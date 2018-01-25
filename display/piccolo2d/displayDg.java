@@ -1,5 +1,9 @@
 package display.piccolo2d;
 
+import modals.piccolo2d.NodeContent;
+import modals.piccolo2d.edge;
+import modals.piccolo2d.node;
+
 import org.piccolo2d.extras.PFrame;
 import org.piccolo2d.nodes.PPath;
 import org.piccolo2d.nodes.PText;
@@ -14,6 +18,7 @@ import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.piccolo2d.PCamera;
 import org.piccolo2d.PCanvas;
@@ -22,11 +27,14 @@ import org.piccolo2d.PNode;
 import org.piccolo2d.PRoot;
 import org.piccolo2d.event.PDragSequenceEventHandler;
 import org.piccolo2d.event.PInputEvent;
+import org.piccolo2d.util.PBounds;
 import org.piccolo2d.util.PPaintContext;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.sun.javafx.geom.Edge;
+
 import reader.xml.Reader;
+import utilities.piccolo2d.xmlToStructure;
 
 public class displayDg extends PFrame {
 
@@ -46,16 +54,47 @@ public class displayDg extends PFrame {
 
 	public ArrayList<PNode> getPNodes() {
 		ArrayList<PNode> listePNode = new ArrayList<>();
-		//PNode p = new PNode();
-		Reader reader = new Reader("./mongraph.xml");
-		NodeList listNode = reader.getAllNodes();
-		for (int i = 1; i <= listNode.getLength(); i++) {
-			PNode p = PPath.createRectangle(0, (i-1)*120, 100, 50);
-			PText text = new PText(reader.getNodeName(i));
-			text.setBounds(p.getX(),p.getY(),50,100);
-			p.addChild(text);
-			listePNode.add(p);
+//		//PNode p = new PNode();
+//		Reader reader = new Reader("./mongraph.xml");
+//		NodeList listNode = reader.getAllNodes();
+//		for (int i = 1; i <= listNode.getLength(); i++) {
+//			PNode p = PPath.createRectangle(0, (i-1)*120, 100, 50);
+//			PText text = new PText(reader.getNodeName(i));
+//			PText text1 = new PText(reader.getNodeName(i));
+//			PText text2 = new PText(reader.getNodeName(i));
+//			text.setBounds(p.getX(),p.getY()+30,50,100);
+//			text1.setBounds(p.getX(),p.getY()+130,50,100);
+//			text2.setBounds(p.getX(),p.getY()+230,50,100);
+//			
+//			p.addChild(text);
+//			p.addChild(text1);
+//			p.addChild(text2);
+//			PBounds bounds=p.getUnionOfChildrenBounds(null);
+//	        p.setBounds(bounds.getX(),bounds.getY(),bounds.getWidth(),bounds.getHeight());
+//			listePNode.add(p);
+//		}
+		HashMap<String, node> listNodes = new xmlToStructure().parseNode();
+		for (String key : listNodes.keySet()) {
+		    if (listNodes.get(key).getType().equals("package")) {
+		    	node packag = listNodes.get(key) ;
+		    	PNode p =  PPath.createRectangle(0,0, 100,100);
+		    	HashMap<String,edge> relation = packag.getRelation();
+		    	for (String idEdge : relation.keySet() ) {
+		    		node node = listNodes.get(relation.get(idEdge).getTo());
+		    		PNode pnode = new NodeContent( new PText(node.getName())); //PPath.createRectangle(0,0, 100, 100);
+		    		//PText nodeName = new PText(node.getName());
+		    		//nodeName.setBounds(pnode.getX(),pnode.getY(),nodeName.getWidth(),nodeName.getHeight());
+		    		//pnode.addChild(nodeName);
+		    		//PBounds bounds=pnode.getUnionOfChildrenBounds(null);
+			        //pnode.setBounds(bounds.getX(),bounds.getY(),bounds.getWidth(),bounds.getHeight());
+		    		p.addChild(pnode);
+		    		PBounds bounds=p.getUnionOfChildrenBounds(null);
+			        p.setBounds(bounds.getX(),bounds.getY(),bounds.getWidth(),bounds.getHeight());
+				}
+		    	listePNode.add(p);
+			}
 		}
+		
 		return listePNode;
 	}
 
@@ -119,6 +158,7 @@ public class displayDg extends PFrame {
 		});
 
 		gridLayer.setBounds(camera.getViewBounds());
+		System.out.println(getPNodes().size());
 		for (PNode node: getPNodes()) {
 			getCanvas().getLayer().addChild(node);
 

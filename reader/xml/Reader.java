@@ -173,6 +173,12 @@ public class Reader {
 		String query = "//edge["+edgeIndex+"]/@to";
 		return this.executeStringQuery(query);
 	}
+	public NodeList getEdgeFrom(String id){
+		String query = "//edge[@from=\""+id+"\"]";
+		return this.executeNodeSetQuery(query);
+	
+	}
+	
 	
 	
 }
