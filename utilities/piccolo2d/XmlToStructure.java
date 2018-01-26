@@ -18,10 +18,6 @@ public  class XmlToStructure {
 		parseNode();
 	}
 	
-enum AttributTypes {
-	id,to,from,type;
-}
-
 private static Edge parseAttributs(NamedNodeMap attrs) {
 	String edgeId = "";
 	String edgeDestId = "";
