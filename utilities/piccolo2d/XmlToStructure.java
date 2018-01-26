@@ -17,9 +17,47 @@ public  class XmlToStructure {
 	public XmlToStructure() {
 		parseNode();
 	}
+	
+enum AttributTypes {
+	id,to,from,type;
+}
+
+private static Edge parseAttributs(NamedNodeMap attrs) {
+	String edgeId = "";
+	String edgeDestId = "";
+	String edgeSrcId ="";
+	String edgetype ="";
+	
+	Edge edge = new Edge() ;
+	for (int k = 0; k < attrs.getLength(); k++) {
+		Attr attribut = (Attr) (attrs.item(k));
+		switch (attribut.getName()) {
+			case "id":
+				edgeId = attribut.getValue();
+				edge.setId(edgeId);
+				break;
+			case "to":
+				edgeDestId = attribut.getValue();
+				edge.setTo(edgeDestId);
+				break;
+			case "from":
+				edgeSrcId = attribut.getValue();
+				edge.setFrom(edgeSrcId);
+				break;
+			case "type":
+				edgetype = attribut.getValue();
+				edge.setType(edgetype);
+				break;
+	
+			default:
+				break;
+		}
+	}
+	return edge;
+}
 
 	public Map<String, Node> parseNode() {
-		HashMap<String, Node> listNode = new HashMap();
+		HashMap<String, Node> listNode = new HashMap<>();
 
 		Reader reader = new Reader("./mongraph.xml");
 		int listLength = reader.getNbNodes();
@@ -34,36 +72,8 @@ public  class XmlToStructure {
 				HashMap<String, Edge> relation = new HashMap<>(n.getRelation());
 				for (int j = 0; j < listEdge.getLength(); j++) {
 					NamedNodeMap attrs = listEdge.item(j).getAttributes();
-					String edgeId = "";
-					String edgeDestId = "";
-					String edgeSrcId ="";
-					String edgetype ="";
-					Edge edge = new Edge() ;
-					for (int k = 0; k < attrs.getLength(); k++) {
-						Attr attribut = (Attr) (attrs.item(k));
-						if (attribut.getName().equals("id")) {
-							edgeId = attribut.getValue();
-							edge.setId(edgeId);
-							
-						}
-						if (attribut.getName().equals("to")) {
-							edgeDestId = attribut.getValue();
-							edge.setTo(edgeDestId);
-							
-						}
-						if (attribut.getName().equals("from")) {
-							edgeSrcId = attribut.getValue();
-							edge.setFrom(edgeSrcId);
-							
-						}
-						if (attribut.getName().equals("type")) {
-							edgetype = attribut.getValue();
-							edge.setType(edgetype);
-							
-						}
-					}
-					relation.put(edgeId, edge);
-
+					Edge edge = XmlToStructure.parseAttributs(attrs);
+					relation.put(edge.getId(), edge);
 				}
 				n.setRelation(relation);
 			}
