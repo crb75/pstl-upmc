@@ -1,25 +1,24 @@
 package utilities.piccolo2d;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Attr;
 
-import com.sun.xml.internal.ws.api.ha.StickyFeature;
 
 import modals.piccolo2d.Edge;
 import modals.piccolo2d.Node;
 import reader.xml.Reader;
 
-public  class xmlToStructure {
+public  class XmlToStructure {
 
-	public xmlToStructure() {
+	public XmlToStructure() {
 		parseNode();
 	}
 
-	public HashMap<String, Node> parseNode() {
+	public Map<String, Node> parseNode() {
 		HashMap<String, Node> listNode = new HashMap();
 
 		Reader reader = new Reader("./mongraph.xml");
@@ -39,35 +38,34 @@ public  class xmlToStructure {
 					String edgeDestId = "";
 					String edgeSrcId ="";
 					String edgetype ="";
-					Edge Edge = new Edge() ;
+					Edge edge = new Edge() ;
 					for (int k = 0; k < attrs.getLength(); k++) {
 						Attr attribut = (Attr) (attrs.item(k));
 						if (attribut.getName().equals("id")) {
 							edgeId = attribut.getValue();
-							Edge.setId(edgeId);
+							edge.setId(edgeId);
 							
 						}
 						if (attribut.getName().equals("to")) {
 							edgeDestId = attribut.getValue();
-							Edge.setTo(edgeDestId);
+							edge.setTo(edgeDestId);
 							
 						}
 						if (attribut.getName().equals("from")) {
 							edgeSrcId = attribut.getValue();
-							Edge.setFrom(edgeSrcId);
+							edge.setFrom(edgeSrcId);
 							
 						}
 						if (attribut.getName().equals("type")) {
 							edgetype = attribut.getValue();
-							Edge.setType(edgetype);
+							edge.setType(edgetype);
 							
 						}
 					}
-					relation.put(edgeId, Edge);
+					relation.put(edgeId, edge);
 
 				}
 				n.setRelation(relation);
-				// System.out.println(((Attr)(listEdge.item(0).getAttributes().item(0))).getValue());
 			}
 
 			listNode.put(n.getId(), n);
@@ -77,9 +75,8 @@ public  class xmlToStructure {
 	}
 
 	public static void main(String[] args) {
-		HashMap<String, Node> listNode = new HashMap<String, Node>();
-		listNode = new xmlToStructure().parseNode();
-		System.out.println(listNode.get("c01").getRelation().get("e01").getTo());
+		HashMap<String, Node> listNode;
+		listNode = new HashMap<>(new XmlToStructure().parseNode());
 	}
 
 }

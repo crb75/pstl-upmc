@@ -2,6 +2,8 @@ package reader.xml;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -27,6 +29,7 @@ public class Reader {
 	private Element root;
 	private XPathFactory xpf;
 	private XPath path;
+	private static String loggerName = "reader.xml";
 	
 	/* Permet d'initialiser un objet de type Reader */
 	public Reader (String path) {
@@ -39,14 +42,8 @@ public class Reader {
 		    this.root = this.xml.getDocumentElement();
 		    this.xpf = XPathFactory.newInstance();
 		    this.path = xpf.newXPath();
-		} catch(ParserConfigurationException e) {
-			e.printStackTrace();
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch(ParserConfigurationException|SAXException|IOException e) {
+			Logger.getLogger(Reader.loggerName).log(Level.SEVERE, "Exception catched in Reader constructor method", e);
 		}
 	}
 	
@@ -55,10 +52,9 @@ public class Reader {
             String expression = query;
 	        String str = "";
 			try {
-				str = (String)path.evaluate(expression, root);
+				str = path.evaluate(expression, root);
 			} catch (XPathExpressionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getLogger(Reader.loggerName).log(Level.SEVERE, "Exception catched in executeStringQuery method", e);
 			}
 	        return str;
 	}
@@ -68,8 +64,8 @@ public class Reader {
 		try {
 			return (Boolean)path.evaluate(query, root, XPathConstants.BOOLEAN);
 		} catch (XPathExpressionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			Logger.getLogger(Reader.loggerName).log(Level.SEVERE, "Exception catched in executeBooleanQuery method", e);
 		}
 		return false;
 	}
@@ -79,8 +75,7 @@ public class Reader {
 		try {
 			return (Node)path.evaluate(query, root, XPathConstants.NODE);
 		} catch (XPathExpressionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger(Reader.loggerName).log(Level.SEVERE, "Exception catched in executeNodeQuery method", e);
 		}
 		return null;
 	}
@@ -90,8 +85,7 @@ public class Reader {
 		try {
 			return (NodeList)path.evaluate(query, root, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger(Reader.loggerName).log(Level.SEVERE, "Exception catched in executeNodeSetQuery method", e);
 		}
 		return null;
 	}
@@ -108,26 +102,30 @@ public class Reader {
 		return this.getAllNodes().getLength();
 	}
 	
+	private static String generateNodePathWithIndex (int index) {
+		return "//node[" + index + "]";
+	}
+	
 	/* Méthode permet de retourner un élément de type Node dont l'index est passé en paramètres*/
 	public Node getNode(int nodeIndex) {
-		return this.executeNodeQuery("//node["+nodeIndex+"]");
+		return this.executeNodeQuery(Reader.generateNodePathWithIndex(nodeIndex));
 	}
 	
 	/* Méthode permet de retourner l'attribut type d'un noeud dont l'index est passé en paramètres */
 	public String getNodeType(int nodeIndex) {
-		String query = "//node["+nodeIndex+"]/@type";
+		String query = Reader.generateNodePathWithIndex(nodeIndex) + "/@type";
 		return this.executeStringQuery(query);
 	}
 	
 	/* Méthode permet de retourner l'attribut id d'un noeud dont l'index est passé en paramètres */
 	public String getNodeId(int nodeIndex) {
-		String query = "//node["+nodeIndex+"]/@id";
+		String query = Reader.generateNodePathWithIndex(nodeIndex)+"/@id";
 		return this.executeStringQuery(query);
 	}
 	
 	/* Méthode permet de retourner l'attribut name d'un noeud dont l'index est passé en paramètres */
 	public String getNodeName(int nodeIndex) {
-		String query = "//node["+nodeIndex+"]/@name";
+		String query = Reader.generateNodePathWithIndex(nodeIndex)+"/@name";
 		return this.executeStringQuery(query);
 	}
 	
@@ -142,35 +140,39 @@ public class Reader {
 	
 	/* Méthode permet de retourner le nombre des éléments Edge dans le fichier XML */
 	public int getNbEdges() {
-		return this.executeNodeSetQuery("//edge").getLength();
+		NodeList nl = this.executeNodeSetQuery("//edge");
+		return (nl==null)?-1:nl.getLength();
 	}
 	
+	private static String generateEdgePathFromIndex(int index) {
+		return "//edge["+index+"]";
+	}
 	/* Méthode permet de retourner un élément de type Edge dont l'index est passé en paramètres*/
-	public Node getEdge(int nodeIndex) {
-		return this.executeNodeQuery("//edge["+nodeIndex+"]");
+	public Node getEdge(int edgeIndex) {
+		return this.executeNodeQuery(Reader.generateEdgePathFromIndex(edgeIndex));
 	}
 	
 	/* Méthode qui permet de retourner l'attribut id d'un edge dont l'index est passé en paramètres */
 	public String getEdgeId(int edgeIndex) {
-		String query = "//edge["+edgeIndex+"]/@id";
+		String query = Reader.generateEdgePathFromIndex(edgeIndex)+"/@id";
 		return this.executeStringQuery(query);
 	}
 	
 	/* Méthode qui permet de retourner l'attribut type d'un edge dont l'index est passé en paramètres */
 	public String getEdgeType(int edgeIndex) {
-		String query = "//edge["+edgeIndex+"]/@type";
+		String query = Reader.generateEdgePathFromIndex(edgeIndex)+"/@type";
 		return this.executeStringQuery(query);
 	}
 
 	/* Méthode qui permet de retourner l'attribut source d'un edge dont l'index est passé en paramètres */
 	public String getEdgeSource(int edgeIndex) {
-		String query = "//edge["+edgeIndex+"]/@from";
+		String query = Reader.generateEdgePathFromIndex(edgeIndex)+"/@from";
 		return this.executeStringQuery(query);
 	}
 
 	/* Méthode qui permet de retourner l'attribut destination d'un edge dont l'index est passé en paramètres */
 	public String getEdgeDestination(int edgeIndex) {
-		String query = "//edge["+edgeIndex+"]/@to";
+		String query = Reader.generateEdgePathFromIndex(edgeIndex)+"/@to";
 		return this.executeStringQuery(query);
 	}
 	public NodeList getEdgeFrom(String id){

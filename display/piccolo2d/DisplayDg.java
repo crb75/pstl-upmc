@@ -19,6 +19,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.piccolo2d.PCamera;
@@ -30,7 +31,7 @@ import org.piccolo2d.event.PDragSequenceEventHandler;
 import org.piccolo2d.event.PInputEvent;
 import org.piccolo2d.util.PBounds;
 import org.piccolo2d.util.PPaintContext;
-import utilities.piccolo2d.xmlToStructure;
+import utilities.piccolo2d.XmlToStructure;
 
 public class DisplayDg extends PFrame {
 
@@ -49,7 +50,8 @@ public class DisplayDg extends PFrame {
 
 	public List<PNode> getPNodes() {
 		ArrayList<PNode> listePNode = new ArrayList<>();
-		HashMap<String, Node> listNodes = new xmlToStructure().parseNode();
+		Map<String,Node> m = new XmlToStructure().parseNode();
+		HashMap<String, Node> listNodes = new HashMap<>(m);
 		for (Entry<String, Node> entry : listNodes.entrySet()) {
 			String key = entry.getKey();
 			Node n = entry.getValue();
