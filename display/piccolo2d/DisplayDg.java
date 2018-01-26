@@ -15,10 +15,11 @@ import java.awt.Stroke;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 import org.piccolo2d.PCamera;
 import org.piccolo2d.PCanvas;
@@ -29,11 +30,6 @@ import org.piccolo2d.event.PDragSequenceEventHandler;
 import org.piccolo2d.event.PInputEvent;
 import org.piccolo2d.util.PBounds;
 import org.piccolo2d.util.PPaintContext;
-import org.w3c.dom.NodeList;
-
-
-
-import reader.xml.Reader;
 import utilities.piccolo2d.xmlToStructure;
 
 public class DisplayDg extends PFrame {
@@ -43,7 +39,6 @@ public class DisplayDg extends PFrame {
 	protected Stroke gridStroke = new BasicStroke(1);
 	protected Color gridPaint = Color.BLACK;
 	protected double gridSpacing = 20;
-
 	public DisplayDg() {
 		this(null);
 	}
@@ -52,41 +47,20 @@ public class DisplayDg extends PFrame {
 		super("displayDg", false, aCanvas);
 	}
 
-	public ArrayList<PNode> getPNodes() {
+	public List<PNode> getPNodes() {
 		ArrayList<PNode> listePNode = new ArrayList<>();
-//		//PNode p = new PNode();
-//		Reader reader = new Reader("./mongraph.xml");
-//		NodeList listNode = reader.getAllNodes();
-//		for (int i = 1; i <= listNode.getLength(); i++) {
-//			PNode p = PPath.createRectangle(0, (i-1)*120, 100, 50);
-//			PText text = new PText(reader.getNodeName(i));
-//			PText text1 = new PText(reader.getNodeName(i));
-//			PText text2 = new PText(reader.getNodeName(i));
-//			text.setBounds(p.getX(),p.getY()+30,50,100);
-//			text1.setBounds(p.getX(),p.getY()+130,50,100);
-//			text2.setBounds(p.getX(),p.getY()+230,50,100);
-//			
-//			p.addChild(text);
-//			p.addChild(text1);
-//			p.addChild(text2);
-//			PBounds bounds=p.getUnionOfChildrenBounds(null);
-//	        p.setBounds(bounds.getX(),bounds.getY(),bounds.getWidth(),bounds.getHeight());
-//			listePNode.add(p);
-//		}
 		HashMap<String, Node> listNodes = new xmlToStructure().parseNode();
-		for (String key : listNodes.keySet()) {
-		    if (listNodes.get(key).getType().equals("package")) {
+		for (Entry<String, Node> entry : listNodes.entrySet()) {
+			String key = entry.getKey();
+			Node n = entry.getValue();
+		    if (n.getType().equals("package")) {
 		    	Node packag = listNodes.get(key) ;
 		    	PNode p =  PPath.createRectangle(0,0, 100,100);
 		    	HashMap<String,Edge> relation = packag.getRelation();
-		    	for (String idEdge : relation.keySet() ) {
-		    		Node Node = listNodes.get(relation.get(idEdge).getTo());
-		    		PNode pnode = new NodeContent( new PText(Node.getName())); //PPath.createRectangle(0,0, 100, 100);
-		    		//PText nodeName = new PText(node.getName());
-		    		//nodeName.setBounds(pnode.getX(),pnode.getY(),nodeName.getWidth(),nodeName.getHeight());
-		    		//pnode.addChild(nodeName);
-		    		//PBounds bounds=pnode.getUnionOfChildrenBounds(null);
-			        //pnode.setBounds(bounds.getX(),bounds.getY(),bounds.getWidth(),bounds.getHeight());
+		    	for (Entry<String, Edge> edgeEntry : relation.entrySet() ) {
+		    		Edge e = edgeEntry.getValue();
+		    		Node node = listNodes.get(e.getTo());
+		    		PNode pnode = new NodeContent( new PText(node.getName())); 
 		    		p.addChild(pnode);
 		    		PBounds bounds=p.getUnionOfChildrenBounds(null);
 			        p.setBounds(bounds.getX(),bounds.getY(),bounds.getWidth(),bounds.getHeight());
@@ -98,6 +72,7 @@ public class DisplayDg extends PFrame {
 		return listePNode;
 	}
 
+	@Override
 	public void initialize() {
 		final PRoot root = getCanvas().getRoot();
 		final PCamera camera = getCanvas().getCamera();
@@ -106,7 +81,8 @@ public class DisplayDg extends PFrame {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
+			
+			@Override
 			protected void paint(final PPaintContext paintContext) {
 				// make sure grid gets drawn on snap to grid boundaries. And
 				// expand a little to make sure that entire view is filled.
@@ -145,20 +121,13 @@ public class DisplayDg extends PFrame {
 
 		// add constrains so that grid layers bounds always match cameras view
 		// bounds. This makes it look like an infinite grid.
-		camera.addPropertyChangeListener(PNode.PROPERTY_BOUNDS, new PropertyChangeListener() {
-			public void propertyChange(final PropertyChangeEvent evt) {
-				gridLayer.setBounds(camera.getViewBounds());
-			}
-		});
+		PropertyChangeListener pcl = evt -> gridLayer.setBounds(camera.getViewBounds());
+		camera.addPropertyChangeListener(PNode.PROPERTY_BOUNDS, pcl);
 
-		camera.addPropertyChangeListener(PCamera.PROPERTY_VIEW_TRANSFORM, new PropertyChangeListener() {
-			public void propertyChange(final PropertyChangeEvent evt) {
-				gridLayer.setBounds(camera.getViewBounds());
-			}
-		});
+		final PropertyChangeListener pcl1 = evt -> gridLayer.setBounds(camera.getViewBounds());
+		camera.addPropertyChangeListener(PCamera.PROPERTY_VIEW_TRANSFORM,pcl1);
 
 		gridLayer.setBounds(camera.getViewBounds());
-		System.out.println(getPNodes().size());
 		for (PNode node: getPNodes()) {
 			getCanvas().getLayer().addChild(node);
 
@@ -171,6 +140,7 @@ public class DisplayDg extends PFrame {
 			protected PNode draggedNode;
 			protected Point2D nodeStartPosition;
 
+			@Override
 			protected boolean shouldStartDragInteraction(final PInputEvent event) {
 				if (super.shouldStartDragInteraction(event)) {
 					return event.getPickedNode() != event.getTopCamera() && !(event.getPickedNode() instanceof PLayer);
@@ -178,6 +148,7 @@ public class DisplayDg extends PFrame {
 				return false;
 			}
 
+			@Override
 			protected void startDrag(final PInputEvent event) {
 				super.startDrag(event);
 				draggedNode = event.getPickedNode();
@@ -185,6 +156,7 @@ public class DisplayDg extends PFrame {
 				nodeStartPosition = draggedNode.getOffset();
 			}
 
+			@Override
 			protected void drag(final PInputEvent event) {
 				super.drag(event);
 
