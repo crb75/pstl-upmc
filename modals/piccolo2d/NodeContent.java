@@ -6,10 +6,13 @@ import org.piccolo2d.nodes.PImage;
 import org.piccolo2d.nodes.PText;
 import org.piccolo2d.util.PBounds;
 
-import java.awt.geom.Point2D;
 
 public class NodeContent extends PNode {
-    private PText text;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8440846339476909563L;
+	private PText text;
     private PImage icon;
     private int margin=10;
 

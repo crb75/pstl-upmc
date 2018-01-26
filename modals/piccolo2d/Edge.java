@@ -7,7 +7,12 @@ public class Edge {
 	private String to ;
 	
 	
-	public Edge(){}
+	public Edge(){
+		this.type = "";
+		this.id = "";
+		this.from = "";
+		this.to = "";
+	}
 	
 	public String getType() {
 		return type;

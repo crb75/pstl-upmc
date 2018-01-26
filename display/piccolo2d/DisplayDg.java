@@ -56,7 +56,7 @@ public class DisplayDg extends PFrame {
 		    if (n.getType().equals("package")) {
 		    	Node packag = listNodes.get(key) ;
 		    	PNode p =  PPath.createRectangle(0,0, 100,100);
-		    	HashMap<String,Edge> relation = packag.getRelation();
+		    	HashMap<String,Edge> relation = new HashMap<>(packag.getRelation());
 		    	for (Entry<String, Edge> edgeEntry : relation.entrySet() ) {
 		    		Edge e = edgeEntry.getValue();
 		    		Node node = listNodes.get(e.getTo());

@@ -32,7 +32,7 @@ public  class xmlToStructure {
 			NodeList listEdge = reader.getEdgeFrom(n.getId());
 			if (listEdge.getLength() != 0) {
 				// dest-id / type
-				HashMap<String, Edge> relation = n.getRelation();
+				HashMap<String, Edge> relation = new HashMap<>(n.getRelation());
 				for (int j = 0; j < listEdge.getLength(); j++) {
 					NamedNodeMap attrs = listEdge.item(j).getAttributes();
 					String edgeId = "";

@@ -1,6 +1,7 @@
 package modals.piccolo2d;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Node {
 	
@@ -11,7 +12,7 @@ public class Node {
 	
 	public Node(){
 		
-		relation = new HashMap<String, Edge>();
+		relation = new HashMap<>();
 	}
 	
 	public String getName() {
@@ -32,11 +33,11 @@ public class Node {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public HashMap<String, Edge> getRelation() {
+	public Map<String, Edge> getRelation() {
 		return relation;
 	}
-	public void setRelation(HashMap<String, Edge> relation) {
-		this.relation = relation;
+	public void setRelation(Map<String, Edge> relation) {
+		this.relation = new HashMap<>(relation);
 	}
 	
 	
