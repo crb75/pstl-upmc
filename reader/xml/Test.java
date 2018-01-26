@@ -1,6 +1,6 @@
 package reader.xml;
 
-public class test {
+public class Test {
 	  public static void main(String[] args) {
 	     Reader r = new Reader("./mongraph.xml");
 	     

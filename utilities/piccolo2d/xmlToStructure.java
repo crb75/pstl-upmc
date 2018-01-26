@@ -9,8 +9,8 @@ import org.w3c.dom.Attr;
 
 import com.sun.xml.internal.ws.api.ha.StickyFeature;
 
-import modals.piccolo2d.edge;
-import modals.piccolo2d.node;
+import modals.piccolo2d.Edge;
+import modals.piccolo2d.Node;
 import reader.xml.Reader;
 
 public  class xmlToStructure {
@@ -19,51 +19,51 @@ public  class xmlToStructure {
 		parseNode();
 	}
 
-	public HashMap<String, node> parseNode() {
-		HashMap<String, node> listNode = new HashMap();
+	public HashMap<String, Node> parseNode() {
+		HashMap<String, Node> listNode = new HashMap();
 
 		Reader reader = new Reader("./mongraph.xml");
 		int listLength = reader.getNbNodes();
 		for (int i = 1; i <= listLength; i++) {
-			node n = new node();
+			Node n = new Node();
 			n.setId(reader.getNodeId(i));
 			n.setName(reader.getNodeName(i));
 			n.setType(reader.getNodeType(i));
 			NodeList listEdge = reader.getEdgeFrom(n.getId());
 			if (listEdge.getLength() != 0) {
 				// dest-id / type
-				HashMap<String, edge> relation = n.getRelation();
+				HashMap<String, Edge> relation = n.getRelation();
 				for (int j = 0; j < listEdge.getLength(); j++) {
 					NamedNodeMap attrs = listEdge.item(j).getAttributes();
 					String edgeId = "";
 					String edgeDestId = "";
 					String edgeSrcId ="";
 					String edgetype ="";
-					edge edge = new edge() ;
+					Edge Edge = new Edge() ;
 					for (int k = 0; k < attrs.getLength(); k++) {
 						Attr attribut = (Attr) (attrs.item(k));
 						if (attribut.getName().equals("id")) {
 							edgeId = attribut.getValue();
-							edge.setId(edgeId);
+							Edge.setId(edgeId);
 							
 						}
 						if (attribut.getName().equals("to")) {
 							edgeDestId = attribut.getValue();
-							edge.setTo(edgeDestId);
+							Edge.setTo(edgeDestId);
 							
 						}
 						if (attribut.getName().equals("from")) {
 							edgeSrcId = attribut.getValue();
-							edge.setFrom(edgeSrcId);
+							Edge.setFrom(edgeSrcId);
 							
 						}
 						if (attribut.getName().equals("type")) {
 							edgetype = attribut.getValue();
-							edge.setType(edgetype);
+							Edge.setType(edgetype);
 							
 						}
 					}
-					relation.put(edgeId, edge);
+					relation.put(edgeId, Edge);
 
 				}
 				n.setRelation(relation);
@@ -77,7 +77,7 @@ public  class xmlToStructure {
 	}
 
 	public static void main(String[] args) {
-		HashMap<String, node> listNode = new HashMap<String, node>();
+		HashMap<String, Node> listNode = new HashMap<String, Node>();
 		listNode = new xmlToStructure().parseNode();
 		System.out.println(listNode.get("c01").getRelation().get("e01").getTo());
 	}

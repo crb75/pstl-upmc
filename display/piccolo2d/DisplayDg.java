@@ -1,8 +1,8 @@
 package display.piccolo2d;
 
 import modals.piccolo2d.NodeContent;
-import modals.piccolo2d.edge;
-import modals.piccolo2d.node;
+import modals.piccolo2d.Edge;
+import modals.piccolo2d.Node;
 
 import org.piccolo2d.extras.PFrame;
 import org.piccolo2d.nodes.PPath;
@@ -31,12 +31,12 @@ import org.piccolo2d.util.PBounds;
 import org.piccolo2d.util.PPaintContext;
 import org.w3c.dom.NodeList;
 
-import com.sun.javafx.geom.Edge;
+
 
 import reader.xml.Reader;
 import utilities.piccolo2d.xmlToStructure;
 
-public class displayDg extends PFrame {
+public class DisplayDg extends PFrame {
 
 	private static final long serialVersionUID = 1L;
 	protected Line2D gridLine = new Line2D.Double();
@@ -44,11 +44,11 @@ public class displayDg extends PFrame {
 	protected Color gridPaint = Color.BLACK;
 	protected double gridSpacing = 20;
 
-	public displayDg() {
+	public DisplayDg() {
 		this(null);
 	}
 
-	public displayDg(final PCanvas aCanvas) {
+	public DisplayDg(final PCanvas aCanvas) {
 		super("displayDg", false, aCanvas);
 	}
 
@@ -73,15 +73,15 @@ public class displayDg extends PFrame {
 //	        p.setBounds(bounds.getX(),bounds.getY(),bounds.getWidth(),bounds.getHeight());
 //			listePNode.add(p);
 //		}
-		HashMap<String, node> listNodes = new xmlToStructure().parseNode();
+		HashMap<String, Node> listNodes = new xmlToStructure().parseNode();
 		for (String key : listNodes.keySet()) {
 		    if (listNodes.get(key).getType().equals("package")) {
-		    	node packag = listNodes.get(key) ;
+		    	Node packag = listNodes.get(key) ;
 		    	PNode p =  PPath.createRectangle(0,0, 100,100);
-		    	HashMap<String,edge> relation = packag.getRelation();
+		    	HashMap<String,Edge> relation = packag.getRelation();
 		    	for (String idEdge : relation.keySet() ) {
-		    		node node = listNodes.get(relation.get(idEdge).getTo());
-		    		PNode pnode = new NodeContent( new PText(node.getName())); //PPath.createRectangle(0,0, 100, 100);
+		    		Node Node = listNodes.get(relation.get(idEdge).getTo());
+		    		PNode pnode = new NodeContent( new PText(Node.getName())); //PPath.createRectangle(0,0, 100, 100);
 		    		//PText nodeName = new PText(node.getName());
 		    		//nodeName.setBounds(pnode.getX(),pnode.getY(),nodeName.getWidth(),nodeName.getHeight());
 		    		//pnode.addChild(nodeName);
@@ -204,6 +204,6 @@ public class displayDg extends PFrame {
 	}
 
 	public static void main(final String[] args) {
-		new displayDg();
+		new DisplayDg();
 	}
 }

@@ -1,13 +1,13 @@
 package modals.piccolo2d;
 
-public class edge {
+public class Edge {
 	private String type ; 
 	private String id;
 	private String from ;
 	private String to ;
 	
 	
-	public edge(){}
+	public Edge(){}
 	
 	public String getType() {
 		return type;
