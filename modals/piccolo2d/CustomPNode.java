@@ -33,15 +33,15 @@ public class CustomPNode extends PNode {
 		this.children = children;
 		this.parent = parent;
 		this.margin = margin;
-		setText(textContent);	
-		rect = PPath.createRectangle(0, 0, this.textContent.getBounds().getWidth()+margin, this.textContent.getBounds().getHeight()+margin);
+		setText(textContent);
+		rect = PPath.createRectangle(0, 0, this.textContent.getBounds().getWidth() + margin,
+				this.textContent.getBounds().getHeight() + margin);
 		addChildren(children);
 		setCollapsedGridLayout();
-		
 
 	}
 
-	public CustomPNode(PPath rect, CustomPNode parent, int margin, String textContent,String idNode) {
+	public CustomPNode(PPath rect, CustomPNode parent, int margin, String textContent, String idNode) {
 		super();
 		this.rect = rect;
 		this.parent = parent;
@@ -110,41 +110,36 @@ public class CustomPNode extends PNode {
 		double y = 0;
 		double w = margin + content.getBounds().getWidth() + margin;
 		double h = margin + content.getBounds().getHeight() + margin;
-		//removeChild(this.rect);
-		this.rect.setBounds(x,y,w,h);
+		this.rect.setBounds(x, y, w, h);
 		this.parent.setGridLayoutV();
-		//addChild(rect);
 	}
+
 	public void expandChildren() {
-		NodeContent content = this.textContent;
 		for (CustomPNode customPNode : this.getChildren()) {
 			customPNode.setVisible(true);
+			customPNode.getParent().setGridLayoutV();
+			customPNode.getParent().setExpandGridLayout();
 		}
-//		double x = 0;
-//		double y = 0;
-//		double w = margin + content.getBounds().getWidth() + margin;
-//		double h = margin + content.getBounds().getHeight() + margin;
-//		//removeChild(this.rect);
-//		this.rect.setBounds(x,y,w,h);
 		this.parent.setGridLayoutV();
 	}
 
 	public void setExpandGridLayout() {
-		if(getChildren().size()==0){
+		if (getChildren().size() == 0) {
 
-            double x=0;
-            double y=0;
-            double w=margin+textContent.getBounds().getWidth()+margin;
-            double h=margin+textContent.getBounds().getHeight()+margin;
+			double x = 0;
+			double y = 0;
+			double w = margin + textContent.getBounds().getWidth() + margin;
+			double h = margin + textContent.getBounds().getHeight() + margin;
 
-            removeChild(rect);
-            rect=PPath.createRectangle(x,y,w,h);
-           // rect=bevelOut(rect,2);
-            addChild(rect);
-            addChild(textContent);
+			// removeChild(rect);
+			// rect=PPath.createRectangle(x,y,w,h);
+			// // rect=bevelOut(rect,2);
+			// addChild(rect);
+			// addChild(textContent);
+			this.rect.setBounds(x, y, w, h);
 
-            return;
-        }
+			return;
+		}
 
 		NodeContent content = this.textContent;
 		Collection<CustomPNode> children = getChildren();
@@ -156,135 +151,138 @@ public class CustomPNode extends PNode {
 
 		CustomPNode lastChild = children.iterator().next();
 		double maxHeight = lastChild.getRect().getHeight();
-		
-		  for(CustomPNode PCN:children){
 
-	            PCN.setTransform(AffineTransform.getTranslateInstance(0,0));
+		for (CustomPNode PCN : children) {
 
-	            //PCN.setExpandGridLayout();
+			PCN.setTransform(AffineTransform.getTranslateInstance(0, 0));
 
-	            PCN.translate(x,y);
+			// PCN.setExpandGridLayout();
 
-	            x+=PCN.getRect().getWidth()+margin;
-	            w+=PCN.getRect().getWidth()+margin;
+			PCN.translate(x, y);
 
-	            if(PCN.getRect().getHeight()>maxHeight)
-	                maxHeight=PCN.getRect().getHeight();
-	        }
-	            h+=maxHeight+margin;
-	        //endregion
+			x += PCN.getRect().getWidth() + margin;
+			w += PCN.getRect().getWidth() + margin;
 
-	        removeChild(rect);
-	        rect=PPath.createRectangle(0,0,w,h);
-	       // rect=bevelIn(rect,2);
-	        addChild(rect);
-	        addChild(content);
-	        addChildren(children);
+			if (PCN.getRect().getHeight() > maxHeight)
+				maxHeight = PCN.getRect().getHeight();
+		}
+		h += maxHeight + margin;
+		// endregion
+
+		removeChild(rect);
+		rect = PPath.createRectangle(0, 0, w, h);
+		// rect=bevelIn(rect,2);
+		addChild(rect);
+		addChild(content);
+
+		addChildren(children);
 	}
-	  public PPath bevelOut(PPath rectangle,int bevel){
-	        double w=rectangle.getWidth();
-	        double h=rectangle.getHeight();
 
-	        PPath background = PPath.createRectangle(0,0,w,h);
-	        background.setPaint(Color.WHITE);
-	        PPath borderTop=PPath.createRectangle(0,0,w,bevel);
-	        borderTop.setPaint(Color.LIGHT_GRAY);
-	        borderTop.setStroke(null);
-	        background.addChild(borderTop);
-	        PPath borderLeft=PPath.createRectangle(0,0,bevel,h);
-	        borderLeft.setPaint(Color.LIGHT_GRAY);
-	        borderLeft.setStroke(null);
-	        background.addChild(borderLeft);
-	        PPath borderRight=PPath.createRectangle(w-bevel,0,bevel,h);
-	        borderRight.setPaint(Color.DARK_GRAY);
-	        borderRight.setStroke(null);
-	        background.addChild(borderRight);
-	        PPath borderBottom=PPath.createRectangle(0,h-bevel,w,bevel);
-	        borderBottom.setPaint(Color.DARK_GRAY);
-	        borderBottom.setStroke(null);
-	        background.addChild(borderBottom);
+	public PPath bevelOut(PPath rectangle, int bevel) {
+		double w = rectangle.getWidth();
+		double h = rectangle.getHeight();
 
-	        return background;
-	    }
+		PPath background = PPath.createRectangle(0, 0, w, h);
+		background.setPaint(Color.WHITE);
+		PPath borderTop = PPath.createRectangle(0, 0, w, bevel);
+		borderTop.setPaint(Color.LIGHT_GRAY);
+		borderTop.setStroke(null);
+		background.addChild(borderTop);
+		PPath borderLeft = PPath.createRectangle(0, 0, bevel, h);
+		borderLeft.setPaint(Color.LIGHT_GRAY);
+		borderLeft.setStroke(null);
+		background.addChild(borderLeft);
+		PPath borderRight = PPath.createRectangle(w - bevel, 0, bevel, h);
+		borderRight.setPaint(Color.DARK_GRAY);
+		borderRight.setStroke(null);
+		background.addChild(borderRight);
+		PPath borderBottom = PPath.createRectangle(0, h - bevel, w, bevel);
+		borderBottom.setPaint(Color.DARK_GRAY);
+		borderBottom.setStroke(null);
+		background.addChild(borderBottom);
 
-	    public PPath bevelIn(PPath rectangle,int bevel){
-	        double w=rectangle.getWidth();
-	        double h=rectangle.getHeight();
+		return background;
+	}
 
-	        PPath background = PPath.createRectangle(0,0,w,h);
-	        background.setPaint(Color.WHITE);
-	        PPath borderTop=PPath.createRectangle(0,0,w,bevel);
-	        borderTop.setPaint(Color.DARK_GRAY);
-	        borderTop.setStroke(null);
-	        background.addChild(borderTop);
-	        PPath borderLeft=PPath.createRectangle(0,0,bevel,h);
-	        borderLeft.setPaint(Color.DARK_GRAY);
-	        borderLeft.setStroke(null);
-	        background.addChild(borderLeft);
-	        PPath borderRight=PPath.createRectangle(w-bevel,0,bevel,h);
-	        borderRight.setPaint(Color.LIGHT_GRAY);
-	        borderRight.setStroke(null);
-	        background.addChild(borderRight);
-	        PPath borderBottom=PPath.createRectangle(0,h-bevel,w,bevel);
-	        borderBottom.setPaint(Color.LIGHT_GRAY);
-	        borderBottom.setStroke(null);
-	        background.addChild(borderBottom);
+	public PPath bevelIn(PPath rectangle, int bevel) {
+		double w = rectangle.getWidth();
+		double h = rectangle.getHeight();
 
-	        return background;
-	    }
-	    public void setGridLayoutV(){
-	        if(getChildren().size()==0){
+		PPath background = PPath.createRectangle(0, 0, w, h);
+		background.setPaint(Color.WHITE);
+		PPath borderTop = PPath.createRectangle(0, 0, w, bevel);
+		borderTop.setPaint(Color.DARK_GRAY);
+		borderTop.setStroke(null);
+		background.addChild(borderTop);
+		PPath borderLeft = PPath.createRectangle(0, 0, bevel, h);
+		borderLeft.setPaint(Color.DARK_GRAY);
+		borderLeft.setStroke(null);
+		background.addChild(borderLeft);
+		PPath borderRight = PPath.createRectangle(w - bevel, 0, bevel, h);
+		borderRight.setPaint(Color.LIGHT_GRAY);
+		borderRight.setStroke(null);
+		background.addChild(borderRight);
+		PPath borderBottom = PPath.createRectangle(0, h - bevel, w, bevel);
+		borderBottom.setPaint(Color.LIGHT_GRAY);
+		borderBottom.setStroke(null);
+		background.addChild(borderBottom);
 
-	            double x=0;
-	            double y=0;
-	            double w=margin+textContent.getBounds().getWidth()+margin;
-	            double h=margin+textContent.getBounds().getHeight()+margin;
+		return background;
+	}
 
-	            removeChild(rect);
-	            rect=PPath.createRectangle(x,y,w,h);
-	            //rect=bevelOut(rect,2);
-	            addChild(rect);
-	            addChild(textContent);
+	public void setGridLayoutV() {
+		if (getChildren().size() == 0) {
 
-	            return;
-	        }
+			double x = 0;
+			double y = 0;
+			double w = margin + textContent.getBounds().getWidth() + margin;
+			double h = margin + textContent.getBounds().getHeight() + margin;
 
-	        PNode content=this.textContent;
-	        Collection<CustomPNode> children=getChildren();
+			removeChild(rect);
+			rect = PPath.createRectangle(x, y, w, h);
+			// rect=bevelOut(rect,2);
+			addChild(rect);
+			addChild(textContent);
 
-	        double x=margin+content.getBounds().getWidth()+margin;
-	        double y=0;
-	        double w=margin+content.getBounds().getWidth()+margin;
-	        double h=margin+content.getBounds().getHeight()+margin;
+			return;
+		}
 
-	        CustomPNode lastChild=children.iterator().next();
-	        double maxWidth=lastChild.getRect().getWidth();
+		PNode content = this.textContent;
+		Collection<CustomPNode> children = getChildren();
 
-	        //region vertical layout
-	        for(CustomPNode PCN:children){
+		double x = margin + content.getBounds().getWidth() + margin;
+		double y = 0;
+		double w = margin + content.getBounds().getWidth() + margin;
+		double h = margin + content.getBounds().getHeight() + margin;
 
-	            PCN.setTransform(AffineTransform.getTranslateInstance(0,0));
+		CustomPNode lastChild = children.iterator().next();
+		double maxWidth = lastChild.getRect().getWidth();
 
-	           // PCN.setGridLayoutV();
+		// region vertical layout
+		for (CustomPNode PCN : children) {
 
-	            PCN.translate(x,y);
+			PCN.setTransform(AffineTransform.getTranslateInstance(0, 0));
 
-	            y+=PCN.getRect().getHeight()+margin;
-	            h+=PCN.getRect().getHeight()+margin;
+			// PCN.setGridLayoutV();
 
-	            if(PCN.getRect().getWidth()>maxWidth)
-	                maxWidth=PCN.getRect().getWidth();
+			PCN.translate(x, y);
 
-	        }
-	            w+=maxWidth+margin;
-	        //endregion
+			y += PCN.getRect().getHeight() + margin;
+			h += PCN.getRect().getHeight() + margin;
 
-	        removeChild(rect);
-	        rect=PPath.createRectangle(0,0,w,h);
-	      // rect=bevelIn(rect,2);
-	        addChild(rect);
-	        addChild(content);
-	        addChildren(children);
-	    }
+			if (PCN.getRect().getWidth() > maxWidth)
+				maxWidth = PCN.getRect().getWidth();
+
+		}
+		w += maxWidth + margin;
+		// endregion
+
+		removeChild(rect);
+		rect = PPath.createRectangle(0, 0, w, h);
+		// rect=bevelIn(rect,2);
+		addChild(rect);
+		addChild(content);
+		addChildren(children);
+	}
 
 }

@@ -19,6 +19,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 
 	public void mousePressed(PInputEvent aEvent) {
 		if (aEvent.isLeftMouseButton()) {
+			System.out.println(pnode.getIdNode());
 			pnode.setCollapsedGridLayout();
 		}
 		if (aEvent.isRightMouseButton()) {

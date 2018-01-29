@@ -72,8 +72,10 @@ public class NewDisplayDG extends PFrame {
 					pnode = getClassNode(pnode);
 					pnode.setExpandGridLayout();
 					pnode.setParent(p);
+					PCustomInputEventHandler eventHandler = new  PCustomInputEventHandler(pnode);
+					pnode.addInputEventListener(eventHandler);
 					children.add(pnode);
-					p.addChild(pnode);
+					//p.addChild(pnode);
 					
 
 				}
@@ -112,7 +114,7 @@ public class NewDisplayDG extends PFrame {
 				}
 				pnodeBis.setParent(pnode);
 				children.add(pnodeBis);
-				pnode.addChild(pnodeBis);
+				//pnode.addChild(pnodeBis);
 				//
 				//System.out.println(pnodeBis.getIdNode());
 			}
@@ -140,7 +142,7 @@ public class NewDisplayDG extends PFrame {
 				
 				pnodeBis.setParent(pnode);
 				children.add(pnodeBis);
-				pnode.addChild(pnodeBis);
+				//pnode.addChild(pnodeBis);
 				
 				//System.out.println(pnodeBis.getIdNode());
 			}
