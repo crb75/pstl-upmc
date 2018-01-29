@@ -7,6 +7,7 @@ public class Node {
 	
 	private String name ; 
 	private String id;
+	//enumaration
 	private String type ;
 	private HashMap<String, Edge> relation ;
 	
@@ -33,7 +34,7 @@ public class Node {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public Map<String, Edge> getRelation() {
+	public HashMap<String, Edge> getRelation() {
 		return relation;
 	}
 	public void setRelation(Map<String, Edge> relation) {
