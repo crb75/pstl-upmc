@@ -95,6 +95,7 @@ public class CustomPNode extends PNode {
 	// end Getters & Setters
 
 	public void setText(String text) {
+		this.
 		removeChild(this.textContent);
 		this.textContent = new NodeContent(new PText(text));
 		addChild(this.textContent);

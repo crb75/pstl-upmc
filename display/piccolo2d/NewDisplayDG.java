@@ -40,6 +40,7 @@ public class NewDisplayDG extends PFrame {
 			PCustomInputEventHandler eventHandler = new  PCustomInputEventHandler(node);
 			node.addInputEventListener(eventHandler);
 			getCanvas().getLayer().addChild(node);
+			
 
 		}
 
@@ -60,6 +61,7 @@ public class NewDisplayDG extends PFrame {
 				Node packag = listNodes.get(key);
 				CustomPNode p = new CustomPNode(PPath.createRectangle(0, 0, 100, 100), null, 10, packag.getName(),
 						packag.getId());
+				p.setName(packag.getName());
 				// les relation contain du package
 				HashMap<String, Edge> relation = new HashMap<>(packag.getRelation());
 				// collection des classes du package
@@ -90,6 +92,7 @@ public class NewDisplayDG extends PFrame {
 		root.addChildren(listePNode);
 		root.setChildren(listePNode);
 		root.setText("root");
+		root.setName("root");
 		root.setGridLayoutV();
 		return root.getChildren();
 	}
