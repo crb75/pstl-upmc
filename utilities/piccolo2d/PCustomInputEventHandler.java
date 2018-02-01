@@ -18,19 +18,28 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	}
 
 	public void mousePressed(PInputEvent aEvent) {
-		System.out.println(aEvent.getPickedNode().getBounds().getHeight());
-		System.out.println(pnode.getRect().getBounds().getHeight());
-		if (aEvent.isLeftMouseButton() && (aEvent.getPickedNode().getBounds().getHeight() == pnode.getRect().getBounds().getHeight()) ) {
-			pnode.setCollapsedGridLayout();
-			if (!pnode.getParent().getName().equals("root")) {
-				pnode.getParent().expandChildren();
+//		System.out.println(aEvent.getPickedNode().getBounds().getHeight());
+//		System.out.println(pnode.getRect().getBounds().getHeight());
+//		System.out.println(pnode.getName());
+		try {
+			if (aEvent.isLeftMouseButton() && (aEvent.getPickedNode().getBounds().getHeight() == pnode.getRect().getBounds().getHeight()) ) {
+				pnode.setCollapsedGridLayout();
+//				System.out.println(pnode.getParent().getName());
+				CustomPNode node =  pnode;
+				while (!pnode.getParent().getName().equals("root")) {
+					pnode.getParent().expandChildren();
+					pnode = pnode.getParent();
+				}
+				pnode = node ;
+				
 			}
-			
-			
-		}
-		if (aEvent.isRightMouseButton()) {
-			pnode.expandChildren();
-			
+			if (aEvent.isRightMouseButton()) {
+				pnode.expandChildren();
+				
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}

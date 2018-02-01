@@ -72,7 +72,7 @@ public class NewDisplayDG extends PFrame {
 					CustomPNode pnode = new CustomPNode(PPath.createRectangle(0, 0, 100, 100), null, 10, node.getName(),
 							node.getId());
 					pnode = getClassNode(pnode);
-					pnode.setExpandGridLayout();
+					pnode.setName(node.getName());
 					pnode.setParent(p);
 					PCustomInputEventHandler eventHandler = new  PCustomInputEventHandler(pnode);
 					pnode.addInputEventListener(eventHandler);
@@ -81,10 +81,12 @@ public class NewDisplayDG extends PFrame {
 					
 
 				}
+				
 				p.setChildren(children);
+				p.setExpandGridLayout();
 				p.setParent(root);
 				// p.getParent().setGridLayoutV();
-				p.setExpandGridLayout();
+				
 				listePNode.add(p);
 			}
 
@@ -112,11 +114,22 @@ public class NewDisplayDG extends PFrame {
 				Node n = listNodes.get(e.getTo());
 				CustomPNode pnodeBis = new CustomPNode(PPath.createRectangle(0, 0, 100, 100), null, 10, n.getName(),
 						n.getId());
+				pnodeBis.setName(n.getName());
 				if (n.getType().equals("method")) {
-					pnodeBis = getMethodNode(pnodeBis);
+					pnodeBis.setParent(pnode);
+					pnodeBis = getMethodNode(pnodeBis);			
+					PCustomInputEventHandler eventHandler = new  PCustomInputEventHandler(pnodeBis);
+					pnodeBis.addInputEventListener(eventHandler);
+					children.add(pnodeBis);
+					pnodeBis.setExpandGridLayout();
 				}
+				if (n.getType().equals("attribute")) {
 				pnodeBis.setParent(pnode);
+				PCustomInputEventHandler eventHandler = new  PCustomInputEventHandler(pnodeBis);
+				pnodeBis.addInputEventListener(eventHandler);
 				children.add(pnodeBis);
+				}
+				
 				//pnode.addChild(pnodeBis);
 				//
 				//System.out.println(pnodeBis.getIdNode());
@@ -124,7 +137,7 @@ public class NewDisplayDG extends PFrame {
 			
 		}
 		pnode.setChildren(children);
-		
+		pnode.setExpandGridLayout();
 
 		return pnode;
 	}
@@ -133,7 +146,7 @@ public class NewDisplayDG extends PFrame {
 		HashMap<String, Node> listNodes = new HashMap<>(m);
 		Node node = listNodes.get(pnode.getIdNode());
 		HashMap<String, Edge> relation = new HashMap<>(node.getRelation());
-		
+		System.out.println(pnode.getParent().getName());
 		Collection<CustomPNode> children = new ArrayList<>();
 		for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
 			Edge e = edgeEntry.getValue();
@@ -142,7 +155,7 @@ public class NewDisplayDG extends PFrame {
 				Node n = listNodes.get(e.getTo());
 				CustomPNode pnodeBis = new CustomPNode(PPath.createRectangle(0, 0, 100, 100), null, 10, n.getName(),
 						n.getId());
-				
+				pnodeBis.setName(n.getName());
 				pnodeBis.setParent(pnode);
 				children.add(pnodeBis);
 				//pnode.addChild(pnodeBis);
@@ -151,7 +164,6 @@ public class NewDisplayDG extends PFrame {
 			}
 		}
 		pnode.setChildren(children);
-		pnode.setExpandGridLayout();
 		return pnode;
 	}
 

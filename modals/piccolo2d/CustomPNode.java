@@ -116,12 +116,17 @@ public class CustomPNode extends PNode {
 	}
 
 	public void expandChildren() {
-		for (CustomPNode customPNode : this.getChildren()) {
-			customPNode.setVisible(true);
-			customPNode.getParent().setGridLayoutV();
-			customPNode.getParent().setExpandGridLayout();
+		try {
+			for (CustomPNode customPNode : this.getChildren()) {
+				customPNode.setVisible(true);
+				customPNode.getParent().setGridLayoutV();
+				customPNode.getParent().setExpandGridLayout();
+			}
+			this.parent.setGridLayoutV();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		this.parent.setGridLayoutV();
 	}
 
 	public void setExpandGridLayout() {
