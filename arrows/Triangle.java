@@ -5,7 +5,12 @@ import org.piccolo2d.nodes.PPath;
 import java.awt.*;
 
 public class Triangle extends PNode{
-    public Triangle(Color color){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public Triangle(Color color){
         PPath t = new PPath.Float();
         t.moveTo(0,0);
         t.lineTo(-10,10);

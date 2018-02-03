@@ -7,7 +7,12 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 
 public class ParrowUses extends Parrow{
-    public ParrowUses(Point2D from, Point2D to){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public ParrowUses(Point2D from, Point2D to){
         super(from,to);
         TriangleHollow head = new TriangleHollow();
 
