@@ -37,7 +37,7 @@ public abstract class AbstractBezierExample extends PFrame {
         );
     }
 
-    protected Point2D midpoint(Point2D p1, Point2D p2) {
+    public static Point2D midpoint(Point2D p1, Point2D p2) {
         return new Point2D.Double(p1.getX() + (p2.getX() - p1.getX()) / 2,
                            p1.getY() + (p2.getY() - p1.getY()) / 2);
     }
