@@ -141,9 +141,6 @@ public class NewDisplayDG extends PFrame {
 	
 	public void createExtendsEdges(CustomPNode pnode, PCanvas canvas) {
 		ParrowExtends arrow = null;
-		
-		
-		
 		for (CustomPNode custom : pnode.getChildren()) {
 			Node node = listNodes.get(custom.getIdNode());
 			HashMap<String, Edge> relation = new HashMap<>(node.getRelation());
