@@ -5,11 +5,12 @@ import java.util.Map;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
+
+import nodes.piccolo2d.Edge;
+import nodes.piccolo2d.Node;
+
 import org.w3c.dom.Attr;
 
-
-import modals.piccolo2d.Edge;
-import modals.piccolo2d.Node;
 import reader.xml.Reader;
 
 public  class XmlToStructure {

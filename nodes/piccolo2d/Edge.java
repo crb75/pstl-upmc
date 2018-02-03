@@ -1,4 +1,4 @@
-package modals.piccolo2d;
+package nodes.piccolo2d;
 
 public class Edge {
 	private String type ; 

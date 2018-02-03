@@ -1,4 +1,4 @@
-package modals.piccolo2d;
+package nodes.piccolo2d;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,9 +1,5 @@
 package display.piccolo2d;
 
-import modals.piccolo2d.NodeContent;
-import modals.piccolo2d.Edge;
-import modals.piccolo2d.Node;
-
 import org.piccolo2d.extras.PFrame;
 import org.piccolo2d.nodes.PPath;
 import org.piccolo2d.nodes.PText;
@@ -32,6 +28,9 @@ import org.piccolo2d.event.PInputEvent;
 import org.piccolo2d.util.PBounds;
 import org.piccolo2d.util.PPaintContext;
 
+import nodes.piccolo2d.Edge;
+import nodes.piccolo2d.Node;
+import nodes.piccolo2d.NodeContent;
 import utilities.piccolo2d.XmlToStructure;
 
 public class DisplayDg extends PFrame {

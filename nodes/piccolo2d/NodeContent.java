@@ -1,4 +1,4 @@
-package modals.piccolo2d;
+package nodes.piccolo2d;
 
 
 import org.piccolo2d.PNode;
@@ -34,8 +34,8 @@ public class NodeContent extends PNode {
         this.text = new PText(text);
         addChild(this.text);
         this.text.setBounds(icon.getBounds().getWidth()+margin,0,this.text.getWidth(),this.text.getHeight());
-        PBounds bounds=this.getUnionOfChildrenBounds(null);
-        this.setBounds(bounds.getX(),bounds.getY(),bounds.getWidth(),bounds.getHeight());
+//        PBounds bounds=this.getUnionOfChildrenBounds(null);
+//        this.setBounds(bounds.getX(),bounds.getY(),bounds.getWidth(),bounds.getHeight());
     }
 
     public PImage getIcon(){
@@ -47,6 +47,7 @@ public class NodeContent extends PNode {
     public NodeContent(PText text){
         this.text=text;
         addChild(this.text);
+        this.text.setBounds(margin,margin,this.text.getWidth(),this.text.getHeight());
         PBounds bounds=this.getUnionOfChildrenBounds(null);
         this.setBounds(bounds.getX(),bounds.getY(),bounds.getWidth(),bounds.getHeight());
     }

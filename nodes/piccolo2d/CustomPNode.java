@@ -1,4 +1,4 @@
-package modals.piccolo2d;
+package nodes.piccolo2d;
 
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
@@ -33,10 +33,12 @@ public class CustomPNode extends PNode {
 		this.children = children;
 		this.parent = parent;
 		this.margin = margin;
+
 		setText(textContent);
 		rect = PPath.createRectangle(0, 0, this.textContent.getBounds().getWidth() + margin,
 				this.textContent.getBounds().getHeight() + margin);
 		addChildren(children);
+		this.setGridLayout(3);
 		setCollapsedGridLayout();
 
 	}
@@ -47,6 +49,7 @@ public class CustomPNode extends PNode {
 		this.parent = parent;
 		this.margin = margin;
 		this.idNode = idNode;
+
 		setText(textContent);
 
 	}
@@ -95,8 +98,7 @@ public class CustomPNode extends PNode {
 	// end Getters & Setters
 
 	public void setText(String text) {
-		this.
-		removeChild(this.textContent);
+		this.removeChild(this.textContent);
 		this.textContent = new NodeContent(new PText(text));
 		addChild(this.textContent);
 
@@ -289,6 +291,71 @@ public class CustomPNode extends PNode {
 		addChild(rect);
 		addChild(content);
 		addChildren(children);
+	}
+
+	public void setGridLayout(int cap) {
+
+		if (getChildren().size() == 0) {
+			double x = 0;
+			double y = 0;
+			double w = margin + textContent.getBounds().getWidth() + margin;
+			double h = margin + textContent.getBounds().getHeight() + margin;
+
+			removeChild(rect);
+			rect = PPath.createRectangle(x, y, w, h);
+			// rect = bevelOut(rect, 2);
+			addChild(rect);
+			addChild(textContent);
+		} else {
+			double x = margin;
+			double y = margin + textContent.getHeight() + margin;
+			double w = margin + textContent.getWidth() + margin;
+			double h = margin + textContent.getHeight() + margin;
+
+			CustomPNode firstChild = getChildren().iterator().next();
+			double maxHeight = firstChild.getTextContent().getHeight();
+			double maxWidth = firstChild.getTextContent().getWidth();
+			int i = 0;
+			for (CustomPNode PCN : getChildren()) {
+				// PCN.setGridLayout(cap);
+
+				if (i == cap) {
+					i = 1;
+					x = margin;
+					y += margin + maxHeight;
+					h += margin + PCN.getRect().getHeight();
+				} else {
+					w = x + PCN.getRect().getWidth() + margin;
+					i++;
+				}
+
+				if (PCN.getRect().getHeight() > maxHeight)
+					maxHeight = PCN.getRect().getHeight();
+
+				if (w > maxWidth)
+					maxWidth = w;
+
+				PCN.setTransform(AffineTransform.getTranslateInstance(0, 0));
+				PCN.translate(x, y);
+				x += PCN.getRect().getWidth() + margin;
+			}
+
+			removeChild(rect);
+			rect = PPath.createRectangle(x, y, maxWidth, h + maxHeight + margin);
+			// rect = bevelIn(rect,2);
+
+			addChild(rect);
+			addChild(textContent);
+			addChildren(getChildren());
+		}
+	}
+
+	public NodeContent getTextContent() {
+		return textContent;
+	}
+
+	public void setTextContent(NodeContent textContent) {
+		this.textContent = textContent;
 	}
 
 }

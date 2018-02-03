@@ -7,7 +7,7 @@ import org.piccolo2d.event.PBasicInputEventHandler;
 import org.piccolo2d.event.PInputEvent;
 import org.piccolo2d.event.PInputEventFilter;
 
-import modals.piccolo2d.CustomPNode;
+import nodes.piccolo2d.CustomPNode;
 
 public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	private CustomPNode pnode;
