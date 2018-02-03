@@ -5,7 +5,12 @@ import org.piccolo2d.PNode;
 import java.awt.geom.Point2D;
 
 public abstract class Parrow extends PNode{
-    public Parrow(Point2D from, Point2D to){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public Parrow(Point2D from, Point2D to){
     }
 
     protected PNode from;
