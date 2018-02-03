@@ -37,11 +37,11 @@ public class NewDisplayDG extends PFrame {
 	public NewDisplayDG() {
 		CustomPNode pnode = null ;
 		for (CustomPNode node : getPackageNodes()) {
-			PCustomInputEventHandler eventHandler = new  PCustomInputEventHandler(node);
+			PCustomInputEventHandler eventHandler = new  PCustomInputEventHandler(node,getCanvas(),allPNodes);
 			node.addInputEventListener(eventHandler);
 			getCanvas().getLayer().addChild(node);
 			pnode = node ;
-			createExtendsEdges(node, getCanvas());
+			//createExtendsEdges(node, getCanvas());
 		}
 		ArrayList<CustomPNode> list = new ArrayList<>(pnode.getChildren());
 
@@ -82,7 +82,7 @@ public class NewDisplayDG extends PFrame {
 					pnode = structureToPiccolo(node, pnode);
 					pnode.setName(node.getName());
 					pnode.setParent(p);
-					PCustomInputEventHandler eventHandler = new  PCustomInputEventHandler(pnode);
+					PCustomInputEventHandler eventHandler = new  PCustomInputEventHandler(pnode,getCanvas(),allPNodes);
 					pnode.addInputEventListener(eventHandler);
 					children.add(pnode);
 					//p.addChild(pnode);				
@@ -123,16 +123,16 @@ public class NewDisplayDG extends PFrame {
 				pnodeBis.setName(n.getName());
 				pnodeBis.setParent(pnode);
 				allPNodes.put(pnodeBis.getIdNode(), pnodeBis);
-				eventHandler = new PCustomInputEventHandler(
-						pnodeBis);
+				eventHandler = new PCustomInputEventHandler(pnodeBis,getCanvas(),allPNodes);
 				pnodeBis.addInputEventListener(eventHandler);
 				children.add(pnodeBis);
 				structureToPiccolo(n,pnodeBis);
 			}
 		}
 		eventHandler = new PCustomInputEventHandler(
-				pnode);
+				pnode,getCanvas(),allPNodes);
 		pnode.addInputEventListener(eventHandler);
+	//	System.out.println(pnode.getIdNode());
 		pnode.setChildren(children);
 		pnode.setGridLayout(3);
 		pnode.setExpandGridLayout();
