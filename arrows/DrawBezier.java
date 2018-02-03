@@ -21,12 +21,17 @@ import java.util.Vector;
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 public class DrawBezier extends Applet {
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 /** main applet class */
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	public static CoordLable coordLabel = new CoordLable();
-	public static DrawPanel dp = new DrawPanel();
-	public static Controls theControls = new Controls(dp);
+	public static final CoordLable coordLabel = new CoordLable();
+	public static final DrawPanel dp = new DrawPanel();
+	public static final Controls theControls = new Controls(dp);
 
+	@Override
     public void init() {
 		setLayout(new BorderLayout());
 
@@ -37,10 +42,19 @@ public class DrawBezier extends Applet {
 			// force loading of Geometry class
 		Point p1 = new Point(0,0);
 		Point p2 = new Point(0,1);
+		@SuppressWarnings("unused")
 		Point p3 = Geometry.interpolate(p1,p2,0.5);
     }
 
+	 /**
+	  * @deprecated
+	*/
+	@Deprecated
+    @Override
     public boolean handleEvent(Event e) {
+		 /**
+		  * @deprecated
+		*/
 		switch (e.id) {
 		  case Event.WINDOW_DESTROY:
 			System.exit(0);
@@ -50,7 +64,8 @@ public class DrawBezier extends Applet {
 		}
     }
 
-    public static void main(String args[]) {
+    @SuppressWarnings("deprecation")
+	public static void main(String[] args) {
 		Frame f = new Frame("DrawBezier");
 		DrawBezier drawBez = new DrawBezier();
 		drawBez.init();
@@ -66,7 +81,9 @@ public class DrawBezier extends Applet {
 class Geometry {
 // A class for some geometric global functions
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+	private Geometry() {
+		
+	}
 	// returns the euclidian distance between two points
 	public static double dist(Point p0, Point p1) {
 		int dx = p1.x - p0.x;
@@ -84,7 +101,7 @@ class Geometry {
 
 	// evaluates a bezier defined by the control polygon
 	// which points are given in the array at the value t
-	public static Point evalBezier(Point arr[],double t) {
+	public static Point evalBezier(Point[] arr,double t) {
 		for (int iter = arr.length ; iter > 0 ; iter--) {
 			for (int i = 1 ; i < iter ; i++) {
 				arr[i-1] = interpolate(arr[i-1],arr[i],t);
@@ -96,7 +113,7 @@ class Geometry {
 	// evaluates a bezier defined by the control polygon
 	// which points are given in the array at the value t
 	// Note: this function is recursive
-	public static Point evalBezierRec(Point arr[],double t,int iter) {
+	public static Point evalBezierRec(Point[] arr,double t,int iter) {
 		if (iter == 1)
 			return arr[0];
 		for (int i = 1 ; i < iter ; i++) {
@@ -110,7 +127,11 @@ class Geometry {
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class CoordLable extends Panel {
-// This class exists solely to put a title showing where the mouse is
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	// This class exists solely to put a title showing where the mouse is
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	Label coords;
 
@@ -130,7 +151,12 @@ class CoordLable extends Panel {
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class FramedArea extends Panel {
-// This class exists solely to put a frame around the drawing area. 
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	// This class exists solely to put a frame around the drawing area. 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     public FramedArea(DrawPanel target) {
 		super();
@@ -142,10 +168,17 @@ class FramedArea extends Panel {
 		validate();
     }
 
+    /**
+	  * @deprecated
+	*/
+    @Deprecated
+    @Override
     public Insets insets() {
 		return new Insets(4,4,5,5);
     }
 
+    @SuppressWarnings("deprecation")
+	@Override
     public void paint(Graphics g) {
         Dimension d = size();
         Color bg = getBackground();
@@ -161,7 +194,11 @@ class DrawPanel extends Panel {
 // The drawing panel class
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-		// edit modes
+		/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	// edit modes
     public static final int EXTEND = 0;
     public static final int EDIT = 1;
     public static final int DELETE = 2;
@@ -169,11 +206,11 @@ class DrawPanel extends Panel {
 		// DeCasteljau algorithm show 
 	boolean bShow = false;
 	int		step = 0;
-	Point	dePnts[][];
-	public double tVal = 0.5;
+	Point[][]	dePnts;
+	double tVal = 0.5;
 
 		// vector to hold the control points
-    Vector points = new Vector();
+    Vector<Point> points = new Vector<Point>();
 
 		// helper variables for mouse dragging
 	Point mPoint;
@@ -209,7 +246,8 @@ class DrawPanel extends Panel {
 		bShow = true;
 		step = 0;
 		// allocate space for points
-		int i,j;
+		int i;
+		int j;
 		int np = points.size();
 		if (np <= 0)
 			return;
@@ -259,7 +297,8 @@ class DrawPanel extends Panel {
 		int np = points.size();
 		if (np <= 0)
 			return;
-		Point p0,p1;
+		Point p0;
+		Point p1;
 		for (int i=0 ; i <= step ; i++) {
 				// draw first point
 			p0 = dePnts[i][0];
@@ -292,10 +331,11 @@ class DrawPanel extends Panel {
 		if (np < 3)
 			return;
 
-		Point ptArray[] = new Point[np];
+		Point[] ptArray = new Point[np];
 
-		Point p0,p1;
-		p0 = (Point)points.elementAt(0);
+		Point p0;
+		Point p1;
+		p0 = points.elementAt(0);
 		for (int i = 1 ; i <= 50 ; i++) {
 			double t = (double)i/50.0;
 			points.copyInto(ptArray);
@@ -315,22 +355,27 @@ class DrawPanel extends Panel {
 		if (np == 0)
 			return -1;
 
-		int index = -1;
+		int idx = -1;
 		double dist = Geometry.dist(op,(Point)points.elementAt(0));
 		if (dist < 10.0)
-			index = 0;
+			idx = 0;
 
 		for (int i=1 ; i < np; i++) {
-			Point p = (Point)points.elementAt(i);
+			Point p = points.elementAt(i);
 			double newDist = Geometry.dist(op,p);
 			if (newDist < dist && newDist < 10.0)
-				index = i;
+				idx = i;
 		}
-		return index;
+		return idx;
 	}
 
 		// handle events according to edit mode
 	//----------------------------------------------------------
+	 /**
+	  * @deprecated
+	*/
+	@Deprecated
+	@Override
     public boolean handleEvent(Event e) {
 	//----------------------------------------------------------
 		if (bShow) {
@@ -374,8 +419,8 @@ class DrawPanel extends Panel {
 			default:
 				if (index >= 0) {
 						// take care of clipping here (e.x and e.y out of window)
-					((Point)points.elementAt(index)).x = e.x;
-					((Point)points.elementAt(index)).y = e.y;
+					(points.elementAt(index)).x = e.x;
+					(points.elementAt(index)).y = e.y;
 
 				}
 			}
@@ -385,8 +430,8 @@ class DrawPanel extends Panel {
 		  case Event.MOUSE_DRAG:
 			DrawBezier.coordLabel.setCoords(e.x,e.y);
 			if (index >= 0) {
-				((Point)points.elementAt(index)).x = mPoint.x;
-				((Point)points.elementAt(index)).y = mPoint.y;
+				(points.elementAt(index)).x = mPoint.x;
+				(points.elementAt(index)).y = mPoint.y;
 			}
 			mPoint.x = e.x;
 			mPoint.y = e.y;
@@ -402,6 +447,7 @@ class DrawPanel extends Panel {
 
 		// draw the bezier spline and control polygon
 	//----------------------------------------------------------
+	@Override
 	public void paint(Graphics g) {
 	//----------------------------------------------------------
 		g.setPaintMode();
@@ -419,14 +465,15 @@ class DrawPanel extends Panel {
 			return;
 
 			// draw polygon
-		Point p0,p1;
-		p0 = (Point)points.elementAt(0);
+		Point p0;
+		Point p1;
+		p0 = points.elementAt(0);
 		g.setColor(Color.red);
 		g.fillRect(p0.x - 2, p0.y - 2, 4, 4);
 
 		for (int i=1 ; i < np; i++) {
-			p0 = (Point)points.elementAt(i-1);
-			p1 = (Point)points.elementAt(i);
+			p0 = points.elementAt(i-1);
+			p1 = points.elementAt(i);
 			g.setColor(Color.red);
 			g.fillRect(p1.x - 2, p1.y - 2, 4, 4);
 			g.setColor(Color.blue);
@@ -470,7 +517,12 @@ class DrawPanel extends Panel {
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class Controls extends Panel {
-// the Card layout control for the two modes: drawing and viewing de-casteljau
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	// the Card layout control for the two modes: drawing and viewing de-casteljau
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     Controls(DrawPanel target) {
 		setLayout(new CardLayout());
@@ -481,12 +533,16 @@ class Controls extends Panel {
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class ViewControls extends Panel {
-// The view de-Casteljau controls
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	// The view de-Casteljau controls
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     DrawPanel target;
 	Label tValLabel;
-	final int INTERVAL = 10;
-	final int INITIAL_VAL = INTERVAL/2;
+	static final int INTERVAL = 10;
+	static final int INITIAL_VAL = INTERVAL/2;
 
     public ViewControls(DrawPanel target) {
 		this.target = target;
@@ -506,12 +562,18 @@ class ViewControls extends Panel {
 
     }
 
+    @Override
     public void paint(Graphics g) {
 		Rectangle r = bounds();
 		g.setColor(Color.lightGray);
 		g.draw3DRect(0, 0, r.width, r.height, false);
     }
 
+    /**
+	  * @deprecated
+	*/
+    @Deprecated
+    @Override
     public boolean action(Event e, Object arg) {
 		if (e.target instanceof Button) {
 			String choice = (String)arg;
@@ -525,7 +587,12 @@ class ViewControls extends Panel {
 		}
 		return true;
     }
-
+    
+    /**
+	  * @deprecated
+	*/
+    @Deprecated
+    @Override
 	public boolean handleEvent(Event e) {
 		switch (e.id) {
 		case Event.SCROLL_LINE_UP:
@@ -539,15 +606,23 @@ class ViewControls extends Panel {
 				tValLabel.setText("t="+target.tVal+" ");
 				target.initShow();
 			}
+			break;
+		default:
+			break;
 		}
 		return super.handleEvent(e);
+		
 	}
 }
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class DrawControls extends Panel {
-// The drawing controls
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	// The drawing controls
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     DrawPanel target;
 
@@ -569,12 +644,18 @@ class DrawControls extends Panel {
 		add(b);
     }
 
+    @Override
     public void paint(Graphics g) {
 		Rectangle r = bounds();
 		g.setColor(Color.lightGray);
 		g.draw3DRect(0, 0, r.width, r.height, false);
     }
 
+    /**
+	  * @deprecated
+	*/
+    @Deprecated
+    @Override
     public boolean action(Event e, Object arg) {
 		if (e.target instanceof Choice) {
 			String choice = (String)arg;
