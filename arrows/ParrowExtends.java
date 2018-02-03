@@ -7,7 +7,12 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 
 public class ParrowExtends extends Parrow{
-    public ParrowExtends(Point2D from, Point2D to){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public ParrowExtends(Point2D from, Point2D to){
         super(from,to);
         double theta = Math.atan2(to.getY()-from.getY(),to.getX()-from.getX())+Math.toRadians(90);
         Triangle head=new Triangle(Color.WHITE);
