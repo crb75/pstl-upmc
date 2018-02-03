@@ -42,4 +42,9 @@ public abstract class Parrow extends PNode{
         return this.from==((Parrow) arrow).getFrom()
                 &&this.to==((Parrow) arrow).getTo();
     }
+    
+    @Override
+    public int hashCode() {
+    		return super.hashCode();
+    }
 }
