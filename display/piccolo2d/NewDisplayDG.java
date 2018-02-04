@@ -1,9 +1,5 @@
 package display.piccolo2d;
 
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,12 +7,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.piccolo2d.PCanvas;
-import org.piccolo2d.PNode;
 import org.piccolo2d.extras.PFrame;
 import org.piccolo2d.nodes.PPath;
 
 import arrows.ParrowExtends;
-import arrows.AbstractBezierExample;
 import nodes.piccolo2d.CustomPNode;
 import nodes.piccolo2d.Edge;
 import nodes.piccolo2d.Node;
@@ -43,8 +37,14 @@ public class NewDisplayDG extends PFrame {
 			pnode = node ;
 			//createExtendsEdges(node, getCanvas());
 		}
-		ArrayList<CustomPNode> list = new ArrayList<>(pnode.getChildren());
-
+		if (pnode != null)
+		{
+			ArrayList<CustomPNode> list = new ArrayList<>(pnode.getChildren());
+		}
+		else
+		{
+			System.err.println("pnode is null");
+		}
 //		ParrowExtends arrow = new ParrowExtends(list.get(0).getRect().getGlobalBounds().getCenter2D(),allPNodes.get("p01").getRect().getGlobalBounds().getCenter2D());
 //		Point2D piint = new Point(100,100);
 //		Point2D piint2 = new Point(0,0);
@@ -56,15 +56,15 @@ public class NewDisplayDG extends PFrame {
 
 	public Collection<CustomPNode> getPackageNodes() {
 		Collection<CustomPNode> listePNode = new ArrayList<>();
-		Map<String, Node> m = new XmlToStructure().parseNode();
-		HashMap<String, Node> listNodes = new HashMap<>(m);
+		Map<String, Node> mm = new XmlToStructure().parseNode();
+		HashMap<String, Node> nodesList = new HashMap<>(mm);
 
 		CustomPNode root = new CustomPNode();
-		for (Entry<String, Node> entry : listNodes.entrySet()) {
+		for (Entry<String, Node> entry : nodesList.entrySet()) {
 			String key = entry.getKey();
 			Node n = entry.getValue();
 			if (n.getType().equals("package")) {
-				Node packag = listNodes.get(key);
+				Node packag = nodesList.get(key);
 				CustomPNode p = new CustomPNode(PPath.createRectangle(0, 0, 100, 100), null, 10, packag.getName(),
 						packag.getId());
 				allPNodes.put(p.getIdNode(), p);
@@ -75,7 +75,7 @@ public class NewDisplayDG extends PFrame {
 				Collection<CustomPNode> children = new ArrayList<>();
 				for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
 					Edge e = edgeEntry.getValue();
-					Node node = listNodes.get(e.getTo());
+					Node node = nodesList.get(e.getTo());
 					CustomPNode pnode = new CustomPNode(PPath.createRectangle(0, 0, 100, 100), null, 10, node.getName(),
 							node.getId());
 					allPNodes.put(pnode.getIdNode(), pnode);
