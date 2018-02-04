@@ -21,8 +21,10 @@ public class NewDisplayDG extends PFrame {
 	 private HashMap<String, CustomPNode> allPNodes = new HashMap<>();
 	 private Map<String, Node> m = new XmlToStructure().parseNode();
 	 private	HashMap<String, Node> listNodes = new HashMap<>(m);
-	 private static final double EPSILON = 0.001;
-	 private static final int ARROW_DIM = 20;
+	 @SuppressWarnings("unused")
+	private static final double EPSILON = 0.001;
+	 @SuppressWarnings("unused")
+	private static final int ARROW_DIM = 20;
 	 protected static final int DIAM = 25;
 	/**
 	 * 
@@ -39,6 +41,7 @@ public class NewDisplayDG extends PFrame {
 		}
 		if (pnode != null)
 		{
+			@SuppressWarnings("unused")
 			ArrayList<CustomPNode> list = new ArrayList<>(pnode.getChildren());
 		}
 		else

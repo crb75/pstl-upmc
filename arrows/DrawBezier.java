@@ -564,6 +564,7 @@ class ViewControls extends Panel {
 
     @Override
     public void paint(Graphics g) {
+		@SuppressWarnings("deprecation")
 		Rectangle r = bounds();
 		g.setColor(Color.lightGray);
 		g.draw3DRect(0, 0, r.width, r.height, false);
@@ -646,6 +647,7 @@ class DrawControls extends Panel {
 
     @Override
     public void paint(Graphics g) {
+		@SuppressWarnings("deprecation")
 		Rectangle r = bounds();
 		g.setColor(Color.lightGray);
 		g.draw3DRect(0, 0, r.width, r.height, false);

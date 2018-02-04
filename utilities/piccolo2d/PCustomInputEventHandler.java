@@ -1,6 +1,5 @@
 package utilities.piccolo2d;
 
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.awt.geom.Point2D;
@@ -26,11 +25,11 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	private Map<String, Node> m = new XmlToStructure().parseNode();
 	private HashMap<String, Node> listNodes = new HashMap<>(m);
 
-	public PCustomInputEventHandler(CustomPNode pnode, PCanvas canvas, HashMap<String, CustomPNode> allPNodes) {
+	public PCustomInputEventHandler(CustomPNode pnode, PCanvas canvas, Map<String, CustomPNode> allPNodes) {
 		setEventFilter(new PInputEventFilter(InputEvent.BUTTON1_MASK & InputEvent.BUTTON2_MASK));
 		this.pnode = pnode;
 		this.canvas = canvas;
-		this.allPNodes = allPNodes;
+		this.allPNodes = new HashMap<>(allPNodes);
 	}
 
 	public PCustomInputEventHandler(CustomPNode pnode) {
@@ -39,6 +38,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 
 	}
 
+	@Override
 	public void mousePressed(PInputEvent aEvent) {
 		// System.out.println(aEvent.getPickedNode().getBounds().getHeight());
 		// System.out.println(pnode.getRect().getBounds().getHeight());
@@ -75,7 +75,6 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

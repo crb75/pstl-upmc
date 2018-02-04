@@ -7,7 +7,6 @@ import java.util.Collection;
 import org.piccolo2d.PNode;
 import org.piccolo2d.nodes.PPath;
 import org.piccolo2d.nodes.PText;
-import org.piccolo2d.util.PBounds;
 
 public class CustomPNode extends PNode {
 
@@ -19,6 +18,7 @@ public class CustomPNode extends PNode {
 	private Collection<CustomPNode> children;
 	private CustomPNode parent;
 	private int margin = 10;
+	@SuppressWarnings("unused")
 	private boolean expanded = false;
 	private NodeContent textContent;
 	private String idNode;
@@ -79,6 +79,7 @@ public class CustomPNode extends PNode {
 		this.children = children;
 	}
 
+	@Override
 	public CustomPNode getParent() {
 		return parent;
 	}
@@ -126,13 +127,12 @@ public class CustomPNode extends PNode {
 			}
 			this.parent.setGridLayoutV();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	public void setExpandGridLayout() {
-		if (getChildren().size() == 0) {
+		if (getChildren().isEmpty()) {
 
 			double x = 0;
 			double y = 0;
@@ -150,17 +150,17 @@ public class CustomPNode extends PNode {
 		}
 
 		NodeContent content = this.textContent;
-		Collection<CustomPNode> children = getChildren();
+		Collection<CustomPNode> childrenAux = getChildren();
 
 		double x = margin;
 		double y = margin + content.getBounds().getHeight() + margin;
 		double w = margin + content.getBounds().getWidth() + margin;
 		double h = margin + content.getBounds().getHeight() + margin;
 
-		CustomPNode lastChild = children.iterator().next();
+		CustomPNode lastChild = childrenAux.iterator().next();
 		double maxHeight = lastChild.getRect().getHeight();
 
-		for (CustomPNode PCN : children) {
+		for (CustomPNode PCN : childrenAux) {
 
 			PCN.setTransform(AffineTransform.getTranslateInstance(0, 0));
 
@@ -183,7 +183,7 @@ public class CustomPNode extends PNode {
 		addChild(rect);
 		addChild(content);
 
-		addChildren(children);
+		addChildren(childrenAux);
 	}
 
 	public PPath bevelOut(PPath rectangle, int bevel) {
@@ -239,7 +239,7 @@ public class CustomPNode extends PNode {
 	}
 
 	public void setGridLayoutV() {
-		if (getChildren().size() == 0) {
+		if (getChildren().isEmpty()) {
 
 			double x = 0;
 			double y = 0;
@@ -256,18 +256,18 @@ public class CustomPNode extends PNode {
 		}
 
 		PNode content = this.textContent;
-		Collection<CustomPNode> children = getChildren();
+		Collection<CustomPNode> auxChildren = getChildren();
 
 		double x = margin + content.getBounds().getWidth() + margin;
 		double y = 0;
 		double w = margin + content.getBounds().getWidth() + margin;
 		double h = margin + content.getBounds().getHeight() + margin;
 
-		CustomPNode lastChild = children.iterator().next();
+		CustomPNode lastChild = auxChildren.iterator().next();
 		double maxWidth = lastChild.getRect().getWidth();
 
 		// region vertical layout
-		for (CustomPNode PCN : children) {
+		for (CustomPNode PCN : auxChildren) {
 
 			PCN.setTransform(AffineTransform.getTranslateInstance(0, 0));
 
@@ -290,12 +290,12 @@ public class CustomPNode extends PNode {
 		// rect=bevelIn(rect,2);
 		addChild(rect);
 		addChild(content);
-		addChildren(children);
+		addChildren(auxChildren);
 	}
 
 	public void setGridLayout(int cap) {
 
-		if (getChildren().size() == 0) {
+		if (getChildren().isEmpty()) {
 			double x = 0;
 			double y = 0;
 			double w = margin + textContent.getBounds().getWidth() + margin;

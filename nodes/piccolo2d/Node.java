@@ -34,7 +34,7 @@ public class Node {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public HashMap<String, Edge> getRelation() {
+	public Map<String, Edge> getRelation() {
 		return relation;
 	}
 	public void setRelation(Map<String, Edge> relation) {

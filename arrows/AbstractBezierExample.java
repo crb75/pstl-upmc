@@ -10,7 +10,12 @@ import org.piccolo2d.nodes.PPath;
 
 public abstract class AbstractBezierExample extends PFrame {
 
-    protected Point2D clipX(Point2D s, Point2D clipper) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	protected Point2D clipX(Point2D s, Point2D clipper) {
         return new Point2D.Double(Math.max(s.getX(), clipper.getX()), s.getY());
     }
 
