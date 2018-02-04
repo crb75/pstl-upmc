@@ -47,7 +47,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 			if (aEvent.getClickCount() == 2) {
 				if (aEvent.isLeftMouseButton() && (aEvent.getPickedNode().getBounds().getHeight() == pnode.getRect()
 						.getBounds().getHeight())) {
-					System.out.println(pnode.getIdNode());
+					// System.out.println(pnode.getIdNode());
 					pnode.setCollapsedGridLayout();
 					CustomPNode node = pnode;
 					while (!pnode.getParent().getName().equals("root")) {
@@ -89,15 +89,19 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 			Edge e = edgeEntry.getValue();
 			if (e.getType().equals("isa")) {
 				CustomPNode dest = allPNodes.get(e.getTo());
-				Point2D point =  new Point((int)pnode.getRect().getGlobalBounds().getCenter2D().getX(),(int)(pnode.getRect().getGlobalBounds().getCenter2D().getY() + pnode.getRect().getHeight()/2));
-				Point2D point2 =  new Point((int)dest.getRect().getGlobalBounds().getCenter2D().getX(),(int)(dest.getRect().getGlobalBounds().getCenter2D().getY() + dest.getRect().getHeight()/2));
+				Point2D point = new Point((int) pnode.getRect().getGlobalBounds().getCenter2D().getX(),
+						(int) (pnode.getRect().getGlobalBounds().getCenter2D().getY()
+								+ pnode.getRect().getHeight() / 2));
+				Point2D point2 = new Point((int) dest.getRect().getGlobalBounds().getCenter2D().getX(),
+						(int) (dest.getRect().getGlobalBounds().getCenter2D().getY() + dest.getRect().getHeight() / 2));
 
-				arrow = new ParrowExtends(point,point2);
+				arrow = new ParrowExtends(point, point2);
 				canvas.getLayer().addChild(arrow);
 				createExtendsEdges(dest, canvas);
 			}
 		}
 	}
+
 	public void createUsesEdges(CustomPNode pnode, PCanvas canvas) {
 		ParrowUses arrow = null;
 		Node node = listNodes.get(pnode.getIdNode());
@@ -105,12 +109,15 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		System.out.println(node.getId());
 		for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
 			Edge e = edgeEntry.getValue();
-			if (e.getType().equals("uses") ) {
+			if (e.getType().equals("uses")) {
 				CustomPNode dest = allPNodes.get(e.getTo());
-				Point2D point =  new Point((int)pnode.getRect().getGlobalBounds().getCenter2D().getX(),(int)(pnode.getRect().getGlobalBounds().getCenter2D().getY() + pnode.getRect().getHeight()/2));
-				Point2D point2 =  new Point((int)dest.getRect().getGlobalBounds().getCenter2D().getX(),(int)(dest.getRect().getGlobalBounds().getCenter2D().getY() + dest.getRect().getHeight()/2));
+				Point2D point = new Point((int) pnode.getRect().getGlobalBounds().getCenter2D().getX(),
+						(int) (pnode.getRect().getGlobalBounds().getCenter2D().getY()
+								+ pnode.getRect().getHeight() / 2));
+				Point2D point2 = new Point((int) dest.getRect().getGlobalBounds().getCenter2D().getX(),
+						(int) (dest.getRect().getGlobalBounds().getCenter2D().getY() + dest.getRect().getHeight() / 2));
 
-				arrow = new ParrowUses(point,point2);
+				arrow = new ParrowUses(point, point2);
 				canvas.getLayer().addChild(arrow);
 				createUsesEdges(dest, canvas);
 			}
