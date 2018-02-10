@@ -14,145 +14,109 @@ import arrows.ParrowExtends;
 import nodes.piccolo2d.CustomPNode;
 import nodes.piccolo2d.Edge;
 import nodes.piccolo2d.Node;
-import sun.awt.EventListenerAggregate;
+import nodes.piccolo2d.PiccoloCustomNode;
 import utilities.piccolo2d.PCustomInputEventHandler;
 import utilities.piccolo2d.XmlToStructure;
 
 public class NewDisplayDG extends PFrame {
-	private HashMap<String, CustomPNode> allPNodes = new HashMap<>();
+	private HashMap<String, PiccoloCustomNode> allPNodes = new HashMap<>();
 	private Map<String, Node> m = new XmlToStructure().parseNode();
 	private HashMap<String, Node> listNodes = new HashMap<>(m);
+	private PiccoloCustomNode root;
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	public NewDisplayDG() {
-		addEventListnerToNodes(getPackageNodes());
-		for (CustomPNode node : getPackageNodes().getChildren()) {
-			 PCustomInputEventHandler eventHandler = new PCustomInputEventHandler(node,
-			 getCanvas(), allPNodes);
-			 node.addInputEventListener(eventHandler);
-			getCanvas().getLayer().addChild(node);
-		}
-
-		this.setBounds(0, 0, 1024, 762);
+		root = getPackageNodes();
+		root.collapseAll();
+		addEvent(root, root);
+		getCanvas().getLayer().addChild(root);
 	}
 
-	public CustomPNode getPackageNodes() {
-		Collection<CustomPNode> listePNode = new ArrayList<>();
+	public PiccoloCustomNode getPackageNodes() {
+		Collection<PiccoloCustomNode> listePNode = new ArrayList<>();
 		Map<String, Node> mm = new XmlToStructure().parseNode();
 		HashMap<String, Node> nodesList = new HashMap<>(mm);
 
-		CustomPNode root = new CustomPNode();
+		PiccoloCustomNode root = new PiccoloCustomNode("root", "r01");
 		for (Entry<String, Node> entry : nodesList.entrySet()) {
 			String key = entry.getKey();
 			Node n = entry.getValue();
 			if (n.getType().equals("package")) {
-				Node packag = nodesList.get(key);
-				CustomPNode p = new CustomPNode(PPath.createRectangle(0, 0, 100, 100), null, 10, packag.getName(),
-						packag.getId());
-				allPNodes.put(p.getIdNode(), p);
+				Node packag = n;
+				PiccoloCustomNode p = new PiccoloCustomNode(packag.getName(), packag.getId());
+				allPNodes.put(p.getidNode(), p);
 				p.setName(packag.getName());
 				// les relation contain du package
 				HashMap<String, Edge> relation = new HashMap<>(packag.getRelation());
 				// collection des classes du package
-				Collection<CustomPNode> children = new ArrayList<>();
+				Collection<PiccoloCustomNode> children = new ArrayList<>();
 				for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
 					Edge e = edgeEntry.getValue();
 					Node node = nodesList.get(e.getTo());
-					CustomPNode pnode = new CustomPNode(PPath.createRectangle(0, 0, 100, 100), null, 10, node.getName(),
-							node.getId());
-					allPNodes.put(pnode.getIdNode(), pnode);
-					pnode = structureToPiccolo(node, pnode);
-					pnode.setName(node.getName());
-					pnode.setParent(p);
-					children.add(pnode);
-					// p.addChild(pnode);
+					PiccoloCustomNode pnode;
+					if (allPNodes.containsKey(node.getId())) {
+						listePNode.remove(allPNodes.get(node.getId()));
+						pnode = allPNodes.get(node.getId());
+						pnode.setName(node.getName());
+						children.add(pnode);
+					} else {
+						pnode = new PiccoloCustomNode(node.getName(), node.getId());
+						allPNodes.put(pnode.getidNode(), pnode);
+						pnode = structureToPiccolo(node, pnode);
+						pnode.setName(node.getName());
+						pnode.setParentNode(p);
+						children.add(pnode);
+					}
 				}
-				p.setChildren(children);
-				p.setGridLayout(3);
-				p.setExpandGridLayout();
-				p.setParent(root);
-				// p.getParent().setGridLayoutV();
+				p.setChilldren(children);
+				p.setParentNode(root);
 				listePNode.add(p);
+
 			}
 		}
 		root.addChildren(listePNode);
-		root.setChildren(listePNode);
-		root.setText("root");
 		root.setName("root");
-		root.setGridLayout(3);
-		root.setGridLayoutV();
 		return root;
 	}
 
-	public CustomPNode structureToPiccolo(Node node, CustomPNode pnode) {
+	public PiccoloCustomNode structureToPiccolo(Node node, PiccoloCustomNode pnode) {
 		PCustomInputEventHandler eventHandler;
-		if (pnode.getIdNode() == null) {
-			pnode = new CustomPNode(PPath.createRectangle(0, 0, 100, 100), null, 10, node.getName(), node.getId());
+		if (pnode.getidNode() == null) {
+			pnode = new PiccoloCustomNode(node.getName(), node.getId());
 			pnode.setName(node.getName());
 		}
-		Collection<CustomPNode> children = new ArrayList<>();
+		Collection<PiccoloCustomNode> children = new ArrayList<>();
 		HashMap<String, Edge> relation = new HashMap<>(node.getRelation());
 		for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
 			Edge e = edgeEntry.getValue();
 			if (e.getType().equals("contains")) {
 				Node n = listNodes.get(e.getTo());
-				CustomPNode pnodeBis = new CustomPNode(PPath.createRectangle(0, 0, 100, 100), null, 10, n.getName(),
-						n.getId());
+				PiccoloCustomNode pnodeBis = new PiccoloCustomNode(n.getName(), n.getId());
 				pnodeBis.setName(n.getName());
-				pnodeBis.setParent(pnode);
-				allPNodes.put(pnodeBis.getIdNode(), pnodeBis);
+				pnode.setParentNode(pnode);
+				allPNodes.put(pnodeBis.getidNode(), pnodeBis);
 				children.add(pnodeBis);
 				structureToPiccolo(n, pnodeBis);
 			}
 		}
-		eventHandler = new PCustomInputEventHandler(pnode, getCanvas(), allPNodes);
-		pnode.addInputEventListener(eventHandler);
-		// System.out.println(pnode.getIdNode());
-		pnode.setChildren(children);
-		pnode.setGridLayout(3);
-		pnode.setExpandGridLayout();
+
+		pnode.setChilldren(children);
 		return pnode;
 	}
 
-	public void createExtendsEdges(CustomPNode pnode, PCanvas canvas) {
-		ParrowExtends arrow = null;
-		for (CustomPNode custom : pnode.getChildren()) {
-			Node node = listNodes.get(custom.getIdNode());
-			HashMap<String, Edge> relation = new HashMap<>(node.getRelation());
-			for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
-				Edge e = edgeEntry.getValue();
-				if (e.getType().equals("isa")) {
-					System.out.println(e.getId());
-					CustomPNode dest = allPNodes.get(e.getTo());
-					arrow = new ParrowExtends(custom.getRect().getGlobalBounds().getCenter2D(),
-							dest.getRect().getGlobalBounds().getCenter2D());
-					canvas.getLayer().addChild(arrow);
-					createExtendsEdges(dest, canvas);
-				}
+	private void addEvent(PiccoloCustomNode node, PiccoloCustomNode tree) {
+		node.getContent().addInputEventListener(new PCustomInputEventHandler(node, tree, getCanvas(), allPNodes));
+		if (node.getAllChildren().size() != 0)
+			for (PiccoloCustomNode PCN : node.getAllChildren()) {
+				addEvent(PCN, tree);
 			}
-		}
-	}
-
-	public void addEventListnerToNodes(CustomPNode root) {
-		PCustomInputEventHandler eventHandler;
-		if (root.getChildren() != null) {
-
-			for (CustomPNode child : root.getChildren()) {
-				eventHandler = new PCustomInputEventHandler(child, getCanvas(), allPNodes);
-				child.addInputEventListener(eventHandler);
-				addEventListnerToNodes(child);
-			}
-
-		}
-
 	}
 
 	public static void main(String[] args) {
 		new NewDisplayDG();
 
 	}
-
 }

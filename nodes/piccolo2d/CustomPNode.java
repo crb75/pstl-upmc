@@ -3,6 +3,7 @@ package nodes.piccolo2d;
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.piccolo2d.PNode;
 import org.piccolo2d.nodes.PPath;
@@ -49,8 +50,8 @@ public class CustomPNode extends PNode {
 		this.parent = parent;
 		this.margin = margin;
 		this.idNode = idNode;
-
 		setText(textContent);
+		
 
 	}
 
@@ -135,6 +136,7 @@ public class CustomPNode extends PNode {
 		}
 	}
 
+
 	public void setExpandGridLayout() {
 		if (getChildren().isEmpty()) {
 
@@ -168,7 +170,7 @@ public class CustomPNode extends PNode {
 
 			PCN.setTransform(AffineTransform.getTranslateInstance(0, 0));
 
-			// PCN.setExpandGridLayout();
+		// PCN.setExpandGridLayout();
 
 			PCN.translate(x, y);
 
@@ -275,7 +277,7 @@ public class CustomPNode extends PNode {
 
 			PCN.setTransform(AffineTransform.getTranslateInstance(0, 0));
 
-			// PCN.setGridLayoutV();
+		// PCN.setGridLayoutV();
 
 			PCN.translate(x, y);
 
@@ -288,7 +290,7 @@ public class CustomPNode extends PNode {
 		}
 		w += maxWidth + margin;
 		// endregion
-
+		System.out.println(this.getIdNode() + "hauteur = "+h);
 		removeChild(rect);
 		rect = PPath.createRectangle(0, 0, w, h);
 		// rect=bevelIn(rect,2);

@@ -17,22 +17,25 @@ import arrows.ParrowUses;
 import nodes.piccolo2d.CustomPNode;
 import nodes.piccolo2d.Edge;
 import nodes.piccolo2d.Node;
+import nodes.piccolo2d.PiccoloCustomNode;
 
 public class PCustomInputEventHandler extends PBasicInputEventHandler {
-	private CustomPNode pnode;
+	private PiccoloCustomNode pnode;
+	private PiccoloCustomNode root;
 	private PCanvas canvas;
-	HashMap<String, CustomPNode> allPNodes;
+	HashMap<String, PiccoloCustomNode> allPNodes;
 	private Map<String, Node> m = new XmlToStructure().parseNode();
 	private HashMap<String, Node> listNodes = new HashMap<>(m);
 
-	public PCustomInputEventHandler(CustomPNode pnode, PCanvas canvas, Map<String, CustomPNode> allPNodes) {
+	public PCustomInputEventHandler(PiccoloCustomNode pnode,PiccoloCustomNode root, PCanvas canvas, Map<String, PiccoloCustomNode> allPNodes) {
 		setEventFilter(new PInputEventFilter(InputEvent.BUTTON1_MASK & InputEvent.BUTTON2_MASK));
 		this.pnode = pnode;
 		this.canvas = canvas;
+		this.root = root;
 		this.allPNodes = new HashMap<>(allPNodes);
 	}
 
-	public PCustomInputEventHandler(CustomPNode pnode) {
+	public PCustomInputEventHandler(PiccoloCustomNode pnode) {
 		setEventFilter(new PInputEventFilter(InputEvent.BUTTON1_MASK & InputEvent.BUTTON2_MASK));
 		this.pnode = pnode;
 
@@ -40,39 +43,19 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 
 	@Override
 	public void mousePressed(PInputEvent aEvent) {
-		// System.out.println(aEvent.getPickedNode().getBounds().getHeight());
-		// System.out.println(pnode.getRect().getBounds().getHeight());
-		// System.out.println(pnode.getName());
+
 		try {
-			if (aEvent.getClickCount() == 2) {
-				if (aEvent.isLeftMouseButton() && (aEvent.getPickedNode().getBounds().getHeight() == pnode.getRect()
-						.getBounds().getHeight())) {
-					// System.out.println(pnode.getIdNode());
-					pnode.setCollapsedGridLayout();
-					CustomPNode node = pnode;
-					while (!pnode.getParent().getName().equals("root")) {
-						pnode.getParent().expandChildren();
-						pnode = pnode.getParent();
-					}
-					pnode = node;
 
-				}
+			if (aEvent.isLeftMouseButton()) {
+				  pnode.toggleChildren();
+				  System.out.println(pnode.getidNode());
+				  root.setLayout();
+		          root.updateContentBoundingBoxes(false,canvas);
+				
 				if (aEvent.isRightMouseButton()) {
-					pnode.expandChildren();
+					System.out.println("droit"+aEvent.getPickedNode().getName());
+				}
 
-				}
-			}
-			if (aEvent.getClickCount() == 1) {
-				if (aEvent.isLeftMouseButton() && (aEvent.getPickedNode().getBounds().getHeight() == pnode.getRect()
-						.getBounds().getHeight())) {
-					System.out.println(pnode.getIdNode());
-					createExtendsEdges(pnode, canvas);
-				}
-				if (aEvent.isRightMouseButton() && (aEvent.getPickedNode().getBounds().getHeight() == pnode.getRect()
-						.getBounds().getHeight())) {
-					System.out.println(pnode.getIdNode());
-					createUsesEdges(pnode, canvas);
-				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -80,47 +63,4 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 
 	}
 
-	public void createExtendsEdges(CustomPNode pnode, PCanvas canvas) {
-		ParrowExtends arrow = null;
-		Node node = listNodes.get(pnode.getIdNode());
-		HashMap<String, Edge> relation = new HashMap<>(node.getRelation());
-		System.out.println(node.getId());
-		for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
-			Edge e = edgeEntry.getValue();
-			if (e.getType().equals("isa")) {
-				CustomPNode dest = allPNodes.get(e.getTo());
-				Point2D point = new Point((int) pnode.getRect().getGlobalBounds().getCenter2D().getX(),
-						(int) (pnode.getRect().getGlobalBounds().getCenter2D().getY()
-								+ pnode.getRect().getHeight() / 2));
-				Point2D point2 = new Point((int) dest.getRect().getGlobalBounds().getCenter2D().getX(),
-						(int) (dest.getRect().getGlobalBounds().getCenter2D().getY() + dest.getRect().getHeight() / 2));
-
-				arrow = new ParrowExtends(point, point2);
-				canvas.getLayer().addChild(arrow);
-				createExtendsEdges(dest, canvas);
-			}
-		}
-	}
-
-	public void createUsesEdges(CustomPNode pnode, PCanvas canvas) {
-		ParrowUses arrow = null;
-		Node node = listNodes.get(pnode.getIdNode());
-		HashMap<String, Edge> relation = new HashMap<>(node.getRelation());
-		System.out.println(node.getId());
-		for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
-			Edge e = edgeEntry.getValue();
-			if (e.getType().equals("uses")) {
-				CustomPNode dest = allPNodes.get(e.getTo());
-				Point2D point = new Point((int) pnode.getRect().getGlobalBounds().getCenter2D().getX(),
-						(int) (pnode.getRect().getGlobalBounds().getCenter2D().getY()
-								+ pnode.getRect().getHeight() / 2));
-				Point2D point2 = new Point((int) dest.getRect().getGlobalBounds().getCenter2D().getX(),
-						(int) (dest.getRect().getGlobalBounds().getCenter2D().getY() + dest.getRect().getHeight() / 2));
-
-				arrow = new ParrowUses(point, point2);
-				canvas.getLayer().addChild(arrow);
-				createUsesEdges(dest, canvas);
-			}
-		}
-	}
 }
