@@ -30,8 +30,8 @@ public class Test {
 	     System.out.println("Destination du centième Edge : " + r.getEdgeDestination(100));
 	     
 	     /*On teste les fonctions prédicats */
-	     System.out.println("2ème élément Node existe? " + r.executeBooleanQuery("//Node[2]"));
-	     System.out.println("100ème élément Node existe? " + r.executeBooleanQuery("//Node[100]"));
+	     System.out.println("2ème élément Node existe? " + r.executeBooleanQuery("//node[2]"));
+	     System.out.println("100ème élément Node existe? " + r.executeBooleanQuery("//node[100]"));
 	     
 	     /* On teste les fonctions getters */
 	     System.out.println("Premier élément de type Node : " + r.getNode(1));
