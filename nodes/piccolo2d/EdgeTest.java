@@ -28,47 +28,62 @@ class EdgeTest {
 
 	@Test
 	final void testEdge() {
-		fail("Not yet implemented"); // TODO
+		assertNotNull(new Edge());
 	}
 
 	@Test
 	final void testGetType() {
-		fail("Not yet implemented"); // TODO
+		Edge e = new Edge();
+		assertEquals("", e.getType());
 	}
 
 	@Test
 	final void testSetType() {
-		fail("Not yet implemented"); // TODO
+		Edge e = new Edge();
+		boolean result = (e.getType() == "");
+		String type = "Test type";
+		e.setType(type);
+		result = result && (type == e.getType());
+		assertEquals(true, result);
+		
 	}
 
 	@Test
 	final void testGetId() {
-		fail("Not yet implemented"); // TODO
+		Edge e = new Edge();
+		assertEquals("",e.getId());
 	}
 
 	@Test
 	final void testSetId() {
-		fail("Not yet implemented"); // TODO
+		Edge e = new Edge();
+		e.setId("id");
+		assertEquals("id", e.getId());
 	}
 
 	@Test
 	final void testGetFrom() {
-		fail("Not yet implemented"); // TODO
+		Edge e = new Edge();
+		assertEquals("", e.getFrom());
 	}
 
 	@Test
 	final void testSetFrom() {
-		fail("Not yet implemented"); // TODO
+		Edge e = new Edge();
+		e.setFrom("from");
+		assertEquals("from", e.getFrom());
 	}
 
 	@Test
 	final void testGetTo() {
-		fail("Not yet implemented"); // TODO
+		Edge e = new Edge();
+		assertEquals("", e.getTo());
 	}
 
 	@Test
 	final void testSetTo() {
-		fail("Not yet implemented"); // TODO
+		Edge e = new Edge();
+		e.setTo("to");
+		assertEquals("to", e.getTo());
 	}
-
 }
