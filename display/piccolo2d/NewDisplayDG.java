@@ -47,6 +47,7 @@ public class NewDisplayDG extends JFrame {
 		addEvent(root, root,canvas,menu);
 		// createExtendsEdges(root, getCanvas());
 		canvas.getLayer().addChild(root);
+		
 	}
 
 	public PiccoloCustomNode getPackageNodes() {
@@ -120,24 +121,6 @@ public class NewDisplayDG extends JFrame {
 		return pnode;
 	}
 
-//	public void createExtendsEdges(PiccoloCustomNode pnode, PCanvas canvas) {
-//		ParrowExtends arrow = null;
-//		for (PiccoloCustomNode custom : pnode.getChildren()) {
-//			Node node = listNodes.get(custom.getidNode());
-//			HashMap<String, Edge> relation = new HashMap<>(node.getRelation());
-//			for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
-//				Edge e = edgeEntry.getValue();
-//				if (e.getType().equals("isa")) {
-//					System.out.println(e.getId());
-//					PiccoloCustomNode dest = allPNodes.get(e.getTo());
-//					arrow = new ParrowExtends(custom.getRect().getGlobalBounds().getCenter2D(),
-//							dest.getRect().getGlobalBounds().getCenter2D());
-//					canvas.getLayer().addChild(arrow);
-//					createExtendsEdges(dest, canvas);
-//				}
-//			}
-//		}
-//	}
 
 	private void addEvent(PiccoloCustomNode node, PiccoloCustomNode tree,	PSwingCanvas canvas,Menu menu) {
 		node.getContent().addInputEventListener(new PCustomInputEventHandler(node, tree, canvas, allPNodes,menu));
@@ -161,12 +144,7 @@ public class NewDisplayDG extends JFrame {
 		//frame.setPreferredSize(new Dimension(742,500));
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         frame.setVisible(true);
-        frame.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-         });
+       
 
 	}
 }

@@ -6,6 +6,8 @@ import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +57,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		this.menu = menu;
 		createUsesEdges = new CreateUsesEdges(pnode,canvas,this.allPNodes);
 		createExtendsEdges = new CreateExtendsEdges(pnode,canvas,this.allPNodes);
+		
 	}
 
 	public PCustomInputEventHandler(PiccoloCustomNode pnode) {
@@ -73,16 +76,22 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		          root.updateContentBoundingBoxes(false,canvas);
 			}
 			if (aEvent.isRightMouseButton()) {
+				//menu.setVisible(true);
 				menu.removeAll();
 				menu.add(createUsesEdges);
 				menu.add(createExtendsEdges);
 				menu.setPoint(aEvent.getPosition());
 				menu.setCanvas(canvas);
 				menu.drawMenu();
-//				PPath line = PPath.createLine(0, 0, 500, 500);
-//		        Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
-//				line.setStroke(dashed);
-				//canvas.getLayer().addChild(line);
+				canvas.addMouseListener(new MouseAdapter() {
+		            @Override
+		            public void mousePressed(MouseEvent e) {
+		            	System.out.println((menu.getP().getGlobalFullBounds().contains(e.getPoint())));
+		            	if(!menu.getP().getGlobalFullBounds().contains(e.getPoint()))
+		            	 menu.hideMenu();
+		            }
+		         });
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

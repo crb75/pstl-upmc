@@ -1,5 +1,7 @@
 package Menu;
 import java.awt.MenuItem;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.List;
 
@@ -25,13 +27,17 @@ public class Menu extends JPopupMenu {
 		this.canvas = canvas;
 		this.point = point;
 		p = new PNode();
+		
 	}
 	
 	public void drawMenu() {
-		canvas.getLayer().removeChild(p);
+		//canvas.getLayer().removeChild(p);
         p.addChild(new PSwing(this));
         p.setOffset(point);       
         canvas.getLayer().addChild(p);
+	}
+	public void hideMenu() {
+		canvas.getLayer().removeChild(p);
 	}
 	public PSwingCanvas getCanvas() {
 		return canvas;
@@ -56,6 +62,15 @@ public class Menu extends JPopupMenu {
 	public void setPoint(Point2D point) {
 		this.point = point;
 	}
+
+	public PNode getP() {
+		return p;
+	}
+
+	public void setP(PNode p) {
+		this.p = p;
+	}
+	
 	
 	
 }
