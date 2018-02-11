@@ -296,8 +296,8 @@ public class PiccoloCustomNode extends PNode {
     //TODO this function breaks the layout when ckick on the first child of the last line
     public void setGridLayout(int cap){
 
-        if(getChildren().size()==0) {
-        	//System.out.println(this.getidNode()+"je ne trouve rien");
+        if(getChildren().size()==0) 
+        {
             double x = 0;
             double y = 0;
             double w = margin + content.getBounds().getWidth() + margin;

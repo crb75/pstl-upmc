@@ -2,8 +2,12 @@ package nodes.piccolo2d;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
+
+import org.piccolo2d.PCanvas;
 import org.piccolo2d.nodes.PPath;
 import org.piccolo2d.nodes.PText;
+import org.piccolo2d.util.PBounds;
 
 public class hardCodeTestASupprimer {
 
@@ -12,16 +16,13 @@ public class hardCodeTestASupprimer {
 	}
 
 	public static void main(String[] args) {
-		/* On crée d'abord le PiccoloCustomNode qu'on va tester*/
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
 		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
-		NodeContent nc = new NodeContent(new PText("Test node"));
-		double margin = 10;
-        double width=margin+nc.getBounds().getWidth()+margin;
-        double height=margin+nc.getBounds().getHeight()+margin;
-        /* On crée séparemment un rectangle qu'on va comprer avec les rectangle de testNode */
-        PPath rectTest = PPath.createRectangle(0,0,width,height);
-		System.out.println(rectTest.equals(testNode.getRect()));
-		System.out.println(margin == (testNode.getMargin()));
+		testNode.setChilldren(children);
+		System.out.println(testNode.getAscendency().size());
 	}
 
 }

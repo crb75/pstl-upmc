@@ -5,6 +5,9 @@ package nodes.piccolo2d;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.piccolo2d.nodes.PPath;
 import org.piccolo2d.nodes.PText;
+import org.piccolo2d.util.PBounds;
 
 /**
  * @author ky
@@ -107,7 +111,11 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testToString() {
-		fail("Not yet implemented"); // TODO
+		String idNodeResult = "124548654";
+		String content = "Test node";
+		/* On crée d'abord le PiccoloCustomNode qu'on va tester*/
+		PiccoloCustomNode testNode = new PiccoloCustomNode(content, idNodeResult);
+		assertEquals(content, testNode.toString());	
 	}
 
 	/**
@@ -115,7 +123,11 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testIsHidden() {
-		fail("Not yet implemented"); // TODO
+		String idNodeResult = "124548654";
+		String content = "Test node";
+		/* On crée d'abord le PiccoloCustomNode qu'on va tester*/
+		PiccoloCustomNode testNode = new PiccoloCustomNode(content, idNodeResult);
+		assertEquals(true, testNode.isHidden());
 	}
 
 	/**
@@ -123,7 +135,11 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testSetParentNode() {
-		fail("Not yet implemented"); // TODO
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		PiccoloCustomNode testNodeParent = new PiccoloCustomNode("Test node parent", "0124548654");
+		testNode.setParentNode(testNodeParent);
+		assertEquals(testNodeParent, testNode.getParentNode());
+
 	}
 
 	/**
@@ -131,7 +147,10 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testGetParentNode() {
-		fail("Not yet implemented"); // TODO
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		PiccoloCustomNode testNodeParent = new PiccoloCustomNode("Test node parent", "0124548654");
+		testNode.setParentNode(testNodeParent);
+		assertEquals(testNodeParent, testNode.getParentNode());
 	}
 
 	/**
@@ -139,7 +158,9 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testPiccoloCustomNode() {
-		fail("Not yet implemented"); // TODO
+		PiccoloCustomNode testNode;
+		testNode = new PiccoloCustomNode("Test node", "124548654");
+		assertNotNull(testNode);
 	}
 
 	/**
@@ -147,7 +168,13 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testSetChilldren() {
-		fail("Not yet implemented"); // TODO
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		testNode.setChilldren(children);
+		assertEquals(3, testNode.getAllChildren().size());
 	}
 
 	/**
@@ -155,7 +182,8 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testGetChildren() {
-		fail("Not yet implemented"); // TODO
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		assertEquals(0, testNode.getChildren().size());
 	}
 
 	/**
@@ -163,7 +191,13 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testGetAllChildren() {
-		fail("Not yet implemented"); // TODO
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		testNode.setChilldren(children);
+		assertEquals(3, testNode.getAllChildren().size());
 	}
 
 	/**
@@ -171,7 +205,8 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testGetHierarchy() {
-		fail("Not yet implemented"); // TODO
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node","123456");
+		assertEquals(0, testNode.getHierarchy().size());
 	}
 
 	/**
@@ -179,7 +214,14 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testShowChildren() {
-		fail("Not yet implemented"); // TODO
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		testNode.setChilldren(children);
+		testNode.showChildren();
+		assertEquals(3, testNode.getChildren().size());
 	}
 
 	/**
@@ -187,7 +229,16 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testHideChildren() {
-		fail("Not yet implemented"); // TODO
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		testNode.setChilldren(children);
+		testNode.showChildren();
+		testNode.hideChildren();
+		assertEquals(0, testNode.getChildren().size());
+	
 	}
 
 	/**
@@ -195,15 +246,35 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testToggleChildren() {
-		fail("Not yet implemented"); // TODO
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		testNode.setChilldren(children);
+		testNode.toggleChildren();
+		assertEquals(3, testNode.getChildren().size());	
 	}
-
+	
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#setLayout()}.
 	 */
 	@Test
 	final void testSetLayout() {
-		fail("Not yet implemented"); // TODO
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		testNode.setChilldren(children);
+		double initialWidth = testNode.getRect().getWidth();
+		double initialHeight = testNode.getRect().getHeight();
+		testNode.showChildren();
+		testNode.setLayout();
+		double finalWidth = testNode.getRect().getWidth();
+		double finalHeight = testNode.getRect().getHeight();
+		boolean result = ((finalWidth*finalHeight) != (initialHeight*initialWidth));
+		assertEquals(true, result);
 	}
 
 	/**
@@ -211,7 +282,20 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testSetGridLayoutH() {
-		fail("Not yet implemented"); // TODO
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		testNode.setChilldren(children);
+		double initialWidth = testNode.getRect().getWidth();
+		double initialHeight = testNode.getRect().getHeight();
+		testNode.showChildren();
+		testNode.setGridLayoutH();
+		double finalWidth = testNode.getRect().getWidth();
+		double finalHeight = testNode.getRect().getHeight();
+		boolean result = ((finalWidth*finalHeight) != (initialHeight*initialWidth));
+		assertEquals(true, result);	
 	}
 
 	/**
@@ -219,7 +303,20 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testSetGridLayoutV() {
-		fail("Not yet implemented"); // TODO
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		testNode.setChilldren(children);
+		double initialWidth = testNode.getRect().getWidth();
+		double initialHeight = testNode.getRect().getHeight();
+		testNode.showChildren();
+		testNode.setGridLayoutV();
+		double finalWidth = testNode.getRect().getWidth();
+		double finalHeight = testNode.getRect().getHeight();
+		boolean result = ((finalWidth*finalHeight) != (initialHeight*initialWidth));
+		assertEquals(true, result);		
 	}
 
 	/**
@@ -227,15 +324,28 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testSetGridLayout() {
-		fail("Not yet implemented"); // TODO
-	}
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		testNode.setChilldren(children);
+		double initialWidth = testNode.getRect().getWidth();
+		double initialHeight = testNode.getRect().getHeight();
+		testNode.showChildren();
+		testNode.setGridLayout(3);
+		double finalWidth = testNode.getRect().getWidth();
+		double finalHeight = testNode.getRect().getHeight();
+		boolean result = ((finalWidth*finalHeight) != (initialHeight*initialWidth));
+		assertEquals(true, result);	}
 
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#bevelOut(org.piccolo2d.nodes.PPath, int)}.
 	 */
 	@Test
 	final void testBevelOut() {
-		fail("Not yet implemented"); // TODO
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "1234");
+		assertNotNull(testNode.bevelOut(testNode.getRect(), 0));
 	}
 
 	/**
@@ -243,7 +353,8 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testBevelIn() {
-		fail("Not yet implemented"); // TODO
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "1234");
+		assertNotNull(testNode.bevelIn(testNode.getRect(), 0));
 	}
 
 	/**
@@ -251,7 +362,16 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testUpdateContentBoundingBoxes() {
-		fail("Not yet implemented"); // TODO
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		testNode.setChilldren(children);
+		PBounds bi = testNode.getContent().getBounds();
+		testNode.updateContentBoundingBoxes(false, null);
+		PBounds bf = testNode.getContent().getBounds();
+		assertNotEquals(bi, bf);
 	}
 
 	/**
@@ -259,7 +379,16 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testUpdateTextBoundingBoxes() {
-		fail("Not yet implemented"); // TODO
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		testNode.setChilldren(children);
+		int bi = testNode.getContent().getChildrenCount();
+		testNode.updateTextBoundingBoxes(true);
+		int bf = testNode.getContent().getChildrenCount();
+		assertEquals(bf, bi+1);
 	}
 
 	/**
@@ -267,23 +396,39 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testExpandAll() {
-		fail("Not yet implemented"); // TODO
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		testNode.setChilldren(children);
+		testNode.expandAll();
+		assertEquals(testNode.getAllChildren().size(), testNode.getAllChildren().size());
 	}
-
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#collapseAll()}.
 	 */
 	@Test
 	final void testCollapseAll() {
-		fail("Not yet implemented"); // TODO
-	}
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		testNode.setChilldren(children);
+		testNode.expandAll();
+		testNode.collapseAll();
+		assertEquals(0, testNode.getChildren().size());	}
 
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#getHigherParent()}.
 	 */
 	@Test
 	final void testGetHigherParent() {
-		fail("Not yet implemented"); // TODO
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		PiccoloCustomNode testParentNode = new PiccoloCustomNode("test parent node", "1");
+		testNode.setParent(testParentNode);
+		assertNotNull(testNode.getHigherParent());
 	}
 
 	/**
@@ -291,7 +436,8 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testGetAscendency() {
-		fail("Not yet implemented"); // TODO
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		assertNotNull(testNode.getAscendency());
 	}
 
 	/**
@@ -299,7 +445,12 @@ class PiccoloCustomNodeTest {
 	 */
 	@Test
 	final void testFocus() {
-		fail("Not yet implemented"); // TODO
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+        Collection<PiccoloCustomNode> ascendency=testNode.getAscendency();
+        for(PiccoloCustomNode PCN:ascendency){
+            assertEquals(PCN.getAllChildren().size(), PCN.getChildren().size());
+        }
+
 	}
 
 }
