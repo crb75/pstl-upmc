@@ -19,11 +19,11 @@ public class ParrowExtends extends Parrow{
 
         PPath line=PPath.createLine(from.getX(),from.getY(),to.getX(),to.getY());
         line.setStrokePaint(Color.green);
-        if (from.getY() == to.getY()) {
-        	theta=Math.atan2(to.getY()-from.getY(),to.getX()-from.getX())+Math.toRadians(140);
-            double distance = from.distance(to);
-        	line.curveTo(to.getX(), to.getY(), (float) from.getX()-distance/2, (float) from.getY()+distance,from.getX(), from.getY());
-		}
+//        if (from.getY() == to.getY()) {
+//        	theta=Math.atan2(to.getY()-from.getY(),to.getX()-from.getX())+Math.toRadians(140);
+//            double distance = from.distance(to);
+//        	line.curveTo(to.getX(), to.getY(), (float) from.getX()-distance/2, 50,from.getX(), from.getY());
+//		}
       
         head.translate(to.getX(),to.getY());
         head.rotate(theta);

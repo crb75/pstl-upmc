@@ -1,24 +1,30 @@
 package display.piccolo2d;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.piccolo2d.PCanvas;
-import org.piccolo2d.extras.PFrame;
-import org.piccolo2d.nodes.PPath;
+import javax.swing.JFrame;
 
-import arrows.ParrowExtends;
-import nodes.piccolo2d.CustomPNode;
+
+
+
+import org.piccolo2d.extras.pswing.PSwingCanvas;
+
+
+
 import nodes.piccolo2d.Edge;
 import nodes.piccolo2d.Node;
 import nodes.piccolo2d.PiccoloCustomNode;
 import utilities.piccolo2d.PCustomInputEventHandler;
 import utilities.piccolo2d.XmlToStructure;
 
-public class NewDisplayDG extends PFrame {
+public class NewDisplayDG extends JFrame {
 	private HashMap<String, PiccoloCustomNode> allPNodes = new HashMap<>();
 	private Map<String, Node> m = new XmlToStructure().parseNode();
 	private HashMap<String, Node> listNodes = new HashMap<>(m);
@@ -28,11 +34,13 @@ public class NewDisplayDG extends PFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public NewDisplayDG() {
+	public NewDisplayDG(PSwingCanvas canvas) {
 		root = getPackageNodes();
 		root.collapseAll();
-		addEvent(root, root);
-		getCanvas().getLayer().addChild(root);
+		//root.setLayout();
+		addEvent(root, root,canvas);
+		// createExtendsEdges(root, getCanvas());
+		canvas.getLayer().addChild(root);
 	}
 
 	public PiccoloCustomNode getPackageNodes() {
@@ -83,7 +91,6 @@ public class NewDisplayDG extends PFrame {
 	}
 
 	public PiccoloCustomNode structureToPiccolo(Node node, PiccoloCustomNode pnode) {
-		PCustomInputEventHandler eventHandler;
 		if (pnode.getidNode() == null) {
 			pnode = new PiccoloCustomNode(node.getName(), node.getId());
 			pnode.setName(node.getName());
@@ -107,16 +114,44 @@ public class NewDisplayDG extends PFrame {
 		return pnode;
 	}
 
-	private void addEvent(PiccoloCustomNode node, PiccoloCustomNode tree) {
-		node.getContent().addInputEventListener(new PCustomInputEventHandler(node, tree, getCanvas(), allPNodes));
+//	public void createExtendsEdges(PiccoloCustomNode pnode, PCanvas canvas) {
+//		ParrowExtends arrow = null;
+//		for (PiccoloCustomNode custom : pnode.getChildren()) {
+//			Node node = listNodes.get(custom.getidNode());
+//			HashMap<String, Edge> relation = new HashMap<>(node.getRelation());
+//			for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
+//				Edge e = edgeEntry.getValue();
+//				if (e.getType().equals("isa")) {
+//					System.out.println(e.getId());
+//					PiccoloCustomNode dest = allPNodes.get(e.getTo());
+//					arrow = new ParrowExtends(custom.getRect().getGlobalBounds().getCenter2D(),
+//							dest.getRect().getGlobalBounds().getCenter2D());
+//					canvas.getLayer().addChild(arrow);
+//					createExtendsEdges(dest, canvas);
+//				}
+//			}
+//		}
+//	}
+
+	private void addEvent(PiccoloCustomNode node, PiccoloCustomNode tree,	PSwingCanvas canvas) {
+		node.getContent().addInputEventListener(new PCustomInputEventHandler(node, tree, canvas, allPNodes));
 		if (node.getAllChildren().size() != 0)
 			for (PiccoloCustomNode PCN : node.getAllChildren()) {
-				addEvent(PCN, tree);
+				addEvent(PCN, tree,canvas);
 			}
 	}
 
 	public static void main(String[] args) {
-		new NewDisplayDG();
+		PSwingCanvas canvas = new PSwingCanvas();
+		JFrame frame = new NewDisplayDG(canvas);
+		Container container = frame.getContentPane();
+		container.setLayout(new BorderLayout());
+		container.add(canvas, BorderLayout.CENTER);
+		canvas.setPreferredSize(new Dimension(1000, 500));
+		frame.pack();
+		//frame.setPreferredSize(new Dimension(742,500));
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        frame.setVisible(true);
 
 	}
 }
