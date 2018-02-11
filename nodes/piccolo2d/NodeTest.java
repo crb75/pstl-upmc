@@ -2,6 +2,8 @@ package nodes.piccolo2d;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.HashMap;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -28,47 +30,66 @@ class NodeTest {
 
 	@Test
 	final void testNode() {
-		fail("Not yet implemented"); // TODO
+		Node n;
+		n = new Node();
+		assertNotNull(n);
 	}
 
 	@Test
 	final void testGetName() {
-		fail("Not yet implemented"); // TODO
+		Node n = new Node();
+		n.setName("Test");
+		assertEquals("Test",n.getName());
 	}
 
 	@Test
 	final void testSetName() {
-		fail("Not yet implemented"); // TODO
+		Node n = new Node();
+		n.setName("Test");
+		assertEquals("Test",n.getName());
 	}
 
 	@Test
 	final void testGetId() {
-		fail("Not yet implemented"); // TODO
+		Node n = new Node();
+		n.setId("1");
+		assertEquals("1", n.getId());
 	}
 
 	@Test
 	final void testSetId() {
-		fail("Not yet implemented"); // TODO
+		Node n = new Node();
+		n.setId("1");
+		assertEquals("1", n.getId());
 	}
 
 	@Test
 	final void testGetType() {
-		fail("Not yet implemented"); // TODO
+		Node n = new Node();
+		n.setType("Test type");
+		assertEquals("Test type",n.getType());
 	}
 
 	@Test
 	final void testSetType() {
-		fail("Not yet implemented"); // TODO
+		Node n = new Node();
+		n.setType("Test type");
+		assertEquals("Test type",n.getType());
 	}
 
 	@Test
 	final void testGetRelation() {
-		fail("Not yet implemented"); // TODO
+		Node n = new Node();
+		assertEquals(0, n.getRelation().size());
 	}
 
 	@Test
 	final void testSetRelation() {
-		fail("Not yet implemented"); // TODO
+		HashMap<String, Edge> re = new HashMap<>();
+		re.put("Test", new Edge());
+		Node n = new Node();
+		n.setRelation(re);
+		assertEquals(re, n.getRelation());
 	}
 
 }

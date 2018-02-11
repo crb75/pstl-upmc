@@ -16,13 +16,8 @@ public class hardCodeTestASupprimer {
 	}
 
 	public static void main(String[] args) {
-		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
-		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
-		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
-		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
-		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
-		testNode.setChilldren(children);
-		System.out.println(testNode.getAscendency().size());
+		Node n = new Node();
+		System.out.println(n.getRelation().size());
 	}
 
 }
