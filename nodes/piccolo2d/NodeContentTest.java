@@ -7,6 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.piccolo2d.nodes.PText;
 
 class NodeContentTest {
 
@@ -28,37 +29,54 @@ class NodeContentTest {
 
 	@Test
 	final void testGetMargin() {
-		fail("Not yet implemented"); // TODO
+		String nct1 = "Test";
+		NodeContent nc = new NodeContent(new PText(nct1));
+		assertEquals(10, nc.getMargin());
 	}
 
 	@Test
 	final void testSetMargin() {
-		fail("Not yet implemented"); // TODO
+		String nct1 = "Test";
+		NodeContent nc = new NodeContent(new PText(nct1));
+		int margin = 10000;
+		nc.setMargin(margin);
+		assertEquals(margin, nc.getMargin());
 	}
 
 	@Test
 	final void testGetText() {
-		fail("Not yet implemented"); // TODO
-	}
+		String nct1 = "Test";
+		NodeContent nc = new NodeContent(new PText(nct1));
+		assertNotNull(nc.getText());
+	}	
 
 	@Test
 	final void testSetText() {
-		fail("Not yet implemented"); // TODO
+		String nct1 = "Test";
+		NodeContent nc = new NodeContent(new PText(nct1));
+		String nct2 = "Test 1";
+		nc.setText(nct2);
+		assertEquals(nct2, nc.toString());
 	}
 
 	@Test
 	final void testGetIcon() {
-		fail("Not yet implemented"); // TODO
+		String nct1 = "Test";
+		NodeContent nc = new NodeContent(new PText(nct1));
+		assertNull(nc.getIcon());
 	}
 
 	@Test
 	final void testNodeContent() {
-		fail("Not yet implemented"); // TODO
+		NodeContent nc;
+		nc = new NodeContent(new PText("Test"));
+		assertNotNull(nc);
 	}
 
 	@Test
 	final void testToString() {
-		fail("Not yet implemented"); // TODO
+		NodeContent nc = new NodeContent(new PText("Test"));
+		assertEquals("Test",nc.toString());
 	}
 
 }

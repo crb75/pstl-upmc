@@ -34,7 +34,9 @@ public class NodeContent extends PNode {
         removeChild(this.text);
         this.text = new PText(text);
         addChild(this.text);
-        this.text.setBounds(icon.getBounds().getWidth()+margin,0,this.text.getWidth(),this.text.getHeight());
+        //this.text.setBounds(icon.getBounds().getWidth()+margin,0,this.text.getWidth(),this.text.getHeight());
+        this.text.setBounds(margin,0,this.text.getWidth(),this.text.getHeight());
+        
         PBounds bounds=this.getUnionOfChildrenBounds(null);
         this.setBounds(bounds.getX(),bounds.getY(),bounds.getWidth(),bounds.getHeight());
     }

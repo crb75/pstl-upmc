@@ -16,8 +16,12 @@ public class hardCodeTestASupprimer {
 	}
 
 	public static void main(String[] args) {
-		Node n = new Node();
-		System.out.println(n.getRelation().size());
+		String nct1 = "Test";
+		NodeContent nc = new NodeContent(new PText(nct1));
+		System.out.println(nc.toString());
+		String nct2 = "Test 1";
+		nc.setText(nct2);
+		System.out.println(nc.toString());
 	}
 
 }
