@@ -3,6 +3,9 @@ package display.piccolo2d;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.MenuItem;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,9 +18,10 @@ import javax.swing.JFrame;
 
 
 import org.piccolo2d.extras.pswing.PSwingCanvas;
+import org.piccolo2d.util.PPaintContext;
 
-
-
+import Menu.CreateUsesEdges;
+import Menu.Menu;
 import nodes.piccolo2d.Edge;
 import nodes.piccolo2d.Node;
 import nodes.piccolo2d.PiccoloCustomNode;
@@ -29,16 +33,18 @@ public class NewDisplayDG extends JFrame {
 	private Map<String, Node> m = new XmlToStructure().parseNode();
 	private HashMap<String, Node> listNodes = new HashMap<>(m);
 	private PiccoloCustomNode root;
+	private Menu menu;
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	public NewDisplayDG(PSwingCanvas canvas) {
+		menu = new Menu();
 		root = getPackageNodes();
 		root.collapseAll();
 		//root.setLayout();
-		addEvent(root, root,canvas);
+		addEvent(root, root,canvas,menu);
 		// createExtendsEdges(root, getCanvas());
 		canvas.getLayer().addChild(root);
 	}
@@ -133,17 +139,20 @@ public class NewDisplayDG extends JFrame {
 //		}
 //	}
 
-	private void addEvent(PiccoloCustomNode node, PiccoloCustomNode tree,	PSwingCanvas canvas) {
-		node.getContent().addInputEventListener(new PCustomInputEventHandler(node, tree, canvas, allPNodes));
+	private void addEvent(PiccoloCustomNode node, PiccoloCustomNode tree,	PSwingCanvas canvas,Menu menu) {
+		node.getContent().addInputEventListener(new PCustomInputEventHandler(node, tree, canvas, allPNodes,menu));
 		if (node.getAllChildren().size() != 0)
 			for (PiccoloCustomNode PCN : node.getAllChildren()) {
-				addEvent(PCN, tree,canvas);
+				addEvent(PCN, tree,canvas,menu);
 			}
 	}
 
 	public static void main(String[] args) {
 		PSwingCanvas canvas = new PSwingCanvas();
 		JFrame frame = new NewDisplayDG(canvas);
+		canvas.setDefaultRenderQuality(PPaintContext.HIGH_QUALITY_RENDERING);
+        canvas.setAnimatingRenderQuality(PPaintContext.HIGH_QUALITY_RENDERING);
+        canvas.setInteractingRenderQuality(PPaintContext.HIGH_QUALITY_RENDERING);
 		Container container = frame.getContentPane();
 		container.setLayout(new BorderLayout());
 		container.add(canvas, BorderLayout.CENTER);
@@ -152,6 +161,12 @@ public class NewDisplayDG extends JFrame {
 		//frame.setPreferredSize(new Dimension(742,500));
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         frame.setVisible(true);
+        frame.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+         });
 
 	}
 }

@@ -1,40 +1,61 @@
 package Menu;
-
-import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
+import java.awt.MenuItem;
+import java.awt.geom.Point2D;
 import java.util.List;
 
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+
 import org.piccolo2d.PNode;
+import org.piccolo2d.extras.pswing.PSwing;
+import org.piccolo2d.extras.pswing.PSwingCanvas;
 
-public class Menu extends PNode {
-	  private List<MenuItem> items;
 
-	    public Menu(){
-	        items=new ArrayList<>();
-	    }
+public class Menu extends JPopupMenu {
+	private List<JMenuItem> items;
+	private PSwingCanvas canvas;
+	private Point2D point;
+	private PNode p;
+	public Menu() {
+		p = new PNode();
+	}
 
-	    public void add(MenuItem item){
-	        items.add(item);
-	    }
+	public Menu(List<JMenuItem> items,PSwingCanvas canvas,Point2D point) {
+		this.items = items;
+		this.canvas = canvas;
+		this.point = point;
+		p = new PNode();
+	}
+	
+	public void drawMenu() {
+		canvas.getLayer().removeChild(p);
+        p.addChild(new PSwing(this));
+        p.setOffset(point);       
+        canvas.getLayer().addChild(p);
+	}
+	public PSwingCanvas getCanvas() {
+		return canvas;
+	}
 
-	    public void remove(MenuItem item){
-	        items.remove(item);
-	        removeChild(item);
-	    }
+	public void setCanvas(PSwingCanvas canvas) {
+		this.canvas = canvas;
+	}
 
-	    public void draw(PNode target){
+	public List<JMenuItem> getItems() {
+		return items;
+	}
 
-	        double x= target.getGlobalTranslation().getX()+target.getBounds().getCenterX();
-	        double y = target.getGlobalTranslation().getY()+target.getBounds().getCenterY();
+	public void setItems(List<JMenuItem> items) {
+		this.items = items;
+	}
 
-	        for(MenuItem m:items) {
-	            m.draw(target);
+	public Point2D getPoint() {
+		return point;
+	}
 
-	            m.setTransform(AffineTransform.getTranslateInstance(0,0));
-
-	            m.translate(x,y);
-	            addChild(m);
-	            y+=m.getHeight();
-	        }
-	    }
+	public void setPoint(Point2D point) {
+		this.point = point;
+	}
+	
+	
 }
