@@ -35,8 +35,12 @@ public class ParrowExtends extends Parrow {
 	public ParrowExtends(PiccoloCustomNode from, PiccoloCustomNode to) {
 		this.from = from;
 		this.to = to;
-		Point2D fromp = from.getFullBounds().getCenter2D();
-		Point2D top = to.getFullBounds().getCenter2D();
+		
+		Point2D fromp = new Point((int) from.getRect().getGlobalBounds().getCenter2D().getX(),
+				(int) (from.getRect().getGlobalBounds().getCenter2D().getY()
+						+ from.getRect().getHeight() / 2));
+		Point2D top = new Point((int) to.getRect().getGlobalBounds().getCenter2D().getX(),
+				(int) (to.getRect().getGlobalBounds().getCenter2D().getY() + to.getRect().getHeight() / 2));
 		// System.out.println(top);
 		double theta = Math.atan2(top.getY() - fromp.getY(), top.getX() - fromp.getX()) + Math.toRadians(90);
 		Triangle head = new Triangle(Color.WHITE);
