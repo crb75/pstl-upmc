@@ -79,7 +79,7 @@ class ReaderTest {
 	@Test
 	final void testGetNbNodes() {
 		Reader r = new Reader("./mongraph.xml");
-		assertEquals(19, r.getNbEdges());
+		assertEquals(22, r.getNbEdges());
 	}
 
 	/**
@@ -106,7 +106,7 @@ class ReaderTest {
 	@Test
 	final void testGetNodeId() {
 		Reader r = new Reader("./mongraph.xml");
-		assertEquals("p01", r.getNodeId(1));
+		assertEquals("p04", r.getNodeId(1));
 	}
 
 	/**
@@ -115,7 +115,7 @@ class ReaderTest {
 	@Test
 	final void testGetNodeName() {
 		Reader r = new Reader("./mongraph.xml");
-		assertEquals("unPackage", r.getNodeName(1));
+		assertEquals("unPackageParent", r.getNodeName(1));
 	}
 
 	/**
@@ -126,7 +126,7 @@ class ReaderTest {
 		Reader r = new Reader("./mongraph.xml");
 		NodeList nl = r.getAllEdges();
 		assertNotNull(nl);
-		assertEquals(19,nl.getLength());
+		assertEquals(22,nl.getLength());
 	}
 
 	/**
