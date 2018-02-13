@@ -1,7 +1,7 @@
 /**
  * 
  */
-package nodes.piccolo2d;
+package nodes.piccolo2d.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.piccolo2d.nodes.PPath;
 import org.piccolo2d.nodes.PText;
 import org.piccolo2d.util.PBounds;
+
+import nodes.piccolo2d.PiccoloCustomNode;
 
 /**
  * @author ky

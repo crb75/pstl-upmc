@@ -1,7 +1,7 @@
 /**
  * 
  */
-package arrows;
+package arrows.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,11 +11,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import arrows.DrawBezier;
+
 /**
  * @author ky
  *
  */
-class TriangleTest {
+class DrawBezierTest {
 
 	/**
 	 * @throws java.lang.Exception
@@ -46,10 +48,18 @@ class TriangleTest {
 	}
 
 	/**
-	 * Test method for {@link arrows.Triangle#Triangle(java.awt.Color)}.
+	 * Test method for {@link arrows.DrawBezier#init()}.
 	 */
 	@Test
-	final void testTriangle() {
+	final void testInit() {
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for {@link arrows.DrawBezier#handleEvent(java.awt.Event)}.
+	 */
+	@Test
+	final void testHandleEventEvent() {
 		fail("Not yet implemented"); // TODO
 	}
 

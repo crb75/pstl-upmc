@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  * @author ky
  *
  */
-class ParrowUsesTest {
+class ParrowISATest {
 
 	/**
 	 * @throws java.lang.Exception
@@ -46,7 +46,7 @@ class ParrowUsesTest {
 	}
 
 	/**
-	 * Test method for {@link arrows.ParrowUses#redraw()}.
+	 * Test method for {@link arrows.ParrowExtends#redraw()}.
 	 */
 	@Test
 	final void testRedraw() {
@@ -54,18 +54,18 @@ class ParrowUsesTest {
 	}
 
 	/**
-	 * Test method for {@link arrows.ParrowUses#ParrowUses(java.awt.geom.Point2D, java.awt.geom.Point2D)}.
+	 * Test method for {@link arrows.ParrowExtends#ParrowExtends(java.awt.geom.Point2D, java.awt.geom.Point2D)}.
 	 */
 	@Test
-	final void testParrowUsesPoint2DPoint2D() {
+	final void testParrowExtendsPoint2DPoint2D() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link arrows.ParrowUses#ParrowUses(org.piccolo2d.PNode, org.piccolo2d.PNode)}.
+	 * Test method for {@link arrows.ParrowExtends#ParrowExtends(org.piccolo2d.PNode, org.piccolo2d.PNode)}.
 	 */
 	@Test
-	final void testParrowUsesPNodePNode() {
+	final void testParrowExtendsPNodePNode() {
 		fail("Not yet implemented"); // TODO
 	}
 

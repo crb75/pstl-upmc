@@ -16,15 +16,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 public class PiccoloCustomNode extends PNode {
-    private NodeContent content;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private NodeContent content;
     private PPath rect;
-
     private Collection<PiccoloCustomNode> hiddenchildren;
-    private Collection<PiccoloCustomNode> children;
     private double margin=10;
-
     private String idNode;
-
     private PiccoloCustomNode parent;
 
     //region getters/setters
@@ -99,21 +99,12 @@ public class PiccoloCustomNode extends PNode {
 
         this.parent=null;
 
-        //if(tree.getChildren()!=null)
-//        for(Tree T:tree.getChildren()) {
-//            PiccoloCustomNode node = new PiccoloCustomNode(T);
-//            node.setParentNode(this);
-//            hiddenchildren.add(node);
-//        }
-//
-//        setLayout();
 
     }
     public void setChilldren(Collection<PiccoloCustomNode> children) {
     	for(PiccoloCustomNode node:children) {
           node.setParentNode(this);
           hiddenchildren.add(node);
-          //this.children= children;
       }
 
       setLayout();

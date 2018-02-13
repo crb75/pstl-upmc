@@ -18,19 +18,21 @@ import nodes.piccolo2d.Node;
 import nodes.piccolo2d.PiccoloCustomNode;
 import utilities.piccolo2d.XmlToStructure;
 
-public class CreateExtendsEdges extends JMenuItem{
+public class CreateISAEdges extends JMenuItem{
 	private HashMap<String, PiccoloCustomNode> allPNodes;
 	private Map<String, Node> m = new XmlToStructure().parseNode();
 	private HashMap<String, Node> listNodes = new HashMap<>(m);
 	private PiccoloCustomNode pnode;
 	private PSwingCanvas canvas;
+	private Menu menu;
 
-	public CreateExtendsEdges(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes) {
+	public CreateISAEdges(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,Menu menu) {
 		//super();
 		this.setText("extends outgoing");
 		this.allPNodes = allPNodes;
 		this.pnode = pnode;
 		this.canvas = canvas;
+		this.menu = menu;
 		addActionListener();
 	}
 	public void drawExtendsEdges(PiccoloCustomNode pnode, PSwingCanvas canvas) {
@@ -53,6 +55,7 @@ public class CreateExtendsEdges extends JMenuItem{
 				drawExtendsEdges(dest, canvas);
 			}
 		}
+		this.menu.hideMenu();
 	}
 	public void addActionListener() {
 		this.addActionListener(new AbstractAction() {

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package arrows;
+package display.piccolo2d.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,11 +11,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import display.piccolo2d.DisplayDg;
+
 /**
  * @author ky
  *
  */
-class ParrowExtendsTest {
+class DisplayDgTest {
 
 	/**
 	 * @throws java.lang.Exception
@@ -46,26 +48,42 @@ class ParrowExtendsTest {
 	}
 
 	/**
-	 * Test method for {@link arrows.ParrowExtends#redraw()}.
+	 * Test method for {@link display.piccolo2d.DisplayDg#initialize()}.
 	 */
 	@Test
-	final void testRedraw() {
+	final void testInitialize() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link arrows.ParrowExtends#ParrowExtends(java.awt.geom.Point2D, java.awt.geom.Point2D)}.
+	 * Test method for {@link display.piccolo2d.DisplayDg#DisplayDg()}.
 	 */
 	@Test
-	final void testParrowExtendsPoint2DPoint2D() {
+	final void testDisplayDg() {
 		fail("Not yet implemented"); // TODO
 	}
 
 	/**
-	 * Test method for {@link arrows.ParrowExtends#ParrowExtends(org.piccolo2d.PNode, org.piccolo2d.PNode)}.
+	 * Test method for {@link display.piccolo2d.DisplayDg#DisplayDg(org.piccolo2d.PCanvas)}.
 	 */
 	@Test
-	final void testParrowExtendsPNodePNode() {
+	final void testDisplayDgPCanvas() {
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for {@link display.piccolo2d.DisplayDg#getPNodes()}.
+	 */
+	@Test
+	final void testGetPNodes() {
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for {@link display.piccolo2d.DisplayDg#main(java.lang.String[])}.
+	 */
+	@Test
+	final void testMain() {
 		fail("Not yet implemented"); // TODO
 	}
 

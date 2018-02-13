@@ -27,7 +27,7 @@ import org.piccolo2d.extras.pswing.PSwing;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 import org.piccolo2d.nodes.PPath;
 
-import Menu.CreateExtendsEdges;
+import Menu.CreateISAEdges;
 import Menu.CreateUsesEdges;
 import Menu.Menu;
 import arrows.ParrowExtends;
@@ -55,8 +55,8 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		this.root = root;
 		this.allPNodes = new HashMap<>(allPNodes);
 		this.menu = menu;
-		createUsesEdges = new CreateUsesEdges(pnode,canvas,this.allPNodes);
-		createExtendsEdges = new CreateExtendsEdges(pnode,canvas,this.allPNodes);
+		createUsesEdges = new CreateUsesEdges(pnode,canvas,this.allPNodes,menu);
+		createExtendsEdges = new CreateISAEdges(pnode,canvas,this.allPNodes,menu);
 		
 	}
 

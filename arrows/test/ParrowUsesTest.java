@@ -1,7 +1,7 @@
 /**
  * 
  */
-package arrows;
+package arrows.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,11 +11,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import arrows.ParrowUses;
+
 /**
  * @author ky
  *
  */
-class TriangleHollowTest {
+class ParrowUsesTest {
 
 	/**
 	 * @throws java.lang.Exception
@@ -46,10 +48,26 @@ class TriangleHollowTest {
 	}
 
 	/**
-	 * Test method for {@link arrows.TriangleHollow#TriangleHollow()}.
+	 * Test method for {@link arrows.ParrowUses#redraw()}.
 	 */
 	@Test
-	final void testTriangleHollow() {
+	final void testRedraw() {
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for {@link arrows.ParrowUses#ParrowUses(java.awt.geom.Point2D, java.awt.geom.Point2D)}.
+	 */
+	@Test
+	final void testParrowUsesPoint2DPoint2D() {
+		fail("Not yet implemented"); // TODO
+	}
+
+	/**
+	 * Test method for {@link arrows.ParrowUses#ParrowUses(org.piccolo2d.PNode, org.piccolo2d.PNode)}.
+	 */
+	@Test
+	final void testParrowUsesPNodePNode() {
 		fail("Not yet implemented"); // TODO
 	}
 

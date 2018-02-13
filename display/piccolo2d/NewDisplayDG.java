@@ -3,9 +3,6 @@ package display.piccolo2d;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.MenuItem;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,7 +17,6 @@ import javax.swing.JFrame;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 import org.piccolo2d.util.PPaintContext;
 
-import Menu.CreateUsesEdges;
 import Menu.Menu;
 import nodes.piccolo2d.Edge;
 import nodes.piccolo2d.Node;

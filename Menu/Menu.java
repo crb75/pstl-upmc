@@ -19,14 +19,14 @@ public class Menu extends JPopupMenu {
 	private Point2D point;
 	private PNode p;
 	public Menu() {
-		p = new PNode();
+		this.p = new PNode();
 	}
 
 	public Menu(List<JMenuItem> items,PSwingCanvas canvas,Point2D point) {
 		this.items = items;
 		this.canvas = canvas;
 		this.point = point;
-		p = new PNode();
+		this.p = new PNode();
 		
 	}
 	
@@ -38,6 +38,7 @@ public class Menu extends JPopupMenu {
 	}
 	public void hideMenu() {
 		canvas.getLayer().removeChild(p);
+		
 	}
 	public PSwingCanvas getCanvas() {
 		return canvas;

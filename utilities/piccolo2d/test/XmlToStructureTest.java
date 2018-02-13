@@ -1,4 +1,4 @@
-package utilities.piccolo2d;
+package utilities.piccolo2d.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 

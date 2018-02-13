@@ -20,6 +20,8 @@ public class ParrowUses extends Parrow{
 
         PPath line=PPath.createLine(from.getX(),from.getY(),to.getX(),to.getY());
         line.setStrokePaint(Color.black);
+        Stroke dashed = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 9 }, 0);
+		line.setStroke(dashed);
         double theta=Math.atan2(to.getY()-from.getY(),to.getX()-from.getX())+Math.toRadians(90);
         head.translate(to.getX(),to.getY());
         head.rotate(theta);

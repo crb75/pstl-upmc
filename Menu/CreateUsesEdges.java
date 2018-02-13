@@ -27,13 +27,15 @@ public class CreateUsesEdges extends JMenuItem {
 	private HashMap<String, Node> listNodes = new HashMap<>(m);
 	private PiccoloCustomNode pnode;
 	private PSwingCanvas canvas;
+	private Menu menu;
 
-	public CreateUsesEdges(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes) {
+	public CreateUsesEdges(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,Menu menu) {
 		//super();
 		this.setText("uses outgoing");
 		this.allPNodes = allPNodes;
 		this.pnode = pnode;
 		this.canvas = canvas;
+		this.menu = menu;
 		addActionListener();
 	}
 
@@ -57,6 +59,7 @@ public class CreateUsesEdges extends JMenuItem {
 				DrawEdges(dest, canvas);
 			}
 		}
+		this.menu.hideMenu();
 	}
 	
 	public void addActionListener() {

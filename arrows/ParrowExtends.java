@@ -48,10 +48,6 @@ public class ParrowExtends extends Parrow {
 
 		PPath line = PPath.createLine(fromp.getX(), fromp.getY(), top.getX(), top.getY());
 		line.setStrokePaint(Color.black);
-		if (this.to.getidNode().contains("i")) {
-			Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 9 }, 0);
-			line.setStroke(dashed);
-		}
 		head.translate(top.getX(), top.getY());
 		head.rotate(theta);
 		addChild(line);
