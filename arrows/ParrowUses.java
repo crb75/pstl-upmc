@@ -77,7 +77,7 @@ public class ParrowUses extends Parrow{
 	@Override
 	public Parrow redraw(PNode virtuaFrom) {
 		removeAllChildren();
-        return new ParrowUses(from,to,spacing,virtuaFrom,to);
+        return new ParrowUses(from,to,spacing,virtuaFrom,virtualto);
 	}
 	@Override
 	public Parrow redrawTo(PNode virtualTo) {

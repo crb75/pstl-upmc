@@ -75,23 +75,25 @@ public class ArrowNodesHolder extends PNode{
             PNode to = arrow.getTo();
             PNode virtualFrom = arrow.getVirtualFrom();
             PNode virtualTo = arrow.getVirtualto();
-            
+            //Parrow ar2  = null ;
             ArrayList<PiccoloCustomNode> fromAscendency = ((PiccoloCustomNode)from).getAscendency();
             ArrayList<PiccoloCustomNode> toAscendency = ((PiccoloCustomNode)to).getAscendency();
             for (PiccoloCustomNode pnode : fromAscendency) {
 				if (!pnode.isHidden()) {
 					if (pnode.equals((PiccoloCustomNode)from)) {
-						    Parrow ar2 = arrow.redraw();
+						Parrow ar2 = arrow.redraw();
 				            removeArrow(arrow);
 				            addArrow(ar2);
 				            virtualFrom = ar2.getVirtualFrom();
+				            arrow = ar2 ;
 				            break;
 					}
 					else {
-						    Parrow ar2 = arrow.redraw(pnode);
+						Parrow ar2 = arrow.redraw(pnode);
 				            removeArrow(arrow);
 				            addArrow(ar2);
 				            virtualFrom = ar2.getVirtualFrom();
+				            arrow = ar2 ;
 				            break;
 					}
 				}
@@ -99,25 +101,29 @@ public class ArrowNodesHolder extends PNode{
             for (PiccoloCustomNode pnode : toAscendency) {
             	if (!pnode.isHidden()) {
 					if (pnode.equals((PiccoloCustomNode)to) && from.equals(virtualFrom)) {
-						    Parrow ar2 = arrow.redraw();
+						Parrow ar2 = arrow.redraw();
 				            removeArrow(arrow);
 				            addArrow(ar2);
+				            arrow = ar2 ;
 				            break;
 					}
 					else if(pnode.equals((PiccoloCustomNode)to)) {
-						    Parrow ar2 = arrow.redraw(virtualFrom);
+						Parrow ar2 = arrow.redraw(virtualFrom);
 				            removeArrow(arrow);
 				            addArrow(ar2);
+				            arrow = ar2 ;
 				            break;
 					}
 					else {
 						Parrow ar2 = arrow.redrawTo(pnode);
 			            removeArrow(arrow);
 			            addArrow(ar2);
+			            arrow = ar2 ;
 			            break;
 					}
 				}
 			}
+            System.out.println(arrow.getVirtualFrom()+"---"+arrow.getVirtualto());
     }
 
     public void hide_show_arrows(PiccoloCustomNode node) {
@@ -131,7 +137,7 @@ public class ArrowNodesHolder extends PNode{
 
                     if (PCN == PCNF || PCN == PCNT) {
                         hideArrow(arrow);
-                    System.out.println("hide "+getVisibleArrows().size()+"-"+getHiddenArrows().size());
+                   // System.out.println("hide "+getVisibleArrows().size()+"-"+getHiddenArrows().size());
                     }
                 }
             else {
@@ -141,7 +147,7 @@ public class ArrowNodesHolder extends PNode{
                     if ((!PCNT.isHidden() || !PCNF.isHidden())
                             && (PCN == PCNF || PCN == PCNT)) {
                     showArrow(arrow);
-                    System.out.println("show "+getVisibleArrows().size()+"-"+getHiddenArrows().size());
+                   // System.out.println("show "+getVisibleArrows().size()+"-"+getHiddenArrows().size());
                     }
                 }
             }

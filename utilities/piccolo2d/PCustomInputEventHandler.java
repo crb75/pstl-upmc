@@ -68,7 +68,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 				root.setLayout();
 				root.updateContentBoundingBoxes(false, canvas);
 				for (Parrow arrow : ANH.getVisibleArrows()) {
-					System.out.println((PiccoloCustomNode) arrow.getTo());
+					//System.out.println((PiccoloCustomNode) arrow.getTo());
 					ANH.updatePosition(arrow);
 				}
 //				ANH.clearCounters();
