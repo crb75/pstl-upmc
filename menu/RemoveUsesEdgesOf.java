@@ -1,5 +1,4 @@
-
-package Menu;
+package menu;
 
 import java.awt.event.ActionEvent;
 import java.util.Collection;
@@ -15,11 +14,12 @@ import org.piccolo2d.extras.pswing.PSwingCanvas;
 import arrows.ArrowNodesHolder;
 import arrows.Parrow;
 import arrows.ParrowExtends;
+import arrows.ParrowUses;
 import nodes.piccolo2d.Node;
 import nodes.piccolo2d.PiccoloCustomNode;
 import utilities.piccolo2d.XmlToStructure;
 
-public class RemoveExtendsEdgesOf extends JMenuItem{
+public class RemoveUsesEdgesOf extends JMenuItem{
 	private HashMap<String, PiccoloCustomNode> allPNodes;
 	private Map<String, Node> m = new XmlToStructure().parseNode();
 	private HashMap<String, Node> listNodes = new HashMap<>(m);
@@ -28,9 +28,9 @@ public class RemoveExtendsEdgesOf extends JMenuItem{
 	private Menu menu;
 	private ArrowNodesHolder ANH;
 
-	public RemoveExtendsEdgesOf(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,Menu menu,ArrowNodesHolder ANH) {
+	public RemoveUsesEdgesOf(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,Menu menu,ArrowNodesHolder ANH) {
 		super();
-		this.setText("hide extends outgoing");
+		this.setText("hide uses outgoing");
 		this.allPNodes = allPNodes;
 		this.pnode = pnode;
 		this.canvas = canvas;
@@ -42,7 +42,7 @@ public class RemoveExtendsEdgesOf extends JMenuItem{
 		  Collection<Parrow> arrows =ANH.getVisibleArrows();
 		  for (Parrow parrow : arrows) {
 			PNode from = parrow.getFrom();
-			if (parrow instanceof ParrowExtends && ((PiccoloCustomNode)from).getidNode().equals(pnode.getidNode())) {
+			if (parrow instanceof ParrowUses && ((PiccoloCustomNode)from).getidNode().equals(pnode.getidNode())) {
 				ANH.removeArrow(parrow);
 			}
 		  }

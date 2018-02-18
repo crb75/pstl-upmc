@@ -13,8 +13,8 @@ import javax.swing.JFrame;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 import org.piccolo2d.util.PPaintContext;
 
-import Menu.Menu;
 import arrows.ArrowNodesHolder;
+import menu.Menu;
 import nodes.piccolo2d.Edge;
 import nodes.piccolo2d.Node;
 import nodes.piccolo2d.PiccoloCustomNode;

@@ -15,15 +15,15 @@ import org.piccolo2d.event.PInputEvent;
 import org.piccolo2d.event.PInputEventFilter;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 
-import Menu.CreateISAEdgesBy;
-import Menu.CreateISAEdgesOf;
-import Menu.CreateUsesEdgesBy;
-import Menu.CreateUsesEdgesOf;
-import Menu.Menu;
-import Menu.RemoveExtendsEdgesOf;
-import Menu.RemoveUsesEdgesOf;
 import arrows.ArrowNodesHolder;
 import arrows.Parrow;
+import menu.CreateISAEdgesBy;
+import menu.CreateISAEdgesOf;
+import menu.CreateUsesEdgesBy;
+import menu.CreateUsesEdgesOf;
+import menu.Menu;
+import menu.RemoveExtendsEdgesOf;
+import menu.RemoveUsesEdgesOf;
 import nodes.piccolo2d.Node;
 import nodes.piccolo2d.PiccoloCustomNode;
 
