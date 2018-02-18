@@ -7,4 +7,5 @@ To run the program
 execute the command line `sh run.sh`
 -----------
 --Windows--
-run 'run.sh'
+run 'run.bat'
+-----------
