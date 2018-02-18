@@ -1,46 +1,43 @@
 package arrows;
-
 import org.piccolo2d.PNode;
-
-import nodes.piccolo2d.PiccoloCustomNode;
+import org.piccolo2d.util.PBounds;
 
 import java.awt.geom.Point2D;
 
 public abstract class Parrow extends PNode{
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	public Parrow() {}
-	public Parrow(Point2D from, Point2D to){
+    public Parrow(Point2D from, Point2D to,Point2D virtuaFrom,Point2D virtualTo){
     }
+    protected PNode virtualFrom;
+    protected PNode virtualto;
+    protected PNode from;
+    protected PNode to;
 
-    protected PiccoloCustomNode from;
-    protected PiccoloCustomNode to;
-
-    public PiccoloCustomNode getFrom() {
+    public PNode getFrom() {
         return from;
     }
 
-    public PiccoloCustomNode getTo() {
+    public PNode getTo() {
         return to;
     }
 
-    public void setFrom(PiccoloCustomNode from){
+    public void setFrom(PNode from){
         this.from=from;
     }
 
-    public void setTo(PiccoloCustomNode to){
+    public void setTo(PNode to){
         this.to=to;
     }
 
-    public Parrow(PiccoloCustomNode from,PiccoloCustomNode to){
-        this(from.getBounds().getCenter2D(),to.getBounds().getCenter2D());
+    public Parrow(PNode from,PNode to,PNode virtuaFrom,PNode virtualto){
         this.from=from;
         this.to=to;
+        this.virtualFrom = virtuaFrom;
+        this.virtualto = virtualto;
     }
 
     public abstract Parrow redraw();
+    public abstract Parrow redraw(PNode virtuaFrom);
+    public abstract Parrow redrawTo(PNode virtuaFrom);
 
     @Override
     public boolean equals(Object arrow){
@@ -49,9 +46,21 @@ public abstract class Parrow extends PNode{
         return this.from==((Parrow) arrow).getFrom()
                 &&this.to==((Parrow) arrow).getTo();
     }
+
+	public PNode getVirtualFrom() {
+		return virtualFrom;
+	}
+
+	public void setVirtualFrom(PNode virtualFrom) {
+		this.virtualFrom = virtualFrom;
+	}
+
+	public PNode getVirtualto() {
+		return virtualto;
+	}
+
+	public void setVirtualto(PNode virtualto) {
+		this.virtualto = virtualto;
+	}
     
-    @Override
-    public int hashCode() {
-    		return super.hashCode();
-    }
 }

@@ -1,63 +1,56 @@
 package utilities.piccolo2d;
 
-import java.awt.BasicStroke;
-import java.awt.MenuItem;
-import java.awt.Point;
-import java.awt.Stroke;
-import java.awt.event.ActionEvent;
+
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
+
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
-import org.piccolo2d.PNode;
 import org.piccolo2d.event.PBasicInputEventHandler;
 import org.piccolo2d.event.PInputEvent;
 import org.piccolo2d.event.PInputEventFilter;
-import org.piccolo2d.extras.nodes.PLine;
-import org.piccolo2d.extras.pswing.PSwing;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
-import org.piccolo2d.nodes.PPath;
 
-import Menu.CreateISAEdges;
-import Menu.CreateUsesEdges;
+import Menu.CreateISAEdgesOf;
+import Menu.CreateUsesEdgesOf;
 import Menu.Menu;
-import arrows.ParrowExtends;
-import arrows.ParrowUses;
-import nodes.piccolo2d.Edge;
+import Menu.RemoveExtendsEdgesOf;
+import Menu.RemoveUsesEdgesOf;
+import arrows.ArrowNodesHolder;
+import arrows.Parrow;
 import nodes.piccolo2d.Node;
 import nodes.piccolo2d.PiccoloCustomNode;
-import sun.font.CreatedFontTracker;
 
 public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	private PiccoloCustomNode pnode;
 	private PiccoloCustomNode root;
 	private PSwingCanvas canvas;
 	private HashMap<String, PiccoloCustomNode> allPNodes;
-	private Map<String, Node> m = new XmlToStructure().parseNode();
-	private HashMap<String, Node> listNodes = new HashMap<>(m);
 	private Menu menu;
-	private JMenuItem createUsesEdges;
-	private JMenuItem createExtendsEdges;
+	private JMenuItem createUsesEdgesOf;
+	private JMenuItem createExtendsEdgesOf;
+	private JMenuItem removeUsesEdgesOf;
+	private JMenuItem removeExtendsEdgesOf;
 
-	public PCustomInputEventHandler(PiccoloCustomNode pnode,PiccoloCustomNode root, PSwingCanvas canvas, Map<String, PiccoloCustomNode> allPNodes,Menu menu) {
+	private ArrowNodesHolder ANH;
+
+	public PCustomInputEventHandler(PiccoloCustomNode pnode, PiccoloCustomNode root, PSwingCanvas canvas,
+			Map<String, PiccoloCustomNode> allPNodes, Menu menu, ArrowNodesHolder ANH) {
 		setEventFilter(new PInputEventFilter(InputEvent.BUTTON1_MASK & InputEvent.BUTTON2_MASK));
 		this.pnode = pnode;
 		this.canvas = canvas;
 		this.root = root;
 		this.allPNodes = new HashMap<>(allPNodes);
 		this.menu = menu;
-		createUsesEdges = new CreateUsesEdges(pnode,canvas,this.allPNodes,menu);
-		createExtendsEdges = new CreateISAEdges(pnode,canvas,this.allPNodes,menu);
-		
+		this.ANH = ANH;
+		createUsesEdgesOf = new CreateUsesEdgesOf(pnode, canvas, this.allPNodes, menu, ANH);
+		createExtendsEdgesOf = new CreateISAEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
+		removeUsesEdgesOf = new RemoveUsesEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
+		removeExtendsEdgesOf = new RemoveExtendsEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
 	}
 
 	public PCustomInputEventHandler(PiccoloCustomNode pnode) {
@@ -71,27 +64,38 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 
 		try {
 			if (aEvent.isLeftMouseButton()) {
-				  pnode.toggleChildren();
-				  root.setLayout();
-		          root.updateContentBoundingBoxes(false,canvas);
+				pnode.toggleChildren();
+				root.setLayout();
+				root.updateContentBoundingBoxes(false, canvas);
+				for (Parrow arrow : ANH.getVisibleArrows()) {
+					System.out.println((PiccoloCustomNode) arrow.getTo());
+					ANH.updatePosition(arrow);
+				}
+//				ANH.clearCounters();
+//				for (Parrow ar : ANH.getVisibleArrows())
+//					if (ar instanceof ParrowDottedFat)
+//						ANH.updateCount((ParrowDottedFat) ar);
+				//ANH.hide_show_arrows(pnode);
 			}
 			if (aEvent.isRightMouseButton()) {
-				//menu.setVisible(true);
+				// menu.setVisible(true);
 				menu.removeAll();
-				menu.add(createUsesEdges);
-				menu.add(createExtendsEdges);
+				menu.add(createUsesEdgesOf);
+				menu.add(createExtendsEdgesOf);
+				menu.add(removeUsesEdgesOf);
+				menu.add(removeExtendsEdgesOf);
 				menu.setPoint(aEvent.getPosition());
 				menu.setCanvas(canvas);
 				menu.drawMenu();
 				canvas.addMouseListener(new MouseAdapter() {
-		            @Override
-		            public void mousePressed(MouseEvent e) {
-		            	System.out.println((menu.getP().getGlobalFullBounds().contains(e.getPoint())));
-		            	if(!menu.getP().getGlobalFullBounds().contains(e.getPoint()))
-		            	 menu.hideMenu();
-		            }
-		         });
-				
+					@Override
+					public void mousePressed(MouseEvent e) {
+						// System.out.println((menu.getP().getGlobalFullBounds().contains(e.getPoint())));
+						if (!menu.getP().getGlobalFullBounds().contains(e.getPoint()))
+							menu.hideMenu();
+					}
+				});
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

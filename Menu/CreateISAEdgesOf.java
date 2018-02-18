@@ -10,60 +10,69 @@ import java.util.Map.Entry;
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 
+import org.piccolo2d.PCanvas;
+import org.piccolo2d.PNode;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 
+import arrows.ArrowNodesHolder;
 import arrows.ParrowExtends;
+import arrows.ParrowUses;
 import nodes.piccolo2d.Edge;
 import nodes.piccolo2d.Node;
 import nodes.piccolo2d.PiccoloCustomNode;
 import utilities.piccolo2d.XmlToStructure;
 
-public class CreateISAEdges extends JMenuItem{
+public class CreateISAEdgesOf extends JMenuItem {
 	private HashMap<String, PiccoloCustomNode> allPNodes;
 	private Map<String, Node> m = new XmlToStructure().parseNode();
 	private HashMap<String, Node> listNodes = new HashMap<>(m);
 	private PiccoloCustomNode pnode;
 	private PSwingCanvas canvas;
 	private Menu menu;
+	private ArrowNodesHolder ANH;
 
-	public CreateISAEdges(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,Menu menu) {
-		//super();
+	public CreateISAEdgesOf(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,
+			Menu menu, ArrowNodesHolder ANH) {
+		super();
 		this.setText("extends outgoing");
 		this.allPNodes = allPNodes;
 		this.pnode = pnode;
 		this.canvas = canvas;
 		this.menu = menu;
+		this.ANH = ANH;
 		addActionListener();
 	}
-	public void drawExtendsEdges(PiccoloCustomNode pnode, PSwingCanvas canvas) {
-		ParrowExtends arrow = null;
-		Node node = listNodes.get(pnode.getidNode());
+
+	public void drawExtendsEdges(PiccoloCustomNode target, PSwingCanvas canvas) {
+		Node node = listNodes.get(target.getidNode());
 		HashMap<String, Edge> relation = new HashMap<>(node.getRelation());
-		//System.out.println(node.getId());
 		for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
 			Edge e = edgeEntry.getValue();
 			if (e.getType().equals("isa")) {
-				PiccoloCustomNode dest = allPNodes.get(e.getTo());
-				Point2D point = new Point((int) pnode.getRect().getGlobalBounds().getCenter2D().getX(),
-						(int) (pnode.getRect().getGlobalBounds().getCenter2D().getY()
-								+ pnode.getRect().getHeight() / 2));
-				Point2D point2 = new Point((int) dest.getRect().getGlobalBounds().getCenter2D().getX(),
-						(int) (dest.getRect().getGlobalBounds().getCenter2D().getY() + dest.getRect().getHeight() / 2));
-				
-				arrow = new ParrowExtends(pnode, dest);
-				canvas.getLayer().addChild(arrow);
-				drawExtendsEdges(dest, canvas);
+				PNode from = target;
+				PNode to = (allPNodes.get(e.getTo()));
+				if (to.getParent() instanceof PiccoloCustomNode && !((PiccoloCustomNode) to.getParent()).isHidden()) {
+					ANH.addArrow(new ParrowExtends(from, to, from, to));
+				} else {
+					for (PiccoloCustomNode pnode : ((PiccoloCustomNode) to).getAscendency()) {
+						if (!pnode.isHidden()) {
+							ANH.addArrow(new ParrowExtends(from, to, from, pnode));
+							break;
+						}
+					}
+				}
 			}
 		}
 		this.menu.hideMenu();
 	}
+
 	public void addActionListener() {
 		this.addActionListener(new AbstractAction() {
 
-            public void actionPerformed(ActionEvent arg0) {
-            	drawExtendsEdges(pnode,canvas);
-            }    
-        });
+			public void actionPerformed(ActionEvent arg0) {
+				drawExtendsEdges(pnode, canvas);
+			}
+		});
 	}
 
 }

@@ -10,14 +10,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.JFrame;
-
-
-
-
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 import org.piccolo2d.util.PPaintContext;
 
 import Menu.Menu;
+import arrows.ArrowNodesHolder;
 import nodes.piccolo2d.Edge;
 import nodes.piccolo2d.Node;
 import nodes.piccolo2d.PiccoloCustomNode;
@@ -30,6 +27,7 @@ public class NewDisplayDG extends JFrame {
 	private HashMap<String, Node> listNodes = new HashMap<>(m);
 	private PiccoloCustomNode root;
 	private Menu menu;
+	private ArrowNodesHolder ANH;
 	/**
 	 * 
 	 */
@@ -39,10 +37,11 @@ public class NewDisplayDG extends JFrame {
 		menu = new Menu();
 		root = getPackageNodes();
 		root.collapseAll();
-		//root.setLayout();
+		this.ANH =  new ArrowNodesHolder();
 		addEvent(root, root,canvas,menu);
-		// createExtendsEdges(root, getCanvas());
 		canvas.getLayer().addChild(root);
+		canvas.getLayer().addChild(ANH);
+		
 		
 	}
 
@@ -119,7 +118,7 @@ public class NewDisplayDG extends JFrame {
 
 
 	private void addEvent(PiccoloCustomNode node, PiccoloCustomNode tree,	PSwingCanvas canvas,Menu menu) {
-		node.getContent().addInputEventListener(new PCustomInputEventHandler(node, tree, canvas, allPNodes,menu));
+		node.getContent().addInputEventListener(new PCustomInputEventHandler(node, tree, canvas, allPNodes,menu,ANH));
 		if (node.getAllChildren().size() != 0)
 			for (PiccoloCustomNode PCN : node.getAllChildren()) {
 				addEvent(PCN, tree,canvas,menu);
@@ -137,7 +136,6 @@ public class NewDisplayDG extends JFrame {
 		container.add(canvas, BorderLayout.CENTER);
 		canvas.setPreferredSize(new Dimension(1000, 500));
 		frame.pack();
-		//frame.setPreferredSize(new Dimension(742,500));
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         frame.setVisible(true);
        
