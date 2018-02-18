@@ -3,8 +3,8 @@ Dependency graph with piccolo2d
 
 To run the program
 -----------
-**Linux*
+--Linux--
 execute the command line `sh run.sh`
-
-**Windows**
+-----------
+--Windows--
 run 'run.sh'
