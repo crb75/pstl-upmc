@@ -53,7 +53,7 @@ private static Edge parseAttributs(NamedNodeMap attrs) {
 	return edge;
 }
 
-	public Map<String, Node> parseNode() {
+	public HashMap<String, Node> parseNode() {
 		HashMap<String, Node> listNode = new HashMap<>();
 
 		Reader reader = new Reader("./mongraph.xml");
@@ -66,7 +66,7 @@ private static Edge parseAttributs(NamedNodeMap attrs) {
 			NodeList listEdge = reader.getEdgeFrom(n.getId());
 			if (listEdge.getLength() != 0) {
 				// dest-id / type
-				HashMap<String, Edge> relation = new HashMap<>(n.getRelation());
+				HashMap<String, Edge> relation = n.getRelation();
 				for (int j = 0; j < listEdge.getLength(); j++) {
 					NamedNodeMap attrs = listEdge.item(j).getAttributes();
 					Edge edge = XmlToStructure.parseAttributs(attrs);

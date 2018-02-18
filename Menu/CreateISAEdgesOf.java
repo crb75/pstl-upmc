@@ -34,7 +34,7 @@ public class CreateISAEdgesOf extends JMenuItem {
 	public CreateISAEdgesOf(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,
 			Menu menu, ArrowNodesHolder ANH) {
 		super();
-		this.setText("extends outgoing");
+		this.setText("show extends outgoing");
 		this.allPNodes = allPNodes;
 		this.pnode = pnode;
 		this.canvas = canvas;
@@ -45,19 +45,22 @@ public class CreateISAEdgesOf extends JMenuItem {
 
 	public void drawExtendsEdges(PiccoloCustomNode target, PSwingCanvas canvas) {
 		Node node = listNodes.get(target.getidNode());
-		HashMap<String, Edge> relation = new HashMap<>(node.getRelation());
-		for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
-			Edge e = edgeEntry.getValue();
-			if (e.getType().equals("isa")) {
-				PNode from = target;
-				PNode to = (allPNodes.get(e.getTo()));
-				if (to.getParent() instanceof PiccoloCustomNode && !((PiccoloCustomNode) to.getParent()).isHidden()) {
-					ANH.addArrow(new ParrowExtends(from, to, from, to));
-				} else {
-					for (PiccoloCustomNode pnode : ((PiccoloCustomNode) to).getAscendency()) {
-						if (!pnode.isHidden()) {
-							ANH.addArrow(new ParrowExtends(from, to, from, pnode));
-							break;
+		if (node != null && node.getRelation() != null) {
+			HashMap<String, Edge> relation = node.getRelation();
+			for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
+				Edge e = edgeEntry.getValue();
+				if (e.getType().equals("isa")) {
+					PNode from = target;
+					PNode to = (allPNodes.get(e.getTo()));
+					if (to.getParent() instanceof PiccoloCustomNode
+							&& !((PiccoloCustomNode) to.getParent()).isHidden()) {
+						ANH.addArrow(new ParrowExtends(from, to, from, to));
+					} else {
+						for (PiccoloCustomNode pnode : ((PiccoloCustomNode) to).getAscendency()) {
+							if (!pnode.isHidden()) {
+								ANH.addArrow(new ParrowExtends(from, to, from, pnode));
+								break;
+							}
 						}
 					}
 				}

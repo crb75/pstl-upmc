@@ -9,11 +9,10 @@ public class Node {
 	private String id;
 	//enumaration
 	private String type ;
-	private HashMap<String, Edge> relation ;
+	private HashMap<String, Edge> relation;
 	
 	public Node(){
-		
-		relation = new HashMap<>();
+		this.relation = new HashMap<String,Edge>();
 	}
 	
 	public String getName() {
@@ -34,11 +33,11 @@ public class Node {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public Map<String, Edge> getRelation() {
+	public HashMap<String, Edge> getRelation() {
 		return relation;
 	}
-	public void setRelation(Map<String, Edge> relation) {
-		this.relation = new HashMap<>(relation);
+	public void setRelation(HashMap<String, Edge> relation) {
+		this.relation = relation;
 	}
 	
 	

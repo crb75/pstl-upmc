@@ -34,9 +34,10 @@ public class CreateUsesEdgesOf extends JMenuItem {
 	private Menu menu;
 	private ArrowNodesHolder ANH;
 
-	public CreateUsesEdgesOf(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,Menu menu,ArrowNodesHolder ANH) {
+	public CreateUsesEdgesOf(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,
+			Menu menu, ArrowNodesHolder ANH) {
 		super();
-		this.setText("uses outgoing");
+		this.setText("show uses outgoing");
 		this.allPNodes = allPNodes;
 		this.pnode = pnode;
 		this.canvas = canvas;
@@ -46,35 +47,38 @@ public class CreateUsesEdgesOf extends JMenuItem {
 	}
 
 	public void DrawEdges(PiccoloCustomNode target, PSwingCanvas canvas) {
-        Node node = listNodes.get(target.getidNode());
-		HashMap<String, Edge> relation = new HashMap<>(node.getRelation());
-        for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
-			Edge e = edgeEntry.getValue();
-			if (e.getType().equals("uses")) {
-				PNode from=target;
-				PNode to = (allPNodes.get(e.getTo()));
-	            if(to.getParent() instanceof  PiccoloCustomNode &&!((PiccoloCustomNode)to.getParent()).isHidden()){
-	            	  ANH.addArrow(new ParrowUses(from, to, 10,from,to));
-	            }
-	            else {
-                       for (PiccoloCustomNode pnode : ((PiccoloCustomNode)to).getAscendency()) {
-						if (!pnode.isHidden()) {
-							 ANH.addArrow(new ParrowUses(from, to, 10,from,pnode));
-							 break;
+		Node node = listNodes.get(target.getidNode());
+		
+		if ( node!= null && node.getRelation() !=  null) {
+			HashMap<String, Edge> relation = node.getRelation();
+			for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
+				Edge e = edgeEntry.getValue();
+				if (e.getType().equals("uses")) {
+					PNode from = target;
+					PNode to = (allPNodes.get(e.getTo()));
+					if (to.getParent() instanceof PiccoloCustomNode
+							&& !((PiccoloCustomNode) to.getParent()).isHidden()) {
+						ANH.addArrow(new ParrowUses(from, to, 10, from, to));
+					} else {
+						for (PiccoloCustomNode pnode : ((PiccoloCustomNode) to).getAscendency()) {
+							if (!pnode.isHidden()) {
+								ANH.addArrow(new ParrowUses(from, to, 10, from, pnode));
+								break;
+							}
 						}
 					}
-                }
+				}
 			}
-        }
+		}
 		this.menu.hideMenu();
 	}
-	
+
 	public void addActionListener() {
 		this.addActionListener(new AbstractAction() {
 
-            public void actionPerformed(ActionEvent arg0) {
-            	DrawEdges(pnode,canvas);
-            }    
-        });
+			public void actionPerformed(ActionEvent arg0) {
+				DrawEdges(pnode, canvas);
+			}
+		});
 	}
 }

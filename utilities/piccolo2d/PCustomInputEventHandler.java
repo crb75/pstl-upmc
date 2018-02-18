@@ -15,7 +15,9 @@ import org.piccolo2d.event.PInputEvent;
 import org.piccolo2d.event.PInputEventFilter;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 
+import Menu.CreateISAEdgesBy;
 import Menu.CreateISAEdgesOf;
+import Menu.CreateUsesEdgesBy;
 import Menu.CreateUsesEdgesOf;
 import Menu.Menu;
 import Menu.RemoveExtendsEdgesOf;
@@ -35,6 +37,8 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	private JMenuItem createExtendsEdgesOf;
 	private JMenuItem removeUsesEdgesOf;
 	private JMenuItem removeExtendsEdgesOf;
+	private JMenuItem createISAEdgesBy;
+	private JMenuItem createUsesEdgesBy;
 
 	private ArrowNodesHolder ANH;
 
@@ -51,6 +55,8 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		createExtendsEdgesOf = new CreateISAEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
 		removeUsesEdgesOf = new RemoveUsesEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
 		removeExtendsEdgesOf = new RemoveExtendsEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
+		createISAEdgesBy = new CreateISAEdgesBy(pnode, canvas, this.allPNodes, menu,ANH);
+		createUsesEdgesBy = new CreateUsesEdgesBy(pnode, canvas, this.allPNodes, menu,ANH);
 	}
 
 	public PCustomInputEventHandler(PiccoloCustomNode pnode) {
@@ -79,14 +85,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 			}
 			if (aEvent.isRightMouseButton()) {
 				// menu.setVisible(true);
-				menu.removeAll();
-				menu.add(createUsesEdgesOf);
-				menu.add(createExtendsEdgesOf);
-				menu.add(removeUsesEdgesOf);
-				menu.add(removeExtendsEdgesOf);
-				menu.setPoint(aEvent.getPosition());
-				menu.setCanvas(canvas);
-				menu.drawMenu();
+				generateMenu(menu,aEvent);
 				canvas.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mousePressed(MouseEvent e) {
@@ -101,5 +100,20 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public void generateMenu(Menu menu,PInputEvent aEvent) {
+		menu.removeAll();
+		menu.add(createUsesEdgesOf);
+		menu.add(createExtendsEdgesOf);
+		menu.addSeparator();
+		menu.add(removeUsesEdgesOf);
+		menu.add(removeExtendsEdgesOf);
+		menu.addSeparator();
+		menu.add(createISAEdgesBy);
+		menu.add(createUsesEdgesBy);
+		menu.setPoint(aEvent.getPosition());
+		menu.setCanvas(canvas);
+		menu.drawMenu();
 	}
 }
