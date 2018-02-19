@@ -2,14 +2,10 @@
 
 ## Guide d'exécution
 
-### Systèmes UNIX
-
-Exécute la commande 
-
-```shell
-  sh run.sh
-```
-
-### Windows
-
-Exécute le fichier 'run.bat'
+- **Systèmes UNIX**
+  Exécute la commande 
+  ```shell
+    sh run.sh
+  ```
+- **Windows**
+  Exécute le fichier `run.bat`.
