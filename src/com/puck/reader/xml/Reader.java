@@ -1,7 +1,5 @@
 package com.puck.reader.xml;
 
-
-
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
