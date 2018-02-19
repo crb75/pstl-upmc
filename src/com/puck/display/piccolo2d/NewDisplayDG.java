@@ -26,7 +26,6 @@ import com.puck.utilities.piccolo2d.XmlToStructure;
 public class NewDisplayDG extends JFrame {
 	private HashMap<String, PiccoloCustomNode> allPNodes = new HashMap<>();
 	private Map<String, Node> listNodes = new XmlToStructure().parseNode();
-	//private HashMap<String, Node> listNodes = new HashMap<>(m);
 	private PiccoloCustomNode root;
 	private Menu menu;
 	private ArrowNodesHolder ANH;
