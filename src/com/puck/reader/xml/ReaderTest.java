@@ -1,7 +1,5 @@
 package com.puck.reader.xml;
 
-
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -13,10 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.w3c.dom.NodeList;
 
 import com.puck.utilities.Logger;
+
 /**
  * @author ky
  *
  */
+
 class ReaderTest {
 
 	/**

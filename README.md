@@ -1,11 +1,11 @@
-Dependency graph with piccolo2d
-=====
+# Graph de dépéndance d'un programme Java en utilisant la bibliothèque Piccolo2D.
 
-To run the program
------------
---Linux--
-execute the command line `sh run.sh`
------------
---Windows--
-run 'run.bat'
------------
+## Guide d'exécution
+
+- **Systèmes UNIX**
+  Exécute la commande 
+  ```shell
+    sh run.sh
+  ```
+- **Windows**
+  Exécute le fichier `run.bat`.
