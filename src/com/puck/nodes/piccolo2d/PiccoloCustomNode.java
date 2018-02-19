@@ -175,7 +175,7 @@ public class PiccoloCustomNode extends PNode {
 
 //	public void redrawEdges(PCanvas canvas, PiccoloCustomNode clickedNode) {
 //		System.out.println("Je suis dans pcustom " + this.getidNode());
-//		// juste pour deplacer la fleche quand le noued qui contient la fleche est fermé
+//		// juste pour deplacer la fleche quand le noued qui contient la fleche est ferme
 //		if (clickedNode.outgoing.size() != 0 && clickedNode.isHidden() == false) {
 //			for (Parrow parrow : clickedNode.getOutgoing()) {
 //				Collection<Parrow> arrowsCol = (Collection<Parrow>) clickedNode.getOutgoing().clone();
