@@ -314,7 +314,7 @@ class ReaderTest {
 	@Test
 	final void testGetAllEdges() {
 		final String methodeName = "testGetAllEdges()";
-				String message;
+		String message;
 		message = "Début de l'appel de la méthode";
 		Logger.logMethod(methodeName, message);
 		message = "Cette méthode permet de test la méthode getAllEdges de la classe Reader qui permet de retourner tous les éléments de type edge depuis le fichier XML";
@@ -488,44 +488,166 @@ class ReaderTest {
 
 	/**
 	 * Test method for {@link reader.xml.Reader#getEdgeType(int)}.
+	 * Cette méthode permet de tester la méthode getEdgeType(index:integer) de la classe Reader qui permet d'obtenir l'attribut type d'un élément de type Edge dont la position est passé en paramètres depuis le fichier xml
+	 * Pour tester cette méthode, on  commence par initialiser une variable de type Reader. On exécute la méthode sur cette variable avec le parramètres 
+	 * On teste à la fin si les deux résultats se correspondent
 	 */
 	@Test
 	final void testGetEdgeType() {
+		final String methodeName = "testGetEdgeType()";
+		String message;
+		message = "Début de l'appel de la méthode";
+		Logger.logMethod(methodeName, message);
+		message = "Cette méthode permet de tester la méthode getEdgeType(index:integer) de la classe Reader qui permet d'obtenir l'attribut type d'un élément de type Edge dont la position est passé en paramètres depuis le fichier xml";
+		Logger.logMethod(methodeName, message);
+		message = "Pour tester cette méthode on commence par initialiser une variable r de type Reader.";
+		Logger.logMethod(methodeName, message);
 		Reader r = new Reader("./mongraph.xml");
+		message ="La variable r est bien initialisé";
+		Logger.logMethod(methodeName, message);
 		String expected = "uses";
+		message ="Le résultat attendu " + expected;
+		Logger.logMethod(methodeName, message);
 		String actual = r.getEdgeType(1);
+		message = "On contrôle maintenant si le résultat obtenu " + expected + " correspond avec le résultat attendu " + expected;
+		if (expected.equals(actual))
+		{
+			message ="Les résultats correspondent";
+			Logger.logMethod(methodeName, message);
+		}
+		else
+		{
+			message ="Les résultats ne correspondent pas";
+			Logger.logError(methodeName, message);
+		}
 		assertEquals(expected, actual);
+		message ="Fin d'appel de la méthode";
+		Logger.logMethod(methodeName, message);
 	}
 
 	/**
 	 * Test method for {@link reader.xml.Reader#getEdgeSource(int)}.
+	 * Cette méthode permet de tester la méthode getEdgeSource de la classe Reader qui permet d'obtenir l'attribut source de l'élément de type Edge dont la position est passé en paramètres depuis le fichier xml
+	 * Pour tester cette méthode on commence par initialiser une variable r de type Reader depuis le fichier xml
+	 * Puis on appelle la méthode getEdgeSource(1) sur cette variable
+	 * On contrôle si les deux résultats se correspondent 
 	 */
 	@Test
 	final void testGetEdgeSource() {
+		final String methodeName = "testGetEdgeSource()";
+		String message;
+		message ="Début de l'appel de méthode";
+		Logger.logMethod(methodeName, message);
+		message ="Cette méthode permet de tester la méthode getEdgeSource de la classe Reader qui permet d'obtenir l'attribut source de l'élément de type Edge dont la position est passé en paramètres depuis le fichier xml";
+		Logger.logMethod(methodeName, message);
+		message = "On commence par initialiser une variable r de type Reader";
+		Logger.logMethod(methodeName, message);
 		Reader r = new Reader("./mongraph.xml");
+		message = "La variable r de type Reader est bien initialisé";
+		Logger.logMethod(methodeName, message);
 		String expected = "c01";
+		message = "Le résultat attendu est " + expected;
+		Logger.logMethod(methodeName, message);
+		message = "On appelle maintenant la méthode getEdgeSource(1) sur la variable r. Ca nous permet d'obtenir l'attribut source du premier élément de type Edge depuis le fichier XML";
+		Logger.logMethod(methodeName, message);
 		String actual = r.getEdgeSource(1);
+		message = "On contrôle maintenant si le résultat attendu " + expected + " correspond bien avec le résultat obtenu " + actual;
+		Logger.logMethod(methodeName, message);
+		if (actual.equals(expected))
+		{
+			message = "Les deux résultats correspondent";
+			Logger.logMethod(methodeName, message);
+		}
+		else
+		{
+			message = "Les deux résultats ne correspondent pas";
+			Logger.logError(methodeName, message);
+		}
 		assertEquals(expected, actual);
+		message = "Fin d'appel de la méthode";
+		Logger.logMethod(methodeName, message);
 	}
 
 	/**
 	 * Test method for {@link reader.xml.Reader#getEdgeDestination(int)}.
+	 * Cette méthode permet de tester la méthode getEdgeDestination(index:integer) de la classe Reader qui permet d'obtenir l'attribut destination de l'élément de type Edge dont la position est passé en paramètres.
+	 * Pour tester cette méthode on commence d'abord par initialiser une variable r de type Reader depuis le fichier xml
+	 * Puis on appelle la méthode getEdgeDestination(1) sur cette variable
+	 * On contrôle ensuite si deux résultats se correspondent
 	 */
 	@Test
 	final void testGetEdgeDestination() {
+		final String methodeName = "testGetEdgeDestination()";
+		String message;
+		message = "Début de l'appel de la méthode";
+		Logger.logMethod(methodeName, message);
+		message = "Cette méthode permet de tester la méthode getEdgeDestination(index:integer) de la classe Reader qui permet d'obtenir l'attribut destination de l'élément de type Edge dont la position est passé en paramètres.";
+		Logger.logMethod(methodeName, message);
+		message = "On commence par initialiser une variable r de type Reader";
+		Logger.logMethod(methodeName, message);
 		Reader r = new Reader("./mongraph.xml");
+		message = "La variable r est bien initialisée";
+		Logger.logMethod(methodeName, message);
 		String expected = "c02";
+		message = "Le résultat attendu est " + expected;
+		Logger.logMethod(methodeName, message);
+		message = "On appelle la méthode getEdgeSource(1) sur la variable r qui nous permet d'obtenir l'attribut source du premier élément edge depuis le fichier xml";
+		Logger.logMethod(methodeName, message);
 		String actual = r.getEdgeDestination(1);
+		message = "On contrôle si le résultat attendu " + expected + " correspond bien avec le résultat obtenu " + actual;
+		Logger.logMethod(methodeName, message);
+		if (actual.equals(expected))
+		{
+			message = "Les deux résultats correspondent";
+			Logger.logMethod(methodeName, message);
+		}
+		else
+		{
+			message = "Les deux résultats ne correspondent pas";
+			Logger.logError(methodeName, message);
+		}
 		assertEquals(expected, actual);
+		message = "Fin d'appel de la méthode";
+		Logger.logMethod(methodeName, message);
 	}
 
 	/**
 	 * Test method for {@link reader.xml.Reader#getEdgeFrom(java.lang.String)}.
+	 * Cette méthode permet de tester la méthode getEdgeFrom(id:string) ui permet d'obtenir tous les éléments de type edge dont leurs attributs from est passé en paramètres
+	 * Pour tester cette méthode on commence par initialiser une variable r de type Reader depuis le fichier xml
+	 * Puis on teste si le résultat obtenu est non null
 	 */
 	@Test
 	final void testGetEdgeFrom() {
+		final String methodeName = "testGetEdgeFrom()";
+		String message;
+		message = "Début de l'appel de la méthode";
+		Logger.logMethod(methodeName, message);
+		message = "Cette méthode permet de tester la méthode getEdgeFrom(id:string) qui permet d'obtenir tous les éléments de type edge dont leurs attributs from est passé en paramètres";
+		Logger.logMethod(methodeName, message);
+		message = "On commence par initialiser une variable r de type Reader depuis le ficheir xml";
+		Logger.logMethod(methodeName, message);
 		Reader r = new Reader("./mongraph.xml");
+		message = "La variable r de type Reader est bien initialisée";
+		Logger.logMethod(methodeName, message);
+		message = "On appelle maintenant la méthide getEdgeFrom(\"c01\") sur cette variable r qui nous permet d'obtenir tous les éléments de type edge dont leurs attribut from est c01";
+		Logger.logMethod(methodeName, message);
+		message = "On teste maintenant si le résultat obtenu est non null";
+		Logger.logMethod(methodeName, message);
+		if (r.getEdgeFrom("c01") != null)
+		{
+			message = "Le résultat obtenu est non null";
+			Logger.logMethod(methodeName, message);
+		}
+		else
+		{
+			message = "Le résultat obtenu est null";
+			Logger.logError(methodeName, message);
+		}
+		System.out.println(r.getEdgeFrom("c01").getLength());
 		assertNotNull(r.getEdgeFrom("c01"));
+		message = "Fin d'appel de la méthode";
+		Logger.logMethod(methodeName, message);
 	}
 
 }
