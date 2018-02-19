@@ -1,7 +1,7 @@
-a#!/bin/bash
+#!/bin/bash
 rm -rf bin/
 mkdir bin/
-CP="./lib/hamcrest-core-1.3.jar:./lib/jackson-core-lgpl-1.2.1.jar:./lib/piccolo2d-swt-3.1-SNAPSHOT.jar:./lib/core-0.15.1.jar:./lib/poi-ooxml-schemas-3.14.jar:./lib/commons-codec-1.10.jar:./lib/poi-3.14.jar:./lib/snakeyaml-1.16.jar:./lib/commons-collections-3.2.2.jar:./lib/poi-ooxml-3.14.jar:./lib/stax-api-1.0.1.jar:./lib/opentest4j-1.0.0-M1.jar:./lib/jackson-mapper-lgpl-1.2.1.jar:./lib/slf4j-api-1.7.12.jar:./lib/junit-4.12.jar:./lib/junit-platform-commons-1.0.0-M2.jar:./lib/junit-jupiter-api-5.0.0-M2.jar:./lib/slf4j-simple-1.7.12.jar:./lib/xmlbeans-2.6.0.jar:./lib/piccolo2d-core-3.1-SNAPSHOT.jar:./lib/junit5-0.15.1.jar:./lib/curvesapi-1.03.jar:./lib/piccolo2d-extras-3.1-SNAPSHOT.jar:./lib/dbunit-2.5.3.jar"
+CP="./lib/org.junit.jupiter.engine_5.0.0.v20170910-2246.jar:./lib/junit.jar:./lib/org.junit.platform.engine_1.0.0.v20170910-2246.jar:./lib/org.opentest4j_1.0.0.v20170910-2246.jar:./lib/org.junit.jupiter.migrationsupport_5.0.0.v20170910-2246.jar:./lib/piccolo2d-swt-3.1-SNAPSHOT.jar:./lib/org.junit.jupiter.api_5.0.0.v20170910-2246.jar:./lib/org.junit.platform.runner_1.0.0.v20170910-2246.jar:./lib/org.junit.vintage.engine_4.12.0.v20170910-2246.jar:./lib/org.junit.platform.suite.api_1.0.0.v20170910-2246.jar:./lib/org.apiguardian_1.0.0.v20170910-2246.jar:./lib/org.hamcrest.core_1.3.0.v201303031735.jar:./lib/org.junit.platform.commons_1.0.0.v20170910-2246.jar:./lib/piccolo2d-core-3.1-SNAPSHOT.jar:./lib/piccolo2d-extras-3.1-SNAPSHOT.jar:./lib/org.junit.jupiter.params_5.0.0.v20170910-2246.jar:./lib/org.junit.platform.launcher_1.0.0.v20170910-2246.jar."
 # compile
 # specify the directory output -d
 # specify the classpath -cp
