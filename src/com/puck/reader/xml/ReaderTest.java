@@ -291,7 +291,7 @@ class ReaderTest {
 		Reader r = new Reader("./mongraph.xml");
 		Logger.logMethod(methodeName,"La variable r est créé avec succès");
 		Logger.logMethod(methodeName,"On teste en suite si l'appel de la fonction retourne bien le résultat attendu qui est \"unPackageParent\"");
-		if (r.getNode(1).equals("unPackageParent"))
+		if (r.getNodeName(1).equals("unPackageParent"))
 		{
 			Logger.logMethod(methodeName,"Le résultat de la méthode est bien égale au résultat attendu");
 		}
@@ -471,7 +471,7 @@ class ReaderTest {
 		Logger.logMethod(methodeName, message);
 		message = "On teste si le resultat attendu correspond avec le resultat obtenu";
 		Logger.logMethod(methodeName, message);
-		if (actual == expected)
+		if (actual.equals(expected))
 		{
 			message = "Les deux resultats correspondent";
 			Logger.logMethod(methodeName, message);
@@ -644,7 +644,19 @@ class ReaderTest {
 			message = "Le résultat obtenu est null";
 			Logger.logError(methodeName, message);
 		}
-		System.out.println(r.getEdgeFrom("c01").getLength());
+		int expected = 4;
+		message = "On teste maintenant la taille de la liste des Edges obtenu correspond bien avec la taille attendu " + expected;
+		Logger.logMethod(methodeName, message);
+		if (r.getEdgeFrom("c01").getLength() == expected)
+		{
+			message = "Les tailles correspondent";
+			Logger.logMethod(methodeName, message);
+		}
+		else
+		{
+			message = "Il y a un problème. Les tailles ne correspondent pas";
+			Logger.logError(methodeName, message);
+		}
 		assertNotNull(r.getEdgeFrom("c01"));
 		message = "Fin d'appel de la méthode";
 		Logger.logMethod(methodeName, message);
