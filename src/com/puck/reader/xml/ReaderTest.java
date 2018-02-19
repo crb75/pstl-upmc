@@ -400,7 +400,7 @@ class ReaderTest {
 			message = "Les résultats ne correspondent pas";
 			Logger.logError(methodeName, message);
 		}
-		assertEquals(resultatAttendu, r.getNbNodes());
+		assertEquals(resultatAttendu, r.getNbEdges());
 		message = "Fin de l'appel de la méthode";
 		Logger.logMethod(methodeName, message);
 	}
