@@ -73,9 +73,9 @@ class NodeTest {
 	/*
 	 * Cette méthode permet de tester la méthode getName() de la classe Node qui permet d'obtenir la valeur de l'attribut name
 	 * Pour tester cette méthode on initialise d'abord une variable n de type Node.
-	 * La valeur par défaut de l'attribut name est la chaîne des caractères vide ""
+	 * La valeur par défaut de l'attribut name est null
 	 * On appelle la méthode getName() sur la variable n
-	 * On teste le résultat de l'appel avec le résultat attendu ""
+	 * On teste le résultat de l'appel avec le résultat attendu null
 	 * */
 	@Test
 	final void testGetName() {
@@ -90,16 +90,16 @@ class NodeTest {
 		Node n = new Node();
 		message = "La variable n est bien initialisée";
 		Logger.logMethod(methodeName, message);
-		message = "La valeur par défaut de l'attribut name est la chaîne des caractères vide \"\"";
+		message = "La valeur par défaut de l'attribut name est null";
 		Logger.logMethod(methodeName, message);
 		message = "On appelle la méthode getName() sur la variable n";
 		Logger.logMethod(methodeName, message);
 		String name = n.getName();
 		message = "L'appel de la méthode getName() est bien passée le résultat obtenu est \""+name+"\"";
 		Logger.logMethod(methodeName, message);
-		message = "On teste le résultat de l'appel avec le résultat attendu \"\"";
+		message = "On teste le résultat de l'appel avec le résultat attendu null";
 		Logger.logMethod(methodeName, message);
-		if ("".equals(name))
+		if (name == null)
 		{
 			message = "Le résultat de la méthode correspond bien avec le résultat attendu";
 			Logger.logMethod(methodeName, message);
@@ -109,7 +109,7 @@ class NodeTest {
 			message = "Le résultat de la méthde ne correspond pas avec le résultat attendu";
 			Logger.logError(methodeName, message);
 		}
-		assertEquals("",name);
+		assertEquals(null,name);
 		message = "Fin d'appel de la méthode";
 		Logger.logMethod(methodeName, message);
 	}
@@ -167,7 +167,7 @@ class NodeTest {
 	/*
 	 * Cette méthode permet de tester la méthode getId de la classe Node qui permet de retourner la valeurd de l'attribut Id.
 	 * Pour tester cette méthode on commence par initialiser une variable n de type Node.
-	 * La valeur par défaut de l'attribut id est la chaîne de caractères vide "".
+	 * La valeur par défaut de l'attribut id est null.
 	 * On appelle la méthode getId() sur la variable n.
 	 * On teste si le résultat de cette appelle correspond bien avec la valeur par défaut
 	 * */
@@ -184,7 +184,7 @@ class NodeTest {
 		Node n = new Node();
 		message = "La variable n est bien initialisée";
 		Logger.logMethod(methodeName, message);
-		message = "La valeur par défaut de l'attribut id est la chaîne de caractères vide \"\".";
+		message = "La valeur par défaut de l'attribut id est null.";
 		Logger.logMethod(methodeName, message);
 		message = "On appelle la méthode getId() sur la variable n.";
 		Logger.logMethod(methodeName, message);
@@ -193,7 +193,7 @@ class NodeTest {
 		Logger.logMethod(methodeName, message);
 		message = "On teste si le résultat de cette appelle correspond bien avec la valeur par défaut";
 		Logger.logMethod(methodeName, message);
-		if (id.equals(""))
+		if (id == null)
 		{
 			message = "Le résulat obtenu correspond bien avec le résultat attendu";
 			Logger.logMethod(methodeName, message);
@@ -203,7 +203,7 @@ class NodeTest {
 			message = "Le résultat attendu ne correspond pas avec le résultat obtenu";
 			Logger.logError(methodeName, message);
 		}
-		assertEquals("", id);
+		assertEquals(null, id);
 		message = "Fin d'appel de la méthode";
 		Logger.logMethod(methodeName, message);
 	}
@@ -253,7 +253,7 @@ class NodeTest {
 	/*
 	 * Cette méthode permet de tester la méthode getType() de la classe Node qui permet de retourner la valeur de l'attribiut type.
 	 * Pour tester cette méthode on commence par initialiser une variable n de type Node
-	 * La valeur par défaut de l'attribut type est la chaîne de caracètres vide.
+	 * La valeur par défaut de l'attribut type est null.
 	 * On appelle en suite la méthide getType() sur la variable n
 	 * On teste si le résultat obtenu de cet appel correspond bien avec la chaîne de caractères vide.
 	 * */
@@ -270,16 +270,16 @@ class NodeTest {
 		Node n = new Node();
 		message = "La variable n de type Node est bien initialisé";
 		Logger.logMethod(methodeName, message);
-		message = "La valeur par défaut de l'attribut type est la chaîne de caracètres vide.";
+		message = "La valeur par défaut de l'attribut type est null.";
 		Logger.logMethod(methodeName, message);
 		message = "On appelle en suite la méthide getType() sur la variable n";
 		Logger.logMethod(methodeName, message);
 		String type = n.getType();
 		message = "Appel de la fonction getType() est bien passé et retourné \"" + type + "\"";
 		Logger.logMethod(methodeName, message);
-		message = "On teste si le résultat obtenu de cet appel correspond bien avec la chaîne de caractères vide.";
+		message = "On teste si le résultat obtenu de cet appel correspond bien avec null.";
 		Logger.logMethod(methodeName, message);
-		if (type.equals(""))
+		if (type == null)
 		{
 			message = "Les deux résultats se correspondent";
 			Logger.logMethod(methodeName, message);
@@ -289,7 +289,7 @@ class NodeTest {
 			message = "Les deux résultats ne se correspondent pas";
 			Logger.logError(methodeName, message);
 		}
-		assertEquals("",n.getType());
+		assertEquals(null,n.getType());
 		message = "Fin d'appel de la méthode";
 		Logger.logMethod(methodeName, message);
 	}
