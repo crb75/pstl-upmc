@@ -34,6 +34,7 @@ public class Menu extends JPopupMenu {
         p.addChild(new PSwing(this));
         p.setOffset(point);       
         canvas.getLayer().addChild(p);
+        //System.out.println("je dessine le menu");
 	}
 	public void hideMenu() {
 		canvas.getLayer().removeChild(p);

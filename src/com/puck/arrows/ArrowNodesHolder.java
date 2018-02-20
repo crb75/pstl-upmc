@@ -110,7 +110,7 @@ public class ArrowNodesHolder extends PNode{
 				            break;
 					}
 					else if(pnode.equals((PiccoloCustomNode)to)) {
-						Parrow ar2 = arrow.redraw(virtualFrom);
+						Parrow ar2 = arrow.redrawTo(to);
 				            removeArrow(arrow);
 				            addArrow(ar2);
 				            arrow = ar2 ;
@@ -125,7 +125,10 @@ public class ArrowNodesHolder extends PNode{
 					}
 				}
 			}
-            System.out.println(arrow.getVirtualFrom()+"---"+arrow.getVirtualto());
+           // if (arrow.getVirtualFrom().equals(arrow.getVirtualto())) {
+            	//System.out.println(arrow.getVirtualFrom()+"---"+arrow.getVirtualto());
+			//}
+            
     }
 
     public void hide_show_arrows(PiccoloCustomNode node) {

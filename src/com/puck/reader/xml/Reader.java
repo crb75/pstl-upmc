@@ -166,17 +166,17 @@ public class Reader {
 
 	/* Méthode qui permet de retourner l'attribut source d'un edge dont l'index est passé en paramètres */
 	public String getEdgeSource(int edgeIndex) {
-		String query = Reader.generateEdgePathFromIndex(edgeIndex)+"/@from";
+		String query = Reader.generateEdgePathFromIndex(edgeIndex)+"/@src";
 		return this.executeStringQuery(query);
 	}
 
 	/* Méthode qui permet de retourner l'attribut destination d'un edge dont l'index est passé en paramètres */
 	public String getEdgeDestination(int edgeIndex) {
-		String query = Reader.generateEdgePathFromIndex(edgeIndex)+"/@to";
+		String query = Reader.generateEdgePathFromIndex(edgeIndex)+"/@dest";
 		return this.executeStringQuery(query);
 	}
 	public NodeList getEdgeFrom(String id){
-		String query = "//edge[@from=\""+id+"\"]";
+		String query = "//edge[@src=\""+id+"\"]";
 		return this.executeNodeSetQuery(query);
 	
 	}

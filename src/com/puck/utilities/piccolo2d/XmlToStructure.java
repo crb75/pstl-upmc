@@ -32,11 +32,11 @@ private static Edge parseAttributs(NamedNodeMap attrs) {
 				edgeId = attribut.getValue();
 				edge.setId(edgeId);
 				break;
-			case "to":
+			case "dest":
 				edgeDestId = attribut.getValue();
 				edge.setTo(edgeDestId);
 				break;
-			case "from":
+			case "src":
 				edgeSrcId = attribut.getValue();
 				edge.setFrom(edgeSrcId);
 				break;
@@ -55,7 +55,7 @@ private static Edge parseAttributs(NamedNodeMap attrs) {
 	public HashMap<String, Node> parseNode() {
 		HashMap<String, Node> listNode = new HashMap<>();
 
-		Reader reader = new Reader("./mongraph.xml");
+		Reader reader = new Reader("./mongraph2.xml");
 		int listLength = reader.getNbNodes();
 		for (int i = 1; i <= listLength; i++) {
 			Node n = new Node();

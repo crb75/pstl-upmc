@@ -44,7 +44,9 @@ public abstract class Parrow extends PNode{
         if(!(arrow instanceof Parrow))
             return false;
         return this.from==((Parrow) arrow).getFrom()
-                &&this.to==((Parrow) arrow).getTo();
+                &&this.to==((Parrow) arrow).getTo()
+                &&this.virtualFrom==((Parrow) arrow).getVirtualFrom()
+                &&this.virtualto==((Parrow) arrow).getVirtualto();
     }
 
 	public PNode getVirtualFrom() {
