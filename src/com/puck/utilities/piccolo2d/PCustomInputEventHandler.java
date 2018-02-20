@@ -18,13 +18,13 @@ import org.piccolo2d.extras.pswing.PSwingCanvas;
 
 import com.puck.arrows.ArrowNodesHolder;
 import com.puck.arrows.Parrow;
-import com.puck.menu.CreateISAEdgesBy;
-import com.puck.menu.CreateISAEdgesOf;
-import com.puck.menu.CreateUsesEdgesBy;
-import com.puck.menu.CreateUsesEdgesOf;
 import com.puck.menu.Menu;
-import com.puck.menu.RemoveExtendsEdgesOf;
-import com.puck.menu.RemoveUsesEdgesOf;
+import com.puck.menu.isa.CreateISAEdgesBy;
+import com.puck.menu.isa.CreateISAEdgesOf;
+import com.puck.menu.isa.RemoveISAEdges;
+import com.puck.menu.uses.CreateUsesEdgesBy;
+import com.puck.menu.uses.CreateUsesEdgesOf;
+import com.puck.menu.uses.RemoveUsesEdges;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
 
 public class PCustomInputEventHandler extends PBasicInputEventHandler {
@@ -35,8 +35,8 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	private Menu menu;
 	private JMenuItem createUsesEdgesOf;
 	private JMenuItem createExtendsEdgesOf;
-	private JMenuItem removeUsesEdgesOf;
-	private JMenuItem removeExtendsEdgesOf;
+	private JMenuItem removeUsesEdges;
+	private JMenuItem removeExtendsEdges;
 	private JMenuItem createISAEdgesBy;
 	private JMenuItem createUsesEdgesBy;
 
@@ -53,8 +53,8 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		this.ANH = ANH;
 		createUsesEdgesOf = new CreateUsesEdgesOf(pnode, canvas, this.allPNodes, menu, ANH);
 		createExtendsEdgesOf = new CreateISAEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
-		removeUsesEdgesOf = new RemoveUsesEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
-		removeExtendsEdgesOf = new RemoveExtendsEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
+		removeUsesEdges = new RemoveUsesEdges(pnode, canvas, this.allPNodes, menu,ANH);
+		removeExtendsEdges = new RemoveISAEdges(pnode, canvas, this.allPNodes, menu,ANH);
 		createISAEdgesBy = new CreateISAEdgesBy(pnode, canvas, this.allPNodes, menu,ANH);
 		createUsesEdgesBy = new CreateUsesEdgesBy(pnode, canvas, this.allPNodes, menu,ANH);
 	}
@@ -107,11 +107,11 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		menu.add(createUsesEdgesOf);
 		menu.add(createExtendsEdgesOf);
 		menu.addSeparator();
-		menu.add(removeUsesEdgesOf);
-		menu.add(removeExtendsEdgesOf);
-		menu.addSeparator();
 		menu.add(createISAEdgesBy);
 		menu.add(createUsesEdgesBy);
+		menu.addSeparator();
+		menu.add(removeUsesEdges);
+		menu.add(removeExtendsEdges);
 		menu.setPoint(aEvent.getPosition());
 		menu.setCanvas(canvas);
 		menu.drawMenu();
