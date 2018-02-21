@@ -436,23 +436,89 @@ class PiccoloCustomNodeTest {
 
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#getParentNode()}.
+	 * Cette méthode permet de tester la méthode getParentNode() de la classe PiccoloCustomNode.
+	 * La méthode getParentNode() permet d'obtenir le noeud père du noeud de type PiccoloCustomNode.
+	 * Pour tester cette méthode, on commence par intialiser une variable testNode de type PiccoloCustomNode en appelant le constructeur PiccoloCustomNode(textContent: String, idNode:String) avec les paramètres textContent="Test node" et idNode="124548654"
+	 * Ainsi on initialise une variable testNodeParent avec le même constructeur qu'on a initialisé la variable testNode avec les paramètres textContent="Test node parent" idNode="0124548654"
+	 * On appelle la méthode setParentNode sur la variable testNode en lui passant testNodeParent en paramètre.
+	 * Puis on appelle la méthode getParentNode() sur la variable testNode et on stocke le résultat de cet appel dans une variable result de type PiccoloCustomNode.
+	 * On teste maintenant si la variable result est identique à la variable testParentNode.
 	 */
 	@Test
 	final void testGetParentNode() {
+		final String methodeName = "testGetParentNode()";
+		String message;
+		message = "Début de l'appel de la méthode";
+		Logger.logMethod(methodeName, message);
+		message = "Cette méthode permet de tester la méthode getParentNode() de la classe PiccoloCustomNode.";
+		Logger.logMethod(methodeName, message);
+		message = "La méthode getParentNode() permet d'obtenir le noeud père du noeud de type PiccoloCustomNode.";
+		Logger.logMethod(methodeName, message);
+		message = "Pour tester cette méthode, on commence par intialiser une variable testNode de type PiccoloCustomNode en appelant le constructeur PiccoloCustomNode(textContent: String, idNode:String) avec les paramètres textContent=\"Test node\" et idNode=\"124548654\"";
+		Logger.logMethod(methodeName, message);
 		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		message = "La variable testNode est bien initialisée";
+		Logger.logMethod(methodeName, message);
+		message = "Ainsi on initialise une variable testNodeParent avec le même constructeur qu'on a initialisé la variable testNode avec les paramètres textContent=\"Test node parent\" idNode=\"0124548654\"";
+		Logger.logMethod(methodeName, message);
 		PiccoloCustomNode testNodeParent = new PiccoloCustomNode("Test node parent", "0124548654");
+		message = "La variable testNodeParent est bien initialisée";
+		Logger.logMethod(methodeName, message);
+		message = "On appelle la méthode setParentNode sur la variable testNode en lui passant testNodeParent en paramètre.";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on appelle la méthode getParentNode() sur la variable testNode et on stocke le résultat de cet appel dans une variable result de type PiccoloCustomNode.";
+		Logger.logMethod(methodeName, message);
 		testNode.setParentNode(testNodeParent);
+		message = "La méthode setParentNode est bien appéllée en lui passant la variable testNodeParent en paramètres";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on appelle la méthode getParentNode() sur la variable testNode et on stocke le résultat de cet appel dans une variable result de type PiccoloCustomNode.";
+		Logger.logMethod(methodeName, message);
+		PiccoloCustomNode result = testNode.getParentNode();
+		if (result.equals(testNodeParent)) {
+			message = "La variable result est identique que la variable testParentNode.";
+			Logger.logMethod(methodeName, message);
+		} else {
+			message = "La variable result est différent de la variable testParentNode.";
+			Logger.logError(methodeName, message);
+		}
 		assertEquals(testNodeParent, testNode.getParentNode());
+		message = "Fin d'appel de la méthode";
+		Logger.logMethod(methodeName, message);
 	}
 
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#PiccoloCustomNode(java.lang.String, java.lang.String)}.
+	 * Cette méthode permet de tester la méthode constructeur de la classe PiccoloCustomNode.
+	 * Le constucteur permet de créer un objet de type PiccoloCustomNode.
+	 * Pour tester cette méthode, on commence par intialiser une variable testNode de type PiccoloCustomNode en appelant le constructeur PiccoloCustomNode(textContent: String, idNode:String) avec les paramètres textContent="Test node" et idNode="124548654"
+	 * Puis on teste si la variable testNode est non null
 	 */
 	@Test
 	final void testPiccoloCustomNode() {
+		final String methodeName = "testPiccoloCustomNode()";
+		String message;
+		message = "Début de l'appel de la méthode";
+		Logger.logMethod(methodeName, message);
+		message = "Le constucteur permet de créer un objet de type PiccoloCustomNode.";
+		Logger.logMethod(methodeName, message);
 		PiccoloCustomNode testNode;
+		message = "Pour tester cette méthode, on commence par intialiser une variable testNode de type PiccoloCustomNode en appelant le constructeur PiccoloCustomNode(textContent: String, idNode:String) avec les paramètres textContent=\"Test node\" et idNode=\"124548654\"";
+		Logger.logMethod(methodeName, message);
+		message = "La variable testNode est bien initialisée";
+		Logger.logMethod(methodeName, message);
 		testNode = new PiccoloCustomNode("Test node", "124548654");
+		message = "Puis on teste si la variable testNode est non null";
+		Logger.logMethod(methodeName, message);
+		if (testNode != null) {
+			message = "La variable testNode est non null";
+			Logger.logMethod(methodeName, message);
+		} else {
+			message = "La variable testNode est null. Il y a un problème quelque part";
+			Logger.logError(methodeName, message);
+		}
 		assertNotNull(testNode);
+		message = "Fin d'appel de la méthode";
+		Logger.logMethod(methodeName, message);
 	}
 
 	/**
