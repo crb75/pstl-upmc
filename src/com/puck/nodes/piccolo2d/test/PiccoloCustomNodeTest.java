@@ -11,9 +11,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.piccolo2d.nodes.PPath;
 import org.piccolo2d.util.PBounds;
 
+import com.puck.nodes.piccolo2d.NodeContent;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
+import com.puck.utilities.Logger;
 
 /**
  * @author ky
@@ -51,33 +54,143 @@ class PiccoloCustomNodeTest {
 
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#getRect()}.
+	 * Cette méthode permet des tester la méthode getRect() de la classe PiccoloCustomNode
+	 * La méthode getRect() permet de retourner l'attribut rect de type PPAth qui signife le rectangle d'un objet PiccoloCustomNode
+	 * Pour tester cette méthode on initialise une variable testNode de type PiccoloCustomNode par l'appel du constructeur picolloCustomNode(testContent:String,idNode:String).
+	 * Puis on appelle la méthode getRect() sur cette variable et on teste si le résultat de l'appel de la méhtode est non null. 
 	 */
 	@Test
 	final void testGetRect() {
+		final String methodeName = "testGetRect()";
+		String message;
+		message = "Début de l'appel de la méthode";
+		Logger.logMethod(methodeName, message);
+		message = "Cette méthode permet de tester la méthode getRect() de la classe PiccoloCustomNode";
+		Logger.logMethod(methodeName, message);
+		message = "La méthode getRect() de la classe PiccoloCustomNode permet d'obtenir l'attribut rect de type PPath d'un objet de type PiccoloCustomNode";
+		Logger.logMethod(methodeName, message);
+		message = "Pour tester cette méthode on commence par initialiser une variable testNode de type PiccoloCustomNode par l'appel du constructeur (textContent:String,idNode:String). On appelle ce constructeur avec les paramètres textContent=\"Test Node\" et idNode = \"124548654\"";
+		Logger.logMethod(methodeName, message);
 		/* On crée d'abord le PiccoloCustomNode qu'on va tester*/
 		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
-		assertNotNull(testNode.getRect());	
+		message = "La variable testNode de type PiccoloCustomNode a bien été initialisée";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on appelle la méthode getRect() sur cette variable testNode.";
+		Logger.logMethod(methodeName, message);
+		PPath rect = testNode.getRect();
+		message = "La méthode getRect() sur la variable testNode est bien appelé. Le résultat de cette appel est désormais stocké dans une variable rect de type PPath.";
+		Logger.logMethod(methodeName, message);
+		message = "On teste maintenant si cette variable rect est non null";
+		Logger.logMethod(methodeName, message);
+		if (rect != null)
+		{
+			message = "La variable rect qui représente le résultat de l'appel de la méthode getRect() sur la variable testNode est non null";
+			Logger.logMethod(methodeName, message);
+		}
+		else
+		{
+			message = "La variable rect qui représente le résultat de l'appel de la méthode getRect() sur la variable testNode est null. Il y a un problème quelque part";
+			Logger.logError(methodeName, message);
+		}
+		assertNotNull(rect);	
+		message = "Fin d'appel de la méthode";
+		Logger.logMethod(methodeName, message);
 	}
 
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#getContent()}.
+	 * Cette méthode permet de tester la méhode getContent() de la classe PiccoloCustomNode.
+	 * La méthode getContent() de la classe PiccoloCustomNode permet d'obtenir l'attribut content de type NodeContent d'un objet de type PiccoloCustomNode
+	 * Pour tester cette méthode on commence par initialiser une variable testNode de type PiccoloCustomNode par l'appel du constructeur PiccoloCustomNode(textContent:String,idNode:String) avec les paramètres textContent = "Test node" et idNode ="124548654"
+	 * Puis on appelle la méthode getContent sur la variable testNode et on stocke le résultat de l'appel de cette méthode dans une variable content de type NodeContent
+	 * On teste si la variable content est non-null
 	 */
 	@Test
 	final void testGetContent() {
 		/* On crée d'abord le PiccoloCustomNode qu'on va tester*/
+		final String methodeName = "testGetContent()";
+		String message;
+		message = "Début de l'appel de la méthode";
+		Logger.logMethod(methodeName, message);
+		message = "Cette méthode permet de tester la méhode getContent() de la classe PiccoloCustomNode.";
+		Logger.logMethod(methodeName, message);
+		message = "La méthode getContent() de la classe PiccoloCustomNode permet d'obtenir l'attribut content de type NodeContent d'un objet de type PiccoloCustomNode";
+		Logger.logMethod(methodeName, message);
+		message = "Pour tester cette méthode on commence par initialiser une variable testNode de type PiccoloCustomNode par l'appel du constructeur PiccoloCustomNode(textContent:String,idNode:String) avec les paramètres textContent = \"Test node\" et idNode =\"124548654\"";
+		Logger.logMethod(methodeName, message);
 		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		message = "La variable testNode est bien initialisée";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on appelle la méthode getContent sur la variable testNode et on stocke le résultat de l'appel de cette méthode dans une variable content de type NodeContent";
+		Logger.logMethod(methodeName, message);
+		NodeContent content = testNode.getContent();
+		message = "La variable content de type NodeContent est bien initialisé par l'appel de la méthode getContent sur la variable testNode";
+		Logger.logMethod(methodeName, message);
+		message = "On teste si la variable content est non-null";
+		Logger.logMethod(methodeName, message);
+		if (content != null)
+		{
+			message = "La variable content est non-null.";
+			Logger.logMethod(methodeName, message);
+		}
+		else
+		{
+			message = "La variable content est null. Il doit avoir une erreur quelque part";
+			Logger.logError(methodeName, message);
+		}
 		assertNotNull(testNode.getContent());
+		message = "Fin d'appel de la méthode";
+		Logger.logMethod(methodeName, message);
 	}
 
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#getMargin()}.
+	 * Cette méthode permet de tester la méthode getMargin() de la classe PiccoloCustomNode.
+	 * La méthode getMargin() permet d'obtenir l'attribut margin qui représente la marge de l'objet PiccoloCustomNode.
+	 * Pour tester cette méhthode, on commence par initialiser une variable testNode de type PiccoloCustomNode par l'appel de constructeur PiccoloCustomNode(textContent:String,idNode:String) avec les parmaètres textContent = "Test node" et idNode = "124548654"
+	 * On sait que la valeur de l'attribut margin par défaut est 10.
+	 * On appelle la méthode getMargin() sur la variable testNode et on stocke le résultat de l'appel dans une variable result de type double.
+	 * On teste maintenant si la variable result est égale à la valeur de l'attribut margin attendu. 
 	 */
 	@Test
 	final void testGetMargin() {
 		/* On crée d'abord le PiccoloCustomNode qu'on va tester*/
+		final String methodeName = "testGetMargin()";
+		String message;
+		message = "Début de l'appel de la méthode";
+		Logger.logMethod(methodeName, message);
+		message = "Cette méthode permet de tester la méthode getMargin() de la classe PiccoloCustomNode.";
+		Logger.logMethod(methodeName, message);
+		message = "La méthode getMargin() permet d'obtenir l'attribut margin qui représente la marge de l'objet PiccoloCustomNode.";
+		Logger.logMethod(methodeName, message);
+		message = "Pour tester cette méhthode, on commence par initialiser une variable testNode de type PiccoloCustomNode par l'appel de constructeur PiccoloCustomNode(textContent:String,idNode:String) avec les parmaètres textContent = \"Test node\" et idNode = \"124548654\"";
+		Logger.logMethod(methodeName, message);
 		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		message = "La variable testNode est bien initialisé.";
+		Logger.logMethod(methodeName, message);
 		double marginResult = 10;
+		message = "On sait que la valeur de l'attribut margin par défaut est " + marginResult;
+		Logger.logMethod(methodeName, message);
+		message = "On appelle la méthode getMargin() sur la variable testNode et on stocke le résultat de l'appel dans une variable result de type double.";
+		Logger.logMethod(methodeName, message);
+		double result = testNode.getMargin();
+		message = "La variable result est bien initialisé par l'appel de la méthode getMargin() sur la variable testNode.";
+		Logger.logMethod(methodeName, message);
+		message = "On teste maintenant si la variable result est égale à la valeur de l'attribut margin attendu.";
+		Logger.logMethod(methodeName, message);
+		if (marginResult == result)
+		{
+			message = "La valeur de la variable result est égale à la valeur de l'attribut margin attendu "+marginResult;
+			Logger.logMethod(methodeName, message);
+		}
+		else
+		{
+			message = "La valeur de la variable result n'est pas égale à la valeur de l'attribut margin attendu. Il doit avoir un problème quelque part";
+			Logger.logError(methodeName, message);
+		}
 		assertEquals(marginResult, testNode.getMargin());
+		message = "Fin d'appel de la méthode";
+		Logger.logMethod(methodeName, message);
 	}
 
 	/**

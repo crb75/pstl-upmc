@@ -261,6 +261,7 @@ class NodeTest {
 	final void testGetType() {
 		final String methodeName = "testGetType()";
 		String message;
+		
 		message = "Début de l'appel de la méthode";
 		Logger.logMethod(methodeName, message);
 		message = "Cette méthode permet de tester la méthode getType() de la classe Node qui permet de retourner la valeur de l'attribiut type.";
