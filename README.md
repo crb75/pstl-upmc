@@ -63,7 +63,7 @@
   <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FImportEclipse3.png?alt=media&token=5e0f2b18-c3ee-448c-a246-2b54967088fd" alt="Depuis l'explorateur de fichiers trouvez le dossier que vous venez de clonner et cliquez sur Open">
   </li>
   <li>
-  Pour compléter l'importation cliquez sur le bouton <strong><samp>Finis</samp></strong>
+  Pour compléter l'importation cliquez sur le bouton <strong><samp>Finish</samp></strong>
   <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FImportEclipse4.png?alt=media&token=f79121d0-b179-413e-85b1-bb5f4fc23de5" alt="Pour compléter l'importation cliquez sur le bouton Finish">
   </li>
   <li>
