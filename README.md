@@ -1,4 +1,4 @@
-# Graph de dépéndance d'un programme Java en utilisant la bibliothèque Piccolo2D.
+# Graph de dépendance d'un programme Java en utilisant la bibliothèque Piccolo2D.
 
 ## Guide d'importation
 
@@ -12,7 +12,7 @@
         <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FimportEclipse1.png?alt=media&token=b90453a4-4b76-4bb6-ad43-ff9bf944c542" alt="Cliquez sur Import dans l'onglet File de barre latérale d'Eclipse"/>
        </li>
        <li>
-        Sur la fenêtre qui s'ouvre choissez <strong><samp>Projects from Git</samp></strong> qui se trouve sous la section Git. Cliquez sur le bouton <strong><samp>Next</samp></strong>.
+        Sur la fenêtre qui s'ouvre choisissez <strong><samp>Projects from Git</samp></strong> qui se trouve sous la section Git. Cliquez sur le bouton <strong><samp>Next</samp></strong>.
         <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FImportEclipse_2.png?alt=media&token=1d415087-e728-49d5-9d92-ccb6339ecfc8" alt="Sur la fenêtre qui s'ouvre choisissez Projects from FGit qui se trouve sous la section Git"/>
       </li>
       <li>
@@ -53,16 +53,16 @@
   <code>git clone https://github.com/Misteryagci/pstl-upmc.git</code>
   </li>
   <li>
-  Cliquez sur <strong><samp>Import</samp></strong> dans l'onglet <strong><samp>File</samp></strong> de barre latterale d'Eclipse.
+  Cliquez sur <strong><samp>Import</samp></strong> dans l'onglet <strong><samp>File</samp></strong> de barre latérale d'Eclipse.
   <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FimportEclipse1.png?alt=media&token=b90453a4-4b76-4bb6-ad43-ff9bf944c542" alt=""/>
   </li>
   <li>
-  Sur la fenêtre qui s'ouvre choissez <strong><samp>Projects from Folder or Archive</samp></strong> qui se trouve sous la section <samp>General</samp>. Cliquez sur le bouton <strong><samp>Next</samp></strong>.
-  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FImportEclipse2.png?alt=media&token=45b4f9d9-5afe-4893-8cba-6c6f619d8456" alt="Sur la fenêtre qui s'ouvre choissez Projects from Folder or Archive qui se trouve sous la section General">
+  Sur la fenêtre qui s'ouvre choisissez <strong><samp>Projects from Folder or Archive</samp></strong> qui se trouve sous la section <samp>General</samp>. Cliquez sur le bouton <strong><samp>Next</samp></strong>.
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FImportEclipse2.png?alt=media&token=45b4f9d9-5afe-4893-8cba-6c6f619d8456" alt="Sur la fenêtre qui s'ouvre choisissez Projects from Folder or Archive qui se trouve sous la section General">
   </li>
   <li>
-  Depuis l'explorateur de fichiers <strong>trouvez le dossier que vous venez de clonner</strong> et cliquez sur le bouton <strong><samp>Open</samp></strong>.
-  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FImportEclipse3.png?alt=media&token=5e0f2b18-c3ee-448c-a246-2b54967088fd" alt="Depuis l'explorateur de fichiers trouvez le dossier que vous venez de clonner et cliquez sur Open">
+  Depuis l'explorateur de fichiers <strong>trouvez le dossier que vous venez de cloner</strong> et cliquez sur le bouton <strong><samp>Open</samp></strong>.
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FImportEclipse3.png?alt=media&token=5e0f2b18-c3ee-448c-a246-2b54967088fd" alt="Depuis l'explorateur de fichiers trouvez le dossier que vous venez de cloner et cliquez sur Open">
   </li>
   <li>
   Pour compléter l'importation cliquez sur le bouton <strong><samp>Finish</samp></strong>
@@ -78,7 +78,7 @@
   <summary>Importez comme un pro 😎</summary>
   <ol>
     <li>
-      Dans un terminal dirigez vous à votre workspace d'Eclipse. <em>Vous pouvez trouver le path exacte au démarrage de votre Eclipse.</em> <br/>
+      Dans un Terminal dirigez vous à votre workspace d'Eclipse. <em>Vous pouvez trouver le path exacte au démarrage de votre Eclipse.</em> <br/>
       <code>
       cd ~/Documents/workspace
       </code>
@@ -91,8 +91,8 @@
       </code>
     </li>
     <li>
-      Cliquez sur <strong><samp>Java Project</samp></strong> dans la section <strong><samp>New</samp></strong> dans l'onglet <strong><samp>File</samp></strong> de barre latterale d'Eclipse.
-      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipsePro2.png?alt=media&token=0f411ace-6872-4871-b595-1b30bda6440e" alt="Cliquez sur Java Project dans la section New dans l'onglet File de barre latterale d'Eclipse">
+      Cliquez sur <strong><samp>Java Project</samp></strong> dans la section <strong><samp>New</samp></strong> dans l'onglet <strong><samp>File</samp></strong> de barre latérale d'Eclipse.
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipsePro2.png?alt=media&token=0f411ace-6872-4871-b595-1b30bda6440e" alt="Cliquez sur Java Project dans la section New dans l'onglet File de barre latérale d'Eclipse">
     </li>
     <li>
       Entrez le nom du dossier que vous avez sélectionné quand vous avez cloné le répo.<em>Si vous n'avez pas entré d'autre paramètre que l'url de répo à la commande <code>git clone</code> par défaut c'est <samp>pstl-upmc</samp></em>. Et cliquez sur le bouton <strong><samp>Finish</samp></strong>.
@@ -139,7 +139,7 @@
     </li>
     <li>
     Vérifiez que la case qui contient le nom du projet <strong><samp>pstl-upmc</samp></strong> sur la colonne de gauche libellé <samp>Modules</samp> est bien cochée et cliquez sur le bouton <strong><samp>Next</samp></strong> pour continuer
-    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ7.png?alt=media&token=72037a1f-c764-4d39-b2bb-7005d08ccf85" altt="Vérifiez que la case qui contient le nom du projet pstl-upmc sur la colonne de gauche libellé Modules est bien cochée et cliquez sur le bouton Next pour continuer.">
+    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ7.png?alt=media&token=72037a1f-c764-4d39-b2bb-7005d08ccf85" alt="Vérifiez que la case qui contient le nom du projet pstl-upmc sur la colonne de gauche libellé Modules est bien cochée et cliquez sur le bouton Next pour continuer.">
     </li>
     <li>
     Vérifiez que le <strong>SDK</strong> sélectionné pour le projet est bien <strong><samp>1.8</samp></strong> et ensuite cliquez sur le bouton <strong><samp>Next</samp></strong> pour continuer.
@@ -183,12 +183,12 @@
     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fintellij14.png?alt=media&token=38413346-3623-4d03-b41f-8a2ce7fafd50" alt="Vérifiez bien que la case contenant le chemin d'accès du dossier src est bien cochée et cliquez sur le bouton Next pour continuer.">
     </li>
     <li>
-    Vérifiez sur la case qui se trouve sur la colonne de gauche libellée <samp>Libraries</samp> de la fênetre et qui contient le dossier <strong><samp>lib</samp></strong> est bien cochée et cliquez sur le bouton <strong><samp>Next</samp></strong> pour continuer.
+    Vérifiez sur la case qui se trouve sur la colonne de gauche libellée <samp>Libraries</samp> de la fenêtre et qui contient le dossier <strong><samp>lib</samp></strong> est bien cochée et cliquez sur le bouton <strong><samp>Next</samp></strong> pour continuer.
     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fintellij15.png?alt=media&token=852dfad8-4020-4fd6-9732-d321e0566a9b" alt="Vérifiez que la case qui se trouve sur la colonne de gauche libellée Libraries de la fenêtre et qui contient le dossier lib est bien cochée et cliquez sur le bouton Next pour continuer.">
     </li>
     <li>
     Vérifiez que la case qui contient le nom du projet <strong><samp>pstl-upmc</samp></strong> sur la colonne de gauche libellé <samp>Modules</samp> est bien cochée et cliquez sur le bouton <strong><samp>Next</samp></strong> pour continuer
-    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fintellij16.png?alt=media&token=ba4088f6-c7b5-495a-82b0-cfc65b5113c3" altt="Vérifiez que la case qui contient le nom du projet pstl-upmc sur la colonne de gauche libellé Modules est bien cochée et cliquez sur le bouton Next pour continuer.">
+    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fintellij16.png?alt=media&token=ba4088f6-c7b5-495a-82b0-cfc65b5113c3" alt="Vérifiez que la case qui contient le nom du projet pstl-upmc sur la colonne de gauche libellé Modules est bien cochée et cliquez sur le bouton Next pour continuer.">
     </li>
     <li>
     Vérifiez que le <strong>SDK</strong> sélectionné pour le projet est bien <strong><samp>1.8</samp></strong> et ensuite cliquez sur le bouton <strong><samp>Next</samp></strong> pour continuer.
