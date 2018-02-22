@@ -36,12 +36,40 @@
      </li>
      <li>
      <strong>Renommez</strong> le projet sous Eclipse comme vous désirez <strong>ou laissez le comme tel</strong> et cliquez sur <strong><samp>Finish</samp></strong>
-     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FImportEclipse_8.png?alt=media&token=776700e6-2d11-4541-9c68-fee7d0bb6ca1" alt="Renommez le projet comme vous désirez ou laissez le comme tel">
+     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FImportEclipse_8.png?alt=media&token=776700e6-2d11-4541-9c68-fee7d0bb6ca1" alt="Renommez le projet comme vous désirez ou laissez le comme tel"/>
      </li>
      <li>
      Happy coding 😊
      </li>
     </ol>
+</details>
+<details>
+  <summary>En clonant le répo par vous même</summary>
+  <ol>
+  <li>
+  Cloner le répo par en tapant la commande suivante dans une <strong>Terminal</strong><br/>
+  <code>git clone https://github.com/Misteryagci/pstl-upmc.git</code>
+  </li>
+  <li>
+  Cliquez sur <strong><samp>Import</samp></strong> dans l'onglet <strong><samp>File</samp></strong> de barre latterale d'Eclipse.
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FimportEclipse1.png?alt=media&token=b90453a4-4b76-4bb6-ad43-ff9bf944c542" alt=""/>
+  </li>
+  <li>
+  Sur la fenêtre qui s'ouvre choissez <strong><samp>Projects from Folder or Archive</samp></strong> qui se trouve sous la section <samp>General</samp>. Cliquez sur le bouton <strong><samp>Next</samp></strong>.
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FImportEclipse2.png?alt=media&token=45b4f9d9-5afe-4893-8cba-6c6f619d8456" alt="Sur la fenêtre qui s'ouvre choissez Projects from Folder or Archive qui se trouve sous la section General">
+  </li>
+  <li>
+  Depuis l'explorateur de fichiers <strong>trouvez le dossier que vous venez de clonner</strong> et cliquez sur le bouton <strong><samp>Open</samp></strong>.
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FImportEclipse3.png?alt=media&token=5e0f2b18-c3ee-448c-a246-2b54967088fd" alt="Depuis l'explorateur de fichiers trouvez le dossier que vous venez de clonner et cliquez sur Open">
+  </li>
+  <li>
+  Pour compléter l'importation cliquez sur le bouton <strong><samp>Finis</samp></strong>
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FImportEclipse4.png?alt=media&token=f79121d0-b179-413e-85b1-bb5f4fc23de5" alt="Pour compléter l'importation cliquez sur le bouton Finish">
+  </li>
+  <li>
+  Happy coding 😊
+  </li>
+  </ol>
 </details>
 
    
