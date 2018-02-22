@@ -2,7 +2,7 @@
 
 ## Guide d'importation
 
-### Sur <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Feclipse.svg?alt=media&token=c1a40189-1236-407b-9568-52c292e46e3d" alt="Eclipse Logo" width="24" height="24"/> Eclipse
+### Sur Eclipse <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Feclipse.svg?alt=media&token=c1a40189-1236-407b-9568-52c292e46e3d" alt="Eclipse Logo" width="32" height="32"/>
 <details>
   <summary>En utilisant <strong>l'intégration git</strong></summary>
     <ol>
