@@ -118,7 +118,7 @@
     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ1.png?alt=media&token=03972eca-d91b-4158-b3d4-a13a8a4a962a" alt="Sur le champs de texte libellé Git Repository URL, entre l'URL du répo de projet qui est https://github.com/Misteryagci/pstl-upmc.git. Puis appuyez sur le bouton Clone">
     </li>
     <li>
-    Appuyez sur bouton <strong><samp>Yes</samp></strong> sur la boîte de dialogue qui vous demande de créer un projet d'IntelliJ en partant les sources clonées.
+    Appuyez sur bouton <strong><samp>Yes</samp></strong> sur la boîte de dialogue qui vous demande de créer un projet d'IntelliJ en partant les sources clonées.<br/>
     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ2.png?alt=media&token=36cfbc41-573f-4708-aef2-0affdf7012f2" alt="Appuyez sur le bouton Yes sur la boîte de dialogue qui vous demande de créer un projet d'IntelliJ en partant les sources clonées.">
     </li>
     <li>
