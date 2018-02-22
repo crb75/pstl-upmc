@@ -75,14 +75,14 @@
   <summary>Importez comme un pro 😎</summary>
   <ol>
     <li>
-      Dans un terminal dirigez vous à votre workspace d'Ecplise. <em>Vous pouvez trouver le path exacte au démarrage de votre Eclipse.</em>
+      Dans un terminal dirigez vous à votre workspace d'Ecplise. <em>Vous pouvez trouver le path exacte au démarrage de votre Eclipse.</em> <br/>
       <code>
       cd ~/Documents/workspace
       </code>
       <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipsePro1.png?alt=media&token=23600c56-737c-42a9-a95c-b9f49e0373c9" alt="Vous pouvez trouver le chemin complet de votre workspace Eclipse au démarrage">
     </li>
     <li>
-      Clonez le répo git par la commande
+      Clonez le répo git par la commande <br/>
       <code>
       git clone git clone https://github.com/Misteryagci/pstl-upmc.git
       </code>
@@ -100,8 +100,7 @@
     </li>
   </ol>
 </details>
-   
-      
+
 ## Guide d'exécution
 
 - **Systèmes UNIX**
