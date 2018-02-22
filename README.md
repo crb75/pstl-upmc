@@ -71,7 +71,35 @@
   </li>
   </ol>
 </details>
-
+<details>
+  <summary>Importez comme un pro 😎</summary>
+  <ol>
+    <li>
+      Dans un terminal dirigez vous à votre workspace d'Ecplise. <em>Vous pouvez trouver le path exacte au démarrage de votre Eclipse.</em>
+      <code>
+      cd ~/Documents/workspace
+      </code>
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipsePro1.png?alt=media&token=23600c56-737c-42a9-a95c-b9f49e0373c9" alt="Vous pouvez trouver le chemin complet de votre workspace Eclipse au démarrage">
+    </li>
+    <li>
+      Clonez le répo git par la commande
+      <code>
+      git clone git clone https://github.com/Misteryagci/pstl-upmc.git
+      </code>
+    </li>
+    <li>
+      Cliquez sur <strong><samp>Java Project</samp></strong> dans la section <strong><samp>New</samp></strong> dans l'onglet <strong><samp>File</samp></strong> de barre latterale d'Eclipse.
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipsePro2.png?alt=media&token=0f411ace-6872-4871-b595-1b30bda6440e" alt="Cliquez sur Java Project dans la section New dans l'onglet File de barre latterale d'Eclipse">
+    </li>
+    <li>
+      Entrez le nom du dossier que vous avez sélectionné quand vous avez cloné le répo.<em>Si vous n'avez pas entré d'autre paramètre que l'url de répo à la commande <code>git clone</code> par défaut c'est <samp>pstl-upmc</samp></em>. Et cliquez sur le bouton <strong><samp>Finish</samp></strong>.
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipsePro3.png?alt=media&token=1a753972-c41d-4e8d-bd07-f4ae8eb6809f" alt="Entre le nom du dossier que avez sélectionné quand vous avez cloné le répo.">
+    </li>
+    <li>
+    Happy coding 😊
+    </li>
+  </ol>
+</details>
    
       
 ## Guide d'exécution
