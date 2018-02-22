@@ -3,6 +3,7 @@
 ## Guide d'importation
 
 ### Sur <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Feclipse.svg?alt=media&token=c1a40189-1236-407b-9568-52c292e46e3d" alt="Eclipse Logo" width="32" height="32" align="top"/> Eclipse
+
 <details>
   <summary>En utilisant <strong>l'intégration git</strong></summary>
     <ol>
@@ -43,6 +44,7 @@
      </li>
     </ol>
 </details>
+
 <details>
   <summary><strong>En clonant le répo</strong> par vous même</summary>
   <ol>
@@ -71,6 +73,7 @@
   </li>
   </ol>
 </details>
+
 <details>
   <summary>Importez comme un pro 😎</summary>
   <ol>
@@ -93,7 +96,7 @@
     </li>
     <li>
       Entrez le nom du dossier que vous avez sélectionné quand vous avez cloné le répo.<em>Si vous n'avez pas entré d'autre paramètre que l'url de répo à la commande <code>git clone</code> par défaut c'est <samp>pstl-upmc</samp></em>. Et cliquez sur le bouton <strong><samp>Finish</samp></strong>.
-      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipsePro3.png?alt=media&token=1a753972-c41d-4e8d-bd07-f4ae8eb6809f" alt="Entre le nom du dossier que avez sélectionné quand vous avez cloné le répo.">
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipsePro3.png?alt=media&token=1a753972-c41d-4e8d-bd07-f4ae8eb6809f" alt="Entrez le nom du dossier que avez sélectionné quand vous avez cloné le répo.">
     </li>
     <li>
     Happy coding 😊
@@ -194,6 +197,45 @@
     <li>
     Vérifiez bien que le message indiqué sur la fenêtre est bien <strong><samp>No frameworks detected</samp></strong> et cliquez sur le bouton <strong><samp>Finish</samp></strong> pour conclure l'importation.
     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fintellij18.png?alt=media&token=1a0ef006-13db-474c-a2ed-f05a918bc50a" alt="Vérifiez bien que le message indiqué sur la fenêtre est bien No frameworks detected et cliquez sur le bouton Finish pour conclure l'importation.">
+    </li>
+    <li>
+    Happy coding 😊
+    </li>
+  </ol>
+</details>
+
+<details>
+  <summary>Importez comme un pro 😎</summary>
+  <ol>
+    <li>
+      Dans un terminal dirigez vous à votre workspace d'IntelliJ.<br/>
+      <code>
+      cd ~/Documents/IntelliJWorkspace
+      </code>
+    </li>
+    <li>
+      Clonez le répo git en tapant la commande sur le même terminal dans le répertoire de votre workspace IntelliJ <br/>
+      <code>
+      git clone git clone https://github.com/Misteryagci/pstl-upmc.git
+      </code>
+    </li>
+    <li>
+      Au démarrge d'IntelliJ cliquez sur <strong><samp>Create New Project</samp></strong> sur la fenêtre qui s'ouvre.
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fintellij21.png?alt=media&token=5c7c2859-2c04-4b64-8ea4-8629fe08b7b8" alt="Au démarrage d'IntelliJ cliquez sur Create New Project sur la fenêtre qui s'ouvre">
+    </li>
+    </li>
+    <li>
+      Sur la fenêtre intitulée <samp>New Project</samp><strong> laissez toutes les cases décochées</strong> et cliquez sur le bouton <strong><samp>Next</samp></strong>.
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fintellij22.png?alt=media&token=55e00c18-74bc-4d40-8d9e-495f1cd16f29" alt="Sur la fenêtre intitulée New Project laissez toutes les cases décochées et cliquez sur le bouton Next">
+    </li>
+    </li>
+    <li>
+      Puis <strong>laissez la case intitulée <samp>Create project from template</samp> décochée</strong> et cliquez sur le bouton <strong><samp>Next</samp></strong>.
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fintellij23.png?alt=media&token=28498040-c684-46d9-9d6f-651544716208" alt="Puis laissez la case intitulée Create project from template et cliquez sur le bouton Next">
+    </li>
+    <li>
+      Entrez le nom du dossier que vous avez sélectionné quand vous avez cloné le répo.<em>Si vous n'avez pas entré d'autre paramètre que l'url de répo à la commande <code>git clone</code> par défaut c'est <samp>pstl-upmc</samp></em>. Et cliquez sur le bouton <strong><samp>Finish</samp></strong>.
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fintellij24.png?alt=media&token=7b7d4ef3-5383-4cff-bec2-dfb6ea73ed31" alt="Entrez le nom du dossier que avez sélectionné quand vous avez cloné le répo.">
     </li>
     <li>
     Happy coding 😊
