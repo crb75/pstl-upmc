@@ -2,7 +2,7 @@
 
 ## Guide d'importation
 
-### Sur Eclipse
+### Sur ![Eclipse Logo](https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Feclipse.svg?alt=media&token=c1a40189-1236-407b-9568-52c292e46e3d "Eclipse Logo")Eclipse
 <details>
   <summary>En utilisant <strong>l'intégration git</strong></summary>
     <ol>
@@ -75,14 +75,14 @@
   <summary>Importez comme un pro 😎</summary>
   <ol>
     <li>
-      Dans un terminal dirigez vous à votre workspace d'Ecplise. <em>Vous pouvez trouver le path exacte au démarrage de votre Eclipse.</em> <br/>
+      Dans un terminal dirigez vous à votre workspace d'Eclipse. <em>Vous pouvez trouver le path exacte au démarrage de votre Eclipse.</em> <br/>
       <code>
       cd ~/Documents/workspace
       </code>
       <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipsePro1.png?alt=media&token=23600c56-737c-42a9-a95c-b9f49e0373c9" alt="Vous pouvez trouver le chemin complet de votre workspace Eclipse au démarrage">
     </li>
     <li>
-      Clonez le répo git par la commande <br/>
+      Clonez le répo git en tapant la commande sur le même terminal dans le répertoire de votre workspace Eclipse <br/>
       <code>
       git clone git clone https://github.com/Misteryagci/pstl-upmc.git
       </code>
