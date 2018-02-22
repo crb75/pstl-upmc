@@ -144,11 +144,11 @@
   </li>
   <li>
   Vérifiez bien que le message indiqué sur la fenêtre est bien <strong><samp>No frameworks detected</samp></strong> et cliquez sur le bouton <strong><samp>Finish</samp></strong> pour conclure l'importation.
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ9.png?alt=media&token=ac03f1a6-a89a-4b8f-887a-f996ee388223" alt="Vérifiez bien que le message indiqué sur la fenêtre est bien No frameworks detected et cliquez sur le bouton Finish pour conclure l'importation.">
   </li>
   <li>
   Happy coding 😊
   </li>
-
 </ol>
 </details>
 
