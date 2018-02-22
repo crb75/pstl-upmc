@@ -206,10 +206,46 @@
 
 ## Guide d'exécution
 
-- **Systèmes UNIX**
-  Exécute la commande 
+### Sur votre IDE préféré
+
+<details>
+  <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Feclipse.svg?alt=media&token=c1a40189-1236-407b-9568-52c292e46e3d" alt="Eclipse Logo" width="32" height="32" align="top"/> Eclipse </summary>
+
+  <ol>
+    <li>
+      Faites <strong>un clique droit sur le dossier principal</strong> contenant le projet. Puis dans le menu déroulant cliquez sur <strong><samp>Java Application</samp></strong> sous la section <strong><samp>Run As</samp></strong>.<br/>
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse1.png?alt=media&token=e121056e-c502-4f98-a91b-1eb40e988cfe" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
+    </li>
+    <li>
+      Sur la fênetre intitulée <samp>Select Java Application</samp> <strong>sélectionnez <samp>NewDisplayDG - com.puck.display.piccolo2d</samp></strong>. Puis cliquez sur le bouton <strong><samp>OK</samp></strong>.
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse2.png?alt=media&token=95b4f994-6455-4dff-a2b8-b0aa5cc6142f" alt="Sur la fenêtre intitulée Select Java Application sélectionnez NewDisplayDG - com.puck.display.piccolo2d. Puis cliquez sur le bouton OK.">
+    </li>
+  </ol>
+
+</details>
+
+<details>
+  <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJ_IDEA_Logo.svg?alt=media&token=4f8c266b-4d1c-4fa5-972a-19dbb23ad1be" alt="Eclipse Logo" width="32" height="32" align="top"/> IntelliJ </summary>
+
+  <ol>
+    <li>
+      Chargez le projet <strong>en sélectionnant le projet</strong> sur la fenêtre de démarrage.<br/>
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunIntelliJ1.png?alt=media&token=fc23661d-95d6-4d9d-b3f4-e90e7bc0bb6a" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
+    </li>
+    <li>
+      Trouvez le fichier <strong><samp>NewDisplayDG</samp></strong> qui se trouve dans le dossier <samp>display.piccolo2d</samp> qui se trouve dans le dossier <samp>com.puck</samp> qui se trouve dans le dossier <samp>src</samp> qui se trouve dans le dossier principal du projet. <strong>Faites un clique droit sur ce fichier</strong> et dans le menu déroulant <strong>cliquez sur <samp>Run 'NewDisplayDG.main()'</samp></strong>.<br/>
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunIntelliJ2.png?alt=media&token=2a0c94a8-a8a0-44f9-a616-215ac2b6cdbf" alt="Trouvez le fichier NewDisplayDG qui se trouve dans le dossier display.piccolo2d qui se trouve dans le dossier com.puck qui se trouve dans le dossier src qui se trouve dans le dossier principal du projet. Faites un clique droit sur ce fichier et dans le menu déroulant cliquez sur Run 'NewDisplayDG.main()'">
+    </li>
+  </ol>
+  
+</details>
+
+### Sur ligne de commande
+
+- **Systèmes UNIX** <br/>
+  Exécutez la commande 
   ```shell
   sh run.sh
   ```
-- **Windows**
-  Exécute le fichier `run.bat`.
+- **Windows** <br/>
+  Exécutez le fichier <samp>run.bat</samp>.
