@@ -103,6 +103,55 @@
 
 ## Sur <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJ_IDEA_Logo.svg?alt=media&token=4f8c266b-4d1c-4fa5-972a-19dbb23ad1be" alt="Eclipse Logo" width="32" height="32" align="top"/> IntelliJ
 
+<details>
+<summary>En utilisant <strong>l'intégration git</strong></summary>
+<ol>
+  <li>
+  Au démarrage d'IntelliJ sur la fenêtre qui s'ouvre cliquez sur la section <strong><samp>Check out from Version Control</samp></strong>. Puis sur le menu déroulant cliquez sur la section <strong><samp>Github</samp></strong>.
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fintellij0.png?alt=media&token=26ba41a6-2911-4131-be07-702b3123b8c1" alt="Au démarrage d'IntelliJ, sur la fenêtre qui s'ouvre cliquez sur la section Check out from Version Control. Puis sur le menu déroulant cliquez sur la section Github"/>
+  </li>
+  <li>
+  Sur le champs de texte libellé <strong><samp>Git Repository URL</samp></strong>, entrez l'URL du répo de projet qui est <samp>https://github.com/Misteryagci/pstl-upmc.git</samp>. Puis appuyez sur le bouton <strong><samp>Clone</samp></strong>.
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ1.png?alt=media&token=03972eca-d91b-4158-b3d4-a13a8a4a962a" alt="Sur le champs de texte libellé Git Repository URL, entre l'URL du répo de projet qui est https://github.com/Misteryagci/pstl-upmc.git. Puis appuyez sur le bouton Clone">
+  </li>
+  <li>
+  Appuyez sur bouton <strong><samp>Yes</samp></strong> sur la boîte de dialogue qui vous demande de créer un projet d'IntelliJ en partant les sources clonées.
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ2.png?alt=media&token=36cfbc41-573f-4708-aef2-0affdf7012f2" alt="Appuyez sur le bouton Yes sur la boîte de dialogue qui vous demande de créer un projet d'IntelliJ en partant les sources clonées.">
+  </li>
+  <li>
+  Sélectionnez maintenant la case <strong><samp>Create project from Existing source</samp></strong> sur la fenêtre et cliquez sur le bouton <strong><samp>Next</samp></strong>.
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ3.png?alt=media&token=827b1feb-2ec2-4751-af52-b287706d890e" alt="Sélectionnez maintenant la case Create project from Existing source sur la fenêtre et cliquez sur le bouton Next">
+  </li>
+  <li>
+  <em>Si vous voulez changer le nom de projet IntelliJ sur votre ordinateur changez le text <samp>pstl-upmc</samp> qui est par défaut dans le champs libellé <samp>Project Name</samp> par le nom que vous désirez. Sinon gardez le comme tel.</em> Cliquez ensuite sur le bouton <strong><samp>Next</samp></strong>
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ4.png?alt=media&token=fa69846e-7507-4f74-b0a1-2435b420bd7c" alt="Si vous voulez changer le nom de projet IntelliJ sur votre ordinateur changez le text pstl-upmc qui est par défaut dans le champs libellé Project Name par le nom que vous désirez. Sinon gardez le comme tel Cliquez ensuite sur le bouton Next">
+  </li>
+  <li>
+  Vérifiez bien que <strong>la case contenant le chemin d'accès du dossier <samp>src</samp></strong> est bien cochée et cliquez sur le bouton <strong><samp>Next</samp></strong> pour continuer.
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ5.png?alt=media&token=6ac8c7c1-62ee-4f2d-80ef-5cfec9ec6ea4" alt="Vérifiez bien que la case contenant le chemin d'accès du dossier src est bien cochée et cliquez sur le bouton Next pour continuer.">
+  </li>
+  <li>
+  Vérifiez sur la case qui se trouve sur la colonne de gauche de la fênetre et qui contient le dossier <strong><samp>lib</samp></strong> est bien cochée et cliquez sur le bouton <strong><samp>Next</samp></strong> pour continuer.
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ6.png?alt=media&token=a3709db5-a979-487b-9e9a-77f0ba5c889e" alt="Vérifiez que la case qui se trouve sur la colonne de gauche de la fenêtre et qui contient le dossier lib est bien cochée et cliquez sur le bouton Next pour continuer.">
+  </li>
+  <li>
+  Vérifiez que la case qui contient le nom du projet <strong><samp>pstl-upmc</samp></strong> sur la colonne de gauche libellé <samp>Modules</samp> est bien cochée et cliquez sur le bouton <strong><samp>Next</samp></strong> pour continuer
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ7.png?alt=media&token=72037a1f-c764-4d39-b2bb-7005d08ccf85" altt="Vérifiez que la case qui contient le nom du projet pstl-upmc sur la colonne de gauche libellé Modules est bien cochée et cliquez sur le bouton Next pour continuer.">
+  </li>
+  <li>
+  Vérifiez que le <strong>SDK</strong> sélectionné pour le projet est bien <strong><samp>1.8</samp></strong> et ensuite cliquez sur le bouton <strong><samp>Next</samp></strong> pour continuer.
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ8.png?alt=media&token=9a2e8c13-9a0d-49a7-b58f-d3269dd7273d" alt="Vérifiez que le SDK sélectionné pour le projet est bien 1.8 et ensuite cliquez sur le bouton Next pour continuer">
+  </li>
+  <li>
+  Vérifiez bien que le message indiqué sur la fenêtre est bien <strong><samp>No frameworks detected</samp></strong> et cliquez sur le bouton <strong><samp>Finish</samp></strong> pour conclure l'importation.
+  </li>
+  <li>
+  Happy coding 😊
+  </li>
+
+</ol>
+</details>
+
 ## Guide d'exécution
 
 - **Systèmes UNIX**
