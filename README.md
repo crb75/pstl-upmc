@@ -134,7 +134,7 @@
     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ5.png?alt=media&token=6ac8c7c1-62ee-4f2d-80ef-5cfec9ec6ea4" alt="Vérifiez bien que la case contenant le chemin d'accès du dossier src est bien cochée et cliquez sur le bouton Next pour continuer.">
     </li>
     <li>
-    Vérifiez sur la case qui se trouve sur la colonne de gauche libellée <samp>Libraries</samp> de la fênetre et qui contient le dossier <strong><samp>lib</samp></strong> est bien cochée et cliquez sur le bouton <strong><samp>Next</samp></strong> pour continuer.
+    Vérifiez sur la case qui se trouve sur la colonne de gauche libellée <samp>Libraries</samp> de la fenêtre et qui contient le dossier <strong><samp>lib</samp></strong> est bien cochée et cliquez sur le bouton <strong><samp>Next</samp></strong> pour continuer.
     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ6.png?alt=media&token=a3709db5-a979-487b-9e9a-77f0ba5c889e" alt="Vérifiez que la case qui se trouve sur la colonne de gauche libellée Libraries de la fenêtre et qui contient le dossier lib est bien cochée et cliquez sur le bouton Next pour continuer.">
     </li>
     <li>
