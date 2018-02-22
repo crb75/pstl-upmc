@@ -35,7 +35,7 @@
      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FImportEclipse_7.png?alt=media&token=e664baed-08b4-4789-8604-50ed806705d6" alt="Sélectionnez import as general project"/>
      </li>
      <li>
-     <strong>Renommez</strong> le projet sous Eclipse comme vous désirez **ou laissez le comme tel** et cliquez sur <strong><samp>Finish</samp></strong>
+     <strong>Renommez</strong> le projet sous Eclipse comme vous désirez <strong>ou laissez le comme tel</strong> et cliquez sur <strong><samp>Finish</samp></strong>
      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FImportEclipse_8.png?alt=media&token=776700e6-2d11-4541-9c68-fee7d0bb6ca1" alt="Renommez le projet comme vous désirez ou laissez le comme tel">
      </li>
      <li>
