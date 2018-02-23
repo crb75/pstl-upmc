@@ -769,17 +769,82 @@ class PiccoloCustomNodeTest {
 
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#showChildren()}.
+	 * Cette méthode permet de tester la méthode showChildren() de la classe 	PiccoloCustomNode
+	 * La méthode showChildren() de la classe PiccoloCustomNode permet de changer la visibilité des noeuds enfants de caché à visible.
+	 * Pour tester cette méthode, on commence par intialiser une variable testNode de type PiccoloCustomNode en appelant le constructeur PiccoloCustomNode(textContent: String, idNode:String) avec les paramètres textContent="Test node" et idNode="124548654"
+	 * Puis on initialise une variable children de type ArrayList<PiccoloCustomNode> avec une liste vide.
+	 * Puis on y ajoute 3 éléments de type PiccoloCustomNode sur cette liste en appelant la méthdode add sur cette variable.
+	 * Les noeuds qu'on ajoute sont définis à la volée au moment d'appel de la méthode add.
+	 * Une fois qu'on a ajouté tous les trois noeuds sur la liste, on appelle la métode setChilldren en passant la liste children en paramètre.
+	 * Par défault les noeuds enfants ont une visibilité caché au moment d'ajout en tant qu'enfant.
+	 * On appelle ensuite la méthode showChildren() qui nous permettra de faire visible ces 3 noeuds enfants qu'on vient d'ajouter.
+	 * Puis on appelle la méthode getChildren().size() sur la variable testNode pour obtenir le nombre des noeuds enfants qui ont une visibilité visible et on stocke le resultat de cet appel dans un variable result de type int.
+	 * On teste ensuite si la valeur de la variable result est bien égal à 3.
 	 */
 	@Test
 	final void testShowChildren() {
-		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
-		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
-		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
-		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		final String methodeName = "testShowChildren()";
+		String message;
+		message = "Début de l'appel de la méthode";
+		Logger.logMethod(methodeName, message);
+		message = "Cette méthode permet de tester la méthode showChildren() de la classe 	PiccoloCustomNode";
+		Logger.logMethod(methodeName, message);
+		message = "La méthode showChildren() de la classe PiccoloCustomNode permet de changer la visibilité des noeuds enfants de caché à visible.";
+		Logger.logMethod(methodeName, message);
+		message = "Pour tester cette méthode, on commence par intialiser une variable testNode de type PiccoloCustomNode en appelant le constructeur PiccoloCustomNode(textContent: String, idNode:String) avec les paramètres textContent=\"Test node\" et idNode=\"124548654\"";
+		Logger.logMethod(methodeName, message);
 		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		message = "La variable testNode de type PiccoloCustomNode est bien initialisée";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on initialise une variable children de type ArrayList<PiccoloCustomNode> avec une liste vide.";
+		Logger.logMethod(methodeName, message);
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		message = "La variable children de type ArrayList<PiccoloCustomNode> est initialisé par une liste vide";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on y ajoute 3 éléments de type PiccoloCustomNode sur cette liste en appelant la méthdode add sur cette variable.";
+		Logger.logMethod(methodeName, message);
+		message = "Les noeuds qu'on ajoute sont définis à la volée au moment d'appel de la méthode add.";
+		Logger.logMethod(methodeName, message);
+		message = "Début d'ajout du premier noeud";
+		Logger.logMethod(methodeName, message);
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		message = "Fin d'ajout du premier noeud";
+		Logger.logMethod(methodeName, message);
+		message = "Début d'ajout d'un deuxième noeud";
+		Logger.logMethod(methodeName, message);
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		message = "Fin d'ajout d'un deuxième noeud";
+		Logger.logMethod(methodeName, message);
+		message = "Début d'ajout du troisième noeud";
+		Logger.logMethod(methodeName, message);
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		message = "Fin d'ajout du troisième noeud";
+		Logger.logMethod(methodeName, message);
+		message = "On appelle ensuite la méthode showChildren() qui nous permettra de faire visible ces 3 noeuds enfants qu'on vient d'ajouter.";
+		Logger.logMethod(methodeName, message);
 		testNode.setChilldren(children);
+		message = "La méthode setChilldren sur la variable testNode est bien appelée en lui passant la variable children en paramètre.";
+		Logger.logMethod(methodeName, message);
+		message = "On appelle ensuite la méthode showChildren() qui nous permettra de faire visible ces 3 noeuds enfants qu'on vient d'ajouter.";
+		Logger.logMethod(methodeName, message);
 		testNode.showChildren();
+		message = "La méthode showChildren() est bien appelé sur la variable testNode";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on appelle la méthode getChildren().size() sur la variable testNode pour obtenir le nombre des noeuds enfants qui ont une visibilité visible et on stocke le resultat de cet appel dans un variable result de type int.";
+		Logger.logMethod(methodeName, message);
+		int result = testNode.getChildren().size();
+		message = "La variable result est bien initialisée par l'appel de la méthode testNode.getChildren().size()";
+		Logger.logMethod(methodeName, message);
+		if (result == 3) {
+			message = "La valeur de la variable result est égale à 3";
+			Logger.logMethod(methodeName, message);
+		} else {
+			message = "La valeur de la variable result est différent de 3";
+			Logger.logError(methodeName, message);
+		}
 		assertEquals(3, testNode.getChildren().size());
+		message = "Fin d'appel de la méthode";
+		Logger.logMethod(methodeName, message);
 	}
 
 	/**
