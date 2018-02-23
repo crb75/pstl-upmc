@@ -523,16 +523,84 @@ class PiccoloCustomNodeTest {
 
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#setChilldren(java.util.Collection)}.
+	 * Cette méthode permet de tester la méthode setChilldren(children: ArrayList<PiccoloCustomNode>) de la classe PiccoloCustomNode.
+	 * La méthode setChilldren(children: ArrayList<PiccoloCustomNode>) permet de changer l'attribut children d'un objet de type PiccoloCustomNode. Autrement dit, cette méthode permet de réinitialiser tous les noeuds enfants d'un noeud PiccoloCustomNode
+	 * Pour tester cette méthode, on commence par intialiser une variable testNode de type PiccoloCustomNode en appelant le constructeur PiccoloCustomNode(textContent: String, idNode:String) avec les paramètres textContent="Test node" et idNode="124548654"
+	 * Puis on initialise une variable children de type ArrayList<PiccoloCustomNode> avec une liste vide.
+	 * Puis on y ajoute 3 éléments de type PiccoloCustomNode sur cette liste en appelant la méthdode add sur cette variable.
+	 * Les noeuds qu'on ajoute sont définis à la volée au moment d'appel de la méthode add.
+	 * Une fois qu'on a ajouté tous les trois noeuds sur la liste, on appelle la métode setChilldren en passant la liste children en paramètre.
+	 * Comme on a ajouté 3 noeuds normalement, si tout est bien passé la taille de la liste retourné pas l'appel de la méthode getAllChildren() doit être 3
+	 * On teste si c'est bien le cas. 
+	 * Pour cela on appelle la méthode getAllChildren().size() sur la variable testNode pour récupérer la taille la liste des noeuds enfant. On stocke le résultat de cet appel dans une variable result de type int
+	 * Puis on teste si la valeur la variable int est bien égale à 3
+	 * 	
 	 */
 	@Test
 	final void testSetChilldren() {
-		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
-		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
-		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
-		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		final String methodeName = "testSetChilldren()";
+		String message;
+		message = "Début de l'appel de la méthode";
+		Logger.logMethod(methodeName, message);
+		message = "Cette méthode permet de tester la méthode setChilldren(children: ArrayList<PiccoloCustomNode>) de la classe PiccoloCustomNode.";
+		Logger.logMethod(methodeName, message);
+		message = "La méthode setChilldren(children: ArrayList<PiccoloCustomNode>) permet de changer l'attribut children d'un objet de type PiccoloCustomNode. Autrement dit, cette méthode permet de réinitialiser tous les noeuds enfants d'un noeud PiccoloCustomNode";
+		Logger.logMethod(methodeName, message);
+		message = "Pour tester cette méthode, on commence par intialiser une variable testNode de type PiccoloCustomNode en appelant le constructeur PiccoloCustomNode(textContent: String, idNode:String) avec les paramètres textContent=\"Test node\" et idNode=\"124548654\"";
+		Logger.logMethod(methodeName, message);
 		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		message = "La variable testNode de type PiccoloCustomNode est bien initialisée";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on initialise une variable children de type ArrayList<PiccoloCustomNode> avec une liste vide.";
+		Logger.logMethod(methodeName, message);
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		message = "La variable children de type ArrayList<PiccoloCustomNode> est bien initialisée avec une liste vide.";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on y ajoute 3 éléments de type PiccoloCustomNode sur cette liste en appelant la méthdode add sur cette variable.";
+		Logger.logMethod(methodeName, message);
+		message = "Les noeuds qu'on ajoute sont définis à la volée au moment d'appel de la méthode add.";
+		Logger.logMethod(methodeName, message);
+		message = "Ajout d'un premier noeud";
+		Logger.logMethod(methodeName, message);
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		message = "fin d'ajout d'un premier noeud";
+		Logger.logMethod(methodeName, message);
+		message = "Ajout d'un deuxième noeud";
+		Logger.logMethod(methodeName, message);
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		message = "fin d'ajout d'un deuxième noeud";
+		Logger.logMethod(methodeName, message);
+		message = "Ajout d'un troisième noeud";
+		Logger.logMethod(methodeName, message);
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		message = "Fin d'ajout d'un troisième noeud";
+		Logger.logMethod(methodeName, message);
+		message = "Une fois qu'on a ajouté tous les trois noeuds sur la liste, on appelle la métode setChilldren en passant la liste children en paramètre.";
+		Logger.logMethod(methodeName, message);
 		testNode.setChilldren(children);
+		message = "La méthode setChilldren est bien appelle en y passant la variable children en paramètres.";
+		Logger.logMethod(methodeName, message);
+		message = "Comme on a ajouté 3 noeuds normalement, si tout est bien passé la taille de la liste retourné pas l'appel de la méthode getAllChildren() doit être 3";
+		Logger.logMethod(methodeName, message);
+		message = "On teste si c'est bien le cas.";
+		Logger.logMethod(methodeName, message);
+		message = "Pour cela on appelle la méthode getAllChildren().size() sur la variable testNode pour récupérer la taille la liste des noeuds enfant. On stocke le résultat de cet appel dans une variable result de type int";
+		Logger.logMethod(methodeName, message);
+		int result = testNode.getAllChildren().size();
+		message = "La variable result est bien initialisé par l'appel de la méthode getAllChildren().size() sur la variable testNode.";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on teste si la valeur la variable int est bien égale à 3";
+		Logger.logMethod(methodeName, message);
+		if (result == 3) {
+			message = "La valeur de la variable result est égale à 3. Donc tout est bien passé";
+			Logger.logMethod(methodeName, message);
+		} else {
+			message = "La valeur de la variable result est différent de 3. Il y a un problème quelque part.";
+			Logger.logError(methodeName, message);
+		}
 		assertEquals(3, testNode.getAllChildren().size());
+		message = "Fin d'appel de la méthode";
+		Logger.logMethod(methodeName, message);
 	}
 
 	/**
