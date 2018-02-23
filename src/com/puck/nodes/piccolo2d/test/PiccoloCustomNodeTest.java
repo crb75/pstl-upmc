@@ -605,11 +605,45 @@ class PiccoloCustomNodeTest {
 
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#getChildren()}.
+	 * Cette méthode permet de tester la méthode getChildren() de la classe PiccoloCustomNode
+	 * La méthode getChildren() de la classe PiccoloCustomNode permet d'obtenir les noeuds enfants visibles d'un objet de type PiccoloCustomNode
+	 * Pour tester cette méthode, on commence par intialiser une variable testNode de type PiccoloCustomNode en appelant le constructeur PiccoloCustomNode(textContent: String, idNode:String) avec les paramètres textContent="Test node" et idNode="124548654"
+	 * Par défaut le nombre des noeuds enfants sont 0 donc évidemment le nombre des enfants visibles est aussi 0.
+	 * On appelle la méthode getChildren().size() sur la variable testNode puis on stocke le résultat de cet appel dans une variable result de type int.
+	 * Puis on teste si la valeurs de la variable result est bien égal à 0.
 	 */
 	@Test
 	final void testGetChildren() {
+		final String methodeName = "testGetChildren()";
+		String message;
+		message = "Début de l'appel de la méthode";
+		Logger.logMethod(methodeName, message);
+		message = "Cette méthode permet de tester la méthode getChildren() de la classe PiccoloCustomNode";
+		Logger.logMethod(methodeName, message);
+		message = "La méthode getChildren() de la classe PiccoloCustomNode permet d'obtenir les noeuds enfants visibles d'un objet de type PiccoloCustomNode";
+		Logger.logMethod(methodeName, message);
+		message = "Pour tester cette méthode, on commence par intialiser une variable testNode de type PiccoloCustomNode en appelant le constructeur PiccoloCustomNode(textContent: String, idNode:String) avec les paramètres textContent=\"Test node\" et idNode=\"124548654\"";
+		Logger.logMethod(methodeName, message);
 		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		message = "La variable testNode de type PiccoloCustomNode est bien initialisée";
+		Logger.logMethod(methodeName, message);
+		message = "On appelle la méthode getChildren().size() sur la variable testNode puis on stocke le résultat de cet appel dans une variable result de type int.";
+		Logger.logMethod(methodeName, message);
+		int result = testNode.getChildren().size();
+		message = "La variable result de type int est bien initialisé par l'appel de la méthode getChildren().size() sur la variable testNode.";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on teste si la valeurs de la variable result est bien égal à 0.";
+		Logger.logMethod(methodeName, message);
+		if (result == 0) {
+			message = "La valeur de la variable result est bien égale à 0";
+			Logger.logMethod(methodeName, message);
+		} else {
+			message = "La valeur de la variable result est différent de 0, il y a un problème quelque part.";
+			Logger.logError(methodeName, message);
+		}
 		assertEquals(0, testNode.getChildren().size());
+		message = "Fin d'appel de la méthode";
+		Logger.logMethod(methodeName, message);
 	}
 
 	/**
