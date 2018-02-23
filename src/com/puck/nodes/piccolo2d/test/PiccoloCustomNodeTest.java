@@ -1138,23 +1138,119 @@ class PiccoloCustomNodeTest {
 
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#setGridLayoutH()}.
+	 * Cette méthode permet de tester la méthode setGirdLayout de la classe PiccoloCustomNode
+	 * La méthode setGridLayout() de la classe PiccoloCustomNode, permet de définir une dispisition horizontale pour les noeuds fils, c'est à dire qu'il permet de mettre tous les noeuds enfants dans une seule ligne.
+	 * Pour tester cette méthode, on commence par intialiser une variable testNode de type PiccoloCustomNode en appelant le constructeur PiccoloCustomNode(textContent: String, idNode:String) avec les paramètres textContent="Test node" et idNode="124548654"
+	 * Puis on initialise une variable children de type ArrayList<PiccoloCustomNode> avec une liste vide.
+	 * Puis on y ajoute 3 éléments de type PiccoloCustomNode sur cette liste en appelant la méthdode add sur cette variable.
+	 * Les noeuds qu'on ajoute sont définis à la volée au moment d'appel de la méthode add.
+	 * Une fois qu'on a ajouté tous les trois noeuds sur la liste, on appelle la métode setChilldren en passant la liste children en paramètre.
+	 * Les noeuds enfants qu'on vients d'ajouter sont par défaut cachées. 
+	 * On récupère maintenant le largeur du rectangle représentant le noued par l'appel de méthode getRect().getWidth() sur la variable testNode on stocke le résultat de cet appel dans une variable initialWidth de type double.
+	 * Et puis on récupère l'hauteur du rectangle représentatnt le noeud par l'appel de la méthode getRect.getHeihgt() sur la variable testNode. On stocke le résultat de cet appel dans une variable initialHeight de type double.
+	 * Ensuite on appelle la méthode showChildren() pour rendre les noeuds enfants visible.
+	 * Une fois que les noeuds ensembles sont visible, on appelle la méthode setGridLayoutH() pour mettre à jour la disposition de ces noeuds enfants.
+	 * Une fois le layout est mis à jour, on appelle la méthode getRect().getWidth() pour récupèrer le largeur actuel du noeud et on sotcke le résultat de cet appel dans une variable finalWidth de type double.
+	 * On fait la même chose pour l'hauteur finale. C'est à dire qu'on appelle la méthode getRect().getHeight() sur la variable testNode et on stocke le résultat de cet apprel dans une variable finalHeight de type double.
+	 * Puis on teste si la surface du rectangle initial est différent que la surface actuel du rectangle qui représente le noeud.
+	 * Pour le faire, calcule la surface initiale et on le compare d'inégalité avec le surface finale. Le résultat de cette comparasion, on le stocke dans une variable result de type boolean.
+	 * Puis on teste si la valeur de la variable result est true.
 	 */
 	@Test
 	final void testSetGridLayoutH() {
-		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
-		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
-		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
-		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		final String methodeName = "testSetGridLayoutH()";
+		String message;
+		message = "Début de l'appel de la méthode";
+		Logger.logMethod(methodeName, message);
+		message = "Cette méthode permet de tester la méthode setGirdLayout de la classe PiccoloCustomNode";
+		Logger.logMethod(methodeName, message);
+		message = "La méthode setGridLayout() de la classe PiccoloCustomNode, permet de définir une dispisition horizontale pour les noeuds fils, c'est à dire qu'il permet de mettre tous les noeuds enfants dans une seule ligne.";
+		Logger.logMethod(methodeName, message);
+		message = "Pour tester cette méthode, on commence par intialiser une variable testNode de type PiccoloCustomNode en appelant le constructeur PiccoloCustomNode(textContent: String, idNode:String) avec les paramètres textContent=\"Test node\" et idNode=\"124548654\"";
+		Logger.logMethod(methodeName, message);
 		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node", "124548654");
+		message = "la variable testNode est bien initialisée";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on initialise une variable children de type ArrayList<PiccoloCustomNode> avec une liste vide.";
+		Logger.logMethod(methodeName, message);
+		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
+		message = "La variable children de type ArrayList<PiccoloCustomNode> est bien initialiseé par une liste vide";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on y ajoute 3 éléments de type PiccoloCustomNode sur cette liste en appelant la méthdode add sur cette variable.";
+		Logger.logMethod(methodeName, message);
+		message = "Les noeuds qu'on ajoute sont définis à la volée au moment d'appel de la méthode add.";
+		Logger.logMethod(methodeName, message);
+		message = "Ajout du premier noeud";
+		Logger.logMethod(methodeName, message);
+		children.add(new PiccoloCustomNode("Je suis un child 01", "01"));
+		message = "Fin d'ajout du premier noeud";
+		Logger.logMethod(methodeName, message);
+		message = "Début d'ajout du deuxième noeud";
+		Logger.logMethod(methodeName, message);
+		children.add(new PiccoloCustomNode("Je suis un child 02", "02"));
+		message = "Fin d'ajout du deuxième noeud";
+		Logger.logMethod(methodeName, message);
+		message = "Début d'ajout du troisième noeud";
+		Logger.logMethod(methodeName, message);
+		children.add(new PiccoloCustomNode("Je suis un child 03", "03"));
+		message = "Fin d'ajout du troisième noeud";
+		Logger.logMethod(methodeName, message);
+		message = "Une fois qu'on a ajouté tous les trois noeuds sur la liste, on appelle la métode setChilldren en passant la liste children en paramètre.";
+		Logger.logMethod(methodeName, message);
 		testNode.setChilldren(children);
+		message = "La méthode setChilldren est bien appellée sur la variable testNode, en lui passant la variable children en paramètres.";
+		Logger.logMethod(methodeName, message);
+		message = "Les noeuds enfants qu'on vients d'ajouter sont par défaut cachées.";
+		Logger.logMethod(methodeName, message);
+		message = "On récupère maintenant le largeur du rectangle représentant le noued par l'appel de méthode getRect().getWidth() sur la variable testNode on stocke le résultat de cet appel dans une variable initialWidth de type double.";
+		Logger.logMethod(methodeName, message);
 		double initialWidth = testNode.getRect().getWidth();
+		message = "La variable initialWidth est bien initialisée par l'appel de la méthode getRect().getWidth() sur la variable testNode.";
+		Logger.logMethod(methodeName, message);
+		message = "Et puis on récupère l'hauteur du rectangle représentatnt le noeud par l'appel de la méthode getRect.getHeihgt() sur la variable testNode. On stocke le résultat de cet appel dans une variable initialHeight de type double.";
+		Logger.logMethod(methodeName, message);
 		double initialHeight = testNode.getRect().getHeight();
+		message = "La variable initialHeight est initialisée par l'appel de la méthode getRect().getHeight() sur la variable testNode.";
+		Logger.logMethod(methodeName, message);
+		message = "Ensuite on appelle la méthode showChildren() pour rendre les noeuds enfants visible.";
+		Logger.logMethod(methodeName, message);
 		testNode.showChildren();
+		message = "La méthode showChildren() est bien appellée sur la variable testNode.";
+		Logger.logMethod(methodeName, message);
+		message = "Une fois que les noeuds ensembles sont visible, on appelle la méthode setGridLayoutH() pour mettre à jour la disposition de ces noeuds enfants.";
+		Logger.logMethod(methodeName, message);
 		testNode.setGridLayoutH();
+		message = "La méthode setGridLayoutH() est bien appellée sur la variable testNode.";
+		Logger.logMethod(methodeName, message);
+		message = "Une fois le layout est mis à jour, on appelle la méthode getRect().getWidth() pour récupèrer le largeur actuel du noeud et on sotcke le résultat de cet appel dans une variable finalWidth de type double.";
+		Logger.logMethod(methodeName, message);
 		double finalWidth = testNode.getRect().getWidth();
+		message = "La variable finalWidth est initialisée par l'appel de la méthode getRect().getWidth() sur la variable testNode.";
+		Logger.logMethod(methodeName, message);
+		message = "On fait la même chose pour l'hauteur finale. C'est à dire qu'on appelle la méthode getRect().getHeight() sur la variable testNode et on stocke le résultat de cet apprel dans une variable finalHeight de type double.";
+		Logger.logMethod(methodeName, message);
 		double finalHeight = testNode.getRect().getHeight();
+		message = "La variable finalHeight est bien initialisée par l'appel de la méthode getRect().getHeight().";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on teste si la surface du rectangle initial est différent que la surface actuel du rectangle qui représente le noeud.";
+		Logger.logMethod(methodeName, message);
+		message = "Pour le faire, calcule la surface initiale et on le compare d'inégalité avec le surface finale. Le résultat de cette comparasion, on le stocke dans une variable result de type boolean.";
+		Logger.logMethod(methodeName, message);
 		boolean result = ((finalWidth*finalHeight) != (initialHeight*initialWidth));
-		assertEquals(true, result);	
+		message = "La variable result de type boolean est initailisée par la comparasion d'inégalité de la surface du rectangle initial et la surface du rectangle final.";
+		Logger.logMethod(methodeName, message);
+		message = "Puis on teste si la valeur de la variable result est true.";
+		Logger.logMethod(methodeName, message);
+		if (result) {
+			message = "La valeur de la variable result est true. C'est à dire que la surface initial est différente de la surface finale.";
+			Logger.logMethod(methodeName, message);
+		} else {
+			message = "La valeur de la variable result est false. C'est à dire que la surface initial est la même que la surface finale. Il doit avoir un problème quelque part.";
+			Logger.logError(methodeName, message);
+		}
+		assertEquals(true, result);
+		message = "Fin d'appel de la méthode";
+		Logger.logMethod(methodeName, message);	
 	}
 
 	/**
