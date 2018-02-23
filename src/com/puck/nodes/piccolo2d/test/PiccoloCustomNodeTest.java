@@ -726,11 +726,45 @@ class PiccoloCustomNodeTest {
 
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#getHierarchy()}.
+	 * Cette méthode permet de tester la méthode getHierarchy() de la classe 	PiccoloCustomNode
+	 * La méthode getHierarchy() de la classe PiccoloCustomNode permet de retourner une liste de tous les noeuds contenus sous le noeud actuel c'est à dire qu'il fait un parcours en largeur du structure arborescente en considerant le noeud actuel comme la racine de l'arbre.
+	 * Pour tester cette méthode, on commence par intialiser une variable testNode de type PiccoloCustomNode en appelant le constructeur PiccoloCustomNode(textContent: String, idNode:String) avec les paramètres textContent="Test node" et idNode="124548654"
+	 * Par défaut un noeud de type PiccoloCustomNode ne contient aucun enfant à l'initialisation, donc la taille de la collection restourné par l'appel de la méthode getHierarchy() sur la variable testNode doit être 0.
+	 * Pour tester si c'est bien le cas, on appelle la méthode getHierarchy().size() sur la variable testNode et on stocke le résutat de cet appel dans une variable result de type int.
+	 * Puis on teste si la valeur de la variable result est bien 0.
 	 */
 	@Test
 	final void testGetHierarchy() {
-		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node","123456");
-		assertEquals(0, testNode.getHierarchy().size());
+		final String methodeName = "testGetHierarchy()";
+		String message;
+		message = "Début de l'appel de la méthode";
+		Logger.logMethod(methodeName, message);
+		message = "Cette méthode permet de tester la méthode getHierarchy() de la classe 	PiccoloCustomNode";
+		Logger.logMethod(methodeName, message);
+		message = "La méthode getHierarchy() de la classe PiccoloCustomNode permet de retourner une liste de tous les noeuds contenus sous le noeud actuel c'est à dire qu'il fait un parcours en largeur du structure arborescente en considerant le noeud actuel comme la racine de l'arbre.";
+		Logger.logMethod(methodeName, message);
+		message = "Pour tester cette méthode, on commence par intialiser une variable testNode de type PiccoloCustomNode en appelant le constructeur PiccoloCustomNode(textContent: String, idNode:String) avec les paramètres textContent=\"Test node\" et idNode=\"124548654\"";
+		Logger.logMethod(methodeName, message);
+		PiccoloCustomNode testNode = new PiccoloCustomNode("Test node","124548654");
+		message = "La variable testNode de type PiccoloCustomNode est bien initialisé par l'appel du constructeur.";
+		Logger.logMethod(methodeName, message);
+		message = "Par défaut un noeud de type PiccoloCustomNode ne contient aucun enfant à l'initialisation, donc la taille de la collection restourné par l'appel de la méthode getHierarchy() sur la variable testNode doit être 0.";
+		Logger.logMethod(methodeName, message);
+		message = "Pour tester si c'est bien le cas, on appelle la méthode getHierarchy().size() sur la variable testNode et on stocke le résutat de cet appel dans une variable result de type int.";
+		Logger.logMethod(methodeName, message);
+		int result = testNode.getHierarchy().size();
+		message = "La variable result est bien initialisé par l'appel de la méthode getHierarchy().size() sur la variable testNode.";
+		Logger.logMethod(methodeName, message);
+		if (result == 0) {
+			message = "La valeur de la variable result est 0";
+			Logger.logMethod(methodeName, message);
+		} else {
+			message = "La valeur de la variable result est différent de 0. Il y a un problème quelque part.";
+			Logger.logError(methodeName, message);
+		}
+		assertEquals(0, result);
+		message = "Fin d'appel de la méthode";
+		Logger.logMethod(methodeName, message);
 	}
 
 	/**
