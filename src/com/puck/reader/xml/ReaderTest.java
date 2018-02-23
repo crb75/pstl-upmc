@@ -56,8 +56,8 @@ class ReaderTest {
 		String methodeName = "testReader()";
 		Logger.logMethod(methodeName, "Début de l'appel de la méthode");
 		Logger.logMethod(methodeName, "Cette méthode permet de tester le contructeur de la classe Reader");
-		Logger.logMethod(methodeName, "On va initialiser une variable r de type Reader par l'appel de ce constructeur sur le fichier mongraph.xml");
-		Reader r = new Reader("./mongraph.xml");
+		Logger.logMethod(methodeName, "On va initialiser une variable r de type Reader par l'appel de ce constructeur sur le fichier mongraph2.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		Logger.logMethod(methodeName, "La variable r est bien initialisé");
 		if (r != null)
 		{
@@ -83,7 +83,7 @@ class ReaderTest {
 		Logger.logMethod(mName, "Cette méthode permet de tester ma méthode executeBooleanQuery(query:String) de la classe Reader");
 		Logger.logMethod(mName, "La méthode executeBooleanQuery(query:String) permet d'exécuter une requête XPath dont le type de retour est une booléenne sur le fichier XML");
 		Logger.logMethod(mName, "On commence par initialiser une variable r de type Reader pour pouvoir tester la méthode");
-		Reader r = new Reader("./mongraph.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		Logger.logMethod(mName, "La variable r de type Reader est initialisé");
 		String requete = "//node[2]";
 		Logger.logMethod(mName,"On va appeler la fonction avec la requête \""+requete+"\"");
@@ -114,7 +114,7 @@ class ReaderTest {
 		Logger.logMethod(mName, "Début de l'appel de la méthode testGetAllNodes()");
 		Logger.logMethod(mName, "Cette méthode permet de tester la méthode getAllNodes() qui permet d'obtenir la liste des éléments de type node depuis le fichier XML de la classe Reader.");
 		Logger.logMethod(mName, "On va commencer par initialiser une variable de type Reader");
-		Reader r = new Reader("./mongraph.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		Logger.logMethod(mName, "La variable r est bien créé");
 		Logger.logMethod(mName, "On va appeler la méthode getAllNodes() sur la variable r qu'on vient de créer");
 		NodeList nl = r.getAllNodes();
@@ -160,7 +160,7 @@ class ReaderTest {
 		Logger.logMethod(methodeName, "Pour tester cette méthode, on va d'abord créer une variable r de type Reader, et on va appeler la méthode getNbNodes() sur cette variable.");
 		Logger.logMethod(methodeName, "Puis on va contrôler si le résultat de cet appel correspond au résultat attendu qui est " + sizeAttendu);
 		Logger.logMethod(methodeName, "On commence par initialiser une variable r de type Reader");
-		Reader r = new Reader("./mongraph.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		Logger.logMethod(methodeName, "La variable r de type Reader est bien créé");
 		Logger.logMethod(methodeName, "Le nombre des éléments nodes retournés par cette méthode est " + r.getNbNodes());
 		assertEquals(sizeAttendu,r.getNbNodes() );
@@ -188,7 +188,7 @@ class ReaderTest {
 		Logger.logMethod(methodeName, "Début de l'appel de la méthode");
 		Logger.logMethod(methodeName, "Cette méthode permet de tester la méthide getNode(index:integer) de la classe Reader qui permet de retourner l'élément de type node dont l'index sur le fichier xml est passé en paramètre en tant qu'une objet java de type Node");
 		Logger.logMethod(methodeName,"On commence par initialiser une variable r de type Reader");
-		Reader r = new Reader("./mongraph.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		Logger.logMethod(methodeName, "La variable r est bien initialisée");
 		Logger.logMethod(methodeName, "On va maintenant appeler la méthide getNode avec le paramètre 1. Ceci va nous permettre d'avoir le premier élément de type node présent sur le fichier XML");
 		if (r.getNode(1) == null)
@@ -213,8 +213,8 @@ class ReaderTest {
 		String methodeName = "testGetNodeType()";
 		Logger.logMethod(methodeName, "Debut de l'appel");
 		Logger.logMethod(methodeName, "Cette méthode permet de tester la méthode getNodeType(index:integer) qui permet d'obtenir l'attribut type d'un élémént node dont l'index est passé en paramètre depuis le fichier xml");
-		Logger.logMethod(methodeName, "On commence par initialiser une variable r de type Reader à partir du fichier XML mongraph.xml");
-		Reader r = new Reader("./mongraph.xml");
+		Logger.logMethod(methodeName, "On commence par initialiser une variable r de type Reader à partir du fichier XML mongraph2.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		Logger.logMethod(methodeName, "La variable r bien initialisée");
 		String typeAttendu = "package";
 		Logger.logMethod(methodeName, "Le résultat attendu est " + typeAttendu);
@@ -251,7 +251,7 @@ class ReaderTest {
 		Logger.logMethod(methodeName, message);
 		message = "On commence par initialiser la variable r de type Reader";
 		Logger.logMethod(methodeName, message);
-		Reader r = new Reader("./mongraph.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		message = "La variable r est bien initialisé";
 		Logger.logMethod(methodeName, message);
 		message = "On test maintenant si les deux résulats se correspondent";
@@ -288,7 +288,7 @@ class ReaderTest {
 		Logger.logMethod(methodeName,"Cette méthode permet de tester la méthode getNodeName(index:integer) de la classe Reader");
 		Logger.logMethod(methodeName,"Cette méthode permet d'avoir l'attribut name de l'élément node depuis le fichier xml dont l'index est passé aux paramètres.");
 		Logger.logMethod(methodeName,"Pour tester cette méthode on crée d'abord une variable r de type Reader");
-		Reader r = new Reader("./mongraph.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		Logger.logMethod(methodeName,"La variable r est créé avec succès");
 		Logger.logMethod(methodeName,"On teste en suite si l'appel de la fonction retourne bien le résultat attendu qui est \"unPackageParent\"");
 		if (r.getNodeName(1).equals("unPackageParent"))
@@ -323,7 +323,7 @@ class ReaderTest {
 		Logger.logMethod(methodeName, message);
 		message = "On commence par initialiser une variable r de type Reader";
 		Logger.logMethod(methodeName, message);
-		Reader r = new Reader("./mongraph.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		message = "La variable r est bien initialisée";
 		Logger.logMethod(methodeName, message);
 		message = "On appelle maintenant la méthode getAllEdges sur cette variable r";
@@ -344,7 +344,7 @@ class ReaderTest {
 			Logger.logMethod(methodeName, message);
 		}
 		assertNotNull(nl);
-		int resultatAttendu = 22;
+		int resultatAttendu = 23;
 		message = "On teste maintenant si la taille de la variable nl correspond bien à la taille attendu qui est " + resultatAttendu;
 		Logger.logMethod(methodeName, message);
 		if (nl.getLength() == resultatAttendu)
@@ -357,7 +357,7 @@ class ReaderTest {
 			message = "Les deux tailles ne correspondent pas";
 			Logger.logError(methodeName, message);
 		}
-		assertEquals(22,nl.getLength());
+		assertEquals(resultatAttendu,nl.getLength());
 		message = "Fin d'appel de la méthode";
 		Logger.logMethod(methodeName, message);
 	}
@@ -366,13 +366,13 @@ class ReaderTest {
 	 * Test method for {@link reader.xml.Reader#getNbEdges()}.
 	 * Cette méthode permet de tester la méthode getNbEdges() sur la classe Reader qui permet d'obtenir le nombre d'éléments de type edge depuis le fichier xml
 	 * Pour ce test on suit lé démarche suivant:
-	 * - On initialise un objet de type Reader à partir de fichier XML mongraph.xml
+	 * - On initialise un objet de type Reader à partir de fichier XML mongraph2.xml
 	 * - On fait appel à la méthode getNbEdges() sur cette variable
 	 * - On compare le résultat obtenu avec le résultat attendu
 	 */
 	@Test
 	final void testGetNbEdges() {
-		int resultatAttendu = 22;
+		int resultatAttendu = 23;
 		String message;
 		final String methodeName = "testGetNbEdges()";
 		message = "Début de l'appel";
@@ -383,7 +383,7 @@ class ReaderTest {
 		Logger.logMethod(methodeName, message);
 		message = "On commence par initialiser la variable r de type Reader";
 		Logger.logMethod(methodeName, message);
-		Reader r = new Reader("./mongraph.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		message = "La variable r est bien initialisée";
 		Logger.logMethod(methodeName, message);
 		message = "Le résultat attendu est" + resultatAttendu;
@@ -409,7 +409,7 @@ class ReaderTest {
 	 * Test method for {@link reader.xml.Reader#getEdge(int)}.
 	 * La méthode testGetEdge() permet de tester la méthode getEdge(index: integer) de la classe Reader qui permet d'obtenir l'élément de type edge qui se trouve sur la position index passé en paramètres sur le fichier xml
 	 * POur le tester on suit les démarches suivants:
-	 * - On initialise une variable de type Reader à partir de fichier mongraph.xml
+	 * - On initialise une variable de type Reader à partir de fichier mongraph2.xml
 	 * - On appel la méthode getEdge avec le paramètre index = 1 sur la variable r.
 	 * - On teste si le résultat retourné par cette méthode est non null
 	 */
@@ -423,7 +423,7 @@ class ReaderTest {
 		Logger.logMethod(methodeName, message);
 		message = "Pour tester cette méthode, on commence par créer une variable r de type Reader";
 		Logger.logMethod(methodeName, message);
-		Reader r = new Reader("./mongraph.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		message = "Cette variable a bien été créé";
 		Logger.logMethod(methodeName, message);
 		message = "Maintenant on appelle la méthode getEdge(1) sur la variable r et on contrôle s'il est non-null";
@@ -446,7 +446,7 @@ class ReaderTest {
 	 * Test method for {@link reader.xml.Reader#getEdgeId(int)}.
 	 * La méthode testGetEdgeId() permet de tester la méthode getEdgeId(index:integer) sur la classe Reader permet d'obtenir l'attribut id de l'élément edge dont la position est passé en paramètres.
 	 * Pour tester cette méthode on suit le démarche suivant:
-	 * - On initialise d'abord une variable r de type Reader à partir du fichier xml mongraph.xml
+	 * - On initialise d'abord une variable r de type Reader à partir du fichier xml mongraph2.xml
 	 * - Puis on appelle la méthode getEdgeId sur la cette variable avec le paramètre index=1 qui nous permmet d'obtanir l'attribut id du premier élément edge sur le fichier xml
 	 * - Puis on contrôle si le résultat obtenu de cet appel correspond bien au résultat attendu 
 	 */
@@ -460,7 +460,7 @@ class ReaderTest {
 		Logger.logMethod(methodeName, message);
 		message = "On commence par initialiser une variable r de type Reader en utilisant le fichier xml.";
 		Logger.logMethod(methodeName, message);
-		Reader r = new Reader("./mongraph.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		message = "La variable r est bien initialisée";
 		Logger.logMethod(methodeName, message);
 		String expected = "e01";
@@ -502,7 +502,7 @@ class ReaderTest {
 		Logger.logMethod(methodeName, message);
 		message = "Pour tester cette méthode on commence par initialiser une variable r de type Reader.";
 		Logger.logMethod(methodeName, message);
-		Reader r = new Reader("./mongraph.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		message ="La variable r est bien initialisé";
 		Logger.logMethod(methodeName, message);
 		String expected = "uses";
@@ -542,7 +542,7 @@ class ReaderTest {
 		Logger.logMethod(methodeName, message);
 		message = "On commence par initialiser une variable r de type Reader";
 		Logger.logMethod(methodeName, message);
-		Reader r = new Reader("./mongraph.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		message = "La variable r de type Reader est bien initialisé";
 		Logger.logMethod(methodeName, message);
 		String expected = "c01";
@@ -585,7 +585,7 @@ class ReaderTest {
 		Logger.logMethod(methodeName, message);
 		message = "On commence par initialiser une variable r de type Reader";
 		Logger.logMethod(methodeName, message);
-		Reader r = new Reader("./mongraph.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		message = "La variable r est bien initialisée";
 		Logger.logMethod(methodeName, message);
 		String expected = "c02";
@@ -627,7 +627,7 @@ class ReaderTest {
 		Logger.logMethod(methodeName, message);
 		message = "On commence par initialiser une variable r de type Reader depuis le ficheir xml";
 		Logger.logMethod(methodeName, message);
-		Reader r = new Reader("./mongraph.xml");
+		Reader r = new Reader("./mongraph2.xml");
 		message = "La variable r de type Reader est bien initialisée";
 		Logger.logMethod(methodeName, message);
 		message = "On appelle maintenant la méthide getEdgeFrom(\"c01\") sur cette variable r qui nous permet d'obtenir tous les éléments de type edge dont leurs attribut from est c01";
