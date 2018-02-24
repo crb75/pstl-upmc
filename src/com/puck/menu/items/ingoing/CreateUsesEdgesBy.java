@@ -76,7 +76,6 @@ public class CreateUsesEdgesBy extends JMenuItem {
 		Node currentNode = listNodes.get(pnode.getidNode());
 		HashMap<String, Edge> relationInGoing = new HashMap<>();
 		if (currentNode != null) {
-
 			for (Entry<String, Node> nodeEntry : listNodes.entrySet()) {
 				Node n = nodeEntry.getValue();
 				HashMap<String, Edge> relation = n.getRelation();

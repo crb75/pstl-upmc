@@ -21,7 +21,7 @@ import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
 import com.puck.utilities.piccolo2d.XmlToStructure;
 
-public class CreateUsesEdgesOf {
+public class CreateUsesEdgesOf extends JMenuItem {
 	private HashMap<String, PiccoloCustomNode> allPNodes;
 	private Map<String, Node> m = new XmlToStructure().parseNode();
 	private HashMap<String, Node> listNodes = new HashMap<>(m);
@@ -32,11 +32,14 @@ public class CreateUsesEdgesOf {
 
 	public CreateUsesEdgesOf(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,
 			Menu menu, ArrowNodesHolder ANH) {
+		super();
+		this.setText("show uses outgoing");
 		this.allPNodes = allPNodes;
 		this.pnode = pnode;
 		this.canvas = canvas;
 		this.menu = menu;
 		this.ANH = ANH;
+		addActionListener();
 	}
 
 	public void DrawEdges(PiccoloCustomNode target, PSwingCanvas canvas) {
@@ -66,5 +69,12 @@ public class CreateUsesEdgesOf {
 		this.menu.hideMenu();
 	}
 
-	
+	public void addActionListener() {
+		this.addActionListener(new AbstractAction() {
+
+			public void actionPerformed(ActionEvent arg0) {
+				DrawEdges(pnode, canvas);
+			}
+		});
+	}
 }

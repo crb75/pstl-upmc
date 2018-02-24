@@ -22,9 +22,11 @@ import com.puck.arrows.ArrowNodesHolder;
 import com.puck.arrows.Parrow;
 import com.puck.menu.Menu;
 import com.puck.menu.items.ingoing.CreateEdgesBy;
+import com.puck.menu.items.ingoing.CreateEgdesHierarchyBy;
 import com.puck.menu.items.ingoing.CreateISAEdgesBy;
 import com.puck.menu.items.ingoing.CreateUsesEdgesBy;
 import com.puck.menu.items.outgoing.CreateEdgesOf;
+import com.puck.menu.items.outgoing.CreateEgdesHierarchyOf;
 import com.puck.menu.items.outgoing.CreateISAEdgesOf;
 import com.puck.menu.items.outgoing.CreateUsesEdgesOf;
 import com.puck.menu.items.removing.RemoveEdgesOf;
@@ -41,6 +43,8 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	private JMenuItem createEdgesOf;
 	private JMenuItem createEdgesBy;
 	private JMenuItem removeEdgesOf;
+	private JMenuItem createEgdesHierarchyBy;
+	private JMenuItem createEgdesHierarchyOf;
 
 	private ArrowNodesHolder ANH;
 
@@ -56,6 +60,9 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		createEdgesOf = new CreateEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
 		removeEdgesOf = new RemoveEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
 		createEdgesBy = new CreateEdgesBy(pnode, canvas, this.allPNodes, menu,ANH);
+		createEgdesHierarchyBy = new CreateEgdesHierarchyBy(pnode, canvas, this.allPNodes, menu,ANH);
+		createEgdesHierarchyOf = new CreateEgdesHierarchyOf(pnode, canvas, this.allPNodes, menu,ANH);
+
 	}
 
 	public PCustomInputEventHandler(PiccoloCustomNode pnode) {
@@ -102,8 +109,10 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	public void generateMenu(Menu menu,PInputEvent aEvent) {
 		menu.removeAll();
 		menu.add(createEdgesOf);
+		menu.add(createEgdesHierarchyOf);
 		menu.addSeparator();
 		menu.add(createEdgesBy);
+		menu.add(createEgdesHierarchyBy);
 		menu.addSeparator();
 		menu.add(removeEdgesOf);
 		menu.setPoint(aEvent.getPosition());
