@@ -20,8 +20,7 @@ import com.puck.utilities.piccolo2d.XmlToStructure;
 
 public class CreateEgdesHierarchyOf extends JMenuItem{
 	private HashMap<String, PiccoloCustomNode> allPNodes;
-	private Map<String, Node> m = new XmlToStructure().parseNode();
-	private HashMap<String, Node> listNodes = new HashMap<>(m);
+	private Map<String, Node> listNodes ;
 	private PiccoloCustomNode pnode;
 	private PSwingCanvas canvas;
 	private Menu menu;
@@ -29,21 +28,22 @@ public class CreateEgdesHierarchyOf extends JMenuItem{
 	private CreateEdgesOf createEdgesOf;
 	
 	public CreateEgdesHierarchyOf(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,
-			Menu menu, ArrowNodesHolder ANH) {
+			Menu menu, ArrowNodesHolder ANH,Map<String, Node> listNodes) {
 		super("Show hierarchy outgoing edges ",new ImageIcon("images/right-arrow.png"));
 		this.allPNodes = allPNodes;
 		this.pnode = pnode;
 		this.canvas = canvas;
 		this.menu = menu;
 		this.ANH = ANH;
-		createEdgesOf = new CreateEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
+		this.listNodes = listNodes;
+		createEdgesOf = new CreateEdgesOf(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
 		addActionListener();
 	}
 	public void drawOutgoingdges(PiccoloCustomNode pnode , PSwingCanvas canvas) {
-		createEdgesOf = new CreateEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
+		createEdgesOf = new CreateEdgesOf(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
 		createEdgesOf.drawOutgoingdges(pnode, canvas);
 		for(PiccoloCustomNode child : pnode.getHierarchy()) {
-			createEdgesOf = new CreateEdgesOf(child, canvas, this.allPNodes, menu,ANH);
+			createEdgesOf = new CreateEdgesOf(child, canvas, this.allPNodes, menu,ANH,listNodes);
 			createEdgesOf.drawOutgoingdges(child, canvas);
 		}
 		menu.hideMenu();

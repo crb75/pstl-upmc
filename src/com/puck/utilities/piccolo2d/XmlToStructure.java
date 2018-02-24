@@ -13,8 +13,9 @@ import com.puck.nodes.piccolo2d.Node;
 import com.puck.reader.xml.Reader;
 
 public  class XmlToStructure {
-
-	public XmlToStructure() {
+	private String xmlPath;
+	public XmlToStructure(String args) {
+		this.xmlPath = args;
 		parseNode();
 	}
 	
@@ -55,7 +56,7 @@ private static Edge parseAttributs(NamedNodeMap attrs) {
 	public HashMap<String, Node> parseNode() {
 		HashMap<String, Node> listNode = new HashMap<>();
 
-		Reader reader = new Reader("./mongraph2.xml");
+		Reader reader = new Reader(xmlPath);
 		int listLength = reader.getNbNodes();
 		for (int i = 1; i <= listLength; i++) {
 			Node n = new Node();
@@ -83,7 +84,7 @@ private static Edge parseAttributs(NamedNodeMap attrs) {
 	public static void main(String[] args) {
 		@SuppressWarnings("unused")
 		HashMap<String, Node> listNode;
-		listNode = new HashMap<>(new XmlToStructure().parseNode());
+		//listNode = new HashMap<>(new XmlToStructure().parseNode());
 	}
 
 }

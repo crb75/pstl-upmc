@@ -21,8 +21,7 @@ import com.puck.utilities.piccolo2d.XmlToStructure;
 public class CreateEdgesBy extends JMenuItem{
 
 	private HashMap<String, PiccoloCustomNode> allPNodes;
-	private Map<String, Node> m = new XmlToStructure().parseNode();
-	private HashMap<String, Node> listNodes = new HashMap<>(m);
+	private Map<String, Node> listNodes ;
 	private PiccoloCustomNode pnode;
 	private PSwingCanvas canvas;
 	private Menu menu;
@@ -31,15 +30,16 @@ public class CreateEdgesBy extends JMenuItem{
 	private CreateISAEdgesBy createExtendsEdgesBy;
 
 	public CreateEdgesBy(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,
-			Menu menu, ArrowNodesHolder ANH) {
+			Menu menu, ArrowNodesHolder ANH, Map<String, Node> listNodes) {
 		super("Show ingoing edges ",new ImageIcon("images/left-arrow.png"));
 		this.allPNodes = allPNodes;
 		this.pnode = pnode;
 		this.canvas = canvas;
 		this.menu = menu;
 		this.ANH = ANH;
-		createUsesEdgesBy = new CreateUsesEdgesBy(pnode, canvas, this.allPNodes, menu, ANH);
-		createExtendsEdgesBy = new CreateISAEdgesBy(pnode, canvas, this.allPNodes, menu,ANH);
+		this.listNodes = listNodes;
+		createUsesEdgesBy = new CreateUsesEdgesBy(pnode, canvas, this.allPNodes, menu, ANH,listNodes);
+		createExtendsEdgesBy = new CreateISAEdgesBy(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
 		addActionListener();
 	}
 	public void drawOutgoingdges(PiccoloCustomNode pnode , PSwingCanvas canvas) {

@@ -24,14 +24,14 @@ import com.puck.utilities.piccolo2d.XmlToStructure;
 
 public class CreateISAEdgesBy extends JMenuItem {
 	private HashMap<String, PiccoloCustomNode> allPNodes;
-	private Map<String, Node> listNodes = new XmlToStructure().parseNode();
+	private Map<String, Node> listNodes ;
 	private PiccoloCustomNode pnode;
 	private PSwingCanvas canvas;
 	private Menu menu;
 	private ArrowNodesHolder ANH;
 
 	public CreateISAEdgesBy(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,
-			Menu menu, ArrowNodesHolder ANH) {
+			Menu menu, ArrowNodesHolder ANH, Map<String, Node> listNodes) {
 		super("show extends ingoing",new ImageIcon("left-arrow.png"));
 		//this.setText();
 		this.allPNodes = allPNodes;
@@ -39,6 +39,7 @@ public class CreateISAEdgesBy extends JMenuItem {
 		this.canvas = canvas;
 		this.menu = menu;
 		this.ANH = ANH;
+		this.listNodes = listNodes;
 		addActionListener();
 	}
 

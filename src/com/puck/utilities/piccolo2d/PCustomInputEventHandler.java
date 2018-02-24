@@ -32,6 +32,7 @@ import com.puck.menu.items.outgoing.CreateUsesEdgesOf;
 import com.puck.menu.items.removing.RemoveEdgesOf;
 import com.puck.menu.items.removing.RemoveISAEdges;
 import com.puck.menu.items.removing.RemoveUsesEdges;
+import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
 
 public class PCustomInputEventHandler extends PBasicInputEventHandler {
@@ -45,11 +46,11 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	private JMenuItem removeEdgesOf;
 	private JMenuItem createEgdesHierarchyBy;
 	private JMenuItem createEgdesHierarchyOf;
-
+	private Map<String, Node> listNodes;
 	private ArrowNodesHolder ANH;
 
 	public PCustomInputEventHandler(PiccoloCustomNode pnode, PiccoloCustomNode root, PSwingCanvas canvas,
-			Map<String, PiccoloCustomNode> allPNodes, Menu menu, ArrowNodesHolder ANH) {
+			Map<String, PiccoloCustomNode> allPNodes, Menu menu, ArrowNodesHolder ANH, Map<String, Node> listNodes) {
 		setEventFilter(new PInputEventFilter(InputEvent.BUTTON1_MASK & InputEvent.BUTTON2_MASK));
 		this.pnode = pnode;
 		this.canvas = canvas;
@@ -57,11 +58,12 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		this.allPNodes = new HashMap<>(allPNodes);
 		this.menu = menu;
 		this.ANH = ANH;
-		createEdgesOf = new CreateEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
-		removeEdgesOf = new RemoveEdgesOf(pnode, canvas, this.allPNodes, menu,ANH);
-		createEdgesBy = new CreateEdgesBy(pnode, canvas, this.allPNodes, menu,ANH);
-		createEgdesHierarchyBy = new CreateEgdesHierarchyBy(pnode, canvas, this.allPNodes, menu,ANH);
-		createEgdesHierarchyOf = new CreateEgdesHierarchyOf(pnode, canvas, this.allPNodes, menu,ANH);
+		this.listNodes = listNodes;
+		createEdgesOf = new CreateEdgesOf(pnode, canvas, this.allPNodes, menu,ANH,this.listNodes);
+		removeEdgesOf = new RemoveEdgesOf(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
+		createEdgesBy = new CreateEdgesBy(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
+		createEgdesHierarchyBy = new CreateEgdesHierarchyBy(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
+		createEgdesHierarchyOf = new CreateEgdesHierarchyOf(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
 
 	}
 

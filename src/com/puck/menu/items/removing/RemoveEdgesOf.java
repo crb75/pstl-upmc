@@ -20,8 +20,7 @@ import com.puck.utilities.piccolo2d.XmlToStructure;
 
 public class RemoveEdgesOf extends JMenuItem{
 	private HashMap<String, PiccoloCustomNode> allPNodes;
-	private Map<String, Node> m = new XmlToStructure().parseNode();
-	private HashMap<String, Node> listNodes = new HashMap<>(m);
+	private Map<String, Node> listNodes;
 	private PiccoloCustomNode pnode;
 	private PSwingCanvas canvas;
 	private Menu menu;
@@ -31,15 +30,16 @@ public class RemoveEdgesOf extends JMenuItem{
 	
 
 	public RemoveEdgesOf(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,
-			Menu menu, ArrowNodesHolder ANH) {
+			Menu menu, ArrowNodesHolder ANH, Map<String, Node> listNodes) {
 		super("Hide edges",new ImageIcon("images/hide.png"));
 		this.allPNodes = allPNodes;
 		this.pnode = pnode;
 		this.canvas = canvas;
 		this.menu = menu;
 		this.ANH = ANH;
-		removeISAEdges = new RemoveISAEdges(pnode, canvas, this.allPNodes, menu, ANH);
-		removeUsesEdges = new RemoveUsesEdges(pnode, canvas, this.allPNodes, menu, ANH);
+		this.listNodes = listNodes;
+		removeISAEdges = new RemoveISAEdges(pnode, canvas, this.allPNodes, menu, ANH,listNodes);
+		removeUsesEdges = new RemoveUsesEdges(pnode, canvas, this.allPNodes, menu, ANH,listNodes);
 
 		addActionListener();
 	}

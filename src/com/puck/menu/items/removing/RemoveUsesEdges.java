@@ -21,7 +21,8 @@ public class RemoveUsesEdges extends JMenuItem{
 	private Menu menu;
 	private ArrowNodesHolder ANH;
 
-	public RemoveUsesEdges(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,Menu menu,ArrowNodesHolder ANH) {
+	public RemoveUsesEdges(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,Menu menu,ArrowNodesHolder ANH
+			, Map<String, Node> listNodes) {
 		super();
 		this.setText("hide uses");
 		this.pnode = pnode;

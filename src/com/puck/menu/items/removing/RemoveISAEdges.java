@@ -22,14 +22,14 @@ import com.puck.utilities.piccolo2d.XmlToStructure;
 
 public class RemoveISAEdges extends JMenuItem{
 	private HashMap<String, PiccoloCustomNode> allPNodes;
-	private Map<String, Node> m = new XmlToStructure().parseNode();
-	private HashMap<String, Node> listNodes = new HashMap<>(m);
+	private Map<String, Node> listNodes ;
 	private PiccoloCustomNode pnode;
 	private PSwingCanvas canvas;
 	private Menu menu;
 	private ArrowNodesHolder ANH;
 
-	public RemoveISAEdges(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,Menu menu,ArrowNodesHolder ANH) {
+	public RemoveISAEdges(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,Menu menu,ArrowNodesHolder ANH
+			, Map<String, Node> listNodes) {
 		super();
 		this.setText("hide extends");
 		this.allPNodes = allPNodes;
@@ -37,6 +37,7 @@ public class RemoveISAEdges extends JMenuItem{
 		this.canvas = canvas;
 		this.menu = menu;
 		this.ANH = ANH;
+		this.listNodes = listNodes;
 		addActionListener();
 	}
 	public void RemoveEdges(PiccoloCustomNode pnode, PSwingCanvas canvas) {

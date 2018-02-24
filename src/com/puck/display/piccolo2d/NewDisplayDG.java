@@ -32,7 +32,7 @@ import com.puck.utilities.piccolo2d.XmlToStructure;
 
 public class NewDisplayDG extends JFrame {
 	private HashMap<String, PiccoloCustomNode> allPNodes = new HashMap<>();
-	private Map<String, Node> listNodes = new XmlToStructure().parseNode();
+	private Map<String, Node> listNodes;
 	private PiccoloCustomNode root;
 	private Menu menu;
 	private ArrowNodesHolder ANH;
@@ -41,12 +41,13 @@ public class NewDisplayDG extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public NewDisplayDG(PSwingCanvas canvas) {
+	public NewDisplayDG(PSwingCanvas canvas,String args) throws InterruptedException{
+		listNodes = new XmlToStructure(args).parseNode();
 		menu = new Menu();
 		root = getPackageNodes();
 		root.collapseAll();
 		this.ANH =  new ArrowNodesHolder();
-		addEvent(root, root,canvas,menu);
+		addEvent(root, root,canvas,menu,listNodes);
 		canvas.getLayer().addChild(root);
 		canvas.getLayer().addChild(ANH);
 		//System.out.println(listNodes);
@@ -58,11 +59,10 @@ public class NewDisplayDG extends JFrame {
 
 	public PiccoloCustomNode getPackageNodes() {
 		Collection<PiccoloCustomNode> listePNode = new ArrayList<>();
-		Map<String, Node> mm = new XmlToStructure().parseNode();
-		HashMap<String, Node> nodesList = new HashMap<>(mm);
+		
 
 		PiccoloCustomNode root = new PiccoloCustomNode("root", "r01");
-		for (Entry<String, Node> entry : nodesList.entrySet()) {
+		for (Entry<String, Node> entry : listNodes.entrySet()) {
 			String key = entry.getKey();
 			Node n = entry.getValue();
 			if (n.getType().equals("package")) {
@@ -76,7 +76,7 @@ public class NewDisplayDG extends JFrame {
 				Collection<PiccoloCustomNode> children = new ArrayList<>();
 				for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
 					Edge e = edgeEntry.getValue();
-					Node node = nodesList.get(e.getTo());
+					Node node = listNodes.get(e.getTo());
 					PiccoloCustomNode pnode;
 					if (allPNodes.containsKey(node.getId())) {
 						listePNode.remove(allPNodes.get(node.getId()));
@@ -128,17 +128,20 @@ public class NewDisplayDG extends JFrame {
 	}
 
 
-	private void addEvent(PiccoloCustomNode node, PiccoloCustomNode tree,	PSwingCanvas canvas,Menu menu) {
-		node.getContent().addInputEventListener(new PCustomInputEventHandler(node, tree, canvas, allPNodes,menu,ANH));
+	private void addEvent(PiccoloCustomNode node, PiccoloCustomNode tree,PSwingCanvas canvas,Menu menu,Map<String, Node> listNodes) {
+		node.getContent().addInputEventListener(new PCustomInputEventHandler(node, tree, canvas, allPNodes,menu,ANH,listNodes));
 		if (node.getAllChildren().size() != 0)
 			for (PiccoloCustomNode PCN : node.getAllChildren()) {
-				addEvent(PCN, tree,canvas,menu);
+				addEvent(PCN, tree,canvas,menu,listNodes);
 			}
 	}
 
 	public static void main(String[] args) {
 		PSwingCanvas canvas = new PSwingCanvas();
-		JFrame frame = new NewDisplayDG(canvas);
+		JFrame frame;
+		try {
+			frame = new NewDisplayDG(canvas,args[0]);
+		
 		canvas.setDefaultRenderQuality(PPaintContext.HIGH_QUALITY_RENDERING);
         canvas.setAnimatingRenderQuality(PPaintContext.HIGH_QUALITY_RENDERING);
         canvas.setInteractingRenderQuality(PPaintContext.HIGH_QUALITY_RENDERING);
@@ -149,6 +152,10 @@ public class NewDisplayDG extends JFrame {
 		frame.pack();
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         frame.setVisible(true);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
        
 
 	}
