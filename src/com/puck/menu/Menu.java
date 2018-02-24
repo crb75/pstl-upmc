@@ -1,15 +1,19 @@
 package com.puck.menu;
 
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.List;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.border.BevelBorder;
 
 import org.piccolo2d.PNode;
 import org.piccolo2d.extras.pswing.PSwing;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
+
 
 
 public class Menu extends JPopupMenu {
@@ -37,7 +41,9 @@ public class Menu extends JPopupMenu {
         //System.out.println("je dessine le menu");
 	}
 	public void hideMenu() {
+		this.removeAll();
 		canvas.getLayer().removeChild(p);
+		p = new PNode();
 		
 	}
 	public PSwingCanvas getCanvas() {
@@ -71,7 +77,4 @@ public class Menu extends JPopupMenu {
 	public void setP(PNode p) {
 		this.p = p;
 	}
-	
-	
-	
 }

@@ -10,11 +10,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JMenuItem;
+import javax.swing.border.BevelBorder;
 
 import org.piccolo2d.event.PBasicInputEventHandler;
 import org.piccolo2d.event.PInputEvent;
 import org.piccolo2d.event.PInputEventFilter;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
+import org.piccolo2d.util.PBounds;
 
 import com.puck.arrows.ArrowNodesHolder;
 import com.puck.arrows.Parrow;
@@ -84,16 +86,14 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 				//ANH.hide_show_arrows(pnode);
 			}
 			if (aEvent.isRightMouseButton()) {
-				// menu.setVisible(true);
-				generateMenu(menu,aEvent);
-				canvas.addMouseListener(new MouseAdapter() {
-					@Override
-					public void mousePressed(MouseEvent e) {
-						// System.out.println((menu.getP().getGlobalFullBounds().contains(e.getPoint())));
-						if (!menu.getP().getGlobalFullBounds().contains(e.getPoint()))
-							menu.hideMenu();
-					}
-				});
+					generateMenu(menu,aEvent);				
+					canvas.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mousePressed(MouseEvent e) {
+							if (!menu.getP().getGlobalFullBounds().contains(e.getPoint().getX()+5,e.getPoint().getY()+5))
+								menu.hideMenu();	
+						}
+					});
 
 			}
 		} catch (Exception e) {

@@ -4,6 +4,8 @@ package com.puck.display.piccolo2d;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,6 +13,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 import org.piccolo2d.util.PPaintContext;
@@ -46,6 +53,8 @@ public class NewDisplayDG extends JFrame {
 		
 		
 	}
+	
+
 
 	public PiccoloCustomNode getPackageNodes() {
 		Collection<PiccoloCustomNode> listePNode = new ArrayList<>();

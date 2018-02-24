@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 
 import org.piccolo2d.PNode;
@@ -32,8 +33,7 @@ public class CreateISAEdgesOf extends JMenuItem {
 
 	public CreateISAEdgesOf(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,
 			Menu menu, ArrowNodesHolder ANH) {
-		super();
-		this.setText("show extends outgoing");
+		super("show extends outgoing",new ImageIcon("right-arrow.png"));
 		this.allPNodes = allPNodes;
 		this.pnode = pnode;
 		this.canvas = canvas;

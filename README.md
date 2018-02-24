@@ -240,7 +240,7 @@
   
 </details>
 
-### Sur ligne de commande
+### Sur la ligne de commande pour executer le programme directement en mode utilisateur.
 
 - **Systèmes UNIX** <br/>
   Exécutez la commande 
