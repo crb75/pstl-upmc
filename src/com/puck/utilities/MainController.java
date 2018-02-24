@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -27,17 +28,42 @@ public class MainController {
 
 	@FXML
 	private TextField projectDGLink;
+	@FXML
+	private TextField projectDGLinkDir;
 
 	@FXML
 	private Button projectDGBtn;
-
+	@FXML
+	private Button projectDGBtn1;
+	
 	@FXML
 	private TextArea consoleArea;
 
 	private String generationDGPath;
 	private String projectDGPath;
 	private String command;
+	private String testFile;
 
+	public void chooseGenerationDGDirectoryyHandler(ActionEvent event) {
+		DirectoryChooser directoryChooser = new DirectoryChooser();
+		File file = directoryChooser.showDialog(new Stage());
+		if (file != null && file.isDirectory()) {
+			projectDGLinkDir.setText(file.getAbsolutePath());
+			projectDGPath = file.getPath();
+			testFile = projectDGPath.replaceAll("\"", "\\");
+			command = generationDGPath.replaceAll("\"", "\\");
+			System.out.println(command);
+			try {
+				//command =  "java -jar "+command+" "+testFile+" DependecyGraph.xml" ;
+				command =  "java -jar "+command+" "+testFile+" DependecyGraph.xml" ;
+				//System.out.println(command);
+				
+			} catch ( Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 	public void chooseGenerationDGDirectoryHandler(ActionEvent event) {
 		FileChooser fileChooser = new FileChooser();
 		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JAR files (*.jar)", "*.jar");
@@ -46,6 +72,7 @@ public class MainController {
 		if (file != null && file.isFile()) {
 			generationDGLink.setText(file.getAbsolutePath());
 			generationDGPath = file.getPath();
+			
 		}
 	}
 	public void chooseProjectDGDirectoryHandler(ActionEvent event) {
@@ -56,18 +83,19 @@ public class MainController {
 		if (file != null && file.isFile()) {
 		projectDGLink.setText(file.getAbsolutePath());
 		projectDGPath = file.getPath();
-		}
-		String testFile = projectDGPath.replaceAll("\"", "\\");
+		
+		testFile = projectDGPath.replaceAll("\"", "\\");
 		command = generationDGPath.replaceAll("\"", "\\");
 		System.out.println(command);
 		try {
 			//command =  "java -jar "+command+" "+testFile+" DependecyGraph.xml" ;
-			command =  "java -jar "+command+" DependecyGraph.xml" ;
+			command =  "java -jar "+command+" "+testFile+" DependecyGraph.xml" ;
 			//System.out.println(command);
 			
 		} catch ( Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
 		}
 	}
 	
