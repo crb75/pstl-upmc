@@ -1,4 +1,4 @@
-package com.puck.menu.uses;
+package com.puck.menu.items.ingoing;
 
 
 

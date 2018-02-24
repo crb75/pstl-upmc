@@ -1,4 +1,4 @@
-package com.puck.menu.isa;
+package com.puck.menu.items.outgoing;
 
 
 
@@ -8,21 +8,20 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 
 import org.piccolo2d.PNode;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 
 import com.puck.arrows.ArrowNodesHolder;
-import com.puck.arrows.ParrowExtends;
+import com.puck.arrows.ParrowUses;
 import com.puck.menu.Menu;
 import com.puck.nodes.piccolo2d.Edge;
 import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
 import com.puck.utilities.piccolo2d.XmlToStructure;
 
-public class CreateISAEdgesOf extends JMenuItem {
+public class CreateUsesEdgesOf {
 	private HashMap<String, PiccoloCustomNode> allPNodes;
 	private Map<String, Node> m = new XmlToStructure().parseNode();
 	private HashMap<String, Node> listNodes = new HashMap<>(m);
@@ -31,33 +30,32 @@ public class CreateISAEdgesOf extends JMenuItem {
 	private Menu menu;
 	private ArrowNodesHolder ANH;
 
-	public CreateISAEdgesOf(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,
+	public CreateUsesEdgesOf(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,
 			Menu menu, ArrowNodesHolder ANH) {
-		super("show extends outgoing",new ImageIcon("right-arrow.png"));
 		this.allPNodes = allPNodes;
 		this.pnode = pnode;
 		this.canvas = canvas;
 		this.menu = menu;
 		this.ANH = ANH;
-		addActionListener();
 	}
 
-	public void drawExtendsEdges(PiccoloCustomNode target, PSwingCanvas canvas) {
+	public void DrawEdges(PiccoloCustomNode target, PSwingCanvas canvas) {
 		Node node = listNodes.get(target.getidNode());
-		if (node != null && node.getRelation() != null) {
+		
+		if ( node!= null && node.getRelation() !=  null) {
 			HashMap<String, Edge> relation = node.getRelation();
 			for (Entry<String, Edge> edgeEntry : relation.entrySet()) {
 				Edge e = edgeEntry.getValue();
-				if (e.getType().equals("isa")) {
+				if (e.getType().equals("uses")) {
 					PNode from = target;
 					PNode to = (allPNodes.get(e.getTo()));
 					if (to.getParent() instanceof PiccoloCustomNode
 							&& !((PiccoloCustomNode) to.getParent()).isHidden()) {
-						ANH.addArrow(new ParrowExtends(from, to, from, to));
+						ANH.addArrow(new ParrowUses(from, to, 10, from, to));
 					} else {
 						for (PiccoloCustomNode pnode : ((PiccoloCustomNode) to).getAscendency()) {
 							if (!pnode.isHidden()) {
-								ANH.addArrow(new ParrowExtends(from, to, from, pnode));
+								ANH.addArrow(new ParrowUses(from, to, 10, from, pnode));
 								break;
 							}
 						}
@@ -68,13 +66,5 @@ public class CreateISAEdgesOf extends JMenuItem {
 		this.menu.hideMenu();
 	}
 
-	public void addActionListener() {
-		this.addActionListener(new AbstractAction() {
-
-			public void actionPerformed(ActionEvent arg0) {
-				drawExtendsEdges(pnode, canvas);
-			}
-		});
-	}
-
+	
 }
