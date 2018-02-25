@@ -140,7 +140,16 @@ public class NewDisplayDG extends JFrame {
 		PSwingCanvas canvas = new PSwingCanvas();
 		JFrame frame;
 		try {
-			frame = new NewDisplayDG(canvas,args[0]);
+			if (args.length == 0)
+			{
+				System.out.println("Appel de la newDisplayDG sans aucun argument");
+				frame = new NewDisplayDG(canvas, "mongraph.xml");
+			}
+			else
+			{
+				frame = new NewDisplayDG(canvas,args[0]);	
+			}
+			
 		
 		canvas.setDefaultRenderQuality(PPaintContext.HIGH_QUALITY_RENDERING);
         canvas.setAnimatingRenderQuality(PPaintContext.HIGH_QUALITY_RENDERING);
