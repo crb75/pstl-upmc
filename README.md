@@ -204,9 +204,11 @@
   </ol>
 </details>
 
-## Guide d'exécution
+## Guide d'exécution 
 
 ### Sur votre IDE préféré
+
+#### Uniquement la partie de graphe de dépendance
 
 <details>
   <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Feclipse.svg?alt=media&token=c1a40189-1236-407b-9568-52c292e46e3d" alt="Eclipse Logo" width="32" height="32" align="top"/> Eclipse </summary>
@@ -238,6 +240,24 @@
     </li>
   </ol>
   
+</details>
+
+#### L'application complet
+
+<details>
+  <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Feclipse.svg?alt=media&token=c1a40189-1236-407b-9568-52c292e46e3d" alt="Eclipse Logo" width="32" height="32" align="top"/> Eclipse </summary>
+
+  <ol>
+    <li>
+      Faites <strong>un clique droit sur le dossier principal</strong> contenant le projet. Puis dans le menu déroulant cliquez sur <strong><samp>Java Application</samp></strong> sous la section <strong><samp>Run As</samp></strong>.<br/>
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse1.png?alt=media&token=e121056e-c502-4f98-a91b-1eb40e988cfe" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
+    </li>
+    <li>
+      Sur la fênetre intitulée <samp>Select Java Application</samp> <strong>sélectionnez <samp>GenrationToDisplayMain - com.puck.utilities</samp></strong>. Puis cliquez sur le bouton <strong><samp>OK</samp></strong>.<br/>
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Feclipse.svg?alt=media&token=c1a40189-1236-407b-9568-52c292e46e3d" alt="Sur la fenêtre intitulée Select Java Application sélectionnez NewDisplayDG - com.puck.display.piccolo2d. Puis cliquez sur le bouton OK.">
+    </li>
+  </ol>
+
 </details>
 
 ### Sur la ligne de commande pour executer le programme directement en mode utilisateur.
