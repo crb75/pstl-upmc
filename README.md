@@ -288,10 +288,10 @@
 
   ## Guide d'utilisation
 
-  Une fois que vous avez réussi à lancer l'interface graphique en exécutant le fichier <samp>GenrationToDisplayMain</samp> vous devez avoir la fenêtre suivante : <br/>
+  Une fois que vous avez réussi à lancer l'interface graphique principal en exécutant le fichier <samp>GenrationToDisplayMain</samp> vous devez avoir la fenêtre suivante : <br/>
   <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FinterfaceAdmin.png?alt=media&token=c84628f0-899c-4515-a7fc-3987bf791f5d" alt="L'interface de l'application">
 
-  Cette interface vous donne deux options tel que:
+  Cette interface vous donne deux options tels que:
 
   <details>
     <summary><strong>Génerer la graphe de dépendance à afficher</strong> par le code source <samp>Java.</samp></summary>
@@ -320,3 +320,40 @@
     <summary>Chargez un fichier <samp>XML</samp> de graph de dépendance à afficher.</summary>
     Vous pouvez utiliser un fichier <samp>XML</samp> qui représente une graphe de dépendance d'un programme <samp>Java</samp>. Pour ce faire cliquez sur le bouton <strong><samp>Fichier XML</samp></strong> dans la section <samp>Utiliser directement votre propre fichier XML</samp>. Une fois que vous avez cliquez sur ce bouton, sélectionnez le fichier <samp>XML</samp> depuis l'exploirateur des fichiers qui s'ouvre. Après avoir sélectionné le fichier <samp>XML</samp> appuyez sur le bouton <strong><samp>Run</samp></strong>.
   </details>
+
+  Après avoir lancé le programme en utilisant le module ExtendJ et les fichiers Java ou en utilisant simplement un fichier XML vous arrivez sur l'interface graphique de la graphe de dépendance comme ceci:
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fuidg0.png?alt=media&token=3b255c03-98e4-42d3-9afc-f64ea6336ed7" alt="Interface graphique de graphe de dépendance au démarrage">
+  Au démarrage cet interface contient qu'un seul noeud qui s'appelle <samp>root</samp>. Ce noeud est considéré comme le noeud racine de toute la graphe.
+  
+<ul>
+  <li>
+    Si vous <strong>cliquez gauche sur la partie textuel d'un noeud fermé</strong> vous pouvez l'<strong>ouvrir</stronh> pour voir ses noeuds enfants.<br/>
+    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fuidg1.png?alt=media&token=2c962403-42c3-41ad-8a23-315ef136698c" alt="Tous les noeuds sont ouverts"/>
+  </li>
+  <li>
+    De même pour <strong>un noeud ouvert cliquez gauche sur la partie textuel pour le refermer</strong>. 
+  </li>
+  <li>
+    Toujours sur la partie textuel d'un noeud, vous pouvez cliquez droit pour afficher le menu.
+    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FuidgMenu.png?alt=media&token=1161ffad-1c99-42f1-b9f1-af327c7e012d" alt="Menu">
+    Sur ce menu vous avez 5 options qui sont les suivants:
+    <ul>
+      <li>
+        <samp>Show outgoing edges</samp>: Cette option permet d'afficher les flèches partants du noeud sur lequel on a affiche le menu.
+      </li>
+      <li>
+        <samp>Show hierarchy outgoing edges</samp>: Cette option permet d'afficher les flèches partants du noeud sur lequel on a affiche le menu ainsi que tous ses noeuds enfants.
+      </li>
+      <li>
+        <samp>Show ingoing edges</samp>: Cette option permet d'afficher les flèches entrants du noeud sur lequel on a affiche le menu.
+      </li>
+      <li>
+        <samp>Show hierarchy ingoing edges</samp>: Cette option permet d'afficher les flèches entrants du noeud sur lequel on a affiche le menu ainsi que tous ses noeuds enfants.
+      </li>
+      <li>
+        <samp>Hide edges</samp>: Cette option permet de cacher les flèches concernant le noeud sur lequel on a affiché le menu.
+      </li>
+    </ul>
+    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FuidgAll.png?alt=media&token=16b5e131-8e02-4f98-a0fd-8edce82bfa7d" alt="Exemple avec les flèches">
+  </li>
+</ul>
