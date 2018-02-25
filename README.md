@@ -114,7 +114,7 @@
     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fintellij0.png?alt=media&token=26ba41a6-2911-4131-be07-702b3123b8c1" alt="Au démarrage d'IntelliJ, sur la fenêtre qui s'ouvre cliquez sur la section Check out from Version Control. Puis sur le menu déroulant cliquez sur la section Github"/>
     </li>
     <li>
-    Sur le champs de texte libellé <strong><samp>Git Repository URL</samp></strong>, entrez l'URL du répo de projet qui est <samp>https://github.com/Misteryagci/pstl-upmc.git</samp>. Puis appuyez sur le bouton <strong><samp>Clone</samp></strong>.
+    Sur le champs de texte libellé <strong><samp>Git Repository URL</samp></strong>, entrez l'URL du répo de projet qui est <kbd>https://github.com/Misteryagci/pstl-upmc.git</kbd>. Puis appuyez sur le bouton <strong><samp>Clone</samp></strong>.
     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ1.png?alt=media&token=03972eca-d91b-4158-b3d4-a13a8a4a962a" alt="Sur le champs de texte libellé Git Repository URL, entre l'URL du répo de projet qui est https://github.com/Misteryagci/pstl-upmc.git. Puis appuyez sur le bouton Clone">
     </li>
     <li>
@@ -126,7 +126,7 @@
     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ3.png?alt=media&token=827b1feb-2ec2-4751-af52-b287706d890e" alt="Sélectionnez maintenant la case Create project from Existing source sur la fenêtre et cliquez sur le bouton Next">
     </li>
     <li>
-    <em>Si vous voulez changer le nom de projet IntelliJ sur votre ordinateur changez le text <samp>pstl-upmc</samp> qui est par défaut dans le champs libellé <samp>Project Name</samp> par le nom que vous désirez. Sinon gardez le comme tel.</em> Cliquez ensuite sur le bouton <strong><samp>Next</samp></strong>
+    <em>Si vous voulez changer le nom de projet IntelliJ sur votre ordinateur changez le text <kbd>pstl-upmc</kbd> qui est par défaut dans le champs libellé <samp>Project Name</samp> par le nom que vous désirez. Sinon gardez le comme tel.</em> Cliquez ensuite sur le bouton <strong><samp>Next</samp></strong>
     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJ4.png?alt=media&token=fa69846e-7507-4f74-b0a1-2435b420bd7c" alt="Si vous voulez changer le nom de projet IntelliJ sur votre ordinateur changez le text pstl-upmc qui est par défaut dans le champs libellé Project Name par le nom que vous désirez. Sinon gardez le comme tel Cliquez ensuite sur le bouton Next">
     </li>
     <li>
