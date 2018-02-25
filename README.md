@@ -285,3 +285,8 @@
   ```
 - **Windows** <br/>
   Exécutez le fichier <samp>run.bat</samp>.
+
+  ## Guide d'utilisation
+
+  Une fois que vous avez réussi à lancer l'interface graphique en exécutant le fichier <samp>GenrationToDisplayMain</samp> vous devez avoir la fenêtre suivante : <br/>
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FinterfaceAdmin.png?alt=media&token=c84628f0-899c-4515-a7fc-3987bf791f5d" alt="L'interface de l'application">
