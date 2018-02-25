@@ -295,7 +295,25 @@
 
   <details>
     <summary><strong>Génerer la graphe de dépendance à afficher</strong> par le code source <samp>Java.</samp></summary>
-    Lorem ipsum dolor sit amet
+    <ul>
+    <li>
+      Pour cela vous devez charger le fichier <samp>jar</samp> du module qui permet de génerer le fichier <samp>xml</samp> contenant la graphe de dépendance. Pour cela vous pouvez utiliser <a href="https://github.com/geoffreycopin/puck2">ceci</a>. Pour le charger cliquez sur le bouton <strong><samp>JAR PUCK2</samp></strong> qui se trouve sur la première ligne de la section <samp>Utiliser la solution basée sur ExtendJ pour générer le fichier XML</samp> et trouvez le fichier <samp>.jar</samp> que vous cherchez à l'aide de l'exploirateur des fichiers.
+    </li>
+    <li>
+      Ainsi vous devez indiquer au moins un fichier <samp>Java</samp> à générer le graph de dépendance. Pour ce faire vous avez deux options : 
+      <ul>
+        <li>
+          Vous pouvez charger un unique fichier <samp>Java</samp> à l'aide de bouton <samp>Class Java à afficher</samp>. Pour le faire cliquez sur le bouton <samp>Class Java à afficher</samp> et sélectionnez le fichier <samp>Java</samp> dont vous utilisez pour l'affichage de graphe de dépendance. 
+        </li>
+        <li>
+        Vous pouvez charger projet complet en <samp>Java</samp> c'est à dire un dossier qui contient plusieurs fichiers <samp>Java</samp> à l'aide de bouton <samp>Projet Java à afficher</samp>. Pour le faire cliquez sur le bouton <samp>Projet Java à afficher</samp> et sélectionnez le dossier de votre projet <samp>Java</samp> dont vous utilisez pour l'affichage de graphe de dépendance. 
+        </li>
+      </ul>
+    </li>
+    <li>
+    Une fois vous avez indiqué le fichier <samp>.jar</samp> et le(s) fichier(s) <samp>Java</samp> vous cliquez sur le bouton <strong><samp>Run</samp></strong> pour génerer la graphe de dépendance et l'afficher.
+    </li>
+    </ul>
   </details>
 
   <details>
