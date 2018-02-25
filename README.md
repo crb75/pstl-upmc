@@ -254,10 +254,26 @@
     </li>
     <li>
       Sur la fênetre intitulée <samp>Select Java Application</samp> <strong>sélectionnez <samp>GenrationToDisplayMain - com.puck.utilities</samp></strong>. Puis cliquez sur le bouton <strong><samp>OK</samp></strong>.<br/>
-      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipseExecComplet.png?alt=media&token=6d2525f8-b373-4fed-afbe-facd43af58dc" alt="Sur la fenêtre intitulée Select Java Application sélectionnez NewDisplayDG - com.puck.display.piccolo2d. Puis cliquez sur le bouton OK.">
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipseExecComplet.png?alt=media&token=6d2525f8-b373-4fed-afbe-facd43af58dc" alt="Sur la fenêtre intitulée Select Java Application sélectionnez GenrationToDisplayMain - com.puck.utilities. Puis cliquez sur le bouton OK.">
     </li>
   </ol>
 
+</details>
+
+<details>
+  <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJ_IDEA_Logo.svg?alt=media&token=4f8c266b-4d1c-4fa5-972a-19dbb23ad1be" alt="Eclipse Logo" width="32" height="32" align="top"/> IntelliJ </summary>
+
+  <ol>
+    <li>
+      Chargez le projet <strong>en sélectionnant le projet</strong> sur la fenêtre de démarrage.<br/>
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunIntelliJ1.png?alt=media&token=fc23661d-95d6-4d9d-b3f4-e90e7bc0bb6a" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
+    </li>
+    <li>
+      Trouvez le fichier <strong><samp>GenrationToDisplayMain</samp></strong> qui se trouve dans le dossier <samp>utilities</samp> qui se trouve dans le dossier <samp>com.puck</samp> qui se trouve dans le dossier <samp>src</samp> qui se trouve dans le dossier principal du projet. <strong>Faites un clique droit sur ce fichier</strong> et dans le menu déroulant <strong>cliquez sur <samp>Run 'GenrationToDis....main()'</samp></strong>.<br/>
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJExecComplet.png?alt=media&token=8a0e9e8c-e8bc-4be0-97a5-50e309b4ba2d" alt="Trouvez le fichier GenrationToDisplayMain qui se trouve dans le dossier utilities qui se trouve dans le dossier com.puck qui se trouve dans le dossier src qui se trouve dans le dossier principal du projet. Faites un clique droit sur ce fichier et dans le menu déroulant cliquez sur Run 'GenrationToDis....main()'">
+    </li>
+  </ol>
+  
 </details>
 
 ### Sur la ligne de commande pour executer le programme directement en mode utilisateur.
