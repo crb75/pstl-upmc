@@ -317,6 +317,6 @@
   </details>
 
   <details>
-    <summary>Génerer le fichier <samp>XML</samp> de graph de dépendance manuellement.</summary>
-    Lorem ipsum dolor sit amet.
+    <summary>Chargez un fichier <samp>XML</samp> de graph de dépendance à afficher.</summary>
+    Vous pouvez utiliser un fichier <samp>XML</samp> qui représente une graphe de dépendance d'un programme <samp>Java</samp>. Pour ce faire cliquez sur le bouton <strong><samp>Fichier XML</samp></strong> dans la section <samp>Utiliser directement votre propre fichier XML</samp>. Une fois que vous avez cliquez sur ce bouton, sélectionnez le fichier <samp>XML</samp> depuis l'exploirateur des fichiers qui s'ouvre. Après avoir sélectionné le fichier <samp>XML</samp> appuyez sur le bouton <strong><samp>Run</samp></strong>.
   </details>
