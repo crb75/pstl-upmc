@@ -10,6 +10,7 @@ import com.puck.display.piccolo2d.NewDisplayDG;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -136,6 +137,7 @@ public class MainController {
 		printLines(command + " stdout:", pro.getInputStream());
 		printLines(command + " stderr:", pro.getErrorStream());
 		pro.waitFor();
+		displaySuccess();
 		System.out.println(command + " exitValue() " + pro.exitValue());
 		NewDisplayDG.main(new String[] { "DependecyGraph.xml" });
 		consoleArea.appendText(command + " exitValue() " + pro.exitValue());
@@ -162,4 +164,10 @@ public class MainController {
 			e.printStackTrace();
 		}
 	}
+	 private void displaySuccess() {
+		        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+		        alert.setTitle("Success");
+		        alert.setHeaderText("Sucess");
+		        alert.showAndWait();
+		    }
 }
