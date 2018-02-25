@@ -290,3 +290,15 @@
 
   Une fois que vous avez réussi à lancer l'interface graphique en exécutant le fichier <samp>GenrationToDisplayMain</samp> vous devez avoir la fenêtre suivante : <br/>
   <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FinterfaceAdmin.png?alt=media&token=c84628f0-899c-4515-a7fc-3987bf791f5d" alt="L'interface de l'application">
+
+  Cette interface vous donne deux options tel que:
+
+  <details>
+    <summary><strong>Génerer la graphe de dépendance à afficher</strong> par le code source <samp>Java.</samp></summary>
+    Lorem ipsum dolor sit amet
+  </details>
+
+  <details>
+    <summary>Génerer le fichier <samp>XML</samp> de graph de dépendance manuellement.</summary>
+    Lorem ipsum dolor sit amet.
+  </details>
