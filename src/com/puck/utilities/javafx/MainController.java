@@ -1,4 +1,4 @@
-package com.puck.utilities;
+package com.puck.utilities.javafx;
 
 import java.io.BufferedReader;
 import java.io.File;

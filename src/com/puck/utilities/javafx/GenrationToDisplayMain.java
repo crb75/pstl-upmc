@@ -1,4 +1,4 @@
-package com.puck.utilities;
+package com.puck.utilities.javafx;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
