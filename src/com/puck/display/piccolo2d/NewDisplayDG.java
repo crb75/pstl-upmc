@@ -50,7 +50,6 @@ public class NewDisplayDG extends JFrame {
 		addEvent(root, root,canvas,menu,listNodes);
 		canvas.getLayer().addChild(root);
 		canvas.getLayer().addChild(ANH);
-		System.out.println(listNodes.get("c01").getType());
 		
 		
 	}

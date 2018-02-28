@@ -25,6 +25,14 @@ public class PiccoloCustomNode extends PNode {
 	private NodeContent content;
 	private PPath rect;
 	private Collection<PiccoloCustomNode> hiddenchildren;
+	public Collection<PiccoloCustomNode> getHiddenchildren() {
+		return hiddenchildren;
+	}
+
+	public void setHiddenchildren(Collection<PiccoloCustomNode> hiddenchildren) {
+		this.hiddenchildren = hiddenchildren;
+	}
+
 	private double margin = 10;
 	private String idNode;
 	private PiccoloCustomNode parent;
