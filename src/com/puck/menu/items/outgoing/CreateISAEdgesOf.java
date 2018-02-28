@@ -54,6 +54,7 @@ public class CreateISAEdgesOf extends JMenuItem {
 					if (to.getParent() instanceof PiccoloCustomNode
 							&& !((PiccoloCustomNode) to.getParent()).isHidden()) {
 						ANH.addArrow(new ParrowExtends(from, to, from, to));
+						ANH.updateAllPosition();
 					} else {
 						for (PiccoloCustomNode pnode : ((PiccoloCustomNode) to).getAscendency()) {
 							if (!pnode.isHidden()) {

@@ -27,6 +27,7 @@ public class ArrowNodesHolder extends PNode{
                     removeArrow(arr);
             }
             addChild(arrow);
+           // updatePosition(arrow);
     }
     public void removeArrow(Parrow arrow){
         removeChild(arrow);
@@ -173,6 +174,11 @@ public class ArrowNodesHolder extends PNode{
         }
     }
 
+    public void updateAllPosition() {
+    	for (Parrow parrow : getVisibleArrows()) {
+			updatePosition(parrow);
+		}
+    }
     private int margin=10;
 
 //	public void updateCount(ParrowDottedFat parrow) {
