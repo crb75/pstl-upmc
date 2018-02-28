@@ -50,7 +50,7 @@ public class NewDisplayDG extends JFrame {
 		addEvent(root, root,canvas,menu,listNodes);
 		canvas.getLayer().addChild(root);
 		canvas.getLayer().addChild(ANH);
-		//System.out.println(listNodes);
+		System.out.println(listNodes.get("c01").getType());
 		
 		
 	}
@@ -61,13 +61,13 @@ public class NewDisplayDG extends JFrame {
 		Collection<PiccoloCustomNode> listePNode = new ArrayList<>();
 		
 
-		PiccoloCustomNode root = new PiccoloCustomNode("root", "r01");
+		PiccoloCustomNode root = new PiccoloCustomNode("root", "r01","root");
 		for (Entry<String, Node> entry : listNodes.entrySet()) {
 			String key = entry.getKey();
 			Node n = entry.getValue();
 			if (n.getType().equals("package")) {
 				Node packag = n;
-				PiccoloCustomNode p = new PiccoloCustomNode(packag.getName(), packag.getId());
+				PiccoloCustomNode p = new PiccoloCustomNode(packag.getName(), packag.getId(),n.getType());
 				allPNodes.put(p.getidNode(), p);
 				p.setName(packag.getName());
 				// les relation contain du package
@@ -84,7 +84,7 @@ public class NewDisplayDG extends JFrame {
 						pnode.setName(node.getName());
 						children.add(pnode);
 					} else {
-						pnode = new PiccoloCustomNode(node.getName(), node.getId());
+						pnode = new PiccoloCustomNode(node.getName(), node.getId(),node.getType());
 						allPNodes.put(pnode.getidNode(), pnode);
 						pnode = structureToPiccolo(node, pnode);
 						pnode.setName(node.getName());
@@ -105,7 +105,7 @@ public class NewDisplayDG extends JFrame {
 
 	public PiccoloCustomNode structureToPiccolo(Node node, PiccoloCustomNode pnode) {
 		if (pnode.getidNode() == null) {
-			pnode = new PiccoloCustomNode(node.getName(), node.getId());
+			pnode = new PiccoloCustomNode(node.getName(), node.getId(),node.getType());
 			pnode.setName(node.getName());
 		}
 		Collection<PiccoloCustomNode> children = new ArrayList<>();
@@ -114,7 +114,7 @@ public class NewDisplayDG extends JFrame {
 			Edge e = edgeEntry.getValue();
 			if (e.getType().equals("contains")) {
 				Node n = listNodes.get(e.getTo());
-				PiccoloCustomNode pnodeBis = new PiccoloCustomNode(n.getName(), n.getId());
+				PiccoloCustomNode pnodeBis = new PiccoloCustomNode(n.getName(), n.getId(),n.getType());
 				pnodeBis.setName(n.getName());
 				pnode.setParentNode(pnode);
 				allPNodes.put(pnodeBis.getidNode(), pnodeBis);

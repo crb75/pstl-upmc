@@ -91,12 +91,12 @@ public class PiccoloCustomNode extends PNode {
 		this.hiddenchildren = new ArrayList<>();
 	}
 
-	public PiccoloCustomNode(String textContent, String idNode) {
+	public PiccoloCustomNode(String textContent, String idNode, String type) {
 
 		this.idNode = idNode;
 
 		hiddenchildren = new ArrayList<>();
-		content = new NodeContent(new PText(textContent));
+		content = new NodeContent(new PText(textContent), type);
 
 		double width = margin + content.getBounds().getWidth() + margin;
 		double height = margin + content.getBounds().getHeight() + margin;
@@ -173,48 +173,6 @@ public class PiccoloCustomNode extends PNode {
 
 	}
 
-//	public void redrawEdges(PCanvas canvas, PiccoloCustomNode clickedNode) {
-//		System.out.println("Je suis dans pcustom " + this.getidNode());
-//		// juste pour deplacer la fleche quand le noued qui contient la fleche est ferme
-//		if (clickedNode.outgoing.size() != 0 && clickedNode.isHidden() == false) {
-//			for (Parrow parrow : clickedNode.getOutgoing()) {
-//				Collection<Parrow> arrowsCol = (Collection<Parrow>) clickedNode.getOutgoing().clone();
-//				canvas.getLayer().removeChild(parrow);
-//				clickedNode.getOutgoing().remove(parrow);
-//				parrow = parrow.redraw();
-//				clickedNode.getOutgoing().add(parrow);
-//				canvas.getLayer().addChild(parrow);
-//			}
-//		}
-//		Collection<PiccoloCustomNode> children;
-//		if (!hiddenchildren.isEmpty()) {
-//			children = hiddenchildren;
-//		} else {
-//			children = getAllChildren();
-//		}
-//		if(clickedNode.isHidden() == false) {
-//		for (PiccoloCustomNode PCN : children) {
-//			Collection<Parrow> arrowsCol = (Collection<Parrow>) PCN.getOutgoing().clone();
-//			for (Parrow parrow : arrowsCol) {
-//				if (PCN.isHidden()) {
-//					canvas.getLayer().removeChild(parrow);
-//					 PCN.getOutgoing().remove(parrow);
-//					 parrow = parrow.redraw(this);
-//					 PCN.getOutgoing().add(parrow);		 
-//					 canvas.getLayer().addChild(parrow);
-//				}
-//				else {
-//					 canvas.getLayer().removeChild(parrow);
-//					 PCN.getOutgoing().remove(parrow);
-//					 parrow = parrow.redraw(PCN);
-//					 PCN.getOutgoing().add(parrow);		 
-//					 canvas.getLayer().addChild(parrow);
-//				}
-//			}
-//			redrawEdges(canvas, PCN);
-//		}
-//		}
-//	}
 
 	public void toggleChildren() {
 		Collection<PiccoloCustomNode> children = getChildren();
@@ -470,7 +428,7 @@ public class PiccoloCustomNode extends PNode {
 		double y = GLobalTranslation.getY();
 		double w = content.getBounds().getWidth();
 		double h = content.getBounds().getHeight();
-		content.setBounds(x, y, w, h);
+		content.setBounds(x+content.getIcon().getWidth()+content.getMargin(), y, w, h);
 
 		if (debug)
 			canvas.getLayer().addChild(PPath.createRectangle(x, y, w, h));
@@ -489,7 +447,7 @@ public class PiccoloCustomNode extends PNode {
 		double w = content.getText().getBounds().getWidth();
 		double h = content.getText().getBounds().getHeight();
 
-		content.getText().setBounds(x, y, w, h);
+		content.getText().setBounds(x+content.getIcon().getWidth()+content.getMargin(), y, w, h);
 
 		if (debug)
 			content.addChild(PPath.createRectangle(x, y, w, h));
