@@ -44,6 +44,7 @@ public class HideNode extends JMenuItem {
 			RemoveEdgesOf removeEdges = new RemoveEdgesOf(pnode, canvas, allPNodes, menu, ANH, listNodes);
 			removeEdges.drawOutgoingdges(pnode,canvas);
 			PiccoloCustomNode parent = pnode.getParentNode();
+			parent.getHiddenchildren().add(pnode);
 			parent.removeChild(pnode);
 			if (fromAscendency.size() > 0) {
 				fromAscendency.get(fromAscendency.size()-1).setLayout();

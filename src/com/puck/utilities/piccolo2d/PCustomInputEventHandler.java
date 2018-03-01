@@ -21,6 +21,7 @@ import org.piccolo2d.util.PBounds;
 import com.puck.arrows.ArrowNodesHolder;
 import com.puck.arrows.Parrow;
 import com.puck.menu.Menu;
+import com.puck.menu.items.FocusNode;
 import com.puck.menu.items.HideNode;
 import com.puck.menu.items.ingoing.CreateEdgesBy;
 import com.puck.menu.items.ingoing.CreateEgdesHierarchyBy;
@@ -50,6 +51,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	private Map<String, Node> listNodes;
 	private ArrowNodesHolder ANH;
 	private HideNode hideNode ;
+	private FocusNode focusNode;
 
 	public PCustomInputEventHandler(PiccoloCustomNode pnode, PiccoloCustomNode root, PSwingCanvas canvas,
 			Map<String, PiccoloCustomNode> allPNodes, Menu menu, ArrowNodesHolder ANH, Map<String, Node> listNodes) {
@@ -67,6 +69,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		createEgdesHierarchyBy = new CreateEgdesHierarchyBy(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
 		createEgdesHierarchyOf = new CreateEgdesHierarchyOf(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
 		hideNode = new HideNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
+		focusNode = new FocusNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
 
 	}
 
@@ -122,6 +125,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		menu.add(removeEdgesOf);
 		menu.addSeparator();
 		menu.add(hideNode);
+		menu.add(focusNode);
 		menu.setPoint(aEvent.getPosition());
 		menu.setCanvas(canvas);
 		menu.drawMenu();

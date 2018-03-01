@@ -88,7 +88,8 @@ public class PiccoloCustomNode extends PNode {
 	}
 
 	public PiccoloCustomNode getParentNode() {
-		return parent;
+			return parent;
+		
 	}
 
 	// endregion
