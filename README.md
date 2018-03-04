@@ -288,7 +288,7 @@
   - Pour lancer la partie principale avec l'interface administration
 
   ```shell
-    nt InterfaceAdmin
+    ant InterfaceAdmin
   ```
 - **Windows** <br/>
   Exécutez le fichier <samp>run.bat</samp>.
