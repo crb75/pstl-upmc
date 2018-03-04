@@ -322,20 +322,20 @@
   </details>
 
   Après avoir lancé le programme en utilisant le module ExtendJ et les fichiers Java ou en utilisant simplement un fichier XML vous arrivez sur l'interface graphique de la graphe de dépendance comme ceci:
-  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fuidg0.png?alt=media&token=3b255c03-98e4-42d3-9afc-f64ea6336ed7" alt="Interface graphique de graphe de dépendance au démarrage">
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fuidg0.png?alt=media&token=ccd5d297-0718-461d-aef9-1d3f75522a60" alt="Interface graphique de graphe de dépendance au démarrage">
   Au démarrage cet interface contient qu'un seul noeud qui s'appelle <samp>root</samp>. Ce noeud est considéré comme le noeud racine de toute la graphe.
   
 <ul>
   <li>
     Si vous <strong>cliquez gauche sur la partie textuel d'un noeud fermé</strong> vous pouvez l'<strong>ouvrir</stronh> pour voir ses noeuds enfants.<br/>
-    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fuidg1.png?alt=media&token=2c962403-42c3-41ad-8a23-315ef136698c" alt="Tous les noeuds sont ouverts"/>
+    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fuidg1.png?alt=media&token=996ed984-1924-4f18-8410-ac9c43e88e8e" alt="Tous les noeuds sont ouverts"/>
   </li>
   <li>
     De même pour <strong>un noeud ouvert cliquez gauche sur la partie textuel pour le refermer</strong>. 
   </li>
   <li>
     Toujours sur la partie textuel d'un noeud, vous pouvez cliquez droit pour afficher le menu.
-    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FuidgMenu.png?alt=media&token=1161ffad-1c99-42f1-b9f1-af327c7e012d" alt="Menu">
+    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FuidgMenu.png?alt=media&token=3191be29-b7fe-493b-9461-ec38c10221b0" alt="Menu">
     Sur ce menu vous avez 5 options qui sont les suivants:
     <ul>
       <li>
@@ -354,6 +354,6 @@
         <samp>Hide edges</samp>: Cette option permet de cacher les flèches concernant le noeud sur lequel on a affiché le menu.
       </li>
     </ul>
-    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FuidgAll.png?alt=media&token=16b5e131-8e02-4f98-a0fd-8edce82bfa7d" alt="Exemple avec les flèches">
+    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FuidgAll.png?alt=media&token=148688fa-ea72-495e-bed5-9f22bc63d222" alt="Exemple avec les flèches">
   </li>
 </ul>
