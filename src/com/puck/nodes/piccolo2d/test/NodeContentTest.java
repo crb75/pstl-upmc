@@ -196,7 +196,7 @@ class NodeContentTest {
 	 * Cette méthode permet de tester la méthode getIcon qui permet d'obtenir l'attribut icon de la classe NodeContent.
 	 * Pour tester cette méthode, on commence par initialiser une variable nc de type NodeContent avec le text "Test" ainsi que la chaîne de caractères 'package' pour définir le type du noeud
 	 * Ensuite on appelle la méthode getIcon() sur la variable nc
-	 * Par défaut l'icon est initialisé à null, donc on teste si le résultat obtenu par ce est égale à null
+	 * Par défaut tout type de noeud a son propre icon, donc on teste si l'appel de la méthode getIcon() est non null
 	 * */
 	@Test
 	final void testGetIcon() {
@@ -214,9 +214,9 @@ class NodeContentTest {
 		Logger.logMethod(methodeName, message);
 		message = "On appelle maintenant la méthode getIcon sur cette variable";
 		Logger.logMethod(methodeName, message);
-		message = "Par défaut, l'attribut icon est initialisée à null. Donc on teste si le résultat retourné par cet appel est null";
+		message = "Par défaut tout type de noeud a son propre icon, donc on teste si l'appel de la méthode getIcon() est non null";
 		Logger.logMethod(methodeName, message);
-		if (nc.getIcon() == null)
+		if (nc.getIcon() != null)
 		{
 			message = "Le résultat attendu correspond bien avec le résultat obtenu";
 			Logger.logMethod(methodeName, message);
@@ -226,7 +226,7 @@ class NodeContentTest {
 			message = "Le résultat obtenu ne correspond pas avec le résultat attendu";
 			Logger.logError(methodeName, message);
 		}
-		assertNull(nc.getIcon());
+		assertNotNull(nc.getIcon());
 		message = "Fin d'appel de la méthode";
 		Logger.logMethod(methodeName, message);
 	}
