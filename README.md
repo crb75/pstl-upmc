@@ -254,7 +254,7 @@
     </li>
     <li>
       Sur la fênetre intitulée <samp>Select Java Application</samp> <strong>sélectionnez <samp>GenrationToDisplayMain - com.puck.utilities.javafx</samp></strong>. Puis cliquez sur le bouton <strong><samp>OK</samp></strong>.<br/>
-      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipseExecComplet.png?alt=media&token=6d2525f8-b373-4fed-afbe-facd43af58dc" alt="Sur la fenêtre intitulée Select Java Application sélectionnez GenrationToDisplayMain - com.puck.utilities.javafx. Puis cliquez sur le bouton OK.">
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipseExecComplet.png?alt=media&token=5f5e9ca4-3ba9-4646-b0fd-a43309f3bc63" alt="Sur la fenêtre intitulée Select Java Application sélectionnez GenrationToDisplayMain - com.puck.utilities.javafx. Puis cliquez sur le bouton OK.">
     </li>
   </ol>
 
