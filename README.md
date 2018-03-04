@@ -279,9 +279,16 @@
 ### Sur la ligne de commande pour executer le programme directement en mode utilisateur.
 
 - **Systèmes UNIX** <br/>
-  Exécutez la commande 
+  - Pour lancer uniquement l'interface d'affichage de la graphe de dépendance en utilisant le fichier xml prédéfini <samp>mongraph.xml</samp>
+
   ```shell
-  ./run.sh
+    ant InterfaceAffichageGrapheDeDependance
+  ```
+
+  - Pour lancer la partie principale avec l'interface administration
+
+  ```shell
+    nt InterfaceAdmin
   ```
 - **Windows** <br/>
   Exécutez le fichier <samp>run.bat</samp>.
