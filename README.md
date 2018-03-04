@@ -281,7 +281,7 @@
 - **Systèmes UNIX** <br/>
   Exécutez la commande 
   ```shell
-  sh run.sh
+  ./run.sh
   ```
 - **Windows** <br/>
   Exécutez le fichier <samp>run.bat</samp>.
