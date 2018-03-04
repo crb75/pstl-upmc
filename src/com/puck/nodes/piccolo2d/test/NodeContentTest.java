@@ -34,7 +34,7 @@ class NodeContentTest {
 	/*
 	 * Cette méthode permet de tester la méthode getMargin de la classe NodeContent 
 	 * qui permet de retourner l'attribut margin de la classe. Pour tester cette méthode on suit les démarches suivantes:
-	 * - On initialise une variable nc de type NodeContent avec une variable de type PText qui contient le text "Test"
+	 * - On initialise une variable nc de type NodeContent avec une variable de type PText qui contient le text "Test" et avec une variable de type String initialisée à 'package' pour définir le type du noeud 
 	 * - Puis on appelle la méthode getMargin sur cette objet nc. 
 	 * - On sait que l'attribut margin par défaut vaut 10
 	 * - Pour conclure le test on contrôle si la valeur retourné par la méthode est bien égale a 10 
@@ -47,10 +47,10 @@ class NodeContentTest {
 		Logger.logMethod(methodeName, message);
 		message = "Cette méthode permet de tester la méthode getMargin de la classe NodeContent qui permet d'obtenir l'attribut margin de la classe NodeContent";
 		Logger.logMethod(methodeName, message);
-		message = "Pour tester cette méthode on commence par initialiser une variable nc de type NodeContent avec une variable de type PText qui contient le text \"Test\"";
+		message = "Pour tester cette méthode on commence par initialiser une variable nc de type NodeContent avec une variable de type PText qui contient le text \"Test\" et avec une variable de type String initialisée à 'package' pour définir le type du noeud";
 		Logger.logMethod(methodeName, message);
 		String nct1 = "Test";
-		NodeContent nc = new NodeContent(new PText(nct1));
+		NodeContent nc = new NodeContent(new PText(nct1), "package");
 		message = "La variable nc est bien été initialisé";
 		Logger.logMethod(methodeName, message);
 		message = "On sait que la marge par défaut est 10. On teste maintenant si le résultat retourné par cet appel est bien 10";
@@ -72,7 +72,7 @@ class NodeContentTest {
 
 	/*
 	 * Cette méthode permet de tester la méthode setMargin(margin:int) de la classe NodeContent qui permet de changer la valeur de l'attribut margin de la classe NodeContent par la nouvelle valeur margin passée en paramètre
-	 * Pour tester cette méthode on commence par créer une variable nc de type NodeContent en passant une variable de type PText initialisé avec le String "Test" en paramètres.
+	 * Pour tester cette méthode on commence par créer une variable nc de type NodeContent en passant une variable de type PText initialisé avec le String "Test" en paramètres ainsi que la chaîne de caractères 'package' pour définir le type du noeud .
 	 * On appelle en suite la méthode setMargin avec margin = 10000 qui permet de changer la valeur de l'attribut margin de 10 à 10000.
 	 * Pour tester si toute est bien passée, on teste si la valeur retourné par la méthode getMargin() est égale à la nouvelle valeur de la margin.
 	 * */
@@ -84,10 +84,10 @@ class NodeContentTest {
 		Logger.logMethod(methodeName, message);
 		message = "Cette méthode permet de tester la méthode setMargin(margin:int) de la classe NodeContent qui permet de changer la valeur de l'attribut margin de la classe NodeContent par la nouvelle valeur margin passée en paramètres";
 		Logger.logMethod(methodeName, message);
-		message = "Pour tester cette méthode on commence par créer une variable nc de type NodeContent en passant une variable de type PText initialisé avec le String \"Test\" en paramètres.";
+		message = "Pour tester cette méthode on commence par créer une variable nc de type NodeContent en passant une variable de type PText initialisé avec le String \"Test\" ainsi que la chaîne des caractères 'package' pour définir le type du noued en paramètres.";
 		Logger.logMethod(methodeName, message);
 		String nct1 = "Test";
-		NodeContent nc = new NodeContent(new PText(nct1));
+		NodeContent nc = new NodeContent(new PText(nct1), "package");
 		message = "La variable nc est bien initialisée";
 		Logger.logMethod(methodeName, message);
 		int margin = 10000;
@@ -115,7 +115,7 @@ class NodeContentTest {
 
 	/*
 	 * Cette méthode permet de tester la méthode getText() de la classe NodeContent qui permet de retourner l'attribut Text de la classe NodeContent
-	 * Pour tester cette méthode on commence par initialiser une variable nc de type NodeContent en passant en paramtères une variable de type PText avec la chaîne des caractères "Test"
+	 * Pour tester cette méthode on commence par initialiser une variable nc de type NodeContent en passant en paramtères une variable de type PText avec la chaîne des caractères "Test" ainsi qu'une chaîne de caractères 'package' pour définir le type du noeud
 	 * Puis on appelle la méthode getText() sur cette variable, et on teste si le résultat est non null
 	 * */
 	@Test
@@ -126,10 +126,10 @@ class NodeContentTest {
 		Logger.logMethod(methodeName, message);
 		message = "Cette méthode permet de tester la méthode getText() de la classe NodeContent qui permet de retourner l'attribut Text de la classe NodeContent";
 		Logger.logMethod(methodeName, message);
-		message = "Pour tester cette méthode on commence par initialiser une variable nc de type NodeContent en passant en paramtères une variable de type PText avec la chaîne des caractères \"Test\"";
+		message = "Pour tester cette méthode on commence par initialiser une variable nc de type NodeContent en passant en paramtères une variable de type PText avec la chaîne des caractères \"Test\" ainsi que la chaîne de caractères 'package' pour définir le type du noeud";
 		Logger.logMethod(methodeName, message);
 		String nct1 = "Test";
-		NodeContent nc = new NodeContent(new PText(nct1));
+		NodeContent nc = new NodeContent(new PText(nct1),"package");
 		message = "la variable nc de type NodeContent est bien initialisée";
 		Logger.logMethod(methodeName, message);
 		message = "On appelle maintenant la méthode getText sur cette variable nc et on teste si le résultat est non null";
@@ -151,7 +151,7 @@ class NodeContentTest {
 
 	/*
 	 * Cette méthode permet de tester la méthode setText(text:String) de la classe NodeContent qui permet de changer le text de la variable.
-	 * Pour tester cette méthode on initialise d'abord une variable nc de type NodeContent avec le text "Test"
+	 * Pour tester cette méthode on initialise d'abord une variable nc de type NodeContent avec le text "Test" ainsi que la chaîne de caractères 'package' pour définir le type du noeud
 	 * Puis on appelle cette méthode avec le paramètre text = "Test 1" qui permet de changer le texte de l'objet de "Test" à "Test 1".
 	 * Pour contrôler si tout est bien passée, on appelle la méthode toString() sur la variable nc et on teste si le résultat obtenu correspond bien avec le résultat attendu.
 	 * */
@@ -163,10 +163,10 @@ class NodeContentTest {
 		Logger.logMethod(methodeName, message);
 		message = "Cette méthode permet de tester la méthode setText(text:String) de la classe NodeContent qui permet de changer le text de la variable.";
 		Logger.logMethod(methodeName, message);
-		message = "Pour tester cette méthode on initialise d'abord une variable nc de type NodeContent avec le text \"Test\"";
+		message = "Pour tester cette méthode on initialise d'abord une variable nc de type NodeContent avec le text \"Test\" ainsi que la chaîne de caractères 'package' pour définir le type du noeud";
 		Logger.logMethod(methodeName, message);
 		String nct1 = "Test";
-		NodeContent nc = new NodeContent(new PText(nct1));
+		NodeContent nc = new NodeContent(new PText(nct1),"package");
 		message = "La variable nc de type NodeContent est bien initialisée";
 		Logger.logMethod(methodeName, message);
 		message = "Puis on appelle cette méthode avec le paramètre text = \"Test 1\" qui permet de changer le texte de l'objet de \"Test\" à \"Test 1\".";
@@ -194,7 +194,7 @@ class NodeContentTest {
 
 	/*
 	 * Cette méthode permet de tester la méthode getIcon qui permet d'obtenir l'attribut icon de la classe NodeContent.
-	 * Pour tester cette méthode, on commence par initialiser une variable nc de type NodeContent avec le text "Test"$
+	 * Pour tester cette méthode, on commence par initialiser une variable nc de type NodeContent avec le text "Test" ainsi que la chaîne de caractères 'package' pour définir le type du noeud
 	 * Ensuite on appelle la méthode getIcon() sur la variable nc
 	 * Par défaut l'icon est initialisé à null, donc on teste si le résultat obtenu par ce est égale à null
 	 * */
@@ -206,10 +206,10 @@ class NodeContentTest {
 		Logger.logMethod(methodeName, message);
 		message = "Cette méthode permet de tester la méthode getIcon de la classe NodeContent qui permet d'obtenir la valeur de l'attribut icon";
 		Logger.logMethod(methodeName, message);
-		message = "Pour tester cette méthode on commence par initialiser une variable nc de type NodeContent avec le text \"Test\"";
+		message = "Pour tester cette méthode on commence par initialiser une variable nc de type NodeContent avec le text \"Test\" et avec une chaîne de caracètres 'package' pour définir le type du noeud";
 		Logger.logMethod(methodeName, message);
 		String nct1 = "Test";
-		NodeContent nc = new NodeContent(new PText(nct1));
+		NodeContent nc = new NodeContent(new PText(nct1),"package");
 		message = "La variable nc est bien initialisée";
 		Logger.logMethod(methodeName, message);
 		message = "On appelle maintenant la méthode getIcon sur cette variable";
@@ -233,7 +233,7 @@ class NodeContentTest {
 
 	/*
 	 * Cette méthode permet de tester la méthode le contructeur de la classe NodeContent.
-	 * Pour le tester on initialise une varible nc de type NodeContent avec le text Test par l'appel du constructeur
+	 * Pour le tester on initialise une varible nc de type NodeContent avec le text Test et avec le type "package" par l'appel du constructeur
 	 * Puis on teste si la variable nc n'est pas null.
 	 * */
 	@Test
@@ -244,10 +244,10 @@ class NodeContentTest {
 		Logger.logMethod(methodeName, message);
 		message = "Cette méthode permet de tester le constructeur de la classe NodeContent ";
 		Logger.logMethod(methodeName, message);
-		message = "Pour tester cette méthode, on commence par initialiser une variable nc de type NodeContent avec le text Test par l'appel du constructeur.";
+		message = "Pour tester cette méthode, on commence par initialiser une variable nc de type NodeContent avec le text Test et avec le type 'package' par l'appel du constructeur.";
 		Logger.logMethod(methodeName, message);
 		NodeContent nc;
-		nc = new NodeContent(new PText("Test"));
+		nc = new NodeContent(new PText("Test"),"package");
 		message = "La variable nc est bien été initialisée";
 		Logger.logMethod(methodeName, message);
 		message = "On teste maintenant si cette variable est non null";
@@ -268,7 +268,7 @@ class NodeContentTest {
 	/*
 	 * Cette méthode permet de tester la méthode toString() de la classe NodeContent, qui permet de donner une affichage en chaînes de caractères d'une objet de type NodeContent.
 	 * Plus précisement, cette méthode retourne le text contenu dans cette objet.
-	 * Pour tester cette méthode, on commence par initialiser une variable nc de type NodeContent avec le text Test.
+	 * Pour tester cette méthode, on commence par initialiser une variable nc de type NodeContent avec le text Test et avec le type "package".
 	 * Puis on appelle la méthode toString() sur cette variable nc qui doit normalement retourner la chaîne des caractères Test.
 	 * On teste si la valeur retournée par l'appel de la méthode correspond bien avec le résultat attendu.
 	 * */
@@ -280,9 +280,9 @@ class NodeContentTest {
 		Logger.logMethod(methodeName, message);
 		message = "Cette méthode permet de tester la méthode toString() de la classe NodeContent, qui permet de donner une affichage en chaînes de caractères d'une objet de type NodeContent.";
 		Logger.logMethod(methodeName, message);
-		message = "Pour tester cette méthode, on commence par initialiser une variable nc de type NodeContent avec le text Test.";
+		message = "Pour tester cette méthode, on commence par initialiser une variable nc de type NodeContent avec le text Test et avec le type 'package'";
 		Logger.logMethod(methodeName, message);
-		NodeContent nc = new NodeContent(new PText("Test"));
+		NodeContent nc = new NodeContent(new PText("Test"),"package");
 		message = "Cette variable nc est bien été initialisée";
 		Logger.logMethod(methodeName, message);
 		message = "Puis on appelle la méthode toString() sur cette variable nc qui doit normalement retourner la chaîne des caractères Test.";
