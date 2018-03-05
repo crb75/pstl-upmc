@@ -161,7 +161,7 @@
     <li>
       <details>
         <summary>
-          En exécutant <strong>manuellement le fichier <samp>NewDisplayDG</samp></strong> (<em>Risque de ne pas marcher si vous avez importé le projet en utilisant l'intégration <samp>git</samp></em>))
+          En exécutant <strong>manuellement le fichier <samp>NewDisplayDG</samp></strong> (<em>Risque de ne pas marcher si vous avez importé le projet en utilisant l'intégration <samp>git</samp></em>)
         </summary>
         <ol>
           <li>
