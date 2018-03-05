@@ -214,21 +214,23 @@
 
 
   <ul>
-    <details>
-      <summary>
-        En exécutant <strong>manuellement le fichier <samp>NewDisplayDG</samp></strong>
-      </summary>
-      <ol>
-        <li>
-          Faites <strong>un clique droit sur le dossier principal</strong> contenant le projet. Puis dans le menu déroulant cliquez sur <strong><samp>Java Application</samp></strong> sous la section <strong><samp>Run As</samp></strong>.<br/>
-          <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse1.png?alt=media&token=e121056e-c502-4f98-a91b-1eb40e988cfe" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
-        </li>
-        <li>
-          Sur la fênetre intitulée <samp>Select Java Application</samp> <strong>sélectionnez <samp>NewDisplayDG - com.puck.display.piccolo2d</samp></strong>. Puis cliquez sur le bouton <strong><samp>OK</samp></strong>.<br/>
-          <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse2.png?alt=media&token=95b4f994-6455-4dff-a2b8-b0aa5cc6142f" alt="Sur la fenêtre intitulée Select Java Application sélectionnez NewDisplayDG - com.puck.display.piccolo2d. Puis cliquez sur le bouton OK.">
-        </li>
-      </ol>
-    </details>
+    <li>
+      <details>
+        <summary>
+          En exécutant <strong>manuellement le fichier <samp>NewDisplayDG</samp></strong>
+        </summary>
+        <ol>
+          <li>
+            Faites <strong>un clique droit sur le dossier principal</strong> contenant le projet. Puis dans le menu déroulant cliquez sur <strong><samp>Java Application</samp></strong> sous la section <strong><samp>Run As</samp></strong>.<br/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse1.png?alt=media&token=e121056e-c502-4f98-a91b-1eb40e988cfe" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
+          </li>
+          <li>
+            Sur la fênetre intitulée <samp>Select Java Application</samp> <strong>sélectionnez <samp>NewDisplayDG - com.puck.display.piccolo2d</samp></strong>. Puis cliquez sur le bouton <strong><samp>OK</samp></strong>.<br/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse2.png?alt=media&token=95b4f994-6455-4dff-a2b8-b0aa5cc6142f" alt="Sur la fenêtre intitulée Select Java Application sélectionnez NewDisplayDG - com.puck.display.piccolo2d. Puis cliquez sur le bouton OK.">
+          </li>
+        </ol>
+      </details>
+    </li>
   </ul>
 </details>
 
