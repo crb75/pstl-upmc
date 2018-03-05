@@ -283,17 +283,42 @@
 
 <details>
   <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Feclipse.svg?alt=media&token=c1a40189-1236-407b-9568-52c292e46e3d" alt="Eclipse Logo" width="32" height="32" align="top"/> Eclipse </summary>
-
-  <ol>
+  <ul>
     <li>
-      Faites <strong>un clique droit sur le dossier principal</strong> contenant le projet. Puis dans le menu déroulant cliquez sur <strong><samp>Java Application</samp></strong> sous la section <strong><samp>Run As</samp></strong>.<br/>
-      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse1.png?alt=media&token=e121056e-c502-4f98-a91b-1eb40e988cfe" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
+      <details>
+        <summary>
+          En exécutant <strong>manuellement le fichier <samp>GenrationToDisplayMain</samp></strong>
+        </summary>
+        <ol>
+          <li>
+            Faites <strong>un clique droit sur le dossier principal</strong> contenant le projet. Puis dans le menu déroulant cliquez sur <strong><samp>Java Application</samp></strong> sous la section <strong><samp>Run As</samp></strong>.<br/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse1.png?alt=media&token=e121056e-c502-4f98-a91b-1eb40e988cfe" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
+          </li>
+          <li>
+            Sur la fenêtre intitulée <samp>Select Java Application</samp> <strong>sélectionnez <samp>GenrationToDisplayMain - com.puck.utilities.javafx</samp></strong>. Puis cliquez sur le bouton <strong><samp>OK</samp></strong>.<br/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipseExecComplet.png?alt=media&token=5f5e9ca4-3ba9-4646-b0fd-a43309f3bc63" alt="Sur la fenêtre intitulée Select Java Application sélectionnez GenrationToDisplayMain - com.puck.utilities.javafx. Puis cliquez sur le bouton OK.">
+          </li>
+        </ol>
+      </details>
     </li>
     <li>
-      Sur la fenêtre intitulée <samp>Select Java Application</samp> <strong>sélectionnez <samp>GenrationToDisplayMain - com.puck.utilities.javafx</samp></strong>. Puis cliquez sur le bouton <strong><samp>OK</samp></strong>.<br/>
-      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipseExecComplet.png?alt=media&token=5f5e9ca4-3ba9-4646-b0fd-a43309f3bc63" alt="Sur la fenêtre intitulée Select Java Application sélectionnez GenrationToDisplayMain - com.puck.utilities.javafx. Puis cliquez sur le bouton OK.">
+      <details>
+        <summary>
+          En utilisant le fichier <strong><samp>build.xml</samp></strong>
+        </summary>
+        <ol>
+          <li>
+            Faites <strong>un clique droit sur le fichier <samp>build.xml</samp></strong> dans le répertoire principal de projet. Puis dans le menu déroulant cliquez sur <strong><samp>2 Ant Build...</samp></strong> sous la section <strong><samp>Run As</samp></strong>.<br/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse0.png?alt=media&token=f61f27e5-c1d5-48b4-88bc-ea0cfd37bdb2" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur 2 Ant Build... sous la section Run As">
+          </li>
+          <li>
+            Sur la fenêtre intitulée <samp>Edit Configuration</samp> <strong>chochez les cases <samp>build [default]</samp> et <samp>InterfaceAdmin</samp></strong>. Vérifiez bien que l'ordre dans la section <samp>Target execution order:</samp> est <samp>build, InterfaceAdmin</samp>. Puis cliquez sur le bouton <strong><samp>Run</samp></strong>.<br/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse1.png?alt=media&token=03bc934d-3841-4ae3-b8d3-d39f130329d9" alt="Sur la fenêtre intitulée Edit Configuration cochez les cases build [default] et InterfaceAdmin. Vérifiez bien que l'ordre dans la section Target execution order est build, InterfaceAdmin. Puis cliquez sur le bouton Run">
+          </li>
+        </ol>
+      </details>
     </li>
-  </ol>
+  </ul>
 
 </details>
 
