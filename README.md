@@ -121,7 +121,6 @@
     Appuyez sur bouton <strong><samp>Yes</samp></strong> sur la boîte de dialogue qui vous demande d'ouvrir le projet IntelliJ que vous venez de cloner.<br/>
     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJImportFromGitOpen.png?alt=media&token=0d64ddc7-965e-45b1-ba5a-284d6bd1c7f3" alt="Appuyez sur le bouton Yes sur la boîte de dialogue qui vous demande de créer un projet d'IntelliJ en partant les sources clonées.">
     </li>
- 
     <li>
     Happy coding 😊
     </li>
