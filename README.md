@@ -319,7 +319,7 @@
         <ol>
           <li>
             Chargez le projet <strong>en sélectionnant le projet</strong> sur la fenêtre de démarrage.<br/>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunIntelliJ1.png?alt=media&token=fc23661d-95d6-4d9d-b3f4-e90e7bc0bb6a" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJOpenForAntbuild.png?alt=media&token=bdd1f3e9-50fb-4b60-8563-176237fbebca" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
           </li>
           <li>
             Trouvez le fichier <strong><samp>GenrationToDisplayMain</samp></strong> qui se trouve dans le dossier <samp>javafx</samp> qui se trouve dans le dossier <samp>utilities</samp> qui se trouve dans le dossier <samp>com.puck</samp> qui se trouve dans le dossier <samp>src</samp> qui se trouve dans le dossier principal du projet. <strong>Faites un clique droit sur ce fichier</strong> et dans le menu déroulant <strong>cliquez sur <samp>Run 'GenrationToDis....main()'</samp></strong>.<br/>
