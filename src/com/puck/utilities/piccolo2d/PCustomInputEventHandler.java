@@ -102,7 +102,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 					canvas.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mousePressed(MouseEvent e) {
-							if (!menu.getP().getGlobalFullBounds().contains(e.getPoint().getX()+5,e.getPoint().getY()+5))
+							if (!menu.getP().getGlobalFullBounds().contains(e.getPoint().getX()+20,e.getPoint().getY()+20))
 								menu.hideMenu();	
 						}
 					});
