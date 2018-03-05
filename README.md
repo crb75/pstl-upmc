@@ -225,8 +225,25 @@
             <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse1.png?alt=media&token=e121056e-c502-4f98-a91b-1eb40e988cfe" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
           </li>
           <li>
-            Sur la fênetre intitulée <samp>Select Java Application</samp> <strong>sélectionnez <samp>NewDisplayDG - com.puck.display.piccolo2d</samp></strong>. Puis cliquez sur le bouton <strong><samp>OK</samp></strong>.<br/>
+            Sur la fenêtre intitulée <samp>Select Java Application</samp> <strong>sélectionnez <samp>NewDisplayDG - com.puck.display.piccolo2d</samp></strong>. Puis cliquez sur le bouton <strong><samp>OK</samp></strong>.<br/>
             <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse2.png?alt=media&token=95b4f994-6455-4dff-a2b8-b0aa5cc6142f" alt="Sur la fenêtre intitulée Select Java Application sélectionnez NewDisplayDG - com.puck.display.piccolo2d. Puis cliquez sur le bouton OK.">
+          </li>
+        </ol>
+      </details>
+    </li>
+    <li>
+      <details>
+        <summary>
+          En utilisant le fichier <strong><samp>build.xml</samp></strong>
+        </summary>
+        <ol>
+          <li>
+            Faites <strong>un clique droit sur le fichier <samp>build.xml</samp></strong> dans le répertoire principal de projet. Puis dans le menu déroulant cliquez sur <strong><samp>2 Ant Build...</samp></strong> sous la section <strong><samp>Run As</samp></strong>.<br/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse0.png?alt=media&token=f61f27e5-c1d5-48b4-88bc-ea0cfd37bdb2" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur 2 Ant Build... sous la section Run As">
+          </li>
+          <li>
+            Sur la fenêtre intitulée <samp>Edit Configuration</samp> <strong>chochez les cases <samp>build [default]</samp> et <samp>InterfaceAffichageGrapheDeDependance</samp></strong>. Vérifiez bien que l'ordre dans la section <samp>Target execution order:</samp> est <samp>build, InterfaceAffichageGrapheDeDependance</samp>. Puis cliquez sur le bouton <strong><samp>Run</samp></strong>.<br/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse2.png?alt=media&token=37b290cf-96d2-4f4a-8c16-7010f22cab6f" alt="Sur la fenêtre intitulée Edit Configuration cochez les cases build [default] et InterfaceAffichageGrapheDeDependance. Vérifiez bien que l'ordre dans la section Target execution order est build, InterfaceAffichageGrapheDeDependance. Puis cliquez sur le bouton Run">
           </li>
         </ol>
       </details>
@@ -273,7 +290,7 @@
       <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse1.png?alt=media&token=e121056e-c502-4f98-a91b-1eb40e988cfe" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
     </li>
     <li>
-      Sur la fênetre intitulée <samp>Select Java Application</samp> <strong>sélectionnez <samp>GenrationToDisplayMain - com.puck.utilities.javafx</samp></strong>. Puis cliquez sur le bouton <strong><samp>OK</samp></strong>.<br/>
+      Sur la fenêtre intitulée <samp>Select Java Application</samp> <strong>sélectionnez <samp>GenrationToDisplayMain - com.puck.utilities.javafx</samp></strong>. Puis cliquez sur le bouton <strong><samp>OK</samp></strong>.<br/>
       <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FeclipseExecComplet.png?alt=media&token=5f5e9ca4-3ba9-4646-b0fd-a43309f3bc63" alt="Sur la fenêtre intitulée Select Java Application sélectionnez GenrationToDisplayMain - com.puck.utilities.javafx. Puis cliquez sur le bouton OK.">
     </li>
   </ol>
