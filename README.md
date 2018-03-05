@@ -206,9 +206,8 @@
 
 ## Guide d'exécution 
 
-### Sur votre IDE préféré
 
-#### Uniquement la partie de graphe de dépendance
+### Uniquement la partie de graphe de dépendance
 
 <details>
   <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Feclipse.svg?alt=media&token=c1a40189-1236-407b-9568-52c292e46e3d" alt="Eclipse Logo" width="32" height="32" align="top"/> Eclipse </summary>
@@ -254,7 +253,7 @@
   </ol>
 </details>
 
-#### L'application complet
+### L'application complet
 
 <details>
   <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Feclipse.svg?alt=media&token=c1a40189-1236-407b-9568-52c292e46e3d" alt="Eclipse Logo" width="32" height="32" align="top"/> Eclipse </summary>
@@ -302,18 +301,6 @@
 
 ### Sur la ligne de commande pour executer le programme directement en mode utilisateur.
 
-- **Systèmes UNIX** <br/>
-  - Pour lancer uniquement l'interface d'affichage de la graphe de dépendance en utilisant le fichier xml prédéfini <samp>mongraph.xml</samp>
-
-  ```shell
-    ant InterfaceAffichageGrapheDeDependance
-  ```
-
-  - Pour lancer la partie principale avec l'interface administration
-
-  ```shell
-    ant InterfaceAdmin
-  ```
 - **Windows** <br/>
   Exécutez le fichier <samp>run.bat</samp>.
 
