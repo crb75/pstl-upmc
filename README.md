@@ -223,7 +223,7 @@
         <ol>
           <li>
              Chargez le projet <strong>en sélectionnant le projet</strong> sur la fenêtre de démarrage.<br/>
-              <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunIntelliJ1.png?alt=media&token=fc23661d-95d6-4d9d-b3f4-e90e7bc0bb6a" alt="Chargez le projet en sélectionnant le projet sur la fenêtre de démarrage">
+              <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJOpenForAntbuild.png?alt=media&token=bdd1f3e9-50fb-4b60-8563-176237fbebca" alt="Chargez le projet en sélectionnant le projet sur la fenêtre de démarrage">
           </li>
           <li>
               Dans la partie intitulé <samp>Ant Build</samp> qui se trouve à droite de la fenêtre <samp>d'IntelliJ</samp>, cliquez deux fois sur la cible <strong><samp>Build</samp></strong>. <em>( Contrairement à Eclipse IntelliJ ne build pas les projets automatiquement, donc il faut le faire manuellement.) <br/>
@@ -310,16 +310,43 @@
 <details>
   <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJ_IDEA_Logo.svg?alt=media&token=4f8c266b-4d1c-4fa5-972a-19dbb23ad1be" alt="Eclipse Logo" width="32" height="32" align="top"/> IntelliJ </summary>
 
-  <ol>
+  <ul>
     <li>
-      Chargez le projet <strong>en sélectionnant le projet</strong> sur la fenêtre de démarrage.<br/>
-      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunIntelliJ1.png?alt=media&token=fc23661d-95d6-4d9d-b3f4-e90e7bc0bb6a" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
+      <details>
+        <summary>
+          En exécutant manuelement le fichier <samp>GenrationToDisplayMain</samp>.
+        </summary>
+        <ol>
+          <li>
+            Chargez le projet <strong>en sélectionnant le projet</strong> sur la fenêtre de démarrage.<br/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunIntelliJ1.png?alt=media&token=fc23661d-95d6-4d9d-b3f4-e90e7bc0bb6a" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
+          </li>
+          <li>
+            Trouvez le fichier <strong><samp>GenrationToDisplayMain</samp></strong> qui se trouve dans le dossier <samp>javafx</samp> qui se trouve dans le dossier <samp>utilities</samp> qui se trouve dans le dossier <samp>com.puck</samp> qui se trouve dans le dossier <samp>src</samp> qui se trouve dans le dossier principal du projet. <strong>Faites un clique droit sur ce fichier</strong> et dans le menu déroulant <strong>cliquez sur <samp>Run 'GenrationToDis....main()'</samp></strong>.<br/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJExecComplet.png?alt=media&token=e62be246-1bac-46cb-80fd-12b6d2418f5d" alt="Trouvez le fichier GenrationToDisplayMain qui se trouve dans le dossier javafx qui se trouve dans le dossier utilities qui se trouve dans le dossier com.puck qui se trouve dans le dossier src qui se trouve dans le dossier principal du projet. Faites un clique droit sur ce fichier et dans le menu déroulant cliquez sur Run 'GenrationToDis....main()'">
+          </li>
+        </ol>
+      </details>
     </li>
     <li>
-      Trouvez le fichier <strong><samp>GenrationToDisplayMain</samp></strong> qui se trouve dans le dossier <samp>javafx</samp> qui se trouve dans le dossier <samp>utilities</samp> qui se trouve dans le dossier <samp>com.puck</samp> qui se trouve dans le dossier <samp>src</samp> qui se trouve dans le dossier principal du projet. <strong>Faites un clique droit sur ce fichier</strong> et dans le menu déroulant <strong>cliquez sur <samp>Run 'GenrationToDis....main()'</samp></strong>.<br/>
-      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJExecComplet.png?alt=media&token=e62be246-1bac-46cb-80fd-12b6d2418f5d" alt="Trouvez le fichier GenrationToDisplayMain qui se trouve dans le dossier javafx qui se trouve dans le dossier utilities qui se trouve dans le dossier com.puck qui se trouve dans le dossier src qui se trouve dans le dossier principal du projet. Faites un clique droit sur ce fichier et dans le menu déroulant cliquez sur Run 'GenrationToDis....main()'">
-    </li>
-  </ol>
+      <details>
+        <summary>
+          En utilisant <samp>Ant Build</samp>
+        </summary>
+        <ol>
+          <li>
+            Chargez le projet <strong>en sélectionnant le projet</strong> sur la fenêtre de démarrage.<br/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJOpenForAntbuild.png?alt=media&token=bdd1f3e9-50fb-4b60-8563-176237fbebca" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
+          </li>
+          <li>
+              Dans la partie intitulé <samp>Ant Build</samp> qui se trouve à droite de la fenêtre <samp>d'IntelliJ</samp>, cliquez deux fois sur la cible <strong><samp>Build</samp></strong>. <em>( Contrairement à Eclipse IntelliJ ne build pas les projets automatiquement, donc il faut le faire manuellement.) <br/>
+              <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJAntBuild.png?alt=media&token=c10bfb8c-52ec-4973-9133-bc644ae08854" alt="Dans la partie intitulé Ant Build qui se trouve à droite de la fenêtre d'IntelliJ cliquez deux fois sur la cible Build."/>
+          </li>
+          <li>
+            Vérifiez le message qui s'affiche sur la gauche de la barre latérale qui se trouve toute en bas de la fenêtre d'IntelliJ commence bien avec <samp>"Ant build completed successfully..."</samp>. Une fois vous avez vérifié que la construction (build) a bien eu lieu, cliquez deux fois sur la cible <samp>InterfaceAdmin</samp> sur la partie intitulé <samp>Ant Build</samp> qui se trouve à droite de la fenêtre <samp>d'IntelliJ</samp>. <br>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJAntInterfaceAdmin.png?alt=media&token=524c92de-f593-42cf-8767-f02c36da7e58" alt="Vérifiez le message qui s'affiche sur la gauche de la barre latérale qui se trouve tout en bas de la fenêtre d'IntelliJ commence bien avec Ant build completed successfully... Une fois vous avez vérifié que la construction (build) a bien eu lieu, cliquez deux fois sur la cible InterfaceAdmin sur la partie intitulé Ant Build qui se trouve à droite de la fenêtre d'IntelliJ"/>
+          </li>
+      </details>
   
 </details>
 
