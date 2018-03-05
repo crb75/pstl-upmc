@@ -276,6 +276,14 @@
   
 </details>
 
+<details>
+  <summary> Sur <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fterminal.png?alt=media&token=df454a13-1480-4c33-a86e-4b22d6f8db99" alt="Command line logo"/> la ligne des commandes
+  </summary>
+
+  Dans un terminal lancer la commande suivante
+  <code>ant InterfaceAffichageGrapheDeDependance</code>
+</details>
+
 ### Sur la ligne de commande pour executer le programme directement en mode utilisateur.
 
 - **Systèmes UNIX** <br/>
