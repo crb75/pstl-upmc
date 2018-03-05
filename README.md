@@ -214,13 +214,26 @@
 <details>
   <summary> Sur <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fterminal.png?alt=media&token=df454a13-1480-4c33-a86e-4b22d6f8db99" alt="Command line logo" width="32" height="32" align="top"/> la ligne des commandes
   </summary>
-  <ol>
+  <ul>
     <li>
       Sur un terminal lancer la commande suivante <br/>
       <code>ant InterfaceAffichageGrapheDeDependance</code> <br/>
       <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FterminalInterfaceGrpahDeDependance.png?alt=media&token=a216b30f-3dfc-4503-ab78-02bcb7a0b794" alt="Sur un terminal lancer la commande ant InterfaceAffichageGrapheDeDependance">
     </li>
-  </ol>
+    <li>
+      En utilisant le script d'exécution selon votre système d'exécution
+      <ul> 
+        <li>
+          <strong>Sous systèmes UNIX</strong> <br/>
+          Dans un terminal lancer le script <samp>run.sh</samp> par la commande suivante <br/>
+          <code>./run.sh</code>
+        </li>
+        <li>
+          <strong>Sous systèmes Windows</strong><br/>
+          Lancer le fichier <strong><samp>run.bat</samp></strong>
+        </li>
+    </li>
+  </ul>
 </details>
 
 ### L'application complet
@@ -294,10 +307,6 @@
   </ol>
 </details>
 
-### Sur la ligne de commande pour executer le programme directement en mode utilisateur.
-
-- **Windows** <br/>
-  Exécutez le fichier <samp>run.bat</samp>.
 
   ## Guide d'utilisation
 
