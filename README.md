@@ -197,18 +197,25 @@
 
 <details>
   <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJ_IDEA_Logo.svg?alt=media&token=4f8c266b-4d1c-4fa5-972a-19dbb23ad1be" alt="Eclipse Logo" width="32" height="32" align="top"/> IntelliJ </summary>
-
-  <ol>
+  <ul>
     <li>
-      Chargez le projet <strong>en sélectionnant le projet</strong> sur la fenêtre de démarrage.<br/>
-      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunIntelliJ1.png?alt=media&token=fc23661d-95d6-4d9d-b3f4-e90e7bc0bb6a" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
+      <details>
+        <summary>
+          En exécutant <strong>manuellement le fichier <samp>NewDisplayDG</samp></strong>
+        </summary>
+          <ol>
+            <li>
+              Chargez le projet <strong>en sélectionnant le projet</strong> sur la fenêtre de démarrage.<br/>
+              <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunIntelliJ1.png?alt=media&token=fc23661d-95d6-4d9d-b3f4-e90e7bc0bb6a" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
+            </li>
+            <li>
+              Trouvez le fichier <strong><samp>NewDisplayDG</samp></strong> qui se trouve dans le dossier <samp>display.piccolo2d</samp> qui se trouve dans le dossier <samp>com.puck</samp> qui se trouve dans le dossier <samp>src</samp> qui se trouve dans le dossier principal du projet. <strong>Faites un clique droit sur ce fichier</strong> et dans le menu déroulant <strong>cliquez sur <samp>Run 'NewDisplayDG.main()'</samp></strong>.<br/>
+              <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunIntelliJ2.png?alt=media&token=2a0c94a8-a8a0-44f9-a616-215ac2b6cdbf" alt="Trouvez le fichier NewDisplayDG qui se trouve dans le dossier display.piccolo2d qui se trouve dans le dossier com.puck qui se trouve dans le dossier src qui se trouve dans le dossier principal du projet. Faites un clique droit sur ce fichier et dans le menu déroulant cliquez sur Run 'NewDisplayDG.main()'">
+            </li>
+          </ol>
+      </details>
     </li>
-    <li>
-      Trouvez le fichier <strong><samp>NewDisplayDG</samp></strong> qui se trouve dans le dossier <samp>display.piccolo2d</samp> qui se trouve dans le dossier <samp>com.puck</samp> qui se trouve dans le dossier <samp>src</samp> qui se trouve dans le dossier principal du projet. <strong>Faites un clique droit sur ce fichier</strong> et dans le menu déroulant <strong>cliquez sur <samp>Run 'NewDisplayDG.main()'</samp></strong>.<br/>
-      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunIntelliJ2.png?alt=media&token=2a0c94a8-a8a0-44f9-a616-215ac2b6cdbf" alt="Trouvez le fichier NewDisplayDG qui se trouve dans le dossier display.piccolo2d qui se trouve dans le dossier com.puck qui se trouve dans le dossier src qui se trouve dans le dossier principal du projet. Faites un clique droit sur ce fichier et dans le menu déroulant cliquez sur Run 'NewDisplayDG.main()'">
-    </li>
-  </ol>
-  
+ </ul> 
 </details>
 
 <details>
