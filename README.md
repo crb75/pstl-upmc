@@ -425,12 +425,17 @@
         <samp>Show ingoing edges</samp>: Cette option permet d'afficher les flèches entrants du noeud sur lequel on a affiche le menu.
       </li>
       <li>
-        <samp>Show hierarchy ingoing edges</samp>: Cette option permet d'afficher les flèches entrants du noeud sur lequel on a affiche le menu ainsi que tous ses noeuds enfants.
+        <samp>Show hierarchy ingoing edges</samp>: Cette option permet d'afficher les flèches entrants du noeud sur lequel on a affiche le menu ainsi que tous ses noeuds enfants.<br/>
+        <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FuidgAll.png?alt=media&token=148688fa-ea72-495e-bed5-9f22bc63d222" alt="Exemple avec les flèches">
       </li>
       <li>
         <samp>Hide edges</samp>: Cette option permet de cacher les flèches concernant le noeud sur lequel on a affiché le menu.
       </li>
+      <li>
+        <samp>Hide node</samp>: Cette option permet de cacher un noeud en entière. (<em>Ceci n'est pas appliquable sur le noeud <samp>root</samp></em>)<br/>
+        <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FhideNode.png?alt=media&token=f6946bd6-a6a5-49d7-946b-2c4768973741" alt="Quand on cache un noeud">
+      </li>
     </ul>
-    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FuidgAll.png?alt=media&token=148688fa-ea72-495e-bed5-9f22bc63d222" alt="Exemple avec les flèches">
+  
   </li>
 </ul>
