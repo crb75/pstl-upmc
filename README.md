@@ -242,6 +242,18 @@
   
 </details>
 
+<details>
+  <summary> Sur <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fterminal.png?alt=media&token=df454a13-1480-4c33-a86e-4b22d6f8db99" alt="Command line logo" width="32" height="32" align="top"/> la ligne des commandes
+  </summary>
+  <ol>
+    <li>
+      Sur un terminal lancer la commande suivante <br/>
+      <code>ant InterfaceAffichageGrapheDeDependance</code> <br/>
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FterminalInterfaceGrpahDeDependance.png?alt=media&token=a216b30f-3dfc-4503-ab78-02bcb7a0b794" alt="Sur un terminal lancer la commande ant InterfaceAffichageGrapheDeDependance">
+    </li>
+  </ol>
+</details>
+
 #### L'application complet
 
 <details>
@@ -279,9 +291,13 @@
 <details>
   <summary> Sur <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fterminal.png?alt=media&token=df454a13-1480-4c33-a86e-4b22d6f8db99" alt="Command line logo" width="32" height="32" align="top"/> la ligne des commandes
   </summary>
-
-  Dans un terminal lancer la commande suivante
-  <code>ant InterfaceAffichageGrapheDeDependance</code>
+  <ol>
+    <li>
+      Sur un terminal lancer la commande suivante <br/>
+      <code>ant InterfaceAdmin</code> <br/>
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FterminalInterfaceAdmin.png?alt=media&token=1a46d1f7-dffb-4cde-8fbc-9d49f4794d14" alt="Sur un terminal lancer la commande ant InterfaceAdmin">
+    </li>
+  </ol>
 </details>
 
 ### Sur la ligne de commande pour executer le programme directement en mode utilisateur.
