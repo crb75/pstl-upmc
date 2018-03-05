@@ -216,7 +216,7 @@
   <ul>
     <details>
       <summary>
-        En exécutant manuellement le fichier <samp>NewDisplayDG</samp>
+        En exécutant <strong>manuellement le fichier <samp>NewDisplayDG</samp></strong>
       </summary>
       <ol>
         <li>
