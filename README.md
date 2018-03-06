@@ -413,7 +413,7 @@
   <li>
     Toujours sur la partie textuel d'un noeud, vous pouvez cliquez droit pour afficher le menu.
     <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FuidgMenu.png?alt=media&token=3191be29-b7fe-493b-9461-ec38c10221b0" alt="Menu">
-    Sur ce menu vous avez 5 options qui sont les suivants:
+    Sur ce menu vous avez 6 options qui sont les suivants:
     <ul>
       <li>
         <samp>Show outgoing edges</samp>: Cette option permet d'afficher les flèches partants du noeud sur lequel on a affiche le menu.
