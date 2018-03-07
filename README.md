@@ -1,5 +1,13 @@
 # Graph de dépendance d'un programme Java en utilisant la bibliothèque Piccolo2D.
 
+## Guide pour les développeurs
+
+- Si vous êtes développeur de ce répo, veuillez exécuter la commande suivante sur un terminal avant de commencer:
+
+  ```shell
+    make init
+  ```
+
 ## Guide d'importation
 
 ### Sur <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Feclipse.svg?alt=media&token=c1a40189-1236-407b-9568-52c292e46e3d" alt="Eclipse Logo" width="32" height="32" align="top"/> Eclipse
