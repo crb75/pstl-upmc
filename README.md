@@ -6,20 +6,20 @@ Si vous êtes développeur de ce répo, <strong>après avoir cloné le répo</st
 
 <details>
   <summary>
-    Si vous utilisez une version de git <samp>≥ 2.9</samp> <em>(Vous pouvez le voir par la commande <code>git --version</code>)</em>. <strong>Veuillez exécuter l'une des deux commandes suivantes</strong>
+    Si vous utilisez une version de git <samp>≥ 2.9</samp> <em>(Vous pouvez le voir par la commande <code>git --version</code>)</em>.<br/> <strong>Veuillez exécuter l'une des deux commandes suivantes</strong>:
   </summary>
   <ul>
     <li>
-      <code> make init </code> (Pour les utilisateurs des systèmes Unix)
+      <code> make init </code> <strong>(Pour les utilisateurs des systèmes Unix)</strong>
     </li>
     <li>
-      <code>git config core.hooksPath .githooks</code> (Pour tous les systèmes d'exploitations)
+      <code>git config core.hooksPath .githooks</code> <strong>(Pour tous les systèmes d'exploitations)</strong>
     </li>
   </ul>
 </details>
 <details>
   <summary>
-    Si vous utilisez une version de git <samp>< 2.9</samp> <em>(Vous pouvez le voir par la commande <code>git --version</code>)</em>. <strong>Veuillez exécuter la commande suivante</strong>
+    Si vous utilisez une version de git <samp>< 2.9</samp> <em>(Vous pouvez le voir par la commande <code>git --version</code>)</em>. <br/><strong>Veuillez exécuter la commande suivante</strong>:
   </summary>
   <ul>
     <li>
@@ -30,8 +30,9 @@ Si vous êtes développeur de ce répo, <strong>après avoir cloné le répo</st
   </ul>
 </details>
 
-Ceci permettra de changer le PATH (le chemin d'accès) des hooks de <samp>git</samp> sur votre machine locale avec le dossier <samp>.githooks</samp>. 
-Ce changement permettra de mettre à jour de la dernière version du fichier <samp>puck2.jar</samp> à chaque fois que vous faites un <samp>push</samp> sur ce répo.
+<br/>
+<em><strong>L'exécution de la commande choisie</strong> permettra de changer le PATH (le chemin d'accès) des hooks de <samp>git</samp> sur votre machine locale avec le dossier <samp>.githooks</samp>. <br/>
+Ce changement permettra de mettre à jour de la dernière version du fichier <samp>puck2.jar</samp> à chaque fois que vous faites un <samp>push</samp> sur ce répo.</em>
 
 ## Guide d'importation
 
