@@ -369,7 +369,7 @@ Si vous êtes développeur de ce répo, veuillez suivre les instructions qui vou
             <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJOpenForAntbuild.png?alt=media&token=bdd1f3e9-50fb-4b60-8563-176237fbebca" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
           </li>
           <li>
-              Dans la partie intitulé <samp>Ant Build</samp> qui se trouve à droite de la fenêtre <samp>d'IntelliJ</samp>, cliquez deux fois sur la cible <strong><samp>Build</samp></strong>. <em>( Contrairement à Eclipse IntelliJ ne build pas les projets automatiquement, donc il faut le faire manuellement.) <br/>
+              Dans la partie intitulé <samp>Ant Build</samp> qui se trouve à droite de la fenêtre <samp>d'IntelliJ</samp>, cliquez deux fois sur la cible <strong><samp>Build</samp></strong>. <em>( Contrairement à Eclipse IntelliJ ne build pas les projets automatiquement, donc il faut le faire manuellement.)</em> <br/>
               <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJAntBuild.png?alt=media&token=c10bfb8c-52ec-4973-9133-bc644ae08854" alt="Dans la partie intitulé Ant Build qui se trouve à droite de la fenêtre d'IntelliJ cliquez deux fois sur la cible Build."/>
           </li>
           <li>
