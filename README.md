@@ -392,7 +392,6 @@ Si vous êtes développeur de ce répo, veuillez suivre les instructions qui vou
   </ol>
 </details>
 
-
 ## Guide d'utilisation
 
   Une fois que vous avez réussi à lancer l'interface graphique principal en exécutant le fichier <samp>GenrationToDisplayMain</samp> vous devez avoir la fenêtre suivante : <br/>
