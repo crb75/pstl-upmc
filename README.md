@@ -1,4 +1,4 @@
-# Graph de dépendance d'un programme Java en utilisant la bibliothèque Piccolo2D.
+# Affichage d'une graphe de dépendance d'un programme Java en utilisant la bibliothèque Piccolo2D.
 
 ## Guide pour les développeurs
 
@@ -10,10 +10,10 @@ Si vous êtes développeur de ce répo, veuillez suivre les instructions qui vou
   </summary>
   <ul>
     <li>
-      <code> make init </code>
+      <code> make init </code> (Pour les utilisateurs Unix)
     </li>
     <li>
-      <code>git config core.hooksPath .githooks</code>
+      <code>git config core.hooksPath .githooks</code> (Pour tous les systèmes d'exploitations)
     </li>
   </ul>
 </details>
