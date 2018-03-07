@@ -30,7 +30,6 @@ Si vous êtes développeur de ce répo, <strong>après avoir cloné le répo</st
   </ul>
 </details>
 
-<br/>
 <em><strong>L'exécution de la commande choisie</strong> permettra de changer le PATH (le chemin d'accès) des hooks de <samp>git</samp> sur votre machine locale avec le dossier <samp>.githooks</samp>. <br/>
 Ce changement permettra de mettre à jour de la dernière version du fichier <samp>puck2.jar</samp> à chaque fois que vous faites un <samp>push</samp> sur ce répo.</em>
 
