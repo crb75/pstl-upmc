@@ -2,11 +2,33 @@
 
 ## Guide pour les développeurs
 
-- Si vous êtes développeur de ce répo, veuillez exécuter la commande suivante sur un terminal avant de commencer:
+Si vous êtes développeur de ce répo, veuillez suivre les instructions qui vous convient parmi les  suivantes:
 
-  ```shell
-    make init
-  ```
+<details>
+  <summary>
+    Si vous utilisez une version de git <code>≥ 2.9</code>. <em>(Vous pouvez le voir par la commande <code>git --version</code>)</em>
+  </summary>
+  <ul>
+    <li>
+      <code> make init </code>
+    </li>
+    <li>
+      <code>git config core.hooksPath .githooks</code>
+    </li>
+  </ul>
+</details>
+<details>
+  <summary>
+    Si vous utilisez une version de git <code>< 2.9</code>. <em>(Vous pouvez le voir par la commande <code>git --version</code>)</em>
+  </summary>
+  <ul>
+    <li>
+      <code> find .git/hooks -type l -exec rm {} \;
+            find .githooks -type f -exec ln -sf ../../{} .git/hooks/ \; 
+      </code>
+    </li>
+  </ul>
+</details>
 
 ## Guide d'importation
 
