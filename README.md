@@ -6,7 +6,7 @@ Si vous êtes développeur de ce répo, veuillez suivre les instructions qui vou
 
 <details>
   <summary>
-    Si vous utilisez une version de git <code>≥ 2.9</code>. <em>(Vous pouvez le voir par la commande <code>git --version</code>)</em> Veuillez exécuter <strong>l'une des deux commandes suivantes</strong>
+    Si vous utilisez une version de git <samp>≥ 2.9</samp> <em>(Vous pouvez le voir par la commande <code>git --version</code>)</em>. Veuillez exécuter <strong>l'une des deux commandes suivantes</strong>
   </summary>
   <ul>
     <li>
@@ -19,7 +19,7 @@ Si vous êtes développeur de ce répo, veuillez suivre les instructions qui vou
 </details>
 <details>
   <summary>
-    Si vous utilisez une version de git <code>< 2.9</code>. <em>(Vous pouvez le voir par la commande <code>git --version</code>)</em> Veuillez exécuter <strong>la commande suivante</strong>
+    Si vous utilisez une version de git <samp>< 2.9</samp> <em>(Vous pouvez le voir par la commande <code>git --version</code>)</em>. Veuillez exécuter <strong>la commande suivante</strong>
   </summary>
   <ul>
     <li>
