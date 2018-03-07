@@ -1,6 +1,6 @@
 # Affichage d'une graphe de dépendance d'un programme Java en utilisant la bibliothèque Piccolo2D.
 
-<!-- ## Guide pour les développeurs
+## Guide pour les développeurs
 
 Si vous êtes développeur de ce répo, veuillez suivre les instructions qui vous convient parmi les  suivantes:
 
@@ -28,7 +28,7 @@ Si vous êtes développeur de ce répo, veuillez suivre les instructions qui vou
       </code>
     </li>
   </ul>
-</details> -->
+</details>
 
 ## Guide d'importation
 
