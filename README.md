@@ -2,15 +2,15 @@
 
 ## Guide pour les développeurs
 
-Si vous êtes développeur de ce répo, veuillez suivre les instructions qui vous convient parmi les  suivantes:
+Si vous êtes développeur de ce répo, <strong>après avoir cloné le répo</strong> veuillez suivre les instructions qui vous convient parmi les  suivantes:
 
 <details>
   <summary>
-    Si vous utilisez une version de git <samp>≥ 2.9</samp> <em>(Vous pouvez le voir par la commande <code>git --version</code>)</em>. Veuillez exécuter <strong>l'une des deux commandes suivantes</strong>
+    Si vous utilisez une version de git <samp>≥ 2.9</samp> <em>(Vous pouvez le voir par la commande <code>git --version</code>)</em>. <strong>Veuillez exécuter l'une des deux commandes suivantes</strong>
   </summary>
   <ul>
     <li>
-      <code> make init </code> (Pour les utilisateurs Unix)
+      <code> make init </code> (Pour les utilisateurs des systèmes Unix)
     </li>
     <li>
       <code>git config core.hooksPath .githooks</code> (Pour tous les systèmes d'exploitations)
@@ -19,7 +19,7 @@ Si vous êtes développeur de ce répo, veuillez suivre les instructions qui vou
 </details>
 <details>
   <summary>
-    Si vous utilisez une version de git <samp>< 2.9</samp> <em>(Vous pouvez le voir par la commande <code>git --version</code>)</em>. Veuillez exécuter <strong>la commande suivante</strong>
+    Si vous utilisez une version de git <samp>< 2.9</samp> <em>(Vous pouvez le voir par la commande <code>git --version</code>)</em>. <strong>Veuillez exécuter la commande suivante</strong>
   </summary>
   <ul>
     <li>
@@ -29,6 +29,9 @@ Si vous êtes développeur de ce répo, veuillez suivre les instructions qui vou
     </li>
   </ul>
 </details>
+
+Ceci permettra de changer le PATH (le chemin d'accès) des hooks de <samp>git</samp> sur votre machine locale avec le dossier <samp>.githooks</samp>. 
+Ce changement permettra de mettre à jour de la dernière version du fichier <samp>puck2.jar</samp> à chaque fois que vous faites un <samp>push</samp> sur ce répo.
 
 ## Guide d'importation
 
@@ -265,7 +268,7 @@ Si vous êtes développeur de ce répo, veuillez suivre les instructions qui vou
           </li>
         </ol>
       </details>
-    </>
+    </strong>
  </ol> 
 </details>
 
