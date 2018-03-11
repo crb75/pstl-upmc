@@ -431,7 +431,7 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
   </details>
 
   Après avoir lancé le programme en utilisant le module ExtendJ et les fichiers Java ou en utilisant simplement un fichier XML vous arrivez sur l'interface graphique de la graphe de dépendance comme ceci:
-  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fuidg0.png?alt=media&token=ccd5d297-0718-461d-aef9-1d3f75522a60" alt="Interface graphique de graphe de dépendance au démarrage">
+  <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fuidg0.png?alt=media&token=baae418f-0268-4380-95d2-b06dc491999e" alt="Interface graphique de graphe de dépendance au démarrage">
   Au démarrage cet interface contient qu'un seul noeud qui s'appelle <samp>root</samp>. Ce noeud est considéré comme le noeud racine de toute la graphe.
   
 <ul>
