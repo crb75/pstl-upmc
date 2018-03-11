@@ -58,6 +58,7 @@ public class HideNode extends JMenuItem {
 			this.addActionListener(new AbstractAction() {
 
 				public void actionPerformed(ActionEvent arg0) {
+					System.out.println("je click");
 					hideNode(pnode, canvas);
 				}
 			});

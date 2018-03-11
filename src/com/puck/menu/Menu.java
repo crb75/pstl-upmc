@@ -1,51 +1,57 @@
 package com.puck.menu;
 
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.List;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.border.BevelBorder;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import org.piccolo2d.PNode;
 import org.piccolo2d.extras.pswing.PSwing;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
-
-
 
 public class Menu extends JPopupMenu {
 	private List<JMenuItem> items;
 	private PSwingCanvas canvas;
 	private Point2D point;
 	private PNode p;
+	private boolean hidden;
+
 	public Menu() {
 		this.p = new PNode();
-	}
-
-	public Menu(List<JMenuItem> items,PSwingCanvas canvas,Point2D point) {
-		this.items = items;
-		this.canvas = canvas;
-		this.point = point;
-		this.p = new PNode();
+		hidden = true;
 		
 	}
-	
+
+	// public Menu(List<JMenuItem> items,PSwingCanvas canvas,Point2D point) {
+	// System.out.println("je suis la ");
+	// this.items = items;
+	// this.canvas = canvas;
+	// this.point = point;
+	// this.p = new PNode();
+	// p.addChild(new PSwing(this));
+	// p.setOffset(point);
+	// hidden = true ;
+	//
+	// }
+
 	public void drawMenu() {
-		//canvas.getLayer().removeChild(p);
-        p.addChild(new PSwing(this));
-        p.setOffset(point);       
-        canvas.getLayer().addChild(p);
-        //System.out.println("je dessine le menu");
+		if (point != null && canvas != null) {
+			p.addChild(new PSwing(this));
+			p.setOffset(point);
+			hidden = false;
+			canvas.getLayer().addChild(p);
+		}
 	}
+
 	public void hideMenu() {
 		this.removeAll();
 		canvas.getLayer().removeChild(p);
-		p = new PNode();
-		
+		hidden = true;
 	}
+
 	public PSwingCanvas getCanvas() {
 		return canvas;
 	}
@@ -76,5 +82,25 @@ public class Menu extends JPopupMenu {
 
 	public void setP(PNode p) {
 		this.p = p;
+	}
+
+	public boolean isHidden() {
+		return hidden;
+	}
+
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+
+	// An inner class to show when popup events occur
+	
+	@Override
+	public void show() {
+		drawMenu();
+	}
+
+	@Override
+	public void hide() {
+		hideMenu();
 	}
 }

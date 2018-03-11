@@ -3,14 +3,16 @@ package com.puck.utilities.piccolo2d;
 
 
 
+import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JMenuItem;
-import javax.swing.border.BevelBorder;
 
 import org.piccolo2d.event.PBasicInputEventHandler;
 import org.piccolo2d.event.PInputEvent;
@@ -25,15 +27,9 @@ import com.puck.menu.items.FocusNode;
 import com.puck.menu.items.HideNode;
 import com.puck.menu.items.ingoing.CreateEdgesBy;
 import com.puck.menu.items.ingoing.CreateEgdesHierarchyBy;
-import com.puck.menu.items.ingoing.CreateISAEdgesBy;
-import com.puck.menu.items.ingoing.CreateUsesEdgesBy;
 import com.puck.menu.items.outgoing.CreateEdgesOf;
 import com.puck.menu.items.outgoing.CreateEgdesHierarchyOf;
-import com.puck.menu.items.outgoing.CreateISAEdgesOf;
-import com.puck.menu.items.outgoing.CreateUsesEdgesOf;
 import com.puck.menu.items.removing.RemoveEdgesOf;
-import com.puck.menu.items.removing.RemoveISAEdges;
-import com.puck.menu.items.removing.RemoveUsesEdges;
 import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
 
@@ -52,7 +48,6 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	private ArrowNodesHolder ANH;
 	private HideNode hideNode ;
 	private FocusNode focusNode;
-
 	public PCustomInputEventHandler(PiccoloCustomNode pnode, PiccoloCustomNode root, PSwingCanvas canvas,
 			Map<String, PiccoloCustomNode> allPNodes, Menu menu, ArrowNodesHolder ANH, Map<String, Node> listNodes) {
 		setEventFilter(new PInputEventFilter(InputEvent.BUTTON1_MASK & InputEvent.BUTTON2_MASK));
@@ -70,18 +65,16 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		createEgdesHierarchyOf = new CreateEgdesHierarchyOf(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
 		hideNode = new HideNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
 		focusNode = new FocusNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
-
 	}
 
 	public PCustomInputEventHandler(PiccoloCustomNode pnode) {
 		setEventFilter(new PInputEventFilter(InputEvent.BUTTON1_MASK & InputEvent.BUTTON2_MASK));
 		this.pnode = pnode;
-
 	}
 
 	@Override
 	public void mousePressed(PInputEvent aEvent) {
-
+		
 		try {
 			if (aEvent.isLeftMouseButton()) {
 				pnode.toggleChildren();
@@ -91,6 +84,13 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 					//System.out.println((PiccoloCustomNode) arrow.getTo());
 					ANH.updatePosition(arrow);
 				}
+//				canvas.addMouseListener(new MouseAdapter() {
+//					@Override
+//					public void mousePressed(MouseEvent e) {
+//						if (!e.isPopupTrigger() && !menu.isHidden())
+//							menu.hideMenu();	
+//					}
+//				});
 //				ANH.clearCounters();
 //				for (Parrow ar : ANH.getVisibleArrows())
 //					if (ar instanceof ParrowDottedFat)
@@ -98,14 +98,8 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 				//ANH.hide_show_arrows(pnode);
 			}
 			if (aEvent.isRightMouseButton()) {
-					generateMenu(menu,aEvent);				
-					canvas.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mousePressed(MouseEvent e) {
-							if (!menu.getP().getGlobalFullBounds().contains(e.getPoint().getX()+20,e.getPoint().getY()+20))
-								menu.hideMenu();	
-						}
-					});
+					generateMenu(menu,aEvent);		
+					
 
 			}
 		} catch (Exception e) {
@@ -128,6 +122,20 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		menu.add(focusNode);
 		menu.setPoint(aEvent.getPosition());
 		menu.setCanvas(canvas);
-		menu.drawMenu();
+		//menu.drawMenu();
 	}
+//	public boolean menuContainsPoint(Menu menu, Point point) {
+//		PBounds bounds = menu.getP().getGlobalFullBounds();
+//		Point2D poi = new Point2D.Double(point.getX()+5, point.getY()+5);
+//		int x = (int) bounds.x;
+//		int y = (int) bounds.y;
+//		Rectangle2D rect =new Rectangle2D.Double();
+//		rect.setFrame(x, y, bounds.getWidth(), bounds.getWidth());
+//		System.out.println("menu "+rect);
+//		System.out.println("point event "+poi);
+//		System.out.println(rect.contains(poi));
+//		return rect.contains(poi);
+//	}
+	
+	 
 }
