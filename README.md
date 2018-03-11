@@ -203,7 +203,7 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
           </li>
           <li>
             Sur la fenêtre intitulée <samp>Select Java Application</samp> <strong>sélectionnez <samp>NewDisplayDG - com.puck.display.piccolo2d</samp></strong>. Puis cliquez sur le bouton <strong><samp>OK</samp></strong>.<br/>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse2.png?alt=media&token=95b4f994-6455-4dff-a2b8-b0aa5cc6142f" alt="Sur la fenêtre intitulée Select Java Application sélectionnez NewDisplayDG - com.puck.display.piccolo2d. Puis cliquez sur le bouton OK.">
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse2.png?alt=media&token=cda8fc2f-e2ba-477b-b35c-cc122e72cb65" alt="Sur la fenêtre intitulée Select Java Application sélectionnez NewDisplayDG - com.puck.display.piccolo2d. Puis cliquez sur le bouton OK.">
           </li>
         </ol>
       </details>
