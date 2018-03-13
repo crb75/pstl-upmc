@@ -11,6 +11,7 @@ public abstract class Parrow extends PNode{
     protected PNode virtualto;
     protected PNode from;
     protected PNode to;
+    protected boolean isAllowed;
 
     public PNode getFrom() {
         return from;
@@ -33,6 +34,7 @@ public abstract class Parrow extends PNode{
         this.to=to;
         this.virtualFrom = virtuaFrom;
         this.virtualto = virtualto;
+        this.isAllowed = true;
     }
 
     public abstract Parrow redraw();
@@ -64,5 +66,14 @@ public abstract class Parrow extends PNode{
 	public void setVirtualto(PNode virtualto) {
 		this.virtualto = virtualto;
 	}
+
+	public boolean isAllowed() {
+		return isAllowed;
+	}
+
+	public void setAllowed(boolean isAllowed) {
+		this.isAllowed = isAllowed;
+	}
+	
     
 }

@@ -11,6 +11,7 @@ import javax.swing.JMenuItem;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 
 import com.puck.arrows.ArrowNodesHolder;
+import com.puck.arrows.Parrow;
 import com.puck.menu.Menu;
 import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
@@ -44,6 +45,9 @@ public class CreateEgdesHierarchyBy extends JMenuItem {
 		for(PiccoloCustomNode child : pnode.getHierarchy()) {
 			createEdgesBy = new CreateEdgesBy(child, canvas, this.allPNodes, menu,ANH,listNodes);
 			createEdgesBy.drawOutgoingdges(child, canvas);
+		}
+		for (Parrow arrow : ANH.getVisibleArrows()) {
+			ANH.updatePosition(arrow);
 		}
 		menu.hideMenu();
 	}

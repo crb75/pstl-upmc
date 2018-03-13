@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import javax.swing.JTextPane;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import org.piccolo2d.event.PDragEventHandler;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 import org.piccolo2d.util.PPaintContext;
 
@@ -146,9 +148,10 @@ public class NewDisplayDG extends JFrame {
 		PSwingCanvas canvas = new PSwingCanvas();
 		JTextArea textArear = new JTextArea();
 		textArear.setEditable(false);
-		textArear.setSize(200, 250);
+		textArear.setSize(200, 40);
 		textArear.setForeground(Color.RED);
-		textArear.append("-INFO- Les menus s'ouvrent et se ferment avec le button droit  ");
+		textArear.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+		textArear.append("- INFO - Les menus des noeuds s'ouvrent et se ferment avec le bouton droit  ");
 		JFrame frame;
 		try {
 			if (args.length == 0)
@@ -163,10 +166,13 @@ public class NewDisplayDG extends JFrame {
 		canvas.setDefaultRenderQuality(PPaintContext.HIGH_QUALITY_RENDERING);
         canvas.setAnimatingRenderQuality(PPaintContext.HIGH_QUALITY_RENDERING);
         canvas.setInteractingRenderQuality(PPaintContext.HIGH_QUALITY_RENDERING);
+        canvas.setZoomEventHandler(null);
+        //canvas.setPanEventHandler(null);
+        //canvas.addInputEventListener(new PDragEventHandler());
 		Container container = frame.getContentPane();
 		container.setLayout(new BorderLayout());
-		container.add(canvas, BorderLayout.SOUTH);
-		container.add(textArear,BorderLayout.NORTH);
+		container.add(canvas, BorderLayout.CENTER);
+		container.add(textArear,BorderLayout.PAGE_START);
 		canvas.setPreferredSize(new Dimension(1000, 500));
 		frame.pack();
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);

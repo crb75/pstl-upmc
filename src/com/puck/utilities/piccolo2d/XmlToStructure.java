@@ -57,6 +57,7 @@ private static Edge parseAttributs(NamedNodeMap attrs) {
 		HashMap<String, Node> listNode = new HashMap<>();
 
 		Reader reader = new Reader(xmlPath);
+		//Reader reader = new Reader("DependecyGraph.xml");
 		int listLength = reader.getNbNodes();
 		for (int i = 1; i <= listLength; i++) {
 			Node n = new Node();

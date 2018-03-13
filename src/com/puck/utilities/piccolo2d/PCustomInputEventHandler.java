@@ -3,12 +3,7 @@ package com.puck.utilities.piccolo2d;
 
 
 
-import java.awt.Point;
 import java.awt.event.InputEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +13,6 @@ import org.piccolo2d.event.PBasicInputEventHandler;
 import org.piccolo2d.event.PInputEvent;
 import org.piccolo2d.event.PInputEventFilter;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
-import org.piccolo2d.util.PBounds;
 
 import com.puck.arrows.ArrowNodesHolder;
 import com.puck.arrows.Parrow;
@@ -30,6 +24,7 @@ import com.puck.menu.items.ingoing.CreateEgdesHierarchyBy;
 import com.puck.menu.items.outgoing.CreateEdgesOf;
 import com.puck.menu.items.outgoing.CreateEgdesHierarchyOf;
 import com.puck.menu.items.removing.RemoveEdgesOf;
+import com.puck.menu.items.removing.RemovesHierarchyEdgesOf;
 import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
 
@@ -44,6 +39,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	private JMenuItem removeEdgesOf;
 	private JMenuItem createEgdesHierarchyBy;
 	private JMenuItem createEgdesHierarchyOf;
+	private JMenuItem removesHierarchyEdgesOf;
 	private Map<String, Node> listNodes;
 	private ArrowNodesHolder ANH;
 	private HideNode hideNode ;
@@ -63,6 +59,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		createEdgesBy = new CreateEdgesBy(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
 		createEgdesHierarchyBy = new CreateEgdesHierarchyBy(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
 		createEgdesHierarchyOf = new CreateEgdesHierarchyOf(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
+		removesHierarchyEdgesOf = new RemovesHierarchyEdgesOf(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
 		hideNode = new HideNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
 		focusNode = new FocusNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
 	}
@@ -81,21 +78,8 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 				root.setLayout();
 				root.updateContentBoundingBoxes(false, canvas);
 				for (Parrow arrow : ANH.getVisibleArrows()) {
-					//System.out.println((PiccoloCustomNode) arrow.getTo());
 					ANH.updatePosition(arrow);
 				}
-//				canvas.addMouseListener(new MouseAdapter() {
-//					@Override
-//					public void mousePressed(MouseEvent e) {
-//						if (!e.isPopupTrigger() && !menu.isHidden())
-//							menu.hideMenu();	
-//					}
-//				});
-//				ANH.clearCounters();
-//				for (Parrow ar : ANH.getVisibleArrows())
-//					if (ar instanceof ParrowDottedFat)
-//						ANH.updateCount((ParrowDottedFat) ar);
-				//ANH.hide_show_arrows(pnode);
 			}
 			if (aEvent.isRightMouseButton()) {
 					generateMenu(menu,aEvent);		
@@ -117,12 +101,12 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		menu.add(createEgdesHierarchyBy);
 		menu.addSeparator();
 		menu.add(removeEdgesOf);
+		menu.add(removesHierarchyEdgesOf);
 		menu.addSeparator();
 		menu.add(hideNode);
 		menu.add(focusNode);
 		menu.setPoint(aEvent.getPosition());
 		menu.setCanvas(canvas);
-		//menu.drawMenu();
 	}
 //	public boolean menuContainsPoint(Menu menu, Point point) {
 //		PBounds bounds = menu.getP().getGlobalFullBounds();

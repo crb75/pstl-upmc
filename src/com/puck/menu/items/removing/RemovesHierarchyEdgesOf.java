@@ -1,4 +1,4 @@
-package com.puck.menu.items.outgoing;
+package com.puck.menu.items.removing;
 
 import java.awt.event.ActionEvent;
 import java.util.HashMap;
@@ -11,41 +11,37 @@ import javax.swing.JMenuItem;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 
 import com.puck.arrows.ArrowNodesHolder;
-import com.puck.arrows.Parrow;
 import com.puck.menu.Menu;
 import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
 
-public class CreateEgdesHierarchyOf extends JMenuItem{
+public class RemovesHierarchyEdgesOf extends JMenuItem {
 	private HashMap<String, PiccoloCustomNode> allPNodes;
 	private Map<String, Node> listNodes ;
 	private PiccoloCustomNode pnode;
 	private PSwingCanvas canvas;
 	private Menu menu;
 	private ArrowNodesHolder ANH;
-	private CreateEdgesOf createEdgesOf;
+	private RemoveEdgesOf removeEdgesOf;
 	
-	public CreateEgdesHierarchyOf(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,
+	public RemovesHierarchyEdgesOf(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,
 			Menu menu, ArrowNodesHolder ANH,Map<String, Node> listNodes) {
-		super("Show hierarchy outgoing edges ",new ImageIcon("images/right-arrow.png"));
+		super("Hide hierarchy edges ",new ImageIcon("images/hide.png"));
 		this.allPNodes = allPNodes;
 		this.pnode = pnode;
 		this.canvas = canvas;
 		this.menu = menu;
 		this.ANH = ANH;
 		this.listNodes = listNodes;
-		createEdgesOf = new CreateEdgesOf(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
+		removeEdgesOf = new RemoveEdgesOf(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
 		addActionListener();
 	}
 	public void drawOutgoingdges(PiccoloCustomNode pnode , PSwingCanvas canvas) {
-		createEdgesOf = new CreateEdgesOf(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
-		createEdgesOf.drawOutgoingdges(pnode, canvas);
+		removeEdgesOf = new RemoveEdgesOf(pnode, canvas, this.allPNodes, menu,ANH,listNodes);
+		removeEdgesOf.drawOutgoingdges(pnode, canvas);
 		for(PiccoloCustomNode child : pnode.getHierarchy()) {
-			createEdgesOf = new CreateEdgesOf(child, canvas, this.allPNodes, menu,ANH,listNodes);
-			createEdgesOf.drawOutgoingdges(child, canvas);
-		}
-		for (Parrow arrow : ANH.getVisibleArrows()) {
-			ANH.updatePosition(arrow);
+			removeEdgesOf = new RemoveEdgesOf(child, canvas, this.allPNodes, menu,ANH,listNodes);
+			removeEdgesOf.drawOutgoingdges(child, canvas);
 		}
 		menu.hideMenu();
 	}
