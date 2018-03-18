@@ -12,11 +12,7 @@ import javax.swing.JMenuItem;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 
 import com.puck.arrows.ArrowNodesHolder;
-import com.puck.arrows.Parrow;
 import com.puck.menu.Menu;
-import com.puck.menu.items.ingoing.CreateISAEdgesBy;
-import com.puck.menu.items.ingoing.CreateUsesEdgesBy;
-import com.puck.menu.items.removing.RemoveEdgesOf;
 import com.puck.menu.items.removing.RemovesHierarchyEdgesOf;
 import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;

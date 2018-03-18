@@ -13,7 +13,10 @@ import org.piccolo2d.PNode;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
 
 public class ArrowNodesHolder extends PNode{
-    /**
+    public void setHiddenArrows(Collection<Parrow> hiddenArrows) {
+		this.hiddenArrows = hiddenArrows;
+	}
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;

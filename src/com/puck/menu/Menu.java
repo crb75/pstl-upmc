@@ -48,7 +48,9 @@ public class Menu extends JPopupMenu {
 
 	public void hideMenu() {
 		this.removeAll();
-		canvas.getLayer().removeChild(p);
+		if (canvas != null) {
+			canvas.getLayer().removeChild(p);
+		}
 		hidden = true;
 	}
 

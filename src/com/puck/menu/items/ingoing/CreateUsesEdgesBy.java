@@ -19,7 +19,6 @@ import com.puck.menu.Menu;
 import com.puck.nodes.piccolo2d.Edge;
 import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
-import com.puck.utilities.piccolo2d.XmlToStructure;
 
 public class CreateUsesEdgesBy extends JMenuItem {
 	private HashMap<String, PiccoloCustomNode> allPNodes;

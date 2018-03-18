@@ -75,6 +75,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		try {
 			if (aEvent.isLeftMouseButton()) {
 				pnode.toggleChildren();
+				System.out.println(pnode.isHidden());
 				root.setLayout();
 				root.updateContentBoundingBoxes(false, canvas);
 				for (Parrow arrow : ANH.getVisibleArrows()) {
