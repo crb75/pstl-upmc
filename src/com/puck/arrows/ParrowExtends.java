@@ -1,15 +1,23 @@
 package com.puck.arrows;
 
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 
 import org.piccolo2d.PNode;
 import org.piccolo2d.nodes.PPath;
+import org.piccolo2d.nodes.PText;
 
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
 
 public class ParrowExtends extends Parrow {
+    final static float dash1[] = {10.0f};
+	final static BasicStroke dashed =
+            new BasicStroke(2.0f,
+                            BasicStroke.CAP_BUTT,
+                            BasicStroke.JOIN_MITER,
+                            10.0f, dash1, 0.0f);
 	public ParrowExtends(Point2D from, Point2D to, Point2D virtuaFrom, Point2D virtualTo) {
 		super(from, to, virtuaFrom, virtualTo);
 		from = virtuaFrom;
@@ -17,13 +25,18 @@ public class ParrowExtends extends Parrow {
 		Triangle head = new Triangle(Color.WHITE);
 
 		PPath line = PPath.createLine(from.getX(), from.getY(), to.getX(), to.getY());
-
+		line.setStroke(dashed);
 		double theta = Math.atan2(to.getY() - from.getY(), to.getX() - from.getX()) + Math.toRadians(90);
 		head.translate(to.getX(), to.getY());
 		head.rotate(theta);
 
 		addChild(line);
 		addChild(head);
+		
+		PText text= new PText("arrowExtends");
+		text.setBounds((from.getX()+to.getX())/2, (from.getY()+to.getY())/2, text.getWidth(), text.getHeight());
+		text.rotateInPlace(line.getGlobalRotation());
+		addChild(text);
 
 	}
 

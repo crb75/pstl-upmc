@@ -1,7 +1,10 @@
 package com.puck.arrows;
 
+import java.awt.Color;
+
 import org.piccolo2d.PNode;
 import org.piccolo2d.nodes.PPath;
+import org.piccolo2d.nodes.PText;
 
 public class TriangleHollow extends PNode{
     /**

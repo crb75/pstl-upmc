@@ -15,8 +15,8 @@ public class Triangle extends PNode{
 	public Triangle(Color color){
         PPath t = new PPath.Float();
         t.moveTo(0,0);
-        t.lineTo(-10,10);
-        t.lineTo(10,10);
+        t.lineTo(-5,5);
+        t.lineTo(5,5);
         t.lineTo(0,0);
         t.closePath();
         t.setPaint(color);

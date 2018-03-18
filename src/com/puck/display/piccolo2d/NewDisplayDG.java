@@ -157,7 +157,7 @@ public class NewDisplayDG extends JFrame {
 			if (args.length == 0)
 			{
 				System.out.println("Appel de la newDisplayDG sans aucun argument");
-				frame = new NewDisplayDG(canvas, "mongraph2.xml");
+				frame = new NewDisplayDG(canvas, "mongraph.xml");
 			}
 			else
 			{

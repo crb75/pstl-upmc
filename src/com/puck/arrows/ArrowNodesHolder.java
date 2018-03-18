@@ -114,21 +114,32 @@ public class ArrowNodesHolder extends PNode{
 						Parrow ar2 = arrow.redrawTo(to);
 				            removeArrow(arrow);
 				            addArrow(ar2);
+				            virtualTo = ar2.getVirtualto();
 				            arrow = ar2 ;
 				            break;
 					}
 					else {
+						System.out.println("pnode"+pnode.getContent().getType());
 						Parrow ar2 = arrow.redrawTo(pnode);
 			            removeArrow(arrow);
 			            addArrow(ar2);
+			            virtualTo = ar2.getVirtualto();
 			            arrow = ar2 ;
 			            break;
 					}
 				}
 			}
-           // if (arrow.getVirtualFrom().equals(arrow.getVirtualto())) {
-            	//System.out.println(arrow.getVirtualFrom()+"---"+arrow.getVirtualto());
-			//}
+            //Pour afficher les cardinalités
+//            if (virtualFrom != null  &&  ((PiccoloCustomNode)virtualFrom).getContent().getType().equals("package")) {
+//                if (virtualTo != null  &&  ((PiccoloCustomNode)virtualTo).getContent().getType().equals("package")) {
+//                	System.out.println("package");
+//        			int [] tab = addCard(virtualFrom,virtualTo);
+//        			if(arrow instanceof ParrowUses) {
+//        				((ParrowUses)arrow).addCard(tab[0], tab[1]);
+//        			}
+//                }	
+//    		}
+         
             
     }
 
@@ -181,6 +192,25 @@ public class ArrowNodesHolder extends PNode{
     }
     private int margin=10;
 
+    public int [] addCard(PNode from, PNode to) {
+    	int [] tab = new int[2];
+		int a =0;
+		int b =0;
+		for (Parrow parrow : this.getAllArrows()) {
+			if (parrow.getVirtualFrom().equals(from) && parrow.getVirtualto().equals(to)) {
+				a++;
+			}
+			if (parrow.getVirtualFrom().equals(to) && parrow.getVirtualto().equals(from)) {
+				b++;
+			}
+		}
+    	tab[0] = a;
+    	tab[1] = b;
+    	System.err.println(a);
+    	System.err.println(b);
+    	return tab;
+    	
+    }
 //	public void updateCount(ParrowDottedFat parrow) {
 //		int i = 0;
 //		for (Parrow parrow1 : getVisibleArrows())

@@ -13,6 +13,7 @@ public class NodeContent extends PNode {
 	private PText text;
 	private PImage icon;
 	private int margin = 10;
+	private String type;
 
 	// region getters/setters
 	public int getMargin() {
@@ -45,6 +46,7 @@ public class NodeContent extends PNode {
 	// endregion
 
 	public NodeContent(PText text, String type) {
+		this.type = type;
 		this.text = text;
 		addChild(this.text);
 		setImageIcon(type);
@@ -88,4 +90,13 @@ public class NodeContent extends PNode {
 	public String toString() {
 		return text.getText();
 	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
 }
