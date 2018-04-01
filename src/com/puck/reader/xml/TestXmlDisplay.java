@@ -1,4 +1,4 @@
-package com.puck.reader.xml.test;
+package com.puck.reader.xml;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,7 +22,7 @@ import com.puck.nodes.piccolo2d.PiccoloCustomNode;
 import com.puck.utilities.piccolo2d.XmlToStructure;
 
 /*
- * cette classe permet de comparer le xml intial avec le xml regénéré à partir de l'affichage 
+ * cette classe permet de comparer le xml intial avec le xml regï¿½nï¿½rï¿½ ï¿½ partir de l'affichage 
  * 
  * */
 public class TestXmlDisplay {

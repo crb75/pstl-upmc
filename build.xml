@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. --><project basedir="." default="build" name="upmc-pstl">
+<project basedir="." default="build" name="upmc-pstl">
     <property environment="env"/>
     <property name="ECLIPSE_HOME" value="../../../../../Volumes/Eclipse/Eclipse.app/Contents/Eclipse/"/>
     <property name="junit.output.dir" value="junit"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.8"/>
     <property name="source" value="1.8"/>
+    <!-- This initialises the classpath of project -->
     <path id="upmc-pstl.classpath">
         <pathelement location="bin"/>
         <pathelement location="lib/junit.jar"/>
@@ -30,6 +27,7 @@
         <pathelement location="lib/piccolo2d-extras-3.1-SNAPSHOT.jar"/>
         <pathelement location="lib/piccolo2d-swt-3.1-SNAPSHOT.jar"/>
     </path>
+    <!-- Target init creates the bin directory and copy all elements from src to bin except .java files -->
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
@@ -38,33 +36,43 @@
             </fileset>
         </copy>
     </target>
+    <!-- clean target removes bin directory -->
     <target name="clean">
         <delete dir="bin"/>
     </target>
-    <target depends="clean" name="cleanall"/>
-    <target depends="build-subprojects,build-project" name="build"/>
-    <target name="build-subprojects"/>
-    <target depends="init" name="build-project">
+    <!-- The build target compile all .java files -->
+    <target depends="init" name="build">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac encoding="iso-8859-1" debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
             <classpath refid="upmc-pstl.classpath"/>
         </javac>
     </target>
-    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
-        <copy todir="${ant.library.dir}">
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </copy>
-        <unzip dest="${ant.library.dir}">
-            <patternset includes="jdtCompilerAdapter.jar"/>
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </unzip>
+
+    <!-- Target admin builds project if it was not and launches the admin interface of the project -->
+    <target name="admin" depends="build">
+        <java classname="com.puck.utilities.javafx.GenrationToDisplayMain" failonerror="true" fork="yes">
+            <classpath refid="upmc-pstl.classpath"/>
+        </java>
     </target>
-    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
-        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
-        <antcall target="build"/>
+
+    <!-- Target base builds the project if it was not and launches the ui for dependecy graph from sample xml file -->
+    <target name="base" depends="build">
+        <java classname="com.puck.display.piccolo2d.NewDisplayDG" failonerror="true" fork="yes">
+            <classpath refid="upmc-pstl.classpath"/>
+        </java>
     </target>
+
+    <!-- Target junitreport generates junit report files and copy them to /bin directory -->
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+
     <target name="EdgeTest (1)">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
@@ -74,16 +82,8 @@
             <classpath refid="upmc-pstl.classpath"/>
         </junit>
     </target>
-    <target name="GenrationToDisplayMain">
-        <java classname="com.puck.utilities.GenrationToDisplayMain" failonerror="true" fork="yes">
-            <classpath refid="upmc-pstl.classpath"/>
-        </java>
-    </target>
-    <target name="InterfaceAffichageGrapheDeDependance">
-        <java classname="com.puck.display.piccolo2d.NewDisplayDG" failonerror="true" fork="yes">
-            <classpath refid="upmc-pstl.classpath"/>
-        </java>
-    </target>
+
+
     <target name="NodeTest (1)">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
@@ -102,6 +102,7 @@
             <classpath refid="upmc-pstl.classpath"/>
         </junit>
     </target>
+
     <target name="upmc-pstl">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
@@ -111,6 +112,7 @@
             <classpath refid="upmc-pstl.classpath"/>
         </junit>
     </target>
+
     <target name="NodeContentTest (1)">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
@@ -120,20 +122,18 @@
             <classpath refid="upmc-pstl.classpath"/>
         </junit>
     </target>
+
     <target name="ReaderTest (1)">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
             <formatter type="xml"/>
-            <test name="com.puck.reader.xml.ReaderTest" todir="${junit.output.dir}"/>
+            <test name="com.puck.reader.xml.test.ReaderTest" todir="${junit.output.dir}"/>
             <jvmarg line="-ea"/>
             <classpath refid="upmc-pstl.classpath"/>
         </junit>
     </target>
-    <target name="InterfaceAdmin">
-        <java classname="com.puck.utilities.javafx.GenrationToDisplayMain" failonerror="true" fork="yes">
-            <classpath refid="upmc-pstl.classpath"/>
-        </java>
-    </target>
+
+
     <target name="PiccoloCustomNodeTest (1)">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
@@ -143,6 +143,7 @@
             <classpath refid="upmc-pstl.classpath"/>
         </junit>
     </target>
+
     <target name="com.puck.nodes.piccolo2d">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
@@ -151,6 +152,7 @@
             <classpath refid="upmc-pstl.classpath"/>
         </junit>
     </target>
+
     <target name="com.puck.reader.xml">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
@@ -159,6 +161,7 @@
             <classpath refid="upmc-pstl.classpath"/>
         </junit>
     </target>
+
     <target name="com.puck.nodes.piccolo2d.test">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
@@ -167,12 +170,6 @@
             <classpath refid="upmc-pstl.classpath"/>
         </junit>
     </target>
-    <target name="junitreport">
-        <junitreport todir="${junit.output.dir}">
-            <fileset dir="${junit.output.dir}">
-                <include name="TEST-*.xml"/>
-            </fileset>
-            <report format="frames" todir="${junit.output.dir}"/>
-        </junitreport>
-    </target>
+
+
 </project>

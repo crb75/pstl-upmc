@@ -8,11 +8,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
@@ -24,10 +21,8 @@ import org.piccolo2d.util.PPaintContext;
 
 import com.puck.arrows.ArrowNodesHolder;
 import com.puck.menu.Menu;
-import com.puck.nodes.piccolo2d.Edge;
 import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
-import com.puck.reader.xml.test.TestXmlDisplay;
 import com.puck.utilities.piccolo2d.PCustomInputEventHandler;
 import com.puck.utilities.piccolo2d.XmlToStructure;
 
