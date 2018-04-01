@@ -25,7 +25,7 @@
         <pathelement location="lib/org.opentest4j_1.0.0.v20170910-2246.jar"/>
         <pathelement location="lib/piccolo2d-core-3.1-SNAPSHOT.jar"/>
         <pathelement location="lib/piccolo2d-extras-3.1-SNAPSHOT.jar"/>
-        <pathelement location="lib/piccolo2d-swt-3.1-SNAPSHOT.jar"/>
+        <pathelement     location="lib/piccolo2d-swt-3.1-SNAPSHOT.jar"/>
     </path>
     <!-- Target init creates the bin directory and copy all elements from src to bin except .java files -->
     <target name="init">
@@ -73,11 +73,21 @@
         </junitreport>
     </target>
 
-    <target name="EdgeTest (1)">
+    <target name="tests:edge">
         <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
+        <junit fork="yes" printsummary="withOutAndErr" haltonfailure="true">
             <formatter type="xml"/>
             <test name="com.puck.nodes.piccolo2d.test.EdgeTest" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="upmc-pstl.classpath"/>
+        </junit>
+    </target>
+
+    <target name="ReaderTest">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr"  haltonfailure="true" >
+            <formatter type="xml"/>
+            <test name="tests.reader.xml.ReaderTest" todir="${junit.output.dir}"/>
             <jvmarg line="-ea"/>
             <classpath refid="upmc-pstl.classpath"/>
         </junit>
@@ -89,15 +99,6 @@
         <junit fork="yes" printsummary="withOutAndErr">
             <formatter type="xml"/>
             <test name="com.puck.nodes.piccolo2d.test.NodeTest" todir="${junit.output.dir}"/>
-            <jvmarg line="-ea"/>
-            <classpath refid="upmc-pstl.classpath"/>
-        </junit>
-    </target>
-    <target name="New_configuration">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
-            <test name="com.puck.arrows.test.ParrowISATest" todir="${junit.output.dir}"/>
             <jvmarg line="-ea"/>
             <classpath refid="upmc-pstl.classpath"/>
         </junit>
@@ -127,7 +128,7 @@
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
             <formatter type="xml"/>
-            <test name="com.puck.reader.xml.test.ReaderTest" todir="${junit.output.dir}"/>
+            <test name="ReaderTest" todir="${junit.output.dir}"/>
             <jvmarg line="-ea"/>
             <classpath refid="upmc-pstl.classpath"/>
         </junit>
