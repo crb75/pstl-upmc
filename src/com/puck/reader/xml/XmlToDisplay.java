@@ -25,8 +25,8 @@ import com.puck.utilities.piccolo2d.XmlToStructure;
  * cette classe permet de comparer le xml intial avec le xml reg�n�r� � partir de l'affichage 
  * 
  * */
-public class TestXmlDisplay {
-	private StringBuilder xmlString = new StringBuilder();
+public class XmlToDisplay {
+	private StringBuilder xmlString;
 	private PiccoloCustomNode root;
 	private HashMap<String, Edge> addedEdges = new HashMap<String, Edge>();
 	private HashMap<String, PiccoloCustomNode> addedPnodes = new HashMap<String, PiccoloCustomNode>();
@@ -39,8 +39,11 @@ public class TestXmlDisplay {
 	private Menu menu;
 	private ArrowNodesHolder ANH;
 
-	public TestXmlDisplay() {
-		this.listNodes = new XmlToStructure("mongraph.xml").parseNode();
+	public XmlToDisplay() {
+		xmlString = new StringBuilder();
+		xmlString.append("<?xml version=\"1.0\"?>\n");
+		xmlString.append("<DG>\n");
+		this.listNodes = new XmlToStructure("DependecyGraph.xml").parseNode();
 		this.root = new NodeToPnodeParser(allPNodes, listNodes).getPackageNodes();
 		this.canvas = new PSwingCanvas();
 		this.menu = new Menu();
@@ -52,19 +55,23 @@ public class TestXmlDisplay {
 		addPnodes(root);
 		createEdgesHierarchyBy.drawOutgoingdges(root, canvas);
 		createEdgesHierarchyOf.drawOutgoingdges(root, canvas);
-		System.err.println(ANH.getAllArrows().size());
+		
 		for (Entry<String, PiccoloCustomNode> entry : addedPnodes.entrySet()) {
 			String key = entry.getKey();
 			PiccoloCustomNode p = entry.getValue();
 			addEdgesToXml(p);
 		}
-
+		addUsesIsaToXml();
+		System.err.println(addedEdges.size());
+		xmlString.append("</DG>");
 		try {
 			writeTo();
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
 
 	public void addPnodes(PiccoloCustomNode pnode) {
@@ -93,12 +100,12 @@ public class TestXmlDisplay {
 	}
 
 	private String edgeToString(Edge node) {
-		String formatString = "\t<edge type=\"%s\" id=\"%s\" src=\"%s\" dest=\"%s\"/>\n";
+		String formatString = "\t<edge type=\"%s\" src=\"%s\" dest=\"%s\" id=\"%s\"/>\n";
 		String type = node.getType();
 		String id = node.getId();
 		String from = node.getFrom();
 		String to = node.getTo();
-		return String.format(formatString, type, id, from, to);
+		return String.format(formatString,type,from,to,id);
 	}
 
 	public void writeTo() throws IOException {
@@ -106,7 +113,12 @@ public class TestXmlDisplay {
 		br.write(xmlString.toString());
 		br.close();
 	}
-
+	public void addUsesIsaToXml() {
+		for (Entry<String, Edge> entry : addedEdges.entrySet()) {
+			Edge e = entry.getValue();
+			xmlString.append(edgeToString(e));
+		}
+	}
 	public void addEdgesToXml(PiccoloCustomNode pnode) {
 		Node node = listNodes.get(pnode.getidNode());
 		for (Entry<String, PiccoloCustomNode> entry : addedPnodes.entrySet()) {
@@ -115,7 +127,7 @@ public class TestXmlDisplay {
 			for (PiccoloCustomNode child : p.getChildren()) {
 				if (node != null) {
 					Edge e = getCointainsEdge(node, listNodes.get(child.getidNode()));
-					if (e != null && !addedEdges.containsKey(e)) {
+					if (e != null && !addedEdges.containsKey(e)) {		
 						xmlString.append(edgeToString(e));
 					}
 				}
@@ -130,11 +142,14 @@ public class TestXmlDisplay {
 			if (e.getType().equals("contains") && e.getTo().equals(child.getId())) {
 				return e;
 			}
+			if(!e.getType().equals("contains")){
+				addedEdges.put(e.getId(), e);
+			}
 		}
 		return null;
 	}
 
 	public static void main(String[] args) {
-		new TestXmlDisplay();
+		new XmlToDisplay();
 	}
 }
