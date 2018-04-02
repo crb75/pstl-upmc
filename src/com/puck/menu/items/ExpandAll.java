@@ -42,7 +42,6 @@ public class ExpandAll extends JMenuItem {
 	}
 	public void addActionListener() {
 		this.addActionListener(new AbstractAction() {
-
 			public void actionPerformed(ActionEvent arg0) {
 				expandAll(pnode, canvas);
 			}
