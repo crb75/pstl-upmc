@@ -17,6 +17,8 @@ import org.piccolo2d.extras.pswing.PSwingCanvas;
 import com.puck.arrows.ArrowNodesHolder;
 import com.puck.arrows.Parrow;
 import com.puck.menu.Menu;
+import com.puck.menu.items.CollapseAll;
+import com.puck.menu.items.ExpandAll;
 import com.puck.menu.items.FocusNode;
 import com.puck.menu.items.HideNode;
 import com.puck.menu.items.ingoing.CreateEdgesBy;
@@ -44,6 +46,8 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	private ArrowNodesHolder ANH;
 	private HideNode hideNode ;
 	private FocusNode focusNode;
+	private ExpandAll expandAll;
+	private CollapseAll collapseAll;
 	public PCustomInputEventHandler(PiccoloCustomNode pnode, PiccoloCustomNode root, PSwingCanvas canvas,
 			Map<String, PiccoloCustomNode> allPNodes, Menu menu, ArrowNodesHolder ANH, Map<String, Node> listNodes) {
 		setEventFilter(new PInputEventFilter(InputEvent.BUTTON1_MASK & InputEvent.BUTTON2_MASK));
@@ -62,6 +66,8 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		removesHierarchyEdgesOf = new RemovesHierarchyEdgesOf(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
 		hideNode = new HideNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
 		focusNode = new FocusNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
+		expandAll = new ExpandAll(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
+		collapseAll = new CollapseAll(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
 	}
 
 	public PCustomInputEventHandler(PiccoloCustomNode pnode) {
@@ -106,6 +112,9 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		menu.addSeparator();
 		menu.add(hideNode);
 		menu.add(focusNode);
+		menu.addSeparator();
+		menu.add(expandAll);
+		menu.add(collapseAll);
 		menu.setPoint(aEvent.getPosition());
 		menu.setCanvas(canvas);
 	}

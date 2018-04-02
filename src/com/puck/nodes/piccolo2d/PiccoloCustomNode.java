@@ -482,9 +482,9 @@ public class PiccoloCustomNode extends PNode {
 	public PiccoloCustomNode getHigherParent() {
 		if (getParentNode() == null)
 			return this;
-		if (isHidden())
-			return getParentNode().getHigherParent();
-		return this;
+		else
+			
+		return this.getParentNode().getHigherParent();
 	}
 
 	public ArrayList<PiccoloCustomNode> getAscendency() {
