@@ -467,8 +467,20 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
         <samp>Hide edges</samp>: Cette option permet de cacher les flèches concernant le noeud sur lequel on a affiché le menu.
       </li>
       <li>
+        <samp>Hide hierarchy edges</samp>: Cette option permet de cacher les flèches hiéarchiques concernant le noueud sur lequel on a affiché le menu.
+      </li>
+      <li>
         <samp>Hide node</samp>: Cette option permet de cacher un noeud en entière. (<em>Ceci n'est pas appliquable sur le noeud <samp>root</samp></em>)<br/>
         <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FhideNode.png?alt=media&token=f6946bd6-a6a5-49d7-946b-2c4768973741" alt="Quand on cache un noeud">
+      </li>
+      <li>
+        <samp>Focus node</samp>: Cette option permet d'isoler le noeud sur lequel on a affiché le menu, en cachant tous les autres noeuds dans le même <samp>package</samp>.
+      </li>
+      <li>
+        <samp>Expand all</samp>: Cette option permet de développer (ouvrir) tous les noeuds de manière récursive depuis le noeud sur lequel on a affiché le menu. 
+      </li>
+      <li>
+        <samp>Collapse all</samp>: Cette option permet de fermer tous les noeuds de manière récurive depuis le noued sur lequel on a affiché le menu.
       </li>
     </ul>
   
