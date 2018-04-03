@@ -330,8 +330,8 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
             <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse0.png?alt=media&token=f61f27e5-c1d5-48b4-88bc-ea0cfd37bdb2" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur 2 Ant Build... sous la section Run As">
           </li>
           <li>
-            Sur la fenêtre intitulée <samp>Edit Configuration</samp> <strong>chochez les cases <samp>build [default]</samp> et <samp>InterfaceAdmin</samp></strong>. Vérifiez bien que l'ordre dans la section <samp>Target execution order:</samp> est <samp>build, InterfaceAdmin</samp>. Puis cliquez sur le bouton <strong><samp>Run</samp></strong>.<br/>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse1.png?alt=media&token=03bc934d-3841-4ae3-b8d3-d39f130329d9" alt="Sur la fenêtre intitulée Edit Configuration cochez les cases build [default] et InterfaceAdmin. Vérifiez bien que l'ordre dans la section Target execution order est build, InterfaceAdmin. Puis cliquez sur le bouton Run">
+            Sur la fenêtre intitulée <samp>Edit Configuration</samp> <strong>chochez les cases <samp>build [default]</samp> et <samp>admin</samp></strong>. Vérifiez bien que l'ordre dans la section <samp>Target execution order:</samp> est <samp>build, admin</samp>. Puis cliquez sur le bouton <strong><samp>Run</samp></strong>.<br/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse1.png?alt=media&token=5a1a3129-062c-430f-9c94-e8dce2d5320a" alt="Sur la fenêtre intitulée Edit Configuration cochez les cases build [default] et admin. Vérifiez bien que l'ordre dans la section Target execution order est build, admin. Puis cliquez sur le bouton Run">
           </li>
         </ol>
       </details>
