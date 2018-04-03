@@ -379,7 +379,7 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
           <li>
             <!-- Vérifiez le message qui s'affiche sur la gauche de la barre latérale qui se trouve toute en bas de la fenêtre d'IntelliJ commence bien avec <samp>"Ant build completed..."</samp>. Une fois vous avez vérifié que la construction (build) a bien eu lieu,  -->
             Cliquez deux fois sur la cible <samp>admin</samp> sur la partie intitulé <samp>Ant Build</samp> qui se trouve à droite de la fenêtre <samp>d'IntelliJ</samp>. <br>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJAntInterfaceAdmin.png?alt=media&token=524c92de-f593-42cf-8767-f02c36da7e58" alt="Cliquez deux fois sur la cible InterfaceAdmin sur la partie intitulé Ant Build qui se trouve à droite de la fenêtre d'IntelliJ"/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJAntAdmin.png?alt=media&token=69c53fd6-2943-4026-bbb3-f404b523dee5" alt="Cliquez deux fois sur la cible InterfaceAdmin sur la partie intitulé Ant Build qui se trouve à droite de la fenêtre d'IntelliJ"/>
           </li>
       </details>
   
@@ -391,8 +391,8 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
   <ol>
     <li>
       Sur un terminal lancer la commande suivante <br/>
-      <code>ant InterfaceAdmin</code> <br/>
-      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FterminalInterfaceAdmin.png?alt=media&token=1a46d1f7-dffb-4cde-8fbc-9d49f4794d14" alt="Sur un terminal lancer la commande ant InterfaceAdmin">
+      <code>ant admin</code> <br/>
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FterminalAdmin.png?alt=media&token=8756f5d7-db2a-4fd1-9ed9-f6cb7ae6703b" alt="Sur un terminal lancer la commande ant InterfaceAdmin">
     </li>
   </ol>
 </details>
