@@ -220,7 +220,7 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
           </li>
           <li>
             Sur la fenêtre intitulée <samp>Edit Configuration</samp> <strong>chochez le case <samp>base</samp></strong>. Vérifiez bien que l'ordre dans la section <samp>Target execution order:</samp> est <samp>base</samp>. Puis cliquez sur le bouton <strong><samp>Run</samp></strong>.<br/>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse1.png?alt=media&token=1cdebe52-553b-4f6a-9bb5-f7e0aa984edc" alt="Sur la fenêtre intitulée Edit Configuration cochez le case base. Vérifiez bien que l'ordre dans la section Target execution order est base. Puis cliquez sur le bouton Run">
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse2.png?alt=media&token=6110f7dd-c2b8-408e-9fa0-41b6151f2ea3" alt="Sur la fenêtre intitulée Edit Configuration cochez le case base. Vérifiez bien que l'ordre dans la section Target execution order est base. Puis cliquez sur le bouton Run">
           </li>
         </ol>
       </details>
@@ -332,7 +332,7 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
           </li>
           <li>
             Sur la fenêtre intitulée <samp>Edit Configuration</samp> <strong>cochez le case <samp>admin</samp></strong>. Vérifiez bien que l'ordre dans la section <samp>Target execution order:</samp> est <samp>admin</samp>. Puis cliquez sur le bouton <strong><samp>Run</samp></strong>.<br/>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse1.png?alt=media&token=5a1a3129-062c-430f-9c94-e8dce2d5320a" alt="Sur la fenêtre intitulée Edit Configuration cochez les cases build [default] et admin. Vérifiez bien que l'ordre dans la section Target execution order est build, admin. Puis cliquez sur le bouton Run">
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse1.png?alt=media&token=1cdebe52-553b-4f6a-9bb5-f7e0aa984edc" alt="Sur la fenêtre intitulée Edit Configuration cochez les cases build [default] et admin. Vérifiez bien que l'ordre dans la section Target execution order est build, admin. Puis cliquez sur le bouton Run">
           </li>
         </ol>
       </details>
@@ -342,13 +342,13 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
 </details>
 
 <details>
-  <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJ_IDEA_Logo.svg?alt=media&token=4f8c266b-4d1c-4fa5-972a-19dbb23ad1be" alt="Eclipse Logo" width="32" height="32" align="top"/> IntelliJ </summary>
+  <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJ_IDEA_Logo.svg?alt=media&token=4f8c266b-4d1c-4fa5-972a-19dbb23ad1be" alt="IntelliJ Logo" width="32" height="32" align="top"/> IntelliJ </summary>
 
   <ul>
     <li>
       <details>
         <summary>
-          En exécutant manuelement le fichier <samp>GenrationToDisplayMain</samp>.
+          En exécutant manuellement le fichier <samp>GenrationToDisplayMain</samp>.
         </summary>
         <ol>
           <li>
