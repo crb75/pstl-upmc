@@ -219,8 +219,8 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
             <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse0.png?alt=media&token=f61f27e5-c1d5-48b4-88bc-ea0cfd37bdb2" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur 2 Ant Build... sous la section Run As">
           </li>
           <li>
-            Sur la fenêtre intitulée <samp>Edit Configuration</samp> <strong>chochez les cases <samp>build [default]</samp> et <samp>base</samp></strong>. Vérifiez bien que l'ordre dans la section <samp>Target execution order:</samp> est <samp>build, base</samp>. Puis cliquez sur le bouton <strong><samp>Run</samp></strong>.<br/>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse2.png?alt=media&token=472bc48f-2d3a-4756-bbe1-3fd93a48312d" alt="Sur la fenêtre intitulée Edit Configuration cochez les cases build [default] et base. Vérifiez bien que l'ordre dans la section Target execution order est build, base. Puis cliquez sur le bouton Run">
+            Sur la fenêtre intitulée <samp>Edit Configuration</samp> <strong>chochez le case <samp>base</samp></strong>. Vérifiez bien que l'ordre dans la section <samp>Target execution order:</samp> est <samp>base</samp>. Puis cliquez sur le bouton <strong><samp>Run</samp></strong>.<br/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse1.png?alt=media&token=1cdebe52-553b-4f6a-9bb5-f7e0aa984edc" alt="Sur la fenêtre intitulée Edit Configuration cochez le case base. Vérifiez bien que l'ordre dans la section Target execution order est base. Puis cliquez sur le bouton Run">
           </li>
         </ol>
       </details>
@@ -229,7 +229,7 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
 </details>
 
 <details>
-  <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJ_IDEA_Logo.svg?alt=media&token=4f8c266b-4d1c-4fa5-972a-19dbb23ad1be" alt="Eclipse Logo" width="32" height="32" align="top"/> IntelliJ </summary>
+  <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJ_IDEA_Logo.svg?alt=media&token=4f8c266b-4d1c-4fa5-972a-19dbb23ad1be" alt="IntelliJ Logo" width="32" height="32" align="top"/> IntelliJ </summary>
   <ol>
     <li>
       <details>
@@ -258,13 +258,14 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
              Chargez le projet <strong>en sélectionnant le projet</strong> sur la fenêtre de démarrage.<br/>
               <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJOpenForAntbuild.png?alt=media&token=bdd1f3e9-50fb-4b60-8563-176237fbebca" alt="Chargez le projet en sélectionnant le projet sur la fenêtre de démarrage">
           </li>
-          <li>
+          <!-- <li>
               Dans la partie intitulé <samp>Ant Build</samp> qui se trouve à droite de la fenêtre <samp>d'IntelliJ</samp>, cliquez deux fois sur la cible <strong><samp>Build</samp></strong>. <em>( Contrairement à Eclipse IntelliJ ne build pas les projets automatiquement, donc il faut le faire manuellement.)</em> <br/>
               <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJAntBuild.png?alt=media&token=c10bfb8c-52ec-4973-9133-bc644ae08854" alt="Dans la partie intitulé Ant Build qui se trouve à droite de la fenêtre d'IntelliJ cliquez deux fois sur la cible Build."/>
-          </li>
+          </li> -->
           <li>
-            Vérifiez le message qui s'affiche sur la gauche de la barre latérale qui se trouve toute en bas de la fenêtre d'IntelliJ commence bien avec <samp>"Ant build completed..."</samp>. Une fois vous avez vérifié que la construction (build) a bien eu lieu, cliquez deux fois sur la cible <samp>InterfaceAfficageGrapheDeDependance</samp> sur la partie intitulé <samp>Ant Build</samp> qui se trouve à droite de la fenêtre <samp>d'IntelliJ</samp>. <br>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJAntInterfaceAffichageGrapheDeDependance.png?alt=media&token=5f88ed52-97fa-42e5-9be1-0200ea6f28b3" alt="Vérifiez le message qui s'affiche sur la gauche de la barre latérale qui se trouve tout en bas de la fenêtre d'IntelliJ commence bien avec Ant build completed... Une fois vous avez vérifié que la construction (build) a bien eu lieu, cliquez deux fois sur la cible InterfaceAffichageGrapheDeDependace surla partie intitulé Ant Build qui se trouve à droite de la fenêtre d'IntelliJ"/>
+            <!-- Vérifiez le message qui s'affiche sur la gauche de la barre latérale qui se trouve toute en bas de la fenêtre d'IntelliJ commence bien avec <samp>"Ant build completed..."</samp>. Une fois vous avez vérifié que la construction (build) a bien eu lieu,  -->
+            Cliquez deux fois sur la cible <samp>base</samp> sur la partie intitulé <samp>Ant Build</samp> qui se trouve à droite de la fenêtre <samp>d'IntelliJ</samp>. <br>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJAntBase.png?alt=media&token=6ff389e7-e2c5-4a46-acff-f2014bdd34e5" alt="Cliquez deux fois sur la cible InterfaceAffichageGrapheDeDependace surla partie intitulé Ant Build qui se trouve à droite de la fenêtre d'IntelliJ"/>
           </li>
         </ol>
       </details>
@@ -278,8 +279,8 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
   <ul>
     <li>
       Sur un terminal lancer la commande suivante <br/>
-      <code>ant InterfaceAffichageGrapheDeDependance</code> <br/>
-      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FterminalInterfaceGrpahDeDependance.png?alt=media&token=a216b30f-3dfc-4503-ab78-02bcb7a0b794" alt="Sur un terminal lancer la commande ant InterfaceAffichageGrapheDeDependance">
+      <code>ant base</code> <br/>
+      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FterminalBase.png?alt=media&token=1b6d7dc0-35e6-4f88-8b10-6a7f6f5be25f" alt="Sur un terminal lancer la commande ant base">
     </li>
     <li>
       En utilisant le script d'exécution selon votre système d'exécution
@@ -330,7 +331,7 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
             <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse0.png?alt=media&token=f61f27e5-c1d5-48b4-88bc-ea0cfd37bdb2" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur 2 Ant Build... sous la section Run As">
           </li>
           <li>
-            Sur la fenêtre intitulée <samp>Edit Configuration</samp> <strong>chochez les cases <samp>build [default]</samp> et <samp>admin</samp></strong>. Vérifiez bien que l'ordre dans la section <samp>Target execution order:</samp> est <samp>build, admin</samp>. Puis cliquez sur le bouton <strong><samp>Run</samp></strong>.<br/>
+            Sur la fenêtre intitulée <samp>Edit Configuration</samp> <strong>cochez le case <samp>admin</samp></strong>. Vérifiez bien que l'ordre dans la section <samp>Target execution order:</samp> est <samp>admin</samp>. Puis cliquez sur le bouton <strong><samp>Run</samp></strong>.<br/>
             <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse1.png?alt=media&token=5a1a3129-062c-430f-9c94-e8dce2d5320a" alt="Sur la fenêtre intitulée Edit Configuration cochez les cases build [default] et admin. Vérifiez bien que l'ordre dans la section Target execution order est build, admin. Puis cliquez sur le bouton Run">
           </li>
         </ol>
@@ -371,13 +372,14 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
             Chargez le projet <strong>en sélectionnant le projet</strong> sur la fenêtre de démarrage.<br/>
             <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJOpenForAntbuild.png?alt=media&token=bdd1f3e9-50fb-4b60-8563-176237fbebca" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
           </li>
-          <li>
+          <!-- <li>
               Dans la partie intitulé <samp>Ant Build</samp> qui se trouve à droite de la fenêtre <samp>d'IntelliJ</samp>, cliquez deux fois sur la cible <strong><samp>Build</samp></strong>. <em>( Contrairement à Eclipse IntelliJ ne build pas les projets automatiquement, donc il faut le faire manuellement.)</em> <br/>
               <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJAntBuild.png?alt=media&token=c10bfb8c-52ec-4973-9133-bc644ae08854" alt="Dans la partie intitulé Ant Build qui se trouve à droite de la fenêtre d'IntelliJ cliquez deux fois sur la cible Build."/>
-          </li>
+          </li> -->
           <li>
-            Vérifiez le message qui s'affiche sur la gauche de la barre latérale qui se trouve toute en bas de la fenêtre d'IntelliJ commence bien avec <samp>"Ant build completed..."</samp>. Une fois vous avez vérifié que la construction (build) a bien eu lieu, cliquez deux fois sur la cible <samp>InterfaceAdmin</samp> sur la partie intitulé <samp>Ant Build</samp> qui se trouve à droite de la fenêtre <samp>d'IntelliJ</samp>. <br>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJAntInterfaceAdmin.png?alt=media&token=524c92de-f593-42cf-8767-f02c36da7e58" alt="Vérifiez le message qui s'affiche sur la gauche de la barre latérale qui se trouve tout en bas de la fenêtre d'IntelliJ commence bien avec Ant build completed... Une fois vous avez vérifié que la construction (build) a bien eu lieu, cliquez deux fois sur la cible InterfaceAdmin sur la partie intitulé Ant Build qui se trouve à droite de la fenêtre d'IntelliJ"/>
+            <!-- Vérifiez le message qui s'affiche sur la gauche de la barre latérale qui se trouve toute en bas de la fenêtre d'IntelliJ commence bien avec <samp>"Ant build completed..."</samp>. Une fois vous avez vérifié que la construction (build) a bien eu lieu,  -->
+            Cliquez deux fois sur la cible <samp>admin</samp> sur la partie intitulé <samp>Ant Build</samp> qui se trouve à droite de la fenêtre <samp>d'IntelliJ</samp>. <br>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJAntInterfaceAdmin.png?alt=media&token=524c92de-f593-42cf-8767-f02c36da7e58" alt="Cliquez deux fois sur la cible InterfaceAdmin sur la partie intitulé Ant Build qui se trouve à droite de la fenêtre d'IntelliJ"/>
           </li>
       </details>
   
