@@ -219,8 +219,8 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
             <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse0.png?alt=media&token=f61f27e5-c1d5-48b4-88bc-ea0cfd37bdb2" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur 2 Ant Build... sous la section Run As">
           </li>
           <li>
-            Sur la fenêtre intitulée <samp>Edit Configuration</samp> <strong>chochez les cases <samp>build [default]</samp> et <samp>InterfaceAffichageGrapheDeDependance</samp></strong>. Vérifiez bien que l'ordre dans la section <samp>Target execution order:</samp> est <samp>build, InterfaceAffichageGrapheDeDependance</samp>. Puis cliquez sur le bouton <strong><samp>Run</samp></strong>.<br/>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse2.png?alt=media&token=37b290cf-96d2-4f4a-8c16-7010f22cab6f" alt="Sur la fenêtre intitulée Edit Configuration cochez les cases build [default] et InterfaceAffichageGrapheDeDependance. Vérifiez bien que l'ordre dans la section Target execution order est build, InterfaceAffichageGrapheDeDependance. Puis cliquez sur le bouton Run">
+            Sur la fenêtre intitulée <samp>Edit Configuration</samp> <strong>chochez les cases <samp>build [default]</samp> et <samp>base</samp></strong>. Vérifiez bien que l'ordre dans la section <samp>Target execution order:</samp> est <samp>build, base</samp>. Puis cliquez sur le bouton <strong><samp>Run</samp></strong>.<br/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse2.png?alt=media&token=472bc48f-2d3a-4756-bbe1-3fd93a48312d" alt="Sur la fenêtre intitulée Edit Configuration cochez les cases build [default] et base. Vérifiez bien que l'ordre dans la section Target execution order est build, base. Puis cliquez sur le bouton Run">
           </li>
         </ol>
       </details>
