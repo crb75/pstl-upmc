@@ -446,8 +446,9 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
   </li>
   <li>
     Toujours sur la partie textuel d'un noeud, vous pouvez cliquez droit pour afficher le menu.
-    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FuidgMenu.png?alt=media&token=3191be29-b7fe-493b-9461-ec38c10221b0" alt="Menu">
-    Sur ce menu vous avez 6 options qui sont les suivants:
+    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FuidgMenu.png?alt=media&token=e7688c35-ec4e-421b-9d16-6858e3b77092" alt="Menu">
+    Sur ce menu vous avez 10 options qui sont les suivantes:
+    <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FuiMenu.png?alt=media&token=cf25164c-fdb9-4015-803f-dddf8b3dbf2e" alt="Options sur le menu">
     <ul>
       <li>
         <samp>Show outgoing edges</samp>: Cette option permet d'afficher les flèches partants du noeud sur lequel on a affiche le menu.
