@@ -149,7 +149,9 @@ public class XmlToDisplay {
 		return null;
 	}
 
-	public static void main(String[] args) {
-		new XmlToDisplay();
-	}
+	/*
+		public static void main(String[] args) {
+			new XmlToDisplay();
+		}
+	*/
 }

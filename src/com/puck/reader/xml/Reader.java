@@ -48,7 +48,7 @@ public class Reader {
 	}
 	
 	/* Méthode permet d'exécuter un requête XPath dont le type de retour est un String sur le fichier XML */
-	private String executeStringQuery(String query) {
+	public String executeStringQuery(String query) {
             String expression = query;
 	        String str = "";
 			try {
@@ -71,7 +71,7 @@ public class Reader {
 	}
 	
 	/* Méthode permet d'exécuter un requête XPath dont le type de retour est un Node sur le fichier XML */
-	private Node executeNodeQuery(String query) {
+	public Node executeNodeQuery(String query) {
 		try {
 			return (Node)path.evaluate(query, root, XPathConstants.NODE);
 		} catch (XPathExpressionException e) {
@@ -81,7 +81,7 @@ public class Reader {
 	}
 	
 	/* Méthode permet d'exécuter un requête XPath dont le type de retour est un NodeList sur le fichier XML */
-	private NodeList executeNodeSetQuery(String query) {
+	public NodeList executeNodeSetQuery(String query) {
 		try {
 			return (NodeList)path.evaluate(query, root, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
@@ -102,7 +102,7 @@ public class Reader {
 		return this.getAllNodes().getLength();
 	}
 	
-	private static String generateNodePathWithIndex (int index) {
+	public static String generateNodePathWithIndex (int index) {
 		return "//node[" + index + "]";
 	}
 	
@@ -144,9 +144,10 @@ public class Reader {
 		return (nl==null)?-1:nl.getLength();
 	}
 	
-	private static String generateEdgePathFromIndex(int index) {
+	public static String generateEdgePathFromIndex(int index) {
 		return "//edge["+index+"]";
 	}
+
 	/* Méthode permet de retourner un élément de type Edge dont l'index est passé en paramètres*/
 	public Node getEdge(int edgeIndex) {
 		return this.executeNodeQuery(Reader.generateEdgePathFromIndex(edgeIndex));
@@ -175,6 +176,7 @@ public class Reader {
 		String query = Reader.generateEdgePathFromIndex(edgeIndex)+"/@dest";
 		return this.executeStringQuery(query);
 	}
+
 	public NodeList getEdgeFrom(String id){
 		String query = "//edge[@src=\""+id+"\"]";
 		return this.executeNodeSetQuery(query);
