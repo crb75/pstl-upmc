@@ -44,6 +44,16 @@ public class NodeContent extends PNode {
 	}
 
 	// endregion
+	public static NodeContent newInstance(NodeContent copy) {
+		NodeContent c = new NodeContent((PText)copy.getText().clone(), copy.getType());
+		c.setName(copy.getName());
+		c.setText(copy.getText().getText());
+		return c;
+	}
+
+	public void setIcon(PImage icon) {
+		this.icon = icon;
+	}
 
 	public NodeContent(PText text, String type) {
 		this.type = type;
@@ -59,28 +69,28 @@ public class NodeContent extends PNode {
 	}
 
 	public void setImageIcon(String type) {
-		PImage Icon ; 
+		PImage Icon;
 		switch (type) {
 		case "package":
-			Icon  = new PImage("images/package.gif");
+			Icon = new PImage("images/package.gif");
 			break;
 		case "class":
-			Icon  = new PImage("images/class.gif");
+			Icon = new PImage("images/class.gif");
 			break;
 		case "interface":
-			Icon  = new PImage("images/interface.gif");
+			Icon = new PImage("images/interface.gif");
 			break;
 		case "root":
-			Icon  = new PImage("images/root.gif");
+			Icon = new PImage("images/root.gif");
 			break;
 		case "method":
-			Icon  = new PImage("images/method.png");
+			Icon = new PImage("images/method.png");
 			break;
 		case "attribute":
-			Icon  = new PImage("images/field.png");
+			Icon = new PImage("images/field.png");
 			break;
 		default:
-			Icon  = new PImage("images/question-mark.gif");
+			Icon = new PImage("images/question-mark.gif");
 			break;
 		}
 		this.icon = Icon;
@@ -91,6 +101,13 @@ public class NodeContent extends PNode {
 		return text.getText();
 	}
 
+	public void rename(String newName) {
+		text.setText(newName);
+		text.setBounds(icon.getBounds().getWidth() + margin, 0, text.getWidth(), text.getHeight());
+		PBounds bounds = this.getUnionOfChildrenBounds(null);
+		this.setBounds(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+	}
+
 	public String getType() {
 		return type;
 	}
@@ -98,5 +115,5 @@ public class NodeContent extends PNode {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 }

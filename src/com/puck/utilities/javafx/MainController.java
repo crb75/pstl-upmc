@@ -138,7 +138,13 @@ public class MainController {
 		pro.waitFor();
 		displaySuccess();
 		System.out.println(command + " exitValue() " + pro.exitValue());
-		NewDisplayDG.main(new String[] { "DependecyGraph.xml" });
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				NewDisplayDG.main(new String[] { "DependecyGraph.xml" });
+			}
+		}).start();
+		
 		consoleArea.appendText(command + " exitValue() " + pro.exitValue());
 
 	}

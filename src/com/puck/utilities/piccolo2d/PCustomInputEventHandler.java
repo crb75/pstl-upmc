@@ -17,10 +17,12 @@ import org.piccolo2d.extras.pswing.PSwingCanvas;
 import com.puck.arrows.ArrowNodesHolder;
 import com.puck.arrows.Parrow;
 import com.puck.menu.Menu;
+import com.puck.menu.items.AddNode;
 import com.puck.menu.items.CollapseAll;
 import com.puck.menu.items.ExpandAll;
 import com.puck.menu.items.FocusNode;
 import com.puck.menu.items.HideNode;
+import com.puck.menu.items.RenameNode;
 import com.puck.menu.items.ingoing.CreateEdgesBy;
 import com.puck.menu.items.ingoing.CreateEgdesHierarchyBy;
 import com.puck.menu.items.outgoing.CreateEdgesOf;
@@ -29,6 +31,9 @@ import com.puck.menu.items.removing.RemoveEdgesOf;
 import com.puck.menu.items.removing.RemovesHierarchyEdgesOf;
 import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
+import com.puck.undoRedo.Changeable;
+import com.puck.undoRedo.StateChanger;
+import com.puck.utilities.NodeType;
 
 public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	private PiccoloCustomNode pnode;
@@ -48,13 +53,17 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	private FocusNode focusNode;
 	private ExpandAll expandAll;
 	private CollapseAll collapseAll;
+	private JMenuItem addClass;
+	private JMenuItem addPackage;
+	private JMenuItem renameNode;
+	private Changeable state;
 	public PCustomInputEventHandler(PiccoloCustomNode pnode, PiccoloCustomNode root, PSwingCanvas canvas,
 			Map<String, PiccoloCustomNode> allPNodes, Menu menu, ArrowNodesHolder ANH, Map<String, Node> listNodes) {
 		setEventFilter(new PInputEventFilter(InputEvent.BUTTON1_MASK & InputEvent.BUTTON2_MASK));
 		this.pnode = pnode;
 		this.canvas = canvas;
 		this.root = root;
-		this.allPNodes = new HashMap<>(allPNodes);
+		this.allPNodes = (HashMap<String, PiccoloCustomNode>) allPNodes;
 		this.menu = menu;
 		this.ANH = ANH;
 		this.listNodes = listNodes;
@@ -68,6 +77,10 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		focusNode = new FocusNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
 		expandAll = new ExpandAll(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
 		collapseAll = new CollapseAll(pnode, canvas, this.allPNodes, menu, ANH, listNodes);
+		state = StateChanger.getInstance();
+		addClass = new AddNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes, NodeType.CLASS, state);
+		addPackage =  new AddNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes, NodeType.PACKAGE, state);
+		renameNode = new RenameNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes, state);
 	}
 
 	public PCustomInputEventHandler(PiccoloCustomNode pnode) {
@@ -81,7 +94,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		try {
 			if (aEvent.isLeftMouseButton()) {
 				pnode.toggleChildren();
-				System.out.println(pnode.isHidden());
+				//System.out.println(pnode.isHidden());
 				root.setLayout();
 				root.updateContentBoundingBoxes(false, canvas);
 				for (Parrow arrow : ANH.getVisibleArrows()) {
@@ -115,6 +128,14 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		menu.addSeparator();
 		menu.add(expandAll);
 		menu.add(collapseAll);
+		menu.addSeparator();
+		if(pnode.getContent().getType().equals("package")) {
+		menu.add(addClass);
+		menu.add(addPackage);
+		menu.addSeparator();
+		}
+		menu.add(renameNode);
+	
 		menu.setPoint(aEvent.getPosition());
 		menu.setCanvas(canvas);
 	}

@@ -43,6 +43,8 @@ public class Menu extends JPopupMenu {
 			p.setOffset(point);
 			hidden = false;
 			canvas.getLayer().addChild(p);
+			System.err.println("canvas menu "+System.identityHashCode(canvas));
+
 		}
 	}
 

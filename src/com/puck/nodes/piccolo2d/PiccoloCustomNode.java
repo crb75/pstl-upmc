@@ -32,6 +32,8 @@ public class PiccoloCustomNode extends PNode {
 	public void setHiddenchildren(Collection<PiccoloCustomNode> hiddenchildren) {
 		this.hiddenchildren = hiddenchildren;
 	}
+	
+	
 
 	private double margin = 10;
 	private String idNode;
@@ -119,7 +121,15 @@ public class PiccoloCustomNode extends PNode {
 		this.parent = null;
 
 	}
-
+	public static PiccoloCustomNode newInstance(PiccoloCustomNode copy) {
+		PiccoloCustomNode p = new  PiccoloCustomNode(copy.getContent().getText().getText(),copy.getidNode(),copy.getContent().getType());
+	//	p.setParentNode(PiccoloCustomNode.newInstance(copy.parent));
+		//p.setHiddenchildren(new ArrayList<>(copy.hiddenchildren));
+		p.setChilldren(new ArrayList<>(copy.getAllChildrenCopy()));
+	//	p.setContent(copy.getContent());
+		return p;
+	}
+	
 	public void setChilldren(Collection<PiccoloCustomNode> children) {
 		for (PiccoloCustomNode node : children) {
 			node.setParentNode(this);
@@ -147,6 +157,15 @@ public class PiccoloCustomNode extends PNode {
 			out.add(PCN);
 		for (PiccoloCustomNode PCN : hiddenchildren)
 			out.add(PCN);
+		return out;
+	}
+	public Collection<PiccoloCustomNode> getAllChildrenCopy() {
+		Collection<PiccoloCustomNode> out = new ArrayList<>();
+		Collection<PiccoloCustomNode> children = getChildren();
+		for (PiccoloCustomNode PCN : children)
+			out.add(PiccoloCustomNode.newInstance(PCN));
+		for (PiccoloCustomNode PCN : hiddenchildren)
+			out.add(PiccoloCustomNode.newInstance(PCN));
 		return out;
 	}
 
@@ -355,7 +374,7 @@ public class PiccoloCustomNode extends PNode {
 			}
 
 			removeChild(rect);
-			rect = PPath.createRectangle(x, y, maxWidth, h + maxHeight + margin);
+			rect = PPath.createRectangle(x, y, maxWidth, h+ maxHeight + margin);
 			rect = bevelIn(rect, 0);
 
 			addChild(rect);
@@ -525,4 +544,9 @@ public class PiccoloCustomNode extends PNode {
 		this.ingoing = ingoing;
 	}
 
+	public void setContent(NodeContent content) {
+		this.content = content;
+	}
+
+	
 }
