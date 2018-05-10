@@ -83,34 +83,15 @@ public class AddNode extends JMenuItem {
 		children.add(nodeToAdd);
 		pnode.setChilldren(children);
 		pnode.showChildren();
-		//for undo redo
-//		Stack<PiccoloCustomNode> editedPnodes = ((StateChanger)state).getAddedPnodes() ;
-//		editedPnodes.push(nodeToAdd);
-//		((StateChanger)state).setAddedPnodes(editedPnodes);
 		
 		// undo redo with state
 		Stack<State> editedState = StateChanger2.getInstance().getAddedPnodes();
 		editedState.push(previousState);
 		StateChanger2.getInstance().setAddedPnodes(editedState);
-	
-		//System.out.println(nodeToAdd);
-		//System.out.println(nodeToAdd.getidNode());
 		
 		
 		allPNodes.put(nodeToAdd.getidNode(), nodeToAdd);
 
-	//	root = root_atpre;
-		//allPNodes = allPNodes_atPre;
-		
-//		System.err.println("root2 "+root.getHierarchy().size());
-//		System.err.println("root_atpre2 "+root_atpre.getHierarchy().size());
-//		
-//		System.err.println("allPNodes_atPre2 "+allPNodes_atPre.size());
-		System.err.println("allPNodes2 "+allPNodes.size());
-//		
-//		System.err.println(allPNodes_atPre.get(pnode.getidNode()).getHierarchy().size());
-//		System.err.println(allPNodes.get(pnode.getidNode()).getHierarchy().size());
-		
 		root.setLayout();
 		//root.showChildren();
 		ANH.updateAllPosition();

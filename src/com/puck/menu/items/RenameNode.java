@@ -18,10 +18,10 @@ import com.puck.arrows.ArrowNodesHolder;
 import com.puck.menu.Menu;
 import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
+import com.puck.refactoring.RefactoringCommands;
 import com.puck.undoRedo.Changeable;
 import com.puck.undoRedo.State;
 import com.puck.undoRedo.StateChanger2;
-import com.puck.utilities.NodeType;
 
 public class RenameNode extends JMenuItem {
 	private HashMap<String, PiccoloCustomNode> allPNodes;
@@ -63,6 +63,8 @@ public class RenameNode extends JMenuItem {
 		editedState = StateChanger2.getInstance().getAddedPnodes();
 		editedState.push(currentState);
 		StateChanger2.getInstance().setAddedPnodes(editedState);
+		
+		RefactoringCommands.getInstance().nodeToString(pnode);
 		root.setLayout();
 	}
 

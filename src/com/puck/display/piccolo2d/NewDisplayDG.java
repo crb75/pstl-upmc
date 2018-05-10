@@ -14,19 +14,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.piccolo2d.extras.pswing.PSwingCanvas;
-import org.piccolo2d.util.PPaintContext;
 
 import com.puck.arrows.ArrowNodesHolder;
 import com.puck.menu.Menu;
 import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
+import com.puck.refactoring.ExecuteRefactoringPlan;
+import com.puck.refactoring.RefactoringCommands;
 import com.puck.undoRedo.StateChanger;
 import com.puck.undoRedo.StateChanger2;
 import com.puck.utilities.piccolo2d.PCustomInputEventHandler;
@@ -42,6 +45,7 @@ public class NewDisplayDG extends JFrame {
 	private PopupPrintListener mpp;
 	private StateChanger state;
 	private StateChanger2 state2;
+	private ExecuteRefactoringPlan refactoringPlanExecutor;
 	/**
 	 * 
 	 */
@@ -50,8 +54,10 @@ public class NewDisplayDG extends JFrame {
 		
 	}
 	public NewDisplayDG(PSwingCanvas canvas,String args) throws InterruptedException{
+		RefactoringCommands.getInstance().init();
 		//state = StateChanger.getInstance();
 		state2 = StateChanger2.getInstance();
+		refactoringPlanExecutor = ExecuteRefactoringPlan.getInstance();
 	    mp = new MousePopupListener();
 	    mpp = new PopupPrintListener();
 		menu = new Menu();
@@ -68,7 +74,7 @@ public class NewDisplayDG extends JFrame {
 		canvas.setAutoscrolls(false);
 		menu.addPopupMenuListener(mpp);
 		state2.init(this.allPNodes, ANH, canvas,root,listNodes,menu);
-
+		refactoringPlanExecutor.init(this.allPNodes, ANH, canvas,root,listNodes,menu);
 		
 		//TestXmlDisplay testXml = new TestXmlDisplay(allPNodes,root);
 		
@@ -90,10 +96,18 @@ public class NewDisplayDG extends JFrame {
 		
 		JButton undo = new JButton("UNDO");
 		JButton redo = new JButton("REDO");
+		JButton save = new JButton("SAVE-Refactoring");
+		JButton export = new JButton("Export-Refactoring");
 		undo.setSize(40,40);
 	 	JToolBar toolBar = new JToolBar();
 	   	toolBar.add(undo);
 	   	toolBar.add(redo);
+	   	toolBar.add(save);
+	   	toolBar.add(export);
+	   	
+	    JFileChooser fc = new JFileChooser();
+        fc.setMultiSelectionEnabled(true);
+        //fc.setCurrentDirectory(new File("C:\\tmp"));
 	   	
 		JTextArea textArear = new JTextArea();
 		textArear.setEditable(false);
@@ -114,6 +128,20 @@ public class NewDisplayDG extends JFrame {
 		 redo.addActionListener(new ActionListener() {
 	         public void actionPerformed(ActionEvent e) {
 	        	 StateChanger2.getInstance().redo();
+	         }          
+	      });
+		 save.addActionListener(new ActionListener() {
+	         public void actionPerformed(ActionEvent e) {
+	        	RefactoringCommands.getInstance().writeFile();
+	         }          
+	      });
+		 export.addActionListener(new ActionListener() {
+	         public void actionPerformed(ActionEvent e) {
+	        	fc.addChoosableFileFilter(new FileNameExtensionFilter("*.xml", "xml"));
+	        	fc.showDialog(canvas, "select");
+	        	System.out.println(fc.getSelectedFile().getPath());
+	        	ExecuteRefactoringPlan.getInstance().setFilePath(fc.getSelectedFile().getPath());
+	        	ExecuteRefactoringPlan.getInstance().execute();
 	         }          
 	      });
 	

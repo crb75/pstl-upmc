@@ -42,7 +42,6 @@ public class StateChanger2 implements Changeable{
 		this.root = root;
 		this.listNodes = listNodes;
 		this.menu = menu;
-		System.err.println("init root"+ root.getHierarchy().size());
 	}
 	
 	@Override

@@ -11,8 +11,15 @@ public class GenrationToDisplayMain extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			System.getProperties().list(System.out);
-			BorderPane root = (BorderPane)FXMLLoader.load(getClass().getResource("/com/puck/utilities/javafx/MainInterface.fxml"));
+			BorderPane root;
+			String osName = System.getProperty("os.name").toLowerCase();
+			if(osName.contains("linux") || osName.contains("unix")) {
+				System.out.println(osName);
+			 root = (BorderPane)FXMLLoader.load(getClass().getResource("/src/com/puck/utilities/javafx/MainInterface.fxml"));
+			}else {
+				System.out.println(osName);
+			 root = (BorderPane)FXMLLoader.load(getClass().getResource("/com/puck/utilities/javafx/MainInterface.fxml"));
+			}
 			Scene scene = new Scene(root,1189.0,912.0);
 			primaryStage.setScene(scene);
 			primaryStage.show();

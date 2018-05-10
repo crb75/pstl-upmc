@@ -22,7 +22,7 @@ import com.puck.nodes.piccolo2d.PiccoloCustomNode;
 import com.puck.utilities.piccolo2d.XmlToStructure;
 
 /*
- * cette classe permet de comparer le xml intial avec le xml reg�n�r� � partir de l'affichage 
+ * cette classe permet de comparer le xml intial avec le xml regenere a partir de l'affichage 
  * 
  * */
 public class XmlToDisplay {
