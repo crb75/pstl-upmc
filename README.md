@@ -1,5 +1,7 @@
 # Affichage d'une graphe de dépendance d'un programme Java en utilisant la bibliothèque Piccolo2D.
 
+[![Build Status](https://travis-ci.org/Misteryagci/pstl-upmc.svg?branch=master)](https://travis-ci.org/Misteryagci/pstl-upmc)
+
 ## Guide pour les développeurs
 
 Si vous êtes développeur de ce répo, <strong>après avoir cloné le répo</strong> veuillez suivre les instructions qui vous convient parmi les  suivantes:
