@@ -1,5 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." default="build" name="upmc-pstl" >
+<project basedir="." default="build" name="upmc-pstl" xmlns:jacoco="antlib:org.jacoco.ant">
+
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="./lib/jacocoant.jar"/>
+    </taskdef>
+
     <property environment="env"/>
     <property name="ECLIPSE_HOME" value="../../../../../Volumes/Eclipse/Eclipse.app/Contents/Eclipse/"/>
     <property name="junit.output.dir" value="junit"/>
@@ -51,10 +55,19 @@
 
     <!-- Target admin builds project if it was not and launches the admin interface of the project -->
     <target name="admin" depends="build">
-        <java classname="com.puck.utilities.javafx.GenrationToDisplayMain" failonerror="true" fork="yes">
-            <classpath refid="upmc-pstl.classpath"/>
-        </java>
+            <java classname="com.puck.utilities.javafx.GenrationToDisplayMain" failonerror="true" fork="yes">
+                    <classpath refid="upmc-pstl.classpath"/>
+            </java>
     </target>
+	
+	<target name="cover_admin" depends="build">
+	    <jacoco:coverage destFile="jcoco.exec" append="true">
+		    <java classname="com.puck.utilities.javafx.GenrationToDisplayMain" failonerror="true" fork="yes">
+		                    <classpath refid="upmc-pstl.classpath"/>
+		    </java>
+	    </jacoco:coverage>
+	 </target>
+
 
     <!-- Target base builds the project if it was not and launches the ui for dependecy graph from sample xml file -->
     <target name="base" depends="build">
@@ -62,6 +75,15 @@
             <classpath refid="upmc-pstl.classpath"/>
         </java>
     </target>
+	
+    <target name="cover_base" depends="build">
+	    <jacoco:coverage destFile="jcoco.exec" append="true">
+	        <java classname="com.puck.display.piccolo2d.NewDisplayDG" failonerror="true" fork="yes">
+	            <classpath refid="upmc-pstl.classpath"/>
+	        </java>
+		</jacoco:coverage>
+    </target>
+	
 
     <!-- Target junitreport generates junit report files and copy them to /bin directory -->
     <target name="junitreport">
@@ -82,6 +104,26 @@
             <classpath refid="upmc-pstl.classpath"/>
         </junit>
     </target>
+	
+	<target name="jcocoReport" depends="cover_base,cover_admin">
+		<jacoco:report>           
+		    <executiondata>
+		        <file file="jcoco.exec"/>
+		    </executiondata>
+		                        
+		    <structure name="PSTL-UPMC">
+		        <classfiles>
+		            <fileset dir="out/production"/>
+		        </classfiles>
+		        <sourcefiles encoding="UTF-8">
+		            <fileset dir="src"/>
+		        </sourcefiles>
+		    </structure>
+		                        
+		    <xml destfile="coverage.xml"/>
+		                        
+		</jacoco:report>
+	</target>
 
     <target name="ReaderTest">
         <mkdir dir="${junit.output.dir}"/>
