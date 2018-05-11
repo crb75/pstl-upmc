@@ -1,0 +1,881 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: AbstractTranslet</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.runtime</a> ]
+</div>
+
+<h1>Coverage Summary for Class: AbstractTranslet (com.sun.org.apache.xalan.internal.xsltc.runtime)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AbstractTranslet</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 48)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 235)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp;/*
+<i>22</i>&nbsp; * $Id: AbstractTranslet.java,v 1.6 2006/06/19 19:49:03 spericas Exp $
+<i>23</i>&nbsp; */
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.runtime;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import com.sun.org.apache.xalan.internal.XalanConstants;
+<i>28</i>&nbsp;import com.sun.org.apache.xalan.internal.utils.FactoryImpl;
+<i>29</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.DOM;
+<i>30</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.DOMCache;
+<i>31</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.DOMEnhancedForDTM;
+<i>32</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.Translet;
+<i>33</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.TransletException;
+<i>34</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.dom.DOMAdapter;
+<i>35</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.dom.KeyIndex;
+<i>36</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.runtime.output.TransletOutputHandlerFactory;
+<i>37</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTM;
+<i>38</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;
+<i>39</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.SerializationHandler;
+<i>40</i>&nbsp;import java.io.BufferedOutputStream;
+<i>41</i>&nbsp;import java.io.File;
+<i>42</i>&nbsp;import java.io.FileOutputStream;
+<i>43</i>&nbsp;import java.text.DecimalFormat;
+<i>44</i>&nbsp;import java.text.DecimalFormatSymbols;
+<i>45</i>&nbsp;import java.util.ArrayList;
+<i>46</i>&nbsp;import java.util.HashMap;
+<i>47</i>&nbsp;import java.util.Map;
+<i>48</i>&nbsp;import java.util.Vector;
+<i>49</i>&nbsp;import javax.xml.parsers.DocumentBuilderFactory;
+<i>50</i>&nbsp;import javax.xml.parsers.ParserConfigurationException;
+<i>51</i>&nbsp;import javax.xml.transform.Templates;
+<i>52</i>&nbsp;import org.w3c.dom.DOMImplementation;
+<i>53</i>&nbsp;import org.w3c.dom.Document;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;/**
+<i>56</i>&nbsp; * @author Jacek Ambroziak
+<i>57</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>58</i>&nbsp; * @author Morten Jorgensen
+<i>59</i>&nbsp; * @author G. Todd Miller
+<i>60</i>&nbsp; * @author John Howard, JohnH@schemasoft.com
+<i>61</i>&nbsp; */
+<b class="nc"><i>62</i>&nbsp;public abstract class AbstractTranslet implements Translet {</b>
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    // These attributes are extracted from the xsl:output element. They also
+<i>65</i>&nbsp;    // appear as fields (with the same type, only public) in Output.java
+<b class="nc"><i>66</i>&nbsp;    public String  _version = &quot;1.0&quot;;</b>
+<b class="nc"><i>67</i>&nbsp;    public String  _method = null;</b>
+<b class="nc"><i>68</i>&nbsp;    public String  _encoding = &quot;UTF-8&quot;;</b>
+<b class="nc"><i>69</i>&nbsp;    public boolean _omitHeader = false;</b>
+<b class="nc"><i>70</i>&nbsp;    public String  _standalone = null;</b>
+<i>71</i>&nbsp;    //see OutputPropertiesFactory.ORACLE_IS_STANDALONE
+<b class="nc"><i>72</i>&nbsp;    public boolean  _isStandalone = false;</b>
+<b class="nc"><i>73</i>&nbsp;    public String  _doctypePublic = null;</b>
+<b class="nc"><i>74</i>&nbsp;    public String  _doctypeSystem = null;</b>
+<b class="nc"><i>75</i>&nbsp;    public boolean _indent = false;</b>
+<b class="nc"><i>76</i>&nbsp;    public String  _mediaType = null;</b>
+<b class="nc"><i>77</i>&nbsp;    public Vector _cdata = null;</b>
+<b class="nc"><i>78</i>&nbsp;    public int _indentamount = -1;</b>
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    public static final int FIRST_TRANSLET_VERSION = 100;
+<i>81</i>&nbsp;    public static final int VER_SPLIT_NAMES_ARRAY = 101;
+<i>82</i>&nbsp;    public static final int CURRENT_TRANSLET_VERSION = VER_SPLIT_NAMES_ARRAY;
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    // Initialize Translet version field to base value.  A class that extends
+<i>85</i>&nbsp;    // AbstractTranslet may override this value to a more recent translet
+<i>86</i>&nbsp;    // version; if it doesn&#39;t override the value (because it was compiled
+<i>87</i>&nbsp;    // before the notion of a translet version was introduced, it will get
+<i>88</i>&nbsp;    // this default value).
+<b class="nc"><i>89</i>&nbsp;    protected int transletVersion = FIRST_TRANSLET_VERSION;</b>
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    // DOM/translet handshaking - the arrays are set by the compiled translet
+<i>92</i>&nbsp;    protected String[] namesArray;
+<i>93</i>&nbsp;    protected String[] urisArray;
+<i>94</i>&nbsp;    protected int[]    typesArray;
+<i>95</i>&nbsp;    protected String[] namespaceArray;
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    // The Templates object that is used to create this Translet instance
+<b class="nc"><i>98</i>&nbsp;    protected Templates _templates = null;</b>
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;    // Boolean flag to indicate whether this translet has id functions.
+<b class="nc"><i>101</i>&nbsp;    protected boolean _hasIdCall = false;</b>
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    // TODO - these should only be instanciated when needed
+<b class="nc"><i>104</i>&nbsp;    protected StringValueHandler stringValueHandler = new StringValueHandler();</b>
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;    // Use one empty string instead of constantly instanciating String(&quot;&quot;);
+<i>107</i>&nbsp;    private final static String EMPTYSTRING = &quot;&quot;;
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    // This is the name of the index used for ID attributes
+<i>110</i>&nbsp;    private final static String ID_INDEX_NAME = &quot;##id&quot;;
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;    private boolean _useServicesMechanism;
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;    /**
+<i>115</i>&nbsp;     * protocols allowed for external references set by the stylesheet processing instruction, Document() function, Import and Include element.
+<i>116</i>&nbsp;     */
+<b class="nc"><i>117</i>&nbsp;    private String _accessExternalStylesheet = XalanConstants.EXTERNAL_ACCESS_DEFAULT;</b>
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;    /************************************************************************
+<i>120</i>&nbsp;     * Debugging
+<i>121</i>&nbsp;     ************************************************************************/
+<i>122</i>&nbsp;    public void printInternalState() {
+<b class="nc"><i>123</i>&nbsp;        System.out.println(&quot;-------------------------------------&quot;);</b>
+<b class="nc"><i>124</i>&nbsp;        System.out.println(&quot;AbstractTranslet this = &quot; + this);</b>
+<b class="nc"><i>125</i>&nbsp;        System.out.println(&quot;pbase = &quot; + pbase);</b>
+<b class="nc"><i>126</i>&nbsp;        System.out.println(&quot;vframe = &quot; + pframe);</b>
+<b class="nc"><i>127</i>&nbsp;        System.out.println(&quot;paramsStack.size() = &quot; + paramsStack.size());</b>
+<b class="nc"><i>128</i>&nbsp;        System.out.println(&quot;namesArray.size = &quot; + namesArray.length);</b>
+<b class="nc"><i>129</i>&nbsp;        System.out.println(&quot;namespaceArray.size = &quot; + namespaceArray.length);</b>
+<b class="nc"><i>130</i>&nbsp;        System.out.println(&quot;&quot;);</b>
+<b class="nc"><i>131</i>&nbsp;        System.out.println(&quot;Total memory = &quot; + Runtime.getRuntime().totalMemory());</b>
+<i>132</i>&nbsp;    }
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;    /**
+<i>135</i>&nbsp;     * Wrap the initial input DOM in a dom adapter. This adapter is wrapped in
+<i>136</i>&nbsp;     * a DOM multiplexer if the document() function is used (handled by compiled
+<i>137</i>&nbsp;     * code in the translet - see compiler/Stylesheet.compileTransform()).
+<i>138</i>&nbsp;     */
+<i>139</i>&nbsp;    public final DOMAdapter makeDOMAdapter(DOM dom)
+<i>140</i>&nbsp;        throws TransletException {
+<b class="nc"><i>141</i>&nbsp;        setRootForKeys(dom.getDocument());</b>
+<b class="nc"><i>142</i>&nbsp;        return new DOMAdapter(dom, namesArray, urisArray, typesArray, namespaceArray);</b>
+<i>143</i>&nbsp;    }
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;    /************************************************************************
+<i>146</i>&nbsp;     * Parameter handling
+<i>147</i>&nbsp;     ************************************************************************/
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    // Parameter&#39;s stack: &lt;tt&gt;pbase&lt;/tt&gt; and &lt;tt&gt;pframe&lt;/tt&gt; are used
+<i>150</i>&nbsp;    // to denote the current parameter frame.
+<b class="nc"><i>151</i>&nbsp;    protected int pbase = 0, pframe = 0;</b>
+<b class="nc"><i>152</i>&nbsp;    protected ArrayList paramsStack = new ArrayList();</b>
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;    /**
+<i>155</i>&nbsp;     * Push a new parameter frame.
+<i>156</i>&nbsp;     */
+<i>157</i>&nbsp;    public final void pushParamFrame() {
+<b class="nc"><i>158</i>&nbsp;        paramsStack.add(pframe, new Integer(pbase));</b>
+<b class="nc"><i>159</i>&nbsp;        pbase = ++pframe;</b>
+<i>160</i>&nbsp;    }
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;    /**
+<i>163</i>&nbsp;     * Pop the topmost parameter frame.
+<i>164</i>&nbsp;     */
+<i>165</i>&nbsp;    public final void popParamFrame() {
+<b class="nc"><i>166</i>&nbsp;        if (pbase &gt; 0) {</b>
+<b class="nc"><i>167</i>&nbsp;            final int oldpbase = ((Integer)paramsStack.get(--pbase)).intValue();</b>
+<b class="nc"><i>168</i>&nbsp;            for (int i = pframe - 1; i &gt;= pbase; i--) {</b>
+<b class="nc"><i>169</i>&nbsp;                paramsStack.remove(i);</b>
+<i>170</i>&nbsp;            }
+<b class="nc"><i>171</i>&nbsp;            pframe = pbase; pbase = oldpbase;</b>
+<i>172</i>&nbsp;        }
+<i>173</i>&nbsp;    }
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;    /**
+<i>176</i>&nbsp;     * Add a new global parameter if not already in the current frame.
+<i>177</i>&nbsp;     * To setParameters of the form {http://foo.bar}xyz
+<i>178</i>&nbsp;     * This needs to get mapped to an instance variable in the class
+<i>179</i>&nbsp;     * The mapping  created so that
+<i>180</i>&nbsp;     * the global variables in the generated class become
+<i>181</i>&nbsp;     * http$colon$$flash$$flash$foo$dot$bar$colon$xyz
+<i>182</i>&nbsp;     */
+<i>183</i>&nbsp;    public final Object addParameter(String name, Object value) {
+<b class="nc"><i>184</i>&nbsp;        name = BasisLibrary.mapQNameToJavaName (name);</b>
+<b class="nc"><i>185</i>&nbsp;        return addParameter(name, value, false);</b>
+<i>186</i>&nbsp;    }
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;    /**
+<i>189</i>&nbsp;     * Add a new global or local parameter if not already in the current frame.
+<i>190</i>&nbsp;     * The &#39;isDefault&#39; parameter is set to true if the value passed is the
+<i>191</i>&nbsp;     * default value from the &lt;xsl:parameter&gt; element&#39;s select attribute or
+<i>192</i>&nbsp;     * element body.
+<i>193</i>&nbsp;     */
+<i>194</i>&nbsp;    public final Object addParameter(String name, Object value,
+<i>195</i>&nbsp;        boolean isDefault)
+<i>196</i>&nbsp;    {
+<i>197</i>&nbsp;        // Local parameters need to be re-evaluated for each iteration
+<b class="nc"><i>198</i>&nbsp;        for (int i = pframe - 1; i &gt;= pbase; i--) {</b>
+<b class="nc"><i>199</i>&nbsp;            final Parameter param = (Parameter) paramsStack.get(i);</b>
+<i>200</i>&nbsp;
+<b class="nc"><i>201</i>&nbsp;            if (param._name.equals(name)) {</b>
+<i>202</i>&nbsp;                // Only overwrite if current value is the default value and
+<i>203</i>&nbsp;                // the new value is _NOT_ the default value.
+<b class="nc"><i>204</i>&nbsp;                if (param._isDefault || !isDefault) {</b>
+<b class="nc"><i>205</i>&nbsp;                    param._value = value;</b>
+<b class="nc"><i>206</i>&nbsp;                    param._isDefault = isDefault;</b>
+<b class="nc"><i>207</i>&nbsp;                    return value;</b>
+<i>208</i>&nbsp;                }
+<b class="nc"><i>209</i>&nbsp;                return param._value;</b>
+<i>210</i>&nbsp;            }
+<i>211</i>&nbsp;        }
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;        // Add new parameter to parameter stack
+<b class="nc"><i>214</i>&nbsp;        paramsStack.add(pframe++, new Parameter(name, value, isDefault));</b>
+<b class="nc"><i>215</i>&nbsp;        return value;</b>
+<i>216</i>&nbsp;    }
+<i>217</i>&nbsp;
+<i>218</i>&nbsp;    /**
+<i>219</i>&nbsp;     * Clears the parameter stack.
+<i>220</i>&nbsp;     */
+<i>221</i>&nbsp;    public void clearParameters() {
+<b class="nc"><i>222</i>&nbsp;        pbase = pframe = 0;</b>
+<b class="nc"><i>223</i>&nbsp;        paramsStack.clear();</b>
+<i>224</i>&nbsp;    }
+<i>225</i>&nbsp;
+<i>226</i>&nbsp;    /**
+<i>227</i>&nbsp;     * Get the value of a parameter from the current frame or
+<i>228</i>&nbsp;     * &lt;tt&gt;null&lt;/tt&gt; if undefined.
+<i>229</i>&nbsp;     */
+<i>230</i>&nbsp;    public final Object getParameter(String name) {
+<i>231</i>&nbsp;
+<b class="nc"><i>232</i>&nbsp;        name = BasisLibrary.mapQNameToJavaName (name);</b>
+<i>233</i>&nbsp;
+<b class="nc"><i>234</i>&nbsp;        for (int i = pframe - 1; i &gt;= pbase; i--) {</b>
+<b class="nc"><i>235</i>&nbsp;            final Parameter param = (Parameter)paramsStack.get(i);</b>
+<b class="nc"><i>236</i>&nbsp;            if (param._name.equals(name)) return param._value;</b>
+<i>237</i>&nbsp;        }
+<b class="nc"><i>238</i>&nbsp;        return null;</b>
+<i>239</i>&nbsp;    }
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;    /************************************************************************
+<i>242</i>&nbsp;     * Message handling - implementation of &lt;xsl:message&gt;
+<i>243</i>&nbsp;     ************************************************************************/
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;    // Holds the translet&#39;s message handler - used for &lt;xsl:message&gt;.
+<i>246</i>&nbsp;    // The deault message handler dumps a string stdout, but anything can be
+<i>247</i>&nbsp;    // used, such as a dialog box for applets, etc.
+<b class="nc"><i>248</i>&nbsp;    private MessageHandler _msgHandler = null;</b>
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;    /**
+<i>251</i>&nbsp;     * Set the translet&#39;s message handler - must implement MessageHandler
+<i>252</i>&nbsp;     */
+<i>253</i>&nbsp;    public final void setMessageHandler(MessageHandler handler) {
+<b class="nc"><i>254</i>&nbsp;        _msgHandler = handler;</b>
+<i>255</i>&nbsp;    }
+<i>256</i>&nbsp;
+<i>257</i>&nbsp;    /**
+<i>258</i>&nbsp;     * Pass a message to the message handler - used by Message class.
+<i>259</i>&nbsp;     */
+<i>260</i>&nbsp;    public final void displayMessage(String msg) {
+<b class="nc"><i>261</i>&nbsp;        if (_msgHandler == null) {</b>
+<b class="nc"><i>262</i>&nbsp;            System.err.println(msg);</b>
+<i>263</i>&nbsp;        }
+<i>264</i>&nbsp;        else {
+<b class="nc"><i>265</i>&nbsp;            _msgHandler.displayMessage(msg);</b>
+<i>266</i>&nbsp;        }
+<i>267</i>&nbsp;    }
+<i>268</i>&nbsp;
+<i>269</i>&nbsp;    /************************************************************************
+<i>270</i>&nbsp;     * Decimal number format symbol handling
+<i>271</i>&nbsp;     ************************************************************************/
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;    // Contains decimal number formatting symbols used by FormatNumberCall
+<b class="nc"><i>274</i>&nbsp;    public Map&lt;String, DecimalFormat&gt; _formatSymbols = null;</b>
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;    /**
+<i>277</i>&nbsp;     * Adds a DecimalFormat object to the _formatSymbols map.
+<i>278</i>&nbsp;     * The entry is created with the input DecimalFormatSymbols.
+<i>279</i>&nbsp;     */
+<i>280</i>&nbsp;    public void addDecimalFormat(String name, DecimalFormatSymbols symbols) {
+<i>281</i>&nbsp;        // Instanciate map for formatting symbols if needed
+<b class="nc"><i>282</i>&nbsp;        if (_formatSymbols == null) _formatSymbols = new HashMap&lt;&gt;();</b>
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;        // The name cannot be null - use empty string instead
+<b class="nc"><i>285</i>&nbsp;        if (name == null) name = EMPTYSTRING;</b>
+<i>286</i>&nbsp;
+<i>287</i>&nbsp;        // Construct a DecimalFormat object containing the symbols we got
+<b class="nc"><i>288</i>&nbsp;        final DecimalFormat df = new DecimalFormat();</b>
+<b class="nc"><i>289</i>&nbsp;        if (symbols != null) {</b>
+<b class="nc"><i>290</i>&nbsp;            df.setDecimalFormatSymbols(symbols);</b>
+<i>291</i>&nbsp;        }
+<b class="nc"><i>292</i>&nbsp;        _formatSymbols.put(name, df);</b>
+<i>293</i>&nbsp;    }
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;    /**
+<i>296</i>&nbsp;     * Retrieves a named DecimalFormat object from the _formatSymbols map.
+<i>297</i>&nbsp;     */
+<i>298</i>&nbsp;    public final DecimalFormat getDecimalFormat(String name) {
+<i>299</i>&nbsp;
+<b class="nc"><i>300</i>&nbsp;        if (_formatSymbols != null) {</b>
+<i>301</i>&nbsp;            // The name cannot be null - use empty string instead
+<b class="nc"><i>302</i>&nbsp;            if (name == null) name = EMPTYSTRING;</b>
+<i>303</i>&nbsp;
+<b class="nc"><i>304</i>&nbsp;            DecimalFormat df = _formatSymbols.get(name);</b>
+<b class="nc"><i>305</i>&nbsp;            if (df == null) df = _formatSymbols.get(EMPTYSTRING);</b>
+<b class="nc"><i>306</i>&nbsp;            return df;</b>
+<i>307</i>&nbsp;        }
+<b class="nc"><i>308</i>&nbsp;        return(null);</b>
+<i>309</i>&nbsp;    }
+<i>310</i>&nbsp;
+<i>311</i>&nbsp;    /**
+<i>312</i>&nbsp;     * Give the translet an opportunity to perform a prepass on the document
+<i>313</i>&nbsp;     * to extract any information that it can store in an optimized form.
+<i>314</i>&nbsp;     *
+<i>315</i>&nbsp;     * Currently, it only extracts information about attributes of type ID.
+<i>316</i>&nbsp;     */
+<i>317</i>&nbsp;    public final void prepassDocument(DOM document) {
+<b class="nc"><i>318</i>&nbsp;        setIndexSize(document.getSize());</b>
+<b class="nc"><i>319</i>&nbsp;        buildIDIndex(document);</b>
+<i>320</i>&nbsp;    }
+<i>321</i>&nbsp;
+<i>322</i>&nbsp;    /**
+<i>323</i>&nbsp;     * Leverages the Key Class to implement the XSLT id() function.
+<i>324</i>&nbsp;     * buildIdIndex creates the index (##id) that Key Class uses.
+<i>325</i>&nbsp;     * The index contains the element node index (int) and Id value (String).
+<i>326</i>&nbsp;     */
+<i>327</i>&nbsp;    private final void buildIDIndex(DOM document) {
+<b class="nc"><i>328</i>&nbsp;        setRootForKeys(document.getDocument());</b>
+<i>329</i>&nbsp;
+<b class="nc"><i>330</i>&nbsp;        if (document instanceof DOMEnhancedForDTM) {</b>
+<b class="nc"><i>331</i>&nbsp;            DOMEnhancedForDTM enhancedDOM = (DOMEnhancedForDTM)document;</b>
+<i>332</i>&nbsp;
+<i>333</i>&nbsp;            // If the input source is DOMSource, the KeyIndex table is not
+<i>334</i>&nbsp;            // built at this time. It will be built later by the lookupId()
+<i>335</i>&nbsp;            // and containsId() methods of the KeyIndex class.
+<b class="nc"><i>336</i>&nbsp;            if (enhancedDOM.hasDOMSource()) {</b>
+<b class="nc"><i>337</i>&nbsp;                buildKeyIndex(ID_INDEX_NAME, document);</b>
+<i>338</i>&nbsp;                return;
+<i>339</i>&nbsp;            }
+<i>340</i>&nbsp;            else {
+<b class="nc"><i>341</i>&nbsp;                final Map&lt;String, Integer&gt; elementsByID = enhancedDOM.getElementsWithIDs();</b>
+<i>342</i>&nbsp;
+<b class="nc"><i>343</i>&nbsp;                if (elementsByID == null) {</b>
+<i>344</i>&nbsp;                    return;
+<i>345</i>&nbsp;                }
+<i>346</i>&nbsp;
+<i>347</i>&nbsp;                // Given a Map of DTM nodes indexed by ID attribute values,
+<i>348</i>&nbsp;                // loop through the table copying information to a KeyIndex
+<i>349</i>&nbsp;                // for the mapping from ID attribute value to DTM node
+<b class="nc"><i>350</i>&nbsp;                boolean hasIDValues = false;</b>
+<b class="nc"><i>351</i>&nbsp;                for (Map.Entry&lt;String, Integer&gt; entry : elementsByID.entrySet()) {</b>
+<b class="nc"><i>352</i>&nbsp;                    final int element = document.getNodeHandle(entry.getValue());</b>
+<b class="nc"><i>353</i>&nbsp;                    buildKeyIndex(ID_INDEX_NAME, element, entry.getKey());</b>
+<b class="nc"><i>354</i>&nbsp;                    hasIDValues = true;</b>
+<b class="nc"><i>355</i>&nbsp;                }</b>
+<i>356</i>&nbsp;
+<b class="nc"><i>357</i>&nbsp;                if (hasIDValues) {</b>
+<b class="nc"><i>358</i>&nbsp;                    setKeyIndexDom(ID_INDEX_NAME, document);</b>
+<i>359</i>&nbsp;                }
+<i>360</i>&nbsp;            }
+<i>361</i>&nbsp;        }
+<i>362</i>&nbsp;    }
+<i>363</i>&nbsp;
+<i>364</i>&nbsp;    /**
+<i>365</i>&nbsp;     * After constructing the translet object, this method must be called to
+<i>366</i>&nbsp;     * perform any version-specific post-initialization that&#39;s required.
+<i>367</i>&nbsp;     */
+<i>368</i>&nbsp;    public final void postInitialization() {
+<i>369</i>&nbsp;        // If the version of the translet had just one namesArray, split
+<i>370</i>&nbsp;        // it into multiple fields.
+<b class="nc"><i>371</i>&nbsp;        if (transletVersion &lt; VER_SPLIT_NAMES_ARRAY) {</b>
+<b class="nc"><i>372</i>&nbsp;            int arraySize = namesArray.length;</b>
+<b class="nc"><i>373</i>&nbsp;            String[] newURIsArray = new String[arraySize];</b>
+<b class="nc"><i>374</i>&nbsp;            String[] newNamesArray = new String[arraySize];</b>
+<b class="nc"><i>375</i>&nbsp;            int[] newTypesArray = new int[arraySize];</b>
+<i>376</i>&nbsp;
+<b class="nc"><i>377</i>&nbsp;            for (int i = 0; i &lt; arraySize; i++) {</b>
+<b class="nc"><i>378</i>&nbsp;                String name = namesArray[i];</b>
+<b class="nc"><i>379</i>&nbsp;                int colonIndex = name.lastIndexOf(&#39;:&#39;);</b>
+<b class="nc"><i>380</i>&nbsp;                int lNameStartIdx = colonIndex+1;</b>
+<i>381</i>&nbsp;
+<b class="nc"><i>382</i>&nbsp;                if (colonIndex &gt; -1) {</b>
+<b class="nc"><i>383</i>&nbsp;                    newURIsArray[i] = name.substring(0, colonIndex);</b>
+<i>384</i>&nbsp;                }
+<i>385</i>&nbsp;
+<i>386</i>&nbsp;               // Distinguish attribute and element names.  Attribute has
+<i>387</i>&nbsp;               // @ before local part of name.
+<b class="nc"><i>388</i>&nbsp;               if (name.charAt(lNameStartIdx) == &#39;@&#39;) {</b>
+<b class="nc"><i>389</i>&nbsp;                   lNameStartIdx++;</b>
+<b class="nc"><i>390</i>&nbsp;                   newTypesArray[i] = DTM.ATTRIBUTE_NODE;</b>
+<b class="nc"><i>391</i>&nbsp;               } else if (name.charAt(lNameStartIdx) == &#39;?&#39;) {</b>
+<b class="nc"><i>392</i>&nbsp;                   lNameStartIdx++;</b>
+<b class="nc"><i>393</i>&nbsp;                   newTypesArray[i] = DTM.NAMESPACE_NODE;</b>
+<i>394</i>&nbsp;               } else {
+<b class="nc"><i>395</i>&nbsp;                   newTypesArray[i] = DTM.ELEMENT_NODE;</b>
+<i>396</i>&nbsp;               }
+<b class="nc"><i>397</i>&nbsp;               newNamesArray[i] =</b>
+<i>398</i>&nbsp;                          (lNameStartIdx == 0) ? name
+<b class="nc"><i>399</i>&nbsp;                                               : name.substring(lNameStartIdx);</b>
+<i>400</i>&nbsp;            }
+<i>401</i>&nbsp;
+<b class="nc"><i>402</i>&nbsp;            namesArray = newNamesArray;</b>
+<b class="nc"><i>403</i>&nbsp;            urisArray  = newURIsArray;</b>
+<b class="nc"><i>404</i>&nbsp;            typesArray = newTypesArray;</b>
+<i>405</i>&nbsp;        }
+<i>406</i>&nbsp;
+<i>407</i>&nbsp;        // Was translet compiled using a more recent version of the XSLTC
+<i>408</i>&nbsp;        // compiler than is known by the AbstractTranslet class?  If, so
+<i>409</i>&nbsp;        // and we&#39;ve made it this far (which is doubtful), we should give up.
+<b class="nc"><i>410</i>&nbsp;        if (transletVersion &gt; CURRENT_TRANSLET_VERSION) {</b>
+<b class="nc"><i>411</i>&nbsp;            BasisLibrary.runTimeError(BasisLibrary.UNKNOWN_TRANSLET_VERSION_ERR,</b>
+<b class="nc"><i>412</i>&nbsp;                                      this.getClass().getName());</b>
+<i>413</i>&nbsp;        }
+<i>414</i>&nbsp;    }
+<i>415</i>&nbsp;
+<i>416</i>&nbsp;    /************************************************************************
+<i>417</i>&nbsp;     * Index(es) for &lt;xsl:key&gt; / key() / id()
+<i>418</i>&nbsp;     ************************************************************************/
+<i>419</i>&nbsp;
+<i>420</i>&nbsp;    // Container for all indexes for xsl:key elements
+<b class="nc"><i>421</i>&nbsp;    private Map&lt;String, KeyIndex&gt; _keyIndexes = null;</b>
+<b class="nc"><i>422</i>&nbsp;    private KeyIndex  _emptyKeyIndex = null;</b>
+<b class="nc"><i>423</i>&nbsp;    private int       _indexSize = 0;</b>
+<b class="nc"><i>424</i>&nbsp;    private int       _currentRootForKeys = 0;</b>
+<i>425</i>&nbsp;
+<i>426</i>&nbsp;    /**
+<i>427</i>&nbsp;     * This method is used to pass the largest DOM size to the translet.
+<i>428</i>&nbsp;     * Needed to make sure that the translet can index the whole DOM.
+<i>429</i>&nbsp;     */
+<i>430</i>&nbsp;    public void setIndexSize(int size) {
+<b class="nc"><i>431</i>&nbsp;        if (size &gt; _indexSize) _indexSize = size;</b>
+<i>432</i>&nbsp;    }
+<i>433</i>&nbsp;
+<i>434</i>&nbsp;    /**
+<i>435</i>&nbsp;     * Creates a KeyIndex object of the desired size - don&#39;t want to resize!!!
+<i>436</i>&nbsp;     */
+<i>437</i>&nbsp;    public KeyIndex createKeyIndex() {
+<b class="nc"><i>438</i>&nbsp;        return(new KeyIndex(_indexSize));</b>
+<i>439</i>&nbsp;    }
+<i>440</i>&nbsp;
+<i>441</i>&nbsp;    /**
+<i>442</i>&nbsp;     * Adds a value to a key/id index
+<i>443</i>&nbsp;     *   @param name is the name of the index (the key or ##id)
+<i>444</i>&nbsp;     *   @param node is the node handle of the node to insert
+<i>445</i>&nbsp;     *   @param value is the value that will look up the node in the given index
+<i>446</i>&nbsp;     */
+<i>447</i>&nbsp;    public void buildKeyIndex(String name, int node, String value) {
+<b class="nc"><i>448</i>&nbsp;        KeyIndex index = buildKeyIndexHelper(name);</b>
+<b class="nc"><i>449</i>&nbsp;        index.add(value, node, _currentRootForKeys);</b>
+<i>450</i>&nbsp;    }
+<i>451</i>&nbsp;
+<i>452</i>&nbsp;    /**
+<i>453</i>&nbsp;     * Create an empty KeyIndex in the DOM case
+<i>454</i>&nbsp;     *   @param name is the name of the index (the key or ##id)
+<i>455</i>&nbsp;     *   @param dom is the DOM
+<i>456</i>&nbsp;     */
+<i>457</i>&nbsp;    public void buildKeyIndex(String name, DOM dom) {
+<b class="nc"><i>458</i>&nbsp;        KeyIndex index = buildKeyIndexHelper(name);</b>
+<b class="nc"><i>459</i>&nbsp;        index.setDom(dom, dom.getDocument());</b>
+<i>460</i>&nbsp;    }
+<i>461</i>&nbsp;
+<i>462</i>&nbsp;    /**
+<i>463</i>&nbsp;     * Return KeyIndex for the buildKeyIndex methods. Note the difference from the
+<i>464</i>&nbsp;     * public getKeyIndex method, this method creates a new Map if keyIndexes does
+<i>465</i>&nbsp;     * not exist.
+<i>466</i>&nbsp;     *
+<i>467</i>&nbsp;     * @param name the name of the index (the key or ##id)
+<i>468</i>&nbsp;     * @return a KeyIndex.
+<i>469</i>&nbsp;     */
+<i>470</i>&nbsp;    private KeyIndex buildKeyIndexHelper(String name) {
+<b class="nc"><i>471</i>&nbsp;        if (_keyIndexes == null) _keyIndexes = new HashMap&lt;&gt;();</b>
+<i>472</i>&nbsp;
+<b class="nc"><i>473</i>&nbsp;        KeyIndex index = _keyIndexes.get(name);</b>
+<b class="nc"><i>474</i>&nbsp;        if (index == null) {</b>
+<b class="nc"><i>475</i>&nbsp;            _keyIndexes.put(name, index = new KeyIndex(_indexSize));</b>
+<i>476</i>&nbsp;        }
+<b class="nc"><i>477</i>&nbsp;        return index;</b>
+<i>478</i>&nbsp;    }
+<i>479</i>&nbsp;
+<i>480</i>&nbsp;    /**
+<i>481</i>&nbsp;     * Returns the index for a given key (or id).
+<i>482</i>&nbsp;     * The index implements our internal iterator interface
+<i>483</i>&nbsp;     * @param name the name of the index (the key or ##id)
+<i>484</i>&nbsp;     * @return a KeyIndex.
+<i>485</i>&nbsp;     */
+<i>486</i>&nbsp;    public KeyIndex getKeyIndex(String name) {
+<i>487</i>&nbsp;        // Return an empty key index iterator if none are defined
+<b class="nc"><i>488</i>&nbsp;        if (_keyIndexes == null) {</b>
+<b class="nc"><i>489</i>&nbsp;            return (_emptyKeyIndex != null)</b>
+<i>490</i>&nbsp;                ? _emptyKeyIndex
+<i>491</i>&nbsp;                : (_emptyKeyIndex = new KeyIndex(1));
+<i>492</i>&nbsp;        }
+<i>493</i>&nbsp;
+<i>494</i>&nbsp;        // Look up the requested key index
+<b class="nc"><i>495</i>&nbsp;        final KeyIndex index = _keyIndexes.get(name);</b>
+<i>496</i>&nbsp;
+<i>497</i>&nbsp;        // Return an empty key index iterator if the requested index not found
+<b class="nc"><i>498</i>&nbsp;        if (index == null) {</b>
+<b class="nc"><i>499</i>&nbsp;            return (_emptyKeyIndex != null)</b>
+<i>500</i>&nbsp;                ? _emptyKeyIndex
+<i>501</i>&nbsp;                : (_emptyKeyIndex = new KeyIndex(1));
+<i>502</i>&nbsp;        }
+<i>503</i>&nbsp;
+<b class="nc"><i>504</i>&nbsp;        return(index);</b>
+<i>505</i>&nbsp;    }
+<i>506</i>&nbsp;
+<i>507</i>&nbsp;    private void setRootForKeys(int root) {
+<b class="nc"><i>508</i>&nbsp;        _currentRootForKeys = root;</b>
+<i>509</i>&nbsp;    }
+<i>510</i>&nbsp;
+<i>511</i>&nbsp;    /**
+<i>512</i>&nbsp;     * This method builds key indexes - it is overridden in the compiled
+<i>513</i>&nbsp;     * translet in cases where the &lt;xsl:key&gt; element is used
+<i>514</i>&nbsp;     */
+<i>515</i>&nbsp;    public void buildKeys(DOM document, DTMAxisIterator iterator,
+<i>516</i>&nbsp;                          SerializationHandler handler,
+<i>517</i>&nbsp;                          int root) throws TransletException {
+<i>518</i>&nbsp;
+<i>519</i>&nbsp;    }
+<i>520</i>&nbsp;
+<i>521</i>&nbsp;    /**
+<i>522</i>&nbsp;     * This method builds key indexes - it is overridden in the compiled
+<i>523</i>&nbsp;     * translet in cases where the &lt;xsl:key&gt; element is used
+<i>524</i>&nbsp;     */
+<i>525</i>&nbsp;    public void setKeyIndexDom(String name, DOM document) {
+<b class="nc"><i>526</i>&nbsp;        getKeyIndex(name).setDom(document, document.getDocument());</b>
+<i>527</i>&nbsp;    }
+<i>528</i>&nbsp;
+<i>529</i>&nbsp;    /************************************************************************
+<i>530</i>&nbsp;     * DOM cache handling
+<i>531</i>&nbsp;     ************************************************************************/
+<i>532</i>&nbsp;
+<i>533</i>&nbsp;    // Hold the DOM cache (if any) used with this translet
+<b class="nc"><i>534</i>&nbsp;    private DOMCache _domCache = null;</b>
+<i>535</i>&nbsp;
+<i>536</i>&nbsp;    /**
+<i>537</i>&nbsp;     * Sets the DOM cache used for additional documents loaded using the
+<i>538</i>&nbsp;     * document() function.
+<i>539</i>&nbsp;     */
+<i>540</i>&nbsp;    public void setDOMCache(DOMCache cache) {
+<b class="nc"><i>541</i>&nbsp;        _domCache = cache;</b>
+<i>542</i>&nbsp;    }
+<i>543</i>&nbsp;
+<i>544</i>&nbsp;    /**
+<i>545</i>&nbsp;     * Returns the DOM cache used for this translet. Used by the LoadDocument
+<i>546</i>&nbsp;     * class (if present) when the document() function is used.
+<i>547</i>&nbsp;     */
+<i>548</i>&nbsp;    public DOMCache getDOMCache() {
+<b class="nc"><i>549</i>&nbsp;        return(_domCache);</b>
+<i>550</i>&nbsp;    }
+<i>551</i>&nbsp;
+<i>552</i>&nbsp;    /************************************************************************
+<i>553</i>&nbsp;     * Multiple output document extension.
+<i>554</i>&nbsp;     * See compiler/TransletOutput for actual implementation.
+<i>555</i>&nbsp;     ************************************************************************/
+<i>556</i>&nbsp;
+<i>557</i>&nbsp;    public SerializationHandler openOutputHandler(String filename, boolean append)
+<i>558</i>&nbsp;        throws TransletException
+<i>559</i>&nbsp;    {
+<i>560</i>&nbsp;        try {
+<i>561</i>&nbsp;            final TransletOutputHandlerFactory factory
+<b class="nc"><i>562</i>&nbsp;                = TransletOutputHandlerFactory.newInstance();</b>
+<i>563</i>&nbsp;
+<b class="nc"><i>564</i>&nbsp;            String dirStr = new File(filename).getParent();</b>
+<b class="nc"><i>565</i>&nbsp;            if ((null != dirStr) &amp;&amp; (dirStr.length() &gt; 0)) {</b>
+<b class="nc"><i>566</i>&nbsp;               File dir = new File(dirStr);</b>
+<b class="nc"><i>567</i>&nbsp;               dir.mkdirs();</b>
+<i>568</i>&nbsp;            }
+<i>569</i>&nbsp;
+<b class="nc"><i>570</i>&nbsp;            factory.setEncoding(_encoding);</b>
+<b class="nc"><i>571</i>&nbsp;            factory.setOutputMethod(_method);</b>
+<b class="nc"><i>572</i>&nbsp;            factory.setOutputStream(new BufferedOutputStream(new FileOutputStream(filename, append)));</b>
+<b class="nc"><i>573</i>&nbsp;            factory.setOutputType(TransletOutputHandlerFactory.STREAM);</b>
+<i>574</i>&nbsp;
+<b class="nc"><i>575</i>&nbsp;            final SerializationHandler handler</b>
+<b class="nc"><i>576</i>&nbsp;                = factory.getSerializationHandler();</b>
+<i>577</i>&nbsp;
+<b class="nc"><i>578</i>&nbsp;            transferOutputSettings(handler);</b>
+<b class="nc"><i>579</i>&nbsp;            handler.startDocument();</b>
+<b class="nc"><i>580</i>&nbsp;            return handler;</b>
+<i>581</i>&nbsp;        }
+<b class="nc"><i>582</i>&nbsp;        catch (Exception e) {</b>
+<b class="nc"><i>583</i>&nbsp;            throw new TransletException(e);</b>
+<i>584</i>&nbsp;        }
+<i>585</i>&nbsp;    }
+<i>586</i>&nbsp;
+<i>587</i>&nbsp;    public SerializationHandler openOutputHandler(String filename)
+<i>588</i>&nbsp;       throws TransletException
+<i>589</i>&nbsp;    {
+<b class="nc"><i>590</i>&nbsp;       return openOutputHandler(filename, false);</b>
+<i>591</i>&nbsp;    }
+<i>592</i>&nbsp;
+<i>593</i>&nbsp;    public void closeOutputHandler(SerializationHandler handler) {
+<i>594</i>&nbsp;        try {
+<b class="nc"><i>595</i>&nbsp;            handler.endDocument();</b>
+<b class="nc"><i>596</i>&nbsp;            handler.close();</b>
+<i>597</i>&nbsp;        }
+<b class="nc"><i>598</i>&nbsp;        catch (Exception e) {</b>
+<i>599</i>&nbsp;            // what can you do?
+<b class="nc"><i>600</i>&nbsp;        }</b>
+<i>601</i>&nbsp;    }
+<i>602</i>&nbsp;
+<i>603</i>&nbsp;    /************************************************************************
+<i>604</i>&nbsp;     * Native API transformation methods - _NOT_ JAXP/TrAX
+<i>605</i>&nbsp;     ************************************************************************/
+<i>606</i>&nbsp;
+<i>607</i>&nbsp;    /**
+<i>608</i>&nbsp;     * Main transform() method - this is overridden by the compiled translet
+<i>609</i>&nbsp;     */
+<i>610</i>&nbsp;    public abstract void transform(DOM document, DTMAxisIterator iterator,
+<i>611</i>&nbsp;                                   SerializationHandler handler)
+<i>612</i>&nbsp;        throws TransletException;
+<i>613</i>&nbsp;
+<i>614</i>&nbsp;    /**
+<i>615</i>&nbsp;     * Calls transform() with a given output handler
+<i>616</i>&nbsp;     */
+<i>617</i>&nbsp;    public final void transform(DOM document, SerializationHandler handler)
+<i>618</i>&nbsp;        throws TransletException {
+<i>619</i>&nbsp;        try {
+<b class="nc"><i>620</i>&nbsp;            transform(document, document.getIterator(), handler);</b>
+<i>621</i>&nbsp;        } finally {
+<b class="nc"><i>622</i>&nbsp;            _keyIndexes = null;</b>
+<b class="nc"><i>623</i>&nbsp;        }</b>
+<i>624</i>&nbsp;    }
+<i>625</i>&nbsp;
+<i>626</i>&nbsp;    /**
+<i>627</i>&nbsp;     * Used by some compiled code as a shortcut for passing strings to the
+<i>628</i>&nbsp;     * output handler
+<i>629</i>&nbsp;     */
+<i>630</i>&nbsp;    public final void characters(final String string,
+<i>631</i>&nbsp;                                 SerializationHandler handler)
+<i>632</i>&nbsp;        throws TransletException {
+<b class="nc"><i>633</i>&nbsp;        if (string != null) {</b>
+<i>634</i>&nbsp;           //final int length = string.length();
+<i>635</i>&nbsp;           try {
+<b class="nc"><i>636</i>&nbsp;               handler.characters(string);</b>
+<b class="nc"><i>637</i>&nbsp;           } catch (Exception e) {</b>
+<b class="nc"><i>638</i>&nbsp;               throw new TransletException(e);</b>
+<b class="nc"><i>639</i>&nbsp;           }</b>
+<i>640</i>&nbsp;        }
+<i>641</i>&nbsp;    }
+<i>642</i>&nbsp;
+<i>643</i>&nbsp;    /**
+<i>644</i>&nbsp;     * Add&#39;s a name of an element whose text contents should be output as CDATA
+<i>645</i>&nbsp;     */
+<i>646</i>&nbsp;    public void addCdataElement(String name) {
+<b class="nc"><i>647</i>&nbsp;        if (_cdata == null) {</b>
+<b class="nc"><i>648</i>&nbsp;            _cdata = new Vector();</b>
+<i>649</i>&nbsp;        }
+<i>650</i>&nbsp;
+<b class="nc"><i>651</i>&nbsp;        int lastColon = name.lastIndexOf(&#39;:&#39;);</b>
+<i>652</i>&nbsp;
+<b class="nc"><i>653</i>&nbsp;        if (lastColon &gt; 0) {</b>
+<b class="nc"><i>654</i>&nbsp;            String uri = name.substring(0, lastColon);</b>
+<b class="nc"><i>655</i>&nbsp;            String localName = name.substring(lastColon+1);</b>
+<b class="nc"><i>656</i>&nbsp;            _cdata.addElement(uri);</b>
+<b class="nc"><i>657</i>&nbsp;            _cdata.addElement(localName);</b>
+<b class="nc"><i>658</i>&nbsp;        } else {</b>
+<b class="nc"><i>659</i>&nbsp;            _cdata.addElement(null);</b>
+<b class="nc"><i>660</i>&nbsp;            _cdata.addElement(name);</b>
+<i>661</i>&nbsp;        }
+<i>662</i>&nbsp;    }
+<i>663</i>&nbsp;
+<i>664</i>&nbsp;    /**
+<i>665</i>&nbsp;     * Transfer the output settings to the output post-processor
+<i>666</i>&nbsp;     */
+<i>667</i>&nbsp;    protected void transferOutputSettings(SerializationHandler handler) {
+<b class="nc"><i>668</i>&nbsp;        if (_method != null) {</b>
+<b class="nc"><i>669</i>&nbsp;            if (_method.equals(&quot;xml&quot;)) {</b>
+<b class="nc"><i>670</i>&nbsp;                if (_standalone != null) {</b>
+<b class="nc"><i>671</i>&nbsp;                    handler.setStandalone(_standalone);</b>
+<i>672</i>&nbsp;                }
+<b class="nc"><i>673</i>&nbsp;                if (_omitHeader) {</b>
+<b class="nc"><i>674</i>&nbsp;                    handler.setOmitXMLDeclaration(true);</b>
+<i>675</i>&nbsp;                }
+<b class="nc"><i>676</i>&nbsp;                handler.setCdataSectionElements(_cdata);</b>
+<b class="nc"><i>677</i>&nbsp;                if (_version != null) {</b>
+<b class="nc"><i>678</i>&nbsp;                    handler.setVersion(_version);</b>
+<i>679</i>&nbsp;                }
+<b class="nc"><i>680</i>&nbsp;                handler.setIndent(_indent);</b>
+<b class="nc"><i>681</i>&nbsp;                handler.setIndentAmount(_indentamount);</b>
+<b class="nc"><i>682</i>&nbsp;                if (_doctypeSystem != null) {</b>
+<b class="nc"><i>683</i>&nbsp;                    handler.setDoctype(_doctypeSystem, _doctypePublic);</b>
+<i>684</i>&nbsp;                }
+<b class="nc"><i>685</i>&nbsp;                handler.setIsStandalone(_isStandalone);</b>
+<i>686</i>&nbsp;            }
+<b class="nc"><i>687</i>&nbsp;            else if (_method.equals(&quot;html&quot;)) {</b>
+<b class="nc"><i>688</i>&nbsp;                handler.setIndent(_indent);</b>
+<b class="nc"><i>689</i>&nbsp;                handler.setDoctype(_doctypeSystem, _doctypePublic);</b>
+<b class="nc"><i>690</i>&nbsp;                if (_mediaType != null) {</b>
+<b class="nc"><i>691</i>&nbsp;                    handler.setMediaType(_mediaType);</b>
+<i>692</i>&nbsp;                }
+<i>693</i>&nbsp;            }
+<i>694</i>&nbsp;        }
+<i>695</i>&nbsp;        else {
+<b class="nc"><i>696</i>&nbsp;            handler.setCdataSectionElements(_cdata);</b>
+<b class="nc"><i>697</i>&nbsp;            if (_version != null) {</b>
+<b class="nc"><i>698</i>&nbsp;                handler.setVersion(_version);</b>
+<i>699</i>&nbsp;            }
+<b class="nc"><i>700</i>&nbsp;            if (_standalone != null) {</b>
+<b class="nc"><i>701</i>&nbsp;                handler.setStandalone(_standalone);</b>
+<i>702</i>&nbsp;            }
+<b class="nc"><i>703</i>&nbsp;            if (_omitHeader) {</b>
+<b class="nc"><i>704</i>&nbsp;                handler.setOmitXMLDeclaration(true);</b>
+<i>705</i>&nbsp;            }
+<b class="nc"><i>706</i>&nbsp;            handler.setIndent(_indent);</b>
+<b class="nc"><i>707</i>&nbsp;            handler.setDoctype(_doctypeSystem, _doctypePublic);</b>
+<b class="nc"><i>708</i>&nbsp;            handler.setIsStandalone(_isStandalone);</b>
+<i>709</i>&nbsp;        }
+<i>710</i>&nbsp;    }
+<i>711</i>&nbsp;
+<b class="nc"><i>712</i>&nbsp;    private Map&lt;String, Class&lt;?&gt;&gt; _auxClasses = null;</b>
+<i>713</i>&nbsp;
+<i>714</i>&nbsp;    public void addAuxiliaryClass(Class auxClass) {
+<b class="nc"><i>715</i>&nbsp;        if (_auxClasses == null) _auxClasses = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>716</i>&nbsp;        _auxClasses.put(auxClass.getName(), auxClass);</b>
+<i>717</i>&nbsp;    }
+<i>718</i>&nbsp;
+<i>719</i>&nbsp;    public void setAuxiliaryClasses(Map&lt;String, Class&lt;?&gt;&gt; auxClasses) {
+<b class="nc"><i>720</i>&nbsp;        _auxClasses = auxClasses;</b>
+<i>721</i>&nbsp;    }
+<i>722</i>&nbsp;
+<i>723</i>&nbsp;    public Class getAuxiliaryClass(String className) {
+<b class="nc"><i>724</i>&nbsp;        if (_auxClasses == null) return null;</b>
+<b class="nc"><i>725</i>&nbsp;        return((Class)_auxClasses.get(className));</b>
+<i>726</i>&nbsp;    }
+<i>727</i>&nbsp;
+<i>728</i>&nbsp;    // GTM added (see pg 110)
+<i>729</i>&nbsp;    public String[] getNamesArray() {
+<b class="nc"><i>730</i>&nbsp;        return namesArray;</b>
+<i>731</i>&nbsp;    }
+<i>732</i>&nbsp;
+<i>733</i>&nbsp;    public String[] getUrisArray() {
+<b class="nc"><i>734</i>&nbsp;        return urisArray;</b>
+<i>735</i>&nbsp;    }
+<i>736</i>&nbsp;
+<i>737</i>&nbsp;    public int[] getTypesArray() {
+<b class="nc"><i>738</i>&nbsp;        return typesArray;</b>
+<i>739</i>&nbsp;    }
+<i>740</i>&nbsp;
+<i>741</i>&nbsp;    public String[] getNamespaceArray() {
+<b class="nc"><i>742</i>&nbsp;        return namespaceArray;</b>
+<i>743</i>&nbsp;    }
+<i>744</i>&nbsp;
+<i>745</i>&nbsp;    public boolean hasIdCall() {
+<b class="nc"><i>746</i>&nbsp;        return _hasIdCall;</b>
+<i>747</i>&nbsp;    }
+<i>748</i>&nbsp;
+<i>749</i>&nbsp;    public Templates getTemplates() {
+<b class="nc"><i>750</i>&nbsp;        return _templates;</b>
+<i>751</i>&nbsp;    }
+<i>752</i>&nbsp;
+<i>753</i>&nbsp;    public void setTemplates(Templates templates) {
+<b class="nc"><i>754</i>&nbsp;        _templates = templates;</b>
+<i>755</i>&nbsp;    }
+<i>756</i>&nbsp;    /**
+<i>757</i>&nbsp;     * Return the state of the services mechanism feature.
+<i>758</i>&nbsp;     */
+<i>759</i>&nbsp;    public boolean useServicesMechnism() {
+<b class="nc"><i>760</i>&nbsp;        return _useServicesMechanism;</b>
+<i>761</i>&nbsp;    }
+<i>762</i>&nbsp;
+<i>763</i>&nbsp;    /**
+<i>764</i>&nbsp;     * Set the state of the services mechanism feature.
+<i>765</i>&nbsp;     */
+<i>766</i>&nbsp;    public void setServicesMechnism(boolean flag) {
+<b class="nc"><i>767</i>&nbsp;        _useServicesMechanism = flag;</b>
+<i>768</i>&nbsp;    }
+<i>769</i>&nbsp;
+<i>770</i>&nbsp;    /**
+<i>771</i>&nbsp;     * Return allowed protocols for accessing external stylesheet.
+<i>772</i>&nbsp;     */
+<i>773</i>&nbsp;    public String getAllowedProtocols() {
+<b class="nc"><i>774</i>&nbsp;        return _accessExternalStylesheet;</b>
+<i>775</i>&nbsp;    }
+<i>776</i>&nbsp;
+<i>777</i>&nbsp;    /**
+<i>778</i>&nbsp;     * Set allowed protocols for accessing external stylesheet.
+<i>779</i>&nbsp;     */
+<i>780</i>&nbsp;    public void setAllowedProtocols(String protocols) {
+<b class="nc"><i>781</i>&nbsp;        _accessExternalStylesheet = protocols;</b>
+<i>782</i>&nbsp;    }
+<i>783</i>&nbsp;
+<i>784</i>&nbsp;    /************************************************************************
+<i>785</i>&nbsp;     * DOMImplementation caching for basis library
+<i>786</i>&nbsp;     ************************************************************************/
+<b class="nc"><i>787</i>&nbsp;    protected DOMImplementation _domImplementation = null;</b>
+<i>788</i>&nbsp;
+<i>789</i>&nbsp;    public Document newDocument(String uri, String qname)
+<i>790</i>&nbsp;        throws ParserConfigurationException
+<i>791</i>&nbsp;    {
+<b class="nc"><i>792</i>&nbsp;        if (_domImplementation == null) {</b>
+<b class="nc"><i>793</i>&nbsp;            DocumentBuilderFactory dbf = FactoryImpl.getDOMFactory(_useServicesMechanism);</b>
+<b class="nc"><i>794</i>&nbsp;            _domImplementation = dbf.newDocumentBuilder().getDOMImplementation();</b>
+<i>795</i>&nbsp;        }
+<b class="nc"><i>796</i>&nbsp;        return _domImplementation.createDocument(uri, qname, null);</b>
+<i>797</i>&nbsp;    }
+<i>798</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

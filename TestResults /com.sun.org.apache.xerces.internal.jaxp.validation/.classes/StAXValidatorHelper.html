@@ -1,0 +1,202 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: StAXValidatorHelper</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.jaxp.validation</a> ]
+</div>
+
+<h1>Coverage Summary for Class: StAXValidatorHelper (com.sun.org.apache.xerces.internal.jaxp.validation)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StAXValidatorHelper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 36)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.org.apache.xerces.internal.jaxp.validation;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.Constants;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.utils.XMLSecurityManager;
+<i>30</i>&nbsp;import java.io.IOException;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import javax.xml.transform.Result;
+<i>33</i>&nbsp;import javax.xml.transform.Source;
+<i>34</i>&nbsp;import javax.xml.transform.Transformer;
+<i>35</i>&nbsp;import javax.xml.transform.TransformerConfigurationException;
+<i>36</i>&nbsp;import javax.xml.transform.TransformerException;
+<i>37</i>&nbsp;import javax.xml.transform.TransformerFactory;
+<i>38</i>&nbsp;import javax.xml.transform.TransformerFactoryConfigurationError;
+<i>39</i>&nbsp;import javax.xml.transform.sax.SAXResult;
+<i>40</i>&nbsp;import javax.xml.transform.sax.SAXTransformerFactory;
+<i>41</i>&nbsp;import javax.xml.transform.sax.TransformerHandler;
+<i>42</i>&nbsp;import javax.xml.transform.stax.StAXResult;
+<i>43</i>&nbsp;import javax.xml.transform.stax.StAXSource;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;import org.xml.sax.SAXException;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;/**
+<i>48</i>&nbsp; * &lt;p&gt;A validator helper for &lt;code&gt;StAXSource&lt;/code&gt;s.&lt;/p&gt;
+<i>49</i>&nbsp; *
+<i>50</i>&nbsp; * @author &lt;a href=&quot;mailto:Sunitha.Reddy@Sun.com&quot;&gt;Sunitha Reddy&lt;/a&gt;
+<i>51</i>&nbsp; */
+<i>52</i>&nbsp;public final class StAXValidatorHelper implements ValidatorHelper {
+<i>53</i>&nbsp;    private static final String DEFAULT_TRANSFORMER_IMPL = &quot;com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl&quot;;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    /** Component manager. **/
+<i>56</i>&nbsp;    private XMLSchemaValidatorComponentManager fComponentManager;
+<i>57</i>&nbsp;
+<b class="nc"><i>58</i>&nbsp;    private Transformer identityTransformer1 = null;</b>
+<b class="nc"><i>59</i>&nbsp;    private TransformerHandler identityTransformer2 = null;</b>
+<b class="nc"><i>60</i>&nbsp;    private ValidatorHandlerImpl handler = null;</b>
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    /** Creates a new instance of StaxValidatorHelper */
+<b class="nc"><i>63</i>&nbsp;    public StAXValidatorHelper(XMLSchemaValidatorComponentManager componentManager) {</b>
+<b class="nc"><i>64</i>&nbsp;        fComponentManager = componentManager;</b>
+<i>65</i>&nbsp;    }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    public void validate(Source source, Result result)
+<i>68</i>&nbsp;        throws SAXException, IOException {
+<i>69</i>&nbsp;
+<b class="nc"><i>70</i>&nbsp;        if (result == null || result instanceof StAXResult) {</b>
+<i>71</i>&nbsp;
+<b class="nc"><i>72</i>&nbsp;            if( identityTransformer1==null ) {</b>
+<i>73</i>&nbsp;                try {
+<b class="nc"><i>74</i>&nbsp;                    SAXTransformerFactory tf = fComponentManager.getFeature(Constants.ORACLE_FEATURE_SERVICE_MECHANISM) ?</b>
+<b class="nc"><i>75</i>&nbsp;                                    (SAXTransformerFactory)SAXTransformerFactory.newInstance()</b>
+<b class="nc"><i>76</i>&nbsp;                                    : (SAXTransformerFactory) TransformerFactory.newInstance(DEFAULT_TRANSFORMER_IMPL, StAXValidatorHelper.class.getClassLoader());</b>
+<b class="nc"><i>77</i>&nbsp;                    XMLSecurityManager securityManager = (XMLSecurityManager)fComponentManager.getProperty(Constants.SECURITY_MANAGER);</b>
+<b class="nc"><i>78</i>&nbsp;                    if (securityManager != null) {</b>
+<b class="nc"><i>79</i>&nbsp;                        for (XMLSecurityManager.Limit limit : XMLSecurityManager.Limit.values()) {</b>
+<b class="nc"><i>80</i>&nbsp;                            if (securityManager.isSet(limit.ordinal())){</b>
+<b class="nc"><i>81</i>&nbsp;                                tf.setAttribute(limit.apiProperty(),</b>
+<b class="nc"><i>82</i>&nbsp;                                        securityManager.getLimitValueAsString(limit));</b>
+<i>83</i>&nbsp;                            }
+<i>84</i>&nbsp;                        }
+<b class="nc"><i>85</i>&nbsp;                        if (securityManager.printEntityCountInfo()) {</b>
+<b class="nc"><i>86</i>&nbsp;                            tf.setAttribute(Constants.JDK_ENTITY_COUNT_INFO, &quot;yes&quot;);</b>
+<i>87</i>&nbsp;                        }
+<i>88</i>&nbsp;                    }
+<i>89</i>&nbsp;
+<b class="nc"><i>90</i>&nbsp;                    identityTransformer1 = tf.newTransformer();</b>
+<b class="nc"><i>91</i>&nbsp;                    identityTransformer2 = tf.newTransformerHandler();</b>
+<b class="nc"><i>92</i>&nbsp;                } catch (TransformerConfigurationException e) {</b>
+<i>93</i>&nbsp;                    // this is impossible, but again better safe than sorry
+<b class="nc"><i>94</i>&nbsp;                    throw new TransformerFactoryConfigurationError(e);</b>
+<b class="nc"><i>95</i>&nbsp;                }</b>
+<i>96</i>&nbsp;            }
+<i>97</i>&nbsp;
+<b class="nc"><i>98</i>&nbsp;            handler = new ValidatorHandlerImpl(fComponentManager);</b>
+<b class="nc"><i>99</i>&nbsp;            if( result!=null ) {</b>
+<b class="nc"><i>100</i>&nbsp;                handler.setContentHandler(identityTransformer2);</b>
+<b class="nc"><i>101</i>&nbsp;                identityTransformer2.setResult(result);</b>
+<i>102</i>&nbsp;            }
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;            try {
+<b class="nc"><i>105</i>&nbsp;                identityTransformer1.transform( source, new SAXResult(handler) );</b>
+<b class="nc"><i>106</i>&nbsp;            } catch (TransformerException e) {</b>
+<b class="nc"><i>107</i>&nbsp;                if( e.getException() instanceof SAXException )</b>
+<b class="nc"><i>108</i>&nbsp;                    throw (SAXException)e.getException();</b>
+<b class="nc"><i>109</i>&nbsp;                throw new SAXException(e);</b>
+<i>110</i>&nbsp;            } finally {
+<b class="nc"><i>111</i>&nbsp;                handler.setContentHandler(null);</b>
+<b class="nc"><i>112</i>&nbsp;            }</b>
+<i>113</i>&nbsp;            return;
+<i>114</i>&nbsp;        }
+<b class="nc"><i>115</i>&nbsp;        throw new IllegalArgumentException(JAXPValidationMessageFormatter.formatMessage(fComponentManager.getLocale(),</b>
+<i>116</i>&nbsp;                &quot;SourceResultMismatch&quot;,
+<b class="nc"><i>117</i>&nbsp;                new Object [] {source.getClass().getName(), result.getClass().getName()}));</b>
+<i>118</i>&nbsp;    }
+<i>119</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:55</div>
+</div>
+</body>
+</html>

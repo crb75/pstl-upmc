@@ -1,0 +1,480 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SignedInfo</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.security.signature</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SignedInfo (com.sun.org.apache.xml.internal.security.signature)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SignedInfo</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 101)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one
+<i>7</i>&nbsp; * or more contributor license agreements. See the NOTICE file
+<i>8</i>&nbsp; * distributed with this work for additional information
+<i>9</i>&nbsp; * regarding copyright ownership. The ASF licenses this file
+<i>10</i>&nbsp; * to you under the Apache License, Version 2.0 (the
+<i>11</i>&nbsp; * &quot;License&quot;); you may not use this file except in compliance
+<i>12</i>&nbsp; * with the License. You may obtain a copy of the License at
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * http://www.apache.org/licenses/LICENSE-2.0
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; * Unless required by applicable law or agreed to in writing,
+<i>17</i>&nbsp; * software distributed under the License is distributed on an
+<i>18</i>&nbsp; * &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+<i>19</i>&nbsp; * KIND, either express or implied. See the License for the
+<i>20</i>&nbsp; * specific language governing permissions and limitations
+<i>21</i>&nbsp; * under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.security.signature;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.io.ByteArrayInputStream;
+<i>26</i>&nbsp;import java.io.IOException;
+<i>27</i>&nbsp;import java.io.OutputStream;
+<i>28</i>&nbsp;import javax.crypto.SecretKey;
+<i>29</i>&nbsp;import javax.crypto.spec.SecretKeySpec;
+<i>30</i>&nbsp;import javax.xml.XMLConstants;
+<i>31</i>&nbsp;import javax.xml.parsers.ParserConfigurationException;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import com.sun.org.apache.xml.internal.security.algorithms.SignatureAlgorithm;
+<i>34</i>&nbsp;import com.sun.org.apache.xml.internal.security.c14n.CanonicalizationException;
+<i>35</i>&nbsp;import com.sun.org.apache.xml.internal.security.c14n.Canonicalizer;
+<i>36</i>&nbsp;import com.sun.org.apache.xml.internal.security.c14n.InvalidCanonicalizerException;
+<i>37</i>&nbsp;import com.sun.org.apache.xml.internal.security.exceptions.XMLSecurityException;
+<i>38</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.Constants;
+<i>39</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.XMLUtils;
+<i>40</i>&nbsp;import com.sun.org.apache.xml.internal.security.transforms.params.InclusiveNamespaces;
+<i>41</i>&nbsp;import org.w3c.dom.Document;
+<i>42</i>&nbsp;import org.w3c.dom.Element;
+<i>43</i>&nbsp;import org.w3c.dom.Node;
+<i>44</i>&nbsp;import org.xml.sax.SAXException;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;/**
+<i>47</i>&nbsp; * Handles &lt;code&gt;&amp;lt;ds:SignedInfo&amp;gt;&lt;/code&gt; elements
+<i>48</i>&nbsp; * This &lt;code&gt;SignedInfo&lt;code&gt; element includes the canonicalization algorithm,
+<i>49</i>&nbsp; * a signature algorithm, and one or more references.
+<i>50</i>&nbsp; *
+<i>51</i>&nbsp; * @author Christian Geuer-Pollmann
+<i>52</i>&nbsp; */
+<i>53</i>&nbsp;public class SignedInfo extends Manifest {
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    /** Field signatureAlgorithm */
+<b class="nc"><i>56</i>&nbsp;    private SignatureAlgorithm signatureAlgorithm = null;</b>
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    /** Field c14nizedBytes           */
+<b class="nc"><i>59</i>&nbsp;    private byte[] c14nizedBytes = null;</b>
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    private Element c14nMethod;
+<i>62</i>&nbsp;    private Element signatureMethod;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    /**
+<i>65</i>&nbsp;     * Overwrites {@link Manifest#addDocument} because it creates another
+<i>66</i>&nbsp;     * Element.
+<i>67</i>&nbsp;     *
+<i>68</i>&nbsp;     * @param doc the {@link Document} in which &lt;code&gt;XMLsignature&lt;/code&gt; will
+<i>69</i>&nbsp;     *    be placed
+<i>70</i>&nbsp;     * @throws XMLSecurityException
+<i>71</i>&nbsp;     */
+<i>72</i>&nbsp;    public SignedInfo(Document doc) throws XMLSecurityException {
+<b class="nc"><i>73</i>&nbsp;        this(doc, XMLSignature.ALGO_ID_SIGNATURE_DSA,</b>
+<i>74</i>&nbsp;             Canonicalizer.ALGO_ID_C14N_OMIT_COMMENTS);
+<i>75</i>&nbsp;    }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    /**
+<i>78</i>&nbsp;     * Constructs {@link SignedInfo} using given Canonicalization algorithm and
+<i>79</i>&nbsp;     * Signature algorithm.
+<i>80</i>&nbsp;     *
+<i>81</i>&nbsp;     * @param doc &lt;code&gt;SignedInfo&lt;/code&gt; is placed in this document
+<i>82</i>&nbsp;     * @param signatureMethodURI URI representation of the Digest and
+<i>83</i>&nbsp;     *    Signature algorithm
+<i>84</i>&nbsp;     * @param canonicalizationMethodURI URI representation of the
+<i>85</i>&nbsp;     *    Canonicalization method
+<i>86</i>&nbsp;     * @throws XMLSecurityException
+<i>87</i>&nbsp;     */
+<i>88</i>&nbsp;    public SignedInfo(
+<i>89</i>&nbsp;        Document doc, String signatureMethodURI, String canonicalizationMethodURI
+<i>90</i>&nbsp;    ) throws XMLSecurityException {
+<b class="nc"><i>91</i>&nbsp;        this(doc, signatureMethodURI, 0, canonicalizationMethodURI);</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    /**
+<i>95</i>&nbsp;     * Constructor SignedInfo
+<i>96</i>&nbsp;     *
+<i>97</i>&nbsp;     * @param doc &lt;code&gt;SignedInfo&lt;/code&gt; is placed in this document
+<i>98</i>&nbsp;     * @param signatureMethodURI URI representation of the Digest and
+<i>99</i>&nbsp;     *    Signature algorithm
+<i>100</i>&nbsp;     * @param hMACOutputLength
+<i>101</i>&nbsp;     * @param canonicalizationMethodURI URI representation of the
+<i>102</i>&nbsp;     *    Canonicalization method
+<i>103</i>&nbsp;     * @throws XMLSecurityException
+<i>104</i>&nbsp;     */
+<i>105</i>&nbsp;    public SignedInfo(
+<i>106</i>&nbsp;        Document doc, String signatureMethodURI,
+<i>107</i>&nbsp;        int hMACOutputLength, String canonicalizationMethodURI
+<i>108</i>&nbsp;    ) throws XMLSecurityException {
+<b class="nc"><i>109</i>&nbsp;        super(doc);</b>
+<i>110</i>&nbsp;
+<b class="nc"><i>111</i>&nbsp;        c14nMethod =</b>
+<b class="nc"><i>112</i>&nbsp;            XMLUtils.createElementInSignatureSpace(this.doc, Constants._TAG_CANONICALIZATIONMETHOD);</b>
+<i>113</i>&nbsp;
+<b class="nc"><i>114</i>&nbsp;        c14nMethod.setAttributeNS(null, Constants._ATT_ALGORITHM, canonicalizationMethodURI);</b>
+<b class="nc"><i>115</i>&nbsp;        this.constructionElement.appendChild(c14nMethod);</b>
+<b class="nc"><i>116</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>117</i>&nbsp;
+<b class="nc"><i>118</i>&nbsp;        if (hMACOutputLength &gt; 0) {</b>
+<b class="nc"><i>119</i>&nbsp;            this.signatureAlgorithm =</b>
+<i>120</i>&nbsp;                new SignatureAlgorithm(this.doc, signatureMethodURI, hMACOutputLength);
+<i>121</i>&nbsp;        } else {
+<b class="nc"><i>122</i>&nbsp;            this.signatureAlgorithm = new SignatureAlgorithm(this.doc, signatureMethodURI);</b>
+<i>123</i>&nbsp;        }
+<i>124</i>&nbsp;
+<b class="nc"><i>125</i>&nbsp;        signatureMethod = this.signatureAlgorithm.getElement();</b>
+<b class="nc"><i>126</i>&nbsp;        this.constructionElement.appendChild(signatureMethod);</b>
+<b class="nc"><i>127</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>128</i>&nbsp;    }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    /**
+<i>131</i>&nbsp;     * @param doc
+<i>132</i>&nbsp;     * @param signatureMethodElem
+<i>133</i>&nbsp;     * @param canonicalizationMethodElem
+<i>134</i>&nbsp;     * @throws XMLSecurityException
+<i>135</i>&nbsp;     */
+<i>136</i>&nbsp;    public SignedInfo(
+<i>137</i>&nbsp;        Document doc, Element signatureMethodElem, Element canonicalizationMethodElem
+<i>138</i>&nbsp;    ) throws XMLSecurityException {
+<b class="nc"><i>139</i>&nbsp;        super(doc);</b>
+<i>140</i>&nbsp;        // Check this?
+<b class="nc"><i>141</i>&nbsp;        this.c14nMethod = canonicalizationMethodElem;</b>
+<b class="nc"><i>142</i>&nbsp;        this.constructionElement.appendChild(c14nMethod);</b>
+<b class="nc"><i>143</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>144</i>&nbsp;
+<b class="nc"><i>145</i>&nbsp;        this.signatureAlgorithm =</b>
+<i>146</i>&nbsp;            new SignatureAlgorithm(signatureMethodElem, null);
+<i>147</i>&nbsp;
+<b class="nc"><i>148</i>&nbsp;        signatureMethod = this.signatureAlgorithm.getElement();</b>
+<b class="nc"><i>149</i>&nbsp;        this.constructionElement.appendChild(signatureMethod);</b>
+<i>150</i>&nbsp;
+<b class="nc"><i>151</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>152</i>&nbsp;    }
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;    /**
+<i>155</i>&nbsp;     * Build a {@link SignedInfo} from an {@link Element}
+<i>156</i>&nbsp;     *
+<i>157</i>&nbsp;     * @param element &lt;code&gt;SignedInfo&lt;/code&gt;
+<i>158</i>&nbsp;     * @param baseURI the URI of the resource where the XML instance was stored
+<i>159</i>&nbsp;     * @throws XMLSecurityException
+<i>160</i>&nbsp;     * @see &lt;A HREF=&quot;http://lists.w3.org/Archives/Public/w3c-ietf-xmldsig/2001OctDec/0033.html&quot;&gt;
+<i>161</i>&nbsp;     * Question&lt;/A&gt;
+<i>162</i>&nbsp;     * @see &lt;A HREF=&quot;http://lists.w3.org/Archives/Public/w3c-ietf-xmldsig/2001OctDec/0054.html&quot;&gt;
+<i>163</i>&nbsp;     * Answer&lt;/A&gt;
+<i>164</i>&nbsp;     */
+<i>165</i>&nbsp;    public SignedInfo(Element element, String baseURI) throws XMLSecurityException {
+<b class="nc"><i>166</i>&nbsp;        this(element, baseURI, false);</b>
+<i>167</i>&nbsp;    }
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;    /**
+<i>170</i>&nbsp;     * Build a {@link SignedInfo} from an {@link Element}
+<i>171</i>&nbsp;     *
+<i>172</i>&nbsp;     * @param element &lt;code&gt;SignedInfo&lt;/code&gt;
+<i>173</i>&nbsp;     * @param baseURI the URI of the resource where the XML instance was stored
+<i>174</i>&nbsp;     * @param secureValidation whether secure validation is enabled or not
+<i>175</i>&nbsp;     * @throws XMLSecurityException
+<i>176</i>&nbsp;     * @see &lt;A HREF=&quot;http://lists.w3.org/Archives/Public/w3c-ietf-xmldsig/2001OctDec/0033.html&quot;&gt;
+<i>177</i>&nbsp;     * Question&lt;/A&gt;
+<i>178</i>&nbsp;     * @see &lt;A HREF=&quot;http://lists.w3.org/Archives/Public/w3c-ietf-xmldsig/2001OctDec/0054.html&quot;&gt;
+<i>179</i>&nbsp;     * Answer&lt;/A&gt;
+<i>180</i>&nbsp;     */
+<i>181</i>&nbsp;    public SignedInfo(
+<i>182</i>&nbsp;        Element element, String baseURI, boolean secureValidation
+<i>183</i>&nbsp;    ) throws XMLSecurityException {
+<i>184</i>&nbsp;        // Parse the Reference children and Id attribute in the Manifest
+<b class="nc"><i>185</i>&nbsp;        super(reparseSignedInfoElem(element), baseURI, secureValidation);</b>
+<i>186</i>&nbsp;
+<b class="nc"><i>187</i>&nbsp;        c14nMethod = XMLUtils.getNextElement(element.getFirstChild());</b>
+<b class="nc"><i>188</i>&nbsp;        signatureMethod = XMLUtils.getNextElement(c14nMethod.getNextSibling());</b>
+<b class="nc"><i>189</i>&nbsp;        this.signatureAlgorithm =</b>
+<b class="nc"><i>190</i>&nbsp;            new SignatureAlgorithm(signatureMethod, this.getBaseURI(), secureValidation);</b>
+<i>191</i>&nbsp;    }
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;    private static Element reparseSignedInfoElem(Element element)
+<i>194</i>&nbsp;        throws XMLSecurityException {
+<i>195</i>&nbsp;        /*
+<i>196</i>&nbsp;         * If a custom canonicalizationMethod is used, canonicalize
+<i>197</i>&nbsp;         * ds:SignedInfo, reparse it into a new document
+<i>198</i>&nbsp;         * and replace the original not-canonicalized ds:SignedInfo by
+<i>199</i>&nbsp;         * the re-parsed canonicalized one.
+<i>200</i>&nbsp;         */
+<b class="nc"><i>201</i>&nbsp;        Element c14nMethod = XMLUtils.getNextElement(element.getFirstChild());</b>
+<b class="nc"><i>202</i>&nbsp;        String c14nMethodURI =</b>
+<b class="nc"><i>203</i>&nbsp;            c14nMethod.getAttributeNS(null, Constants._ATT_ALGORITHM);</b>
+<b class="nc"><i>204</i>&nbsp;        if (!(c14nMethodURI.equals(Canonicalizer.ALGO_ID_C14N_OMIT_COMMENTS) ||</b>
+<b class="nc"><i>205</i>&nbsp;            c14nMethodURI.equals(Canonicalizer.ALGO_ID_C14N_WITH_COMMENTS) ||</b>
+<b class="nc"><i>206</i>&nbsp;            c14nMethodURI.equals(Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS) ||</b>
+<b class="nc"><i>207</i>&nbsp;            c14nMethodURI.equals(Canonicalizer.ALGO_ID_C14N_EXCL_WITH_COMMENTS) ||</b>
+<b class="nc"><i>208</i>&nbsp;            c14nMethodURI.equals(Canonicalizer.ALGO_ID_C14N11_OMIT_COMMENTS) ||</b>
+<b class="nc"><i>209</i>&nbsp;            c14nMethodURI.equals(Canonicalizer.ALGO_ID_C14N11_WITH_COMMENTS))) {</b>
+<i>210</i>&nbsp;            // the c14n is not a secure one and can rewrite the URIs or like
+<i>211</i>&nbsp;            // so reparse the SignedInfo to be sure
+<i>212</i>&nbsp;            try {
+<b class="nc"><i>213</i>&nbsp;                Canonicalizer c14nizer =</b>
+<b class="nc"><i>214</i>&nbsp;                    Canonicalizer.getInstance(c14nMethodURI);</b>
+<i>215</i>&nbsp;
+<b class="nc"><i>216</i>&nbsp;                byte[] c14nizedBytes = c14nizer.canonicalizeSubtree(element);</b>
+<i>217</i>&nbsp;                javax.xml.parsers.DocumentBuilderFactory dbf =
+<b class="nc"><i>218</i>&nbsp;                    javax.xml.parsers.DocumentBuilderFactory.newInstance();</b>
+<b class="nc"><i>219</i>&nbsp;                dbf.setNamespaceAware(true);</b>
+<b class="nc"><i>220</i>&nbsp;                dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);</b>
+<b class="nc"><i>221</i>&nbsp;                javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();</b>
+<b class="nc"><i>222</i>&nbsp;                Document newdoc =</b>
+<b class="nc"><i>223</i>&nbsp;                    db.parse(new ByteArrayInputStream(c14nizedBytes));</b>
+<b class="nc"><i>224</i>&nbsp;                Node imported =</b>
+<b class="nc"><i>225</i>&nbsp;                    element.getOwnerDocument().importNode(newdoc.getDocumentElement(), true);</b>
+<i>226</i>&nbsp;
+<b class="nc"><i>227</i>&nbsp;                element.getParentNode().replaceChild(imported, element);</b>
+<i>228</i>&nbsp;
+<b class="nc"><i>229</i>&nbsp;                return (Element) imported;</b>
+<b class="nc"><i>230</i>&nbsp;            } catch (ParserConfigurationException ex) {</b>
+<b class="nc"><i>231</i>&nbsp;                throw new XMLSecurityException(&quot;empty&quot;, ex);</b>
+<b class="nc"><i>232</i>&nbsp;            } catch (IOException ex) {</b>
+<b class="nc"><i>233</i>&nbsp;                throw new XMLSecurityException(&quot;empty&quot;, ex);</b>
+<b class="nc"><i>234</i>&nbsp;            } catch (SAXException ex) {</b>
+<b class="nc"><i>235</i>&nbsp;                throw new XMLSecurityException(&quot;empty&quot;, ex);</b>
+<i>236</i>&nbsp;            }
+<i>237</i>&nbsp;        }
+<b class="nc"><i>238</i>&nbsp;        return element;</b>
+<i>239</i>&nbsp;    }
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;    /**
+<i>242</i>&nbsp;     * Tests core validation process
+<i>243</i>&nbsp;     *
+<i>244</i>&nbsp;     * @return true if verification was successful
+<i>245</i>&nbsp;     * @throws MissingResourceFailureException
+<i>246</i>&nbsp;     * @throws XMLSecurityException
+<i>247</i>&nbsp;     */
+<i>248</i>&nbsp;    public boolean verify()
+<i>249</i>&nbsp;        throws MissingResourceFailureException, XMLSecurityException {
+<b class="nc"><i>250</i>&nbsp;        return super.verifyReferences(false);</b>
+<i>251</i>&nbsp;    }
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;    /**
+<i>254</i>&nbsp;     * Tests core validation process
+<i>255</i>&nbsp;     *
+<i>256</i>&nbsp;     * @param followManifests defines whether the verification process has to verify referenced &lt;CODE&gt;ds:Manifest&lt;/CODE&gt;s, too
+<i>257</i>&nbsp;     * @return true if verification was successful
+<i>258</i>&nbsp;     * @throws MissingResourceFailureException
+<i>259</i>&nbsp;     * @throws XMLSecurityException
+<i>260</i>&nbsp;     */
+<i>261</i>&nbsp;    public boolean verify(boolean followManifests)
+<i>262</i>&nbsp;        throws MissingResourceFailureException, XMLSecurityException {
+<b class="nc"><i>263</i>&nbsp;        return super.verifyReferences(followManifests);</b>
+<i>264</i>&nbsp;    }
+<i>265</i>&nbsp;
+<i>266</i>&nbsp;    /**
+<i>267</i>&nbsp;     * Returns getCanonicalizedOctetStream
+<i>268</i>&nbsp;     *
+<i>269</i>&nbsp;     * @return the canonicalization result octet stream of &lt;code&gt;SignedInfo&lt;/code&gt; element
+<i>270</i>&nbsp;     * @throws CanonicalizationException
+<i>271</i>&nbsp;     * @throws InvalidCanonicalizerException
+<i>272</i>&nbsp;     * @throws XMLSecurityException
+<i>273</i>&nbsp;     */
+<i>274</i>&nbsp;    public byte[] getCanonicalizedOctetStream()
+<i>275</i>&nbsp;        throws CanonicalizationException, InvalidCanonicalizerException, XMLSecurityException {
+<b class="nc"><i>276</i>&nbsp;        if (this.c14nizedBytes == null) {</b>
+<b class="nc"><i>277</i>&nbsp;            Canonicalizer c14nizer =</b>
+<b class="nc"><i>278</i>&nbsp;                Canonicalizer.getInstance(this.getCanonicalizationMethodURI());</b>
+<i>279</i>&nbsp;
+<b class="nc"><i>280</i>&nbsp;            this.c14nizedBytes =</b>
+<b class="nc"><i>281</i>&nbsp;                c14nizer.canonicalizeSubtree(this.constructionElement);</b>
+<i>282</i>&nbsp;        }
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;        // make defensive copy
+<b class="nc"><i>285</i>&nbsp;        return this.c14nizedBytes.clone();</b>
+<i>286</i>&nbsp;    }
+<i>287</i>&nbsp;
+<i>288</i>&nbsp;    /**
+<i>289</i>&nbsp;     * Output the C14n stream to the given OutputStream.
+<i>290</i>&nbsp;     * @param os
+<i>291</i>&nbsp;     * @throws CanonicalizationException
+<i>292</i>&nbsp;     * @throws InvalidCanonicalizerException
+<i>293</i>&nbsp;     * @throws XMLSecurityException
+<i>294</i>&nbsp;     */
+<i>295</i>&nbsp;    public void signInOctetStream(OutputStream os)
+<i>296</i>&nbsp;        throws CanonicalizationException, InvalidCanonicalizerException, XMLSecurityException {
+<b class="nc"><i>297</i>&nbsp;        if (this.c14nizedBytes == null) {</b>
+<b class="nc"><i>298</i>&nbsp;            Canonicalizer c14nizer =</b>
+<b class="nc"><i>299</i>&nbsp;                Canonicalizer.getInstance(this.getCanonicalizationMethodURI());</b>
+<b class="nc"><i>300</i>&nbsp;            c14nizer.setWriter(os);</b>
+<b class="nc"><i>301</i>&nbsp;            String inclusiveNamespaces = this.getInclusiveNamespaces();</b>
+<i>302</i>&nbsp;
+<b class="nc"><i>303</i>&nbsp;            if (inclusiveNamespaces == null) {</b>
+<b class="nc"><i>304</i>&nbsp;                c14nizer.canonicalizeSubtree(this.constructionElement);</b>
+<i>305</i>&nbsp;            } else {
+<b class="nc"><i>306</i>&nbsp;                c14nizer.canonicalizeSubtree(this.constructionElement, inclusiveNamespaces);</b>
+<i>307</i>&nbsp;            }
+<b class="nc"><i>308</i>&nbsp;        } else {</b>
+<i>309</i>&nbsp;            try {
+<b class="nc"><i>310</i>&nbsp;                os.write(this.c14nizedBytes);</b>
+<b class="nc"><i>311</i>&nbsp;            } catch (IOException e) {</b>
+<b class="nc"><i>312</i>&nbsp;                throw new RuntimeException(e);</b>
+<b class="nc"><i>313</i>&nbsp;            }</b>
+<i>314</i>&nbsp;        }
+<i>315</i>&nbsp;    }
+<i>316</i>&nbsp;
+<i>317</i>&nbsp;    /**
+<i>318</i>&nbsp;     * Returns the Canonicalization method URI
+<i>319</i>&nbsp;     *
+<i>320</i>&nbsp;     * @return the Canonicalization method URI
+<i>321</i>&nbsp;     */
+<i>322</i>&nbsp;    public String getCanonicalizationMethodURI() {
+<b class="nc"><i>323</i>&nbsp;        return c14nMethod.getAttributeNS(null, Constants._ATT_ALGORITHM);</b>
+<i>324</i>&nbsp;    }
+<i>325</i>&nbsp;
+<i>326</i>&nbsp;    /**
+<i>327</i>&nbsp;     * Returns the Signature method URI
+<i>328</i>&nbsp;     *
+<i>329</i>&nbsp;     * @return the Signature method URI
+<i>330</i>&nbsp;     */
+<i>331</i>&nbsp;    public String getSignatureMethodURI() {
+<b class="nc"><i>332</i>&nbsp;        Element signatureElement = this.getSignatureMethodElement();</b>
+<i>333</i>&nbsp;
+<b class="nc"><i>334</i>&nbsp;        if (signatureElement != null) {</b>
+<b class="nc"><i>335</i>&nbsp;            return signatureElement.getAttributeNS(null, Constants._ATT_ALGORITHM);</b>
+<i>336</i>&nbsp;        }
+<i>337</i>&nbsp;
+<b class="nc"><i>338</i>&nbsp;        return null;</b>
+<i>339</i>&nbsp;    }
+<i>340</i>&nbsp;
+<i>341</i>&nbsp;    /**
+<i>342</i>&nbsp;     * Method getSignatureMethodElement
+<i>343</i>&nbsp;     * @return returns the SignatureMethod Element
+<i>344</i>&nbsp;     *
+<i>345</i>&nbsp;     */
+<i>346</i>&nbsp;    public Element getSignatureMethodElement() {
+<b class="nc"><i>347</i>&nbsp;        return signatureMethod;</b>
+<i>348</i>&nbsp;    }
+<i>349</i>&nbsp;
+<i>350</i>&nbsp;    /**
+<i>351</i>&nbsp;     * Creates a SecretKey for the appropriate Mac algorithm based on a
+<i>352</i>&nbsp;     * byte[] array password.
+<i>353</i>&nbsp;     *
+<i>354</i>&nbsp;     * @param secretKeyBytes
+<i>355</i>&nbsp;     * @return the secret key for the SignedInfo element.
+<i>356</i>&nbsp;     */
+<i>357</i>&nbsp;    public SecretKey createSecretKey(byte[] secretKeyBytes) {
+<b class="nc"><i>358</i>&nbsp;        return new SecretKeySpec(secretKeyBytes, this.signatureAlgorithm.getJCEAlgorithmString());</b>
+<i>359</i>&nbsp;    }
+<i>360</i>&nbsp;
+<i>361</i>&nbsp;    protected SignatureAlgorithm getSignatureAlgorithm() {
+<b class="nc"><i>362</i>&nbsp;        return signatureAlgorithm;</b>
+<i>363</i>&nbsp;    }
+<i>364</i>&nbsp;
+<i>365</i>&nbsp;    /**
+<i>366</i>&nbsp;     * Method getBaseLocalName
+<i>367</i>&nbsp;     * @inheritDoc
+<i>368</i>&nbsp;     *
+<i>369</i>&nbsp;     */
+<i>370</i>&nbsp;    public String getBaseLocalName() {
+<b class="nc"><i>371</i>&nbsp;        return Constants._TAG_SIGNEDINFO;</b>
+<i>372</i>&nbsp;    }
+<i>373</i>&nbsp;
+<i>374</i>&nbsp;    public String getInclusiveNamespaces() {
+<b class="nc"><i>375</i>&nbsp;        String c14nMethodURI = c14nMethod.getAttributeNS(null, Constants._ATT_ALGORITHM);</b>
+<b class="nc"><i>376</i>&nbsp;        if (!(c14nMethodURI.equals(&quot;http://www.w3.org/2001/10/xml-exc-c14n#&quot;) ||</b>
+<b class="nc"><i>377</i>&nbsp;            c14nMethodURI.equals(&quot;http://www.w3.org/2001/10/xml-exc-c14n#WithComments&quot;))) {</b>
+<b class="nc"><i>378</i>&nbsp;            return null;</b>
+<i>379</i>&nbsp;        }
+<i>380</i>&nbsp;
+<b class="nc"><i>381</i>&nbsp;        Element inclusiveElement = XMLUtils.getNextElement(c14nMethod.getFirstChild());</b>
+<i>382</i>&nbsp;
+<b class="nc"><i>383</i>&nbsp;        if (inclusiveElement != null) {</b>
+<i>384</i>&nbsp;            try {
+<b class="nc"><i>385</i>&nbsp;                String inclusiveNamespaces =</b>
+<i>386</i>&nbsp;                    new InclusiveNamespaces(
+<i>387</i>&nbsp;                        inclusiveElement,
+<i>388</i>&nbsp;                        InclusiveNamespaces.ExclusiveCanonicalizationNamespace
+<b class="nc"><i>389</i>&nbsp;                    ).getInclusiveNamespaces();</b>
+<b class="nc"><i>390</i>&nbsp;                return inclusiveNamespaces;</b>
+<b class="nc"><i>391</i>&nbsp;            } catch (XMLSecurityException e) {</b>
+<b class="nc"><i>392</i>&nbsp;                return null;</b>
+<i>393</i>&nbsp;            }
+<i>394</i>&nbsp;        }
+<b class="nc"><i>395</i>&nbsp;        return null;</b>
+<i>396</i>&nbsp;    }
+<i>397</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

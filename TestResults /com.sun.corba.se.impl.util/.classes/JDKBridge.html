@@ -1,0 +1,280 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: JDKBridge</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: JDKBridge (com.sun.corba.se.impl.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JDKBridge</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 28)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 1995, 2004, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;/*
+<i>26</i>&nbsp; * Licensed Materials - Property of IBM
+<i>27</i>&nbsp; * RMI-IIOP v1.0
+<i>28</i>&nbsp; * Copyright IBM Corp. 1998 1999  All Rights Reserved
+<i>29</i>&nbsp; *
+<i>30</i>&nbsp; */
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;package com.sun.corba.se.impl.util;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import java.rmi.Remote;
+<i>35</i>&nbsp;import java.rmi.NoSuchObjectException;
+<i>36</i>&nbsp;import java.rmi.server.RMIClassLoader;
+<i>37</i>&nbsp;import java.rmi.server.UnicastRemoteObject;
+<i>38</i>&nbsp;import org.omg.CORBA.BAD_PARAM;
+<i>39</i>&nbsp;import org.omg.CORBA.CompletionStatus;
+<i>40</i>&nbsp;import java.util.Properties;
+<i>41</i>&nbsp;import java.io.File;
+<i>42</i>&nbsp;import java.io.FileInputStream;
+<i>43</i>&nbsp;import java.security.AccessController;
+<i>44</i>&nbsp;import java.security.PrivilegedAction;
+<i>45</i>&nbsp;import java.net.MalformedURLException;
+<i>46</i>&nbsp;import com.sun.corba.se.impl.orbutil.GetPropertyAction;
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;/**
+<i>49</i>&nbsp; *  Utility methods for doing various method calls which are used
+<i>50</i>&nbsp; *  by multiple classes
+<i>51</i>&nbsp; */
+<b class="nc"><i>52</i>&nbsp;public class JDKBridge {</b>
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /**
+<i>55</i>&nbsp;     * Get local codebase System property (java.rmi.server.codebase).
+<i>56</i>&nbsp;     * May be null or a space separated array of URLS.
+<i>57</i>&nbsp;     */
+<i>58</i>&nbsp;    public static String getLocalCodebase () {
+<b class="nc"><i>59</i>&nbsp;        return localCodebase;</b>
+<i>60</i>&nbsp;    }
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    /**
+<i>63</i>&nbsp;     * Return true if the system property &quot;java.rmi.server.useCodebaseOnly&quot;
+<i>64</i>&nbsp;     * is set, false otherwise.
+<i>65</i>&nbsp;     */
+<i>66</i>&nbsp;    public static boolean useCodebaseOnly () {
+<b class="nc"><i>67</i>&nbsp;        return useCodebaseOnly;</b>
+<i>68</i>&nbsp;    }
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    /**
+<i>71</i>&nbsp;     * Returns a class instance for the specified class.
+<i>72</i>&nbsp;     * @param className the name of the class
+<i>73</i>&nbsp;     * @param remoteCodebase a space-separated array of urls at which
+<i>74</i>&nbsp;     * the class might be found. May be null.
+<i>75</i>&nbsp;     * @param loader a ClassLoader who may be used to
+<i>76</i>&nbsp;     * load the class if all other methods fail.
+<i>77</i>&nbsp;     * @return the &lt;code&gt;Class&lt;/code&gt; object representing the loaded class.
+<i>78</i>&nbsp;     * @exception throws ClassNotFoundException if class cannot be loaded.
+<i>79</i>&nbsp;     */
+<i>80</i>&nbsp;    public static Class loadClass (String className,
+<i>81</i>&nbsp;                                   String remoteCodebase,
+<i>82</i>&nbsp;                                   ClassLoader loader)
+<i>83</i>&nbsp;        throws ClassNotFoundException {
+<i>84</i>&nbsp;
+<b class="nc"><i>85</i>&nbsp;        if (loader == null) {</b>
+<b class="nc"><i>86</i>&nbsp;            return loadClassM(className,remoteCodebase,useCodebaseOnly);</b>
+<i>87</i>&nbsp;        } else {
+<i>88</i>&nbsp;            try {
+<b class="nc"><i>89</i>&nbsp;                return loadClassM(className,remoteCodebase,useCodebaseOnly);</b>
+<b class="nc"><i>90</i>&nbsp;            } catch (ClassNotFoundException e) {</b>
+<b class="nc"><i>91</i>&nbsp;                return loader.loadClass(className);</b>
+<i>92</i>&nbsp;            }
+<i>93</i>&nbsp;        }
+<i>94</i>&nbsp;    }
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    /**
+<i>97</i>&nbsp;     * Returns a class instance for the specified class.
+<i>98</i>&nbsp;     * @param className the name of the class
+<i>99</i>&nbsp;     * @param remoteCodebase a space-separated array of urls at which
+<i>100</i>&nbsp;     * the class might be found. May be null.
+<i>101</i>&nbsp;     * @return the &lt;code&gt;Class&lt;/code&gt; object representing the loaded class.
+<i>102</i>&nbsp;     * @exception throws ClassNotFoundException if class cannot be loaded.
+<i>103</i>&nbsp;     */
+<i>104</i>&nbsp;    public static Class loadClass (String className,
+<i>105</i>&nbsp;                                   String remoteCodebase)
+<i>106</i>&nbsp;        throws ClassNotFoundException {
+<b class="nc"><i>107</i>&nbsp;        return loadClass(className,remoteCodebase,null);</b>
+<i>108</i>&nbsp;    }
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;    /**
+<i>111</i>&nbsp;     * Returns a class instance for the specified class.
+<i>112</i>&nbsp;     * @param className the name of the class
+<i>113</i>&nbsp;     * @return the &lt;code&gt;Class&lt;/code&gt; object representing the loaded class.
+<i>114</i>&nbsp;     * @exception throws ClassNotFoundException if class cannot be loaded.
+<i>115</i>&nbsp;     */
+<i>116</i>&nbsp;    public static Class loadClass (String className)
+<i>117</i>&nbsp;        throws ClassNotFoundException {
+<b class="nc"><i>118</i>&nbsp;        return loadClass(className,null,null);</b>
+<i>119</i>&nbsp;    }
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;    private static final String LOCAL_CODEBASE_KEY = &quot;java.rmi.server.codebase&quot;;
+<i>122</i>&nbsp;    private static final String USE_CODEBASE_ONLY_KEY = &quot;java.rmi.server.useCodebaseOnly&quot;;
+<b class="nc"><i>123</i>&nbsp;    private static String localCodebase = null;</b>
+<i>124</i>&nbsp;    private static boolean useCodebaseOnly;
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;    static {
+<b class="nc"><i>127</i>&nbsp;        setCodebaseProperties();</b>
+<i>128</i>&nbsp;    }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    public static final void main (String[] args) {
+<b class="nc"><i>131</i>&nbsp;        System.out.println(&quot;1.2 VM&quot;);</b>
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;        /*
+<i>134</i>&nbsp;                 // If on 1.2, use a policy with all permissions.
+<i>135</i>&nbsp;                 System.setSecurityManager (new javax.rmi.download.SecurityManager());
+<i>136</i>&nbsp;                 String targetClass = &quot;[[Lrmic.Typedef;&quot;;
+<i>137</i>&nbsp;                 System.out.println(&quot;localCodebase =  &quot;+localCodebase);
+<i>138</i>&nbsp;                 System.out.println(&quot;Trying to load &quot;+targetClass);
+<i>139</i>&nbsp;                 try {
+<i>140</i>&nbsp;                 Class clz = loadClass(targetClass,null,localCodebase);
+<i>141</i>&nbsp;                 System.out.println(&quot;Loaded: &quot;+clz);
+<i>142</i>&nbsp;                 } catch (ClassNotFoundException e) {
+<i>143</i>&nbsp;                 System.out.println(&quot;Caught &quot;+e);
+<i>144</i>&nbsp;                 }
+<i>145</i>&nbsp;        */
+<i>146</i>&nbsp;    }
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;    /**
+<i>149</i>&nbsp;     * Set the codebase and useCodebaseOnly properties. This is public
+<i>150</i>&nbsp;     * only for test code.
+<i>151</i>&nbsp;     */
+<i>152</i>&nbsp;    public static synchronized void setCodebaseProperties () {
+<b class="nc"><i>153</i>&nbsp;        String prop = (String)AccessController.doPrivileged(</b>
+<i>154</i>&nbsp;            new GetPropertyAction(LOCAL_CODEBASE_KEY)
+<i>155</i>&nbsp;        );
+<b class="nc"><i>156</i>&nbsp;        if (prop != null &amp;&amp; prop.trim().length() &gt; 0) {</b>
+<b class="nc"><i>157</i>&nbsp;            localCodebase = prop;</b>
+<i>158</i>&nbsp;        }
+<i>159</i>&nbsp;
+<b class="nc"><i>160</i>&nbsp;        prop = (String)AccessController.doPrivileged(</b>
+<i>161</i>&nbsp;            new GetPropertyAction(USE_CODEBASE_ONLY_KEY)
+<i>162</i>&nbsp;        );
+<b class="nc"><i>163</i>&nbsp;        if (prop != null &amp;&amp; prop.trim().length() &gt; 0) {</b>
+<b class="nc"><i>164</i>&nbsp;            useCodebaseOnly = Boolean.valueOf(prop).booleanValue();</b>
+<i>165</i>&nbsp;        }
+<i>166</i>&nbsp;    }
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;    /**
+<i>169</i>&nbsp;     * Set the default code base. This method is here only
+<i>170</i>&nbsp;     * for test code.
+<i>171</i>&nbsp;     */
+<i>172</i>&nbsp;    public static synchronized void setLocalCodebase(String codebase) {
+<b class="nc"><i>173</i>&nbsp;        localCodebase = codebase;</b>
+<i>174</i>&nbsp;    }
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    private static Class loadClassM (String className,
+<i>177</i>&nbsp;                            String remoteCodebase,
+<i>178</i>&nbsp;                            boolean useCodebaseOnly)
+<i>179</i>&nbsp;        throws ClassNotFoundException {
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;        try {
+<b class="nc"><i>182</i>&nbsp;            return JDKClassLoader.loadClass(null,className);</b>
+<b class="nc"><i>183</i>&nbsp;        } catch (ClassNotFoundException e) {}</b>
+<i>184</i>&nbsp;        try {
+<b class="nc"><i>185</i>&nbsp;            if (!useCodebaseOnly &amp;&amp; remoteCodebase != null) {</b>
+<b class="nc"><i>186</i>&nbsp;                return RMIClassLoader.loadClass(remoteCodebase,</b>
+<i>187</i>&nbsp;                                                className);
+<i>188</i>&nbsp;            } else {
+<b class="nc"><i>189</i>&nbsp;                return RMIClassLoader.loadClass(className);</b>
+<i>190</i>&nbsp;            }
+<b class="nc"><i>191</i>&nbsp;        } catch (MalformedURLException e) {</b>
+<b class="nc"><i>192</i>&nbsp;            className = className + &quot;: &quot; + e.toString();</b>
+<i>193</i>&nbsp;        }
+<i>194</i>&nbsp;
+<b class="nc"><i>195</i>&nbsp;        throw new ClassNotFoundException(className);</b>
+<i>196</i>&nbsp;    }
+<i>197</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

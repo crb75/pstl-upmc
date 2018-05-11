@@ -1,0 +1,409 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ErrorMsg</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ErrorMsg (com.sun.org.apache.xalan.internal.xsltc.compiler.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ErrorMsg</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 75)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: ErrorMsg.java,v 1.2.4.1 2005/09/15 10:18:01 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler.util;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.xalan.internal.utils.SecuritySupport;
+<i>27</i>&nbsp;import java.text.MessageFormat;
+<i>28</i>&nbsp;import java.util.Locale;
+<i>29</i>&nbsp;import java.util.ResourceBundle;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.Stylesheet;
+<i>32</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.SyntaxTreeNode;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;/**
+<i>35</i>&nbsp; * @author Jacek Ambroziak
+<i>36</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>37</i>&nbsp; * @author G. Todd Miller
+<i>38</i>&nbsp; * @author Erwin Bolwidt &lt;ejb@klomp.org&gt;
+<i>39</i>&nbsp; * @author Morten Jorgensen
+<i>40</i>&nbsp; */
+<i>41</i>&nbsp;public final class ErrorMsg {
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    private String _code;
+<i>44</i>&nbsp;    private int _line;
+<b class="nc"><i>45</i>&nbsp;    private String _message = null;</b>
+<b class="nc"><i>46</i>&nbsp;    private String _url = null;</b>
+<b class="nc"><i>47</i>&nbsp;    Object[] _params = null;</b>
+<i>48</i>&nbsp;    private boolean _isWarningError;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    Throwable _cause;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    // Compiler error messages
+<i>53</i>&nbsp;    public static final String MULTIPLE_STYLESHEET_ERR = &quot;MULTIPLE_STYLESHEET_ERR&quot;;
+<i>54</i>&nbsp;    public static final String TEMPLATE_REDEF_ERR = &quot;TEMPLATE_REDEF_ERR&quot;;
+<i>55</i>&nbsp;    public static final String TEMPLATE_UNDEF_ERR = &quot;TEMPLATE_UNDEF_ERR&quot;;
+<i>56</i>&nbsp;    public static final String VARIABLE_REDEF_ERR = &quot;VARIABLE_REDEF_ERR&quot;;
+<i>57</i>&nbsp;    public static final String VARIABLE_UNDEF_ERR = &quot;VARIABLE_UNDEF_ERR&quot;;
+<i>58</i>&nbsp;    public static final String CLASS_NOT_FOUND_ERR = &quot;CLASS_NOT_FOUND_ERR&quot;;
+<i>59</i>&nbsp;    public static final String METHOD_NOT_FOUND_ERR = &quot;METHOD_NOT_FOUND_ERR&quot;;
+<i>60</i>&nbsp;    public static final String ARGUMENT_CONVERSION_ERR = &quot;ARGUMENT_CONVERSION_ERR&quot;;
+<i>61</i>&nbsp;    public static final String FILE_NOT_FOUND_ERR = &quot;FILE_NOT_FOUND_ERR&quot;;
+<i>62</i>&nbsp;    public static final String INVALID_URI_ERR = &quot;INVALID_URI_ERR&quot;;
+<i>63</i>&nbsp;    public static final String FILE_ACCESS_ERR = &quot;FILE_ACCESS_ERR&quot;;
+<i>64</i>&nbsp;    public static final String MISSING_ROOT_ERR = &quot;MISSING_ROOT_ERR&quot;;
+<i>65</i>&nbsp;    public static final String NAMESPACE_UNDEF_ERR = &quot;NAMESPACE_UNDEF_ERR&quot;;
+<i>66</i>&nbsp;    public static final String FUNCTION_RESOLVE_ERR = &quot;FUNCTION_RESOLVE_ERR&quot;;
+<i>67</i>&nbsp;    public static final String NEED_LITERAL_ERR = &quot;NEED_LITERAL_ERR&quot;;
+<i>68</i>&nbsp;    public static final String XPATH_PARSER_ERR = &quot;XPATH_PARSER_ERR&quot;;
+<i>69</i>&nbsp;    public static final String REQUIRED_ATTR_ERR = &quot;REQUIRED_ATTR_ERR&quot;;
+<i>70</i>&nbsp;    public static final String ILLEGAL_CHAR_ERR = &quot;ILLEGAL_CHAR_ERR&quot;;
+<i>71</i>&nbsp;    public static final String ILLEGAL_PI_ERR = &quot;ILLEGAL_PI_ERR&quot;;
+<i>72</i>&nbsp;    public static final String STRAY_ATTRIBUTE_ERR = &quot;STRAY_ATTRIBUTE_ERR&quot;;
+<i>73</i>&nbsp;    public static final String ILLEGAL_ATTRIBUTE_ERR = &quot;ILLEGAL_ATTRIBUTE_ERR&quot;;
+<i>74</i>&nbsp;    public static final String CIRCULAR_INCLUDE_ERR = &quot;CIRCULAR_INCLUDE_ERR&quot;;
+<i>75</i>&nbsp;    public static final String RESULT_TREE_SORT_ERR = &quot;RESULT_TREE_SORT_ERR&quot;;
+<i>76</i>&nbsp;    public static final String SYMBOLS_REDEF_ERR = &quot;SYMBOLS_REDEF_ERR&quot;;
+<i>77</i>&nbsp;    public static final String XSL_VERSION_ERR = &quot;XSL_VERSION_ERR&quot;;
+<i>78</i>&nbsp;    public static final String CIRCULAR_VARIABLE_ERR = &quot;CIRCULAR_VARIABLE_ERR&quot;;
+<i>79</i>&nbsp;    public static final String ILLEGAL_BINARY_OP_ERR = &quot;ILLEGAL_BINARY_OP_ERR&quot;;
+<i>80</i>&nbsp;    public static final String ILLEGAL_ARG_ERR = &quot;ILLEGAL_ARG_ERR&quot;;
+<i>81</i>&nbsp;    public static final String DOCUMENT_ARG_ERR = &quot;DOCUMENT_ARG_ERR&quot;;
+<i>82</i>&nbsp;    public static final String MISSING_WHEN_ERR = &quot;MISSING_WHEN_ERR&quot;;
+<i>83</i>&nbsp;    public static final String MULTIPLE_OTHERWISE_ERR = &quot;MULTIPLE_OTHERWISE_ERR&quot;;
+<i>84</i>&nbsp;    public static final String STRAY_OTHERWISE_ERR = &quot;STRAY_OTHERWISE_ERR&quot;;
+<i>85</i>&nbsp;    public static final String STRAY_WHEN_ERR = &quot;STRAY_WHEN_ERR&quot;;
+<i>86</i>&nbsp;    public static final String WHEN_ELEMENT_ERR = &quot;WHEN_ELEMENT_ERR&quot;;
+<i>87</i>&nbsp;    public static final String UNNAMED_ATTRIBSET_ERR = &quot;UNNAMED_ATTRIBSET_ERR&quot;;
+<i>88</i>&nbsp;    public static final String ILLEGAL_CHILD_ERR = &quot;ILLEGAL_CHILD_ERR&quot;;
+<i>89</i>&nbsp;    public static final String ILLEGAL_ELEM_NAME_ERR = &quot;ILLEGAL_ELEM_NAME_ERR&quot;;
+<i>90</i>&nbsp;    public static final String ILLEGAL_ATTR_NAME_ERR = &quot;ILLEGAL_ATTR_NAME_ERR&quot;;
+<i>91</i>&nbsp;    public static final String ILLEGAL_TEXT_NODE_ERR = &quot;ILLEGAL_TEXT_NODE_ERR&quot;;
+<i>92</i>&nbsp;    public static final String SAX_PARSER_CONFIG_ERR = &quot;SAX_PARSER_CONFIG_ERR&quot;;
+<i>93</i>&nbsp;    public static final String INTERNAL_ERR = &quot;INTERNAL_ERR&quot;;
+<i>94</i>&nbsp;    public static final String UNSUPPORTED_XSL_ERR = &quot;UNSUPPORTED_XSL_ERR&quot;;
+<i>95</i>&nbsp;    public static final String UNSUPPORTED_EXT_ERR = &quot;UNSUPPORTED_EXT_ERR&quot;;
+<i>96</i>&nbsp;    public static final String MISSING_XSLT_URI_ERR = &quot;MISSING_XSLT_URI_ERR&quot;;
+<i>97</i>&nbsp;    public static final String MISSING_XSLT_TARGET_ERR = &quot;MISSING_XSLT_TARGET_ERR&quot;;
+<i>98</i>&nbsp;    public static final String ACCESSING_XSLT_TARGET_ERR = &quot;ACCESSING_XSLT_TARGET_ERR&quot;;
+<i>99</i>&nbsp;    public static final String NOT_IMPLEMENTED_ERR = &quot;NOT_IMPLEMENTED_ERR&quot;;
+<i>100</i>&nbsp;    public static final String NOT_STYLESHEET_ERR = &quot;NOT_STYLESHEET_ERR&quot;;
+<i>101</i>&nbsp;    public static final String ELEMENT_PARSE_ERR = &quot;ELEMENT_PARSE_ERR&quot;;
+<i>102</i>&nbsp;    public static final String KEY_USE_ATTR_ERR = &quot;KEY_USE_ATTR_ERR&quot;;
+<i>103</i>&nbsp;    public static final String OUTPUT_VERSION_ERR = &quot;OUTPUT_VERSION_ERR&quot;;
+<i>104</i>&nbsp;    public static final String ILLEGAL_RELAT_OP_ERR = &quot;ILLEGAL_RELAT_OP_ERR&quot;;
+<i>105</i>&nbsp;    public static final String ATTRIBSET_UNDEF_ERR = &quot;ATTRIBSET_UNDEF_ERR&quot;;
+<i>106</i>&nbsp;    public static final String ATTR_VAL_TEMPLATE_ERR = &quot;ATTR_VAL_TEMPLATE_ERR&quot;;
+<i>107</i>&nbsp;    public static final String UNKNOWN_SIG_TYPE_ERR = &quot;UNKNOWN_SIG_TYPE_ERR&quot;;
+<i>108</i>&nbsp;    public static final String DATA_CONVERSION_ERR = &quot;DATA_CONVERSION_ERR&quot;;
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;    // JAXP/TrAX error messages
+<i>111</i>&nbsp;    public static final String NO_TRANSLET_CLASS_ERR = &quot;NO_TRANSLET_CLASS_ERR&quot;;
+<i>112</i>&nbsp;    public static final String NO_MAIN_TRANSLET_ERR = &quot;NO_MAIN_TRANSLET_ERR&quot;;
+<i>113</i>&nbsp;    public static final String TRANSLET_CLASS_ERR = &quot;TRANSLET_CLASS_ERR&quot;;
+<i>114</i>&nbsp;    public static final String TRANSLET_OBJECT_ERR = &quot;TRANSLET_OBJECT_ERR&quot;;
+<i>115</i>&nbsp;    public static final String ERROR_LISTENER_NULL_ERR = &quot;ERROR_LISTENER_NULL_ERR&quot;;
+<i>116</i>&nbsp;    public static final String JAXP_UNKNOWN_SOURCE_ERR = &quot;JAXP_UNKNOWN_SOURCE_ERR&quot;;
+<i>117</i>&nbsp;    public static final String JAXP_NO_SOURCE_ERR = &quot;JAXP_NO_SOURCE_ERR&quot;;
+<i>118</i>&nbsp;    public static final String JAXP_COMPILE_ERR = &quot;JAXP_COMPILE_ERR&quot;;
+<i>119</i>&nbsp;    public static final String JAXP_INVALID_ATTR_ERR = &quot;JAXP_INVALID_ATTR_ERR&quot;;
+<i>120</i>&nbsp;    public static final String JAXP_INVALID_ATTR_VALUE_ERR = &quot;JAXP_INVALID_ATTR_VALUE_ERR&quot;;
+<i>121</i>&nbsp;    public static final String JAXP_SET_RESULT_ERR = &quot;JAXP_SET_RESULT_ERR&quot;;
+<i>122</i>&nbsp;    public static final String JAXP_NO_TRANSLET_ERR = &quot;JAXP_NO_TRANSLET_ERR&quot;;
+<i>123</i>&nbsp;    public static final String JAXP_NO_HANDLER_ERR = &quot;JAXP_NO_HANDLER_ERR&quot;;
+<i>124</i>&nbsp;    public static final String JAXP_NO_RESULT_ERR = &quot;JAXP_NO_RESULT_ERR&quot;;
+<i>125</i>&nbsp;    public static final String JAXP_UNKNOWN_PROP_ERR = &quot;JAXP_UNKNOWN_PROP_ERR&quot;;
+<i>126</i>&nbsp;    public static final String SAX2DOM_ADAPTER_ERR = &quot;SAX2DOM_ADAPTER_ERR&quot;;
+<i>127</i>&nbsp;    public static final String XSLTC_SOURCE_ERR = &quot;XSLTC_SOURCE_ERR&quot;;
+<i>128</i>&nbsp;    public static final String ER_RESULT_NULL = &quot;ER_RESULT_NULL&quot;;
+<i>129</i>&nbsp;    public static final String JAXP_INVALID_SET_PARAM_VALUE = &quot;JAXP_INVALID_SET_PARAM_VALUE&quot;;
+<i>130</i>&nbsp;    public static final String JAXP_SET_FEATURE_NULL_NAME = &quot;JAXP_SET_FEATURE_NULL_NAME&quot;;
+<i>131</i>&nbsp;    public static final String JAXP_GET_FEATURE_NULL_NAME = &quot;JAXP_GET_FEATURE_NULL_NAME&quot;;
+<i>132</i>&nbsp;    public static final String JAXP_UNSUPPORTED_FEATURE = &quot;JAXP_UNSUPPORTED_FEATURE&quot;;
+<i>133</i>&nbsp;    public static final String JAXP_SECUREPROCESSING_FEATURE = &quot;JAXP_SECUREPROCESSING_FEATURE&quot;;
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;    // Command-line error messages
+<i>136</i>&nbsp;    public static final String COMPILE_STDIN_ERR = &quot;COMPILE_STDIN_ERR&quot;;
+<i>137</i>&nbsp;    public static final String COMPILE_USAGE_STR = &quot;COMPILE_USAGE_STR&quot;;
+<i>138</i>&nbsp;    public static final String TRANSFORM_USAGE_STR = &quot;TRANSFORM_USAGE_STR&quot;;
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;    // Recently added error messages
+<i>141</i>&nbsp;    public static final String STRAY_SORT_ERR = &quot;STRAY_SORT_ERR&quot;;
+<i>142</i>&nbsp;    public static final String UNSUPPORTED_ENCODING = &quot;UNSUPPORTED_ENCODING&quot;;
+<i>143</i>&nbsp;    public static final String SYNTAX_ERR = &quot;SYNTAX_ERR&quot;;
+<i>144</i>&nbsp;    public static final String CONSTRUCTOR_NOT_FOUND = &quot;CONSTRUCTOR_NOT_FOUND&quot;;
+<i>145</i>&nbsp;    public static final String NO_JAVA_FUNCT_THIS_REF = &quot;NO_JAVA_FUNCT_THIS_REF&quot;;
+<i>146</i>&nbsp;    public static final String TYPE_CHECK_ERR = &quot;TYPE_CHECK_ERR&quot;;
+<i>147</i>&nbsp;    public static final String TYPE_CHECK_UNK_LOC_ERR = &quot;TYPE_CHECK_UNK_LOC_ERR&quot;;
+<i>148</i>&nbsp;    public static final String ILLEGAL_CMDLINE_OPTION_ERR = &quot;ILLEGAL_CMDLINE_OPTION_ERR&quot;;
+<i>149</i>&nbsp;    public static final String CMDLINE_OPT_MISSING_ARG_ERR = &quot;CMDLINE_OPT_MISSING_ARG_ERR&quot;;
+<i>150</i>&nbsp;    public static final String WARNING_PLUS_WRAPPED_MSG = &quot;WARNING_PLUS_WRAPPED_MSG&quot;;
+<i>151</i>&nbsp;    public static final String WARNING_MSG = &quot;WARNING_MSG&quot;;
+<i>152</i>&nbsp;    public static final String FATAL_ERR_PLUS_WRAPPED_MSG = &quot;FATAL_ERR_PLUS_WRAPPED_MSG&quot;;
+<i>153</i>&nbsp;    public static final String FATAL_ERR_MSG = &quot;FATAL_ERR_MSG&quot;;
+<i>154</i>&nbsp;    public static final String ERROR_PLUS_WRAPPED_MSG = &quot;ERROR_PLUS_WRAPPED_MSG&quot;;
+<i>155</i>&nbsp;    public static final String ERROR_MSG = &quot;ERROR_MSG&quot;;
+<i>156</i>&nbsp;    public static final String TRANSFORM_WITH_TRANSLET_STR = &quot;TRANSFORM_WITH_TRANSLET_STR&quot;;
+<i>157</i>&nbsp;    public static final String TRANSFORM_WITH_JAR_STR = &quot;TRANSFORM_WITH_JAR_STR&quot;;
+<i>158</i>&nbsp;    public static final String COULD_NOT_CREATE_TRANS_FACT = &quot;COULD_NOT_CREATE_TRANS_FACT&quot;;
+<i>159</i>&nbsp;    public static final String TRANSLET_NAME_JAVA_CONFLICT =
+<i>160</i>&nbsp;                                                 &quot;TRANSLET_NAME_JAVA_CONFLICT&quot;;
+<i>161</i>&nbsp;    public static final String INVALID_QNAME_ERR = &quot;INVALID_QNAME_ERR&quot;;
+<i>162</i>&nbsp;    public static final String INVALID_NCNAME_ERR = &quot;INVALID_NCNAME_ERR&quot;;
+<i>163</i>&nbsp;    public static final String INVALID_METHOD_IN_OUTPUT = &quot;INVALID_METHOD_IN_OUTPUT&quot;;
+<i>164</i>&nbsp;
+<i>165</i>&nbsp;    public static final String OUTLINE_ERR_TRY_CATCH = &quot;OUTLINE_ERR_TRY_CATCH&quot;;
+<i>166</i>&nbsp;    public static final String OUTLINE_ERR_UNBALANCED_MARKERS =
+<i>167</i>&nbsp;                                            &quot;OUTLINE_ERR_UNBALANCED_MARKERS&quot;;
+<i>168</i>&nbsp;    public static final String OUTLINE_ERR_DELETED_TARGET =
+<i>169</i>&nbsp;                                            &quot;OUTLINE_ERR_DELETED_TARGET&quot;;
+<i>170</i>&nbsp;    public static final String OUTLINE_ERR_METHOD_TOO_BIG =
+<i>171</i>&nbsp;                                            &quot;OUTLINE_ERR_METHOD_TOO_BIG&quot;;
+<i>172</i>&nbsp;
+<i>173</i>&nbsp;    public static final String DESERIALIZE_TRANSLET_ERR = &quot;DESERIALIZE_TEMPLATES_ERR&quot;;
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;    // All error messages are localized and are stored in resource bundles.
+<i>176</i>&nbsp;    // This array and the following 4 strings are read from that bundle.
+<i>177</i>&nbsp;    private static ResourceBundle _bundle;
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;    public final static String ERROR_MESSAGES_KEY   = &quot;ERROR_MESSAGES_KEY&quot;;
+<i>180</i>&nbsp;    public final static String COMPILER_ERROR_KEY   = &quot;COMPILER_ERROR_KEY&quot;;
+<i>181</i>&nbsp;    public final static String COMPILER_WARNING_KEY = &quot;COMPILER_WARNING_KEY&quot;;
+<i>182</i>&nbsp;    public final static String RUNTIME_ERROR_KEY    = &quot;RUNTIME_ERROR_KEY&quot;;
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;    static {
+<b class="nc"><i>185</i>&nbsp;        _bundle = SecuritySupport.getResourceBundle(</b>
+<i>186</i>&nbsp;                          &quot;com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMessages&quot;,
+<b class="nc"><i>187</i>&nbsp;                          Locale.getDefault());</b>
+<i>188</i>&nbsp;    }
+<i>189</i>&nbsp;
+<b class="nc"><i>190</i>&nbsp;    public ErrorMsg(String code) {</b>
+<b class="nc"><i>191</i>&nbsp;        _code = code;</b>
+<b class="nc"><i>192</i>&nbsp;        _line = 0;</b>
+<i>193</i>&nbsp;    }
+<i>194</i>&nbsp;
+<b class="nc"><i>195</i>&nbsp;    public ErrorMsg(String code, Throwable e) {</b>
+<b class="nc"><i>196</i>&nbsp;        _code = code;</b>
+<b class="nc"><i>197</i>&nbsp;        _message = e.getMessage();</b>
+<b class="nc"><i>198</i>&nbsp;        _line = 0;</b>
+<b class="nc"><i>199</i>&nbsp;        _cause = e;</b>
+<i>200</i>&nbsp;    }
+<i>201</i>&nbsp;
+<b class="nc"><i>202</i>&nbsp;    public ErrorMsg(String message, int line) {</b>
+<b class="nc"><i>203</i>&nbsp;        _code = null;</b>
+<b class="nc"><i>204</i>&nbsp;        _message = message;</b>
+<b class="nc"><i>205</i>&nbsp;        _line = line;</b>
+<i>206</i>&nbsp;    }
+<i>207</i>&nbsp;
+<b class="nc"><i>208</i>&nbsp;    public ErrorMsg(String code, int line, Object param) {</b>
+<b class="nc"><i>209</i>&nbsp;        _code = code;</b>
+<b class="nc"><i>210</i>&nbsp;        _line = line;</b>
+<b class="nc"><i>211</i>&nbsp;        _params = new Object[] { param };</b>
+<i>212</i>&nbsp;    }
+<i>213</i>&nbsp;
+<i>214</i>&nbsp;    public ErrorMsg(String code, Object param) {
+<b class="nc"><i>215</i>&nbsp;        this(code);</b>
+<b class="nc"><i>216</i>&nbsp;        _params = new Object[1];</b>
+<b class="nc"><i>217</i>&nbsp;        _params[0] = param;</b>
+<i>218</i>&nbsp;    }
+<i>219</i>&nbsp;
+<i>220</i>&nbsp;    public ErrorMsg(String code, Object param1, Object param2) {
+<b class="nc"><i>221</i>&nbsp;        this(code);</b>
+<b class="nc"><i>222</i>&nbsp;        _params = new Object[2];</b>
+<b class="nc"><i>223</i>&nbsp;        _params[0] = param1;</b>
+<b class="nc"><i>224</i>&nbsp;        _params[1] = param2;</b>
+<i>225</i>&nbsp;    }
+<i>226</i>&nbsp;
+<b class="nc"><i>227</i>&nbsp;    public ErrorMsg(String code, SyntaxTreeNode node) {</b>
+<b class="nc"><i>228</i>&nbsp;        _code = code;</b>
+<b class="nc"><i>229</i>&nbsp;        _url  = getFileName(node);</b>
+<b class="nc"><i>230</i>&nbsp;        _line = node.getLineNumber();</b>
+<i>231</i>&nbsp;    }
+<i>232</i>&nbsp;
+<b class="nc"><i>233</i>&nbsp;    public ErrorMsg(String code, Object param1, SyntaxTreeNode node) {</b>
+<b class="nc"><i>234</i>&nbsp;        _code = code;</b>
+<b class="nc"><i>235</i>&nbsp;        _url  = getFileName(node);</b>
+<b class="nc"><i>236</i>&nbsp;        _line = node.getLineNumber();</b>
+<b class="nc"><i>237</i>&nbsp;        _params = new Object[1];</b>
+<b class="nc"><i>238</i>&nbsp;        _params[0] = param1;</b>
+<i>239</i>&nbsp;    }
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;    public ErrorMsg(String code, Object param1, Object param2,
+<b class="nc"><i>242</i>&nbsp;                    SyntaxTreeNode node) {</b>
+<b class="nc"><i>243</i>&nbsp;        _code = code;</b>
+<b class="nc"><i>244</i>&nbsp;        _url  = getFileName(node);</b>
+<b class="nc"><i>245</i>&nbsp;        _line = node.getLineNumber();</b>
+<b class="nc"><i>246</i>&nbsp;        _params = new Object[2];</b>
+<b class="nc"><i>247</i>&nbsp;        _params[0] = param1;</b>
+<b class="nc"><i>248</i>&nbsp;        _params[1] = param2;</b>
+<i>249</i>&nbsp;    }
+<i>250</i>&nbsp;
+<i>251</i>&nbsp;    public Throwable getCause() {
+<b class="nc"><i>252</i>&nbsp;        return _cause;</b>
+<i>253</i>&nbsp;    }
+<i>254</i>&nbsp;
+<i>255</i>&nbsp;    private String getFileName(SyntaxTreeNode node) {
+<b class="nc"><i>256</i>&nbsp;        Stylesheet stylesheet = node.getStylesheet();</b>
+<b class="nc"><i>257</i>&nbsp;        if (stylesheet != null)</b>
+<b class="nc"><i>258</i>&nbsp;            return stylesheet.getSystemId();</b>
+<i>259</i>&nbsp;        else
+<b class="nc"><i>260</i>&nbsp;            return null;</b>
+<i>261</i>&nbsp;    }
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;    private String formatLine() {
+<b class="nc"><i>264</i>&nbsp;        StringBuffer result = new StringBuffer();</b>
+<b class="nc"><i>265</i>&nbsp;        if (_url != null) {</b>
+<b class="nc"><i>266</i>&nbsp;            result.append(_url);</b>
+<b class="nc"><i>267</i>&nbsp;            result.append(&quot;: &quot;);</b>
+<i>268</i>&nbsp;        }
+<b class="nc"><i>269</i>&nbsp;        if (_line &gt; 0) {</b>
+<b class="nc"><i>270</i>&nbsp;            result.append(&quot;line &quot;);</b>
+<b class="nc"><i>271</i>&nbsp;            result.append(Integer.toString(_line));</b>
+<b class="nc"><i>272</i>&nbsp;            result.append(&quot;: &quot;);</b>
+<i>273</i>&nbsp;        }
+<b class="nc"><i>274</i>&nbsp;        return result.toString();</b>
+<i>275</i>&nbsp;    }
+<i>276</i>&nbsp;
+<i>277</i>&nbsp;    /**
+<i>278</i>&nbsp;     * This version of toString() uses the _params instance variable
+<i>279</i>&nbsp;     * to format the message. If the &lt;code&gt;_code&lt;/code&gt; is negative
+<i>280</i>&nbsp;     * the use _message as the error string.
+<i>281</i>&nbsp;     */
+<i>282</i>&nbsp;    public String toString() {
+<b class="nc"><i>283</i>&nbsp;        String suffix = (_params == null) ?</b>
+<b class="nc"><i>284</i>&nbsp;            (null != _code ? getErrorMessage() : _message)</b>
+<b class="nc"><i>285</i>&nbsp;            : MessageFormat.format(getErrorMessage(), _params);</b>
+<b class="nc"><i>286</i>&nbsp;        return formatLine() + suffix;</b>
+<i>287</i>&nbsp;    }
+<i>288</i>&nbsp;
+<i>289</i>&nbsp;    public String toString(Object obj) {
+<b class="nc"><i>290</i>&nbsp;        Object params[] = new Object[1];</b>
+<b class="nc"><i>291</i>&nbsp;        params[0] = obj.toString();</b>
+<b class="nc"><i>292</i>&nbsp;        String suffix = MessageFormat.format(getErrorMessage(), params);</b>
+<b class="nc"><i>293</i>&nbsp;        return formatLine() + suffix;</b>
+<i>294</i>&nbsp;    }
+<i>295</i>&nbsp;
+<i>296</i>&nbsp;    public String toString(Object obj0, Object obj1) {
+<b class="nc"><i>297</i>&nbsp;        Object params[] = new Object[2];</b>
+<b class="nc"><i>298</i>&nbsp;        params[0] = obj0.toString();</b>
+<b class="nc"><i>299</i>&nbsp;        params[1] = obj1.toString();</b>
+<b class="nc"><i>300</i>&nbsp;        String suffix = MessageFormat.format(getErrorMessage(), params);</b>
+<b class="nc"><i>301</i>&nbsp;        return formatLine() + suffix;</b>
+<i>302</i>&nbsp;    }
+<i>303</i>&nbsp;
+<i>304</i>&nbsp;    /**
+<i>305</i>&nbsp;     * Return an ErrorMessages string corresponding to the _code
+<i>306</i>&nbsp;     * This function is temporary until the three special-cased keys
+<i>307</i>&nbsp;     * below are moved into ErrorMessages
+<i>308</i>&nbsp;     *
+<i>309</i>&nbsp;     * @return ErrorMessages string
+<i>310</i>&nbsp;     */
+<i>311</i>&nbsp;    private String getErrorMessage() {
+<b class="nc"><i>312</i>&nbsp;      return _bundle.getString(_code);</b>
+<i>313</i>&nbsp;    }
+<i>314</i>&nbsp;
+<i>315</i>&nbsp;    // If the _isWarningError flag is true, the error is treated as
+<i>316</i>&nbsp;    // a warning by the compiler, but should be reported as an error
+<i>317</i>&nbsp;    // to the ErrorListener. This is a workaround for the TCK failure
+<i>318</i>&nbsp;    // ErrorListener.errorTests.error001.
+<i>319</i>&nbsp;    public void setWarningError(boolean flag) {
+<b class="nc"><i>320</i>&nbsp;        _isWarningError = flag;</b>
+<i>321</i>&nbsp;}
+<i>322</i>&nbsp;
+<i>323</i>&nbsp;    public boolean isWarningError() {
+<b class="nc"><i>324</i>&nbsp;        return _isWarningError;</b>
+<i>325</i>&nbsp;    }
+<i>326</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

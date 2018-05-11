@@ -1,0 +1,380 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XIncludeAwareParserConfiguration</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.parsers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XIncludeAwareParserConfiguration (com.sun.org.apache.xerces.internal.parsers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XIncludeAwareParserConfiguration</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 92)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.parsers;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.Constants;
+<i>24</i>&nbsp;import com.sun.org.apache.xerces.internal.util.FeatureState;
+<i>25</i>&nbsp;import com.sun.org.apache.xerces.internal.util.NamespaceSupport;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.util.SymbolTable;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.xinclude.XIncludeHandler;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.xinclude.XIncludeNamespaceSupport;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.NamespaceContext;
+<i>30</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLDocumentHandler;
+<i>31</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarPool;
+<i>32</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLComponentManager;
+<i>33</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException;
+<i>34</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentSource;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; * This class is the configuration used to parse XML 1.0 and XML 1.1 documents
+<i>38</i>&nbsp; * and provides support for XInclude. This is the default Xerces configuration.
+<i>39</i>&nbsp; *
+<i>40</i>&nbsp; * @author Michael Glavassevich, IBM
+<i>41</i>&nbsp; *
+<i>42</i>&nbsp; * @version $Id: XIncludeAwareParserConfiguration.java,v 1.5 2010-11-01 04:40:10 joehw Exp $
+<i>43</i>&nbsp; */
+<i>44</i>&nbsp;public class XIncludeAwareParserConfiguration extends XML11Configuration {
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    /** Feature identifier: allow notation and unparsed entity events to be sent out of order. */
+<i>47</i>&nbsp;    protected static final String ALLOW_UE_AND_NOTATION_EVENTS =
+<i>48</i>&nbsp;        Constants.SAX_FEATURE_PREFIX + Constants.ALLOW_DTD_EVENTS_AFTER_ENDDTD_FEATURE;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    /** Feature identifier: fixup base URIs. */
+<i>51</i>&nbsp;    protected static final String XINCLUDE_FIXUP_BASE_URIS =
+<i>52</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FIXUP_BASE_URIS_FEATURE;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /** Feature identifier: fixup language. */
+<i>55</i>&nbsp;    protected static final String XINCLUDE_FIXUP_LANGUAGE =
+<i>56</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FIXUP_LANGUAGE_FEATURE;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    /** Feature identifier: XInclude processing */
+<i>59</i>&nbsp;    protected static final String XINCLUDE_FEATURE =
+<i>60</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FEATURE;
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    /** Property identifier: error reporter. */
+<i>63</i>&nbsp;    protected static final String XINCLUDE_HANDLER =
+<i>64</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.XINCLUDE_HANDLER_PROPERTY;
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    /** Property identifier: error reporter. */
+<i>67</i>&nbsp;    protected static final String NAMESPACE_CONTEXT =
+<i>68</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.NAMESPACE_CONTEXT_PROPERTY;
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    //
+<i>71</i>&nbsp;    // Components
+<i>72</i>&nbsp;    //
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    /** XInclude handler. */
+<i>75</i>&nbsp;    protected XIncludeHandler fXIncludeHandler;
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    /** Non-XInclude NamespaceContext. */
+<i>78</i>&nbsp;    protected NamespaceSupport fNonXIncludeNSContext;
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    /** XInclude NamespaceContext. */
+<i>81</i>&nbsp;    protected XIncludeNamespaceSupport fXIncludeNSContext;
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    /** Current NamespaceContext. */
+<i>84</i>&nbsp;    protected NamespaceContext fCurrentNSContext;
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    /** Flag indicating whether XInclude processsing is enabled. */
+<b class="nc"><i>87</i>&nbsp;    protected boolean fXIncludeEnabled = false;</b>
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    /** Default constructor. */
+<i>90</i>&nbsp;    public XIncludeAwareParserConfiguration() {
+<b class="nc"><i>91</i>&nbsp;        this(null, null, null);</b>
+<i>92</i>&nbsp;    } // &lt;init&gt;()
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    /**
+<i>95</i>&nbsp;     * Constructs a parser configuration using the specified symbol table.
+<i>96</i>&nbsp;     *
+<i>97</i>&nbsp;     * @param symbolTable The symbol table to use.
+<i>98</i>&nbsp;     */
+<i>99</i>&nbsp;    public XIncludeAwareParserConfiguration(SymbolTable symbolTable) {
+<b class="nc"><i>100</i>&nbsp;        this(symbolTable, null, null);</b>
+<i>101</i>&nbsp;    } // &lt;init&gt;(SymbolTable)
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    /**
+<i>104</i>&nbsp;     * Constructs a parser configuration using the specified symbol table and
+<i>105</i>&nbsp;     * grammar pool.
+<i>106</i>&nbsp;     * &lt;p&gt;
+<i>107</i>&nbsp;     *
+<i>108</i>&nbsp;     * @param symbolTable The symbol table to use.
+<i>109</i>&nbsp;     * @param grammarPool The grammar pool to use.
+<i>110</i>&nbsp;     */
+<i>111</i>&nbsp;    public XIncludeAwareParserConfiguration(
+<i>112</i>&nbsp;            SymbolTable symbolTable,
+<i>113</i>&nbsp;            XMLGrammarPool grammarPool) {
+<b class="nc"><i>114</i>&nbsp;        this(symbolTable, grammarPool, null);</b>
+<i>115</i>&nbsp;    } // &lt;init&gt;(SymbolTable,XMLGrammarPool)
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    /**
+<i>118</i>&nbsp;     * Constructs a parser configuration using the specified symbol table,
+<i>119</i>&nbsp;     * grammar pool, and parent settings.
+<i>120</i>&nbsp;     * &lt;p&gt;
+<i>121</i>&nbsp;     *
+<i>122</i>&nbsp;     * @param symbolTable    The symbol table to use.
+<i>123</i>&nbsp;     * @param grammarPool    The grammar pool to use.
+<i>124</i>&nbsp;     * @param parentSettings The parent settings.
+<i>125</i>&nbsp;     */
+<i>126</i>&nbsp;    public XIncludeAwareParserConfiguration(
+<i>127</i>&nbsp;            SymbolTable symbolTable,
+<i>128</i>&nbsp;            XMLGrammarPool grammarPool,
+<i>129</i>&nbsp;            XMLComponentManager parentSettings) {
+<b class="nc"><i>130</i>&nbsp;        super(symbolTable, grammarPool, parentSettings);</b>
+<i>131</i>&nbsp;
+<b class="nc"><i>132</i>&nbsp;        final String[] recognizedFeatures = {</b>
+<i>133</i>&nbsp;                ALLOW_UE_AND_NOTATION_EVENTS,
+<i>134</i>&nbsp;                XINCLUDE_FIXUP_BASE_URIS,
+<i>135</i>&nbsp;                XINCLUDE_FIXUP_LANGUAGE
+<i>136</i>&nbsp;        };
+<b class="nc"><i>137</i>&nbsp;        addRecognizedFeatures(recognizedFeatures);</b>
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;        // add default recognized properties
+<b class="nc"><i>140</i>&nbsp;        final String[] recognizedProperties =</b>
+<i>141</i>&nbsp;        { XINCLUDE_HANDLER, NAMESPACE_CONTEXT };
+<b class="nc"><i>142</i>&nbsp;        addRecognizedProperties(recognizedProperties);</b>
+<i>143</i>&nbsp;
+<b class="nc"><i>144</i>&nbsp;        setFeature(ALLOW_UE_AND_NOTATION_EVENTS, true);</b>
+<b class="nc"><i>145</i>&nbsp;        setFeature(XINCLUDE_FIXUP_BASE_URIS, true);</b>
+<b class="nc"><i>146</i>&nbsp;        setFeature(XINCLUDE_FIXUP_LANGUAGE, true);</b>
+<i>147</i>&nbsp;
+<b class="nc"><i>148</i>&nbsp;        fNonXIncludeNSContext = new NamespaceSupport();</b>
+<b class="nc"><i>149</i>&nbsp;        fCurrentNSContext = fNonXIncludeNSContext;</b>
+<b class="nc"><i>150</i>&nbsp;        setProperty(NAMESPACE_CONTEXT, fNonXIncludeNSContext);</b>
+<i>151</i>&nbsp;    }
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;    /** Configures the pipeline. */
+<i>155</i>&nbsp;    protected void configurePipeline() {
+<b class="nc"><i>156</i>&nbsp;        super.configurePipeline();</b>
+<b class="nc"><i>157</i>&nbsp;        if (fXIncludeEnabled) {</b>
+<i>158</i>&nbsp;            // If the XInclude handler was not in the pipeline insert it.
+<b class="nc"><i>159</i>&nbsp;            if (fXIncludeHandler == null) {</b>
+<b class="nc"><i>160</i>&nbsp;                fXIncludeHandler = new XIncludeHandler();</b>
+<i>161</i>&nbsp;                // add XInclude component
+<b class="nc"><i>162</i>&nbsp;                setProperty(XINCLUDE_HANDLER, fXIncludeHandler);</b>
+<b class="nc"><i>163</i>&nbsp;                addCommonComponent(fXIncludeHandler);</b>
+<b class="nc"><i>164</i>&nbsp;                fXIncludeHandler.reset(this);</b>
+<i>165</i>&nbsp;            }
+<i>166</i>&nbsp;            // Setup NamespaceContext
+<b class="nc"><i>167</i>&nbsp;            if (fCurrentNSContext != fXIncludeNSContext) {</b>
+<b class="nc"><i>168</i>&nbsp;                if (fXIncludeNSContext == null) {</b>
+<b class="nc"><i>169</i>&nbsp;                    fXIncludeNSContext = new XIncludeNamespaceSupport();</b>
+<i>170</i>&nbsp;                }
+<b class="nc"><i>171</i>&nbsp;                fCurrentNSContext = fXIncludeNSContext;</b>
+<b class="nc"><i>172</i>&nbsp;                setProperty(NAMESPACE_CONTEXT, fXIncludeNSContext);</b>
+<i>173</i>&nbsp;            }
+<i>174</i>&nbsp;            //configure DTD pipeline
+<b class="nc"><i>175</i>&nbsp;            fDTDScanner.setDTDHandler(fDTDProcessor);</b>
+<b class="nc"><i>176</i>&nbsp;            fDTDProcessor.setDTDSource(fDTDScanner);</b>
+<b class="nc"><i>177</i>&nbsp;            fDTDProcessor.setDTDHandler(fXIncludeHandler);</b>
+<b class="nc"><i>178</i>&nbsp;            fXIncludeHandler.setDTDSource(fDTDProcessor);</b>
+<b class="nc"><i>179</i>&nbsp;            fXIncludeHandler.setDTDHandler(fDTDHandler);</b>
+<b class="nc"><i>180</i>&nbsp;            if (fDTDHandler != null) {</b>
+<b class="nc"><i>181</i>&nbsp;                fDTDHandler.setDTDSource(fXIncludeHandler);</b>
+<i>182</i>&nbsp;            }
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;            // configure XML document pipeline: insert after DTDValidator and
+<i>185</i>&nbsp;            // before XML Schema validator
+<b class="nc"><i>186</i>&nbsp;            XMLDocumentSource prev = null;</b>
+<b class="nc"><i>187</i>&nbsp;            if (fFeatures.get(XMLSCHEMA_VALIDATION) == Boolean.TRUE) {</b>
+<i>188</i>&nbsp;                // we don&#39;t have to worry about fSchemaValidator being null, since
+<i>189</i>&nbsp;                // super.configurePipeline() instantiated it if the feature was set
+<b class="nc"><i>190</i>&nbsp;                prev = fSchemaValidator.getDocumentSource();</b>
+<i>191</i>&nbsp;            }
+<i>192</i>&nbsp;            // Otherwise, insert after the last component in the pipeline
+<i>193</i>&nbsp;            else {
+<b class="nc"><i>194</i>&nbsp;                prev = fLastComponent;</b>
+<b class="nc"><i>195</i>&nbsp;                fLastComponent = fXIncludeHandler;</b>
+<i>196</i>&nbsp;            }
+<i>197</i>&nbsp;
+<b class="nc"><i>198</i>&nbsp;            XMLDocumentHandler next = prev.getDocumentHandler();</b>
+<b class="nc"><i>199</i>&nbsp;            prev.setDocumentHandler(fXIncludeHandler);</b>
+<b class="nc"><i>200</i>&nbsp;            fXIncludeHandler.setDocumentSource(prev);</b>
+<b class="nc"><i>201</i>&nbsp;            if (next != null) {</b>
+<b class="nc"><i>202</i>&nbsp;                fXIncludeHandler.setDocumentHandler(next);</b>
+<b class="nc"><i>203</i>&nbsp;                next.setDocumentSource(fXIncludeHandler);</b>
+<i>204</i>&nbsp;            }
+<b class="nc"><i>205</i>&nbsp;        }</b>
+<i>206</i>&nbsp;        else {
+<i>207</i>&nbsp;            // Setup NamespaceContext
+<b class="nc"><i>208</i>&nbsp;            if (fCurrentNSContext != fNonXIncludeNSContext) {</b>
+<b class="nc"><i>209</i>&nbsp;                fCurrentNSContext = fNonXIncludeNSContext;</b>
+<b class="nc"><i>210</i>&nbsp;                setProperty(NAMESPACE_CONTEXT, fNonXIncludeNSContext);</b>
+<i>211</i>&nbsp;            }
+<i>212</i>&nbsp;        }
+<i>213</i>&nbsp;    } // configurePipeline()
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;    protected void configureXML11Pipeline() {
+<b class="nc"><i>216</i>&nbsp;        super.configureXML11Pipeline();</b>
+<b class="nc"><i>217</i>&nbsp;        if (fXIncludeEnabled) {</b>
+<i>218</i>&nbsp;            // If the XInclude handler was not in the pipeline insert it.
+<b class="nc"><i>219</i>&nbsp;            if (fXIncludeHandler == null) {</b>
+<b class="nc"><i>220</i>&nbsp;                fXIncludeHandler = new XIncludeHandler();</b>
+<i>221</i>&nbsp;                // add XInclude component
+<b class="nc"><i>222</i>&nbsp;                setProperty(XINCLUDE_HANDLER, fXIncludeHandler);</b>
+<b class="nc"><i>223</i>&nbsp;                addCommonComponent(fXIncludeHandler);</b>
+<b class="nc"><i>224</i>&nbsp;                fXIncludeHandler.reset(this);</b>
+<i>225</i>&nbsp;            }
+<i>226</i>&nbsp;            // Setup NamespaceContext
+<b class="nc"><i>227</i>&nbsp;            if (fCurrentNSContext != fXIncludeNSContext) {</b>
+<b class="nc"><i>228</i>&nbsp;                if (fXIncludeNSContext == null) {</b>
+<b class="nc"><i>229</i>&nbsp;                    fXIncludeNSContext = new XIncludeNamespaceSupport();</b>
+<i>230</i>&nbsp;                }
+<b class="nc"><i>231</i>&nbsp;                fCurrentNSContext = fXIncludeNSContext;</b>
+<b class="nc"><i>232</i>&nbsp;                setProperty(NAMESPACE_CONTEXT, fXIncludeNSContext);</b>
+<i>233</i>&nbsp;            }
+<i>234</i>&nbsp;            // configure XML 1.1. DTD pipeline
+<b class="nc"><i>235</i>&nbsp;            fXML11DTDScanner.setDTDHandler(fXML11DTDProcessor);</b>
+<b class="nc"><i>236</i>&nbsp;            fXML11DTDProcessor.setDTDSource(fXML11DTDScanner);</b>
+<b class="nc"><i>237</i>&nbsp;            fXML11DTDProcessor.setDTDHandler(fXIncludeHandler);</b>
+<b class="nc"><i>238</i>&nbsp;            fXIncludeHandler.setDTDSource(fXML11DTDProcessor);</b>
+<b class="nc"><i>239</i>&nbsp;            fXIncludeHandler.setDTDHandler(fDTDHandler);</b>
+<b class="nc"><i>240</i>&nbsp;            if (fDTDHandler != null) {</b>
+<b class="nc"><i>241</i>&nbsp;                fDTDHandler.setDTDSource(fXIncludeHandler);</b>
+<i>242</i>&nbsp;            }
+<i>243</i>&nbsp;
+<i>244</i>&nbsp;            // configure XML document pipeline: insert after DTDValidator and
+<i>245</i>&nbsp;            // before XML Schema validator
+<b class="nc"><i>246</i>&nbsp;            XMLDocumentSource prev = null;</b>
+<b class="nc"><i>247</i>&nbsp;            if (fFeatures.get(XMLSCHEMA_VALIDATION) == Boolean.TRUE) {</b>
+<i>248</i>&nbsp;                // we don&#39;t have to worry about fSchemaValidator being null, since
+<i>249</i>&nbsp;                // super.configurePipeline() instantiated it if the feature was set
+<b class="nc"><i>250</i>&nbsp;                prev = fSchemaValidator.getDocumentSource();</b>
+<i>251</i>&nbsp;            }
+<i>252</i>&nbsp;            // Otherwise, insert after the last component in the pipeline
+<i>253</i>&nbsp;            else {
+<b class="nc"><i>254</i>&nbsp;                prev = fLastComponent;</b>
+<b class="nc"><i>255</i>&nbsp;                fLastComponent = fXIncludeHandler;</b>
+<i>256</i>&nbsp;            }
+<i>257</i>&nbsp;
+<b class="nc"><i>258</i>&nbsp;            XMLDocumentHandler next = prev.getDocumentHandler();</b>
+<b class="nc"><i>259</i>&nbsp;            prev.setDocumentHandler(fXIncludeHandler);</b>
+<b class="nc"><i>260</i>&nbsp;            fXIncludeHandler.setDocumentSource(prev);</b>
+<b class="nc"><i>261</i>&nbsp;            if (next != null) {</b>
+<b class="nc"><i>262</i>&nbsp;                fXIncludeHandler.setDocumentHandler(next);</b>
+<b class="nc"><i>263</i>&nbsp;                next.setDocumentSource(fXIncludeHandler);</b>
+<i>264</i>&nbsp;            }
+<b class="nc"><i>265</i>&nbsp;        }</b>
+<i>266</i>&nbsp;        else {
+<i>267</i>&nbsp;            // Setup NamespaceContext
+<b class="nc"><i>268</i>&nbsp;            if (fCurrentNSContext != fNonXIncludeNSContext) {</b>
+<b class="nc"><i>269</i>&nbsp;                fCurrentNSContext = fNonXIncludeNSContext;</b>
+<b class="nc"><i>270</i>&nbsp;                setProperty(NAMESPACE_CONTEXT, fNonXIncludeNSContext);</b>
+<i>271</i>&nbsp;            }
+<i>272</i>&nbsp;        }
+<i>273</i>&nbsp;    } // configureXML11Pipeline()
+<i>274</i>&nbsp;
+<i>275</i>&nbsp;    public FeatureState getFeatureState(String featureId)
+<i>276</i>&nbsp;        throws XMLConfigurationException {
+<b class="nc"><i>277</i>&nbsp;        if (featureId.equals(PARSER_SETTINGS)) {</b>
+<b class="nc"><i>278</i>&nbsp;            return FeatureState.is(fConfigUpdated);</b>
+<i>279</i>&nbsp;        }
+<b class="nc"><i>280</i>&nbsp;        else if (featureId.equals(XINCLUDE_FEATURE)) {</b>
+<b class="nc"><i>281</i>&nbsp;            return FeatureState.is(fXIncludeEnabled);</b>
+<i>282</i>&nbsp;        }
+<b class="nc"><i>283</i>&nbsp;        return super.getFeatureState0(featureId);</b>
+<i>284</i>&nbsp;
+<i>285</i>&nbsp;    } // getFeature(String):boolean
+<i>286</i>&nbsp;
+<i>287</i>&nbsp;    public void setFeature(String featureId, boolean state)
+<i>288</i>&nbsp;        throws XMLConfigurationException {
+<b class="nc"><i>289</i>&nbsp;        if (featureId.equals(XINCLUDE_FEATURE)) {</b>
+<b class="nc"><i>290</i>&nbsp;            fXIncludeEnabled = state;</b>
+<b class="nc"><i>291</i>&nbsp;            fConfigUpdated = true;</b>
+<i>292</i>&nbsp;            return;
+<i>293</i>&nbsp;        }
+<b class="nc"><i>294</i>&nbsp;        super.setFeature(featureId,state);</b>
+<i>295</i>&nbsp;    }
+<i>296</i>&nbsp;
+<i>297</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

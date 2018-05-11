@@ -1,0 +1,653 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: FileLoginModule</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.jmx.remote.security</a> ]
+</div>
+
+<h1>Coverage Summary for Class: FileLoginModule (com.sun.jmx.remote.security)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FileLoginModule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 168)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2004, 2008, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.jmx.remote.security;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import com.sun.jmx.mbeanserver.GetPropertyAction;
+<i>29</i>&nbsp;import com.sun.jmx.mbeanserver.Util;
+<i>30</i>&nbsp;import java.io.BufferedInputStream;
+<i>31</i>&nbsp;import java.io.File;
+<i>32</i>&nbsp;import java.io.FileInputStream;
+<i>33</i>&nbsp;import java.io.FilePermission;
+<i>34</i>&nbsp;import java.io.IOException;
+<i>35</i>&nbsp;import java.security.AccessControlException;
+<i>36</i>&nbsp;import java.security.AccessController;
+<i>37</i>&nbsp;import java.util.Arrays;
+<i>38</i>&nbsp;import java.util.Hashtable;
+<i>39</i>&nbsp;import java.util.Map;
+<i>40</i>&nbsp;import java.util.Properties;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import javax.security.auth.*;
+<i>43</i>&nbsp;import javax.security.auth.callback.*;
+<i>44</i>&nbsp;import javax.security.auth.login.*;
+<i>45</i>&nbsp;import javax.security.auth.spi.*;
+<i>46</i>&nbsp;import javax.management.remote.JMXPrincipal;
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;import com.sun.jmx.remote.util.ClassLogger;
+<i>49</i>&nbsp;import com.sun.jmx.remote.util.EnvHelp;
+<i>50</i>&nbsp;import sun.management.jmxremote.ConnectorBootstrap;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;/**
+<i>53</i>&nbsp; * This {@link LoginModule} performs file-based authentication.
+<i>54</i>&nbsp; *
+<i>55</i>&nbsp; * &lt;p&gt; A supplied username and password is verified against the
+<i>56</i>&nbsp; * corresponding user credentials stored in a designated password file.
+<i>57</i>&nbsp; * If successful then a new {@link JMXPrincipal} is created with the
+<i>58</i>&nbsp; * user&#39;s name and it is associated with the current {@link Subject}.
+<i>59</i>&nbsp; * Such principals may be identified and granted management privileges in
+<i>60</i>&nbsp; * the access control file for JMX remote management or in a Java security
+<i>61</i>&nbsp; * policy.
+<i>62</i>&nbsp; *
+<i>63</i>&nbsp; * &lt;p&gt; The password file comprises a list of key-value pairs as specified in
+<i>64</i>&nbsp; * {@link Properties}. The key represents a user&#39;s name and the value is its
+<i>65</i>&nbsp; * associated cleartext password. By default, the following password file is
+<i>66</i>&nbsp; * used:
+<i>67</i>&nbsp; * &lt;pre&gt;
+<i>68</i>&nbsp; *     ${java.home}/lib/management/jmxremote.password
+<i>69</i>&nbsp; * &lt;/pre&gt;
+<i>70</i>&nbsp; * A different password file can be specified via the &lt;code&gt;passwordFile&lt;/code&gt;
+<i>71</i>&nbsp; * configuration option.
+<i>72</i>&nbsp; *
+<i>73</i>&nbsp; * &lt;p&gt; This module recognizes the following &lt;code&gt;Configuration&lt;/code&gt; options:
+<i>74</i>&nbsp; * &lt;dl&gt;
+<i>75</i>&nbsp; * &lt;dt&gt; &lt;code&gt;passwordFile&lt;/code&gt; &lt;/dt&gt;
+<i>76</i>&nbsp; * &lt;dd&gt; the path to an alternative password file. It is used instead of
+<i>77</i>&nbsp; *      the default password file.&lt;/dd&gt;
+<i>78</i>&nbsp; *
+<i>79</i>&nbsp; * &lt;dt&gt; &lt;code&gt;useFirstPass&lt;/code&gt; &lt;/dt&gt;
+<i>80</i>&nbsp; * &lt;dd&gt; if &lt;code&gt;true&lt;/code&gt;, this module retrieves the username and password
+<i>81</i>&nbsp; *      from the module&#39;s shared state, using &quot;javax.security.auth.login.name&quot;
+<i>82</i>&nbsp; *      and &quot;javax.security.auth.login.password&quot; as the respective keys. The
+<i>83</i>&nbsp; *      retrieved values are used for authentication. If authentication fails,
+<i>84</i>&nbsp; *      no attempt for a retry is made, and the failure is reported back to
+<i>85</i>&nbsp; *      the calling application.&lt;/dd&gt;
+<i>86</i>&nbsp; *
+<i>87</i>&nbsp; * &lt;dt&gt; &lt;code&gt;tryFirstPass&lt;/code&gt; &lt;/dt&gt;
+<i>88</i>&nbsp; * &lt;dd&gt; if &lt;code&gt;true&lt;/code&gt;, this module retrieves the username and password
+<i>89</i>&nbsp; *      from the module&#39;s shared state, using &quot;javax.security.auth.login.name&quot;
+<i>90</i>&nbsp; *       and &quot;javax.security.auth.login.password&quot; as the respective keys.  The
+<i>91</i>&nbsp; *      retrieved values are used for authentication. If authentication fails,
+<i>92</i>&nbsp; *      the module uses the CallbackHandler to retrieve a new username and
+<i>93</i>&nbsp; *      password, and another attempt to authenticate is made. If the
+<i>94</i>&nbsp; *      authentication fails, the failure is reported back to the calling
+<i>95</i>&nbsp; *      application.&lt;/dd&gt;
+<i>96</i>&nbsp; *
+<i>97</i>&nbsp; * &lt;dt&gt; &lt;code&gt;storePass&lt;/code&gt; &lt;/dt&gt;
+<i>98</i>&nbsp; * &lt;dd&gt; if &lt;code&gt;true&lt;/code&gt;, this module stores the username and password
+<i>99</i>&nbsp; *      obtained from the CallbackHandler in the module&#39;s shared state, using
+<i>100</i>&nbsp; *      &quot;javax.security.auth.login.name&quot; and
+<i>101</i>&nbsp; *      &quot;javax.security.auth.login.password&quot; as the respective keys.  This is
+<i>102</i>&nbsp; *      not performed if existing values already exist for the username and
+<i>103</i>&nbsp; *      password in the shared state, or if authentication fails.&lt;/dd&gt;
+<i>104</i>&nbsp; *
+<i>105</i>&nbsp; * &lt;dt&gt; &lt;code&gt;clearPass&lt;/code&gt; &lt;/dt&gt;
+<i>106</i>&nbsp; * &lt;dd&gt; if &lt;code&gt;true&lt;/code&gt;, this module clears the username and password
+<i>107</i>&nbsp; *      stored in the module&#39;s shared state after both phases of authentication
+<i>108</i>&nbsp; *      (login and commit) have completed.&lt;/dd&gt;
+<i>109</i>&nbsp; * &lt;/dl&gt;
+<i>110</i>&nbsp; */
+<b class="nc"><i>111</i>&nbsp;public class FileLoginModule implements LoginModule {</b>
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    // Location of the default password file
+<b class="nc"><i>114</i>&nbsp;    private static final String DEFAULT_PASSWORD_FILE_NAME =</b>
+<b class="nc"><i>115</i>&nbsp;        AccessController.doPrivileged(new GetPropertyAction(&quot;java.home&quot;)) +</b>
+<i>116</i>&nbsp;        File.separatorChar + &quot;lib&quot; +
+<i>117</i>&nbsp;        File.separatorChar + &quot;management&quot; + File.separatorChar +
+<i>118</i>&nbsp;        ConnectorBootstrap.DefaultValues.PASSWORD_FILE_NAME;
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    // Key to retrieve the stored username
+<i>121</i>&nbsp;    private static final String USERNAME_KEY =
+<i>122</i>&nbsp;        &quot;javax.security.auth.login.name&quot;;
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;    // Key to retrieve the stored password
+<i>125</i>&nbsp;    private static final String PASSWORD_KEY =
+<i>126</i>&nbsp;        &quot;javax.security.auth.login.password&quot;;
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;    // Log messages
+<b class="nc"><i>129</i>&nbsp;    private static final ClassLogger logger =</b>
+<i>130</i>&nbsp;        new ClassLogger(&quot;javax.management.remote.misc&quot;, &quot;FileLoginModule&quot;);
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;    // Configurable options
+<b class="nc"><i>133</i>&nbsp;    private boolean useFirstPass = false;</b>
+<b class="nc"><i>134</i>&nbsp;    private boolean tryFirstPass = false;</b>
+<b class="nc"><i>135</i>&nbsp;    private boolean storePass = false;</b>
+<b class="nc"><i>136</i>&nbsp;    private boolean clearPass = false;</b>
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;    // Authentication status
+<b class="nc"><i>139</i>&nbsp;    private boolean succeeded = false;</b>
+<b class="nc"><i>140</i>&nbsp;    private boolean commitSucceeded = false;</b>
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;    // Supplied username and password
+<i>143</i>&nbsp;    private String username;
+<i>144</i>&nbsp;    private char[] password;
+<i>145</i>&nbsp;    private JMXPrincipal user;
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;    // Initial state
+<i>148</i>&nbsp;    private Subject subject;
+<i>149</i>&nbsp;    private CallbackHandler callbackHandler;
+<i>150</i>&nbsp;    private Map&lt;String, Object&gt; sharedState;
+<i>151</i>&nbsp;    private Map&lt;String, ?&gt; options;
+<i>152</i>&nbsp;    private String passwordFile;
+<i>153</i>&nbsp;    private String passwordFileDisplayName;
+<i>154</i>&nbsp;    private boolean userSuppliedPasswordFile;
+<i>155</i>&nbsp;    private boolean hasJavaHomePermission;
+<i>156</i>&nbsp;    private Properties userCredentials;
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;    /**
+<i>159</i>&nbsp;     * Initialize this &lt;code&gt;LoginModule&lt;/code&gt;.
+<i>160</i>&nbsp;     *
+<i>161</i>&nbsp;     * @param subject the &lt;code&gt;Subject&lt;/code&gt; to be authenticated.
+<i>162</i>&nbsp;     * @param callbackHandler a &lt;code&gt;CallbackHandler&lt;/code&gt; to acquire the
+<i>163</i>&nbsp;     *                  user&#39;s name and password.
+<i>164</i>&nbsp;     * @param sharedState shared &lt;code&gt;LoginModule&lt;/code&gt; state.
+<i>165</i>&nbsp;     * @param options options specified in the login
+<i>166</i>&nbsp;     *                  &lt;code&gt;Configuration&lt;/code&gt; for this particular
+<i>167</i>&nbsp;     *                  &lt;code&gt;LoginModule&lt;/code&gt;.
+<i>168</i>&nbsp;     */
+<i>169</i>&nbsp;    public void initialize(Subject subject, CallbackHandler callbackHandler,
+<i>170</i>&nbsp;                           Map&lt;String,?&gt; sharedState,
+<i>171</i>&nbsp;                           Map&lt;String,?&gt; options)
+<i>172</i>&nbsp;    {
+<i>173</i>&nbsp;
+<b class="nc"><i>174</i>&nbsp;        this.subject = subject;</b>
+<b class="nc"><i>175</i>&nbsp;        this.callbackHandler = callbackHandler;</b>
+<b class="nc"><i>176</i>&nbsp;        this.sharedState = Util.cast(sharedState);</b>
+<b class="nc"><i>177</i>&nbsp;        this.options = options;</b>
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;        // initialize any configured options
+<b class="nc"><i>180</i>&nbsp;        tryFirstPass =</b>
+<b class="nc"><i>181</i>&nbsp;                &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;tryFirstPass&quot;));</b>
+<b class="nc"><i>182</i>&nbsp;        useFirstPass =</b>
+<b class="nc"><i>183</i>&nbsp;                &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;useFirstPass&quot;));</b>
+<b class="nc"><i>184</i>&nbsp;        storePass =</b>
+<b class="nc"><i>185</i>&nbsp;                &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;storePass&quot;));</b>
+<b class="nc"><i>186</i>&nbsp;        clearPass =</b>
+<b class="nc"><i>187</i>&nbsp;                &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;clearPass&quot;));</b>
+<i>188</i>&nbsp;
+<b class="nc"><i>189</i>&nbsp;        passwordFile = (String)options.get(&quot;passwordFile&quot;);</b>
+<b class="nc"><i>190</i>&nbsp;        passwordFileDisplayName = passwordFile;</b>
+<b class="nc"><i>191</i>&nbsp;        userSuppliedPasswordFile = true;</b>
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;        // set the location of the password file
+<b class="nc"><i>194</i>&nbsp;        if (passwordFile == null) {</b>
+<b class="nc"><i>195</i>&nbsp;            passwordFile = DEFAULT_PASSWORD_FILE_NAME;</b>
+<b class="nc"><i>196</i>&nbsp;            userSuppliedPasswordFile = false;</b>
+<i>197</i>&nbsp;            try {
+<b class="nc"><i>198</i>&nbsp;                System.getProperty(&quot;java.home&quot;);</b>
+<b class="nc"><i>199</i>&nbsp;                hasJavaHomePermission = true;</b>
+<b class="nc"><i>200</i>&nbsp;                passwordFileDisplayName = passwordFile;</b>
+<b class="nc"><i>201</i>&nbsp;            } catch (SecurityException e) {</b>
+<b class="nc"><i>202</i>&nbsp;                hasJavaHomePermission = false;</b>
+<b class="nc"><i>203</i>&nbsp;                passwordFileDisplayName =</b>
+<i>204</i>&nbsp;                        ConnectorBootstrap.DefaultValues.PASSWORD_FILE_NAME;
+<b class="nc"><i>205</i>&nbsp;            }</b>
+<i>206</i>&nbsp;        }
+<i>207</i>&nbsp;    }
+<i>208</i>&nbsp;
+<i>209</i>&nbsp;    /**
+<i>210</i>&nbsp;     * Begin user authentication (Authentication Phase 1).
+<i>211</i>&nbsp;     *
+<i>212</i>&nbsp;     * &lt;p&gt; Acquire the user&#39;s name and password and verify them against
+<i>213</i>&nbsp;     * the corresponding credentials from the password file.
+<i>214</i>&nbsp;     *
+<i>215</i>&nbsp;     * @return true always, since this &lt;code&gt;LoginModule&lt;/code&gt;
+<i>216</i>&nbsp;     *          should not be ignored.
+<i>217</i>&nbsp;     * @exception FailedLoginException if the authentication fails.
+<i>218</i>&nbsp;     * @exception LoginException if this &lt;code&gt;LoginModule&lt;/code&gt;
+<i>219</i>&nbsp;     *          is unable to perform the authentication.
+<i>220</i>&nbsp;     */
+<i>221</i>&nbsp;    public boolean login() throws LoginException {
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;        try {
+<b class="nc"><i>224</i>&nbsp;            loadPasswordFile();</b>
+<b class="nc"><i>225</i>&nbsp;        } catch (IOException ioe) {</b>
+<b class="nc"><i>226</i>&nbsp;            LoginException le = new LoginException(</b>
+<i>227</i>&nbsp;                    &quot;Error: unable to load the password file: &quot; +
+<i>228</i>&nbsp;                    passwordFileDisplayName);
+<b class="nc"><i>229</i>&nbsp;            throw EnvHelp.initCause(le, ioe);</b>
+<b class="nc"><i>230</i>&nbsp;        }</b>
+<i>231</i>&nbsp;
+<b class="nc"><i>232</i>&nbsp;        if (userCredentials == null) {</b>
+<b class="nc"><i>233</i>&nbsp;            throw new LoginException</b>
+<i>234</i>&nbsp;                (&quot;Error: unable to locate the users&#39; credentials.&quot;);
+<i>235</i>&nbsp;        }
+<i>236</i>&nbsp;
+<b class="nc"><i>237</i>&nbsp;        if (logger.debugOn()) {</b>
+<b class="nc"><i>238</i>&nbsp;            logger.debug(&quot;login&quot;,</b>
+<i>239</i>&nbsp;                    &quot;Using password file: &quot; + passwordFileDisplayName);
+<i>240</i>&nbsp;        }
+<i>241</i>&nbsp;
+<i>242</i>&nbsp;        // attempt the authentication
+<b class="nc"><i>243</i>&nbsp;        if (tryFirstPass) {</b>
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;            try {
+<i>246</i>&nbsp;                // attempt the authentication by getting the
+<i>247</i>&nbsp;                // username and password from shared state
+<b class="nc"><i>248</i>&nbsp;                attemptAuthentication(true);</b>
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;                // authentication succeeded
+<b class="nc"><i>251</i>&nbsp;                succeeded = true;</b>
+<b class="nc"><i>252</i>&nbsp;                if (logger.debugOn()) {</b>
+<b class="nc"><i>253</i>&nbsp;                    logger.debug(&quot;login&quot;,</b>
+<i>254</i>&nbsp;                        &quot;Authentication using cached password has succeeded&quot;);
+<i>255</i>&nbsp;                }
+<b class="nc"><i>256</i>&nbsp;                return true;</b>
+<i>257</i>&nbsp;
+<b class="nc"><i>258</i>&nbsp;            } catch (LoginException le) {</b>
+<i>259</i>&nbsp;                // authentication failed -- try again below by prompting
+<b class="nc"><i>260</i>&nbsp;                cleanState();</b>
+<b class="nc"><i>261</i>&nbsp;                logger.debug(&quot;login&quot;,</b>
+<i>262</i>&nbsp;                    &quot;Authentication using cached password has failed&quot;);
+<b class="nc"><i>263</i>&nbsp;            }</b>
+<i>264</i>&nbsp;
+<b class="nc"><i>265</i>&nbsp;        } else if (useFirstPass) {</b>
+<i>266</i>&nbsp;
+<i>267</i>&nbsp;            try {
+<i>268</i>&nbsp;                // attempt the authentication by getting the
+<i>269</i>&nbsp;                // username and password from shared state
+<b class="nc"><i>270</i>&nbsp;                attemptAuthentication(true);</b>
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;                // authentication succeeded
+<b class="nc"><i>273</i>&nbsp;                succeeded = true;</b>
+<b class="nc"><i>274</i>&nbsp;                if (logger.debugOn()) {</b>
+<b class="nc"><i>275</i>&nbsp;                    logger.debug(&quot;login&quot;,</b>
+<i>276</i>&nbsp;                        &quot;Authentication using cached password has succeeded&quot;);
+<i>277</i>&nbsp;                }
+<b class="nc"><i>278</i>&nbsp;                return true;</b>
+<i>279</i>&nbsp;
+<b class="nc"><i>280</i>&nbsp;            } catch (LoginException le) {</b>
+<i>281</i>&nbsp;                // authentication failed
+<b class="nc"><i>282</i>&nbsp;                cleanState();</b>
+<b class="nc"><i>283</i>&nbsp;                logger.debug(&quot;login&quot;,</b>
+<i>284</i>&nbsp;                    &quot;Authentication using cached password has failed&quot;);
+<i>285</i>&nbsp;
+<b class="nc"><i>286</i>&nbsp;                throw le;</b>
+<i>287</i>&nbsp;            }
+<i>288</i>&nbsp;        }
+<i>289</i>&nbsp;
+<b class="nc"><i>290</i>&nbsp;        if (logger.debugOn()) {</b>
+<b class="nc"><i>291</i>&nbsp;            logger.debug(&quot;login&quot;, &quot;Acquiring password&quot;);</b>
+<i>292</i>&nbsp;        }
+<i>293</i>&nbsp;
+<i>294</i>&nbsp;        // attempt the authentication using the supplied username and password
+<i>295</i>&nbsp;        try {
+<b class="nc"><i>296</i>&nbsp;            attemptAuthentication(false);</b>
+<i>297</i>&nbsp;
+<i>298</i>&nbsp;            // authentication succeeded
+<b class="nc"><i>299</i>&nbsp;            succeeded = true;</b>
+<b class="nc"><i>300</i>&nbsp;            if (logger.debugOn()) {</b>
+<b class="nc"><i>301</i>&nbsp;                logger.debug(&quot;login&quot;, &quot;Authentication has succeeded&quot;);</b>
+<i>302</i>&nbsp;            }
+<b class="nc"><i>303</i>&nbsp;            return true;</b>
+<i>304</i>&nbsp;
+<b class="nc"><i>305</i>&nbsp;        } catch (LoginException le) {</b>
+<b class="nc"><i>306</i>&nbsp;            cleanState();</b>
+<b class="nc"><i>307</i>&nbsp;            logger.debug(&quot;login&quot;, &quot;Authentication has failed&quot;);</b>
+<i>308</i>&nbsp;
+<b class="nc"><i>309</i>&nbsp;            throw le;</b>
+<i>310</i>&nbsp;        }
+<i>311</i>&nbsp;    }
+<i>312</i>&nbsp;
+<i>313</i>&nbsp;    /**
+<i>314</i>&nbsp;     * Complete user authentication (Authentication Phase 2).
+<i>315</i>&nbsp;     *
+<i>316</i>&nbsp;     * &lt;p&gt; This method is called if the LoginContext&#39;s
+<i>317</i>&nbsp;     * overall authentication has succeeded
+<i>318</i>&nbsp;     * (all the relevant REQUIRED, REQUISITE, SUFFICIENT and OPTIONAL
+<i>319</i>&nbsp;     * LoginModules have succeeded).
+<i>320</i>&nbsp;     *
+<i>321</i>&nbsp;     * &lt;p&gt; If this LoginModule&#39;s own authentication attempt
+<i>322</i>&nbsp;     * succeeded (checked by retrieving the private state saved by the
+<i>323</i>&nbsp;     * &lt;code&gt;login&lt;/code&gt; method), then this method associates a
+<i>324</i>&nbsp;     * &lt;code&gt;JMXPrincipal&lt;/code&gt; with the &lt;code&gt;Subject&lt;/code&gt; located in the
+<i>325</i>&nbsp;     * &lt;code&gt;LoginModule&lt;/code&gt;.  If this LoginModule&#39;s own
+<i>326</i>&nbsp;     * authentication attempted failed, then this method removes
+<i>327</i>&nbsp;     * any state that was originally saved.
+<i>328</i>&nbsp;     *
+<i>329</i>&nbsp;     * @exception LoginException if the commit fails
+<i>330</i>&nbsp;     * @return true if this LoginModule&#39;s own login and commit
+<i>331</i>&nbsp;     *          attempts succeeded, or false otherwise.
+<i>332</i>&nbsp;     */
+<i>333</i>&nbsp;    public boolean commit() throws LoginException {
+<i>334</i>&nbsp;
+<b class="nc"><i>335</i>&nbsp;        if (succeeded == false) {</b>
+<b class="nc"><i>336</i>&nbsp;            return false;</b>
+<i>337</i>&nbsp;        } else {
+<b class="nc"><i>338</i>&nbsp;            if (subject.isReadOnly()) {</b>
+<b class="nc"><i>339</i>&nbsp;                cleanState();</b>
+<b class="nc"><i>340</i>&nbsp;                throw new LoginException(&quot;Subject is read-only&quot;);</b>
+<i>341</i>&nbsp;            }
+<i>342</i>&nbsp;            // add Principals to the Subject
+<b class="nc"><i>343</i>&nbsp;            if (!subject.getPrincipals().contains(user)) {</b>
+<b class="nc"><i>344</i>&nbsp;                subject.getPrincipals().add(user);</b>
+<i>345</i>&nbsp;            }
+<i>346</i>&nbsp;
+<b class="nc"><i>347</i>&nbsp;            if (logger.debugOn()) {</b>
+<b class="nc"><i>348</i>&nbsp;                logger.debug(&quot;commit&quot;,</b>
+<i>349</i>&nbsp;                    &quot;Authentication has completed successfully&quot;);
+<i>350</i>&nbsp;            }
+<i>351</i>&nbsp;        }
+<i>352</i>&nbsp;        // in any case, clean out state
+<b class="nc"><i>353</i>&nbsp;        cleanState();</b>
+<b class="nc"><i>354</i>&nbsp;        commitSucceeded = true;</b>
+<b class="nc"><i>355</i>&nbsp;        return true;</b>
+<i>356</i>&nbsp;    }
+<i>357</i>&nbsp;
+<i>358</i>&nbsp;    /**
+<i>359</i>&nbsp;     * Abort user authentication (Authentication Phase 2).
+<i>360</i>&nbsp;     *
+<i>361</i>&nbsp;     * &lt;p&gt; This method is called if the LoginContext&#39;s overall authentication
+<i>362</i>&nbsp;     * failed (the relevant REQUIRED, REQUISITE, SUFFICIENT and OPTIONAL
+<i>363</i>&nbsp;     * LoginModules did not succeed).
+<i>364</i>&nbsp;     *
+<i>365</i>&nbsp;     * &lt;p&gt; If this LoginModule&#39;s own authentication attempt
+<i>366</i>&nbsp;     * succeeded (checked by retrieving the private state saved by the
+<i>367</i>&nbsp;     * &lt;code&gt;login&lt;/code&gt; and &lt;code&gt;commit&lt;/code&gt; methods),
+<i>368</i>&nbsp;     * then this method cleans up any state that was originally saved.
+<i>369</i>&nbsp;     *
+<i>370</i>&nbsp;     * @exception LoginException if the abort fails.
+<i>371</i>&nbsp;     * @return false if this LoginModule&#39;s own login and/or commit attempts
+<i>372</i>&nbsp;     *          failed, and true otherwise.
+<i>373</i>&nbsp;     */
+<i>374</i>&nbsp;    public boolean abort() throws LoginException {
+<i>375</i>&nbsp;
+<b class="nc"><i>376</i>&nbsp;        if (logger.debugOn()) {</b>
+<b class="nc"><i>377</i>&nbsp;            logger.debug(&quot;abort&quot;,</b>
+<i>378</i>&nbsp;                &quot;Authentication has not completed successfully&quot;);
+<i>379</i>&nbsp;        }
+<i>380</i>&nbsp;
+<b class="nc"><i>381</i>&nbsp;        if (succeeded == false) {</b>
+<b class="nc"><i>382</i>&nbsp;            return false;</b>
+<b class="nc"><i>383</i>&nbsp;        } else if (succeeded == true &amp;&amp; commitSucceeded == false) {</b>
+<i>384</i>&nbsp;
+<i>385</i>&nbsp;            // Clean out state
+<b class="nc"><i>386</i>&nbsp;            succeeded = false;</b>
+<b class="nc"><i>387</i>&nbsp;            cleanState();</b>
+<b class="nc"><i>388</i>&nbsp;            user = null;</b>
+<i>389</i>&nbsp;        } else {
+<i>390</i>&nbsp;            // overall authentication succeeded and commit succeeded,
+<i>391</i>&nbsp;            // but someone else&#39;s commit failed
+<b class="nc"><i>392</i>&nbsp;            logout();</b>
+<i>393</i>&nbsp;        }
+<b class="nc"><i>394</i>&nbsp;        return true;</b>
+<i>395</i>&nbsp;    }
+<i>396</i>&nbsp;
+<i>397</i>&nbsp;    /**
+<i>398</i>&nbsp;     * Logout a user.
+<i>399</i>&nbsp;     *
+<i>400</i>&nbsp;     * &lt;p&gt; This method removes the Principals
+<i>401</i>&nbsp;     * that were added by the &lt;code&gt;commit&lt;/code&gt; method.
+<i>402</i>&nbsp;     *
+<i>403</i>&nbsp;     * @exception LoginException if the logout fails.
+<i>404</i>&nbsp;     * @return true in all cases since this &lt;code&gt;LoginModule&lt;/code&gt;
+<i>405</i>&nbsp;     *          should not be ignored.
+<i>406</i>&nbsp;     */
+<i>407</i>&nbsp;    public boolean logout() throws LoginException {
+<b class="nc"><i>408</i>&nbsp;        if (subject.isReadOnly()) {</b>
+<b class="nc"><i>409</i>&nbsp;            cleanState();</b>
+<b class="nc"><i>410</i>&nbsp;            throw new LoginException (&quot;Subject is read-only&quot;);</b>
+<i>411</i>&nbsp;        }
+<b class="nc"><i>412</i>&nbsp;        subject.getPrincipals().remove(user);</b>
+<i>413</i>&nbsp;
+<i>414</i>&nbsp;        // clean out state
+<b class="nc"><i>415</i>&nbsp;        cleanState();</b>
+<b class="nc"><i>416</i>&nbsp;        succeeded = false;</b>
+<b class="nc"><i>417</i>&nbsp;        commitSucceeded = false;</b>
+<b class="nc"><i>418</i>&nbsp;        user = null;</b>
+<i>419</i>&nbsp;
+<b class="nc"><i>420</i>&nbsp;        if (logger.debugOn()) {</b>
+<b class="nc"><i>421</i>&nbsp;            logger.debug(&quot;logout&quot;, &quot;Subject is being logged out&quot;);</b>
+<i>422</i>&nbsp;        }
+<i>423</i>&nbsp;
+<b class="nc"><i>424</i>&nbsp;        return true;</b>
+<i>425</i>&nbsp;    }
+<i>426</i>&nbsp;
+<i>427</i>&nbsp;    /**
+<i>428</i>&nbsp;     * Attempt authentication
+<i>429</i>&nbsp;     *
+<i>430</i>&nbsp;     * @param usePasswdFromSharedState a flag to tell this method whether
+<i>431</i>&nbsp;     *          to retrieve the password from the sharedState.
+<i>432</i>&nbsp;     */
+<i>433</i>&nbsp;    @SuppressWarnings(&quot;unchecked&quot;)  // sharedState used as Map&lt;String,Object&gt;
+<i>434</i>&nbsp;    private void attemptAuthentication(boolean usePasswdFromSharedState)
+<i>435</i>&nbsp;        throws LoginException {
+<i>436</i>&nbsp;
+<i>437</i>&nbsp;        // get the username and password
+<b class="nc"><i>438</i>&nbsp;        getUsernamePassword(usePasswdFromSharedState);</b>
+<i>439</i>&nbsp;
+<i>440</i>&nbsp;        String localPassword;
+<i>441</i>&nbsp;
+<i>442</i>&nbsp;        // userCredentials is initialized in login()
+<b class="nc"><i>443</i>&nbsp;        if (((localPassword = userCredentials.getProperty(username)) == null) ||</b>
+<b class="nc"><i>444</i>&nbsp;            (! localPassword.equals(new String(password)))) {</b>
+<i>445</i>&nbsp;
+<i>446</i>&nbsp;            // username not found or passwords do not match
+<b class="nc"><i>447</i>&nbsp;            if (logger.debugOn()) {</b>
+<b class="nc"><i>448</i>&nbsp;                logger.debug(&quot;login&quot;, &quot;Invalid username or password&quot;);</b>
+<i>449</i>&nbsp;            }
+<b class="nc"><i>450</i>&nbsp;            throw new FailedLoginException(&quot;Invalid username or password&quot;);</b>
+<i>451</i>&nbsp;        }
+<i>452</i>&nbsp;
+<i>453</i>&nbsp;        // Save the username and password in the shared state
+<i>454</i>&nbsp;        // only if authentication succeeded
+<b class="nc"><i>455</i>&nbsp;        if (storePass &amp;&amp;</b>
+<b class="nc"><i>456</i>&nbsp;            !sharedState.containsKey(USERNAME_KEY) &amp;&amp;</b>
+<b class="nc"><i>457</i>&nbsp;            !sharedState.containsKey(PASSWORD_KEY)) {</b>
+<b class="nc"><i>458</i>&nbsp;            sharedState.put(USERNAME_KEY, username);</b>
+<b class="nc"><i>459</i>&nbsp;            sharedState.put(PASSWORD_KEY, password);</b>
+<i>460</i>&nbsp;        }
+<i>461</i>&nbsp;
+<i>462</i>&nbsp;        // Create a new user principal
+<b class="nc"><i>463</i>&nbsp;        user = new JMXPrincipal(username);</b>
+<i>464</i>&nbsp;
+<b class="nc"><i>465</i>&nbsp;        if (logger.debugOn()) {</b>
+<b class="nc"><i>466</i>&nbsp;            logger.debug(&quot;login&quot;,</b>
+<i>467</i>&nbsp;                &quot;User &#39;&quot; + username + &quot;&#39; successfully validated&quot;);
+<i>468</i>&nbsp;        }
+<i>469</i>&nbsp;    }
+<i>470</i>&nbsp;
+<i>471</i>&nbsp;    /*
+<i>472</i>&nbsp;     * Read the password file.
+<i>473</i>&nbsp;     */
+<i>474</i>&nbsp;    private void loadPasswordFile() throws IOException {
+<i>475</i>&nbsp;        FileInputStream fis;
+<i>476</i>&nbsp;        try {
+<b class="nc"><i>477</i>&nbsp;            fis = new FileInputStream(passwordFile);</b>
+<b class="nc"><i>478</i>&nbsp;        } catch (SecurityException e) {</b>
+<b class="nc"><i>479</i>&nbsp;            if (userSuppliedPasswordFile || hasJavaHomePermission) {</b>
+<b class="nc"><i>480</i>&nbsp;                throw e;</b>
+<i>481</i>&nbsp;            } else {
+<b class="nc"><i>482</i>&nbsp;                final FilePermission fp =</b>
+<i>483</i>&nbsp;                        new FilePermission(passwordFileDisplayName, &quot;read&quot;);
+<b class="nc"><i>484</i>&nbsp;                AccessControlException ace = new AccessControlException(</b>
+<b class="nc"><i>485</i>&nbsp;                        &quot;access denied &quot; + fp.toString());</b>
+<b class="nc"><i>486</i>&nbsp;                ace.setStackTrace(e.getStackTrace());</b>
+<b class="nc"><i>487</i>&nbsp;                throw ace;</b>
+<i>488</i>&nbsp;            }
+<b class="nc"><i>489</i>&nbsp;        }</b>
+<i>490</i>&nbsp;        try {
+<b class="nc"><i>491</i>&nbsp;            final BufferedInputStream bis = new BufferedInputStream(fis);</b>
+<i>492</i>&nbsp;            try {
+<b class="nc"><i>493</i>&nbsp;                userCredentials = new Properties();</b>
+<b class="nc"><i>494</i>&nbsp;                userCredentials.load(bis);</b>
+<i>495</i>&nbsp;            } finally {
+<b class="nc"><i>496</i>&nbsp;                bis.close();</b>
+<b class="nc"><i>497</i>&nbsp;            }</b>
+<i>498</i>&nbsp;        } finally {
+<b class="nc"><i>499</i>&nbsp;            fis.close();</b>
+<b class="nc"><i>500</i>&nbsp;        }</b>
+<i>501</i>&nbsp;    }
+<i>502</i>&nbsp;
+<i>503</i>&nbsp;    /**
+<i>504</i>&nbsp;     * Get the username and password.
+<i>505</i>&nbsp;     * This method does not return any value.
+<i>506</i>&nbsp;     * Instead, it sets global name and password variables.
+<i>507</i>&nbsp;     *
+<i>508</i>&nbsp;     * &lt;p&gt; Also note that this method will set the username and password
+<i>509</i>&nbsp;     * values in the shared state in case subsequent LoginModules
+<i>510</i>&nbsp;     * want to use them via use/tryFirstPass.
+<i>511</i>&nbsp;     *
+<i>512</i>&nbsp;     * @param usePasswdFromSharedState boolean that tells this method whether
+<i>513</i>&nbsp;     *          to retrieve the password from the sharedState.
+<i>514</i>&nbsp;     */
+<i>515</i>&nbsp;    private void getUsernamePassword(boolean usePasswdFromSharedState)
+<i>516</i>&nbsp;        throws LoginException {
+<i>517</i>&nbsp;
+<b class="nc"><i>518</i>&nbsp;        if (usePasswdFromSharedState) {</b>
+<i>519</i>&nbsp;            // use the password saved by the first module in the stack
+<b class="nc"><i>520</i>&nbsp;            username = (String)sharedState.get(USERNAME_KEY);</b>
+<b class="nc"><i>521</i>&nbsp;            password = (char[])sharedState.get(PASSWORD_KEY);</b>
+<i>522</i>&nbsp;            return;
+<i>523</i>&nbsp;        }
+<i>524</i>&nbsp;
+<i>525</i>&nbsp;        // acquire username and password
+<b class="nc"><i>526</i>&nbsp;        if (callbackHandler == null)</b>
+<b class="nc"><i>527</i>&nbsp;            throw new LoginException(&quot;Error: no CallbackHandler available &quot; +</b>
+<i>528</i>&nbsp;                &quot;to garner authentication information from the user&quot;);
+<i>529</i>&nbsp;
+<b class="nc"><i>530</i>&nbsp;        Callback[] callbacks = new Callback[2];</b>
+<b class="nc"><i>531</i>&nbsp;        callbacks[0] = new NameCallback(&quot;username&quot;);</b>
+<b class="nc"><i>532</i>&nbsp;        callbacks[1] = new PasswordCallback(&quot;password&quot;, false);</b>
+<i>533</i>&nbsp;
+<i>534</i>&nbsp;        try {
+<b class="nc"><i>535</i>&nbsp;            callbackHandler.handle(callbacks);</b>
+<b class="nc"><i>536</i>&nbsp;            username = ((NameCallback)callbacks[0]).getName();</b>
+<b class="nc"><i>537</i>&nbsp;            char[] tmpPassword = ((PasswordCallback)callbacks[1]).getPassword();</b>
+<b class="nc"><i>538</i>&nbsp;            password = new char[tmpPassword.length];</b>
+<b class="nc"><i>539</i>&nbsp;            System.arraycopy(tmpPassword, 0,</b>
+<i>540</i>&nbsp;                                password, 0, tmpPassword.length);
+<b class="nc"><i>541</i>&nbsp;            ((PasswordCallback)callbacks[1]).clearPassword();</b>
+<i>542</i>&nbsp;
+<b class="nc"><i>543</i>&nbsp;        } catch (IOException ioe) {</b>
+<b class="nc"><i>544</i>&nbsp;            LoginException le = new LoginException(ioe.toString());</b>
+<b class="nc"><i>545</i>&nbsp;            throw EnvHelp.initCause(le, ioe);</b>
+<b class="nc"><i>546</i>&nbsp;        } catch (UnsupportedCallbackException uce) {</b>
+<b class="nc"><i>547</i>&nbsp;            LoginException le = new LoginException(</b>
+<b class="nc"><i>548</i>&nbsp;                                    &quot;Error: &quot; + uce.getCallback().toString() +</b>
+<i>549</i>&nbsp;                                    &quot; not available to garner authentication &quot; +
+<i>550</i>&nbsp;                                    &quot;information from the user&quot;);
+<b class="nc"><i>551</i>&nbsp;            throw EnvHelp.initCause(le, uce);</b>
+<b class="nc"><i>552</i>&nbsp;        }</b>
+<i>553</i>&nbsp;    }
+<i>554</i>&nbsp;
+<i>555</i>&nbsp;    /**
+<i>556</i>&nbsp;     * Clean out state because of a failed authentication attempt
+<i>557</i>&nbsp;     */
+<i>558</i>&nbsp;    private void cleanState() {
+<b class="nc"><i>559</i>&nbsp;        username = null;</b>
+<b class="nc"><i>560</i>&nbsp;        if (password != null) {</b>
+<b class="nc"><i>561</i>&nbsp;            Arrays.fill(password, &#39; &#39;);</b>
+<b class="nc"><i>562</i>&nbsp;            password = null;</b>
+<i>563</i>&nbsp;        }
+<i>564</i>&nbsp;
+<b class="nc"><i>565</i>&nbsp;        if (clearPass) {</b>
+<b class="nc"><i>566</i>&nbsp;            sharedState.remove(USERNAME_KEY);</b>
+<b class="nc"><i>567</i>&nbsp;            sharedState.remove(PASSWORD_KEY);</b>
+<i>568</i>&nbsp;        }
+<i>569</i>&nbsp;    }
+<i>570</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

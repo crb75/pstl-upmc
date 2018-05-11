@@ -1,0 +1,468 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CodeSetComponentInfo</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.encoding</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CodeSetComponentInfo (com.sun.corba.se.impl.encoding)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CodeSetComponentInfo</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 64)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CodeSetComponentInfo$CodeSetComponent</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 35)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CodeSetComponentInfo$CodeSetContext</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 25)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 115)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 1998, 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;/*
+<i>26</i>&nbsp; * Licensed Materials - Property of IBM
+<i>27</i>&nbsp; * RMI-IIOP v1.0
+<i>28</i>&nbsp; * Copyright IBM Corp. 1998 1999  All Rights Reserved
+<i>29</i>&nbsp; *
+<i>30</i>&nbsp; */
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;package com.sun.corba.se.impl.encoding;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import java.util.StringTokenizer;
+<i>35</i>&nbsp;import java.util.ArrayList;
+<i>36</i>&nbsp;import java.util.Arrays;
+<i>37</i>&nbsp;import java.util.List;
+<i>38</i>&nbsp;import java.util.NoSuchElementException;
+<i>39</i>&nbsp;import org.omg.CORBA.INITIALIZE;
+<i>40</i>&nbsp;import org.omg.CORBA.CompletionStatus;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains;
+<i>43</i>&nbsp;import com.sun.corba.se.impl.logging.ORBUtilSystemException;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;public final class CodeSetComponentInfo {
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    /**
+<i>48</i>&nbsp;     * CodeSetComponent is part of an IOR multi-component profile.  Two
+<i>49</i>&nbsp;     * instances constitute a CodeSetComponentInfo (one for char and one
+<i>50</i>&nbsp;     * for wchar data)
+<i>51</i>&nbsp;     */
+<i>52</i>&nbsp;    public static final class CodeSetComponent {
+<i>53</i>&nbsp;        int nativeCodeSet;
+<i>54</i>&nbsp;        int[] conversionCodeSets;
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;        public boolean equals( Object obj )
+<i>57</i>&nbsp;        {
+<b class="nc"><i>58</i>&nbsp;            if (this == obj)</b>
+<b class="nc"><i>59</i>&nbsp;                return true ;</b>
+<i>60</i>&nbsp;
+<b class="nc"><i>61</i>&nbsp;            if (!(obj instanceof CodeSetComponent))</b>
+<b class="nc"><i>62</i>&nbsp;                return false ;</b>
+<i>63</i>&nbsp;
+<b class="nc"><i>64</i>&nbsp;            CodeSetComponent other = (CodeSetComponent)obj ;</b>
+<i>65</i>&nbsp;
+<b class="nc"><i>66</i>&nbsp;            return (nativeCodeSet == other.nativeCodeSet) &amp;&amp;</b>
+<b class="nc"><i>67</i>&nbsp;                Arrays.equals( conversionCodeSets, other.conversionCodeSets ) ;</b>
+<i>68</i>&nbsp;        }
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;        public int hashCode()
+<i>71</i>&nbsp;        {
+<b class="nc"><i>72</i>&nbsp;            int result = nativeCodeSet ;</b>
+<b class="nc"><i>73</i>&nbsp;            for (int ctr=0; ctr&lt;conversionCodeSets.length; ctr++)</b>
+<b class="nc"><i>74</i>&nbsp;                result = 37*result + conversionCodeSets[ctr] ;</b>
+<b class="nc"><i>75</i>&nbsp;            return result ;</b>
+<i>76</i>&nbsp;        }
+<i>77</i>&nbsp;
+<b class="nc"><i>78</i>&nbsp;        public CodeSetComponent() {}</b>
+<i>79</i>&nbsp;
+<b class="nc"><i>80</i>&nbsp;        public CodeSetComponent(int nativeCodeSet, int[] conversionCodeSets) {</b>
+<b class="nc"><i>81</i>&nbsp;            this.nativeCodeSet = nativeCodeSet;</b>
+<b class="nc"><i>82</i>&nbsp;            if (conversionCodeSets == null)</b>
+<b class="nc"><i>83</i>&nbsp;                this.conversionCodeSets = new int[0];</b>
+<i>84</i>&nbsp;            else
+<b class="nc"><i>85</i>&nbsp;                this.conversionCodeSets = conversionCodeSets;</b>
+<i>86</i>&nbsp;        }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;        public void read(MarshalInputStream in) {
+<b class="nc"><i>89</i>&nbsp;            nativeCodeSet = in.read_ulong();</b>
+<b class="nc"><i>90</i>&nbsp;            int len = in.read_long();</b>
+<b class="nc"><i>91</i>&nbsp;            conversionCodeSets = new int[len];</b>
+<b class="nc"><i>92</i>&nbsp;            in.read_ulong_array(conversionCodeSets, 0, len);</b>
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;        }
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;        public void write(MarshalOutputStream out) {
+<b class="nc"><i>97</i>&nbsp;            out.write_ulong(nativeCodeSet);</b>
+<b class="nc"><i>98</i>&nbsp;            out.write_long(conversionCodeSets.length);</b>
+<b class="nc"><i>99</i>&nbsp;            out.write_ulong_array(conversionCodeSets, 0, conversionCodeSets.length);</b>
+<i>100</i>&nbsp;        }
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;        public String toString() {
+<b class="nc"><i>103</i>&nbsp;            StringBuffer sbuf = new StringBuffer(&quot;CodeSetComponent(&quot;);</b>
+<i>104</i>&nbsp;
+<b class="nc"><i>105</i>&nbsp;            sbuf.append(&quot;native:&quot;);</b>
+<b class="nc"><i>106</i>&nbsp;            sbuf.append(Integer.toHexString(nativeCodeSet));</b>
+<b class="nc"><i>107</i>&nbsp;            sbuf.append(&quot; conversion:&quot;);</b>
+<b class="nc"><i>108</i>&nbsp;            if (conversionCodeSets == null)</b>
+<b class="nc"><i>109</i>&nbsp;                sbuf.append(&quot;null&quot;);</b>
+<i>110</i>&nbsp;            else {
+<b class="nc"><i>111</i>&nbsp;                for (int i = 0; i &lt; conversionCodeSets.length; i++) {</b>
+<b class="nc"><i>112</i>&nbsp;                    sbuf.append(Integer.toHexString(conversionCodeSets[i]));</b>
+<b class="nc"><i>113</i>&nbsp;                    sbuf.append(&#39; &#39;);</b>
+<i>114</i>&nbsp;                }
+<i>115</i>&nbsp;            }
+<b class="nc"><i>116</i>&nbsp;            sbuf.append( &quot;)&quot; ) ;</b>
+<i>117</i>&nbsp;
+<b class="nc"><i>118</i>&nbsp;            return sbuf.toString();</b>
+<i>119</i>&nbsp;        }
+<i>120</i>&nbsp;    }
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;    private CodeSetComponent forCharData;
+<i>123</i>&nbsp;    private CodeSetComponent forWCharData;
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    public boolean equals( Object obj )
+<i>126</i>&nbsp;    {
+<b class="nc"><i>127</i>&nbsp;        if (this == obj)</b>
+<b class="nc"><i>128</i>&nbsp;            return true ;</b>
+<i>129</i>&nbsp;
+<b class="nc"><i>130</i>&nbsp;        if (!(obj instanceof CodeSetComponentInfo))</b>
+<b class="nc"><i>131</i>&nbsp;            return false ;</b>
+<i>132</i>&nbsp;
+<b class="nc"><i>133</i>&nbsp;        CodeSetComponentInfo other = (CodeSetComponentInfo)obj ;</b>
+<b class="nc"><i>134</i>&nbsp;        return forCharData.equals( other.forCharData ) &amp;&amp;</b>
+<b class="nc"><i>135</i>&nbsp;            forWCharData.equals( other.forWCharData ) ;</b>
+<i>136</i>&nbsp;    }
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;    public int hashCode()
+<i>139</i>&nbsp;    {
+<b class="nc"><i>140</i>&nbsp;        return forCharData.hashCode() ^ forWCharData.hashCode() ;</b>
+<i>141</i>&nbsp;    }
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;    public String toString() {
+<b class="nc"><i>144</i>&nbsp;        StringBuffer sbuf = new StringBuffer(&quot;CodeSetComponentInfo(&quot;);</b>
+<i>145</i>&nbsp;
+<b class="nc"><i>146</i>&nbsp;        sbuf.append(&quot;char_data:&quot;);</b>
+<b class="nc"><i>147</i>&nbsp;        sbuf.append(forCharData.toString());</b>
+<b class="nc"><i>148</i>&nbsp;        sbuf.append(&quot; wchar_data:&quot;);</b>
+<b class="nc"><i>149</i>&nbsp;        sbuf.append(forWCharData.toString());</b>
+<b class="nc"><i>150</i>&nbsp;        sbuf.append(&quot;)&quot;);</b>
+<i>151</i>&nbsp;
+<b class="nc"><i>152</i>&nbsp;        return sbuf.toString();</b>
+<i>153</i>&nbsp;    }
+<i>154</i>&nbsp;
+<b class="nc"><i>155</i>&nbsp;    public CodeSetComponentInfo() {</b>
+<b class="nc"><i>156</i>&nbsp;        forCharData = CodeSetComponentInfo.JAVASOFT_DEFAULT_CODESETS.forCharData;</b>
+<b class="nc"><i>157</i>&nbsp;        forWCharData = CodeSetComponentInfo.JAVASOFT_DEFAULT_CODESETS.forWCharData;</b>
+<i>158</i>&nbsp;    }
+<i>159</i>&nbsp;
+<i>160</i>&nbsp;    public CodeSetComponentInfo(CodeSetComponent charData,
+<b class="nc"><i>161</i>&nbsp;                                CodeSetComponent wcharData) {</b>
+<b class="nc"><i>162</i>&nbsp;        forCharData = charData;</b>
+<b class="nc"><i>163</i>&nbsp;        forWCharData = wcharData;</b>
+<i>164</i>&nbsp;    }
+<i>165</i>&nbsp;
+<i>166</i>&nbsp;    public void read(MarshalInputStream in) {
+<b class="nc"><i>167</i>&nbsp;        forCharData = new CodeSetComponent();</b>
+<b class="nc"><i>168</i>&nbsp;        forCharData.read(in);</b>
+<b class="nc"><i>169</i>&nbsp;        forWCharData = new CodeSetComponent();</b>
+<b class="nc"><i>170</i>&nbsp;        forWCharData.read(in);</b>
+<i>171</i>&nbsp;    }
+<i>172</i>&nbsp;
+<i>173</i>&nbsp;    public void write(MarshalOutputStream out) {
+<b class="nc"><i>174</i>&nbsp;        forCharData.write(out);</b>
+<b class="nc"><i>175</i>&nbsp;        forWCharData.write(out);</b>
+<i>176</i>&nbsp;    }
+<i>177</i>&nbsp;
+<i>178</i>&nbsp;    public CodeSetComponent getCharComponent() {
+<b class="nc"><i>179</i>&nbsp;        return forCharData;</b>
+<i>180</i>&nbsp;    }
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;    public CodeSetComponent getWCharComponent() {
+<b class="nc"><i>183</i>&nbsp;        return forWCharData;</b>
+<i>184</i>&nbsp;    }
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;    /**
+<i>187</i>&nbsp;     * CodeSetContext goes in a GIOP service context
+<i>188</i>&nbsp;     */
+<i>189</i>&nbsp;    public static final class CodeSetContext {
+<i>190</i>&nbsp;        private int char_data;
+<i>191</i>&nbsp;        private int wchar_data;
+<i>192</i>&nbsp;
+<b class="nc"><i>193</i>&nbsp;        public CodeSetContext() {}</b>
+<i>194</i>&nbsp;
+<b class="nc"><i>195</i>&nbsp;        public CodeSetContext(int charEncoding, int wcharEncoding) {</b>
+<b class="nc"><i>196</i>&nbsp;            char_data = charEncoding;</b>
+<b class="nc"><i>197</i>&nbsp;            wchar_data = wcharEncoding;</b>
+<i>198</i>&nbsp;        }
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;        public void read(MarshalInputStream in) {
+<b class="nc"><i>201</i>&nbsp;            char_data = in.read_ulong();</b>
+<b class="nc"><i>202</i>&nbsp;            wchar_data = in.read_ulong();</b>
+<i>203</i>&nbsp;        }
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;        public void write(MarshalOutputStream out) {
+<b class="nc"><i>206</i>&nbsp;            out.write_ulong(char_data);</b>
+<b class="nc"><i>207</i>&nbsp;            out.write_ulong(wchar_data);</b>
+<i>208</i>&nbsp;        }
+<i>209</i>&nbsp;
+<i>210</i>&nbsp;        public int getCharCodeSet() {
+<b class="nc"><i>211</i>&nbsp;            return char_data;</b>
+<i>212</i>&nbsp;        }
+<i>213</i>&nbsp;
+<i>214</i>&nbsp;        public int getWCharCodeSet() {
+<b class="nc"><i>215</i>&nbsp;            return wchar_data;</b>
+<i>216</i>&nbsp;        }
+<i>217</i>&nbsp;
+<i>218</i>&nbsp;        public String toString() {
+<b class="nc"><i>219</i>&nbsp;            StringBuffer sbuf = new StringBuffer();</b>
+<b class="nc"><i>220</i>&nbsp;            sbuf.append(&quot;CodeSetContext char set: &quot;);</b>
+<b class="nc"><i>221</i>&nbsp;            sbuf.append(Integer.toHexString(char_data));</b>
+<b class="nc"><i>222</i>&nbsp;            sbuf.append(&quot; wchar set: &quot;);</b>
+<b class="nc"><i>223</i>&nbsp;            sbuf.append(Integer.toHexString(wchar_data));</b>
+<b class="nc"><i>224</i>&nbsp;            return sbuf.toString();</b>
+<i>225</i>&nbsp;        }
+<i>226</i>&nbsp;    }
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;    /**
+<i>229</i>&nbsp;     * Our default code set scheme is as follows:
+<i>230</i>&nbsp;     *
+<i>231</i>&nbsp;     * char data:
+<i>232</i>&nbsp;     *
+<i>233</i>&nbsp;     * Native code set:  ISO 8859-1 (8-bit)
+<i>234</i>&nbsp;     * Conversion sets:  UTF-8, ISO 646 (7-bit)
+<i>235</i>&nbsp;     *
+<i>236</i>&nbsp;     * wchar data:
+<i>237</i>&nbsp;     *
+<i>238</i>&nbsp;     * Native code set:  UTF-16
+<i>239</i>&nbsp;     * Conversion sets:  UCS-2
+<i>240</i>&nbsp;     *
+<i>241</i>&nbsp;     * Pre-Merlin/J2EE 1.3 JavaSoft ORBs listed ISO646 for char and
+<i>242</i>&nbsp;     * UCS-2 for wchar, and provided no conversion sets.  They also
+<i>243</i>&nbsp;     * didn&#39;t do correct negotiation or provide the fallback sets.
+<i>244</i>&nbsp;     * UCS-2 is still in the conversion list for backwards compatibility.
+<i>245</i>&nbsp;     *
+<i>246</i>&nbsp;     * The fallbacks are UTF-8 for char and UTF-16 for wchar.
+<i>247</i>&nbsp;     *
+<i>248</i>&nbsp;     * In GIOP 1.1, interoperability with wchar is limited to 2 byte fixed
+<i>249</i>&nbsp;     * width encodings since its wchars aren&#39;t preceded by a length.
+<i>250</i>&nbsp;     * Thus, I&#39;ve chosen not to include UTF-8 in the conversion set
+<i>251</i>&nbsp;     * for wchar data.
+<i>252</i>&nbsp;     *
+<i>253</i>&nbsp;     */
+<i>254</i>&nbsp;    public static final CodeSetComponentInfo JAVASOFT_DEFAULT_CODESETS;
+<i>255</i>&nbsp;    static {
+<b class="nc"><i>256</i>&nbsp;        CodeSetComponent charData</b>
+<b class="nc"><i>257</i>&nbsp;            = new CodeSetComponent(OSFCodeSetRegistry.ISO_8859_1.getNumber(),</b>
+<i>258</i>&nbsp;                                   new int[] {
+<b class="nc"><i>259</i>&nbsp;                                       OSFCodeSetRegistry.UTF_8.getNumber(),</b>
+<b class="nc"><i>260</i>&nbsp;                                       OSFCodeSetRegistry.ISO_646.getNumber()</b>
+<i>261</i>&nbsp;                                   });
+<i>262</i>&nbsp;
+<b class="nc"><i>263</i>&nbsp;        CodeSetComponent wcharData</b>
+<b class="nc"><i>264</i>&nbsp;            = new CodeSetComponent(OSFCodeSetRegistry.UTF_16.getNumber(),</b>
+<i>265</i>&nbsp;                                   new int[]
+<i>266</i>&nbsp;                                   {
+<b class="nc"><i>267</i>&nbsp;                                       OSFCodeSetRegistry.UCS_2.getNumber()</b>
+<i>268</i>&nbsp;                                   });
+<i>269</i>&nbsp;
+<b class="nc"><i>270</i>&nbsp;        JAVASOFT_DEFAULT_CODESETS = new CodeSetComponentInfo(charData, wcharData);</b>
+<i>271</i>&nbsp;    }
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;    /**
+<i>274</i>&nbsp;     * Creates a CodeSetComponent from a String which contains a comma
+<i>275</i>&nbsp;     * delimited list of OSF Code Set Registry numbers.  An INITIALIZE
+<i>276</i>&nbsp;     * exception is thrown if any of the numbers are not known by our
+<i>277</i>&nbsp;     * registry.  Used by corba.ORB init.
+<i>278</i>&nbsp;     *
+<i>279</i>&nbsp;     * The first number in the list is taken as the native code set,
+<i>280</i>&nbsp;     * and the rest is the conversion code set list.
+<i>281</i>&nbsp;     *
+<i>282</i>&nbsp;     * The numbers can either be decimal or hex.
+<i>283</i>&nbsp;     */
+<i>284</i>&nbsp;    public static CodeSetComponent createFromString(String str) {
+<b class="nc"><i>285</i>&nbsp;        ORBUtilSystemException wrapper = ORBUtilSystemException.get(</b>
+<i>286</i>&nbsp;            CORBALogDomains.RPC_ENCODING ) ;
+<i>287</i>&nbsp;
+<b class="nc"><i>288</i>&nbsp;        if (str == null || str.length() == 0)</b>
+<b class="nc"><i>289</i>&nbsp;            throw wrapper.badCodeSetString() ;</b>
+<i>290</i>&nbsp;
+<b class="nc"><i>291</i>&nbsp;        StringTokenizer stok = new StringTokenizer(str, &quot;, &quot;, false);</b>
+<b class="nc"><i>292</i>&nbsp;        int nativeSet = 0;</b>
+<b class="nc"><i>293</i>&nbsp;        int conversionInts[] = null;</b>
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;        try {
+<i>296</i>&nbsp;
+<i>297</i>&nbsp;            // The first value is the native code set
+<b class="nc"><i>298</i>&nbsp;            nativeSet = Integer.decode(stok.nextToken()).intValue();</b>
+<i>299</i>&nbsp;
+<b class="nc"><i>300</i>&nbsp;            if (OSFCodeSetRegistry.lookupEntry(nativeSet) == null)</b>
+<b class="nc"><i>301</i>&nbsp;                throw wrapper.unknownNativeCodeset( new Integer(nativeSet) ) ;</b>
+<i>302</i>&nbsp;
+<b class="nc"><i>303</i>&nbsp;            List conversionList = new ArrayList(10);</b>
+<i>304</i>&nbsp;
+<i>305</i>&nbsp;            // Now process the other values as part of the
+<i>306</i>&nbsp;            // conversion code set list.
+<b class="nc"><i>307</i>&nbsp;            while (stok.hasMoreTokens()) {</b>
+<i>308</i>&nbsp;
+<i>309</i>&nbsp;                // decode allows us to specify hex, decimal, etc
+<b class="nc"><i>310</i>&nbsp;                Integer value = Integer.decode(stok.nextToken());</b>
+<i>311</i>&nbsp;
+<b class="nc"><i>312</i>&nbsp;                if (OSFCodeSetRegistry.lookupEntry(value.intValue()) == null)</b>
+<b class="nc"><i>313</i>&nbsp;                    throw wrapper.unknownConversionCodeSet( value ) ;</b>
+<i>314</i>&nbsp;
+<b class="nc"><i>315</i>&nbsp;                conversionList.add(value);</b>
+<b class="nc"><i>316</i>&nbsp;            }</b>
+<i>317</i>&nbsp;
+<b class="nc"><i>318</i>&nbsp;            conversionInts = new int[conversionList.size()];</b>
+<i>319</i>&nbsp;
+<b class="nc"><i>320</i>&nbsp;            for (int i = 0; i &lt; conversionInts.length; i++)</b>
+<b class="nc"><i>321</i>&nbsp;                conversionInts[i] = ((Integer)conversionList.get(i)).intValue();</b>
+<i>322</i>&nbsp;
+<b class="nc"><i>323</i>&nbsp;        } catch (NumberFormatException nfe) {</b>
+<b class="nc"><i>324</i>&nbsp;            throw wrapper.invalidCodeSetNumber( nfe ) ;</b>
+<b class="nc"><i>325</i>&nbsp;        } catch (NoSuchElementException nsee) {</b>
+<b class="nc"><i>326</i>&nbsp;            throw wrapper.invalidCodeSetString( nsee, str ) ;</b>
+<b class="nc"><i>327</i>&nbsp;        }</b>
+<i>328</i>&nbsp;
+<i>329</i>&nbsp;        // Otherwise return the CodeSetComponent representing
+<i>330</i>&nbsp;        // the given values
+<b class="nc"><i>331</i>&nbsp;        return new CodeSetComponent(nativeSet, conversionInts);</b>
+<i>332</i>&nbsp;    }
+<i>333</i>&nbsp;
+<i>334</i>&nbsp;    /**
+<i>335</i>&nbsp;     * Code sets for local cases without a connection.
+<i>336</i>&nbsp;     */
+<i>337</i>&nbsp;    public static final CodeSetContext LOCAL_CODE_SETS
+<b class="nc"><i>338</i>&nbsp;        = new CodeSetContext(OSFCodeSetRegistry.ISO_8859_1.getNumber(),</b>
+<b class="nc"><i>339</i>&nbsp;                             OSFCodeSetRegistry.UTF_16.getNumber());</b>
+<i>340</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

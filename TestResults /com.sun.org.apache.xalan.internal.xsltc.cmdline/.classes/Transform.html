@@ -1,0 +1,375 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Transform</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.cmdline</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Transform (com.sun.org.apache.xalan.internal.xsltc.cmdline)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Transform</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 133)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: Transform.java,v 1.2.4.1 2005/09/12 09:07:33 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.cmdline;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.xalan.internal.utils.ObjectFactory;
+<i>27</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.DOMEnhancedForDTM;
+<i>28</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.StripFilter;
+<i>29</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.TransletException;
+<i>30</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg;
+<i>31</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.dom.DOMWSFilter;
+<i>32</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.dom.XSLTCDTMManager;
+<i>33</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;
+<i>34</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.runtime.Constants;
+<i>35</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.runtime.Parameter;
+<i>36</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.runtime.output.TransletOutputHandlerFactory;
+<i>37</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTMWSFilter;
+<i>38</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.SerializationHandler;
+<i>39</i>&nbsp;import java.io.FileNotFoundException;
+<i>40</i>&nbsp;import java.net.MalformedURLException;
+<i>41</i>&nbsp;import java.net.UnknownHostException;
+<i>42</i>&nbsp;import java.util.Vector;
+<i>43</i>&nbsp;import javax.xml.parsers.SAXParser;
+<i>44</i>&nbsp;import javax.xml.parsers.SAXParserFactory;
+<i>45</i>&nbsp;import javax.xml.transform.sax.SAXSource;
+<i>46</i>&nbsp;import org.xml.sax.InputSource;
+<i>47</i>&nbsp;import org.xml.sax.SAXException;
+<i>48</i>&nbsp;import org.xml.sax.XMLReader;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;/**
+<i>51</i>&nbsp; * @author Jacek Ambroziak
+<i>52</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>53</i>&nbsp; * @author G. Todd Miller
+<i>54</i>&nbsp; * @author Morten Jorgensen
+<i>55</i>&nbsp; */
+<i>56</i>&nbsp;final public class Transform {
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    private SerializationHandler _handler;
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    private String  _fileName;
+<i>61</i>&nbsp;    private String  _className;
+<i>62</i>&nbsp;    private String  _jarFileSrc;
+<b class="nc"><i>63</i>&nbsp;    private boolean _isJarFileSpecified = false;</b>
+<b class="nc"><i>64</i>&nbsp;    private Vector  _params = null;</b>
+<i>65</i>&nbsp;    private boolean _uri, _debug;
+<i>66</i>&nbsp;    private int     _iterations;
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    public Transform(String className, String fileName,
+<b class="nc"><i>69</i>&nbsp;                     boolean uri, boolean debug, int iterations) {</b>
+<b class="nc"><i>70</i>&nbsp;        _fileName = fileName;</b>
+<b class="nc"><i>71</i>&nbsp;        _className = className;</b>
+<b class="nc"><i>72</i>&nbsp;        _uri = uri;</b>
+<b class="nc"><i>73</i>&nbsp;        _debug = debug;</b>
+<b class="nc"><i>74</i>&nbsp;        _iterations = iterations;</b>
+<i>75</i>&nbsp;  }
+<i>76</i>&nbsp;
+<b class="nc"><i>77</i>&nbsp;   public String getFileName(){return _fileName;}</b>
+<b class="nc"><i>78</i>&nbsp;   public String getClassName(){return _className;}</b>
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    public void setParameters(Vector params) {
+<b class="nc"><i>81</i>&nbsp;        _params = params;</b>
+<i>82</i>&nbsp;    }
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    private void setJarFileInputSrc(boolean flag,  String jarFile) {
+<i>85</i>&nbsp;        // TODO: at this time we do not do anything with this
+<i>86</i>&nbsp;        // information, attempts to add the jarfile to the CLASSPATH
+<i>87</i>&nbsp;        // were successful via System.setProperty, but the effects
+<i>88</i>&nbsp;        // were not visible to the running JVM. For now we add jarfile
+<i>89</i>&nbsp;        // to CLASSPATH in the wrapper script that calls this program.
+<b class="nc"><i>90</i>&nbsp;        _isJarFileSpecified = flag;</b>
+<i>91</i>&nbsp;        // TODO verify jarFile exists...
+<b class="nc"><i>92</i>&nbsp;        _jarFileSrc = jarFile;</b>
+<i>93</i>&nbsp;    }
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    private void doTransform() {
+<i>96</i>&nbsp;        try {
+<b class="nc"><i>97</i>&nbsp;            final Class clazz = ObjectFactory.findProviderClass(_className, true);</b>
+<b class="nc"><i>98</i>&nbsp;            final AbstractTranslet translet = (AbstractTranslet)clazz.newInstance();</b>
+<b class="nc"><i>99</i>&nbsp;            translet.postInitialization();</b>
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;            // Create a SAX parser and get the XMLReader object it uses
+<b class="nc"><i>102</i>&nbsp;            final SAXParserFactory factory = SAXParserFactory.newInstance();</b>
+<i>103</i>&nbsp;            try {
+<b class="nc"><i>104</i>&nbsp;                factory.setFeature(Constants.NAMESPACE_FEATURE,true);</b>
+<i>105</i>&nbsp;            }
+<b class="nc"><i>106</i>&nbsp;            catch (Exception e) {</b>
+<b class="nc"><i>107</i>&nbsp;                factory.setNamespaceAware(true);</b>
+<b class="nc"><i>108</i>&nbsp;            }</b>
+<b class="nc"><i>109</i>&nbsp;            final SAXParser parser = factory.newSAXParser();</b>
+<b class="nc"><i>110</i>&nbsp;            final XMLReader reader = parser.getXMLReader();</b>
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;            // Set the DOM&#39;s DOM builder as the XMLReader&#39;s SAX2 content handler
+<i>113</i>&nbsp;            XSLTCDTMManager dtmManager =
+<b class="nc"><i>114</i>&nbsp;                XSLTCDTMManager.createNewDTMManagerInstance();</b>
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;            DTMWSFilter wsfilter;
+<b class="nc"><i>117</i>&nbsp;            if (translet != null &amp;&amp; translet instanceof StripFilter) {</b>
+<b class="nc"><i>118</i>&nbsp;                wsfilter = new DOMWSFilter(translet);</b>
+<i>119</i>&nbsp;            } else {
+<b class="nc"><i>120</i>&nbsp;                wsfilter = null;</b>
+<i>121</i>&nbsp;            }
+<i>122</i>&nbsp;
+<b class="nc"><i>123</i>&nbsp;            final DOMEnhancedForDTM dom =</b>
+<b class="nc"><i>124</i>&nbsp;                   (DOMEnhancedForDTM)dtmManager.getDTM(</b>
+<i>125</i>&nbsp;                            new SAXSource(reader, new InputSource(_fileName)),
+<b class="nc"><i>126</i>&nbsp;                            false, wsfilter, true, false, translet.hasIdCall());</b>
+<i>127</i>&nbsp;
+<b class="nc"><i>128</i>&nbsp;            dom.setDocumentURI(_fileName);</b>
+<b class="nc"><i>129</i>&nbsp;            translet.prepassDocument(dom);</b>
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;            // Pass global parameters
+<b class="nc"><i>132</i>&nbsp;            int n = _params.size();</b>
+<b class="nc"><i>133</i>&nbsp;            for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>134</i>&nbsp;                Parameter param = (Parameter) _params.elementAt(i);</b>
+<b class="nc"><i>135</i>&nbsp;                translet.addParameter(param._name, param._value);</b>
+<i>136</i>&nbsp;            }
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;            // Transform the document
+<i>139</i>&nbsp;            TransletOutputHandlerFactory tohFactory =
+<b class="nc"><i>140</i>&nbsp;                TransletOutputHandlerFactory.newInstance();</b>
+<b class="nc"><i>141</i>&nbsp;            tohFactory.setOutputType(TransletOutputHandlerFactory.STREAM);</b>
+<b class="nc"><i>142</i>&nbsp;            tohFactory.setEncoding(translet._encoding);</b>
+<b class="nc"><i>143</i>&nbsp;            tohFactory.setOutputMethod(translet._method);</b>
+<i>144</i>&nbsp;
+<b class="nc"><i>145</i>&nbsp;            if (_iterations == -1) {</b>
+<b class="nc"><i>146</i>&nbsp;                translet.transform(dom, tohFactory.getSerializationHandler());</b>
+<i>147</i>&nbsp;            }
+<b class="nc"><i>148</i>&nbsp;            else if (_iterations &gt; 0) {</b>
+<b class="nc"><i>149</i>&nbsp;                long mm = System.currentTimeMillis();</b>
+<b class="nc"><i>150</i>&nbsp;                for (int i = 0; i &lt; _iterations; i++) {</b>
+<b class="nc"><i>151</i>&nbsp;                    translet.transform(dom,</b>
+<b class="nc"><i>152</i>&nbsp;                                       tohFactory.getSerializationHandler());</b>
+<i>153</i>&nbsp;                }
+<b class="nc"><i>154</i>&nbsp;                mm = System.currentTimeMillis() - mm;</b>
+<i>155</i>&nbsp;
+<b class="nc"><i>156</i>&nbsp;                System.err.println(&quot;\n&lt;!--&quot;);</b>
+<b class="nc"><i>157</i>&nbsp;                System.err.println(&quot;  transform  = &quot;</b>
+<i>158</i>&nbsp;                                   + (((double) mm) / ((double) _iterations))
+<i>159</i>&nbsp;                                   + &quot; ms&quot;);
+<b class="nc"><i>160</i>&nbsp;                System.err.println(&quot;  throughput = &quot;</b>
+<i>161</i>&nbsp;                                   + (1000.0 / (((double) mm)
+<i>162</i>&nbsp;                                                 / ((double) _iterations)))
+<i>163</i>&nbsp;                                   + &quot; tps&quot;);
+<b class="nc"><i>164</i>&nbsp;                System.err.println(&quot;--&gt;&quot;);</b>
+<i>165</i>&nbsp;            }
+<i>166</i>&nbsp;        }
+<b class="nc"><i>167</i>&nbsp;        catch (TransletException e) {</b>
+<b class="nc"><i>168</i>&nbsp;            if (_debug) e.printStackTrace();</b>
+<b class="nc"><i>169</i>&nbsp;            System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY)+</b>
+<b class="nc"><i>170</i>&nbsp;                   e.getMessage());</b>
+<i>171</i>&nbsp;        }
+<b class="nc"><i>172</i>&nbsp;        catch (RuntimeException e) {</b>
+<b class="nc"><i>173</i>&nbsp;            if (_debug) e.printStackTrace();</b>
+<b class="nc"><i>174</i>&nbsp;            System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY)+</b>
+<b class="nc"><i>175</i>&nbsp;                               e.getMessage());</b>
+<i>176</i>&nbsp;        }
+<b class="nc"><i>177</i>&nbsp;        catch (FileNotFoundException e) {</b>
+<b class="nc"><i>178</i>&nbsp;            if (_debug) e.printStackTrace();</b>
+<b class="nc"><i>179</i>&nbsp;            ErrorMsg err = new ErrorMsg(ErrorMsg.FILE_NOT_FOUND_ERR, _fileName);</b>
+<b class="nc"><i>180</i>&nbsp;            System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY)+</b>
+<b class="nc"><i>181</i>&nbsp;                               err.toString());</b>
+<i>182</i>&nbsp;        }
+<b class="nc"><i>183</i>&nbsp;        catch (MalformedURLException e) {</b>
+<b class="nc"><i>184</i>&nbsp;            if (_debug) e.printStackTrace();</b>
+<b class="nc"><i>185</i>&nbsp;            ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_URI_ERR, _fileName);</b>
+<b class="nc"><i>186</i>&nbsp;            System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY)+</b>
+<b class="nc"><i>187</i>&nbsp;                               err.toString());</b>
+<i>188</i>&nbsp;        }
+<b class="nc"><i>189</i>&nbsp;        catch (ClassNotFoundException e) {</b>
+<b class="nc"><i>190</i>&nbsp;            if (_debug) e.printStackTrace();</b>
+<b class="nc"><i>191</i>&nbsp;            ErrorMsg err= new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR,_className);</b>
+<b class="nc"><i>192</i>&nbsp;            System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY)+</b>
+<b class="nc"><i>193</i>&nbsp;                               err.toString());</b>
+<i>194</i>&nbsp;        }
+<b class="nc"><i>195</i>&nbsp;        catch (UnknownHostException e) {</b>
+<b class="nc"><i>196</i>&nbsp;            if (_debug) e.printStackTrace();</b>
+<b class="nc"><i>197</i>&nbsp;            ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_URI_ERR, _fileName);</b>
+<b class="nc"><i>198</i>&nbsp;            System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY)+</b>
+<b class="nc"><i>199</i>&nbsp;                               err.toString());</b>
+<i>200</i>&nbsp;        }
+<b class="nc"><i>201</i>&nbsp;        catch (SAXException e) {</b>
+<b class="nc"><i>202</i>&nbsp;            Exception ex = e.getException();</b>
+<b class="nc"><i>203</i>&nbsp;            if (_debug) {</b>
+<b class="nc"><i>204</i>&nbsp;                if (ex != null) ex.printStackTrace();</b>
+<b class="nc"><i>205</i>&nbsp;                e.printStackTrace();</b>
+<i>206</i>&nbsp;            }
+<b class="nc"><i>207</i>&nbsp;            System.err.print(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY));</b>
+<b class="nc"><i>208</i>&nbsp;            if (ex != null)</b>
+<b class="nc"><i>209</i>&nbsp;                System.err.println(ex.getMessage());</b>
+<i>210</i>&nbsp;            else
+<b class="nc"><i>211</i>&nbsp;                System.err.println(e.getMessage());</b>
+<i>212</i>&nbsp;        }
+<b class="nc"><i>213</i>&nbsp;        catch (Exception e) {</b>
+<b class="nc"><i>214</i>&nbsp;            if (_debug) e.printStackTrace();</b>
+<b class="nc"><i>215</i>&nbsp;            System.err.println(new ErrorMsg(ErrorMsg.RUNTIME_ERROR_KEY)+</b>
+<b class="nc"><i>216</i>&nbsp;                               e.getMessage());</b>
+<b class="nc"><i>217</i>&nbsp;        }</b>
+<i>218</i>&nbsp;    }
+<i>219</i>&nbsp;
+<i>220</i>&nbsp;    public static void printUsage() {
+<b class="nc"><i>221</i>&nbsp;        System.err.println(new ErrorMsg(ErrorMsg.TRANSFORM_USAGE_STR));</b>
+<i>222</i>&nbsp;    }
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;    public static void main(String[] args) {
+<i>225</i>&nbsp;        try {
+<b class="nc"><i>226</i>&nbsp;            if (args.length &gt; 0) {</b>
+<i>227</i>&nbsp;                int i;
+<b class="nc"><i>228</i>&nbsp;                int iterations = -1;</b>
+<b class="nc"><i>229</i>&nbsp;                boolean uri = false, debug = false;</b>
+<b class="nc"><i>230</i>&nbsp;                boolean isJarFileSpecified = false;</b>
+<b class="nc"><i>231</i>&nbsp;                String  jarFile = null;</b>
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;                // Parse options starting with &#39;-&#39;
+<b class="nc"><i>234</i>&nbsp;                for (i = 0; i &lt; args.length &amp;&amp; args[i].charAt(0) == &#39;-&#39;; i++) {</b>
+<b class="nc"><i>235</i>&nbsp;                    if (args[i].equals(&quot;-u&quot;)) {</b>
+<b class="nc"><i>236</i>&nbsp;                        uri = true;</b>
+<i>237</i>&nbsp;                    }
+<b class="nc"><i>238</i>&nbsp;                    else if (args[i].equals(&quot;-x&quot;)) {</b>
+<b class="nc"><i>239</i>&nbsp;                        debug = true;</b>
+<i>240</i>&nbsp;                    }
+<b class="nc"><i>241</i>&nbsp;                    else if (args[i].equals(&quot;-j&quot;)) {</b>
+<b class="nc"><i>242</i>&nbsp;                        isJarFileSpecified = true;</b>
+<b class="nc"><i>243</i>&nbsp;                        jarFile = args[++i];</b>
+<i>244</i>&nbsp;                    }
+<b class="nc"><i>245</i>&nbsp;                    else if (args[i].equals(&quot;-n&quot;)) {</b>
+<i>246</i>&nbsp;                        try {
+<b class="nc"><i>247</i>&nbsp;                            iterations = Integer.parseInt(args[++i]);</b>
+<i>248</i>&nbsp;                        }
+<b class="nc"><i>249</i>&nbsp;                        catch (NumberFormatException e) {</b>
+<i>250</i>&nbsp;                            // ignore
+<b class="nc"><i>251</i>&nbsp;                        }</b>
+<i>252</i>&nbsp;                    }
+<i>253</i>&nbsp;                    else {
+<b class="nc"><i>254</i>&nbsp;                        printUsage();</b>
+<i>255</i>&nbsp;                    }
+<i>256</i>&nbsp;                }
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;                // Enough arguments left ?
+<b class="nc"><i>259</i>&nbsp;                if (args.length - i &lt; 2) printUsage();</b>
+<i>260</i>&nbsp;
+<i>261</i>&nbsp;                // Get document file and class name
+<b class="nc"><i>262</i>&nbsp;                Transform handler = new Transform(args[i+1], args[i], uri,</b>
+<i>263</i>&nbsp;                    debug, iterations);
+<b class="nc"><i>264</i>&nbsp;                handler.setJarFileInputSrc(isJarFileSpecified,  jarFile);</b>
+<i>265</i>&nbsp;
+<i>266</i>&nbsp;                // Parse stylesheet parameters
+<b class="nc"><i>267</i>&nbsp;                Vector params = new Vector();</b>
+<b class="nc"><i>268</i>&nbsp;                for (i += 2; i &lt; args.length; i++) {</b>
+<b class="nc"><i>269</i>&nbsp;                    final int equal = args[i].indexOf(&#39;=&#39;);</b>
+<b class="nc"><i>270</i>&nbsp;                    if (equal &gt; 0) {</b>
+<b class="nc"><i>271</i>&nbsp;                        final String name  = args[i].substring(0, equal);</b>
+<b class="nc"><i>272</i>&nbsp;                        final String value = args[i].substring(equal+1);</b>
+<b class="nc"><i>273</i>&nbsp;                        params.addElement(new Parameter(name, value));</b>
+<b class="nc"><i>274</i>&nbsp;                    }</b>
+<i>275</i>&nbsp;                    else {
+<b class="nc"><i>276</i>&nbsp;                        printUsage();</b>
+<i>277</i>&nbsp;                    }
+<i>278</i>&nbsp;                }
+<i>279</i>&nbsp;
+<b class="nc"><i>280</i>&nbsp;                if (i == args.length) {</b>
+<b class="nc"><i>281</i>&nbsp;                    handler.setParameters(params);</b>
+<b class="nc"><i>282</i>&nbsp;                    handler.doTransform();</b>
+<i>283</i>&nbsp;                }
+<b class="nc"><i>284</i>&nbsp;            } else {</b>
+<b class="nc"><i>285</i>&nbsp;                printUsage();</b>
+<i>286</i>&nbsp;            }
+<i>287</i>&nbsp;        }
+<b class="nc"><i>288</i>&nbsp;        catch (Exception e) {</b>
+<b class="nc"><i>289</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>290</i>&nbsp;        }</b>
+<i>291</i>&nbsp;    }
+<i>292</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

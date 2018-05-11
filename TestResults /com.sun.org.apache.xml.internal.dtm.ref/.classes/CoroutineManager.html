@@ -1,0 +1,429 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CoroutineManager</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.dtm.ref</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CoroutineManager (com.sun.org.apache.xml.internal.dtm.ref)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CoroutineManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 44)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: CoroutineManager.java,v 1.2.4.1 2005/09/15 08:14:58 suresh_emailid Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.dtm.ref;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.util.BitSet;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import com.sun.org.apache.xml.internal.res.XMLErrorResources;
+<i>28</i>&nbsp;import com.sun.org.apache.xml.internal.res.XMLMessages;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;/**
+<i>32</i>&nbsp; * &lt;p&gt;Support the coroutine design pattern.&lt;/p&gt;
+<i>33</i>&nbsp; *
+<i>34</i>&nbsp; * &lt;p&gt;A coroutine set is a very simple cooperative non-preemptive
+<i>35</i>&nbsp; * multitasking model, where the switch from one task to another is
+<i>36</i>&nbsp; * performed via an explicit request. Coroutines interact according to
+<i>37</i>&nbsp; * the following rules:&lt;/p&gt;
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; * &lt;ul&gt;
+<i>40</i>&nbsp; * &lt;li&gt;One coroutine in the set has control, which it retains until it
+<i>41</i>&nbsp; * either exits or resumes another coroutine.&lt;/li&gt;
+<i>42</i>&nbsp; * &lt;li&gt;A coroutine is activated when it is resumed by some other coroutine
+<i>43</i>&nbsp; * for the first time.&lt;/li&gt;
+<i>44</i>&nbsp; * &lt;li&gt;An active coroutine that gives up control by resuming another in
+<i>45</i>&nbsp; * the set retains its context -- including call stack and local variables
+<i>46</i>&nbsp; * -- so that if/when it is resumed, it will proceed from the point at which
+<i>47</i>&nbsp; * it last gave up control.&lt;/li&gt;
+<i>48</i>&nbsp; * &lt;/ul&gt;
+<i>49</i>&nbsp; *
+<i>50</i>&nbsp; * &lt;p&gt;Coroutines can be thought of as falling somewhere between pipes and
+<i>51</i>&nbsp; * subroutines. Like call/return, there is an explicit flow of control
+<i>52</i>&nbsp; * from one coroutine to another. Like pipes, neither coroutine is
+<i>53</i>&nbsp; * actually &quot;in charge&quot;, and neither must exit in order to transfer
+<i>54</i>&nbsp; * control to the other. &lt;/p&gt;
+<i>55</i>&nbsp; *
+<i>56</i>&nbsp; * &lt;p&gt;One classic application of coroutines is in compilers, where both
+<i>57</i>&nbsp; * the parser and the lexer are maintaining complex state
+<i>58</i>&nbsp; * information. The parser resumes the lexer to process incoming
+<i>59</i>&nbsp; * characters into lexical tokens, and the lexer resumes the parser
+<i>60</i>&nbsp; * when it has reached a point at which it has a reliably interpreted
+<i>61</i>&nbsp; * set of tokens available for semantic processing. Structuring this
+<i>62</i>&nbsp; * as call-and-return would require saving and restoring a
+<i>63</i>&nbsp; * considerable amount of state each time. Structuring it as two tasks
+<i>64</i>&nbsp; * connected by a queue may involve higher overhead (in systems which
+<i>65</i>&nbsp; * can optimize the coroutine metaphor), isn&#39;t necessarily as clear in
+<i>66</i>&nbsp; * intent, may have trouble handling cases where data flows in both
+<i>67</i>&nbsp; * directions, and may not handle some of the more complex cases where
+<i>68</i>&nbsp; * more than two coroutines are involved.&lt;/p&gt;
+<i>69</i>&nbsp; *
+<i>70</i>&nbsp; * &lt;p&gt;Most coroutine systems also provide a way to pass data between the
+<i>71</i>&nbsp; * source and target of a resume operation; this is sometimes referred
+<i>72</i>&nbsp; * to as &quot;yielding&quot; a value.  Others rely on the fact that, since only
+<i>73</i>&nbsp; * one member of a coroutine set is running at a time and does not
+<i>74</i>&nbsp; * lose control until it chooses to do so, data structures may be
+<i>75</i>&nbsp; * directly shared between them with only minimal precautions.&lt;/p&gt;
+<i>76</i>&nbsp; *
+<i>77</i>&nbsp; * &lt;p&gt;&quot;Note: This should not be taken to mean that producer/consumer
+<i>78</i>&nbsp; * problems should be always be done with coroutines.&quot; Queueing is
+<i>79</i>&nbsp; * often a better solution when only two threads of execution are
+<i>80</i>&nbsp; * involved and full two-way handshaking is not required. It&#39;s a bit
+<i>81</i>&nbsp; * difficult to find short pedagogical examples that require
+<i>82</i>&nbsp; * coroutines for a clear solution.&lt;/p&gt;
+<i>83</i>&nbsp; *
+<i>84</i>&nbsp; * &lt;p&gt;The fact that only one of a group of coroutines is running at a
+<i>85</i>&nbsp; * time, and the control transfer between them is explicit, simplifies
+<i>86</i>&nbsp; * their possible interactions, and in some implementations permits
+<i>87</i>&nbsp; * them to be implemented more efficiently than general multitasking.
+<i>88</i>&nbsp; * In some situations, coroutines can be compiled out entirely;
+<i>89</i>&nbsp; * in others, they may only require a few instructions more than a
+<i>90</i>&nbsp; * simple function call.&lt;/p&gt;
+<i>91</i>&nbsp; *
+<i>92</i>&nbsp; * &lt;p&gt;This version is built on top of standard Java threading, since
+<i>93</i>&nbsp; * that&#39;s all we have available right now. It&#39;s been encapsulated for
+<i>94</i>&nbsp; * code clarity and possible future optimization.&lt;/p&gt;
+<i>95</i>&nbsp; *
+<i>96</i>&nbsp; * &lt;p&gt;(Two possible approaches: wait-notify based and queue-based. Some
+<i>97</i>&nbsp; * folks think that a one-item queue is a cleaner solution because it&#39;s
+<i>98</i>&nbsp; * more abstract -- but since coroutine _is_ an abstraction I&#39;m not really
+<i>99</i>&nbsp; * worried about that; folks should be able to switch this code without
+<i>100</i>&nbsp; * concern.)&lt;/p&gt;
+<i>101</i>&nbsp; *
+<i>102</i>&nbsp; * &lt;p&gt;%TBD% THIS SHOULD BE AN INTERFACE, to facilitate building other
+<i>103</i>&nbsp; * implementations... perhaps including a true coroutine system
+<i>104</i>&nbsp; * someday, rather than controlled threading. Arguably Coroutine
+<i>105</i>&nbsp; * itself should be an interface much like Runnable, but I think that
+<i>106</i>&nbsp; * can be built on top of this.&lt;/p&gt;
+<i>107</i>&nbsp; * */
+<b class="nc"><i>108</i>&nbsp;public class CoroutineManager</b>
+<i>109</i>&nbsp;{
+<i>110</i>&nbsp;  /** &quot;Is this coroutine ID number already in use&quot; lookup table.
+<i>111</i>&nbsp;   * Currently implemented as a bitset as a compromise between
+<i>112</i>&nbsp;   * compactness and speed of access, but obviously other solutions
+<i>113</i>&nbsp;   * could be applied.
+<i>114</i>&nbsp;   * */
+<b class="nc"><i>115</i>&nbsp;  BitSet m_activeIDs=new BitSet();</b>
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;  /** Limit on the coroutine ID numbers accepted. I didn&#39;t want the
+<i>118</i>&nbsp;   * in-use table to grow without bound. If we switch to a more efficient
+<i>119</i>&nbsp;   * sparse-array mechanism, it may be possible to raise or eliminate
+<i>120</i>&nbsp;   * this boundary.
+<i>121</i>&nbsp;   * @xsl.usage internal
+<i>122</i>&nbsp;   */
+<i>123</i>&nbsp;  static final int m_unreasonableId=1024;
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;  /** Internal field used to hold the data being explicitly passed
+<i>126</i>&nbsp;   * from one coroutine to another during a co_resume() operation.
+<i>127</i>&nbsp;   * (Of course implicit data sharing may also occur; one of the reasons
+<i>128</i>&nbsp;   * for using coroutines is that you&#39;re guaranteed that none of the
+<i>129</i>&nbsp;   * other coroutines in your set are using shared structures at the time
+<i>130</i>&nbsp;   * you access them.)
+<i>131</i>&nbsp;   *
+<i>132</i>&nbsp;   * %REVIEW% It&#39;s been proposed that we be able to pass types of data
+<i>133</i>&nbsp;   * other than Object -- more specific object types, or
+<i>134</i>&nbsp;   * lighter-weight primitives.  This would seem to create a potential
+<i>135</i>&nbsp;   * explosion of &quot;pass x recieve y back&quot; methods (or require
+<i>136</i>&nbsp;   * fracturing resume into two calls, resume-other and
+<i>137</i>&nbsp;   * wait-to-be-resumed), and the weight issue could be managed by
+<i>138</i>&nbsp;   * reusing a mutable buffer object to contain the primitive
+<i>139</i>&nbsp;   * (remember that only one coroutine runs at a time, so once the
+<i>140</i>&nbsp;   * buffer&#39;s set it won&#39;t be walked on). Typechecking objects is
+<i>141</i>&nbsp;   * interesting from a code-robustness point of view, but it&#39;s
+<i>142</i>&nbsp;   * unclear whether it makes sense to encapsulate that in the
+<i>143</i>&nbsp;   * coroutine code or let the callers do it, since it depends on RTTI
+<i>144</i>&nbsp;   * either way. Restricting the parameters to objects implementing a
+<i>145</i>&nbsp;   * specific CoroutineParameter interface does _not_ seem to be a net
+<i>146</i>&nbsp;   * win; applications can do so if they want via front-end code, but
+<i>147</i>&nbsp;   * there seem to be too many use cases involving passing an existing
+<i>148</i>&nbsp;   * object type that you may not have the freedom to alter and may
+<i>149</i>&nbsp;   * not want to spend time wrapping another object around.
+<i>150</i>&nbsp;   * */
+<b class="nc"><i>151</i>&nbsp;  Object m_yield=null;</b>
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;  // Expose???
+<i>154</i>&nbsp;  final static int NOBODY=-1;
+<i>155</i>&nbsp;  final static int ANYBODY=-1;
+<i>156</i>&nbsp;
+<i>157</i>&nbsp;  /** Internal field used to confirm that the coroutine now waking up is
+<i>158</i>&nbsp;   * in fact the one we intended to resume. Some such selection mechanism
+<i>159</i>&nbsp;   * is needed when more that two coroutines are operating within the same
+<i>160</i>&nbsp;   * group.
+<i>161</i>&nbsp;   */
+<b class="nc"><i>162</i>&nbsp;  int m_nextCoroutine=NOBODY;</b>
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;  /** &lt;p&gt;Each coroutine in the set managed by a single
+<i>165</i>&nbsp;   * CoroutineManager is identified by a small positive integer. This
+<i>166</i>&nbsp;   * brings up the question of how to manage those integers to avoid
+<i>167</i>&nbsp;   * reuse... since if two coroutines use the same ID number, resuming
+<i>168</i>&nbsp;   * that ID could resume either. I can see arguments for either
+<i>169</i>&nbsp;   * allowing applications to select their own numbers (they may want
+<i>170</i>&nbsp;   * to declare mnemonics via manefest constants) or generating
+<i>171</i>&nbsp;   * numbers on demand.  This routine&#39;s intended to support both
+<i>172</i>&nbsp;   * approaches.&lt;/p&gt;
+<i>173</i>&nbsp;   *
+<i>174</i>&nbsp;   * &lt;p&gt;%REVIEW% We could use an object as the identifier. Not sure
+<i>175</i>&nbsp;   * it&#39;s a net gain, though it would allow the thread to be its own
+<i>176</i>&nbsp;   * ID. Ponder.&lt;/p&gt;
+<i>177</i>&nbsp;   *
+<i>178</i>&nbsp;   * @param coroutineID  If &gt;=0, requests that we reserve this number.
+<i>179</i>&nbsp;   * If &lt;0, requests that we find, reserve, and return an available ID
+<i>180</i>&nbsp;   * number.
+<i>181</i>&nbsp;   *
+<i>182</i>&nbsp;   * @return If &gt;=0, the ID number to be used by this coroutine. If &lt;0,
+<i>183</i>&nbsp;   * an error occurred -- the ID requested was already in use, or we
+<i>184</i>&nbsp;   * couldn&#39;t assign one without going over the &quot;unreasonable value&quot; mark
+<i>185</i>&nbsp;   * */
+<i>186</i>&nbsp;  public synchronized int co_joinCoroutineSet(int coroutineID)
+<i>187</i>&nbsp;  {
+<b class="nc"><i>188</i>&nbsp;    if(coroutineID&gt;=0)</b>
+<i>189</i>&nbsp;      {
+<b class="nc"><i>190</i>&nbsp;        if(coroutineID&gt;=m_unreasonableId || m_activeIDs.get(coroutineID))</b>
+<b class="nc"><i>191</i>&nbsp;          return -1;</b>
+<i>192</i>&nbsp;      }
+<i>193</i>&nbsp;    else
+<i>194</i>&nbsp;      {
+<i>195</i>&nbsp;        // What I want is &quot;Find first clear bit&quot;. That doesn&#39;t exist.
+<i>196</i>&nbsp;        // JDK1.2 added &quot;find last set bit&quot;, but that doesn&#39;t help now.
+<b class="nc"><i>197</i>&nbsp;        coroutineID=0;</b>
+<b class="nc"><i>198</i>&nbsp;        while(coroutineID&lt;m_unreasonableId)</b>
+<i>199</i>&nbsp;          {
+<b class="nc"><i>200</i>&nbsp;            if(m_activeIDs.get(coroutineID))</b>
+<b class="nc"><i>201</i>&nbsp;              ++coroutineID;</b>
+<i>202</i>&nbsp;            else
+<i>203</i>&nbsp;              break;
+<i>204</i>&nbsp;          }
+<b class="nc"><i>205</i>&nbsp;        if(coroutineID&gt;=m_unreasonableId)</b>
+<b class="nc"><i>206</i>&nbsp;          return -1;</b>
+<i>207</i>&nbsp;      }
+<i>208</i>&nbsp;
+<b class="nc"><i>209</i>&nbsp;    m_activeIDs.set(coroutineID);</b>
+<b class="nc"><i>210</i>&nbsp;    return coroutineID;</b>
+<i>211</i>&nbsp;  }
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;  /** In the standard coroutine architecture, coroutines are
+<i>214</i>&nbsp;   * identified by their method names and are launched and run up to
+<i>215</i>&nbsp;   * their first yield by simply resuming them; its&#39;s presumed that
+<i>216</i>&nbsp;   * this recognizes the not-already-running case and does the right
+<i>217</i>&nbsp;   * thing. We seem to need a way to achieve that same threadsafe
+<i>218</i>&nbsp;   * run-up...  eg, start the coroutine with a wait.
+<i>219</i>&nbsp;   *
+<i>220</i>&nbsp;   * %TBD% whether this makes any sense...
+<i>221</i>&nbsp;   *
+<i>222</i>&nbsp;   * @param thisCoroutine the identifier of this coroutine, so we can
+<i>223</i>&nbsp;   * recognize when we are being resumed.
+<i>224</i>&nbsp;   * @exception java.lang.NoSuchMethodException if thisCoroutine isn&#39;t
+<i>225</i>&nbsp;   * a registered member of this group. %REVIEW% whether this is the
+<i>226</i>&nbsp;   * best choice.
+<i>227</i>&nbsp;   * */
+<i>228</i>&nbsp;  public synchronized Object co_entry_pause(int thisCoroutine) throws java.lang.NoSuchMethodException
+<i>229</i>&nbsp;  {
+<b class="nc"><i>230</i>&nbsp;    if(!m_activeIDs.get(thisCoroutine))</b>
+<b class="nc"><i>231</i>&nbsp;      throw new java.lang.NoSuchMethodException();</b>
+<i>232</i>&nbsp;
+<b class="nc"><i>233</i>&nbsp;    while(m_nextCoroutine != thisCoroutine)</b>
+<i>234</i>&nbsp;      {
+<i>235</i>&nbsp;        try
+<i>236</i>&nbsp;          {
+<b class="nc"><i>237</i>&nbsp;            wait();</b>
+<i>238</i>&nbsp;          }
+<b class="nc"><i>239</i>&nbsp;        catch(java.lang.InterruptedException e)</b>
+<i>240</i>&nbsp;          {
+<i>241</i>&nbsp;            // %TBD% -- Declare? Encapsulate? Ignore? Or
+<i>242</i>&nbsp;            // dance widdershins about the instruction cache?
+<b class="nc"><i>243</i>&nbsp;          }</b>
+<i>244</i>&nbsp;      }
+<i>245</i>&nbsp;
+<b class="nc"><i>246</i>&nbsp;    return m_yield;</b>
+<i>247</i>&nbsp;  }
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;  /** Transfer control to another coroutine which has already been started and
+<i>250</i>&nbsp;   * is waiting on this CoroutineManager. We won&#39;t return from this call
+<i>251</i>&nbsp;   * until that routine has relinquished control.
+<i>252</i>&nbsp;   *
+<i>253</i>&nbsp;   * %TBD% What should we do if toCoroutine isn&#39;t registered? Exception?
+<i>254</i>&nbsp;   *
+<i>255</i>&nbsp;   * @param arg_object A value to be passed to the other coroutine.
+<i>256</i>&nbsp;   * @param thisCoroutine Integer identifier for this coroutine. This is the
+<i>257</i>&nbsp;   * ID we watch for to see if we&#39;re the ones being resumed.
+<i>258</i>&nbsp;   * @param toCoroutine  Integer identifier for the coroutine we wish to
+<i>259</i>&nbsp;   * invoke.
+<i>260</i>&nbsp;   * @exception java.lang.NoSuchMethodException if toCoroutine isn&#39;t a
+<i>261</i>&nbsp;   * registered member of this group. %REVIEW% whether this is the best choice.
+<i>262</i>&nbsp;   * */
+<i>263</i>&nbsp;  public synchronized Object co_resume(Object arg_object,int thisCoroutine,int toCoroutine) throws java.lang.NoSuchMethodException
+<i>264</i>&nbsp;  {
+<b class="nc"><i>265</i>&nbsp;    if(!m_activeIDs.get(toCoroutine))</b>
+<b class="nc"><i>266</i>&nbsp;      throw new java.lang.NoSuchMethodException(XMLMessages.createXMLMessage(XMLErrorResources.ER_COROUTINE_NOT_AVAIL, new Object[]{Integer.toString(toCoroutine)})); //&quot;Coroutine not available, id=&quot;+toCoroutine);</b>
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;    // We expect these values to be overwritten during the notify()/wait()
+<i>269</i>&nbsp;    // periods, as other coroutines in this set get their opportunity to run.
+<b class="nc"><i>270</i>&nbsp;    m_yield=arg_object;</b>
+<b class="nc"><i>271</i>&nbsp;    m_nextCoroutine=toCoroutine;</b>
+<i>272</i>&nbsp;
+<b class="nc"><i>273</i>&nbsp;    notify();</b>
+<b class="nc"><i>274</i>&nbsp;    while(m_nextCoroutine != thisCoroutine || m_nextCoroutine==ANYBODY || m_nextCoroutine==NOBODY)</b>
+<i>275</i>&nbsp;      {
+<i>276</i>&nbsp;        try
+<i>277</i>&nbsp;          {
+<i>278</i>&nbsp;            // System.out.println(&quot;waiting...&quot;);
+<b class="nc"><i>279</i>&nbsp;            wait();</b>
+<i>280</i>&nbsp;          }
+<b class="nc"><i>281</i>&nbsp;        catch(java.lang.InterruptedException e)</b>
+<i>282</i>&nbsp;          {
+<i>283</i>&nbsp;            // %TBD% -- Declare? Encapsulate? Ignore? Or
+<i>284</i>&nbsp;            // dance deasil about the program counter?
+<b class="nc"><i>285</i>&nbsp;          }</b>
+<i>286</i>&nbsp;      }
+<i>287</i>&nbsp;
+<b class="nc"><i>288</i>&nbsp;    if(m_nextCoroutine==NOBODY)</b>
+<i>289</i>&nbsp;      {
+<i>290</i>&nbsp;        // Pass it along
+<b class="nc"><i>291</i>&nbsp;        co_exit(thisCoroutine);</b>
+<i>292</i>&nbsp;        // And inform this coroutine that its partners are Going Away
+<i>293</i>&nbsp;        // %REVIEW% Should this throw/return something more useful?
+<b class="nc"><i>294</i>&nbsp;        throw new java.lang.NoSuchMethodException(XMLMessages.createXMLMessage(XMLErrorResources.ER_COROUTINE_CO_EXIT, null)); //&quot;CoroutineManager recieved co_exit() request&quot;);</b>
+<i>295</i>&nbsp;      }
+<i>296</i>&nbsp;
+<b class="nc"><i>297</i>&nbsp;    return m_yield;</b>
+<i>298</i>&nbsp;  }
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;  /** Terminate this entire set of coroutines. The others will be
+<i>301</i>&nbsp;   * deregistered and have exceptions thrown at them. Note that this
+<i>302</i>&nbsp;   * is intended as a panic-shutdown operation; under normal
+<i>303</i>&nbsp;   * circumstances a coroutine should always end with co_exit_to() in
+<i>304</i>&nbsp;   * order to politely inform at least one of its partners that it is
+<i>305</i>&nbsp;   * going away.
+<i>306</i>&nbsp;   *
+<i>307</i>&nbsp;   * %TBD% This may need significantly more work.
+<i>308</i>&nbsp;   *
+<i>309</i>&nbsp;   * %TBD% Should this just be co_exit_to(,,CoroutineManager.PANIC)?
+<i>310</i>&nbsp;   *
+<i>311</i>&nbsp;   * @param thisCoroutine Integer identifier for the coroutine requesting exit.
+<i>312</i>&nbsp;   * */
+<i>313</i>&nbsp;  public synchronized void co_exit(int thisCoroutine)
+<i>314</i>&nbsp;  {
+<b class="nc"><i>315</i>&nbsp;    m_activeIDs.clear(thisCoroutine);</b>
+<b class="nc"><i>316</i>&nbsp;    m_nextCoroutine=NOBODY; // %REVIEW%</b>
+<b class="nc"><i>317</i>&nbsp;    notify();</b>
+<i>318</i>&nbsp;  }
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;  /** Make the ID available for reuse and terminate this coroutine,
+<i>321</i>&nbsp;   * transferring control to the specified coroutine. Note that this
+<i>322</i>&nbsp;   * returns immediately rather than waiting for any further coroutine
+<i>323</i>&nbsp;   * traffic, so the thread can proceed with other shutdown activities.
+<i>324</i>&nbsp;   *
+<i>325</i>&nbsp;   * @param arg_object    A value to be passed to the other coroutine.
+<i>326</i>&nbsp;   * @param thisCoroutine Integer identifier for the coroutine leaving the set.
+<i>327</i>&nbsp;   * @param toCoroutine   Integer identifier for the coroutine we wish to
+<i>328</i>&nbsp;   * invoke.
+<i>329</i>&nbsp;   * @exception java.lang.NoSuchMethodException if toCoroutine isn&#39;t a
+<i>330</i>&nbsp;   * registered member of this group. %REVIEW% whether this is the best choice.
+<i>331</i>&nbsp;   * */
+<i>332</i>&nbsp;  public synchronized void co_exit_to(Object arg_object,int thisCoroutine,int toCoroutine) throws java.lang.NoSuchMethodException
+<i>333</i>&nbsp;  {
+<b class="nc"><i>334</i>&nbsp;    if(!m_activeIDs.get(toCoroutine))</b>
+<b class="nc"><i>335</i>&nbsp;      throw new java.lang.NoSuchMethodException(XMLMessages.createXMLMessage(XMLErrorResources.ER_COROUTINE_NOT_AVAIL, new Object[]{Integer.toString(toCoroutine)})); //&quot;Coroutine not available, id=&quot;+toCoroutine);</b>
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;    // We expect these values to be overwritten during the notify()/wait()
+<i>338</i>&nbsp;    // periods, as other coroutines in this set get their opportunity to run.
+<b class="nc"><i>339</i>&nbsp;    m_yield=arg_object;</b>
+<b class="nc"><i>340</i>&nbsp;    m_nextCoroutine=toCoroutine;</b>
+<i>341</i>&nbsp;
+<b class="nc"><i>342</i>&nbsp;    m_activeIDs.clear(thisCoroutine);</b>
+<i>343</i>&nbsp;
+<b class="nc"><i>344</i>&nbsp;    notify();</b>
+<i>345</i>&nbsp;  }
+<i>346</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

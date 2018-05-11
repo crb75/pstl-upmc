@@ -1,0 +1,186 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Utility</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.naming.namingutil</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Utility (com.sun.corba.se.impl.naming.namingutil)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Utility</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 27)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2002, 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.naming.namingutil;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.io.StringWriter;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import org.omg.CORBA.DATA_CONVERSION;
+<i>31</i>&nbsp;import org.omg.CORBA.CompletionStatus;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import com.sun.corba.se.impl.logging.NamingSystemException;
+<i>34</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; *  Utility methods for Naming.
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; *  @Author Hemanth
+<i>40</i>&nbsp; */
+<b class="nc"><i>41</i>&nbsp;class Utility {</b>
+<i>42</i>&nbsp;    private static NamingSystemException wrapper =
+<b class="nc"><i>43</i>&nbsp;        NamingSystemException.get( CORBALogDomains.NAMING ) ;</b>
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    /**
+<i>46</i>&nbsp;     * cleanEscapes removes URL escapes as per IETF 2386 RFP.
+<i>47</i>&nbsp;     */
+<i>48</i>&nbsp;    static String cleanEscapes( String stringToDecode ) {
+<b class="nc"><i>49</i>&nbsp;        StringWriter theStringWithoutEscape = new StringWriter();</b>
+<b class="nc"><i>50</i>&nbsp;        for( int i = 0; i &lt; stringToDecode.length(); i++ ) {</b>
+<b class="nc"><i>51</i>&nbsp;            char c = stringToDecode.charAt( i ) ;</b>
+<b class="nc"><i>52</i>&nbsp;            if( c != &#39;%&#39; ) {</b>
+<b class="nc"><i>53</i>&nbsp;                theStringWithoutEscape.write( c );</b>
+<i>54</i>&nbsp;            } else {
+<i>55</i>&nbsp;                // Get the two hexadecimal digits and convert that into int
+<b class="nc"><i>56</i>&nbsp;                i++;</b>
+<b class="nc"><i>57</i>&nbsp;                int Hex1 = hexOf( stringToDecode.charAt(i) );</b>
+<b class="nc"><i>58</i>&nbsp;                i++;</b>
+<b class="nc"><i>59</i>&nbsp;                int Hex2 = hexOf( stringToDecode.charAt(i) );</b>
+<b class="nc"><i>60</i>&nbsp;                int value = (Hex1 * 16) + Hex2;</b>
+<i>61</i>&nbsp;                // Convert the integer to ASCII
+<b class="nc"><i>62</i>&nbsp;                theStringWithoutEscape.write( (char) value );</b>
+<i>63</i>&nbsp;            }
+<i>64</i>&nbsp;        }
+<b class="nc"><i>65</i>&nbsp;        return theStringWithoutEscape.toString();</b>
+<i>66</i>&nbsp;    }
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    /**
+<i>69</i>&nbsp;     *  Converts an Ascii Character into Hexadecimal digit
+<i>70</i>&nbsp;     *  NOTE: THIS METHOD IS DUPLICATED TO DELIVER NAMING AS A SEPARATE
+<i>71</i>&nbsp;     *  COMPONENT TO RI.
+<i>72</i>&nbsp;     **/
+<i>73</i>&nbsp;    static int hexOf( char x )
+<i>74</i>&nbsp;    {
+<i>75</i>&nbsp;        int val;
+<i>76</i>&nbsp;
+<b class="nc"><i>77</i>&nbsp;        val = x - &#39;0&#39;;</b>
+<b class="nc"><i>78</i>&nbsp;        if (val &gt;=0 &amp;&amp; val &lt;= 9)</b>
+<b class="nc"><i>79</i>&nbsp;            return val;</b>
+<i>80</i>&nbsp;
+<b class="nc"><i>81</i>&nbsp;        val = (x - &#39;a&#39;) + 10;</b>
+<b class="nc"><i>82</i>&nbsp;        if (val &gt;= 10 &amp;&amp; val &lt;= 15)</b>
+<b class="nc"><i>83</i>&nbsp;            return val;</b>
+<i>84</i>&nbsp;
+<b class="nc"><i>85</i>&nbsp;        val = (x - &#39;A&#39;) + 10;</b>
+<b class="nc"><i>86</i>&nbsp;        if (val &gt;= 10 &amp;&amp; val &lt;= 15)</b>
+<b class="nc"><i>87</i>&nbsp;            return val;</b>
+<i>88</i>&nbsp;
+<b class="nc"><i>89</i>&nbsp;        throw new DATA_CONVERSION( );</b>
+<i>90</i>&nbsp;    }
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;    /**
+<i>93</i>&nbsp;     * If GIOP Version is not correct, This method throws a BAD_PARAM
+<i>94</i>&nbsp;     * Exception.
+<i>95</i>&nbsp;     **/
+<i>96</i>&nbsp;    static void validateGIOPVersion( IIOPEndpointInfo endpointInfo ) {
+<b class="nc"><i>97</i>&nbsp;        if ((endpointInfo.getMajor() &gt; NamingConstants.MAJORNUMBER_SUPPORTED) ||</b>
+<b class="nc"><i>98</i>&nbsp;            (endpointInfo.getMinor() &gt; NamingConstants.MINORNUMBERMAX ) )</b>
+<i>99</i>&nbsp;        {
+<b class="nc"><i>100</i>&nbsp;            throw wrapper.insBadAddress() ;</b>
+<i>101</i>&nbsp;        }
+<i>102</i>&nbsp;    }
+<i>103</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

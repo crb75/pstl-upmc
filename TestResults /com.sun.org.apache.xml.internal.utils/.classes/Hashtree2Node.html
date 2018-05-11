@@ -1,0 +1,225 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Hashtree2Node</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.utils</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Hashtree2Node (com.sun.org.apache.xml.internal.utils)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Hashtree2Node</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 37)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2002-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: Hashtree2Node.java,v 1.2.4.1 2005/09/15 08:15:45 suresh_emailid Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xml.internal.utils;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.Enumeration;
+<i>27</i>&nbsp;import java.util.Hashtable;
+<i>28</i>&nbsp;import java.util.Vector;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import org.w3c.dom.Document;
+<i>31</i>&nbsp;import org.w3c.dom.Element;
+<i>32</i>&nbsp;import org.w3c.dom.Node;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;/**
+<i>35</i>&nbsp; * Simple static utility to convert Hashtable to a Node.
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; * Please maintain JDK 1.1.x compatibility; no Collections!
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; * @see com.sun.org.apache.xalan.internal.xslt.EnvironmentCheck
+<i>40</i>&nbsp; * @see com.sun.org.apache.xalan.internal.lib.Extensions
+<i>41</i>&nbsp; * @author shane_curcuru@us.ibm.com
+<i>42</i>&nbsp; * @xsl.usage general
+<i>43</i>&nbsp; */
+<b class="nc"><i>44</i>&nbsp;public abstract class Hashtree2Node</b>
+<i>45</i>&nbsp;{
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    /**
+<i>48</i>&nbsp;     * Convert a Hashtable into a Node tree.
+<i>49</i>&nbsp;     *
+<i>50</i>&nbsp;     * &lt;p&gt;The hash may have either Hashtables as values (in which
+<i>51</i>&nbsp;     * case we recurse) or other values, in which case we print them
+<i>52</i>&nbsp;     * as &amp;lt;item&gt; elements, with a &#39;key&#39; attribute with the value
+<i>53</i>&nbsp;     * of the key, and the element contents as the value.&lt;/p&gt;
+<i>54</i>&nbsp;     *
+<i>55</i>&nbsp;     * &lt;p&gt;If args are null we simply return without doing anything.
+<i>56</i>&nbsp;     * If we encounter an error, we will attempt to add an &#39;ERROR&#39;
+<i>57</i>&nbsp;     * Element with exception info; if that doesn&#39;t work we simply
+<i>58</i>&nbsp;     * return without doing anything else byt printStackTrace().&lt;/p&gt;
+<i>59</i>&nbsp;     *
+<i>60</i>&nbsp;     * @param hash to get info from (may have sub-hashtables)
+<i>61</i>&nbsp;     * @param name to use as parent element for appended node
+<i>62</i>&nbsp;     * futurework could have namespace and prefix as well
+<i>63</i>&nbsp;     * @param container Node to append our report to
+<i>64</i>&nbsp;     * @param factory Document providing createElement, etc. services
+<i>65</i>&nbsp;     */
+<i>66</i>&nbsp;    public static void appendHashToNode(Hashtable hash, String name,
+<i>67</i>&nbsp;            Node container, Document factory)
+<i>68</i>&nbsp;    {
+<i>69</i>&nbsp;        // Required arguments must not be null
+<b class="nc"><i>70</i>&nbsp;        if ((null == container) || (null == factory) || (null == hash))</b>
+<i>71</i>&nbsp;        {
+<i>72</i>&nbsp;            return;
+<i>73</i>&nbsp;        }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;        // name we will provide a default value for
+<b class="nc"><i>76</i>&nbsp;        String elemName = null;</b>
+<b class="nc"><i>77</i>&nbsp;        if ((null == name) || (&quot;&quot;.equals(name)))</b>
+<b class="nc"><i>78</i>&nbsp;            elemName = &quot;appendHashToNode&quot;;</b>
+<i>79</i>&nbsp;        else
+<b class="nc"><i>80</i>&nbsp;            elemName = name;</b>
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;        try
+<i>83</i>&nbsp;        {
+<b class="nc"><i>84</i>&nbsp;            Element hashNode = factory.createElement(elemName);</b>
+<b class="nc"><i>85</i>&nbsp;            container.appendChild(hashNode);</b>
+<i>86</i>&nbsp;
+<b class="nc"><i>87</i>&nbsp;            Enumeration keys = hash.keys();</b>
+<b class="nc"><i>88</i>&nbsp;            Vector v = new Vector();</b>
+<i>89</i>&nbsp;
+<b class="nc"><i>90</i>&nbsp;            while (keys.hasMoreElements())</b>
+<i>91</i>&nbsp;            {
+<b class="nc"><i>92</i>&nbsp;                Object key = keys.nextElement();</b>
+<b class="nc"><i>93</i>&nbsp;                String keyStr = key.toString();</b>
+<b class="nc"><i>94</i>&nbsp;                Object item = hash.get(key);</b>
+<i>95</i>&nbsp;
+<b class="nc"><i>96</i>&nbsp;                if (item instanceof Hashtable)</b>
+<i>97</i>&nbsp;                {
+<i>98</i>&nbsp;                    // Ensure a pre-order traversal; add this hashes
+<i>99</i>&nbsp;                    //  items before recursing to child hashes
+<i>100</i>&nbsp;                    // Save name and hash in two steps
+<b class="nc"><i>101</i>&nbsp;                    v.addElement(keyStr);</b>
+<b class="nc"><i>102</i>&nbsp;                    v.addElement((Hashtable) item);</b>
+<i>103</i>&nbsp;                }
+<i>104</i>&nbsp;                else
+<i>105</i>&nbsp;                {
+<i>106</i>&nbsp;                    try
+<i>107</i>&nbsp;                    {
+<i>108</i>&nbsp;                        // Add item to node
+<b class="nc"><i>109</i>&nbsp;                        Element node = factory.createElement(&quot;item&quot;);</b>
+<b class="nc"><i>110</i>&nbsp;                        node.setAttribute(&quot;key&quot;, keyStr);</b>
+<b class="nc"><i>111</i>&nbsp;                        node.appendChild(factory.createTextNode((String)item));</b>
+<b class="nc"><i>112</i>&nbsp;                        hashNode.appendChild(node);</b>
+<i>113</i>&nbsp;                    }
+<b class="nc"><i>114</i>&nbsp;                    catch (Exception e)</b>
+<i>115</i>&nbsp;                    {
+<b class="nc"><i>116</i>&nbsp;                        Element node = factory.createElement(&quot;item&quot;);</b>
+<b class="nc"><i>117</i>&nbsp;                        node.setAttribute(&quot;key&quot;, keyStr);</b>
+<b class="nc"><i>118</i>&nbsp;                        node.appendChild(factory.createTextNode(&quot;ERROR: Reading &quot; + key + &quot; threw: &quot; + e.toString()));</b>
+<b class="nc"><i>119</i>&nbsp;                        hashNode.appendChild(node);</b>
+<b class="nc"><i>120</i>&nbsp;                    }</b>
+<i>121</i>&nbsp;                }
+<b class="nc"><i>122</i>&nbsp;            }</b>
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;            // Now go back and do the saved hashes
+<b class="nc"><i>125</i>&nbsp;            keys = v.elements();</b>
+<b class="nc"><i>126</i>&nbsp;            while (keys.hasMoreElements())</b>
+<i>127</i>&nbsp;            {
+<i>128</i>&nbsp;                // Retrieve name and hash in two steps
+<b class="nc"><i>129</i>&nbsp;                String n = (String) keys.nextElement();</b>
+<b class="nc"><i>130</i>&nbsp;                Hashtable h = (Hashtable) keys.nextElement();</b>
+<i>131</i>&nbsp;
+<b class="nc"><i>132</i>&nbsp;                appendHashToNode(h, n, hashNode, factory);</b>
+<b class="nc"><i>133</i>&nbsp;            }</b>
+<i>134</i>&nbsp;        }
+<b class="nc"><i>135</i>&nbsp;        catch (Exception e2)</b>
+<i>136</i>&nbsp;        {
+<i>137</i>&nbsp;            // Ooops, just bail (suggestions for a safe thing
+<i>138</i>&nbsp;            //  to do in this case appreciated)
+<b class="nc"><i>139</i>&nbsp;            e2.printStackTrace();</b>
+<b class="nc"><i>140</i>&nbsp;        }</b>
+<i>141</i>&nbsp;    }
+<i>142</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,303 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PropertyManager</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PropertyManager (com.sun.org.apache.xerces.internal.impl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PropertyManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 70)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.org.apache.xerces.internal.impl;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.utils.XMLSecurityManager;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.utils.XMLSecurityPropertyManager;
+<i>30</i>&nbsp;import com.sun.xml.internal.stream.StaxEntityResolverWrapper;
+<i>31</i>&nbsp;import java.util.HashMap;
+<i>32</i>&nbsp;import javax.xml.stream.XMLInputFactory;
+<i>33</i>&nbsp;import javax.xml.stream.XMLOutputFactory;
+<i>34</i>&nbsp;import javax.xml.stream.XMLResolver;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; *  This class manages different properties related to Stax specification and its implementation.
+<i>38</i>&nbsp; * This class constructor also takes itself (PropertyManager object) as parameter and initializes the
+<i>39</i>&nbsp; * object with the property taken from the object passed.
+<i>40</i>&nbsp; *
+<i>41</i>&nbsp; * @author  Neeraj Bajaj, neeraj.bajaj@sun.com
+<i>42</i>&nbsp; * @author K.Venugopal@sun.com
+<i>43</i>&nbsp; * @author Sunitha Reddy, sunitha.reddy@sun.com
+<i>44</i>&nbsp; */
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;public class PropertyManager {
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    public static final String STAX_NOTATIONS = &quot;javax.xml.stream.notations&quot;;
+<i>50</i>&nbsp;    public static final String STAX_ENTITIES = &quot;javax.xml.stream.entities&quot;;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    private static final String STRING_INTERNING = &quot;http://xml.org/sax/features/string-interning&quot;;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /** Property identifier: Security manager. */
+<i>55</i>&nbsp;    private static final String SECURITY_MANAGER = Constants.SECURITY_MANAGER;
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    /** Property identifier: Security property manager. */
+<i>58</i>&nbsp;    private static final String XML_SECURITY_PROPERTY_MANAGER =
+<i>59</i>&nbsp;            Constants.XML_SECURITY_PROPERTY_MANAGER;
+<i>60</i>&nbsp;
+<b class="nc"><i>61</i>&nbsp;    HashMap supportedProps = new HashMap();</b>
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    private XMLSecurityManager fSecurityManager;
+<i>64</i>&nbsp;    private XMLSecurityPropertyManager fSecurityPropertyMgr;
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    public static final int CONTEXT_READER = 1;
+<i>67</i>&nbsp;    public static final int CONTEXT_WRITER = 2;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    /** Creates a new instance of PropertyManager */
+<b class="nc"><i>70</i>&nbsp;    public PropertyManager(int context) {</b>
+<b class="nc"><i>71</i>&nbsp;        switch(context){</b>
+<i>72</i>&nbsp;            case CONTEXT_READER:{
+<b class="nc"><i>73</i>&nbsp;                initConfigurableReaderProperties();</b>
+<b class="nc"><i>74</i>&nbsp;                break;</b>
+<i>75</i>&nbsp;            }
+<i>76</i>&nbsp;            case CONTEXT_WRITER:{
+<b class="nc"><i>77</i>&nbsp;                initWriterProps();</b>
+<i>78</i>&nbsp;                break;
+<i>79</i>&nbsp;            }
+<i>80</i>&nbsp;        }
+<i>81</i>&nbsp;    }
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    /**
+<i>84</i>&nbsp;     * Initialize this object with the properties taken from passed PropertyManager object.
+<i>85</i>&nbsp;     */
+<b class="nc"><i>86</i>&nbsp;    public PropertyManager(PropertyManager propertyManager){</b>
+<i>87</i>&nbsp;
+<b class="nc"><i>88</i>&nbsp;        HashMap properties = propertyManager.getProperties();</b>
+<b class="nc"><i>89</i>&nbsp;        supportedProps.putAll(properties);</b>
+<b class="nc"><i>90</i>&nbsp;        fSecurityManager = (XMLSecurityManager)getProperty(SECURITY_MANAGER);</b>
+<b class="nc"><i>91</i>&nbsp;        fSecurityPropertyMgr = (XMLSecurityPropertyManager)getProperty(XML_SECURITY_PROPERTY_MANAGER);</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    private HashMap getProperties(){
+<b class="nc"><i>95</i>&nbsp;        return supportedProps ;</b>
+<i>96</i>&nbsp;    }
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    /**
+<i>100</i>&nbsp;     * Important point:
+<i>101</i>&nbsp;     * 1. We are not exposing Xerces namespace property. Application should configure namespace through
+<i>102</i>&nbsp;     * Stax specific property.
+<i>103</i>&nbsp;     *
+<i>104</i>&nbsp;     */
+<i>105</i>&nbsp;    private void initConfigurableReaderProperties(){
+<i>106</i>&nbsp;        //spec default values
+<b class="nc"><i>107</i>&nbsp;        supportedProps.put(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);</b>
+<b class="nc"><i>108</i>&nbsp;        supportedProps.put(XMLInputFactory.IS_VALIDATING, Boolean.FALSE);</b>
+<b class="nc"><i>109</i>&nbsp;        supportedProps.put(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.TRUE);</b>
+<b class="nc"><i>110</i>&nbsp;        supportedProps.put(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.TRUE);</b>
+<b class="nc"><i>111</i>&nbsp;        supportedProps.put(XMLInputFactory.IS_COALESCING, Boolean.FALSE);</b>
+<b class="nc"><i>112</i>&nbsp;        supportedProps.put(XMLInputFactory.SUPPORT_DTD, Boolean.TRUE);</b>
+<b class="nc"><i>113</i>&nbsp;        supportedProps.put(XMLInputFactory.REPORTER, null);</b>
+<b class="nc"><i>114</i>&nbsp;        supportedProps.put(XMLInputFactory.RESOLVER, null);</b>
+<b class="nc"><i>115</i>&nbsp;        supportedProps.put(XMLInputFactory.ALLOCATOR, null);</b>
+<b class="nc"><i>116</i>&nbsp;        supportedProps.put(STAX_NOTATIONS,null );</b>
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;        //zephyr (implementation) specific properties which can be set by the application.
+<i>119</i>&nbsp;        //interning is always done
+<b class="nc"><i>120</i>&nbsp;        supportedProps.put(Constants.SAX_FEATURE_PREFIX + Constants.STRING_INTERNING_FEATURE , new Boolean(true));</b>
+<i>121</i>&nbsp;        //recognizing java encoding names by default
+<b class="nc"><i>122</i>&nbsp;        supportedProps.put(Constants.XERCES_FEATURE_PREFIX + Constants.ALLOW_JAVA_ENCODINGS_FEATURE,  new Boolean(true)) ;</b>
+<i>123</i>&nbsp;        //in stax mode, namespace declarations are not added as attributes
+<b class="nc"><i>124</i>&nbsp;        supportedProps.put(Constants.ADD_NAMESPACE_DECL_AS_ATTRIBUTE ,  Boolean.FALSE) ;</b>
+<b class="nc"><i>125</i>&nbsp;        supportedProps.put(Constants.READER_IN_DEFINED_STATE, new Boolean(true));</b>
+<b class="nc"><i>126</i>&nbsp;        supportedProps.put(Constants.REUSE_INSTANCE, new Boolean(true));</b>
+<b class="nc"><i>127</i>&nbsp;        supportedProps.put(Constants.ZEPHYR_PROPERTY_PREFIX + Constants.STAX_REPORT_CDATA_EVENT , new Boolean(false));</b>
+<b class="nc"><i>128</i>&nbsp;        supportedProps.put(Constants.ZEPHYR_PROPERTY_PREFIX + Constants.IGNORE_EXTERNAL_DTD, Boolean.FALSE);</b>
+<b class="nc"><i>129</i>&nbsp;        supportedProps.put(Constants.XERCES_FEATURE_PREFIX + Constants.WARN_ON_DUPLICATE_ATTDEF_FEATURE, new Boolean(false));</b>
+<b class="nc"><i>130</i>&nbsp;        supportedProps.put(Constants.XERCES_FEATURE_PREFIX + Constants.WARN_ON_DUPLICATE_ENTITYDEF_FEATURE, new Boolean(false));</b>
+<b class="nc"><i>131</i>&nbsp;        supportedProps.put(Constants.XERCES_FEATURE_PREFIX + Constants.WARN_ON_UNDECLARED_ELEMDEF_FEATURE, new Boolean(false));</b>
+<i>132</i>&nbsp;
+<b class="nc"><i>133</i>&nbsp;        fSecurityManager = new XMLSecurityManager(true);</b>
+<b class="nc"><i>134</i>&nbsp;        supportedProps.put(SECURITY_MANAGER, fSecurityManager);</b>
+<b class="nc"><i>135</i>&nbsp;        fSecurityPropertyMgr = new XMLSecurityPropertyManager();</b>
+<b class="nc"><i>136</i>&nbsp;        supportedProps.put(XML_SECURITY_PROPERTY_MANAGER, fSecurityPropertyMgr);</b>
+<i>137</i>&nbsp;    }
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;    private void initWriterProps(){
+<b class="nc"><i>140</i>&nbsp;        supportedProps.put(XMLOutputFactory.IS_REPAIRING_NAMESPACES , Boolean.FALSE);</b>
+<i>141</i>&nbsp;        //default value of escaping characters is &#39;true&#39;
+<b class="nc"><i>142</i>&nbsp;        supportedProps.put(Constants.ESCAPE_CHARACTERS , Boolean.TRUE);</b>
+<b class="nc"><i>143</i>&nbsp;        supportedProps.put(Constants.REUSE_INSTANCE, new Boolean(true));</b>
+<i>144</i>&nbsp;    }
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;    /**
+<i>147</i>&nbsp;     * public void reset(){
+<i>148</i>&nbsp;     * supportedProps.clear() ;
+<i>149</i>&nbsp;     * }
+<i>150</i>&nbsp;     */
+<i>151</i>&nbsp;    public boolean containsProperty(String property){
+<b class="nc"><i>152</i>&nbsp;        return supportedProps.containsKey(property) ||</b>
+<b class="nc"><i>153</i>&nbsp;                (fSecurityManager != null &amp;&amp; fSecurityManager.getIndex(property) &gt; -1) ||</b>
+<b class="nc"><i>154</i>&nbsp;                (fSecurityPropertyMgr!=null &amp;&amp; fSecurityPropertyMgr.getIndex(property) &gt; -1) ;</b>
+<i>155</i>&nbsp;    }
+<i>156</i>&nbsp;
+<i>157</i>&nbsp;    public Object getProperty(String property){
+<b class="nc"><i>158</i>&nbsp;        return supportedProps.get(property);</b>
+<i>159</i>&nbsp;    }
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;    public void setProperty(String property, Object value){
+<b class="nc"><i>162</i>&nbsp;        String equivalentProperty = null ;</b>
+<b class="nc"><i>163</i>&nbsp;        if(property == XMLInputFactory.IS_NAMESPACE_AWARE || property.equals(XMLInputFactory.IS_NAMESPACE_AWARE)){</b>
+<b class="nc"><i>164</i>&nbsp;            equivalentProperty = Constants.XERCES_FEATURE_PREFIX + Constants.NAMESPACES_FEATURE ;</b>
+<i>165</i>&nbsp;        }
+<b class="nc"><i>166</i>&nbsp;        else if(property == XMLInputFactory.IS_VALIDATING || property.equals(XMLInputFactory.IS_VALIDATING)){</b>
+<b class="nc"><i>167</i>&nbsp;            if( (value instanceof Boolean) &amp;&amp; ((Boolean)value).booleanValue()){</b>
+<b class="nc"><i>168</i>&nbsp;                throw new java.lang.IllegalArgumentException(&quot;true value of isValidating not supported&quot;) ;</b>
+<i>169</i>&nbsp;            }
+<i>170</i>&nbsp;        }
+<b class="nc"><i>171</i>&nbsp;        else if(property == STRING_INTERNING || property.equals(STRING_INTERNING)){</b>
+<b class="nc"><i>172</i>&nbsp;            if( (value instanceof Boolean) &amp;&amp; !((Boolean)value).booleanValue()){</b>
+<b class="nc"><i>173</i>&nbsp;                throw new java.lang.IllegalArgumentException(&quot;false value of &quot; + STRING_INTERNING + &quot;feature is not supported&quot;) ;</b>
+<i>174</i>&nbsp;            }
+<i>175</i>&nbsp;        }
+<b class="nc"><i>176</i>&nbsp;        else if(property == XMLInputFactory.RESOLVER || property.equals(XMLInputFactory.RESOLVER)){</b>
+<i>177</i>&nbsp;            //add internal stax property
+<b class="nc"><i>178</i>&nbsp;            supportedProps.put( Constants.XERCES_PROPERTY_PREFIX + Constants.STAX_ENTITY_RESOLVER_PROPERTY , new StaxEntityResolverWrapper((XMLResolver)value)) ;</b>
+<i>179</i>&nbsp;        }
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;        /**
+<i>182</i>&nbsp;         * It&#39;s possible for users to set a security manager through the interface.
+<i>183</i>&nbsp;         * If it&#39;s the old SecurityManager, convert it to the new XMLSecurityManager
+<i>184</i>&nbsp;         */
+<b class="nc"><i>185</i>&nbsp;        if (property.equals(Constants.SECURITY_MANAGER)) {</b>
+<b class="nc"><i>186</i>&nbsp;            fSecurityManager = XMLSecurityManager.convert(value, fSecurityManager);</b>
+<b class="nc"><i>187</i>&nbsp;            supportedProps.put(Constants.SECURITY_MANAGER, fSecurityManager);</b>
+<i>188</i>&nbsp;            return;
+<i>189</i>&nbsp;        }
+<b class="nc"><i>190</i>&nbsp;        if (property.equals(Constants.XML_SECURITY_PROPERTY_MANAGER)) {</b>
+<b class="nc"><i>191</i>&nbsp;            if (value == null) {</b>
+<b class="nc"><i>192</i>&nbsp;                fSecurityPropertyMgr = new XMLSecurityPropertyManager();</b>
+<i>193</i>&nbsp;            } else {
+<b class="nc"><i>194</i>&nbsp;                fSecurityPropertyMgr = (XMLSecurityPropertyManager)value;</b>
+<i>195</i>&nbsp;            }
+<b class="nc"><i>196</i>&nbsp;            supportedProps.put(Constants.XML_SECURITY_PROPERTY_MANAGER, fSecurityPropertyMgr);</b>
+<i>197</i>&nbsp;            return;
+<i>198</i>&nbsp;        }
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;        //check if the property is managed by security manager
+<b class="nc"><i>201</i>&nbsp;        if (fSecurityManager == null ||</b>
+<b class="nc"><i>202</i>&nbsp;                !fSecurityManager.setLimit(property, XMLSecurityManager.State.APIPROPERTY, value)) {</b>
+<i>203</i>&nbsp;            //check if the property is managed by security property manager
+<b class="nc"><i>204</i>&nbsp;            if (fSecurityPropertyMgr == null ||</b>
+<b class="nc"><i>205</i>&nbsp;                    !fSecurityPropertyMgr.setValue(property, XMLSecurityPropertyManager.State.APIPROPERTY, value)) {</b>
+<i>206</i>&nbsp;                //fall back to the existing property manager
+<b class="nc"><i>207</i>&nbsp;                supportedProps.put(property, value);</b>
+<i>208</i>&nbsp;            }
+<i>209</i>&nbsp;        }
+<i>210</i>&nbsp;
+<b class="nc"><i>211</i>&nbsp;        if(equivalentProperty != null){</b>
+<b class="nc"><i>212</i>&nbsp;            supportedProps.put(equivalentProperty, value ) ;</b>
+<i>213</i>&nbsp;        }
+<i>214</i>&nbsp;    }
+<i>215</i>&nbsp;
+<i>216</i>&nbsp;    public String toString(){
+<b class="nc"><i>217</i>&nbsp;        return supportedProps.toString();</b>
+<i>218</i>&nbsp;    }
+<i>219</i>&nbsp;
+<i>220</i>&nbsp;}//PropertyManager
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

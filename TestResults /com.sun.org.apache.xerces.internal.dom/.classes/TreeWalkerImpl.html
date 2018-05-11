@@ -1,0 +1,590 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TreeWalkerImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.dom</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TreeWalkerImpl (com.sun.org.apache.xerces.internal.dom)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TreeWalkerImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 23)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 165)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2002,2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.dom;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import org.w3c.dom.DOMException;
+<i>24</i>&nbsp;import org.w3c.dom.Node;
+<i>25</i>&nbsp;import org.w3c.dom.traversal.NodeFilter;
+<i>26</i>&nbsp;import org.w3c.dom.traversal.TreeWalker;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;/** This class implements the TreeWalker interface.
+<i>29</i>&nbsp; *
+<i>30</i>&nbsp; * @xerces.internal
+<i>31</i>&nbsp; *
+<i>32</i>&nbsp; */
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;public class TreeWalkerImpl implements TreeWalker {
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    //
+<i>37</i>&nbsp;    // Data
+<i>38</i>&nbsp;    //
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;    /** When TRUE, the children of entites references are returned in the iterator. */
+<b class="nc"><i>41</i>&nbsp;    private boolean fEntityReferenceExpansion = false;</b>
+<i>42</i>&nbsp;    /** The whatToShow mask. */
+<b class="nc"><i>43</i>&nbsp;    int fWhatToShow = NodeFilter.SHOW_ALL;</b>
+<i>44</i>&nbsp;    /** The NodeFilter reference. */
+<i>45</i>&nbsp;    NodeFilter fNodeFilter;
+<i>46</i>&nbsp;    /** The current Node. */
+<i>47</i>&nbsp;    Node fCurrentNode;
+<i>48</i>&nbsp;    /** The root Node. */
+<i>49</i>&nbsp;    Node fRoot;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    //
+<i>52</i>&nbsp;    // Implementation Note: No state is kept except the data above
+<i>53</i>&nbsp;    // (fWhatToShow, fNodeFilter, fCurrentNode, fRoot) such that
+<i>54</i>&nbsp;    // setters could be created for these data values and the
+<i>55</i>&nbsp;    // implementation will still work.
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    //
+<i>59</i>&nbsp;    // Constructor
+<i>60</i>&nbsp;    //
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    /** Public constructor */
+<i>63</i>&nbsp;    public TreeWalkerImpl(Node root,
+<i>64</i>&nbsp;                          int whatToShow,
+<i>65</i>&nbsp;                          NodeFilter nodeFilter,
+<b class="nc"><i>66</i>&nbsp;                          boolean entityReferenceExpansion) {</b>
+<b class="nc"><i>67</i>&nbsp;        fCurrentNode = root;</b>
+<b class="nc"><i>68</i>&nbsp;        fRoot = root;</b>
+<b class="nc"><i>69</i>&nbsp;        fWhatToShow = whatToShow;</b>
+<b class="nc"><i>70</i>&nbsp;        fNodeFilter = nodeFilter;</b>
+<b class="nc"><i>71</i>&nbsp;        fEntityReferenceExpansion = entityReferenceExpansion;</b>
+<i>72</i>&nbsp;    }
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    public Node getRoot() {
+<b class="nc"><i>75</i>&nbsp;        return fRoot;</b>
+<i>76</i>&nbsp;    }
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    /** Return the whatToShow value */
+<i>79</i>&nbsp;    public int                getWhatToShow() {
+<b class="nc"><i>80</i>&nbsp;        return fWhatToShow;</b>
+<i>81</i>&nbsp;    }
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    public void setWhatShow(int whatToShow){
+<b class="nc"><i>84</i>&nbsp;        fWhatToShow = whatToShow;</b>
+<i>85</i>&nbsp;    }
+<i>86</i>&nbsp;    /** Return the NodeFilter */
+<i>87</i>&nbsp;    public NodeFilter         getFilter() {
+<b class="nc"><i>88</i>&nbsp;        return fNodeFilter;</b>
+<i>89</i>&nbsp;    }
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    /** Return whether children entity references are included in the iterator. */
+<i>92</i>&nbsp;    public boolean            getExpandEntityReferences() {
+<b class="nc"><i>93</i>&nbsp;        return fEntityReferenceExpansion;</b>
+<i>94</i>&nbsp;    }
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    /** Return the current Node. */
+<i>97</i>&nbsp;    public Node               getCurrentNode() {
+<b class="nc"><i>98</i>&nbsp;        return fCurrentNode;</b>
+<i>99</i>&nbsp;    }
+<i>100</i>&nbsp;    /** Return the current Node. */
+<i>101</i>&nbsp;    public void               setCurrentNode(Node node) {
+<b class="nc"><i>102</i>&nbsp;        if (node == null) {</b>
+<b class="nc"><i>103</i>&nbsp;            String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;NOT_SUPPORTED_ERR&quot;, null);</b>
+<b class="nc"><i>104</i>&nbsp;              throw new DOMException(DOMException.NOT_SUPPORTED_ERR, msg);</b>
+<i>105</i>&nbsp;        }
+<i>106</i>&nbsp;
+<b class="nc"><i>107</i>&nbsp;        fCurrentNode = node;</b>
+<i>108</i>&nbsp;    }
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;    /** Return the parent Node from the current node,
+<i>111</i>&nbsp;     *  after applying filter, whatToshow.
+<i>112</i>&nbsp;     *  If result is not null, set the current Node.
+<i>113</i>&nbsp;     */
+<i>114</i>&nbsp;    public Node               parentNode() {
+<i>115</i>&nbsp;
+<b class="nc"><i>116</i>&nbsp;        if (fCurrentNode == null) return null;</b>
+<i>117</i>&nbsp;
+<b class="nc"><i>118</i>&nbsp;        Node node = getParentNode(fCurrentNode);</b>
+<b class="nc"><i>119</i>&nbsp;        if (node !=null) {</b>
+<b class="nc"><i>120</i>&nbsp;            fCurrentNode = node;</b>
+<i>121</i>&nbsp;        }
+<b class="nc"><i>122</i>&nbsp;        return node;</b>
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;    }
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;    /** Return the first child Node from the current node,
+<i>127</i>&nbsp;     *  after applying filter, whatToshow.
+<i>128</i>&nbsp;     *  If result is not null, set the current Node.
+<i>129</i>&nbsp;     */
+<i>130</i>&nbsp;    public Node               firstChild() {
+<i>131</i>&nbsp;
+<b class="nc"><i>132</i>&nbsp;        if (fCurrentNode == null) return null;</b>
+<i>133</i>&nbsp;
+<b class="nc"><i>134</i>&nbsp;        Node node = getFirstChild(fCurrentNode);</b>
+<b class="nc"><i>135</i>&nbsp;        if (node !=null) {</b>
+<b class="nc"><i>136</i>&nbsp;            fCurrentNode = node;</b>
+<i>137</i>&nbsp;        }
+<b class="nc"><i>138</i>&nbsp;        return node;</b>
+<i>139</i>&nbsp;    }
+<i>140</i>&nbsp;    /** Return the last child Node from the current node,
+<i>141</i>&nbsp;     *  after applying filter, whatToshow.
+<i>142</i>&nbsp;     *  If result is not null, set the current Node.
+<i>143</i>&nbsp;     */
+<i>144</i>&nbsp;    public Node               lastChild() {
+<i>145</i>&nbsp;
+<b class="nc"><i>146</i>&nbsp;        if (fCurrentNode == null) return null;</b>
+<i>147</i>&nbsp;
+<b class="nc"><i>148</i>&nbsp;        Node node = getLastChild(fCurrentNode);</b>
+<b class="nc"><i>149</i>&nbsp;        if (node !=null) {</b>
+<b class="nc"><i>150</i>&nbsp;            fCurrentNode = node;</b>
+<i>151</i>&nbsp;        }
+<b class="nc"><i>152</i>&nbsp;        return node;</b>
+<i>153</i>&nbsp;    }
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;    /** Return the previous sibling Node from the current node,
+<i>156</i>&nbsp;     *  after applying filter, whatToshow.
+<i>157</i>&nbsp;     *  If result is not null, set the current Node.
+<i>158</i>&nbsp;     */
+<i>159</i>&nbsp;    public Node               previousSibling() {
+<i>160</i>&nbsp;
+<b class="nc"><i>161</i>&nbsp;        if (fCurrentNode == null) return null;</b>
+<i>162</i>&nbsp;
+<b class="nc"><i>163</i>&nbsp;        Node node = getPreviousSibling(fCurrentNode);</b>
+<b class="nc"><i>164</i>&nbsp;        if (node !=null) {</b>
+<b class="nc"><i>165</i>&nbsp;            fCurrentNode = node;</b>
+<i>166</i>&nbsp;        }
+<b class="nc"><i>167</i>&nbsp;        return node;</b>
+<i>168</i>&nbsp;    }
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;    /** Return the next sibling Node from the current node,
+<i>171</i>&nbsp;     *  after applying filter, whatToshow.
+<i>172</i>&nbsp;     *  If result is not null, set the current Node.
+<i>173</i>&nbsp;     */
+<i>174</i>&nbsp;    public Node               nextSibling(){
+<b class="nc"><i>175</i>&nbsp;        if (fCurrentNode == null) return null;</b>
+<i>176</i>&nbsp;
+<b class="nc"><i>177</i>&nbsp;        Node node = getNextSibling(fCurrentNode);</b>
+<b class="nc"><i>178</i>&nbsp;        if (node !=null) {</b>
+<b class="nc"><i>179</i>&nbsp;            fCurrentNode = node;</b>
+<i>180</i>&nbsp;        }
+<b class="nc"><i>181</i>&nbsp;        return node;</b>
+<i>182</i>&nbsp;    }
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;    /** Return the previous Node from the current node,
+<i>185</i>&nbsp;     *  after applying filter, whatToshow.
+<i>186</i>&nbsp;     *  If result is not null, set the current Node.
+<i>187</i>&nbsp;     */
+<i>188</i>&nbsp;    public Node               previousNode() {
+<i>189</i>&nbsp;        Node result;
+<i>190</i>&nbsp;
+<b class="nc"><i>191</i>&nbsp;        if (fCurrentNode == null) return null;</b>
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;        // get sibling
+<b class="nc"><i>194</i>&nbsp;        result = getPreviousSibling(fCurrentNode);</b>
+<b class="nc"><i>195</i>&nbsp;        if (result == null) {</b>
+<b class="nc"><i>196</i>&nbsp;            result = getParentNode(fCurrentNode);</b>
+<b class="nc"><i>197</i>&nbsp;            if (result != null) {</b>
+<b class="nc"><i>198</i>&nbsp;                fCurrentNode = result;</b>
+<b class="nc"><i>199</i>&nbsp;                return fCurrentNode;</b>
+<i>200</i>&nbsp;            }
+<b class="nc"><i>201</i>&nbsp;            return null;</b>
+<i>202</i>&nbsp;        }
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;        // get the lastChild of result.
+<b class="nc"><i>205</i>&nbsp;        Node lastChild  = getLastChild(result);</b>
+<i>206</i>&nbsp;
+<b class="nc"><i>207</i>&nbsp;        Node prev = lastChild ;</b>
+<b class="nc"><i>208</i>&nbsp;        while (lastChild != null) {</b>
+<b class="nc"><i>209</i>&nbsp;          prev = lastChild ;</b>
+<b class="nc"><i>210</i>&nbsp;          lastChild = getLastChild(prev) ;</b>
+<i>211</i>&nbsp;        }
+<i>212</i>&nbsp;
+<b class="nc"><i>213</i>&nbsp;        lastChild = prev ;</b>
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;        // if there is a lastChild which passes filters return it.
+<b class="nc"><i>216</i>&nbsp;        if (lastChild != null) {</b>
+<b class="nc"><i>217</i>&nbsp;            fCurrentNode = lastChild;</b>
+<b class="nc"><i>218</i>&nbsp;            return fCurrentNode;</b>
+<i>219</i>&nbsp;        }
+<i>220</i>&nbsp;
+<i>221</i>&nbsp;        // otherwise return the previous sibling.
+<b class="nc"><i>222</i>&nbsp;        if (result != null) {</b>
+<b class="nc"><i>223</i>&nbsp;            fCurrentNode = result;</b>
+<b class="nc"><i>224</i>&nbsp;            return fCurrentNode;</b>
+<i>225</i>&nbsp;        }
+<i>226</i>&nbsp;
+<i>227</i>&nbsp;        // otherwise return null.
+<b class="nc"><i>228</i>&nbsp;        return null;</b>
+<i>229</i>&nbsp;    }
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;    /** Return the next Node from the current node,
+<i>232</i>&nbsp;     *  after applying filter, whatToshow.
+<i>233</i>&nbsp;     *  If result is not null, set the current Node.
+<i>234</i>&nbsp;     */
+<i>235</i>&nbsp;    public Node               nextNode() {
+<i>236</i>&nbsp;
+<b class="nc"><i>237</i>&nbsp;        if (fCurrentNode == null) return null;</b>
+<i>238</i>&nbsp;
+<b class="nc"><i>239</i>&nbsp;        Node result = getFirstChild(fCurrentNode);</b>
+<i>240</i>&nbsp;
+<b class="nc"><i>241</i>&nbsp;        if (result != null) {</b>
+<b class="nc"><i>242</i>&nbsp;            fCurrentNode = result;</b>
+<b class="nc"><i>243</i>&nbsp;            return result;</b>
+<i>244</i>&nbsp;        }
+<i>245</i>&nbsp;
+<b class="nc"><i>246</i>&nbsp;        result = getNextSibling(fCurrentNode);</b>
+<i>247</i>&nbsp;
+<b class="nc"><i>248</i>&nbsp;        if (result != null) {</b>
+<b class="nc"><i>249</i>&nbsp;            fCurrentNode = result;</b>
+<b class="nc"><i>250</i>&nbsp;            return result;</b>
+<i>251</i>&nbsp;        }
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;        // return parent&#39;s 1st sibling.
+<b class="nc"><i>254</i>&nbsp;        Node parent = getParentNode(fCurrentNode);</b>
+<b class="nc"><i>255</i>&nbsp;        while (parent != null) {</b>
+<b class="nc"><i>256</i>&nbsp;            result = getNextSibling(parent);</b>
+<b class="nc"><i>257</i>&nbsp;            if (result != null) {</b>
+<b class="nc"><i>258</i>&nbsp;                fCurrentNode = result;</b>
+<b class="nc"><i>259</i>&nbsp;                return result;</b>
+<i>260</i>&nbsp;            } else {
+<b class="nc"><i>261</i>&nbsp;                parent = getParentNode(parent);</b>
+<i>262</i>&nbsp;            }
+<i>263</i>&nbsp;        }
+<i>264</i>&nbsp;
+<i>265</i>&nbsp;        // end , return null
+<b class="nc"><i>266</i>&nbsp;        return null;</b>
+<i>267</i>&nbsp;    }
+<i>268</i>&nbsp;
+<i>269</i>&nbsp;    /** Internal function.
+<i>270</i>&nbsp;     *  Return the parent Node, from the input node
+<i>271</i>&nbsp;     *  after applying filter, whatToshow.
+<i>272</i>&nbsp;     *  The current node is not consulted or set.
+<i>273</i>&nbsp;     */
+<i>274</i>&nbsp;    Node getParentNode(Node node) {
+<i>275</i>&nbsp;
+<b class="nc"><i>276</i>&nbsp;        if (node == null || node == fRoot) return null;</b>
+<i>277</i>&nbsp;
+<b class="nc"><i>278</i>&nbsp;        Node newNode = node.getParentNode();</b>
+<b class="nc"><i>279</i>&nbsp;        if (newNode == null)  return null;</b>
+<i>280</i>&nbsp;
+<b class="nc"><i>281</i>&nbsp;        int accept = acceptNode(newNode);</b>
+<i>282</i>&nbsp;
+<b class="nc"><i>283</i>&nbsp;        if (accept == NodeFilter.FILTER_ACCEPT)</b>
+<b class="nc"><i>284</i>&nbsp;            return newNode;</b>
+<i>285</i>&nbsp;        else
+<i>286</i>&nbsp;        //if (accept == NodeFilter.SKIP_NODE) // and REJECT too.
+<i>287</i>&nbsp;        {
+<b class="nc"><i>288</i>&nbsp;            return getParentNode(newNode);</b>
+<i>289</i>&nbsp;        }
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;    }
+<i>293</i>&nbsp;
+<i>294</i>&nbsp;    /** Internal function.
+<i>295</i>&nbsp;     *  Return the nextSibling Node, from the input node
+<i>296</i>&nbsp;     *  after applying filter, whatToshow.
+<i>297</i>&nbsp;     *  The current node is not consulted or set.
+<i>298</i>&nbsp;     */
+<i>299</i>&nbsp;    Node getNextSibling(Node node) {
+<b class="nc"><i>300</i>&nbsp;                return getNextSibling(node, fRoot);</b>
+<i>301</i>&nbsp;        }
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;    /** Internal function.
+<i>304</i>&nbsp;     *  Return the nextSibling Node, from the input node
+<i>305</i>&nbsp;     *  after applying filter, whatToshow.
+<i>306</i>&nbsp;     *  NEVER TRAVERSES ABOVE THE SPECIFIED ROOT NODE.
+<i>307</i>&nbsp;     *  The current node is not consulted or set.
+<i>308</i>&nbsp;     */
+<i>309</i>&nbsp;    Node getNextSibling(Node node, Node root) {
+<i>310</i>&nbsp;
+<b class="nc"><i>311</i>&nbsp;        if (node == null || node == root) return null;</b>
+<i>312</i>&nbsp;
+<b class="nc"><i>313</i>&nbsp;        Node newNode = node.getNextSibling();</b>
+<b class="nc"><i>314</i>&nbsp;        if (newNode == null) {</b>
+<i>315</i>&nbsp;
+<b class="nc"><i>316</i>&nbsp;            newNode = node.getParentNode();</b>
+<i>317</i>&nbsp;
+<b class="nc"><i>318</i>&nbsp;            if (newNode == null || newNode == root)  return null;</b>
+<i>319</i>&nbsp;
+<b class="nc"><i>320</i>&nbsp;            int parentAccept = acceptNode(newNode);</b>
+<i>321</i>&nbsp;
+<b class="nc"><i>322</i>&nbsp;            if (parentAccept==NodeFilter.FILTER_SKIP) {</b>
+<b class="nc"><i>323</i>&nbsp;                return getNextSibling(newNode, root);</b>
+<i>324</i>&nbsp;            }
+<i>325</i>&nbsp;
+<b class="nc"><i>326</i>&nbsp;            return null;</b>
+<i>327</i>&nbsp;        }
+<i>328</i>&nbsp;
+<b class="nc"><i>329</i>&nbsp;        int accept = acceptNode(newNode);</b>
+<i>330</i>&nbsp;
+<b class="nc"><i>331</i>&nbsp;        if (accept == NodeFilter.FILTER_ACCEPT)</b>
+<b class="nc"><i>332</i>&nbsp;            return newNode;</b>
+<i>333</i>&nbsp;        else
+<b class="nc"><i>334</i>&nbsp;        if (accept == NodeFilter.FILTER_SKIP) {</b>
+<b class="nc"><i>335</i>&nbsp;            Node fChild = getFirstChild(newNode);</b>
+<b class="nc"><i>336</i>&nbsp;            if (fChild == null) {</b>
+<b class="nc"><i>337</i>&nbsp;                return getNextSibling(newNode, root);</b>
+<i>338</i>&nbsp;            }
+<b class="nc"><i>339</i>&nbsp;            return fChild;</b>
+<i>340</i>&nbsp;        }
+<i>341</i>&nbsp;        else
+<i>342</i>&nbsp;        //if (accept == NodeFilter.REJECT_NODE)
+<i>343</i>&nbsp;        {
+<b class="nc"><i>344</i>&nbsp;            return getNextSibling(newNode, root);</b>
+<i>345</i>&nbsp;        }
+<i>346</i>&nbsp;
+<i>347</i>&nbsp;    } // getNextSibling(Node node) {
+<i>348</i>&nbsp;
+<i>349</i>&nbsp;    /** Internal function.
+<i>350</i>&nbsp;     *  Return the previous sibling Node, from the input node
+<i>351</i>&nbsp;     *  after applying filter, whatToshow.
+<i>352</i>&nbsp;     *  The current node is not consulted or set.
+<i>353</i>&nbsp;     */
+<i>354</i>&nbsp;    Node getPreviousSibling(Node node) {
+<b class="nc"><i>355</i>&nbsp;                return getPreviousSibling(node, fRoot);</b>
+<i>356</i>&nbsp;        }
+<i>357</i>&nbsp;
+<i>358</i>&nbsp;    /** Internal function.
+<i>359</i>&nbsp;     *  Return the previousSibling Node, from the input node
+<i>360</i>&nbsp;     *  after applying filter, whatToshow.
+<i>361</i>&nbsp;         *  NEVER TRAVERSES ABOVE THE SPECIFIED ROOT NODE.
+<i>362</i>&nbsp;     *  The current node is not consulted or set.
+<i>363</i>&nbsp;     */
+<i>364</i>&nbsp;    Node getPreviousSibling(Node node, Node root) {
+<i>365</i>&nbsp;
+<b class="nc"><i>366</i>&nbsp;        if (node == null || node == root) return null;</b>
+<i>367</i>&nbsp;
+<b class="nc"><i>368</i>&nbsp;        Node newNode = node.getPreviousSibling();</b>
+<b class="nc"><i>369</i>&nbsp;        if (newNode == null) {</b>
+<i>370</i>&nbsp;
+<b class="nc"><i>371</i>&nbsp;            newNode = node.getParentNode();</b>
+<b class="nc"><i>372</i>&nbsp;            if (newNode == null || newNode == root)  return null;</b>
+<i>373</i>&nbsp;
+<b class="nc"><i>374</i>&nbsp;            int parentAccept = acceptNode(newNode);</b>
+<i>375</i>&nbsp;
+<b class="nc"><i>376</i>&nbsp;            if (parentAccept==NodeFilter.FILTER_SKIP) {</b>
+<b class="nc"><i>377</i>&nbsp;                return getPreviousSibling(newNode, root);</b>
+<i>378</i>&nbsp;            }
+<i>379</i>&nbsp;
+<b class="nc"><i>380</i>&nbsp;            return null;</b>
+<i>381</i>&nbsp;        }
+<i>382</i>&nbsp;
+<b class="nc"><i>383</i>&nbsp;        int accept = acceptNode(newNode);</b>
+<i>384</i>&nbsp;
+<b class="nc"><i>385</i>&nbsp;        if (accept == NodeFilter.FILTER_ACCEPT)</b>
+<b class="nc"><i>386</i>&nbsp;            return newNode;</b>
+<i>387</i>&nbsp;        else
+<b class="nc"><i>388</i>&nbsp;        if (accept == NodeFilter.FILTER_SKIP) {</b>
+<b class="nc"><i>389</i>&nbsp;            Node fChild =  getLastChild(newNode);</b>
+<b class="nc"><i>390</i>&nbsp;            if (fChild == null) {</b>
+<b class="nc"><i>391</i>&nbsp;                return getPreviousSibling(newNode, root);</b>
+<i>392</i>&nbsp;            }
+<b class="nc"><i>393</i>&nbsp;            return fChild;</b>
+<i>394</i>&nbsp;        }
+<i>395</i>&nbsp;        else
+<i>396</i>&nbsp;        //if (accept == NodeFilter.REJECT_NODE)
+<i>397</i>&nbsp;        {
+<b class="nc"><i>398</i>&nbsp;            return getPreviousSibling(newNode, root);</b>
+<i>399</i>&nbsp;        }
+<i>400</i>&nbsp;
+<i>401</i>&nbsp;    } // getPreviousSibling(Node node) {
+<i>402</i>&nbsp;
+<i>403</i>&nbsp;    /** Internal function.
+<i>404</i>&nbsp;     *  Return the first child Node, from the input node
+<i>405</i>&nbsp;     *  after applying filter, whatToshow.
+<i>406</i>&nbsp;     *  The current node is not consulted or set.
+<i>407</i>&nbsp;     */
+<i>408</i>&nbsp;    Node getFirstChild(Node node) {
+<b class="nc"><i>409</i>&nbsp;        if (node == null) return null;</b>
+<i>410</i>&nbsp;
+<b class="nc"><i>411</i>&nbsp;        if ( !fEntityReferenceExpansion</b>
+<b class="nc"><i>412</i>&nbsp;             &amp;&amp; node.getNodeType() == Node.ENTITY_REFERENCE_NODE)</b>
+<b class="nc"><i>413</i>&nbsp;            return null;</b>
+<b class="nc"><i>414</i>&nbsp;        Node newNode = node.getFirstChild();</b>
+<b class="nc"><i>415</i>&nbsp;        if (newNode == null)  return null;</b>
+<b class="nc"><i>416</i>&nbsp;        int accept = acceptNode(newNode);</b>
+<i>417</i>&nbsp;
+<b class="nc"><i>418</i>&nbsp;        if (accept == NodeFilter.FILTER_ACCEPT)</b>
+<b class="nc"><i>419</i>&nbsp;            return newNode;</b>
+<i>420</i>&nbsp;        else
+<b class="nc"><i>421</i>&nbsp;        if (accept == NodeFilter.FILTER_SKIP</b>
+<b class="nc"><i>422</i>&nbsp;            &amp;&amp; newNode.hasChildNodes())</b>
+<i>423</i>&nbsp;        {
+<b class="nc"><i>424</i>&nbsp;            Node fChild = getFirstChild(newNode);</b>
+<i>425</i>&nbsp;
+<b class="nc"><i>426</i>&nbsp;            if (fChild == null) {</b>
+<b class="nc"><i>427</i>&nbsp;                return getNextSibling(newNode, node);</b>
+<i>428</i>&nbsp;            }
+<b class="nc"><i>429</i>&nbsp;            return fChild;</b>
+<i>430</i>&nbsp;        }
+<i>431</i>&nbsp;        else
+<i>432</i>&nbsp;        //if (accept == NodeFilter.REJECT_NODE)
+<i>433</i>&nbsp;        {
+<b class="nc"><i>434</i>&nbsp;            return getNextSibling(newNode, node);</b>
+<i>435</i>&nbsp;        }
+<i>436</i>&nbsp;
+<i>437</i>&nbsp;
+<i>438</i>&nbsp;    }
+<i>439</i>&nbsp;
+<i>440</i>&nbsp;    /** Internal function.
+<i>441</i>&nbsp;     *  Return the last child Node, from the input node
+<i>442</i>&nbsp;     *  after applying filter, whatToshow.
+<i>443</i>&nbsp;     *  The current node is not consulted or set.
+<i>444</i>&nbsp;     */
+<i>445</i>&nbsp;    Node getLastChild(Node node) {
+<i>446</i>&nbsp;
+<b class="nc"><i>447</i>&nbsp;        if (node == null) return null;</b>
+<i>448</i>&nbsp;
+<b class="nc"><i>449</i>&nbsp;        if ( !fEntityReferenceExpansion</b>
+<b class="nc"><i>450</i>&nbsp;             &amp;&amp; node.getNodeType() == Node.ENTITY_REFERENCE_NODE)</b>
+<b class="nc"><i>451</i>&nbsp;            return null;</b>
+<i>452</i>&nbsp;
+<b class="nc"><i>453</i>&nbsp;        Node newNode = node.getLastChild();</b>
+<b class="nc"><i>454</i>&nbsp;        if (newNode == null)  return null;</b>
+<i>455</i>&nbsp;
+<b class="nc"><i>456</i>&nbsp;        int accept = acceptNode(newNode);</b>
+<i>457</i>&nbsp;
+<b class="nc"><i>458</i>&nbsp;        if (accept == NodeFilter.FILTER_ACCEPT)</b>
+<b class="nc"><i>459</i>&nbsp;            return newNode;</b>
+<i>460</i>&nbsp;        else
+<b class="nc"><i>461</i>&nbsp;        if (accept == NodeFilter.FILTER_SKIP</b>
+<b class="nc"><i>462</i>&nbsp;            &amp;&amp; newNode.hasChildNodes())</b>
+<i>463</i>&nbsp;        {
+<b class="nc"><i>464</i>&nbsp;            Node lChild = getLastChild(newNode);</b>
+<b class="nc"><i>465</i>&nbsp;            if (lChild == null) {</b>
+<b class="nc"><i>466</i>&nbsp;                return getPreviousSibling(newNode, node);</b>
+<i>467</i>&nbsp;            }
+<b class="nc"><i>468</i>&nbsp;            return lChild;</b>
+<i>469</i>&nbsp;        }
+<i>470</i>&nbsp;        else
+<i>471</i>&nbsp;        //if (accept == NodeFilter.REJECT_NODE)
+<i>472</i>&nbsp;        {
+<b class="nc"><i>473</i>&nbsp;            return getPreviousSibling(newNode, node);</b>
+<i>474</i>&nbsp;        }
+<i>475</i>&nbsp;
+<i>476</i>&nbsp;
+<i>477</i>&nbsp;    }
+<i>478</i>&nbsp;
+<i>479</i>&nbsp;    /** Internal function.
+<i>480</i>&nbsp;     *  The node whatToShow and the filter are combined into one result. */
+<i>481</i>&nbsp;    short acceptNode(Node node) {
+<i>482</i>&nbsp;        /***
+<i>483</i>&nbsp;         7.1.2.4. Filters and whatToShow flags
+<i>484</i>&nbsp;
+<i>485</i>&nbsp;         Iterator and TreeWalker apply whatToShow flags before applying Filters. If a node is rejected by the
+<i>486</i>&nbsp;         active whatToShow flags, a Filter will not be called to evaluate that node. When a node is rejected by
+<i>487</i>&nbsp;         the active whatToShow flags, children of that node will still be considered, and Filters may be called to
+<i>488</i>&nbsp;         evaluate them.
+<i>489</i>&nbsp;         ***/
+<i>490</i>&nbsp;
+<b class="nc"><i>491</i>&nbsp;        if (fNodeFilter == null) {</b>
+<b class="nc"><i>492</i>&nbsp;            if ( ( fWhatToShow &amp; (1 &lt;&lt; node.getNodeType()-1)) != 0) {</b>
+<b class="nc"><i>493</i>&nbsp;                return NodeFilter.FILTER_ACCEPT;</b>
+<i>494</i>&nbsp;            } else {
+<b class="nc"><i>495</i>&nbsp;                return NodeFilter.FILTER_SKIP;</b>
+<i>496</i>&nbsp;            }
+<i>497</i>&nbsp;        } else {
+<b class="nc"><i>498</i>&nbsp;            if ((fWhatToShow &amp; (1 &lt;&lt; node.getNodeType()-1)) != 0 ) {</b>
+<b class="nc"><i>499</i>&nbsp;                return fNodeFilter.acceptNode(node);</b>
+<i>500</i>&nbsp;            } else {
+<i>501</i>&nbsp;                // What to show has failed. See above excerpt from spec.
+<i>502</i>&nbsp;                // Equivalent to FILTER_SKIP.
+<b class="nc"><i>503</i>&nbsp;                return NodeFilter.FILTER_SKIP;</b>
+<i>504</i>&nbsp;            }
+<i>505</i>&nbsp;        }
+<i>506</i>&nbsp;    }
+<i>507</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

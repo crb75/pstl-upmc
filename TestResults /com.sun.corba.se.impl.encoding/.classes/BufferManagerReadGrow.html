@@ -1,0 +1,182 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BufferManagerReadGrow</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.encoding</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BufferManagerReadGrow (com.sun.corba.se.impl.encoding)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BufferManagerReadGrow</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.encoding;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.nio.ByteBuffer;
+<i>29</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>30</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains;
+<i>31</i>&nbsp;import com.sun.corba.se.impl.protocol.giopmsgheaders.FragmentMessage;
+<i>32</i>&nbsp;import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
+<i>33</i>&nbsp;import com.sun.corba.se.impl.logging.ORBUtilSystemException;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;public class BufferManagerReadGrow
+<i>36</i>&nbsp;    implements BufferManagerRead, MarkAndResetHandler
+<i>37</i>&nbsp;{
+<i>38</i>&nbsp;    // REVISIT - This should go in an abstract class called
+<i>39</i>&nbsp;    //           BufferManagerReadBase which should implement
+<i>40</i>&nbsp;    //           BufferManagerRead. Then, this class should extend
+<i>41</i>&nbsp;    //           BufferManagerReadBase.
+<i>42</i>&nbsp;    private ORB orb ;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    private ORBUtilSystemException wrapper ;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    BufferManagerReadGrow( ORB orb )
+<b class="nc"><i>47</i>&nbsp;    {</b>
+<b class="nc"><i>48</i>&nbsp;        this.orb = orb ;</b>
+<b class="nc"><i>49</i>&nbsp;        this.wrapper = ORBUtilSystemException.get( orb,</b>
+<i>50</i>&nbsp;            CORBALogDomains.RPC_ENCODING ) ;
+<i>51</i>&nbsp;    }
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    public void processFragment (ByteBuffer byteBuffer, FragmentMessage header)
+<i>54</i>&nbsp;    {
+<i>55</i>&nbsp;        // REVISIT - should we consider throwing an exception similar to what&#39;s
+<i>56</i>&nbsp;        //           done for underflow()???
+<i>57</i>&nbsp;    }
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    public void init(Message msg) {}
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    public ByteBufferWithInfo underflow (ByteBufferWithInfo bbwi)
+<i>62</i>&nbsp;    {
+<b class="nc"><i>63</i>&nbsp;        throw wrapper.unexpectedEof() ;</b>
+<i>64</i>&nbsp;    }
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    public void cancelProcessing(int requestId) {}
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    // Mark and reset handler -------------------------
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    private Object streamMemento;
+<i>71</i>&nbsp;    private RestorableInputStream inputStream;
+<b class="nc"><i>72</i>&nbsp;    private boolean markEngaged = false;</b>
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    public MarkAndResetHandler getMarkAndResetHandler() {
+<b class="nc"><i>75</i>&nbsp;        return this;</b>
+<i>76</i>&nbsp;    }
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    public void mark(RestorableInputStream is) {
+<b class="nc"><i>79</i>&nbsp;        markEngaged = true;</b>
+<b class="nc"><i>80</i>&nbsp;        inputStream = is;</b>
+<b class="nc"><i>81</i>&nbsp;        streamMemento = inputStream.createStreamMemento();</b>
+<i>82</i>&nbsp;    }
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    // This will never happen
+<i>85</i>&nbsp;    public void fragmentationOccured(ByteBufferWithInfo newFragment) {}
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    public void reset() {
+<i>88</i>&nbsp;
+<b class="nc"><i>89</i>&nbsp;        if (!markEngaged)</b>
+<i>90</i>&nbsp;            return;
+<i>91</i>&nbsp;
+<b class="nc"><i>92</i>&nbsp;        markEngaged = false;</b>
+<b class="nc"><i>93</i>&nbsp;        inputStream.restoreInternalState(streamMemento);</b>
+<b class="nc"><i>94</i>&nbsp;        streamMemento = null;</b>
+<i>95</i>&nbsp;    }
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    // Nothing to close and cleanup.
+<i>98</i>&nbsp;    public void close(ByteBufferWithInfo bbwi) {}
+<i>99</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

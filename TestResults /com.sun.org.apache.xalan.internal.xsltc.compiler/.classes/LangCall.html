@@ -1,0 +1,176 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: LangCall</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler</a> ]
+</div>
+
+<h1>Coverage Summary for Class: LangCall (com.sun.org.apache.xalan.internal.xsltc.compiler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LangCall</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: LangCall.java,v 1.2.4.1 2005/09/01 15:54:25 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.Vector;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+<i>29</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ILOAD;
+<i>30</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKESTATIC;
+<i>31</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>32</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
+<i>33</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.FilterGenerator;
+<i>34</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+<i>35</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.StringType;
+<i>36</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
+<i>37</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**
+<i>40</i>&nbsp; * @author Morten Jorgensen
+<i>41</i>&nbsp; */
+<i>42</i>&nbsp;final class LangCall extends FunctionCall {
+<i>43</i>&nbsp;    private Expression _lang;
+<i>44</i>&nbsp;    private Type _langType;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    /**
+<i>47</i>&nbsp;     * Get the parameters passed to function:
+<i>48</i>&nbsp;     *   lang(string)
+<i>49</i>&nbsp;     */
+<i>50</i>&nbsp;    public LangCall(QName fname, Vector arguments) {
+<b class="nc"><i>51</i>&nbsp;        super(fname, arguments);</b>
+<b class="nc"><i>52</i>&nbsp;        _lang = argument(0);</b>
+<i>53</i>&nbsp;    }
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    /**
+<i>56</i>&nbsp;     *
+<i>57</i>&nbsp;     */
+<i>58</i>&nbsp;    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+<b class="nc"><i>59</i>&nbsp;        _langType = _lang.typeCheck(stable);</b>
+<b class="nc"><i>60</i>&nbsp;        if (!(_langType instanceof StringType)) {</b>
+<b class="nc"><i>61</i>&nbsp;            _lang = new CastExpr(_lang, Type.String);</b>
+<i>62</i>&nbsp;        }
+<b class="nc"><i>63</i>&nbsp;        return Type.Boolean;</b>
+<i>64</i>&nbsp;    }
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    /**
+<i>67</i>&nbsp;     *
+<i>68</i>&nbsp;     */
+<i>69</i>&nbsp;    public Type getType() {
+<b class="nc"><i>70</i>&nbsp;        return(Type.Boolean);</b>
+<i>71</i>&nbsp;    }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    /**
+<i>74</i>&nbsp;     * This method is called when the constructor is compiled in
+<i>75</i>&nbsp;     * Stylesheet.compileConstructor() and not as the syntax tree is traversed.
+<i>76</i>&nbsp;     */
+<i>77</i>&nbsp;    public void translate(ClassGenerator classGen,
+<i>78</i>&nbsp;                          MethodGenerator methodGen) {
+<b class="nc"><i>79</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>80</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<i>81</i>&nbsp;
+<b class="nc"><i>82</i>&nbsp;        final int tst = cpg.addMethodref(BASIS_LIBRARY_CLASS,</b>
+<i>83</i>&nbsp;                                         &quot;testLanguage&quot;,
+<i>84</i>&nbsp;                                         &quot;(&quot;+STRING_SIG+DOM_INTF_SIG+&quot;I)Z&quot;);
+<b class="nc"><i>85</i>&nbsp;        _lang.translate(classGen,methodGen);</b>
+<b class="nc"><i>86</i>&nbsp;        il.append(methodGen.loadDOM());</b>
+<b class="nc"><i>87</i>&nbsp;        if (classGen instanceof FilterGenerator)</b>
+<b class="nc"><i>88</i>&nbsp;            il.append(new ILOAD(1));</b>
+<i>89</i>&nbsp;        else
+<b class="nc"><i>90</i>&nbsp;            il.append(methodGen.loadContextNode());</b>
+<b class="nc"><i>91</i>&nbsp;        il.append(new INVOKESTATIC(tst));</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

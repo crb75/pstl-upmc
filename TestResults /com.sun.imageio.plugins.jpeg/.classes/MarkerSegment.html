@@ -1,0 +1,312 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MarkerSegment</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.imageio.plugins.jpeg</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MarkerSegment (com.sun.imageio.plugins.jpeg)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MarkerSegment</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 78)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2001, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.imageio.plugins.jpeg;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import javax.imageio.metadata.IIOInvalidTreeException;
+<i>29</i>&nbsp;import javax.imageio.metadata.IIOMetadataNode;
+<i>30</i>&nbsp;import javax.imageio.stream.ImageOutputStream;
+<i>31</i>&nbsp;import javax.imageio.IIOException;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import java.io.IOException;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import org.w3c.dom.Node;
+<i>36</i>&nbsp;import org.w3c.dom.NamedNodeMap;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;/**
+<i>39</i>&nbsp; * All metadata is stored in MarkerSegments.  Marker segments
+<i>40</i>&nbsp; * that we know about are stored in subclasses of this
+<i>41</i>&nbsp; * basic class, which used for unrecognized APPn marker
+<i>42</i>&nbsp; * segments.  XXX break out UnknownMarkerSegment as a subclass
+<i>43</i>&nbsp; * and make this abstract, avoiding unused data field.
+<i>44</i>&nbsp; */
+<i>45</i>&nbsp;class MarkerSegment implements Cloneable {
+<i>46</i>&nbsp;    protected static final int LENGTH_SIZE = 2; // length is 2 bytes
+<i>47</i>&nbsp;    int tag;      // See JPEG.java
+<i>48</i>&nbsp;    int length;    /* Sometimes needed by subclasses; doesn&#39;t include
+<i>49</i>&nbsp;                      itself.  Meaningful only if constructed from a stream */
+<b class="nc"><i>50</i>&nbsp;    byte [] data = null;  // Raw segment data, used for unrecognized segments</b>
+<b class="nc"><i>51</i>&nbsp;    boolean unknown = false; // Set to true if the tag is not recognized</b>
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    /**
+<i>54</i>&nbsp;     * Constructor for creating &lt;code&gt;MarkerSegment&lt;/code&gt;s by reading
+<i>55</i>&nbsp;     * from an &lt;code&gt;ImageInputStream&lt;/code&gt;.
+<i>56</i>&nbsp;     */
+<b class="nc"><i>57</i>&nbsp;    MarkerSegment(JPEGBuffer buffer) throws IOException {</b>
+<i>58</i>&nbsp;
+<b class="nc"><i>59</i>&nbsp;        buffer.loadBuf(3);  // tag plus length</b>
+<b class="nc"><i>60</i>&nbsp;        tag = buffer.buf[buffer.bufPtr++] &amp; 0xff;</b>
+<b class="nc"><i>61</i>&nbsp;        length = (buffer.buf[buffer.bufPtr++] &amp; 0xff) &lt;&lt; 8;</b>
+<b class="nc"><i>62</i>&nbsp;        length |= buffer.buf[buffer.bufPtr++] &amp; 0xff;</b>
+<b class="nc"><i>63</i>&nbsp;        length -= 2;  // JPEG length includes itself, we don&#39;t</b>
+<i>64</i>&nbsp;
+<b class="nc"><i>65</i>&nbsp;        if (length &lt; 0) {</b>
+<b class="nc"><i>66</i>&nbsp;            throw new IIOException(&quot;Invalid segment length: &quot; + length);</b>
+<i>67</i>&nbsp;        }
+<b class="nc"><i>68</i>&nbsp;        buffer.bufAvail -= 3;</b>
+<i>69</i>&nbsp;        // Now that we know the true length, ensure that we&#39;ve got it,
+<i>70</i>&nbsp;        // or at least a bufferful if length is too big.
+<b class="nc"><i>71</i>&nbsp;        buffer.loadBuf(length);</b>
+<i>72</i>&nbsp;    }
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    /**
+<i>75</i>&nbsp;     * Constructor used when creating segments other than by
+<i>76</i>&nbsp;     * reading them from a stream.
+<i>77</i>&nbsp;     */
+<b class="nc"><i>78</i>&nbsp;    MarkerSegment(int tag) {</b>
+<b class="nc"><i>79</i>&nbsp;        this.tag = tag;</b>
+<b class="nc"><i>80</i>&nbsp;        length = 0;</b>
+<i>81</i>&nbsp;    }
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    /**
+<i>84</i>&nbsp;     * Construct a MarkerSegment from an &quot;unknown&quot; DOM Node.
+<i>85</i>&nbsp;     */
+<b class="nc"><i>86</i>&nbsp;    MarkerSegment(Node node) throws IIOInvalidTreeException {</b>
+<i>87</i>&nbsp;        // The type of node should have been verified already.
+<i>88</i>&nbsp;        // get the attribute and assign it to the tag
+<b class="nc"><i>89</i>&nbsp;        tag = getAttributeValue(node,</b>
+<i>90</i>&nbsp;                                null,
+<i>91</i>&nbsp;                                &quot;MarkerTag&quot;,
+<i>92</i>&nbsp;                                0, 255,
+<i>93</i>&nbsp;                                true);
+<b class="nc"><i>94</i>&nbsp;        length = 0;</b>
+<i>95</i>&nbsp;        // get the user object and clone it to the data
+<b class="nc"><i>96</i>&nbsp;        if (node instanceof IIOMetadataNode) {</b>
+<b class="nc"><i>97</i>&nbsp;            IIOMetadataNode iioNode = (IIOMetadataNode) node;</b>
+<i>98</i>&nbsp;            try {
+<b class="nc"><i>99</i>&nbsp;                data = (byte []) iioNode.getUserObject();</b>
+<b class="nc"><i>100</i>&nbsp;            } catch (Exception e) {</b>
+<b class="nc"><i>101</i>&nbsp;                IIOInvalidTreeException newGuy =</b>
+<i>102</i>&nbsp;                    new IIOInvalidTreeException
+<i>103</i>&nbsp;                    (&quot;Can&#39;t get User Object&quot;, node);
+<b class="nc"><i>104</i>&nbsp;                newGuy.initCause(e);</b>
+<b class="nc"><i>105</i>&nbsp;                throw newGuy;</b>
+<b class="nc"><i>106</i>&nbsp;            }</b>
+<b class="nc"><i>107</i>&nbsp;        } else {</b>
+<b class="nc"><i>108</i>&nbsp;            throw new IIOInvalidTreeException</b>
+<i>109</i>&nbsp;                (&quot;Node must have User Object&quot;, node);
+<i>110</i>&nbsp;        }
+<i>111</i>&nbsp;    }
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    /**
+<i>114</i>&nbsp;     * Deep copy of data array.
+<i>115</i>&nbsp;     */
+<i>116</i>&nbsp;    protected Object clone() {
+<b class="nc"><i>117</i>&nbsp;        MarkerSegment newGuy = null;</b>
+<i>118</i>&nbsp;        try {
+<b class="nc"><i>119</i>&nbsp;            newGuy = (MarkerSegment) super.clone();</b>
+<b class="nc"><i>120</i>&nbsp;        } catch (CloneNotSupportedException e) {} // won&#39;t happen</b>
+<b class="nc"><i>121</i>&nbsp;        if (this.data != null) {</b>
+<b class="nc"><i>122</i>&nbsp;            newGuy.data = (byte[]) data.clone();</b>
+<i>123</i>&nbsp;        }
+<b class="nc"><i>124</i>&nbsp;        return newGuy;</b>
+<i>125</i>&nbsp;    }
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;    /**
+<i>128</i>&nbsp;     * We have determined that we don&#39;t know the type, so load
+<i>129</i>&nbsp;     * the data using the length parameter.
+<i>130</i>&nbsp;     */
+<i>131</i>&nbsp;    void loadData(JPEGBuffer buffer) throws IOException {
+<b class="nc"><i>132</i>&nbsp;        data = new byte[length];</b>
+<b class="nc"><i>133</i>&nbsp;        buffer.readData(data);</b>
+<i>134</i>&nbsp;    }
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;    IIOMetadataNode getNativeNode() {
+<b class="nc"><i>137</i>&nbsp;        IIOMetadataNode node = new IIOMetadataNode(&quot;unknown&quot;);</b>
+<b class="nc"><i>138</i>&nbsp;        node.setAttribute(&quot;MarkerTag&quot;, Integer.toString(tag));</b>
+<b class="nc"><i>139</i>&nbsp;        node.setUserObject(data);</b>
+<i>140</i>&nbsp;
+<b class="nc"><i>141</i>&nbsp;        return node;</b>
+<i>142</i>&nbsp;    }
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;    static int getAttributeValue(Node node,
+<i>145</i>&nbsp;                                 NamedNodeMap attrs,
+<i>146</i>&nbsp;                                 String name,
+<i>147</i>&nbsp;                                 int min,
+<i>148</i>&nbsp;                                 int max,
+<i>149</i>&nbsp;                                 boolean required)
+<i>150</i>&nbsp;        throws IIOInvalidTreeException {
+<b class="nc"><i>151</i>&nbsp;        if (attrs == null) {</b>
+<b class="nc"><i>152</i>&nbsp;            attrs = node.getAttributes();</b>
+<i>153</i>&nbsp;        }
+<b class="nc"><i>154</i>&nbsp;        String valueString = attrs.getNamedItem(name).getNodeValue();</b>
+<b class="nc"><i>155</i>&nbsp;        int value = -1;</b>
+<b class="nc"><i>156</i>&nbsp;        if (valueString == null) {</b>
+<b class="nc"><i>157</i>&nbsp;            if (required) {</b>
+<b class="nc"><i>158</i>&nbsp;                throw new IIOInvalidTreeException</b>
+<i>159</i>&nbsp;                    (name + &quot; attribute not found&quot;, node);
+<i>160</i>&nbsp;            }
+<i>161</i>&nbsp;        } else {
+<b class="nc"><i>162</i>&nbsp;              value = Integer.parseInt(valueString);</b>
+<b class="nc"><i>163</i>&nbsp;              if ((value &lt; min) || (value &gt; max)) {</b>
+<b class="nc"><i>164</i>&nbsp;                  throw new IIOInvalidTreeException</b>
+<i>165</i>&nbsp;                      (name + &quot; attribute out of range&quot;, node);
+<i>166</i>&nbsp;              }
+<i>167</i>&nbsp;        }
+<b class="nc"><i>168</i>&nbsp;        return value;</b>
+<i>169</i>&nbsp;    }
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;    /**
+<i>172</i>&nbsp;     * Writes the marker, tag, and length.  Note that length
+<i>173</i>&nbsp;     * should be verified by the caller as a correct JPEG
+<i>174</i>&nbsp;     * length, i.e it includes itself.
+<i>175</i>&nbsp;     */
+<i>176</i>&nbsp;    void writeTag(ImageOutputStream ios) throws IOException {
+<b class="nc"><i>177</i>&nbsp;        ios.write(0xff);</b>
+<b class="nc"><i>178</i>&nbsp;        ios.write(tag);</b>
+<b class="nc"><i>179</i>&nbsp;        write2bytes(ios, length);</b>
+<i>180</i>&nbsp;    }
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;    /**
+<i>183</i>&nbsp;     * Writes the data for this segment to the stream in
+<i>184</i>&nbsp;     * valid JPEG format.
+<i>185</i>&nbsp;     */
+<i>186</i>&nbsp;    void write(ImageOutputStream ios) throws IOException {
+<b class="nc"><i>187</i>&nbsp;        length = 2 + ((data != null) ? data.length : 0);</b>
+<b class="nc"><i>188</i>&nbsp;        writeTag(ios);</b>
+<b class="nc"><i>189</i>&nbsp;        if (data != null) {</b>
+<b class="nc"><i>190</i>&nbsp;            ios.write(data);</b>
+<i>191</i>&nbsp;        }
+<i>192</i>&nbsp;    }
+<i>193</i>&nbsp;
+<i>194</i>&nbsp;    static void write2bytes(ImageOutputStream ios,
+<i>195</i>&nbsp;                            int value) throws IOException {
+<b class="nc"><i>196</i>&nbsp;        ios.write((value &gt;&gt; 8) &amp; 0xff);</b>
+<b class="nc"><i>197</i>&nbsp;        ios.write(value &amp; 0xff);</b>
+<i>198</i>&nbsp;
+<i>199</i>&nbsp;    }
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;    void printTag(String prefix) {
+<b class="nc"><i>202</i>&nbsp;        System.out.println(prefix + &quot; marker segment - marker = 0x&quot;</b>
+<b class="nc"><i>203</i>&nbsp;                           + Integer.toHexString(tag));</b>
+<b class="nc"><i>204</i>&nbsp;        System.out.println(&quot;length: &quot; + length);</b>
+<i>205</i>&nbsp;    }
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;    void print() {
+<b class="nc"><i>208</i>&nbsp;        printTag(&quot;Unknown&quot;);</b>
+<b class="nc"><i>209</i>&nbsp;        if (length &gt; 10) {</b>
+<b class="nc"><i>210</i>&nbsp;            System.out.print(&quot;First 5 bytes:&quot;);</b>
+<b class="nc"><i>211</i>&nbsp;            for (int i=0;i&lt;5;i++) {</b>
+<b class="nc"><i>212</i>&nbsp;                System.out.print(&quot; Ox&quot;</b>
+<b class="nc"><i>213</i>&nbsp;                                 + Integer.toHexString((int)data[i]));</b>
+<i>214</i>&nbsp;            }
+<b class="nc"><i>215</i>&nbsp;            System.out.print(&quot;\nLast 5 bytes:&quot;);</b>
+<b class="nc"><i>216</i>&nbsp;            for (int i=data.length-5;i&lt;data.length;i++) {</b>
+<b class="nc"><i>217</i>&nbsp;                System.out.print(&quot; Ox&quot;</b>
+<b class="nc"><i>218</i>&nbsp;                                 + Integer.toHexString((int)data[i]));</b>
+<i>219</i>&nbsp;            }
+<i>220</i>&nbsp;        } else {
+<b class="nc"><i>221</i>&nbsp;            System.out.print(&quot;Data:&quot;);</b>
+<b class="nc"><i>222</i>&nbsp;            for (int i=0;i&lt;data.length;i++) {</b>
+<b class="nc"><i>223</i>&nbsp;                System.out.print(&quot; Ox&quot;</b>
+<b class="nc"><i>224</i>&nbsp;                                 + Integer.toHexString((int)data[i]));</b>
+<i>225</i>&nbsp;            }
+<i>226</i>&nbsp;        }
+<b class="nc"><i>227</i>&nbsp;        System.out.println();</b>
+<i>228</i>&nbsp;    }
+<i>229</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

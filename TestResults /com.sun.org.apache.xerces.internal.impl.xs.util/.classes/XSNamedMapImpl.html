@@ -1,0 +1,449 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XSNamedMapImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.xs.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XSNamedMapImpl (com.sun.org.apache.xerces.internal.impl.xs.util)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XSNamedMapImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 67)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">XSNamedMapImpl$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">XSNamedMapImpl$1$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">XSNamedMapImpl$XSNamedMapEntry</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 20)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 97)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2002,2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.xs.util;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import java.util.AbstractMap;
+<i>24</i>&nbsp;import java.util.AbstractSet;
+<i>25</i>&nbsp;import java.util.Iterator;
+<i>26</i>&nbsp;import java.util.Map;
+<i>27</i>&nbsp;import java.util.NoSuchElementException;
+<i>28</i>&nbsp;import java.util.Set;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import javax.xml.XMLConstants;
+<i>31</i>&nbsp;import javax.xml.namespace.QName;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import com.sun.org.apache.xerces.internal.util.SymbolHash;
+<i>34</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSNamedMap;
+<i>35</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSObject;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;/**
+<i>38</i>&nbsp; * Containts the map between qnames and XSObject&#39;s.
+<i>39</i>&nbsp; *
+<i>40</i>&nbsp; * @xerces.internal
+<i>41</i>&nbsp; *
+<i>42</i>&nbsp; * @author Sandy Gao, IBM
+<i>43</i>&nbsp; *
+<i>44</i>&nbsp; * @version $Id: XSNamedMapImpl.java,v 1.7 2010-11-01 04:40:06 joehw Exp $
+<i>45</i>&nbsp; */
+<i>46</i>&nbsp;public class XSNamedMapImpl extends AbstractMap implements XSNamedMap {
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    /**
+<i>49</i>&nbsp;     * An immutable empty map.
+<i>50</i>&nbsp;     */
+<b class="nc"><i>51</i>&nbsp;    public static final XSNamedMapImpl EMPTY_MAP = new XSNamedMapImpl(new XSObject[0], 0);</b>
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    // components of these namespaces are stored in this map
+<i>54</i>&nbsp;    final String[] fNamespaces;
+<i>55</i>&nbsp;    // number of namespaces
+<i>56</i>&nbsp;    final int fNSNum;
+<i>57</i>&nbsp;    // each entry contains components in one namespace
+<i>58</i>&nbsp;    final SymbolHash[] fMaps;
+<i>59</i>&nbsp;    // store all components from all namespace.
+<i>60</i>&nbsp;    // used when this map is accessed as a list.
+<b class="nc"><i>61</i>&nbsp;    XSObject[] fArray = null;</b>
+<i>62</i>&nbsp;    // store the number of components.
+<i>63</i>&nbsp;    // used when this map is accessed as a list.
+<b class="nc"><i>64</i>&nbsp;    int fLength = -1;</b>
+<i>65</i>&nbsp;    // Set of Map.Entry&lt;QName,XSObject&gt; for the java.util.Map methods
+<b class="nc"><i>66</i>&nbsp;    private Set fEntrySet = null;</b>
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    /**
+<i>69</i>&nbsp;     * Construct an XSNamedMap implementation for one namespace
+<i>70</i>&nbsp;     *
+<i>71</i>&nbsp;     * @param namespace the namespace to which the components belong
+<i>72</i>&nbsp;     * @param map       the map from local names to components
+<i>73</i>&nbsp;     */
+<b class="nc"><i>74</i>&nbsp;    public XSNamedMapImpl(String namespace, SymbolHash map) {</b>
+<b class="nc"><i>75</i>&nbsp;        fNamespaces = new String[] {namespace};</b>
+<b class="nc"><i>76</i>&nbsp;        fMaps = new SymbolHash[] {map};</b>
+<b class="nc"><i>77</i>&nbsp;        fNSNum = 1;</b>
+<i>78</i>&nbsp;    }
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    /**
+<i>81</i>&nbsp;     * Construct an XSNamedMap implementation for a list of namespaces
+<i>82</i>&nbsp;     *
+<i>83</i>&nbsp;     * @param namespaces the namespaces to which the components belong
+<i>84</i>&nbsp;     * @param maps       the maps from local names to components
+<i>85</i>&nbsp;     * @param num        the number of namespaces
+<i>86</i>&nbsp;     */
+<b class="nc"><i>87</i>&nbsp;    public XSNamedMapImpl(String[] namespaces, SymbolHash[] maps, int num) {</b>
+<b class="nc"><i>88</i>&nbsp;        fNamespaces = namespaces;</b>
+<b class="nc"><i>89</i>&nbsp;        fMaps = maps;</b>
+<b class="nc"><i>90</i>&nbsp;        fNSNum = num;</b>
+<i>91</i>&nbsp;    }
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    /**
+<i>94</i>&nbsp;     * Construct an XSNamedMap implementation one namespace from an array
+<i>95</i>&nbsp;     *
+<i>96</i>&nbsp;     * @param array     containing all components
+<i>97</i>&nbsp;     * @param length    number of components
+<i>98</i>&nbsp;     */
+<b class="nc"><i>99</i>&nbsp;    public XSNamedMapImpl(XSObject[] array, int length) {</b>
+<b class="nc"><i>100</i>&nbsp;        if (length == 0) {</b>
+<b class="nc"><i>101</i>&nbsp;            fNamespaces = null;</b>
+<b class="nc"><i>102</i>&nbsp;            fMaps = null;</b>
+<b class="nc"><i>103</i>&nbsp;            fNSNum = 0;</b>
+<b class="nc"><i>104</i>&nbsp;            fArray = array;</b>
+<b class="nc"><i>105</i>&nbsp;            fLength = 0;</b>
+<i>106</i>&nbsp;            return;
+<i>107</i>&nbsp;        }
+<i>108</i>&nbsp;        // because all components are from the same target namesapce,
+<i>109</i>&nbsp;        // get the namespace from the first one.
+<b class="nc"><i>110</i>&nbsp;        fNamespaces = new String[]{array[0].getNamespace()};</b>
+<b class="nc"><i>111</i>&nbsp;        fMaps = null;</b>
+<b class="nc"><i>112</i>&nbsp;        fNSNum = 1;</b>
+<i>113</i>&nbsp;        // copy elements to the Vector
+<b class="nc"><i>114</i>&nbsp;        fArray = array;</b>
+<b class="nc"><i>115</i>&nbsp;        fLength = length;</b>
+<i>116</i>&nbsp;    }
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;    /**
+<i>119</i>&nbsp;     * The number of &lt;code&gt;XSObjects&lt;/code&gt; in the &lt;code&gt;XSObjectList&lt;/code&gt;.
+<i>120</i>&nbsp;     * The range of valid child object indices is 0 to &lt;code&gt;length-1&lt;/code&gt;
+<i>121</i>&nbsp;     * inclusive.
+<i>122</i>&nbsp;     */
+<i>123</i>&nbsp;    public synchronized int getLength() {
+<b class="nc"><i>124</i>&nbsp;        if (fLength == -1) {</b>
+<b class="nc"><i>125</i>&nbsp;            fLength = 0;</b>
+<b class="nc"><i>126</i>&nbsp;            for (int i = 0; i &lt; fNSNum; i++) {</b>
+<b class="nc"><i>127</i>&nbsp;                fLength += fMaps[i].getLength();</b>
+<i>128</i>&nbsp;            }
+<i>129</i>&nbsp;        }
+<b class="nc"><i>130</i>&nbsp;        return fLength;</b>
+<i>131</i>&nbsp;    }
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;    /**
+<i>134</i>&nbsp;     * Retrieves an &lt;code&gt;XSObject&lt;/code&gt; specified by local name and
+<i>135</i>&nbsp;     * namespace URI.
+<i>136</i>&nbsp;     * &lt;br&gt;Per XML Namespaces, applications must use the value &lt;code&gt;null&lt;/code&gt; as the
+<i>137</i>&nbsp;     * &lt;code&gt;namespace&lt;/code&gt; parameter for methods if they wish to specify
+<i>138</i>&nbsp;     * no namespace.
+<i>139</i>&nbsp;     * @param namespace The namespace URI of the &lt;code&gt;XSObject&lt;/code&gt; to
+<i>140</i>&nbsp;     *   retrieve, or &lt;code&gt;null&lt;/code&gt; if the &lt;code&gt;XSObject&lt;/code&gt; has no
+<i>141</i>&nbsp;     *   namespace.
+<i>142</i>&nbsp;     * @param localName The local name of the &lt;code&gt;XSObject&lt;/code&gt; to
+<i>143</i>&nbsp;     *   retrieve.
+<i>144</i>&nbsp;     * @return A &lt;code&gt;XSObject&lt;/code&gt; (of any type) with the specified local
+<i>145</i>&nbsp;     *   name and namespace URI, or &lt;code&gt;null&lt;/code&gt; if they do not
+<i>146</i>&nbsp;     *   identify any object in this map.
+<i>147</i>&nbsp;     */
+<i>148</i>&nbsp;    public XSObject itemByName(String namespace, String localName) {
+<b class="nc"><i>149</i>&nbsp;        for (int i = 0; i &lt; fNSNum; i++) {</b>
+<b class="nc"><i>150</i>&nbsp;            if (isEqual(namespace, fNamespaces[i])) {</b>
+<i>151</i>&nbsp;                // when this map is created from SymbolHash&#39;s
+<i>152</i>&nbsp;                // get the component from SymbolHash
+<b class="nc"><i>153</i>&nbsp;                if (fMaps != null) {</b>
+<b class="nc"><i>154</i>&nbsp;                    return (XSObject)fMaps[i].get(localName);</b>
+<i>155</i>&nbsp;                }
+<i>156</i>&nbsp;                // Otherwise (it&#39;s created from an array)
+<i>157</i>&nbsp;                // go through the array to find a matching name
+<i>158</i>&nbsp;                XSObject ret;
+<b class="nc"><i>159</i>&nbsp;                for (int j = 0; j &lt; fLength; j++) {</b>
+<b class="nc"><i>160</i>&nbsp;                    ret = fArray[j];</b>
+<b class="nc"><i>161</i>&nbsp;                    if (ret.getName().equals(localName)) {</b>
+<b class="nc"><i>162</i>&nbsp;                        return ret;</b>
+<i>163</i>&nbsp;                    }
+<i>164</i>&nbsp;                }
+<b class="nc"><i>165</i>&nbsp;                return null;</b>
+<i>166</i>&nbsp;            }
+<i>167</i>&nbsp;        }
+<b class="nc"><i>168</i>&nbsp;        return null;</b>
+<i>169</i>&nbsp;    }
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;    /**
+<i>172</i>&nbsp;     * Returns the &lt;code&gt;index&lt;/code&gt;th item in the collection or
+<i>173</i>&nbsp;     * &lt;code&gt;null&lt;/code&gt; if &lt;code&gt;index&lt;/code&gt; is greater than or equal to
+<i>174</i>&nbsp;     * the number of objects in the list. The index starts at 0.
+<i>175</i>&nbsp;     * @param index  index into the collection.
+<i>176</i>&nbsp;     * @return  The &lt;code&gt;XSObject&lt;/code&gt; at the &lt;code&gt;index&lt;/code&gt;th
+<i>177</i>&nbsp;     *   position in the &lt;code&gt;XSObjectList&lt;/code&gt;, or &lt;code&gt;null&lt;/code&gt; if
+<i>178</i>&nbsp;     *   the index specified is not valid.
+<i>179</i>&nbsp;     */
+<i>180</i>&nbsp;    public synchronized XSObject item(int index) {
+<b class="nc"><i>181</i>&nbsp;        if (fArray == null) {</b>
+<i>182</i>&nbsp;            // calculate the total number of elements
+<b class="nc"><i>183</i>&nbsp;            getLength();</b>
+<b class="nc"><i>184</i>&nbsp;            fArray = new XSObject[fLength];</b>
+<b class="nc"><i>185</i>&nbsp;            int pos = 0;</b>
+<i>186</i>&nbsp;            // get components from all SymbolHashes
+<b class="nc"><i>187</i>&nbsp;            for (int i = 0; i &lt; fNSNum; i++) {</b>
+<b class="nc"><i>188</i>&nbsp;                pos += fMaps[i].getValues(fArray, pos);</b>
+<i>189</i>&nbsp;            }
+<i>190</i>&nbsp;        }
+<b class="nc"><i>191</i>&nbsp;        if (index &lt; 0 || index &gt;= fLength) {</b>
+<b class="nc"><i>192</i>&nbsp;            return null;</b>
+<i>193</i>&nbsp;        }
+<b class="nc"><i>194</i>&nbsp;        return fArray[index];</b>
+<i>195</i>&nbsp;    }
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;    static boolean isEqual(String one, String two) {
+<b class="nc"><i>198</i>&nbsp;        return (one != null) ? one.equals(two) : (two == null);</b>
+<i>199</i>&nbsp;    }
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;    /*
+<i>202</i>&nbsp;     * java.util.Map methods
+<i>203</i>&nbsp;     */
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;    public boolean containsKey(Object key) {
+<b class="nc"><i>206</i>&nbsp;        return (get(key) != null);</b>
+<i>207</i>&nbsp;    }
+<i>208</i>&nbsp;
+<i>209</i>&nbsp;    public Object get(Object key) {
+<b class="nc"><i>210</i>&nbsp;        if (key instanceof QName) {</b>
+<b class="nc"><i>211</i>&nbsp;            final QName name = (QName) key;</b>
+<b class="nc"><i>212</i>&nbsp;            String namespaceURI = name.getNamespaceURI();</b>
+<b class="nc"><i>213</i>&nbsp;            if (XMLConstants.NULL_NS_URI.equals(namespaceURI)) {</b>
+<b class="nc"><i>214</i>&nbsp;                namespaceURI = null;</b>
+<i>215</i>&nbsp;            }
+<b class="nc"><i>216</i>&nbsp;            String localPart = name.getLocalPart();</b>
+<b class="nc"><i>217</i>&nbsp;            return itemByName(namespaceURI, localPart);</b>
+<i>218</i>&nbsp;        }
+<b class="nc"><i>219</i>&nbsp;        return null;</b>
+<i>220</i>&nbsp;    }
+<i>221</i>&nbsp;
+<i>222</i>&nbsp;    public int size() {
+<b class="nc"><i>223</i>&nbsp;        return getLength();</b>
+<i>224</i>&nbsp;    }
+<i>225</i>&nbsp;
+<i>226</i>&nbsp;    public synchronized Set entrySet() {
+<i>227</i>&nbsp;        // Defer creation of the entry set until it is actually needed.
+<b class="nc"><i>228</i>&nbsp;        if (fEntrySet == null) {</b>
+<b class="nc"><i>229</i>&nbsp;            final int length = getLength();</b>
+<b class="nc"><i>230</i>&nbsp;            final XSNamedMapEntry[] entries = new XSNamedMapEntry[length];</b>
+<b class="nc"><i>231</i>&nbsp;            for (int i = 0; i &lt; length; ++i) {</b>
+<b class="nc"><i>232</i>&nbsp;                XSObject xso = item(i);</b>
+<b class="nc"><i>233</i>&nbsp;                entries[i] = new XSNamedMapEntry(new QName(xso.getNamespace(), xso.getName()), xso);</b>
+<i>234</i>&nbsp;            }
+<i>235</i>&nbsp;            // Create a view of this immutable map.
+<b class="nc"><i>236</i>&nbsp;            fEntrySet = new AbstractSet() {</b>
+<i>237</i>&nbsp;                public Iterator iterator() {
+<b class="nc"><i>238</i>&nbsp;                    return new Iterator() {</b>
+<b class="nc"><i>239</i>&nbsp;                        private int index = 0;</b>
+<i>240</i>&nbsp;                        public boolean hasNext() {
+<b class="nc"><i>241</i>&nbsp;                            return (index &lt; length);</b>
+<i>242</i>&nbsp;                        }
+<i>243</i>&nbsp;                        public Object next() {
+<b class="nc"><i>244</i>&nbsp;                            if (index &lt; length) {</b>
+<b class="nc"><i>245</i>&nbsp;                                return entries[index++];</b>
+<i>246</i>&nbsp;                            }
+<b class="nc"><i>247</i>&nbsp;                            throw new NoSuchElementException();</b>
+<i>248</i>&nbsp;                        }
+<i>249</i>&nbsp;                        public void remove() {
+<b class="nc"><i>250</i>&nbsp;                            throw new UnsupportedOperationException();</b>
+<i>251</i>&nbsp;                        }
+<i>252</i>&nbsp;                    };
+<i>253</i>&nbsp;                }
+<i>254</i>&nbsp;                public int size() {
+<b class="nc"><i>255</i>&nbsp;                    return length;</b>
+<i>256</i>&nbsp;                }
+<i>257</i>&nbsp;            };
+<i>258</i>&nbsp;        }
+<b class="nc"><i>259</i>&nbsp;        return fEntrySet;</b>
+<i>260</i>&nbsp;    }
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;    /** An entry in the XSNamedMap. **/
+<i>263</i>&nbsp;    private static final class XSNamedMapEntry implements Map.Entry {
+<i>264</i>&nbsp;        private final QName key;
+<i>265</i>&nbsp;        private final XSObject value;
+<b class="nc"><i>266</i>&nbsp;        public XSNamedMapEntry(QName key, XSObject value) {</b>
+<b class="nc"><i>267</i>&nbsp;            this.key = key;</b>
+<b class="nc"><i>268</i>&nbsp;            this.value = value;</b>
+<i>269</i>&nbsp;        }
+<i>270</i>&nbsp;        public Object getKey() {
+<b class="nc"><i>271</i>&nbsp;            return key;</b>
+<i>272</i>&nbsp;        }
+<i>273</i>&nbsp;        public Object getValue() {
+<b class="nc"><i>274</i>&nbsp;            return value;</b>
+<i>275</i>&nbsp;        }
+<i>276</i>&nbsp;        public Object setValue(Object value) {
+<b class="nc"><i>277</i>&nbsp;            throw new UnsupportedOperationException();</b>
+<i>278</i>&nbsp;        }
+<i>279</i>&nbsp;        public boolean equals(Object o) {
+<b class="nc"><i>280</i>&nbsp;            if (o instanceof Map.Entry) {</b>
+<b class="nc"><i>281</i>&nbsp;                Map.Entry e = (Map.Entry) o;</b>
+<b class="nc"><i>282</i>&nbsp;                Object otherKey = e.getKey();</b>
+<b class="nc"><i>283</i>&nbsp;                Object otherValue = e.getValue();</b>
+<b class="nc"><i>284</i>&nbsp;                return (key == null ? otherKey == null : key.equals(otherKey)) &amp;&amp;</b>
+<b class="nc"><i>285</i>&nbsp;                    (value == null ? otherValue == null : value.equals(otherValue));</b>
+<i>286</i>&nbsp;            }
+<b class="nc"><i>287</i>&nbsp;            return false;</b>
+<i>288</i>&nbsp;        }
+<i>289</i>&nbsp;        public int hashCode() {
+<b class="nc"><i>290</i>&nbsp;            return (key == null ? 0 : key.hashCode())</b>
+<b class="nc"><i>291</i>&nbsp;                ^ (value == null ? 0 : value.hashCode());</b>
+<i>292</i>&nbsp;        }
+<i>293</i>&nbsp;        public String toString() {
+<b class="nc"><i>294</i>&nbsp;            StringBuffer buffer = new StringBuffer();</b>
+<b class="nc"><i>295</i>&nbsp;            buffer.append(String.valueOf(key));</b>
+<b class="nc"><i>296</i>&nbsp;            buffer.append(&#39;=&#39;);</b>
+<b class="nc"><i>297</i>&nbsp;            buffer.append(String.valueOf(value));</b>
+<b class="nc"><i>298</i>&nbsp;            return buffer.toString();</b>
+<i>299</i>&nbsp;        }
+<i>300</i>&nbsp;    }
+<i>301</i>&nbsp;
+<i>302</i>&nbsp;} // class XSNamedMapImpl
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

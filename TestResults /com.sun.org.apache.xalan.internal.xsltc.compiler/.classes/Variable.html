@@ -1,0 +1,288 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Variable</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Variable (com.sun.org.apache.xalan.internal.xsltc.compiler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Variable</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 68)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: Variable.java,v 1.2.4.1 2005/09/12 11:36:46 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.bcel.internal.classfile.Field;
+<i>27</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
+<i>28</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+<i>29</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.DCONST;
+<i>30</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ICONST;
+<i>31</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+<i>32</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>33</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.PUTFIELD;
+<i>34</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.BooleanType;
+<i>35</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
+<i>36</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg;
+<i>37</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.IntType;
+<i>38</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+<i>39</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.NodeType;
+<i>40</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.RealType;
+<i>41</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
+<i>42</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+<i>43</i>&nbsp;
+<b class="nc"><i>44</i>&nbsp;final class Variable extends VariableBase {</b>
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    public int getIndex() {
+<b class="nc"><i>47</i>&nbsp;        return (_local != null) ? _local.getIndex() : -1;</b>
+<i>48</i>&nbsp;    }
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    /**
+<i>51</i>&nbsp;     * Parse the contents of the variable
+<i>52</i>&nbsp;     */
+<i>53</i>&nbsp;    public void parseContents(Parser parser) {
+<i>54</i>&nbsp;        // Parse &#39;name&#39; and &#39;select&#39; attributes plus parameter contents
+<b class="nc"><i>55</i>&nbsp;        super.parseContents(parser);</b>
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;        // Add a ref to this var to its enclosing construct
+<b class="nc"><i>58</i>&nbsp;        SyntaxTreeNode parent = getParent();</b>
+<b class="nc"><i>59</i>&nbsp;        if (parent instanceof Stylesheet) {</b>
+<i>60</i>&nbsp;            // Mark this as a global variable
+<b class="nc"><i>61</i>&nbsp;            _isLocal = false;</b>
+<i>62</i>&nbsp;            // Check if a global variable with this name already exists...
+<b class="nc"><i>63</i>&nbsp;            Variable var = parser.getSymbolTable().lookupVariable(_name);</b>
+<i>64</i>&nbsp;            // ...and if it does we need to check import precedence
+<b class="nc"><i>65</i>&nbsp;            if (var != null) {</b>
+<b class="nc"><i>66</i>&nbsp;                final int us = this.getImportPrecedence();</b>
+<b class="nc"><i>67</i>&nbsp;                final int them = var.getImportPrecedence();</b>
+<i>68</i>&nbsp;                // It is an error if the two have the same import precedence
+<b class="nc"><i>69</i>&nbsp;                if (us == them) {</b>
+<b class="nc"><i>70</i>&nbsp;                    final String name = _name.toString();</b>
+<b class="nc"><i>71</i>&nbsp;                    reportError(this, parser, ErrorMsg.VARIABLE_REDEF_ERR,name);</b>
+<b class="nc"><i>72</i>&nbsp;                }</b>
+<i>73</i>&nbsp;                // Ignore this if previous definition has higher precedence
+<b class="nc"><i>74</i>&nbsp;                else if (them &gt; us) {</b>
+<b class="nc"><i>75</i>&nbsp;                    _ignore = true;</b>
+<b class="nc"><i>76</i>&nbsp;                    copyReferences(var);</b>
+<i>77</i>&nbsp;                    return;
+<i>78</i>&nbsp;                }
+<i>79</i>&nbsp;                else {
+<b class="nc"><i>80</i>&nbsp;                    var.copyReferences(this);</b>
+<b class="nc"><i>81</i>&nbsp;                    var.disable();</b>
+<i>82</i>&nbsp;                }
+<i>83</i>&nbsp;                // Add this variable if we have higher precedence
+<i>84</i>&nbsp;            }
+<b class="nc"><i>85</i>&nbsp;            ((Stylesheet)parent).addVariable(this);</b>
+<b class="nc"><i>86</i>&nbsp;            parser.getSymbolTable().addVariable(this);</b>
+<b class="nc"><i>87</i>&nbsp;        }</b>
+<i>88</i>&nbsp;        else {
+<b class="nc"><i>89</i>&nbsp;            _isLocal = true;</b>
+<i>90</i>&nbsp;        }
+<i>91</i>&nbsp;    }
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    /**
+<i>94</i>&nbsp;     * Runs a type check on either the variable element body or the
+<i>95</i>&nbsp;     * expression in the &#39;select&#39; attribute
+<i>96</i>&nbsp;     */
+<i>97</i>&nbsp;    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;        // Type check the &#39;select&#39; expression if present
+<b class="nc"><i>100</i>&nbsp;        if (_select != null) {</b>
+<b class="nc"><i>101</i>&nbsp;            _type = _select.typeCheck(stable);</b>
+<i>102</i>&nbsp;        }
+<i>103</i>&nbsp;        // Type check the element contents otherwise
+<b class="nc"><i>104</i>&nbsp;        else if (hasContents()) {</b>
+<b class="nc"><i>105</i>&nbsp;            typeCheckContents(stable);</b>
+<b class="nc"><i>106</i>&nbsp;            _type = Type.ResultTree;</b>
+<i>107</i>&nbsp;        }
+<i>108</i>&nbsp;        else {
+<b class="nc"><i>109</i>&nbsp;            _type = Type.Reference;</b>
+<i>110</i>&nbsp;        }
+<i>111</i>&nbsp;        // The return type is void as the variable element does not leave
+<i>112</i>&nbsp;        // anything on the JVM&#39;s stack. The &#39;_type&#39; global will be returned
+<i>113</i>&nbsp;        // by the references to this variable, and not by the variable itself.
+<b class="nc"><i>114</i>&nbsp;        return Type.Void;</b>
+<i>115</i>&nbsp;    }
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    /**
+<i>118</i>&nbsp;     * This method is part of a little trick that is needed to use local
+<i>119</i>&nbsp;     * variables inside nested for-each loops. See the initializeVariables()
+<i>120</i>&nbsp;     * method in the ForEach class for an explanation
+<i>121</i>&nbsp;     */
+<i>122</i>&nbsp;    public void initialize(ClassGenerator classGen, MethodGenerator methodGen) {
+<b class="nc"><i>123</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>124</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;        // This is only done for local variables that are actually used
+<b class="nc"><i>127</i>&nbsp;        if (isLocal() &amp;&amp; !_refs.isEmpty()) {</b>
+<i>128</i>&nbsp;            // Create a variable slot if none is allocated
+<b class="nc"><i>129</i>&nbsp;            if (_local == null) {</b>
+<b class="nc"><i>130</i>&nbsp;                _local = methodGen.addLocalVariable2(getEscapedName(),</b>
+<b class="nc"><i>131</i>&nbsp;                                                     _type.toJCType(),</b>
+<i>132</i>&nbsp;                                                     null);
+<i>133</i>&nbsp;            }
+<i>134</i>&nbsp;            // Push the default value on the JVM&#39;s stack
+<b class="nc"><i>135</i>&nbsp;            if ((_type instanceof IntType) ||</b>
+<i>136</i>&nbsp;                (_type instanceof NodeType) ||
+<i>137</i>&nbsp;                (_type instanceof BooleanType))
+<b class="nc"><i>138</i>&nbsp;                il.append(new ICONST(0)); // 0 for node-id, integer and boolean</b>
+<b class="nc"><i>139</i>&nbsp;            else if (_type instanceof RealType)</b>
+<b class="nc"><i>140</i>&nbsp;                il.append(new DCONST(0)); // 0.0 for floating point numbers</b>
+<i>141</i>&nbsp;            else
+<b class="nc"><i>142</i>&nbsp;                il.append(new ACONST_NULL()); // and &#39;null&#39; for anything else</b>
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;            // Mark the store as the start of the live range of the variable
+<b class="nc"><i>145</i>&nbsp;            _local.setStart(il.append(_type.STORE(_local.getIndex())));</b>
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;        }
+<i>148</i>&nbsp;    }
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+<b class="nc"><i>151</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>152</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;        // Don&#39;t generate code for unreferenced variables
+<b class="nc"><i>155</i>&nbsp;        if (_refs.isEmpty()) {</b>
+<b class="nc"><i>156</i>&nbsp;            _ignore = true;</b>
+<i>157</i>&nbsp;        }
+<i>158</i>&nbsp;
+<i>159</i>&nbsp;        // Make sure that a variable instance is only compiled once
+<b class="nc"><i>160</i>&nbsp;        if (_ignore) return;</b>
+<b class="nc"><i>161</i>&nbsp;        _ignore = true;</b>
+<i>162</i>&nbsp;
+<b class="nc"><i>163</i>&nbsp;        final String name = getEscapedName();</b>
+<i>164</i>&nbsp;
+<b class="nc"><i>165</i>&nbsp;        if (isLocal()) {</b>
+<i>166</i>&nbsp;            // Compile variable value computation
+<b class="nc"><i>167</i>&nbsp;            translateValue(classGen, methodGen);</b>
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;            // Add a new local variable and store value
+<b class="nc"><i>170</i>&nbsp;            boolean createLocal = _local == null;</b>
+<b class="nc"><i>171</i>&nbsp;            if (createLocal) {</b>
+<b class="nc"><i>172</i>&nbsp;                mapRegister(methodGen);</b>
+<i>173</i>&nbsp;            }
+<b class="nc"><i>174</i>&nbsp;            InstructionHandle storeInst =</b>
+<b class="nc"><i>175</i>&nbsp;            il.append(_type.STORE(_local.getIndex()));</b>
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;            // If the local is just being created, mark the store as the start
+<i>178</i>&nbsp;            // of its live range.  Note that it might have been created by
+<i>179</i>&nbsp;            // initializeVariables already, which would have set the start of
+<i>180</i>&nbsp;            // the live range already.
+<b class="nc"><i>181</i>&nbsp;            if (createLocal) {</b>
+<b class="nc"><i>182</i>&nbsp;                _local.setStart(storeInst);</b>
+<i>183</i>&nbsp;        }
+<b class="nc"><i>184</i>&nbsp;        }</b>
+<i>185</i>&nbsp;        else {
+<b class="nc"><i>186</i>&nbsp;            String signature = _type.toSignature();</b>
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;            // Global variables are store in class fields
+<b class="nc"><i>189</i>&nbsp;            if (classGen.containsField(name) == null) {</b>
+<b class="nc"><i>190</i>&nbsp;                classGen.addField(new Field(ACC_PUBLIC,</b>
+<b class="nc"><i>191</i>&nbsp;                                            cpg.addUtf8(name),</b>
+<b class="nc"><i>192</i>&nbsp;                                            cpg.addUtf8(signature),</b>
+<b class="nc"><i>193</i>&nbsp;                                            null, cpg.getConstantPool()));</b>
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;                // Push a reference to &quot;this&quot; for putfield
+<b class="nc"><i>196</i>&nbsp;                il.append(classGen.loadTranslet());</b>
+<i>197</i>&nbsp;                // Compile variable value computation
+<b class="nc"><i>198</i>&nbsp;                translateValue(classGen, methodGen);</b>
+<i>199</i>&nbsp;                // Store the variable in the allocated field
+<b class="nc"><i>200</i>&nbsp;                il.append(new PUTFIELD(cpg.addFieldref(classGen.getClassName(),</b>
+<i>201</i>&nbsp;                                                       name, signature)));
+<i>202</i>&nbsp;            }
+<i>203</i>&nbsp;        }
+<i>204</i>&nbsp;    }
+<i>205</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

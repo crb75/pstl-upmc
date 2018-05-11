@@ -1,0 +1,171 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: JavaSerializationComponent</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.ior.iiop</a> ]
+</div>
+
+<h1>Coverage Summary for Class: JavaSerializationComponent (com.sun.corba.se.impl.ior.iiop)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JavaSerializationComponent</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2004, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;package com.sun.corba.se.impl.ior.iiop;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import org.omg.CORBA_2_3.portable.OutputStream;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBConstants;
+<i>30</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBUtility;
+<i>31</i>&nbsp;import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>34</i>&nbsp;import com.sun.corba.se.spi.ior.TaggedComponentBase;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; * Tagged component that contains a value that indicates the Java
+<i>38</i>&nbsp; * serialization version supported by the ORB.
+<i>39</i>&nbsp; *
+<i>40</i>&nbsp; * ORB Java serialization uses IIOP as the transport protocol, but uses
+<i>41</i>&nbsp; * Java serialization mechanism and its accompanying encodings, instead
+<i>42</i>&nbsp; * of IIOP CDR serialization mechanism. Java serialization is generally
+<i>43</i>&nbsp; * observed to be faster than CDR.
+<i>44</i>&nbsp; */
+<i>45</i>&nbsp;public class JavaSerializationComponent extends TaggedComponentBase {
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    private byte version;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    private static JavaSerializationComponent singleton;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    public static JavaSerializationComponent singleton() {
+<b class="nc"><i>52</i>&nbsp;        if (singleton == null) {</b>
+<b class="nc"><i>53</i>&nbsp;            synchronized (JavaSerializationComponent.class) {</b>
+<b class="nc"><i>54</i>&nbsp;                singleton =</b>
+<i>55</i>&nbsp;                    new JavaSerializationComponent(Message.JAVA_ENC_VERSION);
+<b class="nc"><i>56</i>&nbsp;            }</b>
+<i>57</i>&nbsp;        }
+<b class="nc"><i>58</i>&nbsp;        return singleton;</b>
+<i>59</i>&nbsp;    }
+<i>60</i>&nbsp;
+<b class="nc"><i>61</i>&nbsp;    public JavaSerializationComponent(byte version) {</b>
+<b class="nc"><i>62</i>&nbsp;        this.version = version;</b>
+<i>63</i>&nbsp;    }
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    public byte javaSerializationVersion() {
+<b class="nc"><i>66</i>&nbsp;        return this.version;</b>
+<i>67</i>&nbsp;    }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    public void writeContents(OutputStream os) {
+<b class="nc"><i>70</i>&nbsp;        os.write_octet(version);</b>
+<i>71</i>&nbsp;    }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    public int getId() {
+<b class="nc"><i>74</i>&nbsp;        return ORBConstants.TAG_JAVA_SERIALIZATION_ID;</b>
+<i>75</i>&nbsp;    }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    public boolean equals(Object obj) {
+<b class="nc"><i>78</i>&nbsp;        if (!(obj instanceof JavaSerializationComponent)) {</b>
+<b class="nc"><i>79</i>&nbsp;            return false;</b>
+<i>80</i>&nbsp;        }
+<b class="nc"><i>81</i>&nbsp;        JavaSerializationComponent other = (JavaSerializationComponent) obj;</b>
+<b class="nc"><i>82</i>&nbsp;        return this.version == other.version;</b>
+<i>83</i>&nbsp;    }
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    public int hashCode() {
+<b class="nc"><i>86</i>&nbsp;        return this.version;</b>
+<i>87</i>&nbsp;    }
+<i>88</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

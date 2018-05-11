@@ -1,0 +1,1085 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: StubEntry</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: StubEntry (com.sun.corba.se.impl.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StubEntry</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 1999, 2004, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;/*
+<i>27</i>&nbsp; * Licensed Materials - Property of IBM
+<i>28</i>&nbsp; * RMI-IIOP v1.0
+<i>29</i>&nbsp; * Copyright IBM Corp. 1998 1999  All Rights Reserved
+<i>30</i>&nbsp; *
+<i>31</i>&nbsp; */
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;package com.sun.corba.se.impl.util;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import org.omg.CORBA.SystemException;
+<i>36</i>&nbsp;import org.omg.CORBA.CompletionStatus;
+<i>37</i>&nbsp;import org.omg.CORBA.BAD_OPERATION;
+<i>38</i>&nbsp;import org.omg.CORBA.BAD_INV_ORDER;
+<i>39</i>&nbsp;import org.omg.CORBA.BAD_PARAM;
+<i>40</i>&nbsp;import org.omg.CORBA.ORB;
+<i>41</i>&nbsp;import org.omg.CORBA.Any;
+<i>42</i>&nbsp;import org.omg.CORBA.TypeCode;
+<i>43</i>&nbsp;import org.omg.CORBA.Principal;
+<i>44</i>&nbsp;import org.omg.CORBA.portable.InputStream;
+<i>45</i>&nbsp;import org.omg.CORBA.portable.OutputStream;
+<i>46</i>&nbsp;import org.omg.CORBA.portable.BoxedValueHelper;
+<i>47</i>&nbsp;import org.omg.CORBA.portable.ValueFactory;
+<i>48</i>&nbsp;import org.omg.CORBA.portable.Streamable;
+<i>49</i>&nbsp;import org.omg.CORBA.portable.Delegate;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;import java.util.Hashtable;
+<i>53</i>&nbsp;import java.util.NoSuchElementException;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;import java.rmi.Remote;
+<i>56</i>&nbsp;import java.rmi.NoSuchObjectException;
+<i>57</i>&nbsp;import java.rmi.RemoteException;
+<i>58</i>&nbsp;import java.rmi.server.RemoteStub;
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;import javax.rmi.PortableRemoteObject;
+<i>61</i>&nbsp;import javax.rmi.CORBA.Stub;
+<i>62</i>&nbsp;import javax.rmi.CORBA.Tie;
+<i>63</i>&nbsp;import javax.rmi.CORBA.Util;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;import java.io.Serializable;
+<i>66</i>&nbsp;import java.io.File;
+<i>67</i>&nbsp;import java.io.FileInputStream;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;import org.omg.PortableServer.POA;
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;import com.sun.org.omg.SendingContext.CodeBase;
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains ;
+<i>74</i>&nbsp;import com.sun.corba.se.spi.presentation.rmi.PresentationManager;
+<i>75</i>&nbsp;import com.sun.corba.se.spi.presentation.rmi.StubAdapter ;
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;import com.sun.corba.se.impl.logging.UtilSystemException ;
+<i>78</i>&nbsp;import com.sun.corba.se.impl.logging.OMGSystemException ;
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;/**
+<i>81</i>&nbsp; *  Handy class full of static functions.
+<i>82</i>&nbsp; */
+<i>83</i>&nbsp;public final class Utility {
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    public static final String STUB_PREFIX = &quot;_&quot;;
+<i>86</i>&nbsp;    public static final String RMI_STUB_SUFFIX = &quot;_Stub&quot;;
+<i>87</i>&nbsp;    public static final String DYNAMIC_STUB_SUFFIX = &quot;_DynamicStub&quot; ;
+<i>88</i>&nbsp;    public static final String IDL_STUB_SUFFIX = &quot;Stub&quot;;
+<i>89</i>&nbsp;    public static final String TIE_SUFIX = &quot;_Tie&quot;;
+<i>90</i>&nbsp;    private static IdentityHashtable tieCache = new IdentityHashtable();
+<i>91</i>&nbsp;    private static IdentityHashtable tieToStubCache = new IdentityHashtable();
+<i>92</i>&nbsp;    private static IdentityHashtable stubToTieCache = new IdentityHashtable();
+<i>93</i>&nbsp;    private static Object CACHE_MISS = new Object();
+<i>94</i>&nbsp;    private static UtilSystemException wrapper = UtilSystemException.get(
+<i>95</i>&nbsp;        CORBALogDomains.UTIL ) ;
+<i>96</i>&nbsp;    private static OMGSystemException omgWrapper = OMGSystemException.get(
+<i>97</i>&nbsp;        CORBALogDomains.UTIL ) ;
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    /**
+<i>100</i>&nbsp;     * Ensure that stubs, ties, and implementation objects
+<i>101</i>&nbsp;     * are &#39;connected&#39; to the runtime. Converts implementation
+<i>102</i>&nbsp;     * objects to a type suitable for sending on the wire.
+<i>103</i>&nbsp;     * @param obj the object to connect.
+<i>104</i>&nbsp;     * @param orb the ORB to connect to if obj is exported to IIOP.
+<i>105</i>&nbsp;     * @param convertToStub true if implementation types should be
+<i>106</i>&nbsp;     * converted to Stubs rather than just org.omg.CORBA.Object.
+<i>107</i>&nbsp;     * @return the connected object.
+<i>108</i>&nbsp;     * @exception NoSuchObjectException if obj is an implementation
+<i>109</i>&nbsp;     * which has not been exported.
+<i>110</i>&nbsp;     */
+<i>111</i>&nbsp;    public static Object autoConnect(Object obj, ORB orb, boolean convertToStub)
+<i>112</i>&nbsp;    {
+<i>113</i>&nbsp;        if (obj == null) {
+<i>114</i>&nbsp;            return obj;
+<i>115</i>&nbsp;        }
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;        if (StubAdapter.isStub(obj)) {
+<i>118</i>&nbsp;            try {
+<i>119</i>&nbsp;                StubAdapter.getDelegate(obj) ;
+<i>120</i>&nbsp;            } catch (BAD_OPERATION okay) {
+<i>121</i>&nbsp;                try {
+<i>122</i>&nbsp;                    StubAdapter.connect( obj, orb ) ;
+<i>123</i>&nbsp;                } catch (RemoteException e) {
+<i>124</i>&nbsp;                    // The stub could not be connected because it
+<i>125</i>&nbsp;                    // has an invalid IOR...
+<i>126</i>&nbsp;                    throw wrapper.objectNotConnected( e,
+<i>127</i>&nbsp;                        obj.getClass().getName() ) ;
+<i>128</i>&nbsp;                }
+<i>129</i>&nbsp;            }
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;            return obj;
+<i>132</i>&nbsp;        }
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;        if (obj instanceof Remote) {
+<i>135</i>&nbsp;            Remote remoteObj = (Remote)obj;
+<i>136</i>&nbsp;            Tie theTie = Util.getTie(remoteObj);
+<i>137</i>&nbsp;            if (theTie != null) {
+<i>138</i>&nbsp;                try {
+<i>139</i>&nbsp;                    theTie.orb();
+<i>140</i>&nbsp;                } catch (SystemException okay) {
+<i>141</i>&nbsp;                    theTie.orb(orb);
+<i>142</i>&nbsp;                }
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;                if (convertToStub) {
+<i>145</i>&nbsp;                    Object result = loadStub(theTie,null,null,true);
+<i>146</i>&nbsp;                    if (result != null) {
+<i>147</i>&nbsp;                        return result;
+<i>148</i>&nbsp;                    } else {
+<i>149</i>&nbsp;                        throw wrapper.couldNotLoadStub(obj.getClass().getName());
+<i>150</i>&nbsp;                    }
+<i>151</i>&nbsp;                } else {
+<i>152</i>&nbsp;                    return StubAdapter.activateTie( theTie );
+<i>153</i>&nbsp;                }
+<i>154</i>&nbsp;            } else {
+<i>155</i>&nbsp;                // This is an implementation object which has not been
+<i>156</i>&nbsp;                // exported to IIOP OR is a JRMP stub or implementation
+<i>157</i>&nbsp;                // object which cannot be marshalled into an ORB stream...
+<i>158</i>&nbsp;                throw wrapper.objectNotExported( obj.getClass().getName() ) ;
+<i>159</i>&nbsp;            }
+<i>160</i>&nbsp;        }
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;        // Didn&#39;t need to do anything, just return the input...
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;        return obj;
+<i>165</i>&nbsp;    }
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;    /*
+<i>168</i>&nbsp;     * Get a new instance of an RMI-IIOP Tie for the
+<i>169</i>&nbsp;     * given server object.
+<i>170</i>&nbsp;     */
+<i>171</i>&nbsp;    public static Tie loadTie(Remote obj) {
+<i>172</i>&nbsp;        Tie result = null;
+<i>173</i>&nbsp;        Class objClass = obj.getClass();
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;        // Have we tried to find this guy before?
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;        synchronized (tieCache) {
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;            Object it = tieCache.get(obj);
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;            if (it == null) {
+<i>182</i>&nbsp;
+<i>183</i>&nbsp;                // No, so try it...
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;                try {
+<i>186</i>&nbsp;
+<i>187</i>&nbsp;                    // First try the classname...
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;                    result = loadTie(objClass);
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;                    // If we don&#39;t have a valid tie at this point,
+<i>192</i>&nbsp;                    // walk up the parent chain until we either
+<i>193</i>&nbsp;                    // load a tie or encounter PortableRemoteObject
+<i>194</i>&nbsp;                    // or java.lang.Object...
+<i>195</i>&nbsp;
+<i>196</i>&nbsp;                    while (result == null &amp;&amp;
+<i>197</i>&nbsp;                           (objClass = objClass.getSuperclass()) != null &amp;&amp;
+<i>198</i>&nbsp;                           objClass != PortableRemoteObject.class &amp;&amp;
+<i>199</i>&nbsp;                           objClass != Object.class) {
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;                        result = loadTie(objClass);
+<i>202</i>&nbsp;                    }
+<i>203</i>&nbsp;                } catch (Exception ex) {
+<i>204</i>&nbsp;                    wrapper.loadTieFailed( ex, objClass.getName() ) ;
+<i>205</i>&nbsp;                }
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;                // Did we get it?
+<i>208</i>&nbsp;
+<i>209</i>&nbsp;                if (result == null) {
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;                    // Nope, so cache that fact...
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;                    tieCache.put(obj,CACHE_MISS);
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;                } else {
+<i>216</i>&nbsp;
+<i>217</i>&nbsp;                    // Yes, so cache it...
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;                    tieCache.put(obj,result);
+<i>220</i>&nbsp;                }
+<i>221</i>&nbsp;            } else {
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;                // Yes, return a new instance or fail again if
+<i>224</i>&nbsp;                // it was a miss last time...
+<i>225</i>&nbsp;
+<i>226</i>&nbsp;                if (it != CACHE_MISS) {
+<i>227</i>&nbsp;                    try {
+<i>228</i>&nbsp;                        result = (Tie) it.getClass().newInstance();
+<i>229</i>&nbsp;                    } catch (Exception e) {
+<i>230</i>&nbsp;                    }
+<i>231</i>&nbsp;                }
+<i>232</i>&nbsp;            }
+<i>233</i>&nbsp;        }
+<i>234</i>&nbsp;
+<i>235</i>&nbsp;        return result;
+<i>236</i>&nbsp;    }
+<i>237</i>&nbsp;
+<i>238</i>&nbsp;    /*
+<i>239</i>&nbsp;     * Load an RMI-IIOP Tie
+<i>240</i>&nbsp;     */
+<i>241</i>&nbsp;    private static Tie loadTie(Class theClass)
+<i>242</i>&nbsp;    {
+<i>243</i>&nbsp;        return com.sun.corba.se.spi.orb.ORB.getStubFactoryFactory().
+<i>244</i>&nbsp;            getTie( theClass ) ;
+<i>245</i>&nbsp;    }
+<i>246</i>&nbsp;
+<i>247</i>&nbsp;    /*
+<i>248</i>&nbsp;     * Clear the stub/tie caches. Intended for use by
+<i>249</i>&nbsp;     * test code.
+<i>250</i>&nbsp;     */
+<i>251</i>&nbsp;    public static void clearCaches() {
+<i>252</i>&nbsp;        synchronized (tieToStubCache) {
+<i>253</i>&nbsp;            tieToStubCache.clear();
+<i>254</i>&nbsp;        }
+<i>255</i>&nbsp;        synchronized (tieCache) {
+<i>256</i>&nbsp;            tieCache.clear();
+<i>257</i>&nbsp;        }
+<i>258</i>&nbsp;        synchronized (stubToTieCache) {
+<i>259</i>&nbsp;            stubToTieCache.clear();
+<i>260</i>&nbsp;        }
+<i>261</i>&nbsp;    }
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;    /*
+<i>264</i>&nbsp;     * Load a class and check that it is assignable to a given type.
+<i>265</i>&nbsp;     * @param className the class name.
+<i>266</i>&nbsp;     * @param remoteCodebase the codebase to use. May be null.
+<i>267</i>&nbsp;     * @param loader the class loader of last resort. May be null.
+<i>268</i>&nbsp;     * @param expectedType the expected type. May be null.
+<i>269</i>&nbsp;     * @return the loaded class.
+<i>270</i>&nbsp;     */
+<i>271</i>&nbsp;    static Class loadClassOfType(String className, String remoteCodebase,
+<i>272</i>&nbsp;        ClassLoader loader, Class expectedType,
+<i>273</i>&nbsp;        ClassLoader expectedTypeClassLoader) throws ClassNotFoundException
+<i>274</i>&nbsp;    {
+<i>275</i>&nbsp;        Class loadedClass = null;
+<i>276</i>&nbsp;
+<i>277</i>&nbsp;        try {
+<i>278</i>&nbsp;            //Sequence finding of the stubs according to spec
+<i>279</i>&nbsp;            try{
+<i>280</i>&nbsp;                //If-else is put here for speed up of J2EE.
+<i>281</i>&nbsp;                //According to the OMG spec, the if clause is not dead code.
+<i>282</i>&nbsp;                //It can occur if some compiler has allowed generation
+<i>283</i>&nbsp;                //into org.omg.stub hierarchy for non-offending
+<i>284</i>&nbsp;                //classes. This will encourage people to
+<i>285</i>&nbsp;                //produce non-offending class stubs in their own hierarchy.
+<i>286</i>&nbsp;                if (!PackagePrefixChecker.hasOffendingPrefix(
+<i>287</i>&nbsp;                    PackagePrefixChecker.withoutPackagePrefix(className))){
+<i>288</i>&nbsp;                    loadedClass = Util.loadClass(
+<i>289</i>&nbsp;                        PackagePrefixChecker.withoutPackagePrefix(className),
+<i>290</i>&nbsp;                        remoteCodebase,
+<i>291</i>&nbsp;                        loader);
+<i>292</i>&nbsp;                } else {
+<i>293</i>&nbsp;                    loadedClass = Util.loadClass(className, remoteCodebase,
+<i>294</i>&nbsp;                        loader);
+<i>295</i>&nbsp;                }
+<i>296</i>&nbsp;            } catch (ClassNotFoundException cnfe) {
+<i>297</i>&nbsp;                loadedClass = Util.loadClass(className, remoteCodebase,
+<i>298</i>&nbsp;                    loader);
+<i>299</i>&nbsp;            }
+<i>300</i>&nbsp;            if (expectedType == null)
+<i>301</i>&nbsp;                return loadedClass;
+<i>302</i>&nbsp;        } catch (ClassNotFoundException cnfe) {
+<i>303</i>&nbsp;            if (expectedType == null)
+<i>304</i>&nbsp;                throw cnfe;
+<i>305</i>&nbsp;        }
+<i>306</i>&nbsp;
+<i>307</i>&nbsp;        // If no class was loaded, or if the loaded class is not of the
+<i>308</i>&nbsp;        // correct type, make a further attempt to load the correct class
+<i>309</i>&nbsp;        // using the classloader of the expected type.
+<i>310</i>&nbsp;        // _REVISIT_ Is this step necessary, or should the Util,loadClass
+<i>311</i>&nbsp;        // algorithm always produce a valid class if the setup is correct?
+<i>312</i>&nbsp;        // Does the OMG standard algorithm need to be changed to include
+<i>313</i>&nbsp;        // this step?
+<i>314</i>&nbsp;        if (loadedClass == null || !expectedType.isAssignableFrom(loadedClass)){
+<i>315</i>&nbsp;            if (expectedType.getClassLoader() != expectedTypeClassLoader)
+<i>316</i>&nbsp;                throw new IllegalArgumentException(
+<i>317</i>&nbsp;                    &quot;expectedTypeClassLoader not class loader of &quot;  +
+<i>318</i>&nbsp;                    &quot;expected Type.&quot;);
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;            if (expectedTypeClassLoader != null)
+<i>321</i>&nbsp;                loadedClass = expectedTypeClassLoader.loadClass(className);
+<i>322</i>&nbsp;            else {
+<i>323</i>&nbsp;                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+<i>324</i>&nbsp;                if (cl == null)
+<i>325</i>&nbsp;                    cl = ClassLoader.getSystemClassLoader();
+<i>326</i>&nbsp;
+<i>327</i>&nbsp;                loadedClass = cl.loadClass(className);
+<i>328</i>&nbsp;            }
+<i>329</i>&nbsp;        }
+<i>330</i>&nbsp;
+<i>331</i>&nbsp;        return loadedClass;
+<i>332</i>&nbsp;    }
+<i>333</i>&nbsp;
+<i>334</i>&nbsp;    /*
+<i>335</i>&nbsp;     * Load a class and check that it is compatible with a given type.
+<i>336</i>&nbsp;     * @param className the class name.
+<i>337</i>&nbsp;     * @param remoteCodebase the codebase to use. May be null.
+<i>338</i>&nbsp;     * @param loadingContext the loading context. May be null.
+<i>339</i>&nbsp;     * @param relatedType the related type. May be null.
+<i>340</i>&nbsp;     * @return the loaded class.
+<i>341</i>&nbsp;     */
+<i>342</i>&nbsp;    public static Class loadClassForClass (String className,
+<i>343</i>&nbsp;                                           String remoteCodebase,
+<i>344</i>&nbsp;                                           ClassLoader loader,
+<i>345</i>&nbsp;                                           Class relatedType,
+<i>346</i>&nbsp;                                           ClassLoader relatedTypeClassLoader)
+<i>347</i>&nbsp;        throws ClassNotFoundException
+<i>348</i>&nbsp;    {
+<i>349</i>&nbsp;        if (relatedType == null)
+<i>350</i>&nbsp;            return Util.loadClass(className, remoteCodebase, loader);
+<i>351</i>&nbsp;
+<i>352</i>&nbsp;        Class loadedClass = null;
+<i>353</i>&nbsp;        try {
+<i>354</i>&nbsp;            loadedClass = Util.loadClass(className, remoteCodebase, loader);
+<i>355</i>&nbsp;        } catch (ClassNotFoundException cnfe) {
+<i>356</i>&nbsp;            if (relatedType.getClassLoader() == null)
+<i>357</i>&nbsp;                throw cnfe;
+<i>358</i>&nbsp;        }
+<i>359</i>&nbsp;
+<i>360</i>&nbsp;        // If no class was not loaded, or if the loaded class is not of the
+<i>361</i>&nbsp;        // correct type, make a further attempt to load the correct class
+<i>362</i>&nbsp;        // using the classloader of the related type.
+<i>363</i>&nbsp;        // _REVISIT_ Is this step necessary, or should the Util,loadClass
+<i>364</i>&nbsp;        // algorithm always produce a valid class if the setup is correct?
+<i>365</i>&nbsp;        // Does the OMG standard algorithm need to be changed to include
+<i>366</i>&nbsp;        // this step?
+<i>367</i>&nbsp;        if (loadedClass == null ||
+<i>368</i>&nbsp;            (loadedClass.getClassLoader() != null &amp;&amp;
+<i>369</i>&nbsp;             loadedClass.getClassLoader().loadClass(relatedType.getName()) !=
+<i>370</i>&nbsp;                 relatedType))
+<i>371</i>&nbsp;        {
+<i>372</i>&nbsp;            if (relatedType.getClassLoader() != relatedTypeClassLoader)
+<i>373</i>&nbsp;                throw new IllegalArgumentException(
+<i>374</i>&nbsp;                    &quot;relatedTypeClassLoader not class loader of relatedType.&quot;);
+<i>375</i>&nbsp;
+<i>376</i>&nbsp;            if (relatedTypeClassLoader != null)
+<i>377</i>&nbsp;                loadedClass = relatedTypeClassLoader.loadClass(className);
+<i>378</i>&nbsp;        }
+<i>379</i>&nbsp;
+<i>380</i>&nbsp;        return loadedClass;
+<i>381</i>&nbsp;    }
+<i>382</i>&nbsp;
+<i>383</i>&nbsp;    /**
+<i>384</i>&nbsp;     * Get the helper for an IDLValue
+<i>385</i>&nbsp;     *
+<i>386</i>&nbsp;     * Throws MARSHAL exception if no helper found.
+<i>387</i>&nbsp;     */
+<i>388</i>&nbsp;    public static BoxedValueHelper getHelper(Class clazz, String codebase,
+<i>389</i>&nbsp;        String repId)
+<i>390</i>&nbsp;    {
+<i>391</i>&nbsp;        String className = null;
+<i>392</i>&nbsp;        if (clazz != null) {
+<i>393</i>&nbsp;            className = clazz.getName();
+<i>394</i>&nbsp;            if (codebase == null)
+<i>395</i>&nbsp;                codebase = Util.getCodebase(clazz);
+<i>396</i>&nbsp;        } else {
+<i>397</i>&nbsp;            if (repId != null)
+<i>398</i>&nbsp;                className = RepositoryId.cache.getId(repId).getClassName();
+<i>399</i>&nbsp;            if (className == null) // no repId or unrecognized repId
+<i>400</i>&nbsp;                throw wrapper.unableLocateValueHelper(
+<i>401</i>&nbsp;                    CompletionStatus.COMPLETED_MAYBE);
+<i>402</i>&nbsp;        }
+<i>403</i>&nbsp;
+<i>404</i>&nbsp;        try {
+<i>405</i>&nbsp;            ClassLoader clazzLoader =
+<i>406</i>&nbsp;                (clazz == null ? null : clazz.getClassLoader());
+<i>407</i>&nbsp;            Class helperClass =
+<i>408</i>&nbsp;                loadClassForClass(className+&quot;Helper&quot;, codebase, clazzLoader,
+<i>409</i>&nbsp;                clazz, clazzLoader);
+<i>410</i>&nbsp;            return (BoxedValueHelper)helperClass.newInstance();
+<i>411</i>&nbsp;
+<i>412</i>&nbsp;        } catch (ClassNotFoundException cnfe) {
+<i>413</i>&nbsp;            throw wrapper.unableLocateValueHelper( CompletionStatus.COMPLETED_MAYBE,
+<i>414</i>&nbsp;                cnfe );
+<i>415</i>&nbsp;        } catch (IllegalAccessException iae) {
+<i>416</i>&nbsp;            throw wrapper.unableLocateValueHelper( CompletionStatus.COMPLETED_MAYBE,
+<i>417</i>&nbsp;                iae );
+<i>418</i>&nbsp;        } catch (InstantiationException ie) {
+<i>419</i>&nbsp;            throw wrapper.unableLocateValueHelper( CompletionStatus.COMPLETED_MAYBE,
+<i>420</i>&nbsp;                ie );
+<i>421</i>&nbsp;        } catch (ClassCastException cce) {
+<i>422</i>&nbsp;            throw wrapper.unableLocateValueHelper( CompletionStatus.COMPLETED_MAYBE,
+<i>423</i>&nbsp;                cce );
+<i>424</i>&nbsp;        }
+<i>425</i>&nbsp;    }
+<i>426</i>&nbsp;
+<i>427</i>&nbsp;    /**
+<i>428</i>&nbsp;     * Get the factory for an IDLValue
+<i>429</i>&nbsp;     *
+<i>430</i>&nbsp;     * Throws MARSHAL exception if no factory found.
+<i>431</i>&nbsp;     */
+<i>432</i>&nbsp;    public static ValueFactory getFactory(Class clazz, String codebase,
+<i>433</i>&nbsp;                               ORB orb, String repId)
+<i>434</i>&nbsp;    {
+<i>435</i>&nbsp;        ValueFactory factory = null;
+<i>436</i>&nbsp;        if ((orb != null) &amp;&amp; (repId != null)) {
+<i>437</i>&nbsp;            try {
+<i>438</i>&nbsp;                factory = ((org.omg.CORBA_2_3.ORB)orb).lookup_value_factory(
+<i>439</i>&nbsp;                    repId);
+<i>440</i>&nbsp;            } catch (org.omg.CORBA.BAD_PARAM ex) {
+<i>441</i>&nbsp;                // Try other way
+<i>442</i>&nbsp;            }
+<i>443</i>&nbsp;        }
+<i>444</i>&nbsp;
+<i>445</i>&nbsp;        String className = null;
+<i>446</i>&nbsp;        if (clazz != null) {
+<i>447</i>&nbsp;            className = clazz.getName();
+<i>448</i>&nbsp;            if (codebase == null)
+<i>449</i>&nbsp;                codebase = Util.getCodebase(clazz);
+<i>450</i>&nbsp;        } else {
+<i>451</i>&nbsp;            if (repId != null)
+<i>452</i>&nbsp;                className = RepositoryId.cache.getId(repId).getClassName();
+<i>453</i>&nbsp;            if (className == null) // no repId or unrecognized repId
+<i>454</i>&nbsp;                throw omgWrapper.unableLocateValueFactory(
+<i>455</i>&nbsp;                    CompletionStatus.COMPLETED_MAYBE);
+<i>456</i>&nbsp;        }
+<i>457</i>&nbsp;
+<i>458</i>&nbsp;        // if earlier search found a non-default factory, or the same default
+<i>459</i>&nbsp;        // factory that loadClassForClass would return, bale out now...
+<i>460</i>&nbsp;        if (factory != null &amp;&amp;
+<i>461</i>&nbsp;            (!factory.getClass().getName().equals(className+&quot;DefaultFactory&quot;) ||
+<i>462</i>&nbsp;             (clazz == null &amp;&amp; codebase == null)))
+<i>463</i>&nbsp;            return factory;
+<i>464</i>&nbsp;
+<i>465</i>&nbsp;        try {
+<i>466</i>&nbsp;            ClassLoader clazzLoader =
+<i>467</i>&nbsp;                (clazz == null ? null : clazz.getClassLoader());
+<i>468</i>&nbsp;            Class factoryClass =
+<i>469</i>&nbsp;                loadClassForClass(className+&quot;DefaultFactory&quot;, codebase,
+<i>470</i>&nbsp;                clazzLoader, clazz, clazzLoader);
+<i>471</i>&nbsp;            return (ValueFactory)factoryClass.newInstance();
+<i>472</i>&nbsp;
+<i>473</i>&nbsp;        } catch (ClassNotFoundException cnfe) {
+<i>474</i>&nbsp;            throw omgWrapper.unableLocateValueFactory(
+<i>475</i>&nbsp;                CompletionStatus.COMPLETED_MAYBE, cnfe);
+<i>476</i>&nbsp;        } catch (IllegalAccessException iae) {
+<i>477</i>&nbsp;            throw omgWrapper.unableLocateValueFactory(
+<i>478</i>&nbsp;                CompletionStatus.COMPLETED_MAYBE, iae);
+<i>479</i>&nbsp;        } catch (InstantiationException ie) {
+<i>480</i>&nbsp;            throw omgWrapper.unableLocateValueFactory(
+<i>481</i>&nbsp;                CompletionStatus.COMPLETED_MAYBE, ie);
+<i>482</i>&nbsp;        } catch (ClassCastException cce) {
+<i>483</i>&nbsp;            throw omgWrapper.unableLocateValueFactory(
+<i>484</i>&nbsp;                CompletionStatus.COMPLETED_MAYBE, cce);
+<i>485</i>&nbsp;        }
+<i>486</i>&nbsp;    }
+<i>487</i>&nbsp;
+<i>488</i>&nbsp;    /*
+<i>489</i>&nbsp;     * Load an RMI-IIOP Stub given a Tie.
+<i>490</i>&nbsp;     * @param tie the tie.
+<i>491</i>&nbsp;     * @param stubClass the stub class. May be null.
+<i>492</i>&nbsp;     * @param remoteCodebase the codebase to use. May be null.
+<i>493</i>&nbsp;     * @param onlyMostDerived if true, will fail if cannot load a stub for the
+<i>494</i>&nbsp;     * first repID in the tie. If false, will walk all repIDs.
+<i>495</i>&nbsp;     * @return the stub or null if not found.
+<i>496</i>&nbsp;     */
+<i>497</i>&nbsp;
+<i>498</i>&nbsp;    public static Remote loadStub(Tie tie,
+<i>499</i>&nbsp;                                  PresentationManager.StubFactory stubFactory,
+<i>500</i>&nbsp;                                  String remoteCodebase,
+<i>501</i>&nbsp;                                  boolean onlyMostDerived)
+<i>502</i>&nbsp;    {
+<i>503</i>&nbsp;        StubEntry entry = null;
+<i>504</i>&nbsp;
+<i>505</i>&nbsp;        // Do we already have it cached?
+<i>506</i>&nbsp;        synchronized (tieToStubCache) {
+<i>507</i>&nbsp;            Object cached = tieToStubCache.get(tie);
+<i>508</i>&nbsp;            if (cached == null) {
+<i>509</i>&nbsp;                // No, so go try to load it...
+<i>510</i>&nbsp;                entry = loadStubAndUpdateCache(
+<i>511</i>&nbsp;                        tie, stubFactory, remoteCodebase, onlyMostDerived);
+<i>512</i>&nbsp;            } else {
+<i>513</i>&nbsp;                // Yes, is it a stub?  If not, it was a miss last
+<i>514</i>&nbsp;                // time, so return null again...
+<i>515</i>&nbsp;                if (cached != CACHE_MISS) {
+<i>516</i>&nbsp;                    // It&#39;s a stub.
+<i>517</i>&nbsp;                    entry = (StubEntry) cached;
+<i>518</i>&nbsp;
+<i>519</i>&nbsp;                    // Does the cached stub meet the requirements
+<i>520</i>&nbsp;                    // of the caller? If the caller does not require
+<i>521</i>&nbsp;                    // the most derived stub and does not require
+<i>522</i>&nbsp;                    // a specific stub type, we don&#39;t have to check
+<i>523</i>&nbsp;                    // any further because the cached type is good
+<i>524</i>&nbsp;                    // enough...
+<i>525</i>&nbsp;                    if (!entry.mostDerived &amp;&amp; onlyMostDerived) {
+<i>526</i>&nbsp;                        // We must reload because we do not have
+<i>527</i>&nbsp;                        // the most derived cached already...
+<i>528</i>&nbsp;                        // The stubFactory arg must be null here
+<i>529</i>&nbsp;                        // to force onlyMostDerived=true to work
+<i>530</i>&nbsp;                        // correctly.
+<i>531</i>&nbsp;                        entry = loadStubAndUpdateCache(tie,null,
+<i>532</i>&nbsp;                            remoteCodebase,true);
+<i>533</i>&nbsp;                    } else if (stubFactory != null &amp;&amp;
+<i>534</i>&nbsp;                        !StubAdapter.getTypeIds(entry.stub)[0].equals(
+<i>535</i>&nbsp;                            stubFactory.getTypeIds()[0]) )
+<i>536</i>&nbsp;                    {
+<i>537</i>&nbsp;                        // We do not have exactly the right stub. First, try to
+<i>538</i>&nbsp;                        // upgrade the cached stub by forcing it to the most
+<i>539</i>&nbsp;                        // derived stub...
+<i>540</i>&nbsp;                        entry = loadStubAndUpdateCache(tie,null,
+<i>541</i>&nbsp;                            remoteCodebase,true);
+<i>542</i>&nbsp;
+<i>543</i>&nbsp;                        // If that failed, try again with the exact type
+<i>544</i>&nbsp;                        // we need...
+<i>545</i>&nbsp;                        if (entry == null) {
+<i>546</i>&nbsp;                            entry = loadStubAndUpdateCache(tie,stubFactory,
+<i>547</i>&nbsp;                                    remoteCodebase,onlyMostDerived);
+<i>548</i>&nbsp;                        }
+<i>549</i>&nbsp;                    } else {
+<i>550</i>&nbsp;                        // Use the cached stub. Is the delegate set?
+<i>551</i>&nbsp;                        try {
+<i>552</i>&nbsp;                            Delegate stubDel = StubAdapter.getDelegate(
+<i>553</i>&nbsp;                                entry.stub ) ;
+<i>554</i>&nbsp;                        } catch (Exception e2) {
+<i>555</i>&nbsp;                            // No, so set it if we can...
+<i>556</i>&nbsp;                            try {
+<i>557</i>&nbsp;                                Delegate del = StubAdapter.getDelegate(
+<i>558</i>&nbsp;                                    tie ) ;
+<i>559</i>&nbsp;                                StubAdapter.setDelegate( entry.stub,
+<i>560</i>&nbsp;                                    del ) ;
+<i>561</i>&nbsp;                            } catch (Exception e) {}
+<i>562</i>&nbsp;                        }
+<i>563</i>&nbsp;                    }
+<i>564</i>&nbsp;                }
+<i>565</i>&nbsp;            }
+<i>566</i>&nbsp;        }
+<i>567</i>&nbsp;
+<i>568</i>&nbsp;        if (entry != null) {
+<i>569</i>&nbsp;            return (Remote)entry.stub;
+<i>570</i>&nbsp;        } else {
+<i>571</i>&nbsp;            return null;
+<i>572</i>&nbsp;        }
+<i>573</i>&nbsp;    }
+<i>574</i>&nbsp;
+<i>575</i>&nbsp;    /*
+<i>576</i>&nbsp;     * Load an RMI-IIOP Stub given a Tie, but do not look in the cache.
+<i>577</i>&nbsp;     * This method must be called with the lock held for tieToStubCache.
+<i>578</i>&nbsp;     * @param tie the tie.
+<i>579</i>&nbsp;     * @param stubFactory the stub factory. May be null.
+<i>580</i>&nbsp;     * @param remoteCodebase the codebase to use. May be null.
+<i>581</i>&nbsp;     * @param onlyMostDerived if true, will fail if cannot load a stub for the
+<i>582</i>&nbsp;     * first repID in the tie. If false, will walk all repIDs.
+<i>583</i>&nbsp;     * @return the StubEntry or null if not found.
+<i>584</i>&nbsp;     */
+<i>585</i>&nbsp;    private static StubEntry loadStubAndUpdateCache (
+<i>586</i>&nbsp;        Tie tie, PresentationManager.StubFactory  stubFactory,
+<i>587</i>&nbsp;        String remoteCodebase, boolean onlyMostDerived)
+<i>588</i>&nbsp;    {
+<i>589</i>&nbsp;        org.omg.CORBA.Object stub = null;
+<i>590</i>&nbsp;        StubEntry entry = null;
+<i>591</i>&nbsp;        boolean tieIsStub = StubAdapter.isStub( tie ) ;
+<i>592</i>&nbsp;
+<i>593</i>&nbsp;        if (stubFactory != null) {
+<i>594</i>&nbsp;            try {
+<i>595</i>&nbsp;                stub = stubFactory.makeStub();
+<i>596</i>&nbsp;            } catch (Throwable e) {
+<i>597</i>&nbsp;                wrapper.stubFactoryCouldNotMakeStub( e ) ;
+<i>598</i>&nbsp;                if (e instanceof ThreadDeath) {
+<i>599</i>&nbsp;                    throw (ThreadDeath) e;
+<i>600</i>&nbsp;                }
+<i>601</i>&nbsp;            }
+<i>602</i>&nbsp;        } else {
+<i>603</i>&nbsp;            String[] ids = null;
+<i>604</i>&nbsp;            if (tieIsStub) {
+<i>605</i>&nbsp;                ids = StubAdapter.getTypeIds( tie ) ;
+<i>606</i>&nbsp;            } else {
+<i>607</i>&nbsp;                // This will throw an exception if the tie
+<i>608</i>&nbsp;                // is not a Servant.  XXX Handle this better?
+<i>609</i>&nbsp;                ids = ((org.omg.PortableServer.Servant)tie).
+<i>610</i>&nbsp;                      _all_interfaces( null, null );
+<i>611</i>&nbsp;            }
+<i>612</i>&nbsp;
+<i>613</i>&nbsp;            if (remoteCodebase == null) {
+<i>614</i>&nbsp;                remoteCodebase = Util.getCodebase(tie.getClass());
+<i>615</i>&nbsp;            }
+<i>616</i>&nbsp;
+<i>617</i>&nbsp;            if (ids.length == 0) {
+<i>618</i>&nbsp;                stub = new org.omg.stub.java.rmi._Remote_Stub();
+<i>619</i>&nbsp;            } else {
+<i>620</i>&nbsp;                // Now walk all the RepIDs till we find a stub or fail...
+<i>621</i>&nbsp;                for (int i = 0; i &lt; ids.length; i++) {
+<i>622</i>&nbsp;                    if (ids[i].length() == 0) {
+<i>623</i>&nbsp;                        stub = new org.omg.stub.java.rmi._Remote_Stub();
+<i>624</i>&nbsp;                        break;
+<i>625</i>&nbsp;                    }
+<i>626</i>&nbsp;
+<i>627</i>&nbsp;                    try {
+<i>628</i>&nbsp;                        PresentationManager.StubFactoryFactory stubFactoryFactory =
+<i>629</i>&nbsp;                            com.sun.corba.se.spi.orb.ORB.getStubFactoryFactory();
+<i>630</i>&nbsp;                        RepositoryId rid = RepositoryId.cache.getId( ids[i] ) ;
+<i>631</i>&nbsp;                        String className = rid.getClassName() ;
+<i>632</i>&nbsp;                        boolean isIDLInterface = rid.isIDLType() ;
+<i>633</i>&nbsp;                        stubFactory = stubFactoryFactory.createStubFactory(
+<i>634</i>&nbsp;                            className, isIDLInterface, remoteCodebase, null,
+<i>635</i>&nbsp;                            tie.getClass().getClassLoader() ) ;
+<i>636</i>&nbsp;                        stub = stubFactory.makeStub();
+<i>637</i>&nbsp;                        break;
+<i>638</i>&nbsp;                    } catch (Exception e) {
+<i>639</i>&nbsp;                        wrapper.errorInMakeStubFromRepositoryId( e ) ;
+<i>640</i>&nbsp;                    }
+<i>641</i>&nbsp;
+<i>642</i>&nbsp;                    if (onlyMostDerived)
+<i>643</i>&nbsp;                        break;
+<i>644</i>&nbsp;                }
+<i>645</i>&nbsp;            }
+<i>646</i>&nbsp;        }
+<i>647</i>&nbsp;
+<i>648</i>&nbsp;        if (stub == null) {
+<i>649</i>&nbsp;            // Stub == null, so cache the miss...
+<i>650</i>&nbsp;            tieToStubCache.put(tie,CACHE_MISS);
+<i>651</i>&nbsp;        } else {
+<i>652</i>&nbsp;            if (tieIsStub) {
+<i>653</i>&nbsp;                try {
+<i>654</i>&nbsp;                    Delegate del = StubAdapter.getDelegate( tie ) ;
+<i>655</i>&nbsp;                    StubAdapter.setDelegate( stub, del ) ;
+<i>656</i>&nbsp;                } catch( Exception e1 ) {
+<i>657</i>&nbsp;                    // The tie does not have a delegate set, so stash
+<i>658</i>&nbsp;                    // this tie away using the stub as a key so that
+<i>659</i>&nbsp;                    // later, when the stub is connected, we can find
+<i>660</i>&nbsp;                    // and connect the tie as well...
+<i>661</i>&nbsp;
+<i>662</i>&nbsp;                    synchronized (stubToTieCache) {
+<i>663</i>&nbsp;                        stubToTieCache.put(stub,tie);
+<i>664</i>&nbsp;                    }
+<i>665</i>&nbsp;                }
+<i>666</i>&nbsp;            } else {
+<i>667</i>&nbsp;                // Tie extends Servant
+<i>668</i>&nbsp;                try {
+<i>669</i>&nbsp;                    Delegate delegate = StubAdapter.getDelegate( tie ) ;
+<i>670</i>&nbsp;                    StubAdapter.setDelegate( stub, delegate ) ;
+<i>671</i>&nbsp;                } catch( org.omg.CORBA.BAD_INV_ORDER bad) {
+<i>672</i>&nbsp;                    synchronized (stubToTieCache) {
+<i>673</i>&nbsp;                        stubToTieCache.put(stub,tie);
+<i>674</i>&nbsp;                    }
+<i>675</i>&nbsp;                } catch( Exception e ) {
+<i>676</i>&nbsp;                    // Exception is caught because of any of the
+<i>677</i>&nbsp;                    // following reasons
+<i>678</i>&nbsp;                    // 1) POA is not associated with the TIE
+<i>679</i>&nbsp;                    // 2) POA Policies for the tie-associated POA
+<i>680</i>&nbsp;                    //    does not support _this_object() call.
+<i>681</i>&nbsp;                    throw wrapper.noPoa( e ) ;
+<i>682</i>&nbsp;                }
+<i>683</i>&nbsp;            }
+<i>684</i>&nbsp;            // Update the cache...
+<i>685</i>&nbsp;            entry = new StubEntry(stub,onlyMostDerived);
+<i>686</i>&nbsp;            tieToStubCache.put(tie,entry);
+<i>687</i>&nbsp;        }
+<i>688</i>&nbsp;
+<i>689</i>&nbsp;        return entry;
+<i>690</i>&nbsp;    }
+<i>691</i>&nbsp;
+<i>692</i>&nbsp;    /*
+<i>693</i>&nbsp;     * If we loadStub(Tie,...) stashed away a tie which was
+<i>694</i>&nbsp;     * not connected, remove it from the cache and return
+<i>695</i>&nbsp;     * it.
+<i>696</i>&nbsp;     */
+<i>697</i>&nbsp;    public static Tie getAndForgetTie (org.omg.CORBA.Object stub) {
+<i>698</i>&nbsp;        synchronized (stubToTieCache) {
+<i>699</i>&nbsp;            return (Tie) stubToTieCache.remove(stub);
+<i>700</i>&nbsp;        }
+<i>701</i>&nbsp;    }
+<i>702</i>&nbsp;
+<i>703</i>&nbsp;    /*
+<i>704</i>&nbsp;     * Remove any cached Stub for the given tie.
+<i>705</i>&nbsp;     */
+<i>706</i>&nbsp;    public static void purgeStubForTie (Tie tie) {
+<i>707</i>&nbsp;        StubEntry entry;
+<i>708</i>&nbsp;        synchronized (tieToStubCache) {
+<i>709</i>&nbsp;            entry = (StubEntry)tieToStubCache.remove(tie);
+<i>710</i>&nbsp;        }
+<i>711</i>&nbsp;        if (entry != null) {
+<i>712</i>&nbsp;            synchronized (stubToTieCache) {
+<i>713</i>&nbsp;                stubToTieCache.remove(entry.stub);
+<i>714</i>&nbsp;            }
+<i>715</i>&nbsp;        }
+<i>716</i>&nbsp;    }
+<i>717</i>&nbsp;
+<i>718</i>&nbsp;    /*
+<i>719</i>&nbsp;     * Remove cached tie/servant pair.
+<i>720</i>&nbsp;     */
+<i>721</i>&nbsp;    public static void purgeTieAndServant (Tie tie) {
+<i>722</i>&nbsp;        synchronized (tieCache) {
+<i>723</i>&nbsp;            Object target = tie.getTarget();
+<i>724</i>&nbsp;            if (target != null)
+<i>725</i>&nbsp;                tieCache.remove(target);
+<i>726</i>&nbsp;        }
+<i>727</i>&nbsp;    }
+<i>728</i>&nbsp;
+<i>729</i>&nbsp;    /*
+<i>730</i>&nbsp;     * Convert a RepId to a stubName...
+<i>731</i>&nbsp;     */
+<i>732</i>&nbsp;    public static String stubNameFromRepID (String repID) {
+<i>733</i>&nbsp;
+<i>734</i>&nbsp;        // Convert the typeid to a RepositoryId instance, get
+<i>735</i>&nbsp;        // the className and mangle it as needed...
+<i>736</i>&nbsp;
+<i>737</i>&nbsp;        RepositoryId id = RepositoryId.cache.getId(repID);
+<i>738</i>&nbsp;        String className = id.getClassName();
+<i>739</i>&nbsp;
+<i>740</i>&nbsp;        if (id.isIDLType()) {
+<i>741</i>&nbsp;            className = idlStubName(className);
+<i>742</i>&nbsp;        } else {
+<i>743</i>&nbsp;            className = stubName(className);
+<i>744</i>&nbsp;        }
+<i>745</i>&nbsp;        return className;
+<i>746</i>&nbsp;    }
+<i>747</i>&nbsp;
+<i>748</i>&nbsp;
+<i>749</i>&nbsp;    /*
+<i>750</i>&nbsp;     * Load an RMI-IIOP Stub.  This is used in PortableRemoteObject.narrow.
+<i>751</i>&nbsp;     */
+<i>752</i>&nbsp;    public static Remote loadStub (org.omg.CORBA.Object narrowFrom,
+<i>753</i>&nbsp;                                   Class narrowTo)
+<i>754</i>&nbsp;    {
+<i>755</i>&nbsp;        Remote result = null;
+<i>756</i>&nbsp;
+<i>757</i>&nbsp;        try {
+<i>758</i>&nbsp;            // Get the codebase from the delegate to use when loading
+<i>759</i>&nbsp;            // the new stub, if possible...
+<i>760</i>&nbsp;            String codebase = null;
+<i>761</i>&nbsp;            try {
+<i>762</i>&nbsp;                // We can&#39;t assume that narrowFrom is a CORBA_2_3 stub, yet
+<i>763</i>&nbsp;                // it may have a 2_3 Delegate that provides a codebase.  Swallow
+<i>764</i>&nbsp;                // the ClassCastException otherwise.
+<i>765</i>&nbsp;                Delegate delegate = StubAdapter.getDelegate( narrowFrom ) ;
+<i>766</i>&nbsp;                codebase = ((org.omg.CORBA_2_3.portable.Delegate)delegate).
+<i>767</i>&nbsp;                    get_codebase(narrowFrom);
+<i>768</i>&nbsp;
+<i>769</i>&nbsp;            } catch (ClassCastException e) {
+<i>770</i>&nbsp;                wrapper.classCastExceptionInLoadStub( e ) ;
+<i>771</i>&nbsp;            }
+<i>772</i>&nbsp;
+<i>773</i>&nbsp;            PresentationManager.StubFactoryFactory sff =
+<i>774</i>&nbsp;                com.sun.corba.se.spi.orb.ORB.getStubFactoryFactory() ;
+<i>775</i>&nbsp;            PresentationManager.StubFactory sf = sff.createStubFactory(
+<i>776</i>&nbsp;                narrowTo.getName(), false, codebase, narrowTo,
+<i>777</i>&nbsp;                narrowTo.getClassLoader() ) ;
+<i>778</i>&nbsp;            result = (Remote)sf.makeStub() ;
+<i>779</i>&nbsp;            StubAdapter.setDelegate( result,
+<i>780</i>&nbsp;                StubAdapter.getDelegate( narrowFrom ) ) ;
+<i>781</i>&nbsp;        } catch (Exception err) {
+<i>782</i>&nbsp;            wrapper.exceptionInLoadStub( err ) ;
+<i>783</i>&nbsp;        }
+<i>784</i>&nbsp;
+<i>785</i>&nbsp;        return result;
+<i>786</i>&nbsp;    }
+<i>787</i>&nbsp;
+<i>788</i>&nbsp;    /*
+<i>789</i>&nbsp;     * Load an RMI-IIOP Stub class.  This is used in the
+<i>790</i>&nbsp;     * StaticStubFactoryFactory code.
+<i>791</i>&nbsp;     */
+<i>792</i>&nbsp;    public static Class loadStubClass(String repID,
+<i>793</i>&nbsp;                                      String remoteCodebase,
+<i>794</i>&nbsp;                                      Class expectedType)
+<i>795</i>&nbsp;        throws ClassNotFoundException
+<i>796</i>&nbsp;    {
+<i>797</i>&nbsp;        // Get the repID and check for &quot;&quot; special case.
+<i>798</i>&nbsp;        // We should never be called with it (See CDRInputStream
+<i>799</i>&nbsp;        // and the loadStub() method)...
+<i>800</i>&nbsp;
+<i>801</i>&nbsp;        if (repID.length() == 0) {
+<i>802</i>&nbsp;            throw new ClassNotFoundException();
+<i>803</i>&nbsp;        }
+<i>804</i>&nbsp;
+<i>805</i>&nbsp;        // Get the stubname from the repID and load
+<i>806</i>&nbsp;        // the class. If we have a valid &#39;sender&#39;, fall
+<i>807</i>&nbsp;        // back to using its codebase if we need to...
+<i>808</i>&nbsp;        String className = Utility.stubNameFromRepID(repID);
+<i>809</i>&nbsp;        ClassLoader expectedTypeClassLoader = (expectedType == null ? null :
+<i>810</i>&nbsp;            expectedType.getClassLoader());
+<i>811</i>&nbsp;
+<i>812</i>&nbsp;        try {
+<i>813</i>&nbsp;              return loadClassOfType(className,
+<i>814</i>&nbsp;                                       remoteCodebase,
+<i>815</i>&nbsp;                                       expectedTypeClassLoader,
+<i>816</i>&nbsp;                                       expectedType,
+<i>817</i>&nbsp;                                       expectedTypeClassLoader);
+<i>818</i>&nbsp;        } catch (ClassNotFoundException e) {
+<i>819</i>&nbsp;            return loadClassOfType(PackagePrefixChecker.packagePrefix() + className,
+<i>820</i>&nbsp;                                   remoteCodebase,
+<i>821</i>&nbsp;                                   expectedTypeClassLoader,
+<i>822</i>&nbsp;                                   expectedType,
+<i>823</i>&nbsp;                                   expectedTypeClassLoader);
+<i>824</i>&nbsp;        }
+<i>825</i>&nbsp;    }
+<i>826</i>&nbsp;
+<i>827</i>&nbsp;    /**
+<i>828</i>&nbsp;     * Create an RMI stub name.
+<i>829</i>&nbsp;     */
+<i>830</i>&nbsp;    public static String stubName (String className)
+<i>831</i>&nbsp;    {
+<i>832</i>&nbsp;        return stubName( className, false ) ;
+<i>833</i>&nbsp;    }
+<i>834</i>&nbsp;
+<i>835</i>&nbsp;    public static String dynamicStubName( String className )
+<i>836</i>&nbsp;    {
+<i>837</i>&nbsp;        return stubName( className, true ) ;
+<i>838</i>&nbsp;    }
+<i>839</i>&nbsp;
+<i>840</i>&nbsp;    private static String stubName( String className,
+<i>841</i>&nbsp;        boolean isDynamic )
+<i>842</i>&nbsp;    {
+<i>843</i>&nbsp;        String name = stubNameForCompiler( className, isDynamic ) ;
+<i>844</i>&nbsp;        if (PackagePrefixChecker.hasOffendingPrefix( name ))
+<i>845</i>&nbsp;            name = PackagePrefixChecker.packagePrefix() + name ;
+<i>846</i>&nbsp;        return name ;
+<i>847</i>&nbsp;    }
+<i>848</i>&nbsp;
+<i>849</i>&nbsp;    public static String stubNameForCompiler (String className)
+<i>850</i>&nbsp;    {
+<i>851</i>&nbsp;        return stubNameForCompiler( className, false ) ;
+<i>852</i>&nbsp;    }
+<i>853</i>&nbsp;
+<i>854</i>&nbsp;    private static String stubNameForCompiler( String className,
+<i>855</i>&nbsp;        boolean isDynamic )
+<i>856</i>&nbsp;    {
+<i>857</i>&nbsp;        int index = className.indexOf(&#39;$&#39;);
+<i>858</i>&nbsp;        if (index &lt; 0) {
+<i>859</i>&nbsp;            index = className.lastIndexOf(&#39;.&#39;);
+<i>860</i>&nbsp;        }
+<i>861</i>&nbsp;
+<i>862</i>&nbsp;        String suffix = isDynamic ? DYNAMIC_STUB_SUFFIX :
+<i>863</i>&nbsp;            RMI_STUB_SUFFIX ;
+<i>864</i>&nbsp;
+<i>865</i>&nbsp;        if (index &gt; 0) {
+<i>866</i>&nbsp;            return className.substring(0,index+1) + STUB_PREFIX +
+<i>867</i>&nbsp;                className.substring(index+1) + suffix;
+<i>868</i>&nbsp;        } else {
+<i>869</i>&nbsp;            return STUB_PREFIX + className + suffix;
+<i>870</i>&nbsp;        }
+<i>871</i>&nbsp;    }
+<i>872</i>&nbsp;
+<i>873</i>&nbsp;    /**
+<i>874</i>&nbsp;     * Create an RMI tie name.
+<i>875</i>&nbsp;     */
+<i>876</i>&nbsp;    public static String tieName (String className)
+<i>877</i>&nbsp;    {
+<i>878</i>&nbsp;        return
+<i>879</i>&nbsp;            PackagePrefixChecker.hasOffendingPrefix(tieNameForCompiler(className)) ?
+<i>880</i>&nbsp;            PackagePrefixChecker.packagePrefix() + tieNameForCompiler(className) :
+<i>881</i>&nbsp;            tieNameForCompiler(className);
+<i>882</i>&nbsp;    }
+<i>883</i>&nbsp;
+<i>884</i>&nbsp;    public static String tieNameForCompiler (String className)
+<i>885</i>&nbsp;    {
+<i>886</i>&nbsp;        int index = className.indexOf(&#39;$&#39;);
+<i>887</i>&nbsp;        if (index &lt; 0) {
+<i>888</i>&nbsp;            index = className.lastIndexOf(&#39;.&#39;);
+<i>889</i>&nbsp;        }
+<i>890</i>&nbsp;        if (index &gt; 0) {
+<i>891</i>&nbsp;            return className.substring(0,index+1) +
+<i>892</i>&nbsp;                STUB_PREFIX +
+<i>893</i>&nbsp;                className.substring(index+1) +
+<i>894</i>&nbsp;                TIE_SUFIX;
+<i>895</i>&nbsp;        } else {
+<i>896</i>&nbsp;            return STUB_PREFIX +
+<i>897</i>&nbsp;                className +
+<i>898</i>&nbsp;                TIE_SUFIX;
+<i>899</i>&nbsp;        }
+<i>900</i>&nbsp;    }
+<i>901</i>&nbsp;
+<i>902</i>&nbsp;    /**
+<i>903</i>&nbsp;     * Throws the CORBA equivalent of a java.io.NotSerializableException
+<i>904</i>&nbsp;     */
+<i>905</i>&nbsp;    public static void throwNotSerializableForCorba(String className) {
+<i>906</i>&nbsp;        throw omgWrapper.notSerializable( CompletionStatus.COMPLETED_MAYBE,
+<i>907</i>&nbsp;            className ) ;
+<i>908</i>&nbsp;    }
+<i>909</i>&nbsp;
+<i>910</i>&nbsp;    /**
+<i>911</i>&nbsp;     * Create an IDL stub name.
+<i>912</i>&nbsp;     */
+<i>913</i>&nbsp;    public static String idlStubName(String className)
+<i>914</i>&nbsp;    {
+<i>915</i>&nbsp;        String result = null;
+<i>916</i>&nbsp;        int index = className.lastIndexOf(&#39;.&#39;);
+<i>917</i>&nbsp;        if (index &gt; 0) {
+<i>918</i>&nbsp;            result = className.substring(0,index+1) +
+<i>919</i>&nbsp;                STUB_PREFIX +
+<i>920</i>&nbsp;                className.substring(index+1) +
+<i>921</i>&nbsp;                IDL_STUB_SUFFIX;
+<i>922</i>&nbsp;        } else {
+<i>923</i>&nbsp;            result = STUB_PREFIX +
+<i>924</i>&nbsp;                className +
+<i>925</i>&nbsp;                IDL_STUB_SUFFIX;
+<i>926</i>&nbsp;        }
+<i>927</i>&nbsp;        return result;
+<i>928</i>&nbsp;    }
+<i>929</i>&nbsp;
+<i>930</i>&nbsp;    public static void printStackTrace()
+<i>931</i>&nbsp;    {
+<i>932</i>&nbsp;        Throwable thr = new Throwable( &quot;Printing stack trace:&quot; ) ;
+<i>933</i>&nbsp;        thr.fillInStackTrace() ;
+<i>934</i>&nbsp;        thr.printStackTrace() ;
+<i>935</i>&nbsp;    }
+<i>936</i>&nbsp;
+<i>937</i>&nbsp;    /**
+<i>938</i>&nbsp;     * Read an object reference from the input stream and narrow
+<i>939</i>&nbsp;     * it to the desired type.
+<i>940</i>&nbsp;     * @param in the stream to read from.
+<i>941</i>&nbsp;     * @throws ClassCastException if narrowFrom cannot be cast to narrowTo.
+<i>942</i>&nbsp;     */
+<i>943</i>&nbsp;    public static Object readObjectAndNarrow(InputStream in,
+<i>944</i>&nbsp;                                             Class narrowTo)
+<i>945</i>&nbsp;        throws ClassCastException
+<i>946</i>&nbsp;    {
+<i>947</i>&nbsp;        Object result = in.read_Object();
+<i>948</i>&nbsp;        if (result != null)
+<i>949</i>&nbsp;            return PortableRemoteObject.narrow(result, narrowTo);
+<i>950</i>&nbsp;        else
+<i>951</i>&nbsp;            return null;
+<i>952</i>&nbsp;    }
+<i>953</i>&nbsp;
+<i>954</i>&nbsp;    /**
+<i>955</i>&nbsp;     * Read an abstract interface type from the input stream and narrow
+<i>956</i>&nbsp;     * it to the desired type.
+<i>957</i>&nbsp;     * @param in the stream to read from.
+<i>958</i>&nbsp;     * @throws ClassCastException if narrowFrom cannot be cast to narrowTo.
+<i>959</i>&nbsp;     */
+<i>960</i>&nbsp;    public static Object readAbstractAndNarrow(
+<i>961</i>&nbsp;        org.omg.CORBA_2_3.portable.InputStream in, Class narrowTo)
+<i>962</i>&nbsp;        throws ClassCastException
+<i>963</i>&nbsp;    {
+<i>964</i>&nbsp;        Object result = in.read_abstract_interface();
+<i>965</i>&nbsp;        if (result != null)
+<i>966</i>&nbsp;            return PortableRemoteObject.narrow(result, narrowTo);
+<i>967</i>&nbsp;        else
+<i>968</i>&nbsp;            return null;
+<i>969</i>&nbsp;    }
+<i>970</i>&nbsp;
+<i>971</i>&nbsp;
+<i>972</i>&nbsp;    /** Converts an Ascii Character into Hexadecimal digit
+<i>973</i>&nbsp;     */
+<i>974</i>&nbsp;    static int hexOf( char x )
+<i>975</i>&nbsp;    {
+<i>976</i>&nbsp;        int val;
+<i>977</i>&nbsp;
+<i>978</i>&nbsp;        val = x - &#39;0&#39;;
+<i>979</i>&nbsp;        if (val &gt;=0 &amp;&amp; val &lt;= 9)
+<i>980</i>&nbsp;            return val;
+<i>981</i>&nbsp;
+<i>982</i>&nbsp;        val = (x - &#39;a&#39;) + 10;
+<i>983</i>&nbsp;        if (val &gt;= 10 &amp;&amp; val &lt;= 15)
+<i>984</i>&nbsp;            return val;
+<i>985</i>&nbsp;
+<i>986</i>&nbsp;        val = (x - &#39;A&#39;) + 10;
+<i>987</i>&nbsp;        if (val &gt;= 10 &amp;&amp; val &lt;= 15)
+<i>988</i>&nbsp;            return val;
+<i>989</i>&nbsp;
+<i>990</i>&nbsp;        throw wrapper.badHexDigit() ;
+<i>991</i>&nbsp;    }
+<i>992</i>&nbsp;}
+<i>993</i>&nbsp;
+<i>994</i>&nbsp;class StubEntry {
+<i>995</i>&nbsp;    org.omg.CORBA.Object stub;
+<i>996</i>&nbsp;    boolean mostDerived;
+<i>997</i>&nbsp;
+<b class="nc"><i>998</i>&nbsp;    StubEntry(org.omg.CORBA.Object stub, boolean mostDerived) {</b>
+<b class="nc"><i>999</i>&nbsp;        this.stub = stub;</b>
+<b class="nc"><i>1000</i>&nbsp;        this.mostDerived = mostDerived;</b>
+<i>1001</i>&nbsp;    }
+<i>1002</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

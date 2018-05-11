@@ -1,0 +1,204 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DTMChildIterNodeList</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.dtm.ref</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DTMChildIterNodeList (com.sun.org.apache.xml.internal.dtm.ref)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DTMChildIterNodeList</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: DTMChildIterNodeList.java,v 1.2.4.1 2005/09/15 08:15:00 suresh_emailid Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.dtm.ref;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTM;
+<i>26</i>&nbsp;import org.w3c.dom.Node;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;/**
+<i>29</i>&nbsp; * &lt;code&gt;DTMNodeList&lt;/code&gt; gives us an implementation of the DOM&#39;s
+<i>30</i>&nbsp; * NodeList interface wrapped around a DTM Iterator. The author
+<i>31</i>&nbsp; * considers this something of an abominations, since NodeList was not
+<i>32</i>&nbsp; * intended to be a general purpose &quot;list of nodes&quot; API and is
+<i>33</i>&nbsp; * generally considered by the DOM WG to have be a mistake... but I&#39;m
+<i>34</i>&nbsp; * told that some of the XPath/XSLT folks say they must have this
+<i>35</i>&nbsp; * solution.
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; * Please note that this is not necessarily equivlaent to a DOM
+<i>38</i>&nbsp; * NodeList operating over the same document. In particular:
+<i>39</i>&nbsp; * &lt;ul&gt;
+<i>40</i>&nbsp; *
+<i>41</i>&nbsp; * &lt;li&gt;If there are several Text nodes in logical succession (ie,
+<i>42</i>&nbsp; * across CDATASection and EntityReference boundaries), we will return
+<i>43</i>&nbsp; * only the first; the caller is responsible for stepping through
+<i>44</i>&nbsp; * them.
+<i>45</i>&nbsp; * (%REVIEW% Provide a convenience routine here to assist, pending
+<i>46</i>&nbsp; * proposed DOM Level 3 getAdjacentText() operation?) &lt;/li&gt;
+<i>47</i>&nbsp; *
+<i>48</i>&nbsp; * &lt;li&gt;Since the whole XPath/XSLT architecture assumes that the source
+<i>49</i>&nbsp; * document is not altered while we&#39;re working with it, we do not
+<i>50</i>&nbsp; * promise to implement the DOM NodeList&#39;s &quot;live view&quot; response to
+<i>51</i>&nbsp; * document mutation. &lt;/li&gt;
+<i>52</i>&nbsp; *
+<i>53</i>&nbsp; * &lt;/ul&gt;
+<i>54</i>&nbsp; *
+<i>55</i>&nbsp; * &lt;p&gt;State: In progress!!&lt;/p&gt;
+<i>56</i>&nbsp; * */
+<i>57</i>&nbsp;public class DTMChildIterNodeList extends DTMNodeListBase {
+<i>58</i>&nbsp;    private int m_firstChild;
+<i>59</i>&nbsp;    private DTM m_parentDTM;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    //================================================================
+<i>62</i>&nbsp;    // Methods unique to this class
+<b class="nc"><i>63</i>&nbsp;    private DTMChildIterNodeList() {</b>
+<i>64</i>&nbsp;    }
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    /**
+<i>67</i>&nbsp;     * Public constructor: Create a NodeList to support
+<i>68</i>&nbsp;     * DTMNodeProxy.getChildren().
+<i>69</i>&nbsp;     *
+<i>70</i>&nbsp;     * Unfortunately AxisIterators and DTMIterators don&#39;t share an API,
+<i>71</i>&nbsp;     * so I can&#39;t use the existing Axis.CHILD iterator. Rather than
+<i>72</i>&nbsp;     * create Yet Another Class, let&#39;s set up a special case of this
+<i>73</i>&nbsp;     * one.
+<i>74</i>&nbsp;     *
+<i>75</i>&nbsp;     * @param parentDTM The DTM containing this node
+<i>76</i>&nbsp;     * @param parentHandle DTM node-handle integer
+<i>77</i>&nbsp;     *
+<i>78</i>&nbsp;     */
+<b class="nc"><i>79</i>&nbsp;    public DTMChildIterNodeList(DTM parentDTM,int parentHandle) {</b>
+<b class="nc"><i>80</i>&nbsp;        m_parentDTM=parentDTM;</b>
+<b class="nc"><i>81</i>&nbsp;        m_firstChild=parentDTM.getFirstChild(parentHandle);</b>
+<i>82</i>&nbsp;    }
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    //================================================================
+<i>86</i>&nbsp;    // org.w3c.dom.NodeList API follows
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    /**
+<i>89</i>&nbsp;     * Returns the &lt;code&gt;index&lt;/code&gt;th item in the collection. If
+<i>90</i>&nbsp;     * &lt;code&gt;index&lt;/code&gt; is greater than or equal to the number of nodes in
+<i>91</i>&nbsp;     * the list, this returns &lt;code&gt;null&lt;/code&gt;.
+<i>92</i>&nbsp;     * @param index Index into the collection.
+<i>93</i>&nbsp;     * @return The node at the &lt;code&gt;index&lt;/code&gt;th position in the
+<i>94</i>&nbsp;     *   &lt;code&gt;NodeList&lt;/code&gt;, or &lt;code&gt;null&lt;/code&gt; if that is not a valid
+<i>95</i>&nbsp;     *   index.
+<i>96</i>&nbsp;     */
+<i>97</i>&nbsp;    public Node item(int index) {
+<b class="nc"><i>98</i>&nbsp;        int handle=m_firstChild;</b>
+<b class="nc"><i>99</i>&nbsp;        while(--index&gt;=0 &amp;&amp; handle!=DTM.NULL) {</b>
+<b class="nc"><i>100</i>&nbsp;            handle=m_parentDTM.getNextSibling(handle);</b>
+<i>101</i>&nbsp;        }
+<b class="nc"><i>102</i>&nbsp;        if (handle == DTM.NULL) {</b>
+<b class="nc"><i>103</i>&nbsp;            return null;</b>
+<i>104</i>&nbsp;        }
+<b class="nc"><i>105</i>&nbsp;        return m_parentDTM.getNode(handle);</b>
+<i>106</i>&nbsp;    }
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;    /**
+<i>109</i>&nbsp;     * The number of nodes in the list. The range of valid child node indices
+<i>110</i>&nbsp;     * is 0 to &lt;code&gt;length-1&lt;/code&gt; inclusive.
+<i>111</i>&nbsp;     */
+<i>112</i>&nbsp;    public int getLength() {
+<b class="nc"><i>113</i>&nbsp;        int count=0;</b>
+<b class="nc"><i>114</i>&nbsp;        for (int handle=m_firstChild;</b>
+<b class="nc"><i>115</i>&nbsp;             handle!=DTM.NULL;</b>
+<b class="nc"><i>116</i>&nbsp;             handle=m_parentDTM.getNextSibling(handle)) {</b>
+<b class="nc"><i>117</i>&nbsp;            ++count;</b>
+<i>118</i>&nbsp;        }
+<b class="nc"><i>119</i>&nbsp;        return count;</b>
+<i>120</i>&nbsp;    }
+<i>121</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

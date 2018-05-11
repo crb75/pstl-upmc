@@ -1,0 +1,173 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: FuncTranslate</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xpath.internal.functions</a> ]
+</div>
+
+<h1>Coverage Summary for Class: FuncTranslate (com.sun.org.apache.xpath.internal.functions)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FuncTranslate</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: FuncTranslate.java,v 1.2.4.1 2005/09/14 20:18:45 jeffsuttor Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xpath.internal.functions;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xpath.internal.XPathContext;
+<i>26</i>&nbsp;import com.sun.org.apache.xpath.internal.objects.XObject;
+<i>27</i>&nbsp;import com.sun.org.apache.xpath.internal.objects.XString;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;/**
+<i>30</i>&nbsp; * Execute the Translate() function.
+<i>31</i>&nbsp; * @xsl.usage advanced
+<i>32</i>&nbsp; */
+<b class="nc"><i>33</i>&nbsp;public class FuncTranslate extends Function3Args</b>
+<i>34</i>&nbsp;{
+<i>35</i>&nbsp;    static final long serialVersionUID = -1672834340026116482L;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;  /**
+<i>38</i>&nbsp;   * Execute the function.  The function must return
+<i>39</i>&nbsp;   * a valid object.
+<i>40</i>&nbsp;   * @param xctxt The current execution context.
+<i>41</i>&nbsp;   * @return A valid XObject.
+<i>42</i>&nbsp;   *
+<i>43</i>&nbsp;   * @throws javax.xml.transform.TransformerException
+<i>44</i>&nbsp;   */
+<i>45</i>&nbsp;  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException
+<i>46</i>&nbsp;  {
+<i>47</i>&nbsp;
+<b class="nc"><i>48</i>&nbsp;    String theFirstString = m_arg0.execute(xctxt).str();</b>
+<b class="nc"><i>49</i>&nbsp;    String theSecondString = m_arg1.execute(xctxt).str();</b>
+<b class="nc"><i>50</i>&nbsp;    String theThirdString = m_arg2.execute(xctxt).str();</b>
+<b class="nc"><i>51</i>&nbsp;    int theFirstStringLength = theFirstString.length();</b>
+<b class="nc"><i>52</i>&nbsp;    int theThirdStringLength = theThirdString.length();</b>
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    // A vector to contain the new characters.  We&#39;ll use it to construct
+<i>55</i>&nbsp;    // the result string.
+<b class="nc"><i>56</i>&nbsp;    StringBuffer sbuffer = new StringBuffer();</b>
+<i>57</i>&nbsp;
+<b class="nc"><i>58</i>&nbsp;    for (int i = 0; i &lt; theFirstStringLength; i++)</b>
+<i>59</i>&nbsp;    {
+<b class="nc"><i>60</i>&nbsp;      char theCurrentChar = theFirstString.charAt(i);</b>
+<b class="nc"><i>61</i>&nbsp;      int theIndex = theSecondString.indexOf(theCurrentChar);</b>
+<i>62</i>&nbsp;
+<b class="nc"><i>63</i>&nbsp;      if (theIndex &lt; 0)</b>
+<i>64</i>&nbsp;      {
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;        // Didn&#39;t find the character in the second string, so it
+<i>67</i>&nbsp;        // is not translated.
+<b class="nc"><i>68</i>&nbsp;        sbuffer.append(theCurrentChar);</b>
+<i>69</i>&nbsp;      }
+<b class="nc"><i>70</i>&nbsp;      else if (theIndex &lt; theThirdStringLength)</b>
+<i>71</i>&nbsp;      {
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;        // OK, there&#39;s a corresponding character in the
+<i>74</i>&nbsp;        // third string, so do the translation...
+<b class="nc"><i>75</i>&nbsp;        sbuffer.append(theThirdString.charAt(theIndex));</b>
+<i>76</i>&nbsp;      }
+<i>77</i>&nbsp;      else
+<i>78</i>&nbsp;      {
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;        // There&#39;s no corresponding character in the
+<i>81</i>&nbsp;        // third string, since it&#39;s shorter than the
+<i>82</i>&nbsp;        // second string.  In this case, the character
+<i>83</i>&nbsp;        // is removed from the output string, so don&#39;t
+<i>84</i>&nbsp;        // do anything.
+<i>85</i>&nbsp;      }
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;
+<b class="nc"><i>88</i>&nbsp;    return new XString(sbuffer.toString());</b>
+<i>89</i>&nbsp;  }
+<i>90</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

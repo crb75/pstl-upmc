@@ -1,0 +1,669 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BasicParserConfiguration</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.parsers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BasicParserConfiguration (com.sun.org.apache.xerces.internal.parsers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BasicParserConfiguration</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 79)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.parsers;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import java.io.IOException;
+<i>24</i>&nbsp;import java.util.ArrayList;
+<i>25</i>&nbsp;import java.util.HashMap;
+<i>26</i>&nbsp;import java.util.Locale;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.Constants;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.util.FeatureState;
+<i>30</i>&nbsp;import com.sun.org.apache.xerces.internal.util.ParserConfigurationSettings;
+<i>31</i>&nbsp;import com.sun.org.apache.xerces.internal.util.PropertyState;
+<i>32</i>&nbsp;import com.sun.org.apache.xerces.internal.util.Status;
+<i>33</i>&nbsp;import com.sun.org.apache.xerces.internal.util.SymbolTable;
+<i>34</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLDTDContentModelHandler;
+<i>35</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLDTDHandler;
+<i>36</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLDocumentHandler;
+<i>37</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XNIException;
+<i>38</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLComponent;
+<i>39</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLComponentManager;
+<i>40</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException;
+<i>41</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentSource;
+<i>42</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLEntityResolver;
+<i>43</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLErrorHandler;
+<i>44</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
+<i>45</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLParserConfiguration;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;/**
+<i>48</i>&nbsp; * A very basic parser configuration. This configuration class can
+<i>49</i>&nbsp; * be used as a base class for custom parser configurations. The
+<i>50</i>&nbsp; * basic parser configuration creates the symbol table (if not
+<i>51</i>&nbsp; * specified at construction time) and manages all of the recognized
+<i>52</i>&nbsp; * features and properties.
+<i>53</i>&nbsp; * &lt;p&gt;
+<i>54</i>&nbsp; * The basic parser configuration does &lt;strong&gt;not&lt;/strong&gt; mandate
+<i>55</i>&nbsp; * any particular pipeline configuration or the use of specific
+<i>56</i>&nbsp; * components except for the symbol table. If even this is too much
+<i>57</i>&nbsp; * for a basic parser configuration, the programmer can create a new
+<i>58</i>&nbsp; * configuration class that implements the
+<i>59</i>&nbsp; * &lt;code&gt;XMLParserConfiguration&lt;/code&gt; interface.
+<i>60</i>&nbsp; * &lt;p&gt;
+<i>61</i>&nbsp; * Subclasses of the basic parser configuration can add their own
+<i>62</i>&nbsp; * recognized features and properties by calling the
+<i>63</i>&nbsp; * &lt;code&gt;addRecognizedFeature&lt;/code&gt; and
+<i>64</i>&nbsp; * &lt;code&gt;addRecognizedProperty&lt;/code&gt; methods, respectively.
+<i>65</i>&nbsp; * &lt;p&gt;
+<i>66</i>&nbsp; * The basic parser configuration assumes that the configuration
+<i>67</i>&nbsp; * will be made up of various parser components that implement the
+<i>68</i>&nbsp; * &lt;code&gt;XMLComponent&lt;/code&gt; interface. If subclasses of this
+<i>69</i>&nbsp; * configuration create their own components for use in the
+<i>70</i>&nbsp; * parser configuration, then each component should be added to
+<i>71</i>&nbsp; * the list of components by calling the &lt;code&gt;addComponent&lt;/code&gt;
+<i>72</i>&nbsp; * method. The basic parser configuration will make sure to call
+<i>73</i>&nbsp; * the &lt;code&gt;reset&lt;/code&gt; method of each registered component
+<i>74</i>&nbsp; * before parsing an instance document.
+<i>75</i>&nbsp; * &lt;p&gt;
+<i>76</i>&nbsp; * This class recognizes the following features and properties:
+<i>77</i>&nbsp; * &lt;ul&gt;
+<i>78</i>&nbsp; * &lt;li&gt;Features
+<i>79</i>&nbsp; *  &lt;ul&gt;
+<i>80</i>&nbsp; *   &lt;li&gt;http://xml.org/sax/features/validation&lt;/li&gt;
+<i>81</i>&nbsp; *   &lt;li&gt;http://xml.org/sax/features/namespaces&lt;/li&gt;
+<i>82</i>&nbsp; *   &lt;li&gt;http://xml.org/sax/features/external-general-entities&lt;/li&gt;
+<i>83</i>&nbsp; *   &lt;li&gt;http://xml.org/sax/features/external-parameter-entities&lt;/li&gt;
+<i>84</i>&nbsp; *  &lt;/ul&gt;
+<i>85</i>&nbsp; * &lt;li&gt;Properties
+<i>86</i>&nbsp; *  &lt;ul&gt;
+<i>87</i>&nbsp; *   &lt;li&gt;http://xml.org/sax/properties/xml-string&lt;/li&gt;
+<i>88</i>&nbsp; *   &lt;li&gt;http://apache.org/xml/properties/internal/symbol-table&lt;/li&gt;
+<i>89</i>&nbsp; *   &lt;li&gt;http://apache.org/xml/properties/internal/error-handler&lt;/li&gt;
+<i>90</i>&nbsp; *   &lt;li&gt;http://apache.org/xml/properties/internal/entity-resolver&lt;/li&gt;
+<i>91</i>&nbsp; *  &lt;/ul&gt;
+<i>92</i>&nbsp; * &lt;/ul&gt;
+<i>93</i>&nbsp; *
+<i>94</i>&nbsp; * @author Arnaud  Le Hors, IBM
+<i>95</i>&nbsp; * @author Andy Clark, IBM
+<i>96</i>&nbsp; *
+<i>97</i>&nbsp; * @version $Id: BasicParserConfiguration.java,v 1.6 2010-11-01 04:40:09 joehw Exp $
+<i>98</i>&nbsp; */
+<i>99</i>&nbsp;public abstract class BasicParserConfiguration
+<i>100</i>&nbsp;    extends ParserConfigurationSettings
+<i>101</i>&nbsp;    implements XMLParserConfiguration {
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    //
+<i>104</i>&nbsp;    // Constants
+<i>105</i>&nbsp;    //
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    // feature identifiers
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    /** Feature identifier: validation. */
+<i>110</i>&nbsp;    protected static final String VALIDATION =
+<i>111</i>&nbsp;        Constants.SAX_FEATURE_PREFIX + Constants.VALIDATION_FEATURE;
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    /** Feature identifier: namespaces. */
+<i>114</i>&nbsp;    protected static final String NAMESPACES =
+<i>115</i>&nbsp;        Constants.SAX_FEATURE_PREFIX + Constants.NAMESPACES_FEATURE;
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    /** Feature identifier: external general entities. */
+<i>118</i>&nbsp;    protected static final String EXTERNAL_GENERAL_ENTITIES =
+<i>119</i>&nbsp;        Constants.SAX_FEATURE_PREFIX + Constants.EXTERNAL_GENERAL_ENTITIES_FEATURE;
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;    /** Feature identifier: external parameter entities. */
+<i>122</i>&nbsp;    protected static final String EXTERNAL_PARAMETER_ENTITIES =
+<i>123</i>&nbsp;        Constants.SAX_FEATURE_PREFIX + Constants.EXTERNAL_PARAMETER_ENTITIES_FEATURE;
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    // property identifiers
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;    /** Property identifier: xml string. */
+<i>128</i>&nbsp;    protected static final String XML_STRING =
+<i>129</i>&nbsp;        Constants.SAX_PROPERTY_PREFIX + Constants.XML_STRING_PROPERTY;
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;    /** Property identifier: symbol table. */
+<i>132</i>&nbsp;    protected static final String SYMBOL_TABLE =
+<i>133</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY;
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;    /** Property identifier: error handler. */
+<i>136</i>&nbsp;    protected static final String ERROR_HANDLER =
+<i>137</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_HANDLER_PROPERTY;
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;    /** Property identifier: entity resolver. */
+<i>140</i>&nbsp;    protected static final String ENTITY_RESOLVER =
+<i>141</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.ENTITY_RESOLVER_PROPERTY;
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;    //
+<i>144</i>&nbsp;    // Data
+<i>145</i>&nbsp;    //
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;    // components (non-configurable)
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    /** Symbol table. */
+<i>150</i>&nbsp;    protected SymbolTable fSymbolTable;
+<i>151</i>&nbsp;
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;    // data
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;    /** Locale. */
+<i>156</i>&nbsp;    protected Locale fLocale;
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;    /** Components. */
+<i>159</i>&nbsp;    protected ArrayList fComponents;
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;    // handlers
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;    /** The document handler. */
+<i>164</i>&nbsp;    protected XMLDocumentHandler fDocumentHandler;
+<i>165</i>&nbsp;
+<i>166</i>&nbsp;    /** The DTD handler. */
+<i>167</i>&nbsp;    protected XMLDTDHandler fDTDHandler;
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;    /** The DTD content model handler. */
+<i>170</i>&nbsp;    protected XMLDTDContentModelHandler fDTDContentModelHandler;
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;    /** Last component in the document pipeline */
+<i>173</i>&nbsp;    protected XMLDocumentSource fLastComponent;
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;    //
+<i>176</i>&nbsp;    // Constructors
+<i>177</i>&nbsp;    //
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;    /** Default Constructor. */
+<i>180</i>&nbsp;    protected BasicParserConfiguration() {
+<b class="nc"><i>181</i>&nbsp;        this(null, null);</b>
+<i>182</i>&nbsp;    } // &lt;init&gt;()
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;    /**
+<i>185</i>&nbsp;     * Constructs a parser configuration using the specified symbol table.
+<i>186</i>&nbsp;     *
+<i>187</i>&nbsp;     * @param symbolTable The symbol table to use.
+<i>188</i>&nbsp;     */
+<i>189</i>&nbsp;    protected BasicParserConfiguration(SymbolTable symbolTable) {
+<b class="nc"><i>190</i>&nbsp;        this(symbolTable, null);</b>
+<i>191</i>&nbsp;    } // &lt;init&gt;(SymbolTable)
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;    /**
+<i>194</i>&nbsp;     * Constructs a parser configuration using the specified symbol table
+<i>195</i>&nbsp;     * and parent settings.
+<i>196</i>&nbsp;     *
+<i>197</i>&nbsp;     * @param symbolTable    The symbol table to use.
+<i>198</i>&nbsp;     * @param parentSettings The parent settings.
+<i>199</i>&nbsp;     */
+<i>200</i>&nbsp;    protected BasicParserConfiguration(SymbolTable symbolTable,
+<i>201</i>&nbsp;                                       XMLComponentManager parentSettings) {
+<b class="nc"><i>202</i>&nbsp;        super(parentSettings);</b>
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;        // create a vector to hold all the components in use
+<b class="nc"><i>205</i>&nbsp;        fComponents = new ArrayList();</b>
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;        // create table for features and properties
+<b class="nc"><i>208</i>&nbsp;        fFeatures = new HashMap();</b>
+<b class="nc"><i>209</i>&nbsp;        fProperties = new HashMap();</b>
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;        // add default recognized features
+<b class="nc"><i>212</i>&nbsp;        final String[] recognizedFeatures = {</b>
+<i>213</i>&nbsp;                PARSER_SETTINGS,
+<i>214</i>&nbsp;            VALIDATION,
+<i>215</i>&nbsp;            NAMESPACES,
+<i>216</i>&nbsp;            EXTERNAL_GENERAL_ENTITIES,
+<i>217</i>&nbsp;            EXTERNAL_PARAMETER_ENTITIES,
+<i>218</i>&nbsp;        };
+<b class="nc"><i>219</i>&nbsp;        addRecognizedFeatures(recognizedFeatures);</b>
+<b class="nc"><i>220</i>&nbsp;        fFeatures.put(PARSER_SETTINGS, Boolean.TRUE);</b>
+<i>221</i>&nbsp;        // set state for default features
+<b class="nc"><i>222</i>&nbsp;                fFeatures.put(VALIDATION, Boolean.FALSE);</b>
+<b class="nc"><i>223</i>&nbsp;                fFeatures.put(NAMESPACES, Boolean.TRUE);</b>
+<b class="nc"><i>224</i>&nbsp;                fFeatures.put(EXTERNAL_GENERAL_ENTITIES, Boolean.TRUE);</b>
+<b class="nc"><i>225</i>&nbsp;                fFeatures.put(EXTERNAL_PARAMETER_ENTITIES, Boolean.TRUE);</b>
+<i>226</i>&nbsp;
+<i>227</i>&nbsp;        // add default recognized properties
+<b class="nc"><i>228</i>&nbsp;        final String[] recognizedProperties = {</b>
+<i>229</i>&nbsp;            XML_STRING,
+<i>230</i>&nbsp;            SYMBOL_TABLE,
+<i>231</i>&nbsp;            ERROR_HANDLER,
+<i>232</i>&nbsp;            ENTITY_RESOLVER,
+<i>233</i>&nbsp;        };
+<b class="nc"><i>234</i>&nbsp;        addRecognizedProperties(recognizedProperties);</b>
+<i>235</i>&nbsp;
+<b class="nc"><i>236</i>&nbsp;        if (symbolTable == null) {</b>
+<b class="nc"><i>237</i>&nbsp;            symbolTable = new SymbolTable();</b>
+<i>238</i>&nbsp;        }
+<b class="nc"><i>239</i>&nbsp;        fSymbolTable = symbolTable;</b>
+<b class="nc"><i>240</i>&nbsp;        fProperties.put(SYMBOL_TABLE, fSymbolTable);</b>
+<i>241</i>&nbsp;
+<i>242</i>&nbsp;    } // &lt;init&gt;(SymbolTable)
+<i>243</i>&nbsp;
+<i>244</i>&nbsp;    /**
+<i>245</i>&nbsp;     * Adds a component to the parser configuration. This method will
+<i>246</i>&nbsp;     * also add all of the component&#39;s recognized features and properties
+<i>247</i>&nbsp;     * to the list of default recognized features and properties.
+<i>248</i>&nbsp;     *
+<i>249</i>&nbsp;     * @param component The component to add.
+<i>250</i>&nbsp;     */
+<i>251</i>&nbsp;    protected void addComponent(XMLComponent component) {
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;        // don&#39;t add a component more than once
+<b class="nc"><i>254</i>&nbsp;        if (fComponents.contains(component)) {</b>
+<i>255</i>&nbsp;            return;
+<i>256</i>&nbsp;        }
+<b class="nc"><i>257</i>&nbsp;        fComponents.add(component);</b>
+<i>258</i>&nbsp;
+<i>259</i>&nbsp;        // register component&#39;s recognized features
+<b class="nc"><i>260</i>&nbsp;        String[] recognizedFeatures = component.getRecognizedFeatures();</b>
+<b class="nc"><i>261</i>&nbsp;        addRecognizedFeatures(recognizedFeatures);</b>
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;        // register component&#39;s recognized properties
+<b class="nc"><i>264</i>&nbsp;        String[] recognizedProperties = component.getRecognizedProperties();</b>
+<b class="nc"><i>265</i>&nbsp;        addRecognizedProperties(recognizedProperties);</b>
+<i>266</i>&nbsp;
+<i>267</i>&nbsp;        // set default values
+<b class="nc"><i>268</i>&nbsp;        if (recognizedFeatures != null) {</b>
+<b class="nc"><i>269</i>&nbsp;            for (int i = 0; i &lt; recognizedFeatures.length; i++) {</b>
+<b class="nc"><i>270</i>&nbsp;                String featureId = recognizedFeatures[i];</b>
+<b class="nc"><i>271</i>&nbsp;                Boolean state = component.getFeatureDefault(featureId);</b>
+<b class="nc"><i>272</i>&nbsp;                if (state != null) {</b>
+<b class="nc"><i>273</i>&nbsp;                    super.setFeature(featureId, state.booleanValue());</b>
+<i>274</i>&nbsp;                }
+<i>275</i>&nbsp;            }
+<i>276</i>&nbsp;        }
+<b class="nc"><i>277</i>&nbsp;        if (recognizedProperties != null) {</b>
+<b class="nc"><i>278</i>&nbsp;            for (int i = 0; i &lt; recognizedProperties.length; i++) {</b>
+<b class="nc"><i>279</i>&nbsp;                String propertyId = recognizedProperties[i];</b>
+<b class="nc"><i>280</i>&nbsp;                Object value = component.getPropertyDefault(propertyId);</b>
+<b class="nc"><i>281</i>&nbsp;                if (value != null) {</b>
+<b class="nc"><i>282</i>&nbsp;                    super.setProperty(propertyId, value);</b>
+<i>283</i>&nbsp;                }
+<i>284</i>&nbsp;            }
+<i>285</i>&nbsp;        }
+<i>286</i>&nbsp;
+<i>287</i>&nbsp;    } // addComponent(XMLComponent)
+<i>288</i>&nbsp;
+<i>289</i>&nbsp;    //
+<i>290</i>&nbsp;    // XMLParserConfiguration methods
+<i>291</i>&nbsp;    //
+<i>292</i>&nbsp;
+<i>293</i>&nbsp;    /**
+<i>294</i>&nbsp;     * Parse an XML document.
+<i>295</i>&nbsp;     * &lt;p&gt;
+<i>296</i>&nbsp;     * The parser can use this method to instruct this configuration
+<i>297</i>&nbsp;     * to begin parsing an XML document from any valid input source
+<i>298</i>&nbsp;     * (a character stream, a byte stream, or a URI).
+<i>299</i>&nbsp;     * &lt;p&gt;
+<i>300</i>&nbsp;     * Parsers may not invoke this method while a parse is in progress.
+<i>301</i>&nbsp;     * Once a parse is complete, the parser may then parse another XML
+<i>302</i>&nbsp;     * document.
+<i>303</i>&nbsp;     * &lt;p&gt;
+<i>304</i>&nbsp;     * This method is synchronous: it will not return until parsing
+<i>305</i>&nbsp;     * has ended.  If a client application wants to terminate
+<i>306</i>&nbsp;     * parsing early, it should throw an exception.
+<i>307</i>&nbsp;     *
+<i>308</i>&nbsp;     * @param inputSource The input source for the top-level of the
+<i>309</i>&nbsp;     *               XML document.
+<i>310</i>&nbsp;     *
+<i>311</i>&nbsp;     * @exception XNIException Any XNI exception, possibly wrapping
+<i>312</i>&nbsp;     *                         another exception.
+<i>313</i>&nbsp;     * @exception IOException  An IO exception from the parser, possibly
+<i>314</i>&nbsp;     *                         from a byte stream or character stream
+<i>315</i>&nbsp;     *                         supplied by the parser.
+<i>316</i>&nbsp;     */
+<i>317</i>&nbsp;    public abstract void parse(XMLInputSource inputSource)
+<i>318</i>&nbsp;        throws XNIException, IOException;
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;    /**
+<i>321</i>&nbsp;     * Sets the document handler on the last component in the pipeline
+<i>322</i>&nbsp;     * to receive information about the document.
+<i>323</i>&nbsp;     *
+<i>324</i>&nbsp;     * @param documentHandler   The document handler.
+<i>325</i>&nbsp;     */
+<i>326</i>&nbsp;    public void setDocumentHandler(XMLDocumentHandler documentHandler) {
+<b class="nc"><i>327</i>&nbsp;        fDocumentHandler = documentHandler;</b>
+<b class="nc"><i>328</i>&nbsp;        if (fLastComponent != null) {</b>
+<b class="nc"><i>329</i>&nbsp;            fLastComponent.setDocumentHandler(fDocumentHandler);</b>
+<b class="nc"><i>330</i>&nbsp;            if (fDocumentHandler !=null){</b>
+<b class="nc"><i>331</i>&nbsp;                fDocumentHandler.setDocumentSource(fLastComponent);</b>
+<i>332</i>&nbsp;            }
+<i>333</i>&nbsp;        }
+<i>334</i>&nbsp;    } // setDocumentHandler(XMLDocumentHandler)
+<i>335</i>&nbsp;
+<i>336</i>&nbsp;    /** Returns the registered document handler. */
+<i>337</i>&nbsp;    public XMLDocumentHandler getDocumentHandler() {
+<b class="nc"><i>338</i>&nbsp;        return fDocumentHandler;</b>
+<i>339</i>&nbsp;    } // getDocumentHandler():XMLDocumentHandler
+<i>340</i>&nbsp;
+<i>341</i>&nbsp;    /**
+<i>342</i>&nbsp;     * Sets the DTD handler.
+<i>343</i>&nbsp;     *
+<i>344</i>&nbsp;     * @param dtdHandler The DTD handler.
+<i>345</i>&nbsp;     */
+<i>346</i>&nbsp;    public void setDTDHandler(XMLDTDHandler dtdHandler) {
+<b class="nc"><i>347</i>&nbsp;        fDTDHandler = dtdHandler;</b>
+<i>348</i>&nbsp;    } // setDTDHandler(XMLDTDHandler)
+<i>349</i>&nbsp;
+<i>350</i>&nbsp;    /** Returns the registered DTD handler. */
+<i>351</i>&nbsp;    public XMLDTDHandler getDTDHandler() {
+<b class="nc"><i>352</i>&nbsp;        return fDTDHandler;</b>
+<i>353</i>&nbsp;    } // getDTDHandler():XMLDTDHandler
+<i>354</i>&nbsp;
+<i>355</i>&nbsp;    /**
+<i>356</i>&nbsp;     * Sets the DTD content model handler.
+<i>357</i>&nbsp;     *
+<i>358</i>&nbsp;     * @param handler The DTD content model handler.
+<i>359</i>&nbsp;     */
+<i>360</i>&nbsp;    public void setDTDContentModelHandler(XMLDTDContentModelHandler handler) {
+<b class="nc"><i>361</i>&nbsp;        fDTDContentModelHandler = handler;</b>
+<i>362</i>&nbsp;    } // setDTDContentModelHandler(XMLDTDContentModelHandler)
+<i>363</i>&nbsp;
+<i>364</i>&nbsp;    /** Returns the registered DTD content model handler. */
+<i>365</i>&nbsp;    public XMLDTDContentModelHandler getDTDContentModelHandler() {
+<b class="nc"><i>366</i>&nbsp;        return fDTDContentModelHandler;</b>
+<i>367</i>&nbsp;    } // getDTDContentModelHandler():XMLDTDContentModelHandler
+<i>368</i>&nbsp;
+<i>369</i>&nbsp;    /**
+<i>370</i>&nbsp;     * Sets the resolver used to resolve external entities. The EntityResolver
+<i>371</i>&nbsp;     * interface supports resolution of public and system identifiers.
+<i>372</i>&nbsp;     *
+<i>373</i>&nbsp;     * @param resolver The new entity resolver. Passing a null value will
+<i>374</i>&nbsp;     *                 uninstall the currently installed resolver.
+<i>375</i>&nbsp;     */
+<i>376</i>&nbsp;    public void setEntityResolver(XMLEntityResolver resolver) {
+<i>377</i>&nbsp;        // REVISIT: Should this be a property?
+<b class="nc"><i>378</i>&nbsp;        fProperties.put(ENTITY_RESOLVER, resolver);</b>
+<i>379</i>&nbsp;    } // setEntityResolver(XMLEntityResolver)
+<i>380</i>&nbsp;
+<i>381</i>&nbsp;    /**
+<i>382</i>&nbsp;     * Return the current entity resolver.
+<i>383</i>&nbsp;     *
+<i>384</i>&nbsp;     * @return The current entity resolver, or null if none
+<i>385</i>&nbsp;     *         has been registered.
+<i>386</i>&nbsp;     * @see #setEntityResolver
+<i>387</i>&nbsp;     */
+<i>388</i>&nbsp;    public XMLEntityResolver getEntityResolver() {
+<i>389</i>&nbsp;        // REVISIT: Should this be a property?
+<b class="nc"><i>390</i>&nbsp;        return (XMLEntityResolver)fProperties.get(ENTITY_RESOLVER);</b>
+<i>391</i>&nbsp;    } // getEntityResolver():XMLEntityResolver
+<i>392</i>&nbsp;
+<i>393</i>&nbsp;    /**
+<i>394</i>&nbsp;     * Allow an application to register an error event handler.
+<i>395</i>&nbsp;     *
+<i>396</i>&nbsp;     * &lt;p&gt;If the application does not register an error handler, all
+<i>397</i>&nbsp;     * error events reported by the SAX parser will be silently
+<i>398</i>&nbsp;     * ignored; however, normal processing may not continue.  It is
+<i>399</i>&nbsp;     * highly recommended that all SAX applications implement an
+<i>400</i>&nbsp;     * error handler to avoid unexpected bugs.&lt;/p&gt;
+<i>401</i>&nbsp;     *
+<i>402</i>&nbsp;     * &lt;p&gt;Applications may register a new or different handler in the
+<i>403</i>&nbsp;     * middle of a parse, and the SAX parser must begin using the new
+<i>404</i>&nbsp;     * handler immediately.&lt;/p&gt;
+<i>405</i>&nbsp;     *
+<i>406</i>&nbsp;     * @param errorHandler The error handler.
+<i>407</i>&nbsp;     * @exception java.lang.NullPointerException If the handler
+<i>408</i>&nbsp;     *            argument is null.
+<i>409</i>&nbsp;     * @see #getErrorHandler
+<i>410</i>&nbsp;     */
+<i>411</i>&nbsp;    public void setErrorHandler(XMLErrorHandler errorHandler) {
+<i>412</i>&nbsp;        // REVISIT: Should this be a property?
+<b class="nc"><i>413</i>&nbsp;        fProperties.put(ERROR_HANDLER, errorHandler);</b>
+<i>414</i>&nbsp;    } // setErrorHandler(XMLErrorHandler)
+<i>415</i>&nbsp;
+<i>416</i>&nbsp;    /**
+<i>417</i>&nbsp;     * Return the current error handler.
+<i>418</i>&nbsp;     *
+<i>419</i>&nbsp;     * @return The current error handler, or null if none
+<i>420</i>&nbsp;     *         has been registered.
+<i>421</i>&nbsp;     * @see #setErrorHandler
+<i>422</i>&nbsp;     */
+<i>423</i>&nbsp;    public XMLErrorHandler getErrorHandler() {
+<i>424</i>&nbsp;        // REVISIT: Should this be a property?
+<b class="nc"><i>425</i>&nbsp;        return (XMLErrorHandler)fProperties.get(ERROR_HANDLER);</b>
+<i>426</i>&nbsp;    } // getErrorHandler():XMLErrorHandler
+<i>427</i>&nbsp;
+<i>428</i>&nbsp;    /**
+<i>429</i>&nbsp;     * Set the state of a feature.
+<i>430</i>&nbsp;     *
+<i>431</i>&nbsp;     * Set the state of any feature in a SAX2 parser.  The parser
+<i>432</i>&nbsp;     * might not recognize the feature, and if it does recognize
+<i>433</i>&nbsp;     * it, it might not be able to fulfill the request.
+<i>434</i>&nbsp;     *
+<i>435</i>&nbsp;     * @param featureId The unique identifier (URI) of the feature.
+<i>436</i>&nbsp;     * @param state The requested state of the feature (true or false).
+<i>437</i>&nbsp;     *
+<i>438</i>&nbsp;     * @exception com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException If the
+<i>439</i>&nbsp;     *            requested feature is not known.
+<i>440</i>&nbsp;     */
+<i>441</i>&nbsp;    public void setFeature(String featureId, boolean state)
+<i>442</i>&nbsp;        throws XMLConfigurationException {
+<i>443</i>&nbsp;
+<i>444</i>&nbsp;        // forward to every component
+<b class="nc"><i>445</i>&nbsp;        int count = fComponents.size();</b>
+<b class="nc"><i>446</i>&nbsp;        for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc"><i>447</i>&nbsp;            XMLComponent c = (XMLComponent) fComponents.get(i);</b>
+<b class="nc"><i>448</i>&nbsp;            c.setFeature(featureId, state);</b>
+<i>449</i>&nbsp;        }
+<i>450</i>&nbsp;        // save state if noone &quot;objects&quot;
+<b class="nc"><i>451</i>&nbsp;        super.setFeature(featureId, state);</b>
+<i>452</i>&nbsp;
+<i>453</i>&nbsp;    } // setFeature(String,boolean)
+<i>454</i>&nbsp;
+<i>455</i>&nbsp;    /**
+<i>456</i>&nbsp;     * setProperty
+<i>457</i>&nbsp;     *
+<i>458</i>&nbsp;     * @param propertyId
+<i>459</i>&nbsp;     * @param value
+<i>460</i>&nbsp;     */
+<i>461</i>&nbsp;    public void setProperty(String propertyId, Object value)
+<i>462</i>&nbsp;        throws XMLConfigurationException {
+<i>463</i>&nbsp;
+<i>464</i>&nbsp;        // forward to every component
+<b class="nc"><i>465</i>&nbsp;        int count = fComponents.size();</b>
+<b class="nc"><i>466</i>&nbsp;        for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc"><i>467</i>&nbsp;            XMLComponent c = (XMLComponent) fComponents.get(i);</b>
+<b class="nc"><i>468</i>&nbsp;            c.setProperty(propertyId, value);</b>
+<i>469</i>&nbsp;        }
+<i>470</i>&nbsp;
+<i>471</i>&nbsp;        // store value if noone &quot;objects&quot;
+<b class="nc"><i>472</i>&nbsp;        super.setProperty(propertyId, value);</b>
+<i>473</i>&nbsp;
+<i>474</i>&nbsp;    } // setProperty(String,Object)
+<i>475</i>&nbsp;
+<i>476</i>&nbsp;    /**
+<i>477</i>&nbsp;     * Set the locale to use for messages.
+<i>478</i>&nbsp;     *
+<i>479</i>&nbsp;     * @param locale The locale object to use for localization of messages.
+<i>480</i>&nbsp;     *
+<i>481</i>&nbsp;     * @exception XNIException Thrown if the parser does not support the
+<i>482</i>&nbsp;     *                         specified locale.
+<i>483</i>&nbsp;     */
+<i>484</i>&nbsp;    public void setLocale(Locale locale) throws XNIException {
+<b class="nc"><i>485</i>&nbsp;        fLocale = locale;</b>
+<i>486</i>&nbsp;    } // setLocale(Locale)
+<i>487</i>&nbsp;
+<i>488</i>&nbsp;    /** Returns the locale. */
+<i>489</i>&nbsp;    public Locale getLocale() {
+<b class="nc"><i>490</i>&nbsp;        return fLocale;</b>
+<i>491</i>&nbsp;    } // getLocale():Locale
+<i>492</i>&nbsp;
+<i>493</i>&nbsp;    //
+<i>494</i>&nbsp;    // Protected methods
+<i>495</i>&nbsp;    //
+<i>496</i>&nbsp;
+<i>497</i>&nbsp;    /**
+<i>498</i>&nbsp;     * reset all components before parsing and namespace context
+<i>499</i>&nbsp;     */
+<i>500</i>&nbsp;    protected void reset() throws XNIException {
+<i>501</i>&nbsp;
+<i>502</i>&nbsp;        // reset every component
+<b class="nc"><i>503</i>&nbsp;        int count = fComponents.size();</b>
+<b class="nc"><i>504</i>&nbsp;        for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc"><i>505</i>&nbsp;            XMLComponent c = (XMLComponent) fComponents.get(i);</b>
+<b class="nc"><i>506</i>&nbsp;            c.reset(this);</b>
+<i>507</i>&nbsp;        }
+<i>508</i>&nbsp;
+<i>509</i>&nbsp;    } // reset()
+<i>510</i>&nbsp;
+<i>511</i>&nbsp;    /**
+<i>512</i>&nbsp;     * Check a property. If the property is known and supported, this method
+<i>513</i>&nbsp;     * simply returns. Otherwise, the appropriate exception is thrown.
+<i>514</i>&nbsp;     *
+<i>515</i>&nbsp;     * @param propertyId The unique identifier (URI) of the property
+<i>516</i>&nbsp;     *                   being set.
+<i>517</i>&nbsp;     * @exception com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException If the
+<i>518</i>&nbsp;     *            requested feature is not known or supported.
+<i>519</i>&nbsp;     */
+<i>520</i>&nbsp;    protected PropertyState checkProperty(String propertyId)
+<i>521</i>&nbsp;        throws XMLConfigurationException {
+<i>522</i>&nbsp;
+<i>523</i>&nbsp;        // special cases
+<b class="nc"><i>524</i>&nbsp;        if (propertyId.startsWith(Constants.SAX_PROPERTY_PREFIX)) {</b>
+<b class="nc"><i>525</i>&nbsp;            final int suffixLength = propertyId.length() - Constants.SAX_PROPERTY_PREFIX.length();</b>
+<i>526</i>&nbsp;
+<i>527</i>&nbsp;            //
+<i>528</i>&nbsp;            // http://xml.org/sax/properties/xml-string
+<i>529</i>&nbsp;            // Value type: String
+<i>530</i>&nbsp;            // Access: read-only
+<i>531</i>&nbsp;            //   Get the literal string of characters associated with the
+<i>532</i>&nbsp;            //   current event.  If the parser recognises and supports this
+<i>533</i>&nbsp;            //   property but is not currently parsing text, it should return
+<i>534</i>&nbsp;            //   null (this is a good way to check for availability before the
+<i>535</i>&nbsp;            //   parse begins).
+<i>536</i>&nbsp;            //
+<b class="nc"><i>537</i>&nbsp;            if (suffixLength == Constants.XML_STRING_PROPERTY.length() &amp;&amp;</b>
+<b class="nc"><i>538</i>&nbsp;                propertyId.endsWith(Constants.XML_STRING_PROPERTY)) {</b>
+<i>539</i>&nbsp;                // REVISIT - we should probably ask xml-dev for a precise
+<i>540</i>&nbsp;                // definition of what this is actually supposed to return, and
+<i>541</i>&nbsp;                // in exactly which circumstances.
+<b class="nc"><i>542</i>&nbsp;                return PropertyState.NOT_SUPPORTED;</b>
+<i>543</i>&nbsp;            }
+<i>544</i>&nbsp;        }
+<i>545</i>&nbsp;
+<i>546</i>&nbsp;        // check property
+<b class="nc"><i>547</i>&nbsp;        return super.checkProperty(propertyId);</b>
+<i>548</i>&nbsp;
+<i>549</i>&nbsp;    } // checkProperty(String)
+<i>550</i>&nbsp;
+<i>551</i>&nbsp;
+<i>552</i>&nbsp;    /**
+<i>553</i>&nbsp;     * Check a feature. If feature is know and supported, this method simply
+<i>554</i>&nbsp;     * returns. Otherwise, the appropriate exception is thrown.
+<i>555</i>&nbsp;     *
+<i>556</i>&nbsp;     * @param featureId The unique identifier (URI) of the feature.
+<i>557</i>&nbsp;     *
+<i>558</i>&nbsp;     * @throws XMLConfigurationException Thrown for configuration error.
+<i>559</i>&nbsp;     *                                   In general, components should
+<i>560</i>&nbsp;     *                                   only throw this exception if
+<i>561</i>&nbsp;     *                                   it is &lt;strong&gt;really&lt;/strong&gt;
+<i>562</i>&nbsp;     *                                   a critical error.
+<i>563</i>&nbsp;     */
+<i>564</i>&nbsp;    protected FeatureState checkFeature(String featureId)
+<i>565</i>&nbsp;        throws XMLConfigurationException {
+<i>566</i>&nbsp;
+<i>567</i>&nbsp;        //
+<i>568</i>&nbsp;        // Xerces Features
+<i>569</i>&nbsp;        //
+<b class="nc"><i>570</i>&nbsp;        if (featureId.startsWith(Constants.XERCES_FEATURE_PREFIX)) {</b>
+<b class="nc"><i>571</i>&nbsp;            final int suffixLength = featureId.length() - Constants.XERCES_FEATURE_PREFIX.length();</b>
+<i>572</i>&nbsp;
+<i>573</i>&nbsp;            //
+<i>574</i>&nbsp;            // special performance feature: no one by component manager is allowed to set it
+<i>575</i>&nbsp;            //
+<b class="nc"><i>576</i>&nbsp;            if (suffixLength == Constants.PARSER_SETTINGS.length() &amp;&amp;</b>
+<b class="nc"><i>577</i>&nbsp;                featureId.endsWith(Constants.PARSER_SETTINGS)) {</b>
+<b class="nc"><i>578</i>&nbsp;                return FeatureState.NOT_SUPPORTED;</b>
+<i>579</i>&nbsp;            }
+<i>580</i>&nbsp;        }
+<i>581</i>&nbsp;
+<b class="nc"><i>582</i>&nbsp;        return super.checkFeature(featureId);</b>
+<i>583</i>&nbsp;     } // checkFeature(String)
+<i>584</i>&nbsp;
+<i>585</i>&nbsp;
+<i>586</i>&nbsp;} // class BasicParserConfiguration
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,404 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MotifSplitPaneDivider</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.java.swing.plaf.motif</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MotifSplitPaneDivider (com.sun.java.swing.plaf.motif)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MotifSplitPaneDivider</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 101)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MotifSplitPaneDivider$MotifMouseHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 111)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 1997, 1999, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.java.swing.plaf.motif;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.awt.*;
+<i>29</i>&nbsp;import java.awt.event.*;
+<i>30</i>&nbsp;import javax.swing.JSplitPane;
+<i>31</i>&nbsp;import javax.swing.UIManager;
+<i>32</i>&nbsp;import javax.swing.plaf.basic.BasicSplitPaneUI;
+<i>33</i>&nbsp;import javax.swing.plaf.basic.BasicSplitPaneDivider;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; * Divider used for Motif split pane.
+<i>38</i>&nbsp; * &lt;p&gt;
+<i>39</i>&nbsp; * &lt;strong&gt;Warning:&lt;/strong&gt;
+<i>40</i>&nbsp; * Serialized objects of this class will not be compatible with
+<i>41</i>&nbsp; * future Swing releases.  The current serialization support is appropriate
+<i>42</i>&nbsp; * for short term storage or RMI between applications running the same
+<i>43</i>&nbsp; * version of Swing.  A future release of Swing will provide support for
+<i>44</i>&nbsp; * long term persistence.
+<i>45</i>&nbsp; *
+<i>46</i>&nbsp; * @author Jeff Dinkins
+<i>47</i>&nbsp; */
+<b class="nc"><i>48</i>&nbsp;public class MotifSplitPaneDivider extends BasicSplitPaneDivider</b>
+<i>49</i>&nbsp;{
+<i>50</i>&nbsp;    /**
+<i>51</i>&nbsp;     * Default cursor, supers is package private, so we have to have one
+<i>52</i>&nbsp;     * too.
+<i>53</i>&nbsp;     */
+<i>54</i>&nbsp;    private static final Cursor defaultCursor =
+<b class="nc"><i>55</i>&nbsp;                            Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);</b>
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    public static final int minimumThumbSize = 6;
+<i>59</i>&nbsp;    public static final int defaultDividerSize = 18;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    protected  static final int pad = 6;
+<i>62</i>&nbsp;
+<b class="nc"><i>63</i>&nbsp;    private int hThumbOffset = 30;</b>
+<b class="nc"><i>64</i>&nbsp;    private int vThumbOffset = 40;</b>
+<b class="nc"><i>65</i>&nbsp;    protected int hThumbWidth = 12;</b>
+<b class="nc"><i>66</i>&nbsp;    protected int hThumbHeight = 18;</b>
+<b class="nc"><i>67</i>&nbsp;    protected int vThumbWidth = 18;</b>
+<b class="nc"><i>68</i>&nbsp;    protected int vThumbHeight = 12;</b>
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    protected Color highlightColor;
+<i>71</i>&nbsp;    protected Color shadowColor;
+<i>72</i>&nbsp;    protected Color focusedColor;
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    /**
+<i>75</i>&nbsp;     * Creates a new Motif SplitPaneDivider
+<i>76</i>&nbsp;     */
+<i>77</i>&nbsp;    public MotifSplitPaneDivider(BasicSplitPaneUI ui) {
+<b class="nc"><i>78</i>&nbsp;        super(ui);</b>
+<b class="nc"><i>79</i>&nbsp;        highlightColor = UIManager.getColor(&quot;SplitPane.highlight&quot;);</b>
+<b class="nc"><i>80</i>&nbsp;        shadowColor = UIManager.getColor(&quot;SplitPane.shadow&quot;);</b>
+<b class="nc"><i>81</i>&nbsp;        focusedColor = UIManager.getColor(&quot;SplitPane.activeThumb&quot;);</b>
+<b class="nc"><i>82</i>&nbsp;        setDividerSize(hThumbWidth + pad);</b>
+<i>83</i>&nbsp;    }
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    /**
+<i>86</i>&nbsp;     * overrides to hardcode the size of the divider
+<i>87</i>&nbsp;     * PENDING(jeff) - rewrite JSplitPane so that this ins&#39;t needed
+<i>88</i>&nbsp;     */
+<i>89</i>&nbsp;    public void setDividerSize(int newSize) {
+<b class="nc"><i>90</i>&nbsp;        Insets          insets = getInsets();</b>
+<b class="nc"><i>91</i>&nbsp;        int             borderSize = 0;</b>
+<b class="nc"><i>92</i>&nbsp;        if (getBasicSplitPaneUI().getOrientation() ==</b>
+<i>93</i>&nbsp;            JSplitPane.HORIZONTAL_SPLIT) {
+<b class="nc"><i>94</i>&nbsp;            if (insets != null) {</b>
+<b class="nc"><i>95</i>&nbsp;                borderSize = insets.left + insets.right;</b>
+<i>96</i>&nbsp;            }
+<i>97</i>&nbsp;        }
+<b class="nc"><i>98</i>&nbsp;        else if (insets != null) {</b>
+<b class="nc"><i>99</i>&nbsp;            borderSize = insets.top + insets.bottom;</b>
+<i>100</i>&nbsp;        }
+<b class="nc"><i>101</i>&nbsp;        if (newSize &lt; pad + minimumThumbSize + borderSize) {</b>
+<b class="nc"><i>102</i>&nbsp;            setDividerSize(pad + minimumThumbSize + borderSize);</b>
+<i>103</i>&nbsp;        } else {
+<b class="nc"><i>104</i>&nbsp;            vThumbHeight = hThumbWidth = newSize - pad - borderSize;</b>
+<b class="nc"><i>105</i>&nbsp;            super.setDividerSize(newSize);</b>
+<i>106</i>&nbsp;        }
+<i>107</i>&nbsp;    }
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    /**
+<i>110</i>&nbsp;      * Paints the divider.
+<i>111</i>&nbsp;      */
+<i>112</i>&nbsp;    // PENDING(jeff) - the thumb&#39;s location and size is currently hard coded.
+<i>113</i>&nbsp;    // It should be dynamic.
+<i>114</i>&nbsp;    public void paint(Graphics g) {
+<b class="nc"><i>115</i>&nbsp;        Color               bgColor = getBackground();</b>
+<b class="nc"><i>116</i>&nbsp;        Dimension           size = getSize();</b>
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;        // fill
+<b class="nc"><i>119</i>&nbsp;        g.setColor(getBackground());</b>
+<b class="nc"><i>120</i>&nbsp;        g.fillRect(0, 0, size.width, size.height);</b>
+<i>121</i>&nbsp;
+<b class="nc"><i>122</i>&nbsp;        if(getBasicSplitPaneUI().getOrientation() ==</b>
+<i>123</i>&nbsp;           JSplitPane.HORIZONTAL_SPLIT) {
+<b class="nc"><i>124</i>&nbsp;            int center = size.width/2;</b>
+<b class="nc"><i>125</i>&nbsp;            int x = center - hThumbWidth/2;</b>
+<b class="nc"><i>126</i>&nbsp;            int y = hThumbOffset;</b>
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;            // split line
+<b class="nc"><i>129</i>&nbsp;            g.setColor(shadowColor);</b>
+<b class="nc"><i>130</i>&nbsp;            g.drawLine(center-1, 0, center-1, size.height);</b>
+<i>131</i>&nbsp;
+<b class="nc"><i>132</i>&nbsp;            g.setColor(highlightColor);</b>
+<b class="nc"><i>133</i>&nbsp;            g.drawLine(center, 0, center, size.height);</b>
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;            // draw thumb
+<b class="nc"><i>136</i>&nbsp;            g.setColor((splitPane.hasFocus()) ? focusedColor :</b>
+<b class="nc"><i>137</i>&nbsp;                                                getBackground());</b>
+<b class="nc"><i>138</i>&nbsp;            g.fillRect(x+1, y+1, hThumbWidth-2, hThumbHeight-1);</b>
+<i>139</i>&nbsp;
+<b class="nc"><i>140</i>&nbsp;            g.setColor(highlightColor);</b>
+<b class="nc"><i>141</i>&nbsp;            g.drawLine(x, y, x+hThumbWidth-1, y);       // top</b>
+<b class="nc"><i>142</i>&nbsp;            g.drawLine(x, y+1, x, y+hThumbHeight-1);    // left</b>
+<i>143</i>&nbsp;
+<b class="nc"><i>144</i>&nbsp;            g.setColor(shadowColor);</b>
+<b class="nc"><i>145</i>&nbsp;            g.drawLine(x+1, y+hThumbHeight-1,</b>
+<i>146</i>&nbsp;                       x+hThumbWidth-1, y+hThumbHeight-1);      // bottom
+<b class="nc"><i>147</i>&nbsp;            g.drawLine(x+hThumbWidth-1, y+1,</b>
+<i>148</i>&nbsp;                       x+hThumbWidth-1, y+hThumbHeight-2);      // right
+<i>149</i>&nbsp;
+<b class="nc"><i>150</i>&nbsp;        } else {</b>
+<b class="nc"><i>151</i>&nbsp;            int center = size.height/2;</b>
+<b class="nc"><i>152</i>&nbsp;            int x = size.width - vThumbOffset;</b>
+<b class="nc"><i>153</i>&nbsp;            int y = size.height/2 - vThumbHeight/2;</b>
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;            // split line
+<b class="nc"><i>156</i>&nbsp;            g.setColor(shadowColor);</b>
+<b class="nc"><i>157</i>&nbsp;            g.drawLine(0, center-1, size.width, center-1);</b>
+<i>158</i>&nbsp;
+<b class="nc"><i>159</i>&nbsp;            g.setColor(highlightColor);</b>
+<b class="nc"><i>160</i>&nbsp;            g.drawLine(0, center, size.width, center);</b>
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;            // draw thumb
+<b class="nc"><i>163</i>&nbsp;            g.setColor((splitPane.hasFocus()) ? focusedColor :</b>
+<b class="nc"><i>164</i>&nbsp;                                                getBackground());</b>
+<b class="nc"><i>165</i>&nbsp;            g.fillRect(x+1, y+1, vThumbWidth-1, vThumbHeight-1);</b>
+<i>166</i>&nbsp;
+<b class="nc"><i>167</i>&nbsp;            g.setColor(highlightColor);</b>
+<b class="nc"><i>168</i>&nbsp;            g.drawLine(x, y, x+vThumbWidth, y);    // top</b>
+<b class="nc"><i>169</i>&nbsp;            g.drawLine(x, y+1, x, y+vThumbHeight); // left</b>
+<i>170</i>&nbsp;
+<b class="nc"><i>171</i>&nbsp;            g.setColor(shadowColor);</b>
+<b class="nc"><i>172</i>&nbsp;            g.drawLine(x+1, y+vThumbHeight,</b>
+<i>173</i>&nbsp;                       x+vThumbWidth, y+vThumbHeight);          // bottom
+<b class="nc"><i>174</i>&nbsp;            g.drawLine(x+vThumbWidth, y+1,</b>
+<i>175</i>&nbsp;                       x+vThumbWidth, y+vThumbHeight-1);        // right
+<i>176</i>&nbsp;        }
+<b class="nc"><i>177</i>&nbsp;        super.paint(g);</b>
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;    }
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;    /**
+<i>182</i>&nbsp;      * The minimums size is the same as the preferredSize
+<i>183</i>&nbsp;      */
+<i>184</i>&nbsp;    public Dimension getMinimumSize() {
+<b class="nc"><i>185</i>&nbsp;        return getPreferredSize();</b>
+<i>186</i>&nbsp;    }
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;    /**
+<i>189</i>&nbsp;     * Sets the SplitPaneUI that is using the receiver. This is completely
+<i>190</i>&nbsp;     * overriden from super to create a different MouseHandler.
+<i>191</i>&nbsp;     */
+<i>192</i>&nbsp;    public void setBasicSplitPaneUI(BasicSplitPaneUI newUI) {
+<b class="nc"><i>193</i>&nbsp;        if (splitPane != null) {</b>
+<b class="nc"><i>194</i>&nbsp;            splitPane.removePropertyChangeListener(this);</b>
+<b class="nc"><i>195</i>&nbsp;           if (mouseHandler != null) {</b>
+<b class="nc"><i>196</i>&nbsp;               splitPane.removeMouseListener(mouseHandler);</b>
+<b class="nc"><i>197</i>&nbsp;               splitPane.removeMouseMotionListener(mouseHandler);</b>
+<b class="nc"><i>198</i>&nbsp;               removeMouseListener(mouseHandler);</b>
+<b class="nc"><i>199</i>&nbsp;               removeMouseMotionListener(mouseHandler);</b>
+<b class="nc"><i>200</i>&nbsp;               mouseHandler = null;</b>
+<i>201</i>&nbsp;           }
+<i>202</i>&nbsp;        }
+<b class="nc"><i>203</i>&nbsp;        splitPaneUI = newUI;</b>
+<b class="nc"><i>204</i>&nbsp;        if (newUI != null) {</b>
+<b class="nc"><i>205</i>&nbsp;            splitPane = newUI.getSplitPane();</b>
+<b class="nc"><i>206</i>&nbsp;            if (splitPane != null) {</b>
+<b class="nc"><i>207</i>&nbsp;                if (mouseHandler == null) mouseHandler=new MotifMouseHandler();</b>
+<b class="nc"><i>208</i>&nbsp;                splitPane.addMouseListener(mouseHandler);</b>
+<b class="nc"><i>209</i>&nbsp;                splitPane.addMouseMotionListener(mouseHandler);</b>
+<b class="nc"><i>210</i>&nbsp;                addMouseListener(mouseHandler);</b>
+<b class="nc"><i>211</i>&nbsp;                addMouseMotionListener(mouseHandler);</b>
+<b class="nc"><i>212</i>&nbsp;                splitPane.addPropertyChangeListener(this);</b>
+<b class="nc"><i>213</i>&nbsp;                if (splitPane.isOneTouchExpandable()) {</b>
+<b class="nc"><i>214</i>&nbsp;                    oneTouchExpandableChanged();</b>
+<i>215</i>&nbsp;                }
+<i>216</i>&nbsp;            }
+<i>217</i>&nbsp;        }
+<i>218</i>&nbsp;        else {
+<b class="nc"><i>219</i>&nbsp;            splitPane = null;</b>
+<i>220</i>&nbsp;        }
+<i>221</i>&nbsp;    }
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;    /**
+<i>224</i>&nbsp;     * Returns true if the point at &lt;code&gt;x&lt;/code&gt;, &lt;code&gt;y&lt;/code&gt;
+<i>225</i>&nbsp;     * is inside the thumb.
+<i>226</i>&nbsp;     */
+<i>227</i>&nbsp;    private boolean isInThumb(int x, int y) {
+<b class="nc"><i>228</i>&nbsp;        Dimension           size = getSize();</b>
+<i>229</i>&nbsp;        int                 thumbX;
+<i>230</i>&nbsp;        int                 thumbY;
+<i>231</i>&nbsp;        int                 thumbWidth;
+<i>232</i>&nbsp;        int                 thumbHeight;
+<i>233</i>&nbsp;
+<b class="nc"><i>234</i>&nbsp;        if (getBasicSplitPaneUI().getOrientation() ==</b>
+<i>235</i>&nbsp;            JSplitPane.HORIZONTAL_SPLIT) {
+<b class="nc"><i>236</i>&nbsp;            int center = size.width/2;</b>
+<b class="nc"><i>237</i>&nbsp;            thumbX = center - hThumbWidth/2;</b>
+<b class="nc"><i>238</i>&nbsp;            thumbY = hThumbOffset;</b>
+<b class="nc"><i>239</i>&nbsp;            thumbWidth = hThumbWidth;</b>
+<b class="nc"><i>240</i>&nbsp;            thumbHeight = hThumbHeight;</b>
+<b class="nc"><i>241</i>&nbsp;        }</b>
+<i>242</i>&nbsp;        else {
+<b class="nc"><i>243</i>&nbsp;            int center = size.height/2;</b>
+<b class="nc"><i>244</i>&nbsp;            thumbX = size.width - vThumbOffset;</b>
+<b class="nc"><i>245</i>&nbsp;            thumbY = size.height/2 - vThumbHeight/2;</b>
+<b class="nc"><i>246</i>&nbsp;            thumbWidth = vThumbWidth;</b>
+<b class="nc"><i>247</i>&nbsp;            thumbHeight = vThumbHeight;</b>
+<i>248</i>&nbsp;        }
+<b class="nc"><i>249</i>&nbsp;        return (x &gt;= thumbX &amp;&amp; x &lt; (thumbX + thumbWidth) &amp;&amp;</b>
+<i>250</i>&nbsp;                y &gt;= thumbY &amp;&amp; y &lt; (thumbY + thumbHeight));
+<i>251</i>&nbsp;    }
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;    //
+<i>254</i>&nbsp;    // Two methods are exposed so that MotifMouseHandler can see the
+<i>255</i>&nbsp;    // superclass protected ivars
+<i>256</i>&nbsp;    //
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;    private DragController getDragger() {
+<b class="nc"><i>259</i>&nbsp;        return dragger;</b>
+<i>260</i>&nbsp;    }
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;    private JSplitPane getSplitPane() {
+<b class="nc"><i>263</i>&nbsp;        return splitPane;</b>
+<i>264</i>&nbsp;    }
+<i>265</i>&nbsp;
+<i>266</i>&nbsp;
+<i>267</i>&nbsp;    /**
+<i>268</i>&nbsp;     * MouseHandler is subclassed to only pass off to super if the mouse
+<i>269</i>&nbsp;     * is in the thumb. Motif only allows dragging when the thumb is clicked
+<i>270</i>&nbsp;     * in.
+<i>271</i>&nbsp;     */
+<b class="nc"><i>272</i>&nbsp;    private class MotifMouseHandler extends MouseHandler {</b>
+<i>273</i>&nbsp;        public void mousePressed(MouseEvent e) {
+<i>274</i>&nbsp;            // Constrain the mouse pressed to the thumb.
+<b class="nc"><i>275</i>&nbsp;            if (e.getSource() == MotifSplitPaneDivider.this &amp;&amp;</b>
+<b class="nc"><i>276</i>&nbsp;                getDragger() == null &amp;&amp; getSplitPane().isEnabled() &amp;&amp;</b>
+<b class="nc"><i>277</i>&nbsp;                isInThumb(e.getX(), e.getY())) {</b>
+<b class="nc"><i>278</i>&nbsp;                super.mousePressed(e);</b>
+<i>279</i>&nbsp;            }
+<i>280</i>&nbsp;        }
+<i>281</i>&nbsp;
+<i>282</i>&nbsp;        public void mouseMoved(MouseEvent e) {
+<b class="nc"><i>283</i>&nbsp;            if (getDragger() != null) {</b>
+<i>284</i>&nbsp;                return;
+<i>285</i>&nbsp;            }
+<b class="nc"><i>286</i>&nbsp;            if (!isInThumb(e.getX(), e.getY())) {</b>
+<b class="nc"><i>287</i>&nbsp;                if (getCursor() != defaultCursor) {</b>
+<b class="nc"><i>288</i>&nbsp;                    setCursor(defaultCursor);</b>
+<i>289</i>&nbsp;                }
+<i>290</i>&nbsp;                return;
+<i>291</i>&nbsp;            }
+<b class="nc"><i>292</i>&nbsp;            super.mouseMoved(e);</b>
+<i>293</i>&nbsp;        }
+<i>294</i>&nbsp;    }
+<i>295</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

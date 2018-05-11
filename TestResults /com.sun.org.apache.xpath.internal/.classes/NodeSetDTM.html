@@ -1,0 +1,1332 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: NodeSetDTM</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xpath.internal</a> ]
+</div>
+
+<h1>Coverage Summary for Class: NodeSetDTM (com.sun.org.apache.xpath.internal)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">NodeSetDTM</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 52)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 175)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: NodeSetDTM.java,v 1.2.4.2 2005/09/14 20:30:06 jeffsuttor Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xpath.internal;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xalan.internal.res.XSLMessages;
+<i>26</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTM;
+<i>27</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTMFilter;
+<i>28</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTMIterator;
+<i>29</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTMManager;
+<i>30</i>&nbsp;import com.sun.org.apache.xml.internal.utils.NodeVector;
+<i>31</i>&nbsp;import com.sun.org.apache.xpath.internal.res.XPATHErrorResources;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import org.w3c.dom.Node;
+<i>34</i>&nbsp;import org.w3c.dom.NodeList;
+<i>35</i>&nbsp;import org.w3c.dom.traversal.NodeIterator;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;/**
+<i>39</i>&nbsp; * &lt;p&gt;The NodeSetDTM class can act as either a NodeVector,
+<i>40</i>&nbsp; * NodeList, or NodeIterator.  However, in order for it to
+<i>41</i>&nbsp; * act as a NodeVector or NodeList, it&#39;s required that
+<i>42</i>&nbsp; * setShouldCacheNodes(true) be called before the first
+<i>43</i>&nbsp; * nextNode() is called, in order that nodes can be added
+<i>44</i>&nbsp; * as they are fetched.  Derived classes that implement iterators
+<i>45</i>&nbsp; * must override runTo(int index), in order that they may
+<i>46</i>&nbsp; * run the iteration to the given index. &lt;/p&gt;
+<i>47</i>&nbsp; *
+<i>48</i>&nbsp; * &lt;p&gt;Note that we directly implement the DOM&#39;s NodeIterator
+<i>49</i>&nbsp; * interface. We do not emulate all the behavior of the
+<i>50</i>&nbsp; * standard NodeIterator. In particular, we do not guarantee
+<i>51</i>&nbsp; * to present a &quot;live view&quot; of the document ... but in XSLT,
+<i>52</i>&nbsp; * the source document should never be mutated, so this should
+<i>53</i>&nbsp; * never be an issue.&lt;/p&gt;
+<i>54</i>&nbsp; *
+<i>55</i>&nbsp; * &lt;p&gt;Thought: Should NodeSetDTM really implement NodeList and NodeIterator,
+<i>56</i>&nbsp; * or should there be specific subclasses of it which do so? The
+<i>57</i>&nbsp; * advantage of doing it all here is that all NodeSetDTMs will respond
+<i>58</i>&nbsp; * to the same calls; the disadvantage is that some of them may return
+<i>59</i>&nbsp; * less-than-enlightening results when you do so.&lt;/p&gt;
+<i>60</i>&nbsp; * @xsl.usage advanced
+<i>61</i>&nbsp; */
+<i>62</i>&nbsp;public class NodeSetDTM extends NodeVector
+<i>63</i>&nbsp;        implements /* NodeList, NodeIterator, */ DTMIterator,
+<i>64</i>&nbsp;        Cloneable
+<i>65</i>&nbsp;{
+<i>66</i>&nbsp;    static final long serialVersionUID = 7686480133331317070L;
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;  /**
+<i>69</i>&nbsp;   * Create an empty nodelist.
+<i>70</i>&nbsp;   */
+<i>71</i>&nbsp;  public NodeSetDTM(DTMManager dtmManager)
+<i>72</i>&nbsp;  {
+<b class="nc"><i>73</i>&nbsp;    super();</b>
+<b class="nc"><i>74</i>&nbsp;    m_manager = dtmManager;</b>
+<i>75</i>&nbsp;  }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;  /**
+<i>78</i>&nbsp;   * Create an empty, using the given block size.
+<i>79</i>&nbsp;   *
+<i>80</i>&nbsp;   * @param blocksize Size of blocks to allocate
+<i>81</i>&nbsp;   * @param dummy pass zero for right now...
+<i>82</i>&nbsp;   */
+<i>83</i>&nbsp;  public NodeSetDTM(int blocksize, int dummy, DTMManager dtmManager)
+<i>84</i>&nbsp;  {
+<b class="nc"><i>85</i>&nbsp;    super(blocksize);</b>
+<b class="nc"><i>86</i>&nbsp;    m_manager = dtmManager;</b>
+<i>87</i>&nbsp;  }
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;  // %TBD%
+<i>90</i>&nbsp;//  /**
+<i>91</i>&nbsp;//   * Create a NodeSetDTM, and copy the members of the
+<i>92</i>&nbsp;//   * given nodelist into it.
+<i>93</i>&nbsp;//   *
+<i>94</i>&nbsp;//   * @param nodelist List of Nodes to be made members of the new set.
+<i>95</i>&nbsp;//   */
+<i>96</i>&nbsp;//  public NodeSetDTM(NodeList nodelist)
+<i>97</i>&nbsp;//  {
+<i>98</i>&nbsp;//
+<i>99</i>&nbsp;//    super();
+<i>100</i>&nbsp;//
+<i>101</i>&nbsp;//    addNodes(nodelist);
+<i>102</i>&nbsp;//  }
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;  /**
+<i>105</i>&nbsp;   * Create a NodeSetDTM, and copy the members of the
+<i>106</i>&nbsp;   * given NodeSetDTM into it.
+<i>107</i>&nbsp;   *
+<i>108</i>&nbsp;   * @param nodelist Set of Nodes to be made members of the new set.
+<i>109</i>&nbsp;   */
+<i>110</i>&nbsp;  public NodeSetDTM(NodeSetDTM nodelist)
+<i>111</i>&nbsp;  {
+<i>112</i>&nbsp;
+<b class="nc"><i>113</i>&nbsp;    super();</b>
+<b class="nc"><i>114</i>&nbsp;    m_manager = nodelist.getDTMManager();</b>
+<b class="nc"><i>115</i>&nbsp;    m_root = nodelist.getRoot();</b>
+<i>116</i>&nbsp;
+<b class="nc"><i>117</i>&nbsp;    addNodes((DTMIterator) nodelist);</b>
+<i>118</i>&nbsp;  }
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;  /**
+<i>121</i>&nbsp;   * Create a NodeSetDTM, and copy the members of the
+<i>122</i>&nbsp;   * given DTMIterator into it.
+<i>123</i>&nbsp;   *
+<i>124</i>&nbsp;   * @param ni Iterator which yields Nodes to be made members of the new set.
+<i>125</i>&nbsp;   */
+<i>126</i>&nbsp;  public NodeSetDTM(DTMIterator ni)
+<i>127</i>&nbsp;  {
+<i>128</i>&nbsp;
+<b class="nc"><i>129</i>&nbsp;    super();</b>
+<i>130</i>&nbsp;
+<b class="nc"><i>131</i>&nbsp;    m_manager = ni.getDTMManager();</b>
+<b class="nc"><i>132</i>&nbsp;    m_root = ni.getRoot();</b>
+<b class="nc"><i>133</i>&nbsp;    addNodes(ni);</b>
+<i>134</i>&nbsp;  }
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;  /**
+<i>137</i>&nbsp;   * Create a NodeSetDTM, and copy the members of the
+<i>138</i>&nbsp;   * given DTMIterator into it.
+<i>139</i>&nbsp;   *
+<i>140</i>&nbsp;   * @param iterator Iterator which yields Nodes to be made members of the new set.
+<i>141</i>&nbsp;   */
+<i>142</i>&nbsp;  public NodeSetDTM(NodeIterator iterator, XPathContext xctxt)
+<i>143</i>&nbsp;  {
+<i>144</i>&nbsp;
+<b class="nc"><i>145</i>&nbsp;    super();</b>
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;    Node node;
+<b class="nc"><i>148</i>&nbsp;    m_manager = xctxt.getDTMManager();</b>
+<i>149</i>&nbsp;
+<b class="nc"><i>150</i>&nbsp;    while (null != (node = iterator.nextNode()))</b>
+<i>151</i>&nbsp;    {
+<b class="nc"><i>152</i>&nbsp;      int handle = xctxt.getDTMHandleFromNode(node);</b>
+<b class="nc"><i>153</i>&nbsp;      addNodeInDocOrder(handle, xctxt);</b>
+<b class="nc"><i>154</i>&nbsp;    }</b>
+<i>155</i>&nbsp;  }
+<i>156</i>&nbsp;
+<i>157</i>&nbsp;  /**
+<i>158</i>&nbsp;   * Create a NodeSetDTM, and copy the members of the
+<i>159</i>&nbsp;   * given DTMIterator into it.
+<i>160</i>&nbsp;   *
+<i>161</i>&nbsp;   */
+<i>162</i>&nbsp;  public NodeSetDTM(NodeList nodeList, XPathContext xctxt)
+<i>163</i>&nbsp;  {
+<i>164</i>&nbsp;
+<b class="nc"><i>165</i>&nbsp;    super();</b>
+<i>166</i>&nbsp;
+<b class="nc"><i>167</i>&nbsp;    m_manager = xctxt.getDTMManager();</b>
+<i>168</i>&nbsp;
+<b class="nc"><i>169</i>&nbsp;    int n = nodeList.getLength();</b>
+<b class="nc"><i>170</i>&nbsp;    for (int i = 0; i &lt; n; i++)</b>
+<i>171</i>&nbsp;    {
+<b class="nc"><i>172</i>&nbsp;      Node node = nodeList.item(i);</b>
+<b class="nc"><i>173</i>&nbsp;      int handle = xctxt.getDTMHandleFromNode(node);</b>
+<i>174</i>&nbsp;      // Do not reorder or strip duplicate nodes from the given DOM nodelist
+<b class="nc"><i>175</i>&nbsp;      addNode(handle); // addNodeInDocOrder(handle, xctxt);</b>
+<i>176</i>&nbsp;    }
+<i>177</i>&nbsp;  }
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;  /**
+<i>181</i>&nbsp;   * Create a NodeSetDTM which contains the given Node.
+<i>182</i>&nbsp;   *
+<i>183</i>&nbsp;   * @param node Single node to be added to the new set.
+<i>184</i>&nbsp;   */
+<i>185</i>&nbsp;  public NodeSetDTM(int node, DTMManager dtmManager)
+<i>186</i>&nbsp;  {
+<i>187</i>&nbsp;
+<b class="nc"><i>188</i>&nbsp;    super();</b>
+<b class="nc"><i>189</i>&nbsp;    m_manager = dtmManager;</b>
+<i>190</i>&nbsp;
+<b class="nc"><i>191</i>&nbsp;    addNode(node);</b>
+<i>192</i>&nbsp;  }
+<i>193</i>&nbsp;
+<i>194</i>&nbsp;  /**
+<i>195</i>&nbsp;   * Set the environment in which this iterator operates, which should provide:
+<i>196</i>&nbsp;   * a node (the context node... same value as &quot;root&quot; defined below)
+<i>197</i>&nbsp;   * a pair of non-zero positive integers (the context position and the context size)
+<i>198</i>&nbsp;   * a set of variable bindings
+<i>199</i>&nbsp;   * a function library
+<i>200</i>&nbsp;   * the set of namespace declarations in scope for the expression.
+<i>201</i>&nbsp;   *
+<i>202</i>&nbsp;   * &lt;p&gt;At this time the exact implementation of this environment is application
+<i>203</i>&nbsp;   * dependent.  Probably a proper interface will be created fairly soon.&lt;/p&gt;
+<i>204</i>&nbsp;   *
+<i>205</i>&nbsp;   * @param environment The environment object.
+<i>206</i>&nbsp;   */
+<i>207</i>&nbsp;  public void setEnvironment(Object environment)
+<i>208</i>&nbsp;  {
+<i>209</i>&nbsp;    // no-op
+<i>210</i>&nbsp;  }
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;  /**
+<i>214</i>&nbsp;   * @return The root node of the Iterator, as specified when it was created.
+<i>215</i>&nbsp;   * For non-Iterator NodeSetDTMs, this will be null.
+<i>216</i>&nbsp;   */
+<i>217</i>&nbsp;  public int getRoot()
+<i>218</i>&nbsp;  {
+<b class="nc"><i>219</i>&nbsp;    if(DTM.NULL == m_root)</b>
+<i>220</i>&nbsp;    {
+<b class="nc"><i>221</i>&nbsp;      if(size() &gt; 0)</b>
+<b class="nc"><i>222</i>&nbsp;        return item(0);</b>
+<i>223</i>&nbsp;      else
+<b class="nc"><i>224</i>&nbsp;        return DTM.NULL;</b>
+<i>225</i>&nbsp;    }
+<i>226</i>&nbsp;    else
+<b class="nc"><i>227</i>&nbsp;      return m_root;</b>
+<i>228</i>&nbsp;  }
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;  /**
+<i>231</i>&nbsp;   * Initialize the context values for this expression
+<i>232</i>&nbsp;   * after it is cloned.
+<i>233</i>&nbsp;   *
+<i>234</i>&nbsp;   * @param context The XPath runtime context for this
+<i>235</i>&nbsp;   * transformation.
+<i>236</i>&nbsp;   */
+<i>237</i>&nbsp;  public void setRoot(int context, Object environment)
+<i>238</i>&nbsp;  {
+<i>239</i>&nbsp;    // no-op, I guess...  (-sb)
+<i>240</i>&nbsp;  }
+<i>241</i>&nbsp;
+<i>242</i>&nbsp;  /**
+<i>243</i>&nbsp;   * Clone this NodeSetDTM.
+<i>244</i>&nbsp;   * At this time, we only expect this to be used with LocPathIterators;
+<i>245</i>&nbsp;   * it may not work with other kinds of NodeSetDTMs.
+<i>246</i>&nbsp;   *
+<i>247</i>&nbsp;   * @return a new NodeSetDTM of the same type, having the same state...
+<i>248</i>&nbsp;   * though unless overridden in the subclasses, it may not copy all
+<i>249</i>&nbsp;   * the state information.
+<i>250</i>&nbsp;   *
+<i>251</i>&nbsp;   * @throws CloneNotSupportedException if this subclass of NodeSetDTM
+<i>252</i>&nbsp;   * does not support the clone() operation.
+<i>253</i>&nbsp;   */
+<i>254</i>&nbsp;  public Object clone() throws CloneNotSupportedException
+<i>255</i>&nbsp;  {
+<i>256</i>&nbsp;
+<b class="nc"><i>257</i>&nbsp;    NodeSetDTM clone = (NodeSetDTM) super.clone();</b>
+<i>258</i>&nbsp;
+<b class="nc"><i>259</i>&nbsp;    return clone;</b>
+<i>260</i>&nbsp;  }
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;  /**
+<i>263</i>&nbsp;   * Get a cloned Iterator, and reset its state to the beginning of the
+<i>264</i>&nbsp;   * iteration.
+<i>265</i>&nbsp;   *
+<i>266</i>&nbsp;   * @return a new NodeSetDTM of the same type, having the same state...
+<i>267</i>&nbsp;   * except that the reset() operation has been called.
+<i>268</i>&nbsp;   *
+<i>269</i>&nbsp;   * @throws CloneNotSupportedException if this subclass of NodeSetDTM
+<i>270</i>&nbsp;   * does not support the clone() operation.
+<i>271</i>&nbsp;   */
+<i>272</i>&nbsp;  public DTMIterator cloneWithReset() throws CloneNotSupportedException
+<i>273</i>&nbsp;  {
+<i>274</i>&nbsp;
+<b class="nc"><i>275</i>&nbsp;    NodeSetDTM clone = (NodeSetDTM) clone();</b>
+<i>276</i>&nbsp;
+<b class="nc"><i>277</i>&nbsp;    clone.reset();</b>
+<i>278</i>&nbsp;
+<b class="nc"><i>279</i>&nbsp;    return clone;</b>
+<i>280</i>&nbsp;  }
+<i>281</i>&nbsp;
+<i>282</i>&nbsp;  /**
+<i>283</i>&nbsp;   * Reset the iterator. May have no effect on non-iterator Nodesets.
+<i>284</i>&nbsp;   */
+<i>285</i>&nbsp;  public void reset()
+<i>286</i>&nbsp;  {
+<b class="nc"><i>287</i>&nbsp;    m_next = 0;</b>
+<i>288</i>&nbsp;  }
+<i>289</i>&nbsp;
+<i>290</i>&nbsp;  /**
+<i>291</i>&nbsp;   *  This attribute determines which node types are presented via the
+<i>292</i>&nbsp;   * iterator. The available set of constants is defined in the
+<i>293</i>&nbsp;   * &lt;code&gt;DTMFilter&lt;/code&gt; interface. For NodeSetDTMs, the mask has been
+<i>294</i>&nbsp;   * hardcoded to show all nodes except EntityReference nodes, which have
+<i>295</i>&nbsp;   * no equivalent in the XPath data model.
+<i>296</i>&nbsp;   *
+<i>297</i>&nbsp;   * @return integer used as a bit-array, containing flags defined in
+<i>298</i>&nbsp;   * the DOM&#39;s DTMFilter class. The value will be
+<i>299</i>&nbsp;   * &lt;code&gt;SHOW_ALL &amp; ~SHOW_ENTITY_REFERENCE&lt;/code&gt;, meaning that
+<i>300</i>&nbsp;   * only entity references are suppressed.
+<i>301</i>&nbsp;   */
+<i>302</i>&nbsp;  public int getWhatToShow()
+<i>303</i>&nbsp;  {
+<b class="nc"><i>304</i>&nbsp;    return DTMFilter.SHOW_ALL &amp; ~DTMFilter.SHOW_ENTITY_REFERENCE;</b>
+<i>305</i>&nbsp;  }
+<i>306</i>&nbsp;
+<i>307</i>&nbsp;  /**
+<i>308</i>&nbsp;   * The filter object used to screen nodes. Filters are applied to
+<i>309</i>&nbsp;   * further reduce (and restructure) the DTMIterator&#39;s view of the
+<i>310</i>&nbsp;   * document. In our case, we will be using hardcoded filters built
+<i>311</i>&nbsp;   * into our iterators... but getFilter() is part of the DOM&#39;s
+<i>312</i>&nbsp;   * DTMIterator interface, so we have to support it.
+<i>313</i>&nbsp;   *
+<i>314</i>&nbsp;   * @return null, which is slightly misleading. True, there is no
+<i>315</i>&nbsp;   * user-written filter object, but in fact we are doing some very
+<i>316</i>&nbsp;   * sophisticated custom filtering. A DOM purist might suggest
+<i>317</i>&nbsp;   * returning a placeholder object just to indicate that this is
+<i>318</i>&nbsp;   * not going to return all nodes selected by whatToShow.
+<i>319</i>&nbsp;   */
+<i>320</i>&nbsp;  public DTMFilter getFilter()
+<i>321</i>&nbsp;  {
+<b class="nc"><i>322</i>&nbsp;    return null;</b>
+<i>323</i>&nbsp;  }
+<i>324</i>&nbsp;
+<i>325</i>&nbsp;  /**
+<i>326</i>&nbsp;   *  The value of this flag determines whether the children of entity
+<i>327</i>&nbsp;   * reference nodes are visible to the iterator. If false, they will be
+<i>328</i>&nbsp;   * skipped over.
+<i>329</i>&nbsp;   * &lt;br&gt; To produce a view of the document that has entity references
+<i>330</i>&nbsp;   * expanded and does not expose the entity reference node itself, use the
+<i>331</i>&nbsp;   * whatToShow flags to hide the entity reference node and set
+<i>332</i>&nbsp;   * expandEntityReferences to true when creating the iterator. To produce
+<i>333</i>&nbsp;   * a view of the document that has entity reference nodes but no entity
+<i>334</i>&nbsp;   * expansion, use the whatToShow flags to show the entity reference node
+<i>335</i>&nbsp;   * and set expandEntityReferences to false.
+<i>336</i>&nbsp;   *
+<i>337</i>&nbsp;   * @return true for all iterators based on NodeSetDTM, meaning that the
+<i>338</i>&nbsp;   * contents of EntityRefrence nodes may be returned (though whatToShow
+<i>339</i>&nbsp;   * says that the EntityReferences themselves are not shown.)
+<i>340</i>&nbsp;   */
+<i>341</i>&nbsp;  public boolean getExpandEntityReferences()
+<i>342</i>&nbsp;  {
+<b class="nc"><i>343</i>&nbsp;    return true;</b>
+<i>344</i>&nbsp;  }
+<i>345</i>&nbsp;
+<i>346</i>&nbsp;  /**
+<i>347</i>&nbsp;   * Get an instance of a DTM that &quot;owns&quot; a node handle.  Since a node
+<i>348</i>&nbsp;   * iterator may be passed without a DTMManager, this allows the
+<i>349</i>&nbsp;   * caller to easily get the DTM using just the iterator.
+<i>350</i>&nbsp;   *
+<i>351</i>&nbsp;   * @param nodeHandle the nodeHandle.
+<i>352</i>&nbsp;   *
+<i>353</i>&nbsp;   * @return a non-null DTM reference.
+<i>354</i>&nbsp;   */
+<i>355</i>&nbsp;  public DTM getDTM(int nodeHandle)
+<i>356</i>&nbsp;  {
+<i>357</i>&nbsp;
+<b class="nc"><i>358</i>&nbsp;    return m_manager.getDTM(nodeHandle);</b>
+<i>359</i>&nbsp;  }
+<i>360</i>&nbsp;
+<i>361</i>&nbsp;  /* An instance of the DTMManager. */
+<i>362</i>&nbsp;  DTMManager m_manager;
+<i>363</i>&nbsp;
+<i>364</i>&nbsp;  /**
+<i>365</i>&nbsp;   * Get an instance of the DTMManager.  Since a node
+<i>366</i>&nbsp;   * iterator may be passed without a DTMManager, this allows the
+<i>367</i>&nbsp;   * caller to easily get the DTMManager using just the iterator.
+<i>368</i>&nbsp;   *
+<i>369</i>&nbsp;   * @return a non-null DTMManager reference.
+<i>370</i>&nbsp;   */
+<i>371</i>&nbsp;  public DTMManager getDTMManager()
+<i>372</i>&nbsp;  {
+<i>373</i>&nbsp;
+<b class="nc"><i>374</i>&nbsp;    return m_manager;</b>
+<i>375</i>&nbsp;  }
+<i>376</i>&nbsp;
+<i>377</i>&nbsp;  /**
+<i>378</i>&nbsp;   *  Returns the next node in the set and advances the position of the
+<i>379</i>&nbsp;   * iterator in the set. After a DTMIterator is created, the first call
+<i>380</i>&nbsp;   * to nextNode() returns the first node in the set.
+<i>381</i>&nbsp;   * @return  The next &lt;code&gt;Node&lt;/code&gt; in the set being iterated over, or
+<i>382</i>&nbsp;   *   &lt;code&gt;DTM.NULL&lt;/code&gt; if there are no more members in that set.
+<i>383</i>&nbsp;   * @throws DOMException
+<i>384</i>&nbsp;   *    INVALID_STATE_ERR: Raised if this method is called after the
+<i>385</i>&nbsp;   *   &lt;code&gt;detach&lt;/code&gt; method was invoked.
+<i>386</i>&nbsp;   */
+<i>387</i>&nbsp;  public int nextNode()
+<i>388</i>&nbsp;  {
+<i>389</i>&nbsp;
+<b class="nc"><i>390</i>&nbsp;    if ((m_next) &lt; this.size())</b>
+<i>391</i>&nbsp;    {
+<b class="nc"><i>392</i>&nbsp;      int next = this.elementAt(m_next);</b>
+<i>393</i>&nbsp;
+<b class="nc"><i>394</i>&nbsp;      m_next++;</b>
+<i>395</i>&nbsp;
+<b class="nc"><i>396</i>&nbsp;      return next;</b>
+<i>397</i>&nbsp;    }
+<i>398</i>&nbsp;    else
+<b class="nc"><i>399</i>&nbsp;      return DTM.NULL;</b>
+<i>400</i>&nbsp;  }
+<i>401</i>&nbsp;
+<i>402</i>&nbsp;  /**
+<i>403</i>&nbsp;   *  Returns the previous node in the set and moves the position of the
+<i>404</i>&nbsp;   * iterator backwards in the set.
+<i>405</i>&nbsp;   * @return  The previous &lt;code&gt;Node&lt;/code&gt; in the set being iterated over,
+<i>406</i>&nbsp;   *   or&lt;code&gt;DTM.NULL&lt;/code&gt; if there are no more members in that set.
+<i>407</i>&nbsp;   * @throws DOMException
+<i>408</i>&nbsp;   *    INVALID_STATE_ERR: Raised if this method is called after the
+<i>409</i>&nbsp;   *   &lt;code&gt;detach&lt;/code&gt; method was invoked.
+<i>410</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>411</i>&nbsp;   * a cached type, and hence doesn&#39;t know what the previous node was.
+<i>412</i>&nbsp;   */
+<i>413</i>&nbsp;  public int previousNode()
+<i>414</i>&nbsp;  {
+<i>415</i>&nbsp;
+<b class="nc"><i>416</i>&nbsp;    if (!m_cacheNodes)</b>
+<b class="nc"><i>417</i>&nbsp;      throw new RuntimeException(</b>
+<b class="nc"><i>418</i>&nbsp;        XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_CANNOT_ITERATE, null)); //&quot;This NodeSetDTM can not iterate to a previous node!&quot;);</b>
+<i>419</i>&nbsp;
+<b class="nc"><i>420</i>&nbsp;    if ((m_next - 1) &gt; 0)</b>
+<i>421</i>&nbsp;    {
+<b class="nc"><i>422</i>&nbsp;      m_next--;</b>
+<i>423</i>&nbsp;
+<b class="nc"><i>424</i>&nbsp;      return this.elementAt(m_next);</b>
+<i>425</i>&nbsp;    }
+<i>426</i>&nbsp;    else
+<b class="nc"><i>427</i>&nbsp;      return DTM.NULL;</b>
+<i>428</i>&nbsp;  }
+<i>429</i>&nbsp;
+<i>430</i>&nbsp;  /**
+<i>431</i>&nbsp;   * Detaches the iterator from the set which it iterated over, releasing
+<i>432</i>&nbsp;   * any computational resources and placing the iterator in the INVALID
+<i>433</i>&nbsp;   * state. After&lt;code&gt;detach&lt;/code&gt; has been invoked, calls to
+<i>434</i>&nbsp;   * &lt;code&gt;nextNode&lt;/code&gt; or&lt;code&gt;previousNode&lt;/code&gt; will raise the
+<i>435</i>&nbsp;   * exception INVALID_STATE_ERR.
+<i>436</i>&nbsp;   * &lt;p&gt;
+<i>437</i>&nbsp;   * This operation is a no-op in NodeSetDTM, and will not cause
+<i>438</i>&nbsp;   * INVALID_STATE_ERR to be raised by later operations.
+<i>439</i>&nbsp;   * &lt;/p&gt;
+<i>440</i>&nbsp;   */
+<i>441</i>&nbsp;  public void detach(){}
+<i>442</i>&nbsp;
+<i>443</i>&nbsp;  /**
+<i>444</i>&nbsp;   * Specify if it&#39;s OK for detach to release the iterator for reuse.
+<i>445</i>&nbsp;   *
+<i>446</i>&nbsp;   * @param allowRelease true if it is OK for detach to release this iterator
+<i>447</i>&nbsp;   * for pooling.
+<i>448</i>&nbsp;   */
+<i>449</i>&nbsp;  public void allowDetachToRelease(boolean allowRelease)
+<i>450</i>&nbsp;  {
+<i>451</i>&nbsp;    // no action for right now.
+<i>452</i>&nbsp;  }
+<i>453</i>&nbsp;
+<i>454</i>&nbsp;
+<i>455</i>&nbsp;  /**
+<i>456</i>&nbsp;   * Tells if this NodeSetDTM is &quot;fresh&quot;, in other words, if
+<i>457</i>&nbsp;   * the first nextNode() that is called will return the
+<i>458</i>&nbsp;   * first node in the set.
+<i>459</i>&nbsp;   *
+<i>460</i>&nbsp;   * @return true if nextNode() would return the first node in the set,
+<i>461</i>&nbsp;   * false if it would return a later one.
+<i>462</i>&nbsp;   */
+<i>463</i>&nbsp;  public boolean isFresh()
+<i>464</i>&nbsp;  {
+<b class="nc"><i>465</i>&nbsp;    return (m_next == 0);</b>
+<i>466</i>&nbsp;  }
+<i>467</i>&nbsp;
+<i>468</i>&nbsp;  /**
+<i>469</i>&nbsp;   * If an index is requested, NodeSetDTM will call this method
+<i>470</i>&nbsp;   * to run the iterator to the index.  By default this sets
+<i>471</i>&nbsp;   * m_next to the index.  If the index argument is -1, this
+<i>472</i>&nbsp;   * signals that the iterator should be run to the end.
+<i>473</i>&nbsp;   *
+<i>474</i>&nbsp;   * @param index Position to advance (or retreat) to, with
+<i>475</i>&nbsp;   * 0 requesting the reset (&quot;fresh&quot;) position and -1 (or indeed
+<i>476</i>&nbsp;   * any out-of-bounds value) requesting the final position.
+<i>477</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not
+<i>478</i>&nbsp;   * one of the types which supports indexing/counting.
+<i>479</i>&nbsp;   */
+<i>480</i>&nbsp;  public void runTo(int index)
+<i>481</i>&nbsp;  {
+<i>482</i>&nbsp;
+<b class="nc"><i>483</i>&nbsp;    if (!m_cacheNodes)</b>
+<b class="nc"><i>484</i>&nbsp;      throw new RuntimeException(</b>
+<b class="nc"><i>485</i>&nbsp;        XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_CANNOT_INDEX, null)); //&quot;This NodeSetDTM can not do indexing or counting functions!&quot;);</b>
+<i>486</i>&nbsp;
+<b class="nc"><i>487</i>&nbsp;    if ((index &gt;= 0) &amp;&amp; (m_next &lt; m_firstFree))</b>
+<b class="nc"><i>488</i>&nbsp;      m_next = index;</b>
+<i>489</i>&nbsp;    else
+<b class="nc"><i>490</i>&nbsp;      m_next = m_firstFree - 1;</b>
+<i>491</i>&nbsp;  }
+<i>492</i>&nbsp;
+<i>493</i>&nbsp;  /**
+<i>494</i>&nbsp;   * Returns the &lt;code&gt;index&lt;/code&gt;th item in the collection. If
+<i>495</i>&nbsp;   * &lt;code&gt;index&lt;/code&gt; is greater than or equal to the number of nodes in
+<i>496</i>&nbsp;   * the list, this returns &lt;code&gt;null&lt;/code&gt;.
+<i>497</i>&nbsp;   *
+<i>498</i>&nbsp;   * TODO: What happens if index is out of range?
+<i>499</i>&nbsp;   *
+<i>500</i>&nbsp;   * @param index Index into the collection.
+<i>501</i>&nbsp;   * @return The node at the &lt;code&gt;index&lt;/code&gt;th position in the
+<i>502</i>&nbsp;   *   &lt;code&gt;NodeList&lt;/code&gt;, or &lt;code&gt;null&lt;/code&gt; if that is not a valid
+<i>503</i>&nbsp;   *   index.
+<i>504</i>&nbsp;   */
+<i>505</i>&nbsp;  public int item(int index)
+<i>506</i>&nbsp;  {
+<i>507</i>&nbsp;
+<b class="nc"><i>508</i>&nbsp;    runTo(index);</b>
+<i>509</i>&nbsp;
+<b class="nc"><i>510</i>&nbsp;    return this.elementAt(index);</b>
+<i>511</i>&nbsp;  }
+<i>512</i>&nbsp;
+<i>513</i>&nbsp;  /**
+<i>514</i>&nbsp;   * The number of nodes in the list. The range of valid child node indices is
+<i>515</i>&nbsp;   * 0 to &lt;code&gt;length-1&lt;/code&gt; inclusive. Note that this operation requires
+<i>516</i>&nbsp;   * finding all the matching nodes, which may defeat attempts to defer
+<i>517</i>&nbsp;   * that work.
+<i>518</i>&nbsp;   *
+<i>519</i>&nbsp;   * @return integer indicating how many nodes are represented by this list.
+<i>520</i>&nbsp;   */
+<i>521</i>&nbsp;  public int getLength()
+<i>522</i>&nbsp;  {
+<i>523</i>&nbsp;
+<b class="nc"><i>524</i>&nbsp;    runTo(-1);</b>
+<i>525</i>&nbsp;
+<b class="nc"><i>526</i>&nbsp;    return this.size();</b>
+<i>527</i>&nbsp;  }
+<i>528</i>&nbsp;
+<i>529</i>&nbsp;  /**
+<i>530</i>&nbsp;   * Add a node to the NodeSetDTM. Not all types of NodeSetDTMs support this
+<i>531</i>&nbsp;   * operation
+<i>532</i>&nbsp;   *
+<i>533</i>&nbsp;   * @param n Node to be added
+<i>534</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>535</i>&nbsp;   * a mutable type.
+<i>536</i>&nbsp;   */
+<i>537</i>&nbsp;  public void addNode(int n)
+<i>538</i>&nbsp;  {
+<i>539</i>&nbsp;
+<b class="nc"><i>540</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>541</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>542</i>&nbsp;
+<b class="nc"><i>543</i>&nbsp;    this.addElement(n);</b>
+<i>544</i>&nbsp;  }
+<i>545</i>&nbsp;
+<i>546</i>&nbsp;  /**
+<i>547</i>&nbsp;   * Insert a node at a given position.
+<i>548</i>&nbsp;   *
+<i>549</i>&nbsp;   * @param n Node to be added
+<i>550</i>&nbsp;   * @param pos Offset at which the node is to be inserted,
+<i>551</i>&nbsp;   * with 0 being the first position.
+<i>552</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>553</i>&nbsp;   * a mutable type.
+<i>554</i>&nbsp;   */
+<i>555</i>&nbsp;  public void insertNode(int n, int pos)
+<i>556</i>&nbsp;  {
+<i>557</i>&nbsp;
+<b class="nc"><i>558</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>559</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>560</i>&nbsp;
+<b class="nc"><i>561</i>&nbsp;    insertElementAt(n, pos);</b>
+<i>562</i>&nbsp;  }
+<i>563</i>&nbsp;
+<i>564</i>&nbsp;  /**
+<i>565</i>&nbsp;   * Remove a node.
+<i>566</i>&nbsp;   *
+<i>567</i>&nbsp;   * @param n Node to be added
+<i>568</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>569</i>&nbsp;   * a mutable type.
+<i>570</i>&nbsp;   */
+<i>571</i>&nbsp;  public void removeNode(int n)
+<i>572</i>&nbsp;  {
+<i>573</i>&nbsp;
+<b class="nc"><i>574</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>575</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>576</i>&nbsp;
+<b class="nc"><i>577</i>&nbsp;    this.removeElement(n);</b>
+<i>578</i>&nbsp;  }
+<i>579</i>&nbsp;
+<i>580</i>&nbsp;  // %TBD%
+<i>581</i>&nbsp;//  /**
+<i>582</i>&nbsp;//   * Copy NodeList members into this nodelist, adding in
+<i>583</i>&nbsp;//   * document order.  If a node is null, don&#39;t add it.
+<i>584</i>&nbsp;//   *
+<i>585</i>&nbsp;//   * @param nodelist List of nodes which should now be referenced by
+<i>586</i>&nbsp;//   * this NodeSetDTM.
+<i>587</i>&nbsp;//   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>588</i>&nbsp;//   * a mutable type.
+<i>589</i>&nbsp;//   */
+<i>590</i>&nbsp;//  public void addNodes(NodeList nodelist)
+<i>591</i>&nbsp;//  {
+<i>592</i>&nbsp;//
+<i>593</i>&nbsp;//    if (!m_mutable)
+<i>594</i>&nbsp;//      throw new RuntimeException(&quot;This NodeSetDTM is not mutable!&quot;);
+<i>595</i>&nbsp;//
+<i>596</i>&nbsp;//    if (null != nodelist)  // defensive to fix a bug that Sanjiva reported.
+<i>597</i>&nbsp;//    {
+<i>598</i>&nbsp;//      int nChildren = nodelist.getLength();
+<i>599</i>&nbsp;//
+<i>600</i>&nbsp;//      for (int i = 0; i &lt; nChildren; i++)
+<i>601</i>&nbsp;//      {
+<i>602</i>&nbsp;//        int obj = nodelist.item(i);
+<i>603</i>&nbsp;//
+<i>604</i>&nbsp;//        if (null != obj)
+<i>605</i>&nbsp;//        {
+<i>606</i>&nbsp;//          addElement(obj);
+<i>607</i>&nbsp;//        }
+<i>608</i>&nbsp;//      }
+<i>609</i>&nbsp;//    }
+<i>610</i>&nbsp;//
+<i>611</i>&nbsp;//    // checkDups();
+<i>612</i>&nbsp;//  }
+<i>613</i>&nbsp;
+<i>614</i>&nbsp;  // %TBD%
+<i>615</i>&nbsp;//  /**
+<i>616</i>&nbsp;//   * &lt;p&gt;Copy NodeList members into this nodelist, adding in
+<i>617</i>&nbsp;//   * document order.  Only genuine node references will be copied;
+<i>618</i>&nbsp;//   * nulls appearing in the source NodeSetDTM will
+<i>619</i>&nbsp;//   * not be added to this one. &lt;/p&gt;
+<i>620</i>&nbsp;//   *
+<i>621</i>&nbsp;//   * &lt;p&gt; In case you&#39;re wondering why this function is needed: NodeSetDTM
+<i>622</i>&nbsp;//   * implements both DTMIterator and NodeList. If this method isn&#39;t
+<i>623</i>&nbsp;//   * provided, Java can&#39;t decide which of those to use when addNodes()
+<i>624</i>&nbsp;//   * is invoked. Providing the more-explicit match avoids that
+<i>625</i>&nbsp;//   * ambiguity.)&lt;/p&gt;
+<i>626</i>&nbsp;//   *
+<i>627</i>&nbsp;//   * @param ns NodeSetDTM whose members should be merged into this NodeSetDTM.
+<i>628</i>&nbsp;//   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>629</i>&nbsp;//   * a mutable type.
+<i>630</i>&nbsp;//   */
+<i>631</i>&nbsp;//  public void addNodes(NodeSetDTM ns)
+<i>632</i>&nbsp;//  {
+<i>633</i>&nbsp;//
+<i>634</i>&nbsp;//    if (!m_mutable)
+<i>635</i>&nbsp;//      throw new RuntimeException(&quot;This NodeSetDTM is not mutable!&quot;);
+<i>636</i>&nbsp;//
+<i>637</i>&nbsp;//    addNodes((DTMIterator) ns);
+<i>638</i>&nbsp;//  }
+<i>639</i>&nbsp;
+<i>640</i>&nbsp;  /**
+<i>641</i>&nbsp;   * Copy NodeList members into this nodelist, adding in
+<i>642</i>&nbsp;   * document order.  Null references are not added.
+<i>643</i>&nbsp;   *
+<i>644</i>&nbsp;   * @param iterator DTMIterator which yields the nodes to be added.
+<i>645</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>646</i>&nbsp;   * a mutable type.
+<i>647</i>&nbsp;   */
+<i>648</i>&nbsp;  public void addNodes(DTMIterator iterator)
+<i>649</i>&nbsp;  {
+<i>650</i>&nbsp;
+<b class="nc"><i>651</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>652</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>653</i>&nbsp;
+<b class="nc"><i>654</i>&nbsp;    if (null != iterator)  // defensive to fix a bug that Sanjiva reported.</b>
+<i>655</i>&nbsp;    {
+<i>656</i>&nbsp;      int obj;
+<i>657</i>&nbsp;
+<b class="nc"><i>658</i>&nbsp;      while (DTM.NULL != (obj = iterator.nextNode()))</b>
+<i>659</i>&nbsp;      {
+<b class="nc"><i>660</i>&nbsp;        addElement(obj);</b>
+<i>661</i>&nbsp;      }
+<i>662</i>&nbsp;    }
+<i>663</i>&nbsp;
+<i>664</i>&nbsp;    // checkDups();
+<i>665</i>&nbsp;  }
+<i>666</i>&nbsp;
+<i>667</i>&nbsp;  // %TBD%
+<i>668</i>&nbsp;//  /**
+<i>669</i>&nbsp;//   * Copy NodeList members into this nodelist, adding in
+<i>670</i>&nbsp;//   * document order.  If a node is null, don&#39;t add it.
+<i>671</i>&nbsp;//   *
+<i>672</i>&nbsp;//   * @param nodelist List of nodes to be added
+<i>673</i>&nbsp;//   * @param support The XPath runtime context.
+<i>674</i>&nbsp;//   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>675</i>&nbsp;//   * a mutable type.
+<i>676</i>&nbsp;//   */
+<i>677</i>&nbsp;//  public void addNodesInDocOrder(NodeList nodelist, XPathContext support)
+<i>678</i>&nbsp;//  {
+<i>679</i>&nbsp;//
+<i>680</i>&nbsp;//    if (!m_mutable)
+<i>681</i>&nbsp;//      throw new RuntimeException(&quot;This NodeSetDTM is not mutable!&quot;);
+<i>682</i>&nbsp;//
+<i>683</i>&nbsp;//    int nChildren = nodelist.getLength();
+<i>684</i>&nbsp;//
+<i>685</i>&nbsp;//    for (int i = 0; i &lt; nChildren; i++)
+<i>686</i>&nbsp;//    {
+<i>687</i>&nbsp;//      int node = nodelist.item(i);
+<i>688</i>&nbsp;//
+<i>689</i>&nbsp;//      if (null != node)
+<i>690</i>&nbsp;//      {
+<i>691</i>&nbsp;//        addNodeInDocOrder(node, support);
+<i>692</i>&nbsp;//      }
+<i>693</i>&nbsp;//    }
+<i>694</i>&nbsp;//  }
+<i>695</i>&nbsp;
+<i>696</i>&nbsp;  /**
+<i>697</i>&nbsp;   * Copy NodeList members into this nodelist, adding in
+<i>698</i>&nbsp;   * document order.  If a node is null, don&#39;t add it.
+<i>699</i>&nbsp;   *
+<i>700</i>&nbsp;   * @param iterator DTMIterator which yields the nodes to be added.
+<i>701</i>&nbsp;   * @param support The XPath runtime context.
+<i>702</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>703</i>&nbsp;   * a mutable type.
+<i>704</i>&nbsp;   */
+<i>705</i>&nbsp;  public void addNodesInDocOrder(DTMIterator iterator, XPathContext support)
+<i>706</i>&nbsp;  {
+<i>707</i>&nbsp;
+<b class="nc"><i>708</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>709</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>710</i>&nbsp;
+<i>711</i>&nbsp;    int node;
+<i>712</i>&nbsp;
+<b class="nc"><i>713</i>&nbsp;    while (DTM.NULL != (node = iterator.nextNode()))</b>
+<i>714</i>&nbsp;    {
+<b class="nc"><i>715</i>&nbsp;      addNodeInDocOrder(node, support);</b>
+<i>716</i>&nbsp;    }
+<i>717</i>&nbsp;  }
+<i>718</i>&nbsp;
+<i>719</i>&nbsp;  // %TBD%
+<i>720</i>&nbsp;//  /**
+<i>721</i>&nbsp;//   * Add the node list to this node set in document order.
+<i>722</i>&nbsp;//   *
+<i>723</i>&nbsp;//   * @param start index.
+<i>724</i>&nbsp;//   * @param end index.
+<i>725</i>&nbsp;//   * @param testIndex index.
+<i>726</i>&nbsp;//   * @param nodelist The nodelist to add.
+<i>727</i>&nbsp;//   * @param support The XPath runtime context.
+<i>728</i>&nbsp;//   *
+<i>729</i>&nbsp;//   * @return false always.
+<i>730</i>&nbsp;//   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>731</i>&nbsp;//   * a mutable type.
+<i>732</i>&nbsp;//   */
+<i>733</i>&nbsp;//  private boolean addNodesInDocOrder(int start, int end, int testIndex,
+<i>734</i>&nbsp;//                                     NodeList nodelist, XPathContext support)
+<i>735</i>&nbsp;//  {
+<i>736</i>&nbsp;//
+<i>737</i>&nbsp;//    if (!m_mutable)
+<i>738</i>&nbsp;//      throw new RuntimeException(&quot;This NodeSetDTM is not mutable!&quot;);
+<i>739</i>&nbsp;//
+<i>740</i>&nbsp;//    boolean foundit = false;
+<i>741</i>&nbsp;//    int i;
+<i>742</i>&nbsp;//    int node = nodelist.item(testIndex);
+<i>743</i>&nbsp;//
+<i>744</i>&nbsp;//    for (i = end; i &gt;= start; i--)
+<i>745</i>&nbsp;//    {
+<i>746</i>&nbsp;//      int child = elementAt(i);
+<i>747</i>&nbsp;//
+<i>748</i>&nbsp;//      if (child == node)
+<i>749</i>&nbsp;//      {
+<i>750</i>&nbsp;//        i = -2;  // Duplicate, suppress insert
+<i>751</i>&nbsp;//
+<i>752</i>&nbsp;//        break;
+<i>753</i>&nbsp;//      }
+<i>754</i>&nbsp;//
+<i>755</i>&nbsp;//      if (!support.getDOMHelper().isNodeAfter(node, child))
+<i>756</i>&nbsp;//      {
+<i>757</i>&nbsp;//        insertElementAt(node, i + 1);
+<i>758</i>&nbsp;//
+<i>759</i>&nbsp;//        testIndex--;
+<i>760</i>&nbsp;//
+<i>761</i>&nbsp;//        if (testIndex &gt; 0)
+<i>762</i>&nbsp;//        {
+<i>763</i>&nbsp;//          boolean foundPrev = addNodesInDocOrder(0, i, testIndex, nodelist,
+<i>764</i>&nbsp;//                                                 support);
+<i>765</i>&nbsp;//
+<i>766</i>&nbsp;//          if (!foundPrev)
+<i>767</i>&nbsp;//          {
+<i>768</i>&nbsp;//            addNodesInDocOrder(i, size() - 1, testIndex, nodelist, support);
+<i>769</i>&nbsp;//          }
+<i>770</i>&nbsp;//        }
+<i>771</i>&nbsp;//
+<i>772</i>&nbsp;//        break;
+<i>773</i>&nbsp;//      }
+<i>774</i>&nbsp;//    }
+<i>775</i>&nbsp;//
+<i>776</i>&nbsp;//    if (i == -1)
+<i>777</i>&nbsp;//    {
+<i>778</i>&nbsp;//      insertElementAt(node, 0);
+<i>779</i>&nbsp;//    }
+<i>780</i>&nbsp;//
+<i>781</i>&nbsp;//    return foundit;
+<i>782</i>&nbsp;//  }
+<i>783</i>&nbsp;
+<i>784</i>&nbsp;  /**
+<i>785</i>&nbsp;   * Add the node into a vector of nodes where it should occur in
+<i>786</i>&nbsp;   * document order.
+<i>787</i>&nbsp;   * @param node The node to be added.
+<i>788</i>&nbsp;   * @param test true if we should test for doc order
+<i>789</i>&nbsp;   * @param support The XPath runtime context.
+<i>790</i>&nbsp;   * @return insertIndex.
+<i>791</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>792</i>&nbsp;   * a mutable type.
+<i>793</i>&nbsp;   */
+<i>794</i>&nbsp;  public int addNodeInDocOrder(int node, boolean test, XPathContext support)
+<i>795</i>&nbsp;  {
+<i>796</i>&nbsp;
+<b class="nc"><i>797</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>798</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>799</i>&nbsp;
+<b class="nc"><i>800</i>&nbsp;    int insertIndex = -1;</b>
+<i>801</i>&nbsp;
+<b class="nc"><i>802</i>&nbsp;    if (test)</b>
+<i>803</i>&nbsp;    {
+<i>804</i>&nbsp;
+<i>805</i>&nbsp;      // This needs to do a binary search, but a binary search
+<i>806</i>&nbsp;      // is somewhat tough because the sequence test involves
+<i>807</i>&nbsp;      // two nodes.
+<b class="nc"><i>808</i>&nbsp;      int size = size(), i;</b>
+<i>809</i>&nbsp;
+<b class="nc"><i>810</i>&nbsp;      for (i = size - 1; i &gt;= 0; i--)</b>
+<i>811</i>&nbsp;      {
+<b class="nc"><i>812</i>&nbsp;        int child = elementAt(i);</b>
+<i>813</i>&nbsp;
+<b class="nc"><i>814</i>&nbsp;        if (child == node)</b>
+<i>815</i>&nbsp;        {
+<b class="nc"><i>816</i>&nbsp;          i = -2;  // Duplicate, suppress insert</b>
+<i>817</i>&nbsp;
+<b class="nc"><i>818</i>&nbsp;          break;</b>
+<i>819</i>&nbsp;        }
+<i>820</i>&nbsp;
+<b class="nc"><i>821</i>&nbsp;        DTM dtm = support.getDTM(node);</b>
+<b class="nc"><i>822</i>&nbsp;        if (!dtm.isNodeAfter(node, child))</b>
+<i>823</i>&nbsp;        {
+<b class="nc"><i>824</i>&nbsp;          break;</b>
+<i>825</i>&nbsp;        }
+<i>826</i>&nbsp;      }
+<i>827</i>&nbsp;
+<b class="nc"><i>828</i>&nbsp;      if (i != -2)</b>
+<i>829</i>&nbsp;      {
+<b class="nc"><i>830</i>&nbsp;        insertIndex = i + 1;</b>
+<i>831</i>&nbsp;
+<b class="nc"><i>832</i>&nbsp;        insertElementAt(node, insertIndex);</b>
+<i>833</i>&nbsp;      }
+<b class="nc"><i>834</i>&nbsp;    }</b>
+<i>835</i>&nbsp;    else
+<i>836</i>&nbsp;    {
+<b class="nc"><i>837</i>&nbsp;      insertIndex = this.size();</b>
+<i>838</i>&nbsp;
+<b class="nc"><i>839</i>&nbsp;      boolean foundit = false;</b>
+<i>840</i>&nbsp;
+<b class="nc"><i>841</i>&nbsp;      for (int i = 0; i &lt; insertIndex; i++)</b>
+<i>842</i>&nbsp;      {
+<b class="nc"><i>843</i>&nbsp;        if (i == node)</b>
+<i>844</i>&nbsp;        {
+<b class="nc"><i>845</i>&nbsp;          foundit = true;</b>
+<i>846</i>&nbsp;
+<b class="nc"><i>847</i>&nbsp;          break;</b>
+<i>848</i>&nbsp;        }
+<i>849</i>&nbsp;      }
+<i>850</i>&nbsp;
+<b class="nc"><i>851</i>&nbsp;      if (!foundit)</b>
+<b class="nc"><i>852</i>&nbsp;        addElement(node);</b>
+<i>853</i>&nbsp;    }
+<i>854</i>&nbsp;
+<i>855</i>&nbsp;    // checkDups();
+<b class="nc"><i>856</i>&nbsp;    return insertIndex;</b>
+<i>857</i>&nbsp;  }  // end addNodeInDocOrder(Vector v, Object obj)
+<i>858</i>&nbsp;
+<i>859</i>&nbsp;  /**
+<i>860</i>&nbsp;   * Add the node into a vector of nodes where it should occur in
+<i>861</i>&nbsp;   * document order.
+<i>862</i>&nbsp;   * @param node The node to be added.
+<i>863</i>&nbsp;   * @param support The XPath runtime context.
+<i>864</i>&nbsp;   *
+<i>865</i>&nbsp;   * @return The index where it was inserted.
+<i>866</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>867</i>&nbsp;   * a mutable type.
+<i>868</i>&nbsp;   */
+<i>869</i>&nbsp;  public int addNodeInDocOrder(int node, XPathContext support)
+<i>870</i>&nbsp;  {
+<i>871</i>&nbsp;
+<b class="nc"><i>872</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>873</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>874</i>&nbsp;
+<b class="nc"><i>875</i>&nbsp;    return addNodeInDocOrder(node, true, support);</b>
+<i>876</i>&nbsp;  }  // end addNodeInDocOrder(Vector v, Object obj)
+<i>877</i>&nbsp;
+<i>878</i>&nbsp;  /**
+<i>879</i>&nbsp;   * Get the length of the list.
+<i>880</i>&nbsp;   *
+<i>881</i>&nbsp;   * @return The size of this node set.
+<i>882</i>&nbsp;   */
+<i>883</i>&nbsp;  public int size()
+<i>884</i>&nbsp;  {
+<b class="nc"><i>885</i>&nbsp;    return super.size();</b>
+<i>886</i>&nbsp;  }
+<i>887</i>&nbsp;
+<i>888</i>&nbsp;  /**
+<i>889</i>&nbsp;   * Append a Node onto the vector.
+<i>890</i>&nbsp;   *
+<i>891</i>&nbsp;   * @param value The node to be added.
+<i>892</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>893</i>&nbsp;   * a mutable type.
+<i>894</i>&nbsp;   */
+<i>895</i>&nbsp;  public void addElement(int value)
+<i>896</i>&nbsp;  {
+<i>897</i>&nbsp;
+<b class="nc"><i>898</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>899</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>900</i>&nbsp;
+<b class="nc"><i>901</i>&nbsp;    super.addElement(value);</b>
+<i>902</i>&nbsp;  }
+<i>903</i>&nbsp;
+<i>904</i>&nbsp;  /**
+<i>905</i>&nbsp;   * Inserts the specified node in this vector at the specified index.
+<i>906</i>&nbsp;   * Each component in this vector with an index greater or equal to
+<i>907</i>&nbsp;   * the specified index is shifted upward to have an index one greater
+<i>908</i>&nbsp;   * than the value it had previously.
+<i>909</i>&nbsp;   *
+<i>910</i>&nbsp;   * @param value The node to be inserted.
+<i>911</i>&nbsp;   * @param at The index where the insert should occur.
+<i>912</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>913</i>&nbsp;   * a mutable type.
+<i>914</i>&nbsp;   */
+<i>915</i>&nbsp;  public void insertElementAt(int value, int at)
+<i>916</i>&nbsp;  {
+<i>917</i>&nbsp;
+<b class="nc"><i>918</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>919</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>920</i>&nbsp;
+<b class="nc"><i>921</i>&nbsp;    super.insertElementAt(value, at);</b>
+<i>922</i>&nbsp;  }
+<i>923</i>&nbsp;
+<i>924</i>&nbsp;  /**
+<i>925</i>&nbsp;   * Append the nodes to the list.
+<i>926</i>&nbsp;   *
+<i>927</i>&nbsp;   * @param nodes The nodes to be appended to this node set.
+<i>928</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>929</i>&nbsp;   * a mutable type.
+<i>930</i>&nbsp;   */
+<i>931</i>&nbsp;  public void appendNodes(NodeVector nodes)
+<i>932</i>&nbsp;  {
+<i>933</i>&nbsp;
+<b class="nc"><i>934</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>935</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>936</i>&nbsp;
+<b class="nc"><i>937</i>&nbsp;    super.appendNodes(nodes);</b>
+<i>938</i>&nbsp;  }
+<i>939</i>&nbsp;
+<i>940</i>&nbsp;  /**
+<i>941</i>&nbsp;   * Inserts the specified node in this vector at the specified index.
+<i>942</i>&nbsp;   * Each component in this vector with an index greater or equal to
+<i>943</i>&nbsp;   * the specified index is shifted upward to have an index one greater
+<i>944</i>&nbsp;   * than the value it had previously.
+<i>945</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>946</i>&nbsp;   * a mutable type.
+<i>947</i>&nbsp;   */
+<i>948</i>&nbsp;  public void removeAllElements()
+<i>949</i>&nbsp;  {
+<i>950</i>&nbsp;
+<b class="nc"><i>951</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>952</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>953</i>&nbsp;
+<b class="nc"><i>954</i>&nbsp;    super.removeAllElements();</b>
+<i>955</i>&nbsp;  }
+<i>956</i>&nbsp;
+<i>957</i>&nbsp;  /**
+<i>958</i>&nbsp;   * Removes the first occurrence of the argument from this vector.
+<i>959</i>&nbsp;   * If the object is found in this vector, each component in the vector
+<i>960</i>&nbsp;   * with an index greater or equal to the object&#39;s index is shifted
+<i>961</i>&nbsp;   * downward to have an index one smaller than the value it had
+<i>962</i>&nbsp;   * previously.
+<i>963</i>&nbsp;   *
+<i>964</i>&nbsp;   * @param s The node to be removed.
+<i>965</i>&nbsp;   *
+<i>966</i>&nbsp;   * @return True if the node was successfully removed
+<i>967</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>968</i>&nbsp;   * a mutable type.
+<i>969</i>&nbsp;   */
+<i>970</i>&nbsp;  public boolean removeElement(int s)
+<i>971</i>&nbsp;  {
+<i>972</i>&nbsp;
+<b class="nc"><i>973</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>974</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>975</i>&nbsp;
+<b class="nc"><i>976</i>&nbsp;    return super.removeElement(s);</b>
+<i>977</i>&nbsp;  }
+<i>978</i>&nbsp;
+<i>979</i>&nbsp;  /**
+<i>980</i>&nbsp;   * Deletes the component at the specified index. Each component in
+<i>981</i>&nbsp;   * this vector with an index greater or equal to the specified
+<i>982</i>&nbsp;   * index is shifted downward to have an index one smaller than
+<i>983</i>&nbsp;   * the value it had previously.
+<i>984</i>&nbsp;   *
+<i>985</i>&nbsp;   * @param i The index of the node to be removed.
+<i>986</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>987</i>&nbsp;   * a mutable type.
+<i>988</i>&nbsp;   */
+<i>989</i>&nbsp;  public void removeElementAt(int i)
+<i>990</i>&nbsp;  {
+<i>991</i>&nbsp;
+<b class="nc"><i>992</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>993</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>994</i>&nbsp;
+<b class="nc"><i>995</i>&nbsp;    super.removeElementAt(i);</b>
+<i>996</i>&nbsp;  }
+<i>997</i>&nbsp;
+<i>998</i>&nbsp;  /**
+<i>999</i>&nbsp;   * Sets the component at the specified index of this vector to be the
+<i>1000</i>&nbsp;   * specified object. The previous component at that position is discarded.
+<i>1001</i>&nbsp;   *
+<i>1002</i>&nbsp;   * The index must be a value greater than or equal to 0 and less
+<i>1003</i>&nbsp;   * than the current size of the vector.
+<i>1004</i>&nbsp;   *
+<i>1005</i>&nbsp;   * @param node  The node to be set.
+<i>1006</i>&nbsp;   * @param index The index of the node to be replaced.
+<i>1007</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>1008</i>&nbsp;   * a mutable type.
+<i>1009</i>&nbsp;   */
+<i>1010</i>&nbsp;  public void setElementAt(int node, int index)
+<i>1011</i>&nbsp;  {
+<i>1012</i>&nbsp;
+<b class="nc"><i>1013</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>1014</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>1015</i>&nbsp;
+<b class="nc"><i>1016</i>&nbsp;    super.setElementAt(node, index);</b>
+<i>1017</i>&nbsp;  }
+<i>1018</i>&nbsp;
+<i>1019</i>&nbsp;  /**
+<i>1020</i>&nbsp;   * Same as setElementAt.
+<i>1021</i>&nbsp;   *
+<i>1022</i>&nbsp;   * @param node  The node to be set.
+<i>1023</i>&nbsp;   * @param index The index of the node to be replaced.
+<i>1024</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>1025</i>&nbsp;   * a mutable type.
+<i>1026</i>&nbsp;   */
+<i>1027</i>&nbsp;  public void setItem(int node, int index)
+<i>1028</i>&nbsp;  {
+<i>1029</i>&nbsp;
+<b class="nc"><i>1030</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>1031</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_NOT_MUTABLE, null)); //&quot;This NodeSetDTM is not mutable!&quot;);</b>
+<i>1032</i>&nbsp;
+<b class="nc"><i>1033</i>&nbsp;    super.setElementAt(node, index);</b>
+<i>1034</i>&nbsp;  }
+<i>1035</i>&nbsp;
+<i>1036</i>&nbsp;  /**
+<i>1037</i>&nbsp;   * Get the nth element.
+<i>1038</i>&nbsp;   *
+<i>1039</i>&nbsp;   * @param i The index of the requested node.
+<i>1040</i>&nbsp;   *
+<i>1041</i>&nbsp;   * @return Node at specified index.
+<i>1042</i>&nbsp;   */
+<i>1043</i>&nbsp;  public int elementAt(int i)
+<i>1044</i>&nbsp;  {
+<i>1045</i>&nbsp;
+<b class="nc"><i>1046</i>&nbsp;    runTo(i);</b>
+<i>1047</i>&nbsp;
+<b class="nc"><i>1048</i>&nbsp;    return super.elementAt(i);</b>
+<i>1049</i>&nbsp;  }
+<i>1050</i>&nbsp;
+<i>1051</i>&nbsp;  /**
+<i>1052</i>&nbsp;   * Tell if the table contains the given node.
+<i>1053</i>&nbsp;   *
+<i>1054</i>&nbsp;   * @param s Node to look for
+<i>1055</i>&nbsp;   *
+<i>1056</i>&nbsp;   * @return True if the given node was found.
+<i>1057</i>&nbsp;   */
+<i>1058</i>&nbsp;  public boolean contains(int s)
+<i>1059</i>&nbsp;  {
+<i>1060</i>&nbsp;
+<b class="nc"><i>1061</i>&nbsp;    runTo(-1);</b>
+<i>1062</i>&nbsp;
+<b class="nc"><i>1063</i>&nbsp;    return super.contains(s);</b>
+<i>1064</i>&nbsp;  }
+<i>1065</i>&nbsp;
+<i>1066</i>&nbsp;  /**
+<i>1067</i>&nbsp;   * Searches for the first occurence of the given argument,
+<i>1068</i>&nbsp;   * beginning the search at index, and testing for equality
+<i>1069</i>&nbsp;   * using the equals method.
+<i>1070</i>&nbsp;   *
+<i>1071</i>&nbsp;   * @param elem Node to look for
+<i>1072</i>&nbsp;   * @param index Index of where to start the search
+<i>1073</i>&nbsp;   * @return the index of the first occurrence of the object
+<i>1074</i>&nbsp;   * argument in this vector at position index or later in the
+<i>1075</i>&nbsp;   * vector; returns -1 if the object is not found.
+<i>1076</i>&nbsp;   */
+<i>1077</i>&nbsp;  public int indexOf(int elem, int index)
+<i>1078</i>&nbsp;  {
+<i>1079</i>&nbsp;
+<b class="nc"><i>1080</i>&nbsp;    runTo(-1);</b>
+<i>1081</i>&nbsp;
+<b class="nc"><i>1082</i>&nbsp;    return super.indexOf(elem, index);</b>
+<i>1083</i>&nbsp;  }
+<i>1084</i>&nbsp;
+<i>1085</i>&nbsp;  /**
+<i>1086</i>&nbsp;   * Searches for the first occurence of the given argument,
+<i>1087</i>&nbsp;   * beginning the search at index, and testing for equality
+<i>1088</i>&nbsp;   * using the equals method.
+<i>1089</i>&nbsp;   *
+<i>1090</i>&nbsp;   * @param elem Node to look for
+<i>1091</i>&nbsp;   * @return the index of the first occurrence of the object
+<i>1092</i>&nbsp;   * argument in this vector at position index or later in the
+<i>1093</i>&nbsp;   * vector; returns -1 if the object is not found.
+<i>1094</i>&nbsp;   */
+<i>1095</i>&nbsp;  public int indexOf(int elem)
+<i>1096</i>&nbsp;  {
+<i>1097</i>&nbsp;
+<b class="nc"><i>1098</i>&nbsp;    runTo(-1);</b>
+<i>1099</i>&nbsp;
+<b class="nc"><i>1100</i>&nbsp;    return super.indexOf(elem);</b>
+<i>1101</i>&nbsp;  }
+<i>1102</i>&nbsp;
+<i>1103</i>&nbsp;  /** If this node is being used as an iterator, the next index that nextNode()
+<i>1104</i>&nbsp;   *  will return.  */
+<b class="nc"><i>1105</i>&nbsp;  transient protected int m_next = 0;</b>
+<i>1106</i>&nbsp;
+<i>1107</i>&nbsp;  /**
+<i>1108</i>&nbsp;   * Get the current position, which is one less than
+<i>1109</i>&nbsp;   * the next nextNode() call will retrieve.  i.e. if
+<i>1110</i>&nbsp;   * you call getCurrentPos() and the return is 0, the next
+<i>1111</i>&nbsp;   * fetch will take place at index 1.
+<i>1112</i>&nbsp;   *
+<i>1113</i>&nbsp;   * @return The the current position index.
+<i>1114</i>&nbsp;   */
+<i>1115</i>&nbsp;  public int getCurrentPos()
+<i>1116</i>&nbsp;  {
+<b class="nc"><i>1117</i>&nbsp;    return m_next;</b>
+<i>1118</i>&nbsp;  }
+<i>1119</i>&nbsp;
+<i>1120</i>&nbsp;  /**
+<i>1121</i>&nbsp;   * Set the current position in the node set.
+<i>1122</i>&nbsp;   * @param i Must be a valid index.
+<i>1123</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>1124</i>&nbsp;   * a cached type, and thus doesn&#39;t permit indexed access.
+<i>1125</i>&nbsp;   */
+<i>1126</i>&nbsp;  public void setCurrentPos(int i)
+<i>1127</i>&nbsp;  {
+<i>1128</i>&nbsp;
+<b class="nc"><i>1129</i>&nbsp;    if (!m_cacheNodes)</b>
+<b class="nc"><i>1130</i>&nbsp;      throw new RuntimeException(</b>
+<b class="nc"><i>1131</i>&nbsp;        XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESETDTM_CANNOT_INDEX, null)); //&quot;This NodeSetDTM can not do indexing or counting functions!&quot;);</b>
+<i>1132</i>&nbsp;
+<b class="nc"><i>1133</i>&nbsp;    m_next = i;</b>
+<i>1134</i>&nbsp;  }
+<i>1135</i>&nbsp;
+<i>1136</i>&nbsp;  /**
+<i>1137</i>&nbsp;   * Return the last fetched node.  Needed to support the UnionPathIterator.
+<i>1138</i>&nbsp;   *
+<i>1139</i>&nbsp;   * @return the last fetched node.
+<i>1140</i>&nbsp;   * @throws RuntimeException thrown if this NodeSetDTM is not of
+<i>1141</i>&nbsp;   * a cached type, and thus doesn&#39;t permit indexed access.
+<i>1142</i>&nbsp;   */
+<i>1143</i>&nbsp;  public int getCurrentNode()
+<i>1144</i>&nbsp;  {
+<i>1145</i>&nbsp;
+<b class="nc"><i>1146</i>&nbsp;    if (!m_cacheNodes)</b>
+<b class="nc"><i>1147</i>&nbsp;      throw new RuntimeException(</b>
+<i>1148</i>&nbsp;        &quot;This NodeSetDTM can not do indexing or counting functions!&quot;);
+<i>1149</i>&nbsp;
+<b class="nc"><i>1150</i>&nbsp;    int saved = m_next;</b>
+<i>1151</i>&nbsp;    // because nextNode always increments
+<i>1152</i>&nbsp;    // But watch out for copy29, where the root iterator didn&#39;t
+<i>1153</i>&nbsp;    // have nextNode called on it.
+<b class="nc"><i>1154</i>&nbsp;    int current = (m_next &gt; 0) ? m_next-1 : m_next;</b>
+<b class="nc"><i>1155</i>&nbsp;    int n = (current &lt; m_firstFree) ? elementAt(current) : DTM.NULL;</b>
+<b class="nc"><i>1156</i>&nbsp;    m_next = saved; // HACK: I think this is a bit of a hack.  -sb</b>
+<b class="nc"><i>1157</i>&nbsp;    return n;</b>
+<i>1158</i>&nbsp;  }
+<i>1159</i>&nbsp;
+<i>1160</i>&nbsp;  /** True if this list can be mutated.  */
+<b class="nc"><i>1161</i>&nbsp;  transient protected boolean m_mutable = true;</b>
+<i>1162</i>&nbsp;
+<i>1163</i>&nbsp;  /** True if this list is cached.
+<i>1164</i>&nbsp;   *  @serial  */
+<b class="nc"><i>1165</i>&nbsp;  transient protected boolean m_cacheNodes = true;</b>
+<i>1166</i>&nbsp;
+<i>1167</i>&nbsp;  /** The root of the iteration, if available. */
+<b class="nc"><i>1168</i>&nbsp;  protected int m_root = DTM.NULL;</b>
+<i>1169</i>&nbsp;
+<i>1170</i>&nbsp;  /**
+<i>1171</i>&nbsp;   * Get whether or not this is a cached node set.
+<i>1172</i>&nbsp;   *
+<i>1173</i>&nbsp;   *
+<i>1174</i>&nbsp;   * @return True if this list is cached.
+<i>1175</i>&nbsp;   */
+<i>1176</i>&nbsp;  public boolean getShouldCacheNodes()
+<i>1177</i>&nbsp;  {
+<b class="nc"><i>1178</i>&nbsp;    return m_cacheNodes;</b>
+<i>1179</i>&nbsp;  }
+<i>1180</i>&nbsp;
+<i>1181</i>&nbsp;  /**
+<i>1182</i>&nbsp;   * If setShouldCacheNodes(true) is called, then nodes will
+<i>1183</i>&nbsp;   * be cached.  They are not cached by default. This switch must
+<i>1184</i>&nbsp;   * be set before the first call to nextNode is made, to ensure
+<i>1185</i>&nbsp;   * that all nodes are cached.
+<i>1186</i>&nbsp;   *
+<i>1187</i>&nbsp;   * @param b true if this node set should be cached.
+<i>1188</i>&nbsp;   * @throws RuntimeException thrown if an attempt is made to
+<i>1189</i>&nbsp;   * request caching after we&#39;ve already begun stepping through the
+<i>1190</i>&nbsp;   * nodes in this set.
+<i>1191</i>&nbsp;  */
+<i>1192</i>&nbsp;  public void setShouldCacheNodes(boolean b)
+<i>1193</i>&nbsp;  {
+<i>1194</i>&nbsp;
+<b class="nc"><i>1195</i>&nbsp;    if (!isFresh())</b>
+<b class="nc"><i>1196</i>&nbsp;      throw new RuntimeException(</b>
+<b class="nc"><i>1197</i>&nbsp;        XSLMessages.createXPATHMessage(XPATHErrorResources.ER_CANNOT_CALL_SETSHOULDCACHENODE, null)); //&quot;Can not call setShouldCacheNodes after nextNode has been called!&quot;);</b>
+<i>1198</i>&nbsp;
+<b class="nc"><i>1199</i>&nbsp;    m_cacheNodes = b;</b>
+<b class="nc"><i>1200</i>&nbsp;    m_mutable = true;</b>
+<i>1201</i>&nbsp;  }
+<i>1202</i>&nbsp;
+<i>1203</i>&nbsp;  /**
+<i>1204</i>&nbsp;   * Tells if this iterator can have nodes added to it or set via
+<i>1205</i>&nbsp;   * the &lt;code&gt;setItem(int node, int index)&lt;/code&gt; method.
+<i>1206</i>&nbsp;   *
+<i>1207</i>&nbsp;   * @return True if the nodelist can be mutated.
+<i>1208</i>&nbsp;   */
+<i>1209</i>&nbsp;  public boolean isMutable()
+<i>1210</i>&nbsp;  {
+<b class="nc"><i>1211</i>&nbsp;    return m_mutable;</b>
+<i>1212</i>&nbsp;  }
+<i>1213</i>&nbsp;
+<b class="nc"><i>1214</i>&nbsp;  transient private int m_last = 0;</b>
+<i>1215</i>&nbsp;
+<i>1216</i>&nbsp;  public int getLast()
+<i>1217</i>&nbsp;  {
+<b class="nc"><i>1218</i>&nbsp;    return m_last;</b>
+<i>1219</i>&nbsp;  }
+<i>1220</i>&nbsp;
+<i>1221</i>&nbsp;  public void setLast(int last)
+<i>1222</i>&nbsp;  {
+<b class="nc"><i>1223</i>&nbsp;    m_last = last;</b>
+<i>1224</i>&nbsp;  }
+<i>1225</i>&nbsp;
+<i>1226</i>&nbsp;  /**
+<i>1227</i>&nbsp;   * Returns true if all the nodes in the iteration well be returned in document
+<i>1228</i>&nbsp;   * order.
+<i>1229</i>&nbsp;   *
+<i>1230</i>&nbsp;   * @return true as a default.
+<i>1231</i>&nbsp;   */
+<i>1232</i>&nbsp;  public boolean isDocOrdered()
+<i>1233</i>&nbsp;  {
+<b class="nc"><i>1234</i>&nbsp;    return true;</b>
+<i>1235</i>&nbsp;  }
+<i>1236</i>&nbsp;
+<i>1237</i>&nbsp;  /**
+<i>1238</i>&nbsp;   * Returns the axis being iterated, if it is known.
+<i>1239</i>&nbsp;   *
+<i>1240</i>&nbsp;   * @return Axis.CHILD, etc., or -1 if the axis is not known or is of multiple
+<i>1241</i>&nbsp;   * types.
+<i>1242</i>&nbsp;   */
+<i>1243</i>&nbsp;  public int getAxis()
+<i>1244</i>&nbsp;  {
+<b class="nc"><i>1245</i>&nbsp;    return -1;</b>
+<i>1246</i>&nbsp;  }
+<i>1247</i>&nbsp;
+<i>1248</i>&nbsp;
+<i>1249</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

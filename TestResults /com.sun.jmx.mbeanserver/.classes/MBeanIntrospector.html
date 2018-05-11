@@ -1,0 +1,618 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MBeanIntrospector</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.jmx.mbeanserver</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MBeanIntrospector (com.sun.jmx.mbeanserver)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MBeanIntrospector</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 106)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MBeanIntrospector$MBeanInfoMaker</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MBeanIntrospector$MBeanInfoMap</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MBeanIntrospector$PerInterfaceMap</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 129)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.jmx.mbeanserver;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import static com.sun.jmx.mbeanserver.Util.*;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import java.lang.ref.WeakReference;
+<i>32</i>&nbsp;import java.lang.reflect.Array;
+<i>33</i>&nbsp;import java.lang.reflect.Constructor;
+<i>34</i>&nbsp;import java.lang.reflect.InvocationTargetException;
+<i>35</i>&nbsp;import java.lang.reflect.Method;
+<i>36</i>&nbsp;import java.lang.reflect.Type;
+<i>37</i>&nbsp;import java.util.Arrays;
+<i>38</i>&nbsp;import java.util.List;
+<i>39</i>&nbsp;import java.util.WeakHashMap;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import javax.management.Descriptor;
+<i>42</i>&nbsp;import javax.management.ImmutableDescriptor;
+<i>43</i>&nbsp;import javax.management.IntrospectionException;
+<i>44</i>&nbsp;import javax.management.InvalidAttributeValueException;
+<i>45</i>&nbsp;import javax.management.MBeanAttributeInfo;
+<i>46</i>&nbsp;import javax.management.MBeanConstructorInfo;
+<i>47</i>&nbsp;import javax.management.MBeanException;
+<i>48</i>&nbsp;import javax.management.MBeanInfo;
+<i>49</i>&nbsp;import javax.management.MBeanNotificationInfo;
+<i>50</i>&nbsp;import javax.management.MBeanOperationInfo;
+<i>51</i>&nbsp;import javax.management.NotCompliantMBeanException;
+<i>52</i>&nbsp;import javax.management.NotificationBroadcaster;
+<i>53</i>&nbsp;import javax.management.ReflectionException;
+<i>54</i>&nbsp;import sun.reflect.misc.ReflectUtil;
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;/**
+<i>57</i>&nbsp; * An introspector for MBeans of a certain type.  There is one instance
+<i>58</i>&nbsp; * of this class for Standard MBeans, and one for every MXBeanMappingFactory;
+<i>59</i>&nbsp; * these two cases correspond to the two concrete subclasses of this abstract
+<i>60</i>&nbsp; * class.
+<i>61</i>&nbsp; *
+<i>62</i>&nbsp; * @param &lt;M&gt; the representation of methods for this kind of MBean:
+<i>63</i>&nbsp; * Method for Standard MBeans, ConvertingMethod for MXBeans.
+<i>64</i>&nbsp; *
+<i>65</i>&nbsp; * @since 1.6
+<i>66</i>&nbsp; */
+<i>67</i>&nbsp;/*
+<i>68</i>&nbsp; * Using a type parameter &lt;M&gt; allows us to deal with the fact that
+<i>69</i>&nbsp; * Method and ConvertingMethod have no useful common ancestor, on
+<i>70</i>&nbsp; * which we could call getName, getGenericReturnType, etc.  A simpler approach
+<i>71</i>&nbsp; * would be to wrap every Method in an object that does have a common
+<i>72</i>&nbsp; * ancestor with ConvertingMethod.  But that would mean an extra object
+<i>73</i>&nbsp; * for every Method in every Standard MBean interface.
+<i>74</i>&nbsp; */
+<b class="nc"><i>75</i>&nbsp;abstract class MBeanIntrospector&lt;M&gt; {</b>
+<b class="nc"><i>76</i>&nbsp;    static final class PerInterfaceMap&lt;M&gt;</b>
+<i>77</i>&nbsp;            extends WeakHashMap&lt;Class&lt;?&gt;, WeakReference&lt;PerInterface&lt;M&gt;&gt;&gt; {}
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    /** The map from interface to PerInterface for this type of MBean. */
+<i>80</i>&nbsp;    abstract PerInterfaceMap&lt;M&gt; getPerInterfaceMap();
+<i>81</i>&nbsp;    /**
+<i>82</i>&nbsp;     * The map from concrete implementation class and interface to
+<i>83</i>&nbsp;     * MBeanInfo for this type of MBean.
+<i>84</i>&nbsp;     */
+<i>85</i>&nbsp;    abstract MBeanInfoMap getMBeanInfoMap();
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    /** Make an interface analyzer for this type of MBean. */
+<i>88</i>&nbsp;    abstract MBeanAnalyzer&lt;M&gt; getAnalyzer(Class&lt;?&gt; mbeanInterface)
+<i>89</i>&nbsp;    throws NotCompliantMBeanException;
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    /** True if MBeans with this kind of introspector are MXBeans. */
+<i>92</i>&nbsp;    abstract boolean isMXBean();
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    /** Find the M corresponding to the given Method. */
+<i>95</i>&nbsp;    abstract M mFrom(Method m);
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    /** Get the name of this method. */
+<i>98</i>&nbsp;    abstract String getName(M m);
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;    /**
+<i>101</i>&nbsp;     * Get the return type of this method.  This is the return type
+<i>102</i>&nbsp;     * of a method in a Java interface, so for MXBeans it is the
+<i>103</i>&nbsp;     * declared Java type, not the mapped Open Type.
+<i>104</i>&nbsp;     */
+<i>105</i>&nbsp;    abstract Type getGenericReturnType(M m);
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    /**
+<i>108</i>&nbsp;     * Get the parameter types of this method in the Java interface
+<i>109</i>&nbsp;     * it came from.
+<i>110</i>&nbsp;     */
+<i>111</i>&nbsp;    abstract Type[] getGenericParameterTypes(M m);
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    /**
+<i>114</i>&nbsp;     * Get the signature of this method as a caller would have to supply
+<i>115</i>&nbsp;     * it in MBeanServer.invoke.  For MXBeans, the named types will be
+<i>116</i>&nbsp;     * the mapped Open Types for the parameters.
+<i>117</i>&nbsp;     */
+<i>118</i>&nbsp;    abstract String[] getSignature(M m);
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    /**
+<i>121</i>&nbsp;     * Check that this method is valid.  For example, a method in an
+<i>122</i>&nbsp;     * MXBean interface is not valid if one of its parameters cannot be
+<i>123</i>&nbsp;     * mapped to an Open Type.
+<i>124</i>&nbsp;     */
+<i>125</i>&nbsp;    abstract void checkMethod(M m);
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;    /**
+<i>128</i>&nbsp;     * Invoke the method with the given target and arguments.
+<i>129</i>&nbsp;     *
+<i>130</i>&nbsp;     * @param cookie Additional information about the target.  For an
+<i>131</i>&nbsp;     * MXBean, this is the MXBeanLookup associated with the MXBean.
+<i>132</i>&nbsp;     */
+<i>133</i>&nbsp;    /*
+<i>134</i>&nbsp;     * It would be cleaner if the type of the cookie were a
+<i>135</i>&nbsp;     * type parameter to this class, but that would involve a lot of
+<i>136</i>&nbsp;     * messy type parameter propagation just to avoid a couple of casts.
+<i>137</i>&nbsp;     */
+<i>138</i>&nbsp;    abstract Object invokeM2(M m, Object target, Object[] args, Object cookie)
+<i>139</i>&nbsp;    throws InvocationTargetException, IllegalAccessException,
+<i>140</i>&nbsp;            MBeanException;
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;    /**
+<i>143</i>&nbsp;     * Test whether the given value is valid for the given parameter of this
+<i>144</i>&nbsp;     * M.
+<i>145</i>&nbsp;     */
+<i>146</i>&nbsp;    abstract boolean validParameter(M m, Object value, int paramNo,
+<i>147</i>&nbsp;            Object cookie);
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    /**
+<i>150</i>&nbsp;     * Construct an MBeanAttributeInfo for the given attribute based on the
+<i>151</i>&nbsp;     * given getter and setter.  One but not both of the getter and setter
+<i>152</i>&nbsp;     * may be null.
+<i>153</i>&nbsp;     */
+<i>154</i>&nbsp;    abstract MBeanAttributeInfo getMBeanAttributeInfo(String attributeName,
+<i>155</i>&nbsp;            M getter, M setter);
+<i>156</i>&nbsp;    /**
+<i>157</i>&nbsp;     * Construct an MBeanOperationInfo for the given operation based on
+<i>158</i>&nbsp;     * the M it was derived from.
+<i>159</i>&nbsp;     */
+<i>160</i>&nbsp;    abstract MBeanOperationInfo getMBeanOperationInfo(String operationName,
+<i>161</i>&nbsp;            M operation);
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;    /**
+<i>164</i>&nbsp;     * Get a Descriptor containing fields that MBeans of this kind will
+<i>165</i>&nbsp;     * always have.  For example, MXBeans will always have &quot;mxbean=true&quot;.
+<i>166</i>&nbsp;     */
+<i>167</i>&nbsp;    abstract Descriptor getBasicMBeanDescriptor();
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;    /**
+<i>170</i>&nbsp;     * Get a Descriptor containing additional fields beyond the ones
+<i>171</i>&nbsp;     * from getBasicMBeanDescriptor that MBeans whose concrete class
+<i>172</i>&nbsp;     * is resourceClass will always have.
+<i>173</i>&nbsp;     */
+<i>174</i>&nbsp;    abstract Descriptor getMBeanDescriptor(Class&lt;?&gt; resourceClass);
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    /**
+<i>177</i>&nbsp;     * Get the methods to be analyzed to build the MBean interface.
+<i>178</i>&nbsp;     */
+<i>179</i>&nbsp;    final List&lt;Method&gt; getMethods(final Class&lt;?&gt; mbeanType) {
+<b class="nc"><i>180</i>&nbsp;        ReflectUtil.checkPackageAccess(mbeanType);</b>
+<b class="nc"><i>181</i>&nbsp;        return Arrays.asList(mbeanType.getMethods());</b>
+<i>182</i>&nbsp;    }
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;    final PerInterface&lt;M&gt; getPerInterface(Class&lt;?&gt; mbeanInterface)
+<i>185</i>&nbsp;    throws NotCompliantMBeanException {
+<b class="nc"><i>186</i>&nbsp;        PerInterfaceMap&lt;M&gt; map = getPerInterfaceMap();</b>
+<b class="nc"><i>187</i>&nbsp;        synchronized (map) {</b>
+<b class="nc"><i>188</i>&nbsp;            WeakReference&lt;PerInterface&lt;M&gt;&gt; wr = map.get(mbeanInterface);</b>
+<b class="nc"><i>189</i>&nbsp;            PerInterface&lt;M&gt; pi = (wr == null) ? null : wr.get();</b>
+<b class="nc"><i>190</i>&nbsp;            if (pi == null) {</b>
+<i>191</i>&nbsp;                try {
+<b class="nc"><i>192</i>&nbsp;                    MBeanAnalyzer&lt;M&gt; analyzer = getAnalyzer(mbeanInterface);</b>
+<b class="nc"><i>193</i>&nbsp;                    MBeanInfo mbeanInfo =</b>
+<b class="nc"><i>194</i>&nbsp;                            makeInterfaceMBeanInfo(mbeanInterface, analyzer);</b>
+<b class="nc"><i>195</i>&nbsp;                    pi = new PerInterface&lt;M&gt;(mbeanInterface, this, analyzer,</b>
+<i>196</i>&nbsp;                            mbeanInfo);
+<b class="nc"><i>197</i>&nbsp;                    wr = new WeakReference&lt;PerInterface&lt;M&gt;&gt;(pi);</b>
+<b class="nc"><i>198</i>&nbsp;                    map.put(mbeanInterface, wr);</b>
+<b class="nc"><i>199</i>&nbsp;                } catch (Exception x) {</b>
+<b class="nc"><i>200</i>&nbsp;                    throw Introspector.throwException(mbeanInterface,x);</b>
+<b class="nc"><i>201</i>&nbsp;                }</b>
+<i>202</i>&nbsp;            }
+<b class="nc"><i>203</i>&nbsp;            return pi;</b>
+<b class="nc"><i>204</i>&nbsp;        }</b>
+<i>205</i>&nbsp;    }
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;    /**
+<i>208</i>&nbsp;     * Make the MBeanInfo skeleton for the given MBean interface using
+<i>209</i>&nbsp;     * the given analyzer.  This will never be the MBeanInfo of any real
+<i>210</i>&nbsp;     * MBean (because the getClassName() must be a concrete class), but
+<i>211</i>&nbsp;     * its MBeanAttributeInfo[] and MBeanOperationInfo[] can be inserted
+<i>212</i>&nbsp;     * into such an MBeanInfo, and its Descriptor can be the basis for
+<i>213</i>&nbsp;     * the MBeanInfo&#39;s Descriptor.
+<i>214</i>&nbsp;     */
+<i>215</i>&nbsp;    private MBeanInfo makeInterfaceMBeanInfo(Class&lt;?&gt; mbeanInterface,
+<i>216</i>&nbsp;            MBeanAnalyzer&lt;M&gt; analyzer) {
+<b class="nc"><i>217</i>&nbsp;        final MBeanInfoMaker maker = new MBeanInfoMaker();</b>
+<b class="nc"><i>218</i>&nbsp;        analyzer.visit(maker);</b>
+<i>219</i>&nbsp;        final String description =
+<i>220</i>&nbsp;                &quot;Information on the management interface of the MBean&quot;;
+<b class="nc"><i>221</i>&nbsp;        return maker.makeMBeanInfo(mbeanInterface, description);</b>
+<i>222</i>&nbsp;    }
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;    /** True if the given getter and setter are consistent. */
+<i>225</i>&nbsp;    final boolean consistent(M getter, M setter) {
+<b class="nc"><i>226</i>&nbsp;        return (getter == null || setter == null ||</b>
+<b class="nc"><i>227</i>&nbsp;                getGenericReturnType(getter).equals(getGenericParameterTypes(setter)[0]));</b>
+<i>228</i>&nbsp;    }
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;    /**
+<i>231</i>&nbsp;     * Invoke the given M on the given target with the given args and cookie.
+<i>232</i>&nbsp;     * Wrap exceptions appropriately.
+<i>233</i>&nbsp;     */
+<i>234</i>&nbsp;    final Object invokeM(M m, Object target, Object[] args, Object cookie)
+<i>235</i>&nbsp;    throws MBeanException, ReflectionException {
+<i>236</i>&nbsp;        try {
+<b class="nc"><i>237</i>&nbsp;            return invokeM2(m, target, args, cookie);</b>
+<b class="nc"><i>238</i>&nbsp;        } catch (InvocationTargetException e) {</b>
+<b class="nc"><i>239</i>&nbsp;            unwrapInvocationTargetException(e);</b>
+<b class="nc"><i>240</i>&nbsp;            throw new RuntimeException(e); // not reached</b>
+<b class="nc"><i>241</i>&nbsp;        } catch (IllegalAccessException e) {</b>
+<b class="nc"><i>242</i>&nbsp;            throw new ReflectionException(e, e.toString());</b>
+<i>243</i>&nbsp;        }
+<i>244</i>&nbsp;        /* We do not catch and wrap RuntimeException or Error,
+<i>245</i>&nbsp;         * because we&#39;re in a DynamicMBean, so the logic for DynamicMBeans
+<i>246</i>&nbsp;         * will do the wrapping.
+<i>247</i>&nbsp;         */
+<i>248</i>&nbsp;    }
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;    /**
+<i>251</i>&nbsp;     * Invoke the given setter on the given target with the given argument
+<i>252</i>&nbsp;     * and cookie.  Wrap exceptions appropriately.
+<i>253</i>&nbsp;     */
+<i>254</i>&nbsp;    /* If the value is of the wrong type for the method we are about to
+<i>255</i>&nbsp;     * invoke, we are supposed to throw an InvalidAttributeValueException.
+<i>256</i>&nbsp;     * Rather than making the check always, we invoke the method, then
+<i>257</i>&nbsp;     * if it throws an exception we check the type to see if that was
+<i>258</i>&nbsp;     * what caused the exception.  The assumption is that an exception
+<i>259</i>&nbsp;     * from an invalid type will arise before any user method is ever
+<i>260</i>&nbsp;     * called (either in reflection or in OpenConverter).
+<i>261</i>&nbsp;     */
+<i>262</i>&nbsp;    final void invokeSetter(String name, M setter, Object target, Object arg,
+<i>263</i>&nbsp;            Object cookie)
+<i>264</i>&nbsp;            throws MBeanException, ReflectionException,
+<i>265</i>&nbsp;            InvalidAttributeValueException {
+<i>266</i>&nbsp;        try {
+<b class="nc"><i>267</i>&nbsp;            invokeM2(setter, target, new Object[] {arg}, cookie);</b>
+<b class="nc"><i>268</i>&nbsp;        } catch (IllegalAccessException e) {</b>
+<b class="nc"><i>269</i>&nbsp;            throw new ReflectionException(e, e.toString());</b>
+<b class="nc"><i>270</i>&nbsp;        } catch (RuntimeException e) {</b>
+<b class="nc"><i>271</i>&nbsp;            maybeInvalidParameter(name, setter, arg, cookie);</b>
+<b class="nc"><i>272</i>&nbsp;            throw e;</b>
+<b class="nc"><i>273</i>&nbsp;        } catch (InvocationTargetException e) {</b>
+<b class="nc"><i>274</i>&nbsp;            maybeInvalidParameter(name, setter, arg, cookie);</b>
+<b class="nc"><i>275</i>&nbsp;            unwrapInvocationTargetException(e);</b>
+<b class="nc"><i>276</i>&nbsp;        }</b>
+<i>277</i>&nbsp;    }
+<i>278</i>&nbsp;
+<i>279</i>&nbsp;    private void maybeInvalidParameter(String name, M setter, Object arg,
+<i>280</i>&nbsp;            Object cookie)
+<i>281</i>&nbsp;            throws InvalidAttributeValueException {
+<b class="nc"><i>282</i>&nbsp;        if (!validParameter(setter, arg, 0, cookie)) {</b>
+<b class="nc"><i>283</i>&nbsp;            final String msg =</b>
+<i>284</i>&nbsp;                    &quot;Invalid value for attribute &quot; + name + &quot;: &quot; + arg;
+<b class="nc"><i>285</i>&nbsp;            throw new InvalidAttributeValueException(msg);</b>
+<i>286</i>&nbsp;        }
+<i>287</i>&nbsp;    }
+<i>288</i>&nbsp;
+<i>289</i>&nbsp;    static boolean isValidParameter(Method m, Object value, int paramNo) {
+<b class="nc"><i>290</i>&nbsp;        Class&lt;?&gt; c = m.getParameterTypes()[paramNo];</b>
+<i>291</i>&nbsp;        try {
+<i>292</i>&nbsp;            // Following is expensive but we only call this method to determine
+<i>293</i>&nbsp;            // if an exception is due to an incompatible parameter type.
+<i>294</i>&nbsp;            // Plain old c.isInstance doesn&#39;t work for primitive types.
+<b class="nc"><i>295</i>&nbsp;            Object a = Array.newInstance(c, 1);</b>
+<b class="nc"><i>296</i>&nbsp;            Array.set(a, 0, value);</b>
+<b class="nc"><i>297</i>&nbsp;            return true;</b>
+<b class="nc"><i>298</i>&nbsp;        } catch (IllegalArgumentException e) {</b>
+<b class="nc"><i>299</i>&nbsp;            return false;</b>
+<i>300</i>&nbsp;        }
+<i>301</i>&nbsp;    }
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;    private static void
+<i>304</i>&nbsp;            unwrapInvocationTargetException(InvocationTargetException e)
+<i>305</i>&nbsp;            throws MBeanException {
+<b class="nc"><i>306</i>&nbsp;        Throwable t = e.getCause();</b>
+<b class="nc"><i>307</i>&nbsp;        if (t instanceof RuntimeException)</b>
+<b class="nc"><i>308</i>&nbsp;            throw (RuntimeException) t;</b>
+<b class="nc"><i>309</i>&nbsp;        else if (t instanceof Error)</b>
+<b class="nc"><i>310</i>&nbsp;            throw (Error) t;</b>
+<i>311</i>&nbsp;        else
+<b class="nc"><i>312</i>&nbsp;            throw new MBeanException((Exception) t,</b>
+<b class="nc"><i>313</i>&nbsp;                    (t == null ? null : t.toString()));</b>
+<i>314</i>&nbsp;    }
+<i>315</i>&nbsp;
+<i>316</i>&nbsp;    /** A visitor that constructs the per-interface MBeanInfo. */
+<b class="nc"><i>317</i>&nbsp;    private class MBeanInfoMaker</b>
+<i>318</i>&nbsp;            implements MBeanAnalyzer.MBeanVisitor&lt;M&gt; {
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;        public void visitAttribute(String attributeName,
+<i>321</i>&nbsp;                M getter,
+<i>322</i>&nbsp;                M setter) {
+<b class="nc"><i>323</i>&nbsp;            MBeanAttributeInfo mbai =</b>
+<b class="nc"><i>324</i>&nbsp;                    getMBeanAttributeInfo(attributeName, getter, setter);</b>
+<i>325</i>&nbsp;
+<b class="nc"><i>326</i>&nbsp;            attrs.add(mbai);</b>
+<i>327</i>&nbsp;        }
+<i>328</i>&nbsp;
+<i>329</i>&nbsp;        public void visitOperation(String operationName,
+<i>330</i>&nbsp;                M operation) {
+<b class="nc"><i>331</i>&nbsp;            MBeanOperationInfo mboi =</b>
+<b class="nc"><i>332</i>&nbsp;                    getMBeanOperationInfo(operationName, operation);</b>
+<i>333</i>&nbsp;
+<b class="nc"><i>334</i>&nbsp;            ops.add(mboi);</b>
+<i>335</i>&nbsp;        }
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;        /** Make an MBeanInfo based on the attributes and operations
+<i>338</i>&nbsp;         *  found in the interface. */
+<i>339</i>&nbsp;        MBeanInfo makeMBeanInfo(Class&lt;?&gt; mbeanInterface,
+<i>340</i>&nbsp;                String description) {
+<b class="nc"><i>341</i>&nbsp;            final MBeanAttributeInfo[] attrArray =</b>
+<b class="nc"><i>342</i>&nbsp;                    attrs.toArray(new MBeanAttributeInfo[0]);</b>
+<b class="nc"><i>343</i>&nbsp;            final MBeanOperationInfo[] opArray =</b>
+<b class="nc"><i>344</i>&nbsp;                    ops.toArray(new MBeanOperationInfo[0]);</b>
+<b class="nc"><i>345</i>&nbsp;            final String interfaceClassName =</b>
+<b class="nc"><i>346</i>&nbsp;                    &quot;interfaceClassName=&quot; + mbeanInterface.getName();</b>
+<b class="nc"><i>347</i>&nbsp;            final Descriptor classNameDescriptor =</b>
+<i>348</i>&nbsp;                    new ImmutableDescriptor(interfaceClassName);
+<b class="nc"><i>349</i>&nbsp;            final Descriptor mbeanDescriptor = getBasicMBeanDescriptor();</b>
+<b class="nc"><i>350</i>&nbsp;            final Descriptor annotatedDescriptor =</b>
+<b class="nc"><i>351</i>&nbsp;                    Introspector.descriptorForElement(mbeanInterface);</b>
+<i>352</i>&nbsp;            final Descriptor descriptor =
+<b class="nc"><i>353</i>&nbsp;                DescriptorCache.getInstance().union(</b>
+<i>354</i>&nbsp;                    classNameDescriptor,
+<i>355</i>&nbsp;                    mbeanDescriptor,
+<i>356</i>&nbsp;                    annotatedDescriptor);
+<i>357</i>&nbsp;
+<b class="nc"><i>358</i>&nbsp;            return new MBeanInfo(mbeanInterface.getName(),</b>
+<i>359</i>&nbsp;                    description,
+<i>360</i>&nbsp;                    attrArray,
+<i>361</i>&nbsp;                    null,
+<i>362</i>&nbsp;                    opArray,
+<i>363</i>&nbsp;                    null,
+<i>364</i>&nbsp;                    descriptor);
+<i>365</i>&nbsp;        }
+<i>366</i>&nbsp;
+<b class="nc"><i>367</i>&nbsp;        private final List&lt;MBeanAttributeInfo&gt; attrs = newList();</b>
+<b class="nc"><i>368</i>&nbsp;        private final List&lt;MBeanOperationInfo&gt; ops = newList();</b>
+<i>369</i>&nbsp;    }
+<i>370</i>&nbsp;
+<i>371</i>&nbsp;    /*
+<i>372</i>&nbsp;     * Looking up the MBeanInfo for a given base class (implementation class)
+<i>373</i>&nbsp;     * is complicated by the fact that we may use the same base class with
+<i>374</i>&nbsp;     * several different explicit MBean interfaces via the
+<i>375</i>&nbsp;     * javax.management.StandardMBean class.  It is further complicated
+<i>376</i>&nbsp;     * by the fact that we have to be careful not to retain a strong reference
+<i>377</i>&nbsp;     * to any Class object for fear we would prevent a ClassLoader from being
+<i>378</i>&nbsp;     * garbage-collected.  So we have a first lookup from the base class
+<i>379</i>&nbsp;     * to a map for each interface that base class might specify giving
+<i>380</i>&nbsp;     * the MBeanInfo constructed for that base class and interface.
+<i>381</i>&nbsp;     */
+<b class="nc"><i>382</i>&nbsp;    static class MBeanInfoMap</b>
+<i>383</i>&nbsp;            extends WeakHashMap&lt;Class&lt;?&gt;, WeakHashMap&lt;Class&lt;?&gt;, MBeanInfo&gt;&gt; {
+<i>384</i>&nbsp;    }
+<i>385</i>&nbsp;
+<i>386</i>&nbsp;    /**
+<i>387</i>&nbsp;     * Return the MBeanInfo for the given resource, based on the given
+<i>388</i>&nbsp;     * per-interface data.
+<i>389</i>&nbsp;     */
+<i>390</i>&nbsp;    final MBeanInfo getMBeanInfo(Object resource, PerInterface&lt;M&gt; perInterface) {
+<b class="nc"><i>391</i>&nbsp;        MBeanInfo mbi =</b>
+<b class="nc"><i>392</i>&nbsp;                getClassMBeanInfo(resource.getClass(), perInterface);</b>
+<b class="nc"><i>393</i>&nbsp;        MBeanNotificationInfo[] notifs = findNotifications(resource);</b>
+<b class="nc"><i>394</i>&nbsp;        if (notifs == null || notifs.length == 0)</b>
+<b class="nc"><i>395</i>&nbsp;            return mbi;</b>
+<i>396</i>&nbsp;        else {
+<b class="nc"><i>397</i>&nbsp;            return new MBeanInfo(mbi.getClassName(),</b>
+<b class="nc"><i>398</i>&nbsp;                    mbi.getDescription(),</b>
+<b class="nc"><i>399</i>&nbsp;                    mbi.getAttributes(),</b>
+<b class="nc"><i>400</i>&nbsp;                    mbi.getConstructors(),</b>
+<b class="nc"><i>401</i>&nbsp;                    mbi.getOperations(),</b>
+<i>402</i>&nbsp;                    notifs,
+<b class="nc"><i>403</i>&nbsp;                    mbi.getDescriptor());</b>
+<i>404</i>&nbsp;        }
+<i>405</i>&nbsp;    }
+<i>406</i>&nbsp;
+<i>407</i>&nbsp;    /**
+<i>408</i>&nbsp;     * Return the basic MBeanInfo for resources of the given class and
+<i>409</i>&nbsp;     * per-interface data.  This MBeanInfo might not be the final MBeanInfo
+<i>410</i>&nbsp;     * for instances of the class, because if the class is a
+<i>411</i>&nbsp;     * NotificationBroadcaster then each instance gets to decide what
+<i>412</i>&nbsp;     * MBeanNotificationInfo[] to put in its own MBeanInfo.
+<i>413</i>&nbsp;     */
+<i>414</i>&nbsp;    final MBeanInfo getClassMBeanInfo(Class&lt;?&gt; resourceClass,
+<i>415</i>&nbsp;            PerInterface&lt;M&gt; perInterface) {
+<b class="nc"><i>416</i>&nbsp;        MBeanInfoMap map = getMBeanInfoMap();</b>
+<b class="nc"><i>417</i>&nbsp;        synchronized (map) {</b>
+<b class="nc"><i>418</i>&nbsp;            WeakHashMap&lt;Class&lt;?&gt;, MBeanInfo&gt; intfMap = map.get(resourceClass);</b>
+<b class="nc"><i>419</i>&nbsp;            if (intfMap == null) {</b>
+<b class="nc"><i>420</i>&nbsp;                intfMap = new WeakHashMap&lt;Class&lt;?&gt;, MBeanInfo&gt;();</b>
+<b class="nc"><i>421</i>&nbsp;                map.put(resourceClass, intfMap);</b>
+<i>422</i>&nbsp;            }
+<b class="nc"><i>423</i>&nbsp;            Class&lt;?&gt; intfClass = perInterface.getMBeanInterface();</b>
+<b class="nc"><i>424</i>&nbsp;            MBeanInfo mbi = intfMap.get(intfClass);</b>
+<b class="nc"><i>425</i>&nbsp;            if (mbi == null) {</b>
+<b class="nc"><i>426</i>&nbsp;                MBeanInfo imbi = perInterface.getMBeanInfo();</b>
+<b class="nc"><i>427</i>&nbsp;                Descriptor descriptor =</b>
+<b class="nc"><i>428</i>&nbsp;                        ImmutableDescriptor.union(imbi.getDescriptor(),</b>
+<b class="nc"><i>429</i>&nbsp;                        getMBeanDescriptor(resourceClass));</b>
+<b class="nc"><i>430</i>&nbsp;                mbi = new MBeanInfo(resourceClass.getName(),</b>
+<b class="nc"><i>431</i>&nbsp;                        imbi.getDescription(),</b>
+<b class="nc"><i>432</i>&nbsp;                        imbi.getAttributes(),</b>
+<b class="nc"><i>433</i>&nbsp;                        findConstructors(resourceClass),</b>
+<b class="nc"><i>434</i>&nbsp;                        imbi.getOperations(),</b>
+<i>435</i>&nbsp;                        (MBeanNotificationInfo[]) null,
+<i>436</i>&nbsp;                        descriptor);
+<b class="nc"><i>437</i>&nbsp;                intfMap.put(intfClass, mbi);</b>
+<i>438</i>&nbsp;            }
+<b class="nc"><i>439</i>&nbsp;            return mbi;</b>
+<b class="nc"><i>440</i>&nbsp;        }</b>
+<i>441</i>&nbsp;    }
+<i>442</i>&nbsp;
+<i>443</i>&nbsp;    static MBeanNotificationInfo[] findNotifications(Object moi) {
+<b class="nc"><i>444</i>&nbsp;        if (!(moi instanceof NotificationBroadcaster))</b>
+<b class="nc"><i>445</i>&nbsp;            return null;</b>
+<b class="nc"><i>446</i>&nbsp;        MBeanNotificationInfo[] mbn =</b>
+<b class="nc"><i>447</i>&nbsp;                ((NotificationBroadcaster) moi).getNotificationInfo();</b>
+<b class="nc"><i>448</i>&nbsp;        if (mbn == null)</b>
+<b class="nc"><i>449</i>&nbsp;            return null;</b>
+<b class="nc"><i>450</i>&nbsp;        MBeanNotificationInfo[] result =</b>
+<i>451</i>&nbsp;                new MBeanNotificationInfo[mbn.length];
+<b class="nc"><i>452</i>&nbsp;        for (int i = 0; i &lt; mbn.length; i++) {</b>
+<b class="nc"><i>453</i>&nbsp;            MBeanNotificationInfo ni = mbn[i];</b>
+<b class="nc"><i>454</i>&nbsp;            if (ni.getClass() != MBeanNotificationInfo.class)</b>
+<b class="nc"><i>455</i>&nbsp;                ni = (MBeanNotificationInfo) ni.clone();</b>
+<b class="nc"><i>456</i>&nbsp;            result[i] = ni;</b>
+<i>457</i>&nbsp;        }
+<b class="nc"><i>458</i>&nbsp;        return result;</b>
+<i>459</i>&nbsp;    }
+<i>460</i>&nbsp;
+<i>461</i>&nbsp;    private static MBeanConstructorInfo[] findConstructors(Class&lt;?&gt; c) {
+<b class="nc"><i>462</i>&nbsp;        Constructor&lt;?&gt;[] cons = c.getConstructors();</b>
+<b class="nc"><i>463</i>&nbsp;        MBeanConstructorInfo[] mbc = new MBeanConstructorInfo[cons.length];</b>
+<b class="nc"><i>464</i>&nbsp;        for (int i = 0; i &lt; cons.length; i++) {</b>
+<i>465</i>&nbsp;            final String descr = &quot;Public constructor of the MBean&quot;;
+<b class="nc"><i>466</i>&nbsp;            mbc[i] = new MBeanConstructorInfo(descr, cons[i]);</b>
+<i>467</i>&nbsp;        }
+<b class="nc"><i>468</i>&nbsp;        return mbc;</b>
+<i>469</i>&nbsp;    }
+<i>470</i>&nbsp;
+<i>471</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,249 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DupFilterIterator</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.dom</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DupFilterIterator (com.sun.org.apache.xalan.internal.xsltc.dom)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DupFilterIterator</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 50)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: DupFilterIterator.java,v 1.2.4.1 2005/09/06 06:16:11 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.dom;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.runtime.BasisLibrary;
+<i>27</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.util.IntegerArray;
+<i>28</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;
+<i>29</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.ref.DTMAxisIteratorBase;
+<i>30</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.ref.DTMDefaultBase;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;/**
+<i>33</i>&nbsp; * Removes duplicates and sorts a source iterator. The nodes from the
+<i>34</i>&nbsp; * source are collected in an array upon calling setStartNode(). This
+<i>35</i>&nbsp; * array is later sorted and duplicates are ignored in next().
+<i>36</i>&nbsp; * @author G. Todd Miller
+<i>37</i>&nbsp; */
+<i>38</i>&nbsp;public final class DupFilterIterator extends DTMAxisIteratorBase {
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;    /**
+<i>41</i>&nbsp;     * Reference to source iterator.
+<i>42</i>&nbsp;     */
+<i>43</i>&nbsp;    private DTMAxisIterator _source;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    /**
+<i>46</i>&nbsp;     * Array to cache all nodes from source.
+<i>47</i>&nbsp;     */
+<b class="nc"><i>48</i>&nbsp;    private IntegerArray _nodes = new IntegerArray();</b>
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    /**
+<i>51</i>&nbsp;     * Index in _nodes array to current node.
+<i>52</i>&nbsp;     */
+<b class="nc"><i>53</i>&nbsp;    private int _current = 0;</b>
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    /**
+<i>56</i>&nbsp;     * Cardinality of _nodes array.
+<i>57</i>&nbsp;     */
+<b class="nc"><i>58</i>&nbsp;    private int _nodesSize = 0;</b>
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    /**
+<i>61</i>&nbsp;     * Last value returned by next().
+<i>62</i>&nbsp;     */
+<b class="nc"><i>63</i>&nbsp;    private int _lastNext = END;</b>
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    /**
+<i>66</i>&nbsp;     * Temporary variable to store _lastNext.
+<i>67</i>&nbsp;     */
+<b class="nc"><i>68</i>&nbsp;    private int _markedLastNext = END;</b>
+<i>69</i>&nbsp;
+<b class="nc"><i>70</i>&nbsp;    public DupFilterIterator(DTMAxisIterator source) {</b>
+<b class="nc"><i>71</i>&nbsp;        _source = source;</b>
+<i>72</i>&nbsp;// System.out.println(&quot;DFI source = &quot; + source + &quot; this = &quot; + this);
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;        // Cache contents of id() or key() index right away. Necessary for
+<i>75</i>&nbsp;        // union expressions containing multiple calls to the same index, and
+<i>76</i>&nbsp;        // correct as well since start-node is irrelevant for id()/key() exrp.
+<b class="nc"><i>77</i>&nbsp;        if (source instanceof KeyIndex) {</b>
+<b class="nc"><i>78</i>&nbsp;            setStartNode(DTMDefaultBase.ROOTNODE);</b>
+<i>79</i>&nbsp;        }
+<i>80</i>&nbsp;    }
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    /**
+<i>83</i>&nbsp;     * Set the start node for this iterator
+<i>84</i>&nbsp;     * @param node The start node
+<i>85</i>&nbsp;     * @return A reference to this node iterator
+<i>86</i>&nbsp;     */
+<i>87</i>&nbsp;    public DTMAxisIterator setStartNode(int node) {
+<b class="nc"><i>88</i>&nbsp;        if (_isRestartable) {</b>
+<i>89</i>&nbsp;            // KeyIndex iterators are always relative to the root node, so there
+<i>90</i>&nbsp;            // is never any point in re-reading the iterator (and we SHOULD NOT).
+<b class="nc"><i>91</i>&nbsp;            boolean sourceIsKeyIndex = _source instanceof KeyIndex;</b>
+<i>92</i>&nbsp;
+<b class="nc"><i>93</i>&nbsp;            if (sourceIsKeyIndex</b>
+<i>94</i>&nbsp;                    &amp;&amp; _startNode == DTMDefaultBase.ROOTNODE) {
+<b class="nc"><i>95</i>&nbsp;                return this;</b>
+<i>96</i>&nbsp;            }
+<i>97</i>&nbsp;
+<b class="nc"><i>98</i>&nbsp;            if (node != _startNode) {</b>
+<b class="nc"><i>99</i>&nbsp;                _source.setStartNode(_startNode = node);</b>
+<i>100</i>&nbsp;
+<b class="nc"><i>101</i>&nbsp;                _nodes.clear();</b>
+<b class="nc"><i>102</i>&nbsp;                while ((node = _source.next()) != END) {</b>
+<b class="nc"><i>103</i>&nbsp;                    _nodes.add(node);</b>
+<i>104</i>&nbsp;                }
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;                // Nodes produced by KeyIndex are known to be in document order.
+<i>107</i>&nbsp;                // Take advantage of it.
+<b class="nc"><i>108</i>&nbsp;                if (!sourceIsKeyIndex) {</b>
+<b class="nc"><i>109</i>&nbsp;                    _nodes.sort();</b>
+<i>110</i>&nbsp;                }
+<b class="nc"><i>111</i>&nbsp;                _nodesSize = _nodes.cardinality();</b>
+<b class="nc"><i>112</i>&nbsp;                _current = 0;</b>
+<b class="nc"><i>113</i>&nbsp;                _lastNext = END;</b>
+<b class="nc"><i>114</i>&nbsp;                resetPosition();</b>
+<i>115</i>&nbsp;            }
+<i>116</i>&nbsp;        }
+<b class="nc"><i>117</i>&nbsp;        return this;</b>
+<i>118</i>&nbsp;    }
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    public int next() {
+<b class="nc"><i>121</i>&nbsp;        while (_current &lt; _nodesSize) {</b>
+<b class="nc"><i>122</i>&nbsp;            final int next = _nodes.at(_current++);</b>
+<b class="nc"><i>123</i>&nbsp;            if (next != _lastNext) {</b>
+<b class="nc"><i>124</i>&nbsp;                return returnNode(_lastNext = next);</b>
+<i>125</i>&nbsp;            }
+<b class="nc"><i>126</i>&nbsp;        }</b>
+<b class="nc"><i>127</i>&nbsp;        return END;</b>
+<i>128</i>&nbsp;    }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    public DTMAxisIterator cloneIterator() {
+<i>131</i>&nbsp;        try {
+<b class="nc"><i>132</i>&nbsp;            final DupFilterIterator clone =</b>
+<b class="nc"><i>133</i>&nbsp;                (DupFilterIterator) super.clone();</b>
+<b class="nc"><i>134</i>&nbsp;            clone._nodes = (IntegerArray) _nodes.clone();</b>
+<b class="nc"><i>135</i>&nbsp;            clone._source = _source.cloneIterator();</b>
+<b class="nc"><i>136</i>&nbsp;            clone._isRestartable = false;</b>
+<b class="nc"><i>137</i>&nbsp;            return clone.reset();</b>
+<i>138</i>&nbsp;        }
+<b class="nc"><i>139</i>&nbsp;        catch (CloneNotSupportedException e) {</b>
+<b class="nc"><i>140</i>&nbsp;            BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR,</b>
+<b class="nc"><i>141</i>&nbsp;                                      e.toString());</b>
+<b class="nc"><i>142</i>&nbsp;            return null;</b>
+<i>143</i>&nbsp;        }
+<i>144</i>&nbsp;    }
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;    public void setRestartable(boolean isRestartable) {
+<b class="nc"><i>147</i>&nbsp;        _isRestartable = isRestartable;</b>
+<b class="nc"><i>148</i>&nbsp;        _source.setRestartable(isRestartable);</b>
+<i>149</i>&nbsp;    }
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;    public void setMark() {
+<b class="nc"><i>152</i>&nbsp;        _markedNode = _current;</b>
+<b class="nc"><i>153</i>&nbsp;        _markedLastNext = _lastNext;    // Bugzilla 25924</b>
+<i>154</i>&nbsp;    }
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;    public void gotoMark() {
+<b class="nc"><i>157</i>&nbsp;        _current = _markedNode;</b>
+<b class="nc"><i>158</i>&nbsp;        _lastNext = _markedLastNext;    // Bugzilla 25924</b>
+<i>159</i>&nbsp;    }
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;    public DTMAxisIterator reset() {
+<b class="nc"><i>162</i>&nbsp;        _current = 0;</b>
+<b class="nc"><i>163</i>&nbsp;        _lastNext = END;</b>
+<b class="nc"><i>164</i>&nbsp;        return resetPosition();</b>
+<i>165</i>&nbsp;    }
+<i>166</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

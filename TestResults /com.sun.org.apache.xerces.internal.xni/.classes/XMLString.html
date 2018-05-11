@@ -1,0 +1,274 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XMLString</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.xni</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XMLString (com.sun.org.apache.xerces.internal.xni)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XMLString</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 29)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2000-2002,2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.xni;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;/**
+<i>24</i>&nbsp; * This class is used as a structure to pass text contained in the underlying
+<i>25</i>&nbsp; * character buffer of the scanner. The offset and length fields allow the
+<i>26</i>&nbsp; * buffer to be re-used without creating new character arrays.
+<i>27</i>&nbsp; * &lt;p&gt;
+<i>28</i>&nbsp; * &lt;strong&gt;Note:&lt;/strong&gt; Methods that are passed an XMLString structure
+<i>29</i>&nbsp; * should consider the contents read-only and not make any modifications
+<i>30</i>&nbsp; * to the contents of the buffer. The method receiving this structure
+<i>31</i>&nbsp; * should also not modify the offset and length if this structure (or
+<i>32</i>&nbsp; * the values of this structure) are passed to another method.
+<i>33</i>&nbsp; * &lt;p&gt;
+<i>34</i>&nbsp; * &lt;strong&gt;Note:&lt;/strong&gt; Methods that are passed an XMLString structure
+<i>35</i>&nbsp; * are required to copy the information out of the buffer if it is to be
+<i>36</i>&nbsp; * saved for use beyond the scope of the method. The contents of the
+<i>37</i>&nbsp; * structure are volatile and the contents of the character buffer cannot
+<i>38</i>&nbsp; * be assured once the method that is passed this structure returns.
+<i>39</i>&nbsp; * Therefore, methods passed this structure should not save any reference
+<i>40</i>&nbsp; * to the structure or the character array contained in the structure.
+<i>41</i>&nbsp; *
+<i>42</i>&nbsp; * @author Eric Ye, IBM
+<i>43</i>&nbsp; * @author Andy Clark, IBM
+<i>44</i>&nbsp; *
+<i>45</i>&nbsp; */
+<i>46</i>&nbsp;public class XMLString {
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    //
+<i>49</i>&nbsp;    // Data
+<i>50</i>&nbsp;    //
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    /** The character array. */
+<i>53</i>&nbsp;    public char[] ch;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    /** The offset into the character array. */
+<i>56</i>&nbsp;    public int offset;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    /** The length of characters from the offset. */
+<i>59</i>&nbsp;    public int length;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    //
+<i>62</i>&nbsp;    // Constructors
+<i>63</i>&nbsp;    //
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    /** Default constructor. */
+<b class="nc"><i>66</i>&nbsp;    public XMLString() {</b>
+<i>67</i>&nbsp;    } // &lt;init&gt;()
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    /**
+<i>70</i>&nbsp;     * Constructs an XMLString structure preset with the specified
+<i>71</i>&nbsp;     * values.
+<i>72</i>&nbsp;     *
+<i>73</i>&nbsp;     * @param ch     The character array.
+<i>74</i>&nbsp;     * @param offset The offset into the character array.
+<i>75</i>&nbsp;     * @param length The length of characters from the offset.
+<i>76</i>&nbsp;     */
+<b class="nc"><i>77</i>&nbsp;    public XMLString(char[] ch, int offset, int length) {</b>
+<b class="nc"><i>78</i>&nbsp;        setValues(ch, offset, length);</b>
+<i>79</i>&nbsp;    } // &lt;init&gt;(char[],int,int)
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    /**
+<i>82</i>&nbsp;     * Constructs an XMLString structure with copies of the values in
+<i>83</i>&nbsp;     * the given structure.
+<i>84</i>&nbsp;     * &lt;p&gt;
+<i>85</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt; This does not copy the character array;
+<i>86</i>&nbsp;     * only the reference to the array is copied.
+<i>87</i>&nbsp;     *
+<i>88</i>&nbsp;     * @param string The XMLString to copy.
+<i>89</i>&nbsp;     */
+<b class="nc"><i>90</i>&nbsp;    public XMLString(XMLString string) {</b>
+<b class="nc"><i>91</i>&nbsp;        setValues(string);</b>
+<i>92</i>&nbsp;    } // &lt;init&gt;(XMLString)
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    //
+<i>95</i>&nbsp;    // Public methods
+<i>96</i>&nbsp;    //
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;    /**
+<i>99</i>&nbsp;     * Initializes the contents of the XMLString structure with the
+<i>100</i>&nbsp;     * specified values.
+<i>101</i>&nbsp;     *
+<i>102</i>&nbsp;     * @param ch     The character array.
+<i>103</i>&nbsp;     * @param offset The offset into the character array.
+<i>104</i>&nbsp;     * @param length The length of characters from the offset.
+<i>105</i>&nbsp;     */
+<i>106</i>&nbsp;    public void setValues(char[] ch, int offset, int length) {
+<b class="nc"><i>107</i>&nbsp;        this.ch = ch;</b>
+<b class="nc"><i>108</i>&nbsp;        this.offset = offset;</b>
+<b class="nc"><i>109</i>&nbsp;        this.length = length;</b>
+<i>110</i>&nbsp;    } // setValues(char[],int,int)
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;    /**
+<i>113</i>&nbsp;     * Initializes the contents of the XMLString structure with copies
+<i>114</i>&nbsp;     * of the given string structure.
+<i>115</i>&nbsp;     * &lt;p&gt;
+<i>116</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt; This does not copy the character array;
+<i>117</i>&nbsp;     * only the reference to the array is copied.
+<i>118</i>&nbsp;     *
+<i>119</i>&nbsp;     * @param s
+<i>120</i>&nbsp;     */
+<i>121</i>&nbsp;    public void setValues(XMLString s) {
+<b class="nc"><i>122</i>&nbsp;        setValues(s.ch, s.offset, s.length);</b>
+<i>123</i>&nbsp;    } // setValues(XMLString)
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    /** Resets all of the values to their defaults. */
+<i>126</i>&nbsp;    public void clear() {
+<b class="nc"><i>127</i>&nbsp;        this.ch = null;</b>
+<b class="nc"><i>128</i>&nbsp;        this.offset = 0;</b>
+<b class="nc"><i>129</i>&nbsp;        this.length = -1;</b>
+<i>130</i>&nbsp;    } // clear()
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;    /**
+<i>133</i>&nbsp;     * Returns true if the contents of this XMLString structure and
+<i>134</i>&nbsp;     * the specified array are equal.
+<i>135</i>&nbsp;     *
+<i>136</i>&nbsp;     * @param ch     The character array.
+<i>137</i>&nbsp;     * @param offset The offset into the character array.
+<i>138</i>&nbsp;     * @param length The length of characters from the offset.
+<i>139</i>&nbsp;     */
+<i>140</i>&nbsp;    public boolean equals(char[] ch, int offset, int length) {
+<b class="nc"><i>141</i>&nbsp;        if (ch == null) {</b>
+<b class="nc"><i>142</i>&nbsp;            return false;</b>
+<i>143</i>&nbsp;        }
+<b class="nc"><i>144</i>&nbsp;        if (this.length != length) {</b>
+<b class="nc"><i>145</i>&nbsp;            return false;</b>
+<i>146</i>&nbsp;        }
+<i>147</i>&nbsp;
+<b class="nc"><i>148</i>&nbsp;        for (int i=0; i&lt;length; i++) {</b>
+<b class="nc"><i>149</i>&nbsp;            if (this.ch[this.offset+i] != ch[offset+i] ) {</b>
+<b class="nc"><i>150</i>&nbsp;                return false;</b>
+<i>151</i>&nbsp;            }
+<i>152</i>&nbsp;        }
+<b class="nc"><i>153</i>&nbsp;        return true;</b>
+<i>154</i>&nbsp;    } // equals(char[],int,int):boolean
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;    /**
+<i>157</i>&nbsp;     * Returns true if the contents of this XMLString structure and
+<i>158</i>&nbsp;     * the specified string are equal.
+<i>159</i>&nbsp;     *
+<i>160</i>&nbsp;     * @param s The string to compare.
+<i>161</i>&nbsp;     */
+<i>162</i>&nbsp;    public boolean equals(String s) {
+<b class="nc"><i>163</i>&nbsp;        if (s == null) {</b>
+<b class="nc"><i>164</i>&nbsp;            return false;</b>
+<i>165</i>&nbsp;        }
+<b class="nc"><i>166</i>&nbsp;        if ( length != s.length() ) {</b>
+<b class="nc"><i>167</i>&nbsp;            return false;</b>
+<i>168</i>&nbsp;        }
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;        // is this faster than call s.toCharArray first and compare the
+<i>171</i>&nbsp;        // two arrays directly, which will possibly involve creating a
+<i>172</i>&nbsp;        // new char array object.
+<b class="nc"><i>173</i>&nbsp;        for (int i=0; i&lt;length; i++) {</b>
+<b class="nc"><i>174</i>&nbsp;            if (ch[offset+i] != s.charAt(i)) {</b>
+<b class="nc"><i>175</i>&nbsp;                return false;</b>
+<i>176</i>&nbsp;            }
+<i>177</i>&nbsp;        }
+<i>178</i>&nbsp;
+<b class="nc"><i>179</i>&nbsp;        return true;</b>
+<i>180</i>&nbsp;    } // equals(String):boolean
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;    //
+<i>183</i>&nbsp;    // Object methods
+<i>184</i>&nbsp;    //
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;    /** Returns a string representation of this object. */
+<i>187</i>&nbsp;    public String toString() {
+<b class="nc"><i>188</i>&nbsp;        return length &gt; 0 ? new String(ch, offset, length) : &quot;&quot;;</b>
+<i>189</i>&nbsp;    } // toString():String
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;} // class XMLString
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

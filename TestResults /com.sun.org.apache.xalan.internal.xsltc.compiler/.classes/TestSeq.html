@@ -1,0 +1,371 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TestSeq</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TestSeq (com.sun.org.apache.xalan.internal.xsltc.compiler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TestSeq</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 82)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: TestSeq.java,v 1.2.4.1 2005/09/12 11:31:38 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.GOTO_W;
+<i>27</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+<i>28</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>29</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
+<i>30</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+<i>31</i>&nbsp;import java.util.Map;
+<i>32</i>&nbsp;import java.util.Vector;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;/**
+<i>35</i>&nbsp; * A test sequence is a sequence of patterns that
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; *  (1) occured in templates in the same mode
+<i>38</i>&nbsp; *  (2) share the same kernel node type (e.g. A/B and C/C/B)
+<i>39</i>&nbsp; *  (3) may also contain patterns matching &quot;*&quot; and &quot;node()&quot;
+<i>40</i>&nbsp; *      (element sequence only) or matching &quot;@*&quot; (attribute
+<i>41</i>&nbsp; *      sequence only).
+<i>42</i>&nbsp; *
+<i>43</i>&nbsp; * A test sequence may have a default template, which will be
+<i>44</i>&nbsp; * instantiated if none of the other patterns match.
+<i>45</i>&nbsp; * @author Jacek Ambroziak
+<i>46</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>47</i>&nbsp; * @author Erwin Bolwidt &lt;ejb@klomp.org&gt;
+<i>48</i>&nbsp; * @author Morten Jorgensen &lt;morten.jorgensen@sun.com&gt;
+<i>49</i>&nbsp; */
+<i>50</i>&nbsp;final class TestSeq {
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    /**
+<i>53</i>&nbsp;     * Integer code for the kernel type of this test sequence
+<i>54</i>&nbsp;     */
+<i>55</i>&nbsp;    private int _kernelType;
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    /**
+<i>58</i>&nbsp;     * Vector of all patterns in the test sequence. May include
+<i>59</i>&nbsp;     * patterns with &quot;*&quot;, &quot;@*&quot; or &quot;node()&quot; kernel.
+<i>60</i>&nbsp;     */
+<b class="nc"><i>61</i>&nbsp;    private Vector _patterns = null;</b>
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    /**
+<i>64</i>&nbsp;     * A reference to the Mode object.
+<i>65</i>&nbsp;     */
+<b class="nc"><i>66</i>&nbsp;    private Mode _mode = null;</b>
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    /**
+<i>69</i>&nbsp;     * Default template for this test sequence
+<i>70</i>&nbsp;     */
+<b class="nc"><i>71</i>&nbsp;    private Template _default = null;</b>
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    /**
+<i>74</i>&nbsp;     * Instruction list representing this test sequence.
+<i>75</i>&nbsp;     */
+<i>76</i>&nbsp;    private InstructionList _instructionList;
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    /**
+<i>79</i>&nbsp;     * Cached handle to avoid compiling more than once.
+<i>80</i>&nbsp;     */
+<b class="nc"><i>81</i>&nbsp;    private InstructionHandle _start = null;</b>
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    /**
+<i>84</i>&nbsp;     * Creates a new test sequence given a set of patterns and a mode.
+<i>85</i>&nbsp;     */
+<i>86</i>&nbsp;    public TestSeq(Vector patterns, Mode mode) {
+<b class="nc"><i>87</i>&nbsp;        this(patterns, -2, mode);</b>
+<i>88</i>&nbsp;    }
+<i>89</i>&nbsp;
+<b class="nc"><i>90</i>&nbsp;    public TestSeq(Vector patterns, int kernelType, Mode mode) {</b>
+<b class="nc"><i>91</i>&nbsp;        _patterns = patterns;</b>
+<b class="nc"><i>92</i>&nbsp;        _kernelType = kernelType;</b>
+<b class="nc"><i>93</i>&nbsp;        _mode = mode;</b>
+<i>94</i>&nbsp;    }
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    /**
+<i>97</i>&nbsp;     * Returns a string representation of this test sequence. Notice
+<i>98</i>&nbsp;     * that test sequences are mutable, so the value returned by this
+<i>99</i>&nbsp;     * method is different before and after calling reduce().
+<i>100</i>&nbsp;     */
+<i>101</i>&nbsp;    public String toString() {
+<b class="nc"><i>102</i>&nbsp;        final int count = _patterns.size();</b>
+<b class="nc"><i>103</i>&nbsp;        final StringBuffer result = new StringBuffer();</b>
+<i>104</i>&nbsp;
+<b class="nc"><i>105</i>&nbsp;        for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc"><i>106</i>&nbsp;            final LocationPathPattern pattern =</b>
+<b class="nc"><i>107</i>&nbsp;                (LocationPathPattern) _patterns.elementAt(i);</b>
+<i>108</i>&nbsp;
+<b class="nc"><i>109</i>&nbsp;            if (i == 0) {</b>
+<b class="nc"><i>110</i>&nbsp;                result.append(&quot;Testseq for kernel &quot;).append(_kernelType)</b>
+<b class="nc"><i>111</i>&nbsp;                      .append(&#39;\n&#39;);</b>
+<i>112</i>&nbsp;            }
+<b class="nc"><i>113</i>&nbsp;            result.append(&quot;   pattern &quot;).append(i).append(&quot;: &quot;)</b>
+<b class="nc"><i>114</i>&nbsp;                  .append(pattern.toString())</b>
+<b class="nc"><i>115</i>&nbsp;                  .append(&#39;\n&#39;);</b>
+<i>116</i>&nbsp;        }
+<b class="nc"><i>117</i>&nbsp;        return result.toString();</b>
+<i>118</i>&nbsp;    }
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    /**
+<i>121</i>&nbsp;     * Returns the instruction list for this test sequence
+<i>122</i>&nbsp;     */
+<i>123</i>&nbsp;    public InstructionList getInstructionList() {
+<b class="nc"><i>124</i>&nbsp;        return _instructionList;</b>
+<i>125</i>&nbsp;    }
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;    /**
+<i>128</i>&nbsp;     * Return the highest priority for a pattern in this test
+<i>129</i>&nbsp;     * sequence. This is either the priority of the first or
+<i>130</i>&nbsp;     * of the default pattern.
+<i>131</i>&nbsp;     */
+<i>132</i>&nbsp;    public double getPriority() {
+<b class="nc"><i>133</i>&nbsp;        final Template template = (_patterns.size() == 0) ? _default</b>
+<b class="nc"><i>134</i>&nbsp;            : ((Pattern) _patterns.elementAt(0)).getTemplate();</b>
+<b class="nc"><i>135</i>&nbsp;        return template.getPriority();</b>
+<i>136</i>&nbsp;    }
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;    /**
+<i>139</i>&nbsp;     * Returns the position of the highest priority pattern in
+<i>140</i>&nbsp;     * this test sequence.
+<i>141</i>&nbsp;     */
+<i>142</i>&nbsp;    public int getPosition() {
+<b class="nc"><i>143</i>&nbsp;        final Template template = (_patterns.size() == 0) ? _default</b>
+<b class="nc"><i>144</i>&nbsp;            : ((Pattern) _patterns.elementAt(0)).getTemplate();</b>
+<b class="nc"><i>145</i>&nbsp;        return template.getPosition();</b>
+<i>146</i>&nbsp;    }
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;    /**
+<i>149</i>&nbsp;     * Reduce the patterns in this test sequence. Creates a new
+<i>150</i>&nbsp;     * vector of patterns and sets the default pattern if it
+<i>151</i>&nbsp;     * finds a patterns that is fully reduced.
+<i>152</i>&nbsp;     */
+<i>153</i>&nbsp;    public void reduce() {
+<b class="nc"><i>154</i>&nbsp;        final Vector newPatterns = new Vector();</b>
+<i>155</i>&nbsp;
+<b class="nc"><i>156</i>&nbsp;        final int count = _patterns.size();</b>
+<b class="nc"><i>157</i>&nbsp;        for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc"><i>158</i>&nbsp;            final LocationPathPattern pattern =</b>
+<b class="nc"><i>159</i>&nbsp;                (LocationPathPattern)_patterns.elementAt(i);</b>
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;            // Reduce this pattern
+<b class="nc"><i>162</i>&nbsp;            pattern.reduceKernelPattern();</b>
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;            // Is this pattern fully reduced?
+<b class="nc"><i>165</i>&nbsp;            if (pattern.isWildcard()) {</b>
+<b class="nc"><i>166</i>&nbsp;                _default = pattern.getTemplate();</b>
+<b class="nc"><i>167</i>&nbsp;                break;          // Ignore following patterns</b>
+<i>168</i>&nbsp;            }
+<i>169</i>&nbsp;            else {
+<b class="nc"><i>170</i>&nbsp;                newPatterns.addElement(pattern);</b>
+<i>171</i>&nbsp;            }
+<i>172</i>&nbsp;        }
+<b class="nc"><i>173</i>&nbsp;        _patterns = newPatterns;</b>
+<i>174</i>&nbsp;    }
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    /**
+<i>177</i>&nbsp;     * Returns, by reference, the templates that are included in
+<i>178</i>&nbsp;     * this test sequence. Note that a single template can occur
+<i>179</i>&nbsp;     * in several test sequences if its pattern is a union.
+<i>180</i>&nbsp;     */
+<i>181</i>&nbsp;    public void findTemplates(Map&lt;Template, Object&gt; templates) {
+<b class="nc"><i>182</i>&nbsp;        if (_default != null) {</b>
+<b class="nc"><i>183</i>&nbsp;            templates.put(_default, this);</b>
+<i>184</i>&nbsp;        }
+<b class="nc"><i>185</i>&nbsp;        for (int i = 0; i &lt; _patterns.size(); i++) {</b>
+<b class="nc"><i>186</i>&nbsp;            final LocationPathPattern pattern =</b>
+<b class="nc"><i>187</i>&nbsp;                (LocationPathPattern)_patterns.elementAt(i);</b>
+<b class="nc"><i>188</i>&nbsp;            templates.put(pattern.getTemplate(), this);</b>
+<i>189</i>&nbsp;        }
+<i>190</i>&nbsp;    }
+<i>191</i>&nbsp;
+<i>192</i>&nbsp;    /**
+<i>193</i>&nbsp;     * Get the instruction handle to a template&#39;s code. This is
+<i>194</i>&nbsp;     * used when a single template occurs in several test
+<i>195</i>&nbsp;     * sequences; that is, if its pattern is a union of patterns
+<i>196</i>&nbsp;     * (e.g. match=&quot;A/B | A/C&quot;).
+<i>197</i>&nbsp;     */
+<i>198</i>&nbsp;    private InstructionHandle getTemplateHandle(Template template) {
+<b class="nc"><i>199</i>&nbsp;        return (InstructionHandle)_mode.getTemplateInstructionHandle(template);</b>
+<i>200</i>&nbsp;    }
+<i>201</i>&nbsp;
+<i>202</i>&nbsp;    /**
+<i>203</i>&nbsp;     * Returns pattern n in this test sequence
+<i>204</i>&nbsp;     */
+<i>205</i>&nbsp;    private LocationPathPattern getPattern(int n) {
+<b class="nc"><i>206</i>&nbsp;        return (LocationPathPattern)_patterns.elementAt(n);</b>
+<i>207</i>&nbsp;    }
+<i>208</i>&nbsp;
+<i>209</i>&nbsp;    /**
+<i>210</i>&nbsp;     * Compile the code for this test sequence. Compile patterns
+<i>211</i>&nbsp;     * from highest to lowest priority. Note that since patterns
+<i>212</i>&nbsp;     * can be share by multiple test sequences, instruction lists
+<i>213</i>&nbsp;     * must be copied before backpatching.
+<i>214</i>&nbsp;     */
+<i>215</i>&nbsp;    public InstructionHandle compile(ClassGenerator classGen,
+<i>216</i>&nbsp;                                     MethodGenerator methodGen,
+<i>217</i>&nbsp;                                     InstructionHandle continuation)
+<i>218</i>&nbsp;    {
+<i>219</i>&nbsp;        // Returned cached value if already compiled
+<b class="nc"><i>220</i>&nbsp;        if (_start != null) {</b>
+<b class="nc"><i>221</i>&nbsp;            return _start;</b>
+<i>222</i>&nbsp;        }
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;        // If not patterns, then return handle for default template
+<b class="nc"><i>225</i>&nbsp;        final int count = _patterns.size();</b>
+<b class="nc"><i>226</i>&nbsp;        if (count == 0) {</b>
+<b class="nc"><i>227</i>&nbsp;            return (_start = getTemplateHandle(_default));</b>
+<i>228</i>&nbsp;        }
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;        // Init handle to jump when all patterns failed
+<b class="nc"><i>231</i>&nbsp;        InstructionHandle fail = (_default == null) ? continuation</b>
+<b class="nc"><i>232</i>&nbsp;            : getTemplateHandle(_default);</b>
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;        // Compile all patterns in reverse order
+<b class="nc"><i>235</i>&nbsp;        for (int n = count - 1; n &gt;= 0; n--) {</b>
+<b class="nc"><i>236</i>&nbsp;            final LocationPathPattern pattern = getPattern(n);</b>
+<b class="nc"><i>237</i>&nbsp;            final Template template = pattern.getTemplate();</b>
+<b class="nc"><i>238</i>&nbsp;            final InstructionList il = new InstructionList();</b>
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;            // Patterns expect current node on top of stack
+<b class="nc"><i>241</i>&nbsp;            il.append(methodGen.loadCurrentNode());</b>
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;            // Apply the test-code compiled for the pattern
+<b class="nc"><i>244</i>&nbsp;            InstructionList ilist = methodGen.getInstructionList(pattern);</b>
+<b class="nc"><i>245</i>&nbsp;            if (ilist == null) {</b>
+<b class="nc"><i>246</i>&nbsp;                ilist = pattern.compile(classGen, methodGen);</b>
+<b class="nc"><i>247</i>&nbsp;                methodGen.addInstructionList(pattern, ilist);</b>
+<i>248</i>&nbsp;            }
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;            // Make a copy of the instruction list for backpatching
+<b class="nc"><i>251</i>&nbsp;            InstructionList copyOfilist = ilist.copy();</b>
+<i>252</i>&nbsp;
+<b class="nc"><i>253</i>&nbsp;            FlowList trueList = pattern.getTrueList();</b>
+<b class="nc"><i>254</i>&nbsp;            if (trueList != null) {</b>
+<b class="nc"><i>255</i>&nbsp;                trueList = trueList.copyAndRedirect(ilist, copyOfilist);</b>
+<i>256</i>&nbsp;            }
+<b class="nc"><i>257</i>&nbsp;            FlowList falseList = pattern.getFalseList();</b>
+<b class="nc"><i>258</i>&nbsp;            if (falseList != null) {</b>
+<b class="nc"><i>259</i>&nbsp;                falseList = falseList.copyAndRedirect(ilist, copyOfilist);</b>
+<i>260</i>&nbsp;            }
+<i>261</i>&nbsp;
+<b class="nc"><i>262</i>&nbsp;            il.append(copyOfilist);</b>
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;            // On success branch to the template code
+<b class="nc"><i>265</i>&nbsp;            final InstructionHandle gtmpl = getTemplateHandle(template);</b>
+<b class="nc"><i>266</i>&nbsp;            final InstructionHandle success = il.append(new GOTO_W(gtmpl));</b>
+<i>267</i>&nbsp;
+<b class="nc"><i>268</i>&nbsp;            if (trueList != null) {</b>
+<b class="nc"><i>269</i>&nbsp;                trueList.backPatch(success);</b>
+<i>270</i>&nbsp;            }
+<b class="nc"><i>271</i>&nbsp;            if (falseList != null) {</b>
+<b class="nc"><i>272</i>&nbsp;                falseList.backPatch(fail);</b>
+<i>273</i>&nbsp;            }
+<i>274</i>&nbsp;
+<i>275</i>&nbsp;            // Next pattern&#39;s &#39;fail&#39; target is this pattern&#39;s first instruction
+<b class="nc"><i>276</i>&nbsp;            fail = il.getStart();</b>
+<i>277</i>&nbsp;
+<i>278</i>&nbsp;            // Append existing instruction list to the end of this one
+<b class="nc"><i>279</i>&nbsp;            if (_instructionList != null) {</b>
+<b class="nc"><i>280</i>&nbsp;                il.append(_instructionList);</b>
+<i>281</i>&nbsp;            }
+<i>282</i>&nbsp;
+<i>283</i>&nbsp;            // Set current instruction list to be this one
+<b class="nc"><i>284</i>&nbsp;            _instructionList = il;</b>
+<i>285</i>&nbsp;        }
+<b class="nc"><i>286</i>&nbsp;        return (_start = fail);</b>
+<i>287</i>&nbsp;    }
+<i>288</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

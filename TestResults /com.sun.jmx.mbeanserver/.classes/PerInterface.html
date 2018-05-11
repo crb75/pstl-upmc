@@ -1,0 +1,408 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PerInterface</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.jmx.mbeanserver</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PerInterface (com.sun.jmx.mbeanserver)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PerInterface</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 87)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">PerInterface$InitMaps</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">PerInterface$MethodAndSig</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 109)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, 2006, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.jmx.mbeanserver;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.security.AccessController;
+<i>29</i>&nbsp;import java.util.Arrays;
+<i>30</i>&nbsp;import java.util.Collections;
+<i>31</i>&nbsp;import java.util.List;
+<i>32</i>&nbsp;import java.util.Map;
+<i>33</i>&nbsp;import javax.management.AttributeNotFoundException;
+<i>34</i>&nbsp;import javax.management.InvalidAttributeValueException;
+<i>35</i>&nbsp;import javax.management.MBeanException;
+<i>36</i>&nbsp;import javax.management.MBeanInfo;
+<i>37</i>&nbsp;import javax.management.ReflectionException;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;import static com.sun.jmx.mbeanserver.Util.*;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;/**
+<i>42</i>&nbsp; * Per-MBean-interface behavior.  A single instance of this class can be shared
+<i>43</i>&nbsp; * by all MBeans of the same kind (Standard MBean or MXBean) that have the same
+<i>44</i>&nbsp; * MBean interface.
+<i>45</i>&nbsp; *
+<i>46</i>&nbsp; * @since 1.6
+<i>47</i>&nbsp; */
+<b class="nc"><i>48</i>&nbsp;final class PerInterface&lt;M&gt; {</b>
+<i>49</i>&nbsp;    PerInterface(Class&lt;?&gt; mbeanInterface, MBeanIntrospector&lt;M&gt; introspector,
+<b class="nc"><i>50</i>&nbsp;                 MBeanAnalyzer&lt;M&gt; analyzer, MBeanInfo mbeanInfo) {</b>
+<b class="nc"><i>51</i>&nbsp;        this.mbeanInterface = mbeanInterface;</b>
+<b class="nc"><i>52</i>&nbsp;        this.introspector = introspector;</b>
+<b class="nc"><i>53</i>&nbsp;        this.mbeanInfo = mbeanInfo;</b>
+<b class="nc"><i>54</i>&nbsp;        analyzer.visit(new InitMaps());</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    Class&lt;?&gt; getMBeanInterface() {
+<b class="nc"><i>58</i>&nbsp;        return mbeanInterface;</b>
+<i>59</i>&nbsp;    }
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    MBeanInfo getMBeanInfo() {
+<b class="nc"><i>62</i>&nbsp;        return mbeanInfo;</b>
+<i>63</i>&nbsp;    }
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    boolean isMXBean() {
+<b class="nc"><i>66</i>&nbsp;        return introspector.isMXBean();</b>
+<i>67</i>&nbsp;    }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    Object getAttribute(Object resource, String attribute, Object cookie)
+<i>70</i>&nbsp;            throws AttributeNotFoundException,
+<i>71</i>&nbsp;                   MBeanException,
+<i>72</i>&nbsp;                   ReflectionException {
+<i>73</i>&nbsp;
+<b class="nc"><i>74</i>&nbsp;        final M cm = getters.get(attribute);</b>
+<b class="nc"><i>75</i>&nbsp;        if (cm == null) {</b>
+<i>76</i>&nbsp;            final String msg;
+<b class="nc"><i>77</i>&nbsp;            if (setters.containsKey(attribute))</b>
+<b class="nc"><i>78</i>&nbsp;                msg = &quot;Write-only attribute: &quot; + attribute;</b>
+<i>79</i>&nbsp;            else
+<b class="nc"><i>80</i>&nbsp;                msg = &quot;No such attribute: &quot; + attribute;</b>
+<b class="nc"><i>81</i>&nbsp;            throw new AttributeNotFoundException(msg);</b>
+<i>82</i>&nbsp;        }
+<b class="nc"><i>83</i>&nbsp;        return introspector.invokeM(cm, resource, (Object[]) null, cookie);</b>
+<i>84</i>&nbsp;    }
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    void setAttribute(Object resource, String attribute, Object value,
+<i>87</i>&nbsp;                      Object cookie)
+<i>88</i>&nbsp;            throws AttributeNotFoundException,
+<i>89</i>&nbsp;                   InvalidAttributeValueException,
+<i>90</i>&nbsp;                   MBeanException,
+<i>91</i>&nbsp;                   ReflectionException {
+<i>92</i>&nbsp;
+<b class="nc"><i>93</i>&nbsp;        final M cm = setters.get(attribute);</b>
+<b class="nc"><i>94</i>&nbsp;        if (cm == null) {</b>
+<i>95</i>&nbsp;            final String msg;
+<b class="nc"><i>96</i>&nbsp;            if (getters.containsKey(attribute))</b>
+<b class="nc"><i>97</i>&nbsp;                msg = &quot;Read-only attribute: &quot; + attribute;</b>
+<i>98</i>&nbsp;            else
+<b class="nc"><i>99</i>&nbsp;                msg = &quot;No such attribute: &quot; + attribute;</b>
+<b class="nc"><i>100</i>&nbsp;            throw new AttributeNotFoundException(msg);</b>
+<i>101</i>&nbsp;        }
+<b class="nc"><i>102</i>&nbsp;        introspector.invokeSetter(attribute, cm, resource, value, cookie);</b>
+<i>103</i>&nbsp;    }
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;    Object invoke(Object resource, String operation, Object[] params,
+<i>106</i>&nbsp;                  String[] signature, Object cookie)
+<i>107</i>&nbsp;            throws MBeanException, ReflectionException {
+<i>108</i>&nbsp;
+<b class="nc"><i>109</i>&nbsp;        final List&lt;MethodAndSig&gt; list = ops.get(operation);</b>
+<b class="nc"><i>110</i>&nbsp;        if (list == null) {</b>
+<b class="nc"><i>111</i>&nbsp;            final String msg = &quot;No such operation: &quot; + operation;</b>
+<b class="nc"><i>112</i>&nbsp;            return noSuchMethod(msg, resource, operation, params, signature,</b>
+<i>113</i>&nbsp;                                cookie);
+<i>114</i>&nbsp;        }
+<b class="nc"><i>115</i>&nbsp;        if (signature == null)</b>
+<b class="nc"><i>116</i>&nbsp;            signature = new String[0];</b>
+<b class="nc"><i>117</i>&nbsp;        MethodAndSig found = null;</b>
+<b class="nc"><i>118</i>&nbsp;        for (MethodAndSig mas : list) {</b>
+<b class="nc"><i>119</i>&nbsp;            if (Arrays.equals(mas.signature, signature)) {</b>
+<b class="nc"><i>120</i>&nbsp;                found = mas;</b>
+<b class="nc"><i>121</i>&nbsp;                break;</b>
+<i>122</i>&nbsp;            }
+<b class="nc"><i>123</i>&nbsp;        }</b>
+<b class="nc"><i>124</i>&nbsp;        if (found == null) {</b>
+<b class="nc"><i>125</i>&nbsp;            final String badSig = sigString(signature);</b>
+<i>126</i>&nbsp;            final String msg;
+<b class="nc"><i>127</i>&nbsp;            if (list.size() == 1) {  // helpful exception message</b>
+<b class="nc"><i>128</i>&nbsp;                msg = &quot;Signature mismatch for operation &quot; + operation +</b>
+<i>129</i>&nbsp;                        &quot;: &quot; + badSig + &quot; should be &quot; +
+<b class="nc"><i>130</i>&nbsp;                        sigString(list.get(0).signature);</b>
+<i>131</i>&nbsp;            } else {
+<b class="nc"><i>132</i>&nbsp;                msg = &quot;Operation &quot; + operation + &quot; exists but not with &quot; +</b>
+<i>133</i>&nbsp;                        &quot;this signature: &quot; + badSig;
+<i>134</i>&nbsp;            }
+<b class="nc"><i>135</i>&nbsp;            return noSuchMethod(msg, resource, operation, params, signature,</b>
+<i>136</i>&nbsp;                                cookie);
+<i>137</i>&nbsp;        }
+<b class="nc"><i>138</i>&nbsp;        return introspector.invokeM(found.method, resource, params, cookie);</b>
+<i>139</i>&nbsp;    }
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;    /*
+<i>142</i>&nbsp;     * This method is called when invoke doesn&#39;t find the named method.
+<i>143</i>&nbsp;     * Before throwing an exception, we check to see whether the
+<i>144</i>&nbsp;     * jmx.invoke.getters property is set, and if so whether the method
+<i>145</i>&nbsp;     * being invoked might be a getter or a setter.  If so we invoke it
+<i>146</i>&nbsp;     * and return the result.  This is for compatibility
+<i>147</i>&nbsp;     * with code based on JMX RI 1.0 or 1.1 which allowed invoking getters
+<i>148</i>&nbsp;     * and setters.  It is *not* recommended that new code use this feature.
+<i>149</i>&nbsp;     *
+<i>150</i>&nbsp;     * Since this method is either going to throw an exception or use
+<i>151</i>&nbsp;     * functionality that is strongly discouraged, we consider that its
+<i>152</i>&nbsp;     * performance is not very important.
+<i>153</i>&nbsp;     *
+<i>154</i>&nbsp;     * A simpler way to implement the functionality would be to add the getters
+<i>155</i>&nbsp;     * and setters to the operations map when jmx.invoke.getters is set.
+<i>156</i>&nbsp;     * However, that means that the property is consulted when an MBean
+<i>157</i>&nbsp;     * interface is being introspected and not thereafter.  Previously,
+<i>158</i>&nbsp;     * the property was consulted on every invocation.  So this simpler
+<i>159</i>&nbsp;     * implementation could potentially break code that sets and unsets
+<i>160</i>&nbsp;     * the property at different times.
+<i>161</i>&nbsp;     */
+<i>162</i>&nbsp;    private Object noSuchMethod(String msg, Object resource, String operation,
+<i>163</i>&nbsp;                                Object[] params, String[] signature,
+<i>164</i>&nbsp;                                Object cookie)
+<i>165</i>&nbsp;            throws MBeanException, ReflectionException {
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;        // Construct the exception that we will probably throw
+<b class="nc"><i>168</i>&nbsp;        final NoSuchMethodException nsme =</b>
+<b class="nc"><i>169</i>&nbsp;            new NoSuchMethodException(operation + sigString(signature));</b>
+<b class="nc"><i>170</i>&nbsp;        final ReflectionException exception =</b>
+<i>171</i>&nbsp;            new ReflectionException(nsme, msg);
+<i>172</i>&nbsp;
+<b class="nc"><i>173</i>&nbsp;        if (introspector.isMXBean())</b>
+<b class="nc"><i>174</i>&nbsp;            throw exception; // No compatibility requirement here</b>
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;        // Is the compatibility property set?
+<b class="nc"><i>177</i>&nbsp;        GetPropertyAction act = new GetPropertyAction(&quot;jmx.invoke.getters&quot;);</b>
+<i>178</i>&nbsp;        String invokeGettersS;
+<i>179</i>&nbsp;        try {
+<b class="nc"><i>180</i>&nbsp;            invokeGettersS = AccessController.doPrivileged(act);</b>
+<b class="nc"><i>181</i>&nbsp;        } catch (Exception e) {</b>
+<i>182</i>&nbsp;            // We don&#39;t expect an exception here but if we get one then
+<i>183</i>&nbsp;            // we&#39;ll simply assume that the property is not set.
+<b class="nc"><i>184</i>&nbsp;            invokeGettersS = null;</b>
+<b class="nc"><i>185</i>&nbsp;        }</b>
+<b class="nc"><i>186</i>&nbsp;        if (invokeGettersS == null)</b>
+<b class="nc"><i>187</i>&nbsp;            throw exception;</b>
+<i>188</i>&nbsp;
+<b class="nc"><i>189</i>&nbsp;        int rest = 0;</b>
+<b class="nc"><i>190</i>&nbsp;        Map&lt;String, M&gt; methods = null;</b>
+<b class="nc"><i>191</i>&nbsp;        if (signature == null || signature.length == 0) {</b>
+<b class="nc"><i>192</i>&nbsp;            if (operation.startsWith(&quot;get&quot;))</b>
+<b class="nc"><i>193</i>&nbsp;                rest = 3;</b>
+<b class="nc"><i>194</i>&nbsp;            else if (operation.startsWith(&quot;is&quot;))</b>
+<b class="nc"><i>195</i>&nbsp;                rest = 2;</b>
+<b class="nc"><i>196</i>&nbsp;            if (rest != 0)</b>
+<b class="nc"><i>197</i>&nbsp;                methods = getters;</b>
+<b class="nc"><i>198</i>&nbsp;        } else if (signature.length == 1 &amp;&amp;</b>
+<b class="nc"><i>199</i>&nbsp;                   operation.startsWith(&quot;set&quot;)) {</b>
+<b class="nc"><i>200</i>&nbsp;            rest = 3;</b>
+<b class="nc"><i>201</i>&nbsp;            methods = setters;</b>
+<i>202</i>&nbsp;        }
+<i>203</i>&nbsp;
+<b class="nc"><i>204</i>&nbsp;        if (rest != 0) {</b>
+<b class="nc"><i>205</i>&nbsp;            String attrName = operation.substring(rest);</b>
+<b class="nc"><i>206</i>&nbsp;            M method = methods.get(attrName);</b>
+<b class="nc"><i>207</i>&nbsp;            if (method != null &amp;&amp; introspector.getName(method).equals(operation)) {</b>
+<b class="nc"><i>208</i>&nbsp;                String[] msig = introspector.getSignature(method);</b>
+<b class="nc"><i>209</i>&nbsp;                if ((signature == null &amp;&amp; msig.length == 0) ||</b>
+<b class="nc"><i>210</i>&nbsp;                        Arrays.equals(signature, msig)) {</b>
+<b class="nc"><i>211</i>&nbsp;                    return introspector.invokeM(method, resource, params, cookie);</b>
+<i>212</i>&nbsp;                }
+<i>213</i>&nbsp;            }
+<i>214</i>&nbsp;        }
+<i>215</i>&nbsp;
+<b class="nc"><i>216</i>&nbsp;        throw exception;</b>
+<i>217</i>&nbsp;    }
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;    private String sigString(String[] signature) {
+<b class="nc"><i>220</i>&nbsp;        StringBuilder b = new StringBuilder(&quot;(&quot;);</b>
+<b class="nc"><i>221</i>&nbsp;        if (signature != null) {</b>
+<b class="nc"><i>222</i>&nbsp;            for (String s : signature) {</b>
+<b class="nc"><i>223</i>&nbsp;                if (b.length() &gt; 1)</b>
+<b class="nc"><i>224</i>&nbsp;                    b.append(&quot;, &quot;);</b>
+<b class="nc"><i>225</i>&nbsp;                b.append(s);</b>
+<i>226</i>&nbsp;            }
+<i>227</i>&nbsp;        }
+<b class="nc"><i>228</i>&nbsp;        return b.append(&quot;)&quot;).toString();</b>
+<i>229</i>&nbsp;    }
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;    /**
+<i>232</i>&nbsp;     * Visitor that sets up the method maps (operations, getters, setters).
+<i>233</i>&nbsp;     */
+<b class="nc"><i>234</i>&nbsp;    private class InitMaps implements MBeanAnalyzer.MBeanVisitor&lt;M&gt; {</b>
+<i>235</i>&nbsp;        public void visitAttribute(String attributeName,
+<i>236</i>&nbsp;                                   M getter,
+<i>237</i>&nbsp;                                   M setter) {
+<b class="nc"><i>238</i>&nbsp;            if (getter != null) {</b>
+<b class="nc"><i>239</i>&nbsp;                introspector.checkMethod(getter);</b>
+<b class="nc"><i>240</i>&nbsp;                final Object old = getters.put(attributeName, getter);</b>
+<b class="nc"><i>241</i>&nbsp;                assert(old == null);</b>
+<i>242</i>&nbsp;            }
+<b class="nc"><i>243</i>&nbsp;            if (setter != null) {</b>
+<b class="nc"><i>244</i>&nbsp;                introspector.checkMethod(setter);</b>
+<b class="nc"><i>245</i>&nbsp;                final Object old = setters.put(attributeName, setter);</b>
+<b class="nc"><i>246</i>&nbsp;                assert(old == null);</b>
+<i>247</i>&nbsp;            }
+<i>248</i>&nbsp;        }
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;        public void visitOperation(String operationName,
+<i>251</i>&nbsp;                                   M operation) {
+<b class="nc"><i>252</i>&nbsp;            introspector.checkMethod(operation);</b>
+<b class="nc"><i>253</i>&nbsp;            final String[] sig = introspector.getSignature(operation);</b>
+<b class="nc"><i>254</i>&nbsp;            final MethodAndSig mas = new MethodAndSig();</b>
+<b class="nc"><i>255</i>&nbsp;            mas.method = operation;</b>
+<b class="nc"><i>256</i>&nbsp;            mas.signature = sig;</b>
+<b class="nc"><i>257</i>&nbsp;            List&lt;MethodAndSig&gt; list = ops.get(operationName);</b>
+<b class="nc"><i>258</i>&nbsp;            if (list == null)</b>
+<b class="nc"><i>259</i>&nbsp;                list = Collections.singletonList(mas);</b>
+<i>260</i>&nbsp;            else {
+<b class="nc"><i>261</i>&nbsp;                if (list.size() == 1)</b>
+<b class="nc"><i>262</i>&nbsp;                    list = newList(list);</b>
+<b class="nc"><i>263</i>&nbsp;                list.add(mas);</b>
+<i>264</i>&nbsp;            }
+<b class="nc"><i>265</i>&nbsp;            ops.put(operationName, list);</b>
+<i>266</i>&nbsp;        }
+<i>267</i>&nbsp;    }
+<i>268</i>&nbsp;
+<b class="nc"><i>269</i>&nbsp;    private class MethodAndSig {</b>
+<i>270</i>&nbsp;        M method;
+<i>271</i>&nbsp;        String[] signature;
+<i>272</i>&nbsp;    }
+<i>273</i>&nbsp;
+<i>274</i>&nbsp;    private final Class&lt;?&gt; mbeanInterface;
+<i>275</i>&nbsp;    private final MBeanIntrospector&lt;M&gt; introspector;
+<i>276</i>&nbsp;    private final MBeanInfo mbeanInfo;
+<b class="nc"><i>277</i>&nbsp;    private final Map&lt;String, M&gt; getters = newMap();</b>
+<b class="nc"><i>278</i>&nbsp;    private final Map&lt;String, M&gt; setters = newMap();</b>
+<b class="nc"><i>279</i>&nbsp;    private final Map&lt;String, List&lt;MethodAndSig&gt;&gt; ops = newMap();</b>
+<i>280</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

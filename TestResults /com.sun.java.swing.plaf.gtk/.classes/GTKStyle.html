@@ -1,0 +1,1288 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: GTKStyle</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.java.swing.plaf.gtk</a> ]
+</div>
+
+<h1>Coverage Summary for Class: GTKStyle (com.sun.java.swing.plaf.gtk)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GTKStyle</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 36)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 384)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">GTKStyle$GTKLazyValue</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 17)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">GTKStyle$GTKStockIcon</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 33)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">GTKStyle$GTKStockIconInfo</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 33)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 51)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 467)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2002, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.java.swing.plaf.gtk;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.awt.*;
+<i>29</i>&nbsp;import java.lang.reflect.*;
+<i>30</i>&nbsp;import java.security.*;
+<i>31</i>&nbsp;import java.util.*;
+<i>32</i>&nbsp;import javax.swing.*;
+<i>33</i>&nbsp;import javax.swing.plaf.*;
+<i>34</i>&nbsp;import javax.swing.plaf.synth.*;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import sun.awt.AppContext;
+<i>37</i>&nbsp;import sun.awt.UNIXToolkit;
+<i>38</i>&nbsp;import sun.swing.SwingUtilities2;
+<i>39</i>&nbsp;import sun.swing.plaf.synth.SynthIcon;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import com.sun.java.swing.plaf.gtk.GTKEngine.WidgetType;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;/**
+<i>44</i>&nbsp; *
+<i>45</i>&nbsp; * @author Scott Violet
+<i>46</i>&nbsp; */
+<b class="nc"><i>47</i>&nbsp;class GTKStyle extends SynthStyle implements GTKConstants {</b>
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    private static native int nativeGetXThickness(int widgetType);
+<i>50</i>&nbsp;    private static native int nativeGetYThickness(int widgetType);
+<i>51</i>&nbsp;    private static native int nativeGetColorForState(int widgetType,
+<i>52</i>&nbsp;                                                     int state, int typeID);
+<i>53</i>&nbsp;    private static native Object nativeGetClassValue(int widgetType,
+<i>54</i>&nbsp;                                                     String key);
+<i>55</i>&nbsp;    private static native String nativeGetPangoFontName(int widgetType);
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    private static final String ICON_PROPERTY_PREFIX = &quot;gtk.icon.&quot;;
+<i>58</i>&nbsp;
+<b class="nc"><i>59</i>&nbsp;    static final Color BLACK_COLOR = new ColorUIResource(Color.BLACK);</b>
+<b class="nc"><i>60</i>&nbsp;    static final Color WHITE_COLOR = new ColorUIResource(Color.WHITE);</b>
+<i>61</i>&nbsp;
+<b class="nc"><i>62</i>&nbsp;    static final Font DEFAULT_FONT = new FontUIResource(&quot;sansserif&quot;,</b>
+<i>63</i>&nbsp;                                                        Font.PLAIN, 10  );
+<b class="nc"><i>64</i>&nbsp;    static final Insets BUTTON_DEFAULT_BORDER_INSETS = new Insets(1, 1, 1, 1);</b>
+<i>65</i>&nbsp;
+<b class="nc"><i>66</i>&nbsp;    private static final GTKGraphicsUtils GTK_GRAPHICS = new GTKGraphicsUtils();</b>
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    /**
+<i>69</i>&nbsp;     * Maps from a key that is passed to Style.get to the equivalent class
+<i>70</i>&nbsp;     * specific key.
+<i>71</i>&nbsp;     */
+<i>72</i>&nbsp;    private static final Map&lt;String,String&gt; CLASS_SPECIFIC_MAP;
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    /**
+<i>75</i>&nbsp;     * Backing style properties that are used if the style does not
+<i>76</i>&nbsp;     * defined the property.
+<i>77</i>&nbsp;     */
+<i>78</i>&nbsp;    private static final Map&lt;String,GTKStockIcon&gt; ICONS_MAP;
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    /**
+<i>81</i>&nbsp;     * The font used for this particular style, as determined at
+<i>82</i>&nbsp;     * construction time.
+<i>83</i>&nbsp;     */
+<i>84</i>&nbsp;    private final Font font;
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    /** Widget type used when looking up class specific values. */
+<i>87</i>&nbsp;    private final int widgetType;
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    /** The x/y thickness values for this particular style. */
+<i>90</i>&nbsp;    private final int xThickness, yThickness;
+<i>91</i>&nbsp;
+<b class="nc"><i>92</i>&nbsp;    GTKStyle(Font userFont, WidgetType widgetType) {</b>
+<b class="nc"><i>93</i>&nbsp;        this.widgetType = widgetType.ordinal();</b>
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;        String pangoFontName;
+<b class="nc"><i>96</i>&nbsp;        synchronized (sun.awt.UNIXToolkit.GTK_LOCK) {</b>
+<b class="nc"><i>97</i>&nbsp;            xThickness = nativeGetXThickness(this.widgetType);</b>
+<b class="nc"><i>98</i>&nbsp;            yThickness = nativeGetYThickness(this.widgetType);</b>
+<b class="nc"><i>99</i>&nbsp;            pangoFontName = nativeGetPangoFontName(this.widgetType);</b>
+<b class="nc"><i>100</i>&nbsp;        }</b>
+<i>101</i>&nbsp;
+<b class="nc"><i>102</i>&nbsp;        Font pangoFont = null;</b>
+<b class="nc"><i>103</i>&nbsp;        if (pangoFontName != null) {</b>
+<b class="nc"><i>104</i>&nbsp;            pangoFont = PangoFonts.lookupFont(pangoFontName);</b>
+<i>105</i>&nbsp;        }
+<b class="nc"><i>106</i>&nbsp;        if (pangoFont != null) {</b>
+<b class="nc"><i>107</i>&nbsp;            this.font = pangoFont;</b>
+<b class="nc"><i>108</i>&nbsp;        } else if (userFont != null) {</b>
+<b class="nc"><i>109</i>&nbsp;            this.font = userFont;</b>
+<i>110</i>&nbsp;        } else {
+<b class="nc"><i>111</i>&nbsp;            this.font = DEFAULT_FONT;</b>
+<i>112</i>&nbsp;        }
+<i>113</i>&nbsp;    }
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;    @Override
+<i>116</i>&nbsp;    public void installDefaults(SynthContext context) {
+<b class="nc"><i>117</i>&nbsp;        super.installDefaults(context);</b>
+<b class="nc"><i>118</i>&nbsp;        if (!context.getRegion().isSubregion()) {</b>
+<b class="nc"><i>119</i>&nbsp;            context.getComponent().putClientProperty(</b>
+<i>120</i>&nbsp;                SwingUtilities2.AA_TEXT_PROPERTY_KEY,
+<i>121</i>&nbsp;                GTKLookAndFeel.aaTextInfo);
+<i>122</i>&nbsp;        }
+<i>123</i>&nbsp;    }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    @Override
+<i>126</i>&nbsp;    public SynthGraphicsUtils getGraphicsUtils(SynthContext context) {
+<b class="nc"><i>127</i>&nbsp;        return GTK_GRAPHICS;</b>
+<i>128</i>&nbsp;    }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    /**
+<i>131</i>&nbsp;     * Returns a &lt;code&gt;SynthPainter&lt;/code&gt; that will route the appropriate
+<i>132</i>&nbsp;     * calls to a &lt;code&gt;GTKEngine&lt;/code&gt;.
+<i>133</i>&nbsp;     *
+<i>134</i>&nbsp;     * @param state SynthContext identifying requestor
+<i>135</i>&nbsp;     * @return SynthPainter
+<i>136</i>&nbsp;     */
+<i>137</i>&nbsp;    @Override
+<i>138</i>&nbsp;    public SynthPainter getPainter(SynthContext state) {
+<b class="nc"><i>139</i>&nbsp;        return GTKPainter.INSTANCE;</b>
+<i>140</i>&nbsp;    }
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;    protected Color getColorForState(SynthContext context, ColorType type) {
+<b class="nc"><i>143</i>&nbsp;        if (type == ColorType.FOCUS || type == GTKColorType.BLACK) {</b>
+<b class="nc"><i>144</i>&nbsp;            return BLACK_COLOR;</b>
+<i>145</i>&nbsp;        }
+<b class="nc"><i>146</i>&nbsp;        else if (type == GTKColorType.WHITE) {</b>
+<b class="nc"><i>147</i>&nbsp;            return WHITE_COLOR;</b>
+<i>148</i>&nbsp;        }
+<i>149</i>&nbsp;
+<b class="nc"><i>150</i>&nbsp;        Region id = context.getRegion();</b>
+<b class="nc"><i>151</i>&nbsp;        int state = context.getComponentState();</b>
+<b class="nc"><i>152</i>&nbsp;        state = GTKLookAndFeel.synthStateToGTKState(id, state);</b>
+<i>153</i>&nbsp;
+<b class="nc"><i>154</i>&nbsp;        if (type == ColorType.TEXT_FOREGROUND &amp;&amp;</b>
+<i>155</i>&nbsp;               (id == Region.BUTTON ||
+<i>156</i>&nbsp;                id == Region.CHECK_BOX ||
+<i>157</i>&nbsp;                id == Region.CHECK_BOX_MENU_ITEM ||
+<i>158</i>&nbsp;                id == Region.MENU ||
+<i>159</i>&nbsp;                id == Region.MENU_ITEM ||
+<i>160</i>&nbsp;                id == Region.RADIO_BUTTON ||
+<i>161</i>&nbsp;                id == Region.RADIO_BUTTON_MENU_ITEM ||
+<i>162</i>&nbsp;                id == Region.TABBED_PANE_TAB ||
+<i>163</i>&nbsp;                id == Region.TOGGLE_BUTTON ||
+<i>164</i>&nbsp;                id == Region.TOOL_TIP ||
+<i>165</i>&nbsp;                id == Region.MENU_ITEM_ACCELERATOR ||
+<i>166</i>&nbsp;                id == Region.TABBED_PANE_TAB)) {
+<b class="nc"><i>167</i>&nbsp;            type = ColorType.FOREGROUND;</b>
+<b class="nc"><i>168</i>&nbsp;        } else if (id == Region.TABLE ||</b>
+<i>169</i>&nbsp;                   id == Region.LIST ||
+<i>170</i>&nbsp;                   id == Region.TREE ||
+<i>171</i>&nbsp;                   id == Region.TREE_CELL) {
+<b class="nc"><i>172</i>&nbsp;            if (type == ColorType.FOREGROUND) {</b>
+<b class="nc"><i>173</i>&nbsp;                type = ColorType.TEXT_FOREGROUND;</b>
+<b class="nc"><i>174</i>&nbsp;                if (state == SynthConstants.PRESSED) {</b>
+<b class="nc"><i>175</i>&nbsp;                    state = SynthConstants.SELECTED;</b>
+<i>176</i>&nbsp;                }
+<b class="nc"><i>177</i>&nbsp;            } else if (type == ColorType.BACKGROUND) {</b>
+<b class="nc"><i>178</i>&nbsp;                type = ColorType.TEXT_BACKGROUND;</b>
+<i>179</i>&nbsp;            }
+<i>180</i>&nbsp;        }
+<i>181</i>&nbsp;
+<b class="nc"><i>182</i>&nbsp;        return getStyleSpecificColor(context, state, type);</b>
+<i>183</i>&nbsp;    }
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;    /**
+<i>186</i>&nbsp;     * Returns color specific to the current style. This method is
+<i>187</i>&nbsp;     * invoked when other variants don&#39;t fit.
+<i>188</i>&nbsp;     */
+<i>189</i>&nbsp;    private Color getStyleSpecificColor(SynthContext context, int state,
+<i>190</i>&nbsp;                                        ColorType type)
+<i>191</i>&nbsp;    {
+<b class="nc"><i>192</i>&nbsp;        state = GTKLookAndFeel.synthStateToGTKStateType(state).ordinal();</b>
+<b class="nc"><i>193</i>&nbsp;        synchronized (sun.awt.UNIXToolkit.GTK_LOCK) {</b>
+<b class="nc"><i>194</i>&nbsp;            int rgb = nativeGetColorForState(widgetType, state,</b>
+<b class="nc"><i>195</i>&nbsp;                                             type.getID());</b>
+<b class="nc"><i>196</i>&nbsp;            return new ColorUIResource(rgb);</b>
+<b class="nc"><i>197</i>&nbsp;        }</b>
+<i>198</i>&nbsp;    }
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;    Color getGTKColor(int state, ColorType type) {
+<b class="nc"><i>201</i>&nbsp;        return getGTKColor(null, state, type);</b>
+<i>202</i>&nbsp;    }
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;    /**
+<i>205</i>&nbsp;     * Returns the color for the specified state.
+<i>206</i>&nbsp;     *
+<i>207</i>&nbsp;     * @param context SynthContext identifying requestor
+<i>208</i>&nbsp;     * @param state to get the color for
+<i>209</i>&nbsp;     * @param type of the color
+<i>210</i>&nbsp;     * @return Color to render with
+<i>211</i>&nbsp;     */
+<i>212</i>&nbsp;    Color getGTKColor(SynthContext context, int state, ColorType type) {
+<b class="nc"><i>213</i>&nbsp;        if (context != null) {</b>
+<b class="nc"><i>214</i>&nbsp;            JComponent c = context.getComponent();</b>
+<b class="nc"><i>215</i>&nbsp;            Region id = context.getRegion();</b>
+<i>216</i>&nbsp;
+<b class="nc"><i>217</i>&nbsp;            state = GTKLookAndFeel.synthStateToGTKState(id, state);</b>
+<b class="nc"><i>218</i>&nbsp;            if (!id.isSubregion() &amp;&amp;</b>
+<i>219</i>&nbsp;                (state &amp; SynthConstants.ENABLED) != 0) {
+<b class="nc"><i>220</i>&nbsp;                if (type == ColorType.BACKGROUND ||</b>
+<i>221</i>&nbsp;                    type == ColorType.TEXT_BACKGROUND) {
+<b class="nc"><i>222</i>&nbsp;                    Color bg = c.getBackground();</b>
+<b class="nc"><i>223</i>&nbsp;                    if (!(bg instanceof UIResource)) {</b>
+<b class="nc"><i>224</i>&nbsp;                        return bg;</b>
+<i>225</i>&nbsp;                    }
+<b class="nc"><i>226</i>&nbsp;                }</b>
+<b class="nc"><i>227</i>&nbsp;                else if (type == ColorType.FOREGROUND ||</b>
+<i>228</i>&nbsp;                         type == ColorType.TEXT_FOREGROUND) {
+<b class="nc"><i>229</i>&nbsp;                    Color fg = c.getForeground();</b>
+<b class="nc"><i>230</i>&nbsp;                    if (!(fg instanceof UIResource)) {</b>
+<b class="nc"><i>231</i>&nbsp;                        return fg;</b>
+<i>232</i>&nbsp;                    }
+<i>233</i>&nbsp;                }
+<i>234</i>&nbsp;            }
+<i>235</i>&nbsp;        }
+<i>236</i>&nbsp;
+<b class="nc"><i>237</i>&nbsp;        return getStyleSpecificColor(context, state, type);</b>
+<i>238</i>&nbsp;    }
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;    @Override
+<i>241</i>&nbsp;    public Color getColor(SynthContext context, ColorType type) {
+<b class="nc"><i>242</i>&nbsp;        JComponent c = context.getComponent();</b>
+<b class="nc"><i>243</i>&nbsp;        Region id = context.getRegion();</b>
+<b class="nc"><i>244</i>&nbsp;        int state = context.getComponentState();</b>
+<i>245</i>&nbsp;
+<b class="nc"><i>246</i>&nbsp;        if (c.getName() == &quot;Table.cellRenderer&quot;) {</b>
+<b class="nc"><i>247</i>&nbsp;             if (type == ColorType.BACKGROUND) {</b>
+<b class="nc"><i>248</i>&nbsp;                 return c.getBackground();</b>
+<i>249</i>&nbsp;             }
+<b class="nc"><i>250</i>&nbsp;             if (type == ColorType.FOREGROUND) {</b>
+<b class="nc"><i>251</i>&nbsp;                 return c.getForeground();</b>
+<i>252</i>&nbsp;             }
+<i>253</i>&nbsp;        }
+<i>254</i>&nbsp;
+<b class="nc"><i>255</i>&nbsp;        if (id == Region.LABEL &amp;&amp; type == ColorType.TEXT_FOREGROUND) {</b>
+<b class="nc"><i>256</i>&nbsp;            type = ColorType.FOREGROUND;</b>
+<i>257</i>&nbsp;        }
+<i>258</i>&nbsp;
+<i>259</i>&nbsp;        // For the enabled state, prefer the widget&#39;s colors
+<b class="nc"><i>260</i>&nbsp;        if (!id.isSubregion() &amp;&amp; (state &amp; SynthConstants.ENABLED) != 0) {</b>
+<b class="nc"><i>261</i>&nbsp;            if (type == ColorType.BACKGROUND) {</b>
+<b class="nc"><i>262</i>&nbsp;                return c.getBackground();</b>
+<i>263</i>&nbsp;            }
+<b class="nc"><i>264</i>&nbsp;            else if (type == ColorType.FOREGROUND) {</b>
+<b class="nc"><i>265</i>&nbsp;                return c.getForeground();</b>
+<i>266</i>&nbsp;            }
+<b class="nc"><i>267</i>&nbsp;            else if (type == ColorType.TEXT_FOREGROUND) {</b>
+<i>268</i>&nbsp;                // If getForeground returns a non-UIResource it means the
+<i>269</i>&nbsp;                // developer has explicitly set the foreground, use it over
+<i>270</i>&nbsp;                // that of TEXT_FOREGROUND as that is typically the expected
+<i>271</i>&nbsp;                // behavior.
+<b class="nc"><i>272</i>&nbsp;                Color color = c.getForeground();</b>
+<b class="nc"><i>273</i>&nbsp;                if (color != null &amp;&amp; !(color instanceof UIResource)) {</b>
+<b class="nc"><i>274</i>&nbsp;                    return color;</b>
+<i>275</i>&nbsp;                }
+<i>276</i>&nbsp;            }
+<i>277</i>&nbsp;        }
+<b class="nc"><i>278</i>&nbsp;        return getColorForState(context, type);</b>
+<i>279</i>&nbsp;    }
+<i>280</i>&nbsp;
+<i>281</i>&nbsp;    protected Font getFontForState(SynthContext context) {
+<b class="nc"><i>282</i>&nbsp;        return font;</b>
+<i>283</i>&nbsp;    }
+<i>284</i>&nbsp;
+<i>285</i>&nbsp;    /**
+<i>286</i>&nbsp;     * Returns the X thickness to use for this GTKStyle.
+<i>287</i>&nbsp;     *
+<i>288</i>&nbsp;     * @return x thickness.
+<i>289</i>&nbsp;     */
+<i>290</i>&nbsp;    int getXThickness() {
+<b class="nc"><i>291</i>&nbsp;        return xThickness;</b>
+<i>292</i>&nbsp;    }
+<i>293</i>&nbsp;
+<i>294</i>&nbsp;    /**
+<i>295</i>&nbsp;     * Returns the Y thickness to use for this GTKStyle.
+<i>296</i>&nbsp;     *
+<i>297</i>&nbsp;     * @return y thickness.
+<i>298</i>&nbsp;     */
+<i>299</i>&nbsp;    int getYThickness() {
+<b class="nc"><i>300</i>&nbsp;        return yThickness;</b>
+<i>301</i>&nbsp;    }
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;    /**
+<i>304</i>&nbsp;     * Returns the Insets. If &lt;code&gt;insets&lt;/code&gt; is non-null the resulting
+<i>305</i>&nbsp;     * insets will be placed in it, otherwise a new Insets object will be
+<i>306</i>&nbsp;     * created and returned.
+<i>307</i>&nbsp;     *
+<i>308</i>&nbsp;     * @param context SynthContext identifying requestor
+<i>309</i>&nbsp;     * @param insets Where to place Insets
+<i>310</i>&nbsp;     * @return Insets.
+<i>311</i>&nbsp;     */
+<i>312</i>&nbsp;    @Override
+<i>313</i>&nbsp;    public Insets getInsets(SynthContext state, Insets insets) {
+<b class="nc"><i>314</i>&nbsp;        Region id = state.getRegion();</b>
+<b class="nc"><i>315</i>&nbsp;        JComponent component = state.getComponent();</b>
+<b class="nc"><i>316</i>&nbsp;        String name = (id.isSubregion()) ? null : component.getName();</b>
+<i>317</i>&nbsp;
+<b class="nc"><i>318</i>&nbsp;        if (insets == null) {</b>
+<b class="nc"><i>319</i>&nbsp;            insets = new Insets(0, 0, 0, 0);</b>
+<i>320</i>&nbsp;        } else {
+<b class="nc"><i>321</i>&nbsp;            insets.top = insets.bottom = insets.left = insets.right = 0;</b>
+<i>322</i>&nbsp;        }
+<i>323</i>&nbsp;
+<b class="nc"><i>324</i>&nbsp;        if (id == Region.ARROW_BUTTON || id == Region.BUTTON ||</b>
+<i>325</i>&nbsp;                id == Region.TOGGLE_BUTTON) {
+<b class="nc"><i>326</i>&nbsp;            if (&quot;Spinner.previousButton&quot; == name ||</b>
+<i>327</i>&nbsp;                    &quot;Spinner.nextButton&quot; == name) {
+<b class="nc"><i>328</i>&nbsp;                return getSimpleInsets(state, insets, 1);</b>
+<i>329</i>&nbsp;            } else {
+<b class="nc"><i>330</i>&nbsp;                return getButtonInsets(state, insets);</b>
+<i>331</i>&nbsp;            }
+<i>332</i>&nbsp;        }
+<b class="nc"><i>333</i>&nbsp;        else if (id == Region.CHECK_BOX || id == Region.RADIO_BUTTON) {</b>
+<b class="nc"><i>334</i>&nbsp;            return getRadioInsets(state, insets);</b>
+<i>335</i>&nbsp;        }
+<b class="nc"><i>336</i>&nbsp;        else if (id == Region.MENU_BAR) {</b>
+<b class="nc"><i>337</i>&nbsp;            return getMenuBarInsets(state, insets);</b>
+<i>338</i>&nbsp;        }
+<b class="nc"><i>339</i>&nbsp;        else if (id == Region.MENU ||</b>
+<i>340</i>&nbsp;                 id == Region.MENU_ITEM ||
+<i>341</i>&nbsp;                 id == Region.CHECK_BOX_MENU_ITEM ||
+<i>342</i>&nbsp;                 id == Region.RADIO_BUTTON_MENU_ITEM) {
+<b class="nc"><i>343</i>&nbsp;            return getMenuItemInsets(state, insets);</b>
+<i>344</i>&nbsp;        }
+<b class="nc"><i>345</i>&nbsp;        else if (id == Region.FORMATTED_TEXT_FIELD) {</b>
+<b class="nc"><i>346</i>&nbsp;            return getTextFieldInsets(state, insets);</b>
+<i>347</i>&nbsp;        }
+<b class="nc"><i>348</i>&nbsp;        else if (id == Region.INTERNAL_FRAME) {</b>
+<b class="nc"><i>349</i>&nbsp;            insets = Metacity.INSTANCE.getBorderInsets(state, insets);</b>
+<i>350</i>&nbsp;        }
+<b class="nc"><i>351</i>&nbsp;        else if (id == Region.LABEL) {</b>
+<b class="nc"><i>352</i>&nbsp;            if (&quot;TableHeader.renderer&quot; == name) {</b>
+<b class="nc"><i>353</i>&nbsp;                return getButtonInsets(state, insets);</b>
+<i>354</i>&nbsp;            }
+<b class="nc"><i>355</i>&nbsp;            else if (component instanceof ListCellRenderer) {</b>
+<b class="nc"><i>356</i>&nbsp;                return getTextFieldInsets(state, insets);</b>
+<i>357</i>&nbsp;            }
+<b class="nc"><i>358</i>&nbsp;            else if (&quot;Tree.cellRenderer&quot; == name) {</b>
+<b class="nc"><i>359</i>&nbsp;                return getSimpleInsets(state, insets, 1);</b>
+<i>360</i>&nbsp;            }
+<i>361</i>&nbsp;        }
+<b class="nc"><i>362</i>&nbsp;        else if (id == Region.OPTION_PANE) {</b>
+<b class="nc"><i>363</i>&nbsp;            return getSimpleInsets(state, insets, 6);</b>
+<i>364</i>&nbsp;        }
+<b class="nc"><i>365</i>&nbsp;        else if (id == Region.POPUP_MENU) {</b>
+<b class="nc"><i>366</i>&nbsp;            return getSimpleInsets(state, insets, 2);</b>
+<i>367</i>&nbsp;        }
+<b class="nc"><i>368</i>&nbsp;        else if (id == Region.PROGRESS_BAR || id == Region.SLIDER ||</b>
+<i>369</i>&nbsp;                 id == Region.TABBED_PANE  || id == Region.TABBED_PANE_CONTENT ||
+<i>370</i>&nbsp;                 id == Region.TOOL_BAR     ||
+<i>371</i>&nbsp;                 id == Region.TOOL_BAR_DRAG_WINDOW ||
+<i>372</i>&nbsp;                 id == Region.TOOL_TIP) {
+<b class="nc"><i>373</i>&nbsp;            return getThicknessInsets(state, insets);</b>
+<i>374</i>&nbsp;        }
+<b class="nc"><i>375</i>&nbsp;        else if (id == Region.SCROLL_BAR) {</b>
+<b class="nc"><i>376</i>&nbsp;            return getScrollBarInsets(state, insets);</b>
+<i>377</i>&nbsp;        }
+<b class="nc"><i>378</i>&nbsp;        else if (id == Region.SLIDER_TRACK) {</b>
+<b class="nc"><i>379</i>&nbsp;            return getSliderTrackInsets(state, insets);</b>
+<i>380</i>&nbsp;        }
+<b class="nc"><i>381</i>&nbsp;        else if (id == Region.TABBED_PANE_TAB) {</b>
+<b class="nc"><i>382</i>&nbsp;            return getTabbedPaneTabInsets(state, insets);</b>
+<i>383</i>&nbsp;        }
+<b class="nc"><i>384</i>&nbsp;        else if (id == Region.TEXT_FIELD || id == Region.PASSWORD_FIELD) {</b>
+<b class="nc"><i>385</i>&nbsp;            if (name == &quot;Tree.cellEditor&quot;) {</b>
+<b class="nc"><i>386</i>&nbsp;                return getSimpleInsets(state, insets, 1);</b>
+<i>387</i>&nbsp;            }
+<b class="nc"><i>388</i>&nbsp;            return getTextFieldInsets(state, insets);</b>
+<b class="nc"><i>389</i>&nbsp;        } else if (id == Region.SEPARATOR ||</b>
+<i>390</i>&nbsp;                   id == Region.POPUP_MENU_SEPARATOR ||
+<i>391</i>&nbsp;                   id == Region.TOOL_BAR_SEPARATOR) {
+<b class="nc"><i>392</i>&nbsp;            return getSeparatorInsets(state, insets);</b>
+<b class="nc"><i>393</i>&nbsp;        } else if (id == GTKEngine.CustomRegion.TITLED_BORDER) {</b>
+<b class="nc"><i>394</i>&nbsp;            return getThicknessInsets(state, insets);</b>
+<i>395</i>&nbsp;        }
+<b class="nc"><i>396</i>&nbsp;        return insets;</b>
+<i>397</i>&nbsp;    }
+<i>398</i>&nbsp;
+<i>399</i>&nbsp;    private Insets getButtonInsets(SynthContext context, Insets insets) {
+<i>400</i>&nbsp;        // The following calculations are derived from gtkbutton.c
+<i>401</i>&nbsp;        // (GTK+ version 2.8.20), gtk_button_size_allocate() method.
+<b class="nc"><i>402</i>&nbsp;        int CHILD_SPACING = 1;</b>
+<b class="nc"><i>403</i>&nbsp;        int focusSize = getClassSpecificIntValue(context, &quot;focus-line-width&quot;,1);</b>
+<b class="nc"><i>404</i>&nbsp;        int focusPad = getClassSpecificIntValue(context, &quot;focus-padding&quot;, 1);</b>
+<b class="nc"><i>405</i>&nbsp;        int xThickness = getXThickness();</b>
+<b class="nc"><i>406</i>&nbsp;        int yThickness = getYThickness();</b>
+<b class="nc"><i>407</i>&nbsp;        int w = focusSize + focusPad + xThickness + CHILD_SPACING;</b>
+<b class="nc"><i>408</i>&nbsp;        int h = focusSize + focusPad + yThickness + CHILD_SPACING;</b>
+<b class="nc"><i>409</i>&nbsp;        insets.left = insets.right = w;</b>
+<b class="nc"><i>410</i>&nbsp;        insets.top = insets.bottom = h;</b>
+<i>411</i>&nbsp;
+<b class="nc"><i>412</i>&nbsp;        Component component = context.getComponent();</b>
+<b class="nc"><i>413</i>&nbsp;        if ((component instanceof JButton) &amp;&amp;</b>
+<b class="nc"><i>414</i>&nbsp;            !(component.getParent() instanceof JToolBar) &amp;&amp;</b>
+<b class="nc"><i>415</i>&nbsp;            ((JButton)component).isDefaultCapable())</b>
+<i>416</i>&nbsp;        {
+<i>417</i>&nbsp;            // Include the default border insets, but only for JButtons
+<i>418</i>&nbsp;            // that are default capable.  Note that
+<i>419</i>&nbsp;            // JButton.getDefaultCapable() returns true by default, but
+<i>420</i>&nbsp;            // GtkToolButtons are never default capable, so we skip this
+<i>421</i>&nbsp;            // step if the button is contained in a toolbar.
+<b class="nc"><i>422</i>&nbsp;            Insets defaultInsets = getClassSpecificInsetsValue(context,</b>
+<i>423</i>&nbsp;                          &quot;default-border&quot;, BUTTON_DEFAULT_BORDER_INSETS);
+<b class="nc"><i>424</i>&nbsp;            insets.left += defaultInsets.left;</b>
+<b class="nc"><i>425</i>&nbsp;            insets.right += defaultInsets.right;</b>
+<b class="nc"><i>426</i>&nbsp;            insets.top += defaultInsets.top;</b>
+<b class="nc"><i>427</i>&nbsp;            insets.bottom += defaultInsets.bottom;</b>
+<i>428</i>&nbsp;        }
+<i>429</i>&nbsp;
+<b class="nc"><i>430</i>&nbsp;        return insets;</b>
+<i>431</i>&nbsp;    }
+<i>432</i>&nbsp;
+<i>433</i>&nbsp;    /*
+<i>434</i>&nbsp;     * This is used for both RADIO_BUTTON and CHECK_BOX.
+<i>435</i>&nbsp;     */
+<i>436</i>&nbsp;    private Insets getRadioInsets(SynthContext context, Insets insets) {
+<i>437</i>&nbsp;        // The following calculations are derived from gtkcheckbutton.c
+<i>438</i>&nbsp;        // (GTK+ version 2.8.20), gtk_check_button_size_allocate() method.
+<b class="nc"><i>439</i>&nbsp;        int focusSize =</b>
+<b class="nc"><i>440</i>&nbsp;            getClassSpecificIntValue(context, &quot;focus-line-width&quot;, 1);</b>
+<b class="nc"><i>441</i>&nbsp;        int focusPad =</b>
+<b class="nc"><i>442</i>&nbsp;            getClassSpecificIntValue(context, &quot;focus-padding&quot;, 1);</b>
+<b class="nc"><i>443</i>&nbsp;        int totalFocus = focusSize + focusPad;</b>
+<i>444</i>&nbsp;
+<i>445</i>&nbsp;        // Note: GTKIconFactory.DelegateIcon will have already included the
+<i>446</i>&nbsp;        // &quot;indicator-spacing&quot; value in the size of the indicator icon,
+<i>447</i>&nbsp;        // which explains why we use zero as the left inset (or right inset
+<i>448</i>&nbsp;        // in the RTL case); see 6489585 for more details.
+<b class="nc"><i>449</i>&nbsp;        insets.top    = totalFocus;</b>
+<b class="nc"><i>450</i>&nbsp;        insets.bottom = totalFocus;</b>
+<b class="nc"><i>451</i>&nbsp;        if (context.getComponent().getComponentOrientation().isLeftToRight()) {</b>
+<b class="nc"><i>452</i>&nbsp;            insets.left  = 0;</b>
+<b class="nc"><i>453</i>&nbsp;            insets.right = totalFocus;</b>
+<i>454</i>&nbsp;        } else {
+<b class="nc"><i>455</i>&nbsp;            insets.left  = totalFocus;</b>
+<b class="nc"><i>456</i>&nbsp;            insets.right = 0;</b>
+<i>457</i>&nbsp;        }
+<i>458</i>&nbsp;
+<b class="nc"><i>459</i>&nbsp;        return insets;</b>
+<i>460</i>&nbsp;    }
+<i>461</i>&nbsp;
+<i>462</i>&nbsp;    private Insets getMenuBarInsets(SynthContext context, Insets insets) {
+<i>463</i>&nbsp;        // The following calculations are derived from gtkmenubar.c
+<i>464</i>&nbsp;        // (GTK+ version 2.8.20), gtk_menu_bar_size_allocate() method.
+<b class="nc"><i>465</i>&nbsp;        int internalPadding = getClassSpecificIntValue(context,</b>
+<i>466</i>&nbsp;                                                       &quot;internal-padding&quot;, 1);
+<b class="nc"><i>467</i>&nbsp;        int xThickness = getXThickness();</b>
+<b class="nc"><i>468</i>&nbsp;        int yThickness = getYThickness();</b>
+<b class="nc"><i>469</i>&nbsp;        insets.left = insets.right = xThickness + internalPadding;</b>
+<b class="nc"><i>470</i>&nbsp;        insets.top = insets.bottom = yThickness + internalPadding;</b>
+<b class="nc"><i>471</i>&nbsp;        return insets;</b>
+<i>472</i>&nbsp;    }
+<i>473</i>&nbsp;
+<i>474</i>&nbsp;    private Insets getMenuItemInsets(SynthContext context, Insets insets) {
+<i>475</i>&nbsp;        // The following calculations are derived from gtkmenuitem.c
+<i>476</i>&nbsp;        // (GTK+ version 2.8.20), gtk_menu_item_size_allocate() method.
+<b class="nc"><i>477</i>&nbsp;        int horizPadding = getClassSpecificIntValue(context,</b>
+<i>478</i>&nbsp;                                                    &quot;horizontal-padding&quot;, 3);
+<b class="nc"><i>479</i>&nbsp;        int xThickness = getXThickness();</b>
+<b class="nc"><i>480</i>&nbsp;        int yThickness = getYThickness();</b>
+<b class="nc"><i>481</i>&nbsp;        insets.left = insets.right = xThickness + horizPadding;</b>
+<b class="nc"><i>482</i>&nbsp;        insets.top = insets.bottom = yThickness;</b>
+<b class="nc"><i>483</i>&nbsp;        return insets;</b>
+<i>484</i>&nbsp;    }
+<i>485</i>&nbsp;
+<i>486</i>&nbsp;    private Insets getThicknessInsets(SynthContext context, Insets insets) {
+<b class="nc"><i>487</i>&nbsp;        insets.left = insets.right = getXThickness();</b>
+<b class="nc"><i>488</i>&nbsp;        insets.top = insets.bottom = getYThickness();</b>
+<b class="nc"><i>489</i>&nbsp;        return insets;</b>
+<i>490</i>&nbsp;    }
+<i>491</i>&nbsp;
+<i>492</i>&nbsp;    private Insets getSeparatorInsets(SynthContext context, Insets insets) {
+<b class="nc"><i>493</i>&nbsp;        int horizPadding = 0;</b>
+<b class="nc"><i>494</i>&nbsp;        if (context.getRegion() == Region.POPUP_MENU_SEPARATOR) {</b>
+<b class="nc"><i>495</i>&nbsp;            horizPadding =</b>
+<b class="nc"><i>496</i>&nbsp;                getClassSpecificIntValue(context, &quot;horizontal-padding&quot;, 3);</b>
+<i>497</i>&nbsp;        }
+<b class="nc"><i>498</i>&nbsp;        insets.right = insets.left = getXThickness() + horizPadding;</b>
+<b class="nc"><i>499</i>&nbsp;        insets.top = insets.bottom = getYThickness();</b>
+<b class="nc"><i>500</i>&nbsp;        return insets;</b>
+<i>501</i>&nbsp;    }
+<i>502</i>&nbsp;
+<i>503</i>&nbsp;    private Insets getSliderTrackInsets(SynthContext context, Insets insets) {
+<b class="nc"><i>504</i>&nbsp;        int focusSize = getClassSpecificIntValue(context, &quot;focus-line-width&quot;, 1);</b>
+<b class="nc"><i>505</i>&nbsp;        int focusPad = getClassSpecificIntValue(context, &quot;focus-padding&quot;, 1);</b>
+<b class="nc"><i>506</i>&nbsp;        insets.top = insets.bottom =</b>
+<i>507</i>&nbsp;                insets.left = insets.right = focusSize + focusPad;
+<b class="nc"><i>508</i>&nbsp;        return insets;</b>
+<i>509</i>&nbsp;    }
+<i>510</i>&nbsp;
+<i>511</i>&nbsp;    private Insets getSimpleInsets(SynthContext context, Insets insets, int n) {
+<b class="nc"><i>512</i>&nbsp;        insets.top = insets.bottom = insets.right = insets.left = n;</b>
+<b class="nc"><i>513</i>&nbsp;        return insets;</b>
+<i>514</i>&nbsp;    }
+<i>515</i>&nbsp;
+<i>516</i>&nbsp;    private Insets getTabbedPaneTabInsets(SynthContext context, Insets insets) {
+<b class="nc"><i>517</i>&nbsp;        int xThickness = getXThickness();</b>
+<b class="nc"><i>518</i>&nbsp;        int yThickness = getYThickness();</b>
+<b class="nc"><i>519</i>&nbsp;        int focusSize = getClassSpecificIntValue(context, &quot;focus-line-width&quot;,1);</b>
+<b class="nc"><i>520</i>&nbsp;        int pad = 2;</b>
+<i>521</i>&nbsp;
+<b class="nc"><i>522</i>&nbsp;        insets.left = insets.right = focusSize + pad + xThickness;</b>
+<b class="nc"><i>523</i>&nbsp;        insets.top = insets.bottom = focusSize + pad + yThickness;</b>
+<b class="nc"><i>524</i>&nbsp;        return insets;</b>
+<i>525</i>&nbsp;    }
+<i>526</i>&nbsp;
+<i>527</i>&nbsp;    // NOTE: this is called for ComboBox, and FormattedTextField also
+<i>528</i>&nbsp;    private Insets getTextFieldInsets(SynthContext context, Insets insets) {
+<b class="nc"><i>529</i>&nbsp;        insets = getClassSpecificInsetsValue(context, &quot;inner-border&quot;,</b>
+<b class="nc"><i>530</i>&nbsp;                                    getSimpleInsets(context, insets, 2));</b>
+<i>531</i>&nbsp;
+<b class="nc"><i>532</i>&nbsp;        int xThickness = getXThickness();</b>
+<b class="nc"><i>533</i>&nbsp;        int yThickness = getYThickness();</b>
+<b class="nc"><i>534</i>&nbsp;        boolean interiorFocus =</b>
+<b class="nc"><i>535</i>&nbsp;                getClassSpecificBoolValue(context, &quot;interior-focus&quot;, true);</b>
+<b class="nc"><i>536</i>&nbsp;        int focusSize = 0;</b>
+<i>537</i>&nbsp;
+<b class="nc"><i>538</i>&nbsp;        if (!interiorFocus) {</b>
+<b class="nc"><i>539</i>&nbsp;            focusSize = getClassSpecificIntValue(context, &quot;focus-line-width&quot;,1);</b>
+<i>540</i>&nbsp;        }
+<i>541</i>&nbsp;
+<b class="nc"><i>542</i>&nbsp;        insets.left   += focusSize + xThickness;</b>
+<b class="nc"><i>543</i>&nbsp;        insets.right  += focusSize + xThickness;</b>
+<b class="nc"><i>544</i>&nbsp;        insets.top    += focusSize + yThickness;</b>
+<b class="nc"><i>545</i>&nbsp;        insets.bottom += focusSize + yThickness;</b>
+<b class="nc"><i>546</i>&nbsp;        return insets;</b>
+<i>547</i>&nbsp;    }
+<i>548</i>&nbsp;
+<i>549</i>&nbsp;    private Insets getScrollBarInsets(SynthContext context, Insets insets) {
+<b class="nc"><i>550</i>&nbsp;        int troughBorder =</b>
+<b class="nc"><i>551</i>&nbsp;            getClassSpecificIntValue(context, &quot;trough-border&quot;, 1);</b>
+<b class="nc"><i>552</i>&nbsp;        insets.left = insets.right = insets.top = insets.bottom = troughBorder;</b>
+<i>553</i>&nbsp;
+<b class="nc"><i>554</i>&nbsp;        JComponent c = context.getComponent();</b>
+<b class="nc"><i>555</i>&nbsp;        if (c.getParent() instanceof JScrollPane) {</b>
+<i>556</i>&nbsp;            // This scrollbar is part of a scrollpane; use only the
+<i>557</i>&nbsp;            // &quot;scrollbar-spacing&quot; style property to determine the padding
+<i>558</i>&nbsp;            // between the scrollbar and its parent scrollpane.
+<b class="nc"><i>559</i>&nbsp;            int spacing =</b>
+<b class="nc"><i>560</i>&nbsp;                getClassSpecificIntValue(WidgetType.SCROLL_PANE,</b>
+<i>561</i>&nbsp;                                         &quot;scrollbar-spacing&quot;, 3);
+<b class="nc"><i>562</i>&nbsp;            if (((JScrollBar)c).getOrientation() == JScrollBar.HORIZONTAL) {</b>
+<b class="nc"><i>563</i>&nbsp;                insets.top += spacing;</b>
+<i>564</i>&nbsp;            } else {
+<b class="nc"><i>565</i>&nbsp;                if (c.getComponentOrientation().isLeftToRight()) {</b>
+<b class="nc"><i>566</i>&nbsp;                    insets.left += spacing;</b>
+<i>567</i>&nbsp;                } else {
+<b class="nc"><i>568</i>&nbsp;                    insets.right += spacing;</b>
+<i>569</i>&nbsp;                }
+<i>570</i>&nbsp;            }
+<b class="nc"><i>571</i>&nbsp;        } else {</b>
+<i>572</i>&nbsp;            // This is a standalone scrollbar; leave enough room for the
+<i>573</i>&nbsp;            // focus line in addition to the trough border.
+<b class="nc"><i>574</i>&nbsp;            if (c.isFocusable()) {</b>
+<b class="nc"><i>575</i>&nbsp;                int focusSize =</b>
+<b class="nc"><i>576</i>&nbsp;                    getClassSpecificIntValue(context, &quot;focus-line-width&quot;, 1);</b>
+<b class="nc"><i>577</i>&nbsp;                int focusPad =</b>
+<b class="nc"><i>578</i>&nbsp;                    getClassSpecificIntValue(context, &quot;focus-padding&quot;, 1);</b>
+<b class="nc"><i>579</i>&nbsp;                int totalFocus = focusSize + focusPad;</b>
+<b class="nc"><i>580</i>&nbsp;                insets.left   += totalFocus;</b>
+<b class="nc"><i>581</i>&nbsp;                insets.right  += totalFocus;</b>
+<b class="nc"><i>582</i>&nbsp;                insets.top    += totalFocus;</b>
+<b class="nc"><i>583</i>&nbsp;                insets.bottom += totalFocus;</b>
+<i>584</i>&nbsp;            }
+<i>585</i>&nbsp;        }
+<b class="nc"><i>586</i>&nbsp;        return insets;</b>
+<i>587</i>&nbsp;    }
+<i>588</i>&nbsp;
+<i>589</i>&nbsp;    /**
+<i>590</i>&nbsp;     * Returns the value for a class specific property for a particular
+<i>591</i>&nbsp;     * WidgetType.  This method is useful in those cases where we need to
+<i>592</i>&nbsp;     * fetch a value for a Region that is not associated with the component
+<i>593</i>&nbsp;     * currently in use (e.g. we need to figure out the insets for a
+<i>594</i>&nbsp;     * SCROLL_BAR, but certain values can only be extracted from a
+<i>595</i>&nbsp;     * SCROLL_PANE region).
+<i>596</i>&nbsp;     *
+<i>597</i>&nbsp;     * @param wt WidgetType for which to fetch the value
+<i>598</i>&nbsp;     * @param key Key identifying class specific value
+<i>599</i>&nbsp;     * @return Value, or null if one has not been defined
+<i>600</i>&nbsp;     */
+<i>601</i>&nbsp;    private static Object getClassSpecificValue(WidgetType wt, String key) {
+<b class="nc"><i>602</i>&nbsp;        synchronized (UNIXToolkit.GTK_LOCK) {</b>
+<b class="nc"><i>603</i>&nbsp;            return nativeGetClassValue(wt.ordinal(), key);</b>
+<b class="nc"><i>604</i>&nbsp;        }</b>
+<i>605</i>&nbsp;    }
+<i>606</i>&nbsp;
+<i>607</i>&nbsp;    /**
+<i>608</i>&nbsp;     * Convenience method to get a class specific integer value for
+<i>609</i>&nbsp;     * a particular WidgetType.
+<i>610</i>&nbsp;     *
+<i>611</i>&nbsp;     * @param wt WidgetType for which to fetch the value
+<i>612</i>&nbsp;     * @param key Key identifying class specific value
+<i>613</i>&nbsp;     * @param defaultValue Returned if there is no value for the specified
+<i>614</i>&nbsp;     *        type
+<i>615</i>&nbsp;     * @return Value, or defaultValue if &lt;code&gt;key&lt;/code&gt; is not defined
+<i>616</i>&nbsp;     */
+<i>617</i>&nbsp;    private static int getClassSpecificIntValue(WidgetType wt, String key,
+<i>618</i>&nbsp;                                                int defaultValue)
+<i>619</i>&nbsp;    {
+<b class="nc"><i>620</i>&nbsp;        Object value = getClassSpecificValue(wt, key);</b>
+<b class="nc"><i>621</i>&nbsp;        if (value instanceof Number) {</b>
+<b class="nc"><i>622</i>&nbsp;            return ((Number)value).intValue();</b>
+<i>623</i>&nbsp;        }
+<b class="nc"><i>624</i>&nbsp;        return defaultValue;</b>
+<i>625</i>&nbsp;    }
+<i>626</i>&nbsp;
+<i>627</i>&nbsp;    /**
+<i>628</i>&nbsp;     * Returns the value for a class specific property. A class specific value
+<i>629</i>&nbsp;     * is a value that will be picked up based on class hierarchy.
+<i>630</i>&nbsp;     *
+<i>631</i>&nbsp;     * @param key Key identifying class specific value
+<i>632</i>&nbsp;     * @return Value, or null if one has not been defined.
+<i>633</i>&nbsp;     */
+<i>634</i>&nbsp;    Object getClassSpecificValue(String key) {
+<b class="nc"><i>635</i>&nbsp;        synchronized (sun.awt.UNIXToolkit.GTK_LOCK) {</b>
+<b class="nc"><i>636</i>&nbsp;            return nativeGetClassValue(widgetType, key);</b>
+<b class="nc"><i>637</i>&nbsp;        }</b>
+<i>638</i>&nbsp;    }
+<i>639</i>&nbsp;
+<i>640</i>&nbsp;    /**
+<i>641</i>&nbsp;     * Convenience method to get a class specific integer value.
+<i>642</i>&nbsp;     *
+<i>643</i>&nbsp;     * @param context SynthContext identifying requestor
+<i>644</i>&nbsp;     * @param key Key identifying class specific value
+<i>645</i>&nbsp;     * @param defaultValue Returned if there is no value for the specified
+<i>646</i>&nbsp;     *        type
+<i>647</i>&nbsp;     * @return Value, or defaultValue if &lt;code&gt;key&lt;/code&gt; is not defined
+<i>648</i>&nbsp;     */
+<i>649</i>&nbsp;    int getClassSpecificIntValue(SynthContext context, String key,
+<i>650</i>&nbsp;                                 int defaultValue)
+<i>651</i>&nbsp;    {
+<b class="nc"><i>652</i>&nbsp;        Object value = getClassSpecificValue(key);</b>
+<i>653</i>&nbsp;
+<b class="nc"><i>654</i>&nbsp;        if (value instanceof Number) {</b>
+<b class="nc"><i>655</i>&nbsp;            return ((Number)value).intValue();</b>
+<i>656</i>&nbsp;        }
+<b class="nc"><i>657</i>&nbsp;        return defaultValue;</b>
+<i>658</i>&nbsp;    }
+<i>659</i>&nbsp;
+<i>660</i>&nbsp;    /**
+<i>661</i>&nbsp;     * Convenience method to get a class specific Insets value.
+<i>662</i>&nbsp;     *
+<i>663</i>&nbsp;     * @param context SynthContext identifying requestor
+<i>664</i>&nbsp;     * @param key Key identifying class specific value
+<i>665</i>&nbsp;     * @param defaultValue Returned if there is no value for the specified
+<i>666</i>&nbsp;     *        type
+<i>667</i>&nbsp;     * @return Value, or defaultValue if &lt;code&gt;key&lt;/code&gt; is not defined
+<i>668</i>&nbsp;     */
+<i>669</i>&nbsp;    Insets getClassSpecificInsetsValue(SynthContext context, String key,
+<i>670</i>&nbsp;                                       Insets defaultValue)
+<i>671</i>&nbsp;    {
+<b class="nc"><i>672</i>&nbsp;        Object value = getClassSpecificValue(key);</b>
+<i>673</i>&nbsp;
+<b class="nc"><i>674</i>&nbsp;        if (value instanceof Insets) {</b>
+<b class="nc"><i>675</i>&nbsp;            return (Insets)value;</b>
+<i>676</i>&nbsp;        }
+<b class="nc"><i>677</i>&nbsp;        return defaultValue;</b>
+<i>678</i>&nbsp;    }
+<i>679</i>&nbsp;
+<i>680</i>&nbsp;    /**
+<i>681</i>&nbsp;     * Convenience method to get a class specific Boolean value.
+<i>682</i>&nbsp;     *
+<i>683</i>&nbsp;     * @param context SynthContext identifying requestor
+<i>684</i>&nbsp;     * @param key Key identifying class specific value
+<i>685</i>&nbsp;     * @param defaultValue Returned if there is no value for the specified
+<i>686</i>&nbsp;     *        type
+<i>687</i>&nbsp;     * @return Value, or defaultValue if &lt;code&gt;key&lt;/code&gt; is not defined
+<i>688</i>&nbsp;     */
+<i>689</i>&nbsp;    boolean getClassSpecificBoolValue(SynthContext context, String key,
+<i>690</i>&nbsp;                                      boolean defaultValue)
+<i>691</i>&nbsp;    {
+<b class="nc"><i>692</i>&nbsp;        Object value = getClassSpecificValue(key);</b>
+<i>693</i>&nbsp;
+<b class="nc"><i>694</i>&nbsp;        if (value instanceof Boolean) {</b>
+<b class="nc"><i>695</i>&nbsp;            return ((Boolean)value).booleanValue();</b>
+<i>696</i>&nbsp;        }
+<b class="nc"><i>697</i>&nbsp;        return defaultValue;</b>
+<i>698</i>&nbsp;    }
+<i>699</i>&nbsp;
+<i>700</i>&nbsp;    /**
+<i>701</i>&nbsp;     * Returns the value to initialize the opacity property of the Component
+<i>702</i>&nbsp;     * to. A Style should NOT assume the opacity will remain this value, the
+<i>703</i>&nbsp;     * developer may reset it or override it.
+<i>704</i>&nbsp;     *
+<i>705</i>&nbsp;     * @param context SynthContext identifying requestor
+<i>706</i>&nbsp;     * @return opaque Whether or not the JComponent is opaque.
+<i>707</i>&nbsp;     */
+<i>708</i>&nbsp;    @Override
+<i>709</i>&nbsp;    public boolean isOpaque(SynthContext context) {
+<b class="nc"><i>710</i>&nbsp;        Region region = context.getRegion();</b>
+<b class="nc"><i>711</i>&nbsp;        if (region == Region.COMBO_BOX ||</b>
+<i>712</i>&nbsp;              region == Region.DESKTOP_PANE ||
+<i>713</i>&nbsp;              region == Region.DESKTOP_ICON ||
+<i>714</i>&nbsp;              region == Region.EDITOR_PANE ||
+<i>715</i>&nbsp;              region == Region.FORMATTED_TEXT_FIELD ||
+<i>716</i>&nbsp;              region == Region.INTERNAL_FRAME ||
+<i>717</i>&nbsp;              region == Region.LIST ||
+<i>718</i>&nbsp;              region == Region.MENU_BAR ||
+<i>719</i>&nbsp;              region == Region.PANEL ||
+<i>720</i>&nbsp;              region == Region.PASSWORD_FIELD ||
+<i>721</i>&nbsp;              region == Region.POPUP_MENU ||
+<i>722</i>&nbsp;              region == Region.PROGRESS_BAR ||
+<i>723</i>&nbsp;              region == Region.ROOT_PANE ||
+<i>724</i>&nbsp;              region == Region.SCROLL_PANE ||
+<i>725</i>&nbsp;              region == Region.SPINNER ||
+<i>726</i>&nbsp;              region == Region.SPLIT_PANE_DIVIDER ||
+<i>727</i>&nbsp;              region == Region.TABLE ||
+<i>728</i>&nbsp;              region == Region.TEXT_AREA ||
+<i>729</i>&nbsp;              region == Region.TEXT_FIELD ||
+<i>730</i>&nbsp;              region == Region.TEXT_PANE ||
+<i>731</i>&nbsp;              region == Region.TOOL_BAR_DRAG_WINDOW ||
+<i>732</i>&nbsp;              region == Region.TOOL_TIP ||
+<i>733</i>&nbsp;              region == Region.TREE ||
+<i>734</i>&nbsp;              region == Region.VIEWPORT) {
+<b class="nc"><i>735</i>&nbsp;            return true;</b>
+<i>736</i>&nbsp;        }
+<b class="nc"><i>737</i>&nbsp;        Component c = context.getComponent();</b>
+<b class="nc"><i>738</i>&nbsp;        String name = c.getName();</b>
+<b class="nc"><i>739</i>&nbsp;        if (name == &quot;ComboBox.renderer&quot; || name == &quot;ComboBox.listRenderer&quot;) {</b>
+<b class="nc"><i>740</i>&nbsp;            return true;</b>
+<i>741</i>&nbsp;        }
+<b class="nc"><i>742</i>&nbsp;        return false;</b>
+<i>743</i>&nbsp;    }
+<i>744</i>&nbsp;
+<i>745</i>&nbsp;    @Override
+<i>746</i>&nbsp;    public Object get(SynthContext context, Object key) {
+<i>747</i>&nbsp;        // See if this is a class specific value.
+<b class="nc"><i>748</i>&nbsp;        String classKey = CLASS_SPECIFIC_MAP.get(key);</b>
+<b class="nc"><i>749</i>&nbsp;        if (classKey != null) {</b>
+<b class="nc"><i>750</i>&nbsp;            Object value = getClassSpecificValue(classKey);</b>
+<b class="nc"><i>751</i>&nbsp;            if (value != null) {</b>
+<b class="nc"><i>752</i>&nbsp;                return value;</b>
+<i>753</i>&nbsp;            }
+<i>754</i>&nbsp;        }
+<i>755</i>&nbsp;
+<i>756</i>&nbsp;        // Is it a specific value ?
+<b class="nc"><i>757</i>&nbsp;        if (key == &quot;ScrollPane.viewportBorderInsets&quot;) {</b>
+<b class="nc"><i>758</i>&nbsp;            return getThicknessInsets(context, new Insets(0, 0, 0, 0));</b>
+<i>759</i>&nbsp;        }
+<b class="nc"><i>760</i>&nbsp;        else if (key == &quot;Slider.tickColor&quot;) {</b>
+<b class="nc"><i>761</i>&nbsp;            return getColorForState(context, ColorType.FOREGROUND);</b>
+<i>762</i>&nbsp;        }
+<b class="nc"><i>763</i>&nbsp;        else if (key == &quot;ScrollBar.minimumThumbSize&quot;) {</b>
+<b class="nc"><i>764</i>&nbsp;            int len =</b>
+<b class="nc"><i>765</i>&nbsp;                getClassSpecificIntValue(context, &quot;min-slider-length&quot;, 21);</b>
+<b class="nc"><i>766</i>&nbsp;            JScrollBar sb = (JScrollBar)context.getComponent();</b>
+<b class="nc"><i>767</i>&nbsp;            if (sb.getOrientation() == JScrollBar.HORIZONTAL) {</b>
+<b class="nc"><i>768</i>&nbsp;                return new DimensionUIResource(len, 0);</b>
+<i>769</i>&nbsp;            } else {
+<b class="nc"><i>770</i>&nbsp;                return new DimensionUIResource(0, len);</b>
+<i>771</i>&nbsp;            }
+<i>772</i>&nbsp;        }
+<b class="nc"><i>773</i>&nbsp;        else if (key == &quot;Separator.thickness&quot;) {</b>
+<b class="nc"><i>774</i>&nbsp;            JSeparator sep = (JSeparator)context.getComponent();</b>
+<b class="nc"><i>775</i>&nbsp;            if (sep.getOrientation() == JSeparator.HORIZONTAL) {</b>
+<b class="nc"><i>776</i>&nbsp;                return getYThickness();</b>
+<i>777</i>&nbsp;            } else {
+<b class="nc"><i>778</i>&nbsp;                return getXThickness();</b>
+<i>779</i>&nbsp;            }
+<i>780</i>&nbsp;        }
+<b class="nc"><i>781</i>&nbsp;        else if (key == &quot;ToolBar.separatorSize&quot;) {</b>
+<b class="nc"><i>782</i>&nbsp;            int size = getClassSpecificIntValue(WidgetType.TOOL_BAR,</b>
+<i>783</i>&nbsp;                                                &quot;space-size&quot;, 12);
+<b class="nc"><i>784</i>&nbsp;            return new DimensionUIResource(size, size);</b>
+<i>785</i>&nbsp;        }
+<b class="nc"><i>786</i>&nbsp;        else if (key == &quot;ScrollBar.buttonSize&quot;) {</b>
+<b class="nc"><i>787</i>&nbsp;            JScrollBar sb = (JScrollBar)context.getComponent().getParent();</b>
+<b class="nc"><i>788</i>&nbsp;            boolean horiz = (sb.getOrientation() == JScrollBar.HORIZONTAL);</b>
+<b class="nc"><i>789</i>&nbsp;            WidgetType wt = horiz ?</b>
+<i>790</i>&nbsp;                WidgetType.HSCROLL_BAR : WidgetType.VSCROLL_BAR;
+<b class="nc"><i>791</i>&nbsp;            int sliderWidth = getClassSpecificIntValue(wt, &quot;slider-width&quot;, 14);</b>
+<b class="nc"><i>792</i>&nbsp;            int stepperSize = getClassSpecificIntValue(wt, &quot;stepper-size&quot;, 14);</b>
+<b class="nc"><i>793</i>&nbsp;            return horiz ?</b>
+<i>794</i>&nbsp;                new DimensionUIResource(stepperSize, sliderWidth) :
+<i>795</i>&nbsp;                new DimensionUIResource(sliderWidth, stepperSize);
+<i>796</i>&nbsp;        }
+<b class="nc"><i>797</i>&nbsp;        else if (key == &quot;ArrowButton.size&quot;) {</b>
+<b class="nc"><i>798</i>&nbsp;            String name = context.getComponent().getName();</b>
+<b class="nc"><i>799</i>&nbsp;            if (name != null &amp;&amp; name.startsWith(&quot;Spinner&quot;)) {</b>
+<i>800</i>&nbsp;                // Believe it or not, the size of a spinner arrow button is
+<i>801</i>&nbsp;                // dependent upon the size of the spinner&#39;s font.  These
+<i>802</i>&nbsp;                // calculations come from gtkspinbutton.c (version 2.8.20),
+<i>803</i>&nbsp;                // spin_button_get_arrow_size() method.
+<i>804</i>&nbsp;                String pangoFontName;
+<b class="nc"><i>805</i>&nbsp;                synchronized (sun.awt.UNIXToolkit.GTK_LOCK) {</b>
+<b class="nc"><i>806</i>&nbsp;                    pangoFontName =</b>
+<b class="nc"><i>807</i>&nbsp;                        nativeGetPangoFontName(WidgetType.SPINNER.ordinal());</b>
+<b class="nc"><i>808</i>&nbsp;                }</b>
+<b class="nc"><i>809</i>&nbsp;                int arrowSize = (pangoFontName != null) ?</b>
+<b class="nc"><i>810</i>&nbsp;                    PangoFonts.getFontSize(pangoFontName) : 10;</b>
+<b class="nc"><i>811</i>&nbsp;                return (arrowSize + (getXThickness() * 2));</b>
+<i>812</i>&nbsp;            }
+<i>813</i>&nbsp;            // For all other kinds of arrow buttons (e.g. combobox arrow
+<i>814</i>&nbsp;            // buttons), we will simply fall back on the value of
+<i>815</i>&nbsp;            // ArrowButton.size as defined in the UIDefaults for
+<i>816</i>&nbsp;            // GTKLookAndFeel when we call UIManager.get() below...
+<b class="nc"><i>817</i>&nbsp;        }</b>
+<b class="nc"><i>818</i>&nbsp;        else if (&quot;CheckBox.iconTextGap&quot;.equals(key) ||</b>
+<b class="nc"><i>819</i>&nbsp;                 &quot;RadioButton.iconTextGap&quot;.equals(key))</b>
+<i>820</i>&nbsp;        {
+<i>821</i>&nbsp;            // The iconTextGap value needs to include &quot;indicator-spacing&quot;
+<i>822</i>&nbsp;            // and it also needs to leave enough space for the focus line,
+<i>823</i>&nbsp;            // which falls between the indicator icon and the text.
+<i>824</i>&nbsp;            // See getRadioInsets() and 6489585 for more details.
+<b class="nc"><i>825</i>&nbsp;            int indicatorSpacing =</b>
+<b class="nc"><i>826</i>&nbsp;                getClassSpecificIntValue(context, &quot;indicator-spacing&quot;, 2);</b>
+<b class="nc"><i>827</i>&nbsp;            int focusSize =</b>
+<b class="nc"><i>828</i>&nbsp;                getClassSpecificIntValue(context, &quot;focus-line-width&quot;, 1);</b>
+<b class="nc"><i>829</i>&nbsp;            int focusPad =</b>
+<b class="nc"><i>830</i>&nbsp;                getClassSpecificIntValue(context, &quot;focus-padding&quot;, 1);</b>
+<b class="nc"><i>831</i>&nbsp;            return indicatorSpacing + focusSize + focusPad;</b>
+<i>832</i>&nbsp;        }
+<i>833</i>&nbsp;
+<i>834</i>&nbsp;        // Is it a stock icon ?
+<b class="nc"><i>835</i>&nbsp;        GTKStockIcon stockIcon = null;</b>
+<b class="nc"><i>836</i>&nbsp;        synchronized (ICONS_MAP) {</b>
+<b class="nc"><i>837</i>&nbsp;            stockIcon = ICONS_MAP.get(key);</b>
+<b class="nc"><i>838</i>&nbsp;        }</b>
+<i>839</i>&nbsp;
+<b class="nc"><i>840</i>&nbsp;        if (stockIcon != null) {</b>
+<b class="nc"><i>841</i>&nbsp;            return stockIcon;</b>
+<i>842</i>&nbsp;        }
+<i>843</i>&nbsp;
+<i>844</i>&nbsp;        // Is it another kind of value ?
+<b class="nc"><i>845</i>&nbsp;        if (key != &quot;engine&quot;) {</b>
+<i>846</i>&nbsp;            // For backward compatibility we&#39;ll fallback to the UIManager.
+<i>847</i>&nbsp;            // We don&#39;t go to the UIManager for engine as the engine is GTK
+<i>848</i>&nbsp;            // specific.
+<b class="nc"><i>849</i>&nbsp;            Object value = UIManager.get(key);</b>
+<b class="nc"><i>850</i>&nbsp;            if (key == &quot;Table.rowHeight&quot;) {</b>
+<b class="nc"><i>851</i>&nbsp;                int focusLineWidth = getClassSpecificIntValue(context,</b>
+<i>852</i>&nbsp;                        &quot;focus-line-width&quot;, 0);
+<b class="nc"><i>853</i>&nbsp;                if (value == null &amp;&amp; focusLineWidth &gt; 0) {</b>
+<b class="nc"><i>854</i>&nbsp;                    value = Integer.valueOf(16 + 2 * focusLineWidth);</b>
+<i>855</i>&nbsp;                }
+<i>856</i>&nbsp;            }
+<b class="nc"><i>857</i>&nbsp;            return value;</b>
+<i>858</i>&nbsp;        }
+<i>859</i>&nbsp;
+<i>860</i>&nbsp;        // Don&#39;t call super, we don&#39;t want to pick up defaults from
+<i>861</i>&nbsp;        // SynthStyle.
+<b class="nc"><i>862</i>&nbsp;        return null;</b>
+<i>863</i>&nbsp;    }
+<i>864</i>&nbsp;
+<i>865</i>&nbsp;    private Icon getStockIcon(SynthContext context, String key, int type) {
+<b class="nc"><i>866</i>&nbsp;        TextDirection direction = TextDirection.LTR;</b>
+<i>867</i>&nbsp;
+<b class="nc"><i>868</i>&nbsp;        if (context != null) {</b>
+<b class="nc"><i>869</i>&nbsp;            ComponentOrientation co = context.getComponent().</b>
+<b class="nc"><i>870</i>&nbsp;                                              getComponentOrientation();</b>
+<i>871</i>&nbsp;
+<b class="nc"><i>872</i>&nbsp;            if (co != null &amp;&amp; !co.isLeftToRight()) {</b>
+<b class="nc"><i>873</i>&nbsp;                direction = TextDirection.RTL;</b>
+<i>874</i>&nbsp;            }
+<i>875</i>&nbsp;        }
+<i>876</i>&nbsp;
+<i>877</i>&nbsp;        // First try loading a theme-specific icon using the native
+<i>878</i>&nbsp;        // GTK libraries (native GTK handles the resizing for us).
+<b class="nc"><i>879</i>&nbsp;        Icon icon = getStyleSpecificIcon(key, direction, type);</b>
+<b class="nc"><i>880</i>&nbsp;        if (icon != null) {</b>
+<b class="nc"><i>881</i>&nbsp;            return icon;</b>
+<i>882</i>&nbsp;        }
+<i>883</i>&nbsp;
+<i>884</i>&nbsp;        // In a failure case where native GTK (unexpectedly) returns a
+<i>885</i>&nbsp;        // null icon, we can try loading a default icon as a fallback.
+<b class="nc"><i>886</i>&nbsp;        String propName = ICON_PROPERTY_PREFIX + key + &#39;.&#39; + type + &#39;.&#39; +</b>
+<i>887</i>&nbsp;                          (direction == TextDirection.RTL ? &quot;rtl&quot; : &quot;ltr&quot;);
+<i>888</i>&nbsp;        Image img = (Image)
+<b class="nc"><i>889</i>&nbsp;            Toolkit.getDefaultToolkit().getDesktopProperty(propName);</b>
+<b class="nc"><i>890</i>&nbsp;        if (img != null) {</b>
+<b class="nc"><i>891</i>&nbsp;            return new ImageIcon(img);</b>
+<i>892</i>&nbsp;        }
+<i>893</i>&nbsp;
+<i>894</i>&nbsp;        // In an extreme failure situation, just return null (callers are
+<i>895</i>&nbsp;        // already prepared to handle a null icon, so the worst that can
+<i>896</i>&nbsp;        // happen is that an icon won&#39;t be included in the button/dialog).
+<b class="nc"><i>897</i>&nbsp;        return null;</b>
+<i>898</i>&nbsp;    }
+<i>899</i>&nbsp;
+<i>900</i>&nbsp;    private Icon getStyleSpecificIcon(String key,
+<i>901</i>&nbsp;                                      TextDirection direction, int type)
+<i>902</i>&nbsp;    {
+<b class="nc"><i>903</i>&nbsp;        UNIXToolkit tk = (UNIXToolkit)Toolkit.getDefaultToolkit();</b>
+<b class="nc"><i>904</i>&nbsp;        Image img =</b>
+<b class="nc"><i>905</i>&nbsp;            tk.getStockIcon(widgetType, key, type, direction.ordinal(), null);</b>
+<b class="nc"><i>906</i>&nbsp;        return (img != null) ? new ImageIcon(img) : null;</b>
+<i>907</i>&nbsp;    }
+<i>908</i>&nbsp;
+<b class="nc"><i>909</i>&nbsp;    static class GTKStockIconInfo {</b>
+<i>910</i>&nbsp;        private static Map&lt;String,Integer&gt; ICON_TYPE_MAP;
+<b class="nc"><i>911</i>&nbsp;        private static final Object ICON_SIZE_KEY = new StringBuffer(&quot;IconSize&quot;);</b>
+<i>912</i>&nbsp;
+<i>913</i>&nbsp;        private static Dimension[] getIconSizesMap() {
+<b class="nc"><i>914</i>&nbsp;            AppContext appContext = AppContext.getAppContext();</b>
+<b class="nc"><i>915</i>&nbsp;            Dimension[] iconSizes = (Dimension[])appContext.get(ICON_SIZE_KEY);</b>
+<i>916</i>&nbsp;
+<b class="nc"><i>917</i>&nbsp;            if (iconSizes == null) {</b>
+<b class="nc"><i>918</i>&nbsp;                iconSizes = new Dimension[7];</b>
+<b class="nc"><i>919</i>&nbsp;                iconSizes[0] = null;                  // GTK_ICON_SIZE_INVALID</b>
+<b class="nc"><i>920</i>&nbsp;                iconSizes[1] = new Dimension(16, 16); // GTK_ICON_SIZE_MENU</b>
+<b class="nc"><i>921</i>&nbsp;                iconSizes[2] = new Dimension(18, 18); // GTK_ICON_SIZE_SMALL_TOOLBAR</b>
+<b class="nc"><i>922</i>&nbsp;                iconSizes[3] = new Dimension(24, 24); // GTK_ICON_SIZE_LARGE_TOOLBAR</b>
+<b class="nc"><i>923</i>&nbsp;                iconSizes[4] = new Dimension(20, 20); // GTK_ICON_SIZE_BUTTON</b>
+<b class="nc"><i>924</i>&nbsp;                iconSizes[5] = new Dimension(32, 32); // GTK_ICON_SIZE_DND</b>
+<b class="nc"><i>925</i>&nbsp;                iconSizes[6] = new Dimension(48, 48); // GTK_ICON_SIZE_DIALOG</b>
+<b class="nc"><i>926</i>&nbsp;                appContext.put(ICON_SIZE_KEY, iconSizes);</b>
+<i>927</i>&nbsp;            }
+<b class="nc"><i>928</i>&nbsp;            return iconSizes;</b>
+<i>929</i>&nbsp;        }
+<i>930</i>&nbsp;
+<i>931</i>&nbsp;        /**
+<i>932</i>&nbsp;         * Return the size of a particular icon type (logical size)
+<i>933</i>&nbsp;         *
+<i>934</i>&nbsp;         * @param type icon type (GtkIconSize value)
+<i>935</i>&nbsp;         * @return a Dimension object, or null if lsize is invalid
+<i>936</i>&nbsp;         */
+<i>937</i>&nbsp;        public static Dimension getIconSize(int type) {
+<b class="nc"><i>938</i>&nbsp;            Dimension[] iconSizes = getIconSizesMap();</b>
+<b class="nc"><i>939</i>&nbsp;            return type &gt;= 0 &amp;&amp; type &lt; iconSizes.length ?</b>
+<i>940</i>&nbsp;                iconSizes[type] : null;
+<i>941</i>&nbsp;        }
+<i>942</i>&nbsp;
+<i>943</i>&nbsp;        /**
+<i>944</i>&nbsp;         * Change icon size in a type to size mapping. This is called by code
+<i>945</i>&nbsp;         * that parses the gtk-icon-sizes setting
+<i>946</i>&nbsp;         *
+<i>947</i>&nbsp;         * @param type icon type (GtkIconSize value)
+<i>948</i>&nbsp;         * @param w the new icon width
+<i>949</i>&nbsp;         * @param h the new icon height
+<i>950</i>&nbsp;         */
+<i>951</i>&nbsp;        public static void setIconSize(int type, int w, int h) {
+<b class="nc"><i>952</i>&nbsp;            Dimension[] iconSizes = getIconSizesMap();</b>
+<b class="nc"><i>953</i>&nbsp;            if (type &gt;= 0 &amp;&amp; type &lt; iconSizes.length) {</b>
+<b class="nc"><i>954</i>&nbsp;                iconSizes[type] = new Dimension(w, h);</b>
+<i>955</i>&nbsp;            }
+<i>956</i>&nbsp;        }
+<i>957</i>&nbsp;
+<i>958</i>&nbsp;        /**
+<i>959</i>&nbsp;         * Return icon type (GtkIconSize value) given a symbolic name which can
+<i>960</i>&nbsp;         * occur in a theme file.
+<i>961</i>&nbsp;         *
+<i>962</i>&nbsp;         * @param size symbolic name, e.g. gtk-button
+<i>963</i>&nbsp;         * @return icon type. Valid types are 1 to 6
+<i>964</i>&nbsp;         */
+<i>965</i>&nbsp;        public static int getIconType(String size) {
+<b class="nc"><i>966</i>&nbsp;            if (size == null) {</b>
+<b class="nc"><i>967</i>&nbsp;                return UNDEFINED;</b>
+<i>968</i>&nbsp;            }
+<b class="nc"><i>969</i>&nbsp;            if (ICON_TYPE_MAP == null) {</b>
+<b class="nc"><i>970</i>&nbsp;                initIconTypeMap();</b>
+<i>971</i>&nbsp;            }
+<b class="nc"><i>972</i>&nbsp;            Integer n = ICON_TYPE_MAP.get(size);</b>
+<b class="nc"><i>973</i>&nbsp;            return n != null ? n.intValue() : UNDEFINED;</b>
+<i>974</i>&nbsp;        }
+<i>975</i>&nbsp;
+<i>976</i>&nbsp;        private static void initIconTypeMap() {
+<b class="nc"><i>977</i>&nbsp;            ICON_TYPE_MAP = new HashMap&lt;String,Integer&gt;();</b>
+<b class="nc"><i>978</i>&nbsp;            ICON_TYPE_MAP.put(&quot;gtk-menu&quot;, Integer.valueOf(1));</b>
+<b class="nc"><i>979</i>&nbsp;            ICON_TYPE_MAP.put(&quot;gtk-small-toolbar&quot;, Integer.valueOf(2));</b>
+<b class="nc"><i>980</i>&nbsp;            ICON_TYPE_MAP.put(&quot;gtk-large-toolbar&quot;, Integer.valueOf(3));</b>
+<b class="nc"><i>981</i>&nbsp;            ICON_TYPE_MAP.put(&quot;gtk-button&quot;, Integer.valueOf(4));</b>
+<b class="nc"><i>982</i>&nbsp;            ICON_TYPE_MAP.put(&quot;gtk-dnd&quot;, Integer.valueOf(5));</b>
+<b class="nc"><i>983</i>&nbsp;            ICON_TYPE_MAP.put(&quot;gtk-dialog&quot;, Integer.valueOf(6));</b>
+<i>984</i>&nbsp;        }
+<i>985</i>&nbsp;
+<i>986</i>&nbsp;    }
+<i>987</i>&nbsp;
+<i>988</i>&nbsp;    /**
+<i>989</i>&nbsp;     * An Icon that is fetched using getStockIcon.
+<i>990</i>&nbsp;     */
+<i>991</i>&nbsp;    private static class GTKStockIcon extends SynthIcon {
+<i>992</i>&nbsp;        private String key;
+<i>993</i>&nbsp;        private int size;
+<i>994</i>&nbsp;        private boolean loadedLTR;
+<i>995</i>&nbsp;        private boolean loadedRTL;
+<i>996</i>&nbsp;        private Icon ltrIcon;
+<i>997</i>&nbsp;        private Icon rtlIcon;
+<i>998</i>&nbsp;        private SynthStyle style;
+<i>999</i>&nbsp;
+<b class="nc"><i>1000</i>&nbsp;        GTKStockIcon(String key, int size) {</b>
+<b class="nc"><i>1001</i>&nbsp;            this.key = key;</b>
+<b class="nc"><i>1002</i>&nbsp;            this.size = size;</b>
+<i>1003</i>&nbsp;        }
+<i>1004</i>&nbsp;
+<i>1005</i>&nbsp;        public void paintIcon(SynthContext context, Graphics g, int x,
+<i>1006</i>&nbsp;                              int y, int w, int h) {
+<b class="nc"><i>1007</i>&nbsp;            Icon icon = getIcon(context);</b>
+<i>1008</i>&nbsp;
+<b class="nc"><i>1009</i>&nbsp;            if (icon != null) {</b>
+<b class="nc"><i>1010</i>&nbsp;                if (context == null) {</b>
+<b class="nc"><i>1011</i>&nbsp;                    icon.paintIcon(null, g, x, y);</b>
+<i>1012</i>&nbsp;                }
+<i>1013</i>&nbsp;                else {
+<b class="nc"><i>1014</i>&nbsp;                    icon.paintIcon(context.getComponent(), g, x, y);</b>
+<i>1015</i>&nbsp;                }
+<i>1016</i>&nbsp;            }
+<i>1017</i>&nbsp;        }
+<i>1018</i>&nbsp;
+<i>1019</i>&nbsp;        public int getIconWidth(SynthContext context) {
+<b class="nc"><i>1020</i>&nbsp;            Icon icon = getIcon(context);</b>
+<i>1021</i>&nbsp;
+<b class="nc"><i>1022</i>&nbsp;            if (icon != null) {</b>
+<b class="nc"><i>1023</i>&nbsp;                return icon.getIconWidth();</b>
+<i>1024</i>&nbsp;            }
+<b class="nc"><i>1025</i>&nbsp;            return 0;</b>
+<i>1026</i>&nbsp;        }
+<i>1027</i>&nbsp;
+<i>1028</i>&nbsp;        public int getIconHeight(SynthContext context) {
+<b class="nc"><i>1029</i>&nbsp;            Icon icon = getIcon(context);</b>
+<i>1030</i>&nbsp;
+<b class="nc"><i>1031</i>&nbsp;            if (icon != null) {</b>
+<b class="nc"><i>1032</i>&nbsp;                return icon.getIconHeight();</b>
+<i>1033</i>&nbsp;            }
+<b class="nc"><i>1034</i>&nbsp;            return 0;</b>
+<i>1035</i>&nbsp;        }
+<i>1036</i>&nbsp;
+<i>1037</i>&nbsp;        private Icon getIcon(SynthContext context) {
+<b class="nc"><i>1038</i>&nbsp;            if (context != null) {</b>
+<b class="nc"><i>1039</i>&nbsp;                ComponentOrientation co = context.getComponent().</b>
+<b class="nc"><i>1040</i>&nbsp;                                                  getComponentOrientation();</b>
+<b class="nc"><i>1041</i>&nbsp;                SynthStyle style = context.getStyle();</b>
+<i>1042</i>&nbsp;
+<b class="nc"><i>1043</i>&nbsp;                if (style != this.style) {</b>
+<b class="nc"><i>1044</i>&nbsp;                    this.style = style;</b>
+<b class="nc"><i>1045</i>&nbsp;                    loadedLTR = loadedRTL = false;</b>
+<i>1046</i>&nbsp;                }
+<b class="nc"><i>1047</i>&nbsp;                if (co == null || co.isLeftToRight()) {</b>
+<b class="nc"><i>1048</i>&nbsp;                    if (!loadedLTR) {</b>
+<b class="nc"><i>1049</i>&nbsp;                        loadedLTR = true;</b>
+<b class="nc"><i>1050</i>&nbsp;                        ltrIcon = ((GTKStyle)context.getStyle()).</b>
+<i>1051</i>&nbsp;                                  getStockIcon(context, key, size);
+<i>1052</i>&nbsp;                    }
+<b class="nc"><i>1053</i>&nbsp;                    return ltrIcon;</b>
+<i>1054</i>&nbsp;                }
+<b class="nc"><i>1055</i>&nbsp;                else if (!loadedRTL) {</b>
+<b class="nc"><i>1056</i>&nbsp;                    loadedRTL = true;</b>
+<b class="nc"><i>1057</i>&nbsp;                    rtlIcon = ((GTKStyle)context.getStyle()).</b>
+<i>1058</i>&nbsp;                              getStockIcon(context, key,size);
+<i>1059</i>&nbsp;                }
+<b class="nc"><i>1060</i>&nbsp;                return rtlIcon;</b>
+<i>1061</i>&nbsp;            }
+<b class="nc"><i>1062</i>&nbsp;            return ltrIcon;</b>
+<i>1063</i>&nbsp;        }
+<i>1064</i>&nbsp;    }
+<i>1065</i>&nbsp;
+<i>1066</i>&nbsp;    /**
+<i>1067</i>&nbsp;     * GTKLazyValue is a slimmed down version of &lt;code&gt;ProxyLaxyValue&lt;/code&gt;.
+<i>1068</i>&nbsp;     * The code is duplicate so that it can get at the package private
+<i>1069</i>&nbsp;     * classes in gtk.
+<i>1070</i>&nbsp;     */
+<i>1071</i>&nbsp;    static class GTKLazyValue implements UIDefaults.LazyValue {
+<i>1072</i>&nbsp;        /**
+<i>1073</i>&nbsp;         * Name of the class to create.
+<i>1074</i>&nbsp;         */
+<i>1075</i>&nbsp;        private String className;
+<i>1076</i>&nbsp;        private String methodName;
+<i>1077</i>&nbsp;
+<i>1078</i>&nbsp;        GTKLazyValue(String name) {
+<b class="nc"><i>1079</i>&nbsp;            this(name, null);</b>
+<i>1080</i>&nbsp;        }
+<i>1081</i>&nbsp;
+<b class="nc"><i>1082</i>&nbsp;        GTKLazyValue(String name, String methodName) {</b>
+<b class="nc"><i>1083</i>&nbsp;            this.className = name;</b>
+<b class="nc"><i>1084</i>&nbsp;            this.methodName = methodName;</b>
+<i>1085</i>&nbsp;        }
+<i>1086</i>&nbsp;
+<i>1087</i>&nbsp;        public Object createValue(UIDefaults table) {
+<i>1088</i>&nbsp;            try {
+<b class="nc"><i>1089</i>&nbsp;                Class c = Class.forName(className, true,Thread.currentThread().</b>
+<b class="nc"><i>1090</i>&nbsp;                                        getContextClassLoader());</b>
+<i>1091</i>&nbsp;
+<b class="nc"><i>1092</i>&nbsp;                if (methodName == null) {</b>
+<b class="nc"><i>1093</i>&nbsp;                    return c.newInstance();</b>
+<i>1094</i>&nbsp;                }
+<b class="nc"><i>1095</i>&nbsp;                Method m = c.getMethod(methodName, (Class[])null);</b>
+<i>1096</i>&nbsp;
+<b class="nc"><i>1097</i>&nbsp;                return m.invoke(c, (Object[])null);</b>
+<b class="nc"><i>1098</i>&nbsp;            } catch (ClassNotFoundException cnfe) {</b>
+<b class="nc"><i>1099</i>&nbsp;            } catch (IllegalAccessException iae) {</b>
+<b class="nc"><i>1100</i>&nbsp;            } catch (InvocationTargetException ite) {</b>
+<b class="nc"><i>1101</i>&nbsp;            } catch (NoSuchMethodException nsme) {</b>
+<b class="nc"><i>1102</i>&nbsp;            } catch (InstantiationException ie) {</b>
+<b class="nc"><i>1103</i>&nbsp;            }</b>
+<b class="nc"><i>1104</i>&nbsp;            return null;</b>
+<i>1105</i>&nbsp;        }
+<i>1106</i>&nbsp;    }
+<i>1107</i>&nbsp;
+<i>1108</i>&nbsp;    static {
+<b class="nc"><i>1109</i>&nbsp;        CLASS_SPECIFIC_MAP = new HashMap&lt;String,String&gt;();</b>
+<b class="nc"><i>1110</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;Slider.thumbHeight&quot;, &quot;slider-width&quot;);</b>
+<b class="nc"><i>1111</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;Slider.trackBorder&quot;, &quot;trough-border&quot;);</b>
+<b class="nc"><i>1112</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;SplitPane.size&quot;, &quot;handle-size&quot;);</b>
+<b class="nc"><i>1113</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;Tree.expanderSize&quot;, &quot;expander-size&quot;);</b>
+<b class="nc"><i>1114</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;ScrollBar.thumbHeight&quot;, &quot;slider-width&quot;);</b>
+<b class="nc"><i>1115</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;ScrollBar.width&quot;, &quot;slider-width&quot;);</b>
+<b class="nc"><i>1116</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;TextArea.caretForeground&quot;, &quot;cursor-color&quot;);</b>
+<b class="nc"><i>1117</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;TextArea.caretAspectRatio&quot;, &quot;cursor-aspect-ratio&quot;);</b>
+<b class="nc"><i>1118</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;TextField.caretForeground&quot;, &quot;cursor-color&quot;);</b>
+<b class="nc"><i>1119</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;TextField.caretAspectRatio&quot;, &quot;cursor-aspect-ratio&quot;);</b>
+<b class="nc"><i>1120</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;PasswordField.caretForeground&quot;, &quot;cursor-color&quot;);</b>
+<b class="nc"><i>1121</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;PasswordField.caretAspectRatio&quot;, &quot;cursor-aspect-ratio&quot;);</b>
+<b class="nc"><i>1122</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;FormattedTextField.caretForeground&quot;, &quot;cursor-color&quot;);</b>
+<b class="nc"><i>1123</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;FormattedTextField.caretAspectRatio&quot;, &quot;cursor-aspect-&quot;);</b>
+<b class="nc"><i>1124</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;TextPane.caretForeground&quot;, &quot;cursor-color&quot;);</b>
+<b class="nc"><i>1125</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;TextPane.caretAspectRatio&quot;, &quot;cursor-aspect-ratio&quot;);</b>
+<b class="nc"><i>1126</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;EditorPane.caretForeground&quot;, &quot;cursor-color&quot;);</b>
+<b class="nc"><i>1127</i>&nbsp;        CLASS_SPECIFIC_MAP.put(&quot;EditorPane.caretAspectRatio&quot;, &quot;cursor-aspect-ratio&quot;);</b>
+<i>1128</i>&nbsp;
+<b class="nc"><i>1129</i>&nbsp;        ICONS_MAP = new HashMap&lt;String, GTKStockIcon&gt;();</b>
+<b class="nc"><i>1130</i>&nbsp;        ICONS_MAP.put(&quot;FileChooser.cancelIcon&quot;, new GTKStockIcon(&quot;gtk-cancel&quot;, 4));</b>
+<b class="nc"><i>1131</i>&nbsp;        ICONS_MAP.put(&quot;FileChooser.okIcon&quot;,     new GTKStockIcon(&quot;gtk-ok&quot;,     4));</b>
+<b class="nc"><i>1132</i>&nbsp;        ICONS_MAP.put(&quot;OptionPane.errorIcon&quot;, new GTKStockIcon(&quot;gtk-dialog-error&quot;, 6));</b>
+<b class="nc"><i>1133</i>&nbsp;        ICONS_MAP.put(&quot;OptionPane.informationIcon&quot;, new GTKStockIcon(&quot;gtk-dialog-info&quot;, 6));</b>
+<b class="nc"><i>1134</i>&nbsp;        ICONS_MAP.put(&quot;OptionPane.warningIcon&quot;, new GTKStockIcon(&quot;gtk-dialog-warning&quot;, 6));</b>
+<b class="nc"><i>1135</i>&nbsp;        ICONS_MAP.put(&quot;OptionPane.questionIcon&quot;, new GTKStockIcon(&quot;gtk-dialog-question&quot;, 6));</b>
+<b class="nc"><i>1136</i>&nbsp;        ICONS_MAP.put(&quot;OptionPane.yesIcon&quot;, new GTKStockIcon(&quot;gtk-yes&quot;, 4));</b>
+<b class="nc"><i>1137</i>&nbsp;        ICONS_MAP.put(&quot;OptionPane.noIcon&quot;, new GTKStockIcon(&quot;gtk-no&quot;, 4));</b>
+<b class="nc"><i>1138</i>&nbsp;        ICONS_MAP.put(&quot;OptionPane.cancelIcon&quot;, new GTKStockIcon(&quot;gtk-cancel&quot;, 4));</b>
+<b class="nc"><i>1139</i>&nbsp;        ICONS_MAP.put(&quot;OptionPane.okIcon&quot;, new GTKStockIcon(&quot;gtk-ok&quot;, 4));</b>
+<i>1140</i>&nbsp;    }
+<i>1141</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

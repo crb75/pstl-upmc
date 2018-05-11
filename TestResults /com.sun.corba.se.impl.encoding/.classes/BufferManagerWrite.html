@@ -1,0 +1,233 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BufferManagerWrite</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.encoding</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BufferManagerWrite (com.sun.corba.se.impl.encoding)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BufferManagerWrite</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.encoding;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import com.sun.corba.se.impl.encoding.ByteBufferWithInfo;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import com.sun.corba.se.impl.logging.ORBUtilSystemException;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; * Defines the contract between the BufferManager and
+<i>38</i>&nbsp; * CDR stream on the writing side.  The CDR stream
+<i>39</i>&nbsp; * calls back to the BufferManagerWrite when it needs
+<i>40</i>&nbsp; * more room in the output buffer to continue.  The
+<i>41</i>&nbsp; * BufferManager can then grow the output buffer or
+<i>42</i>&nbsp; * use some kind of fragmentation technique.
+<i>43</i>&nbsp; */
+<i>44</i>&nbsp;public abstract class BufferManagerWrite
+<i>45</i>&nbsp;{
+<i>46</i>&nbsp;    protected ORB orb ;
+<i>47</i>&nbsp;    protected ORBUtilSystemException wrapper ;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    BufferManagerWrite( ORB orb )
+<b class="nc"><i>50</i>&nbsp;    {</b>
+<b class="nc"><i>51</i>&nbsp;        this.orb = orb ;</b>
+<b class="nc"><i>52</i>&nbsp;        this.wrapper = ORBUtilSystemException.get( orb,</b>
+<i>53</i>&nbsp;            CORBALogDomains.RPC_ENCODING ) ;
+<i>54</i>&nbsp;    }
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    /**
+<i>57</i>&nbsp;     * Has the stream sent out any fragments so far?
+<i>58</i>&nbsp;     */
+<i>59</i>&nbsp;    public abstract boolean sentFragment();
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    /**
+<i>62</i>&nbsp;     * Has the entire message been sent?  (Has
+<i>63</i>&nbsp;     * sendMessage been called?)
+<i>64</i>&nbsp;     */
+<i>65</i>&nbsp;    public boolean sentFullMessage() {
+<b class="nc"><i>66</i>&nbsp;        return sentFullMessage;</b>
+<i>67</i>&nbsp;    }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    /**
+<i>70</i>&nbsp;     * Returns the correct buffer size for this type of
+<i>71</i>&nbsp;     * buffer manager as set in the ORB.
+<i>72</i>&nbsp;     */
+<i>73</i>&nbsp;    public abstract int getBufferSize();
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    /*
+<i>76</i>&nbsp;     * Called from CDROutputStream.grow.
+<i>77</i>&nbsp;     *
+<i>78</i>&nbsp;     * bbwi.buf contains a byte array which needs to grow by bbwi.needed bytes.
+<i>79</i>&nbsp;     *
+<i>80</i>&nbsp;     * This can be handled in several ways:
+<i>81</i>&nbsp;     *
+<i>82</i>&nbsp;     * 1. Resize the bbwi.buf like the current implementation of
+<i>83</i>&nbsp;     *    CDROutputStream.grow.
+<i>84</i>&nbsp;     *
+<i>85</i>&nbsp;     * 2. Collect the buffer for a later send:
+<i>86</i>&nbsp;     *    this.bufQ.put(bbwi);
+<i>87</i>&nbsp;     *    return new ByteBufferWithInfo(bbwi.length);
+<i>88</i>&nbsp;     *
+<i>89</i>&nbsp;     * 3. Send buffer as fragment:
+<i>90</i>&nbsp;     *    Backpatch fragment size field in bbwi.buf.
+<i>91</i>&nbsp;     *    Set more fragments bit in bbwi.buf.
+<i>92</i>&nbsp;     *    this.connection.send(bbwi);
+<i>93</i>&nbsp;     *    return reinitialized bbwi.buf with fragment header
+<i>94</i>&nbsp;     *
+<i>95</i>&nbsp;     * All cases should adjust the returned bbwi.* appropriately.
+<i>96</i>&nbsp;     *
+<i>97</i>&nbsp;     * Should set the bbwi.fragmented flag to true only in cases 2 and 3.
+<i>98</i>&nbsp;     */
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;    public abstract void overflow (ByteBufferWithInfo bbwi);
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;    /**
+<i>103</i>&nbsp;     * Called after Stub._invoke (i.e., before complete message has been sent).
+<i>104</i>&nbsp;     *
+<i>105</i>&nbsp;     * IIOPOutputStream.writeTo called from IIOPOutputStream.invoke
+<i>106</i>&nbsp;     *
+<i>107</i>&nbsp;     * Case: overflow was never called (bbwi.buf contains complete message).
+<i>108</i>&nbsp;     *       Backpatch size field.
+<i>109</i>&nbsp;     *       If growing or collecting:
+<i>110</i>&nbsp;     *          this.bufQ.put(bbwi).
+<i>111</i>&nbsp;     *          this.bufQ.iterate // However, see comment in getBufferQ
+<i>112</i>&nbsp;     *             this.connection.send(fragment)
+<i>113</i>&nbsp;     *       If streaming:
+<i>114</i>&nbsp;     *          this.connection.send(bbwi).
+<i>115</i>&nbsp;     *
+<i>116</i>&nbsp;     * Case: overflow was called N times (bbwi.buf contains last buffer).
+<i>117</i>&nbsp;     *       If growing or collecting:
+<i>118</i>&nbsp;     *          this.bufQ.put(bbwi).
+<i>119</i>&nbsp;     *          backpatch size field in first buffer.
+<i>120</i>&nbsp;     *          this.bufQ.iterate // However, see comment in getBufferQ
+<i>121</i>&nbsp;     *             this.connection.send(fragment)
+<i>122</i>&nbsp;     *       If streaming:
+<i>123</i>&nbsp;     *          backpatch fragment size field in bbwi.buf.
+<i>124</i>&nbsp;     *          Set no more fragments bit.
+<i>125</i>&nbsp;     *          this.connection.send(bbwi).
+<i>126</i>&nbsp;     */
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;    public abstract void sendMessage ();
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    /**
+<i>131</i>&nbsp;     * A reference to the connection level stream will be required when
+<i>132</i>&nbsp;     * sending fragments.
+<i>133</i>&nbsp;     */
+<i>134</i>&nbsp;    public void setOutputObject(Object outputObject) {
+<b class="nc"><i>135</i>&nbsp;        this.outputObject = outputObject;</b>
+<i>136</i>&nbsp;    }
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;    /**
+<i>139</i>&nbsp;     * Close the BufferManagerWrite and do any outstanding cleanup.
+<i>140</i>&nbsp;     */
+<i>141</i>&nbsp;     abstract public void close();
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;    // XREVISIT - Currently a java.lang.Object during
+<i>145</i>&nbsp;    // the rip-int-generic transition.  Should eventually
+<i>146</i>&nbsp;    // become a GIOPOutputObject.
+<i>147</i>&nbsp;    protected Object outputObject;
+<i>148</i>&nbsp;
+<b class="nc"><i>149</i>&nbsp;    protected boolean sentFullMessage = false;</b>
+<i>150</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

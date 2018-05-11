@@ -1,0 +1,326 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DOMCatalogReader</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.resolver.readers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DOMCatalogReader (com.sun.org.apache.xml.internal.resolver.readers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DOMCatalogReader</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 51)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;// DOMCatalogReader.java - Read XML Catalog files
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package com.sun.org.apache.xml.internal.resolver.readers;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.Catalog;
+<i>25</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.CatalogException;
+<i>26</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.helpers.Namespaces;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.io.InputStream;
+<i>29</i>&nbsp;import java.net.MalformedURLException;
+<i>30</i>&nbsp;import java.net.URL;
+<i>31</i>&nbsp;import java.net.URLConnection;
+<i>32</i>&nbsp;import java.util.HashMap;
+<i>33</i>&nbsp;import java.util.Map;
+<i>34</i>&nbsp;import javax.xml.parsers.DocumentBuilder;
+<i>35</i>&nbsp;import javax.xml.parsers.DocumentBuilderFactory;
+<i>36</i>&nbsp;import javax.xml.parsers.ParserConfigurationException;
+<i>37</i>&nbsp;import org.w3c.dom.Document;
+<i>38</i>&nbsp;import org.w3c.dom.Element;
+<i>39</i>&nbsp;import org.w3c.dom.Node;
+<i>40</i>&nbsp;import org.xml.sax.SAXException;
+<i>41</i>&nbsp;import sun.reflect.misc.ReflectUtil;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;/**
+<i>44</i>&nbsp; * A DOM-based CatalogReader.
+<i>45</i>&nbsp; *
+<i>46</i>&nbsp; * &lt;p&gt;This class is used to read XML Catalogs using the DOM. This reader
+<i>47</i>&nbsp; * has an advantage over the SAX-based reader that it can analyze the
+<i>48</i>&nbsp; * DOM tree rather than simply a series of SAX events. It has the disadvantage
+<i>49</i>&nbsp; * that it requires all of the code necessary to build and walk a DOM
+<i>50</i>&nbsp; * tree.&lt;/p&gt;
+<i>51</i>&nbsp; *
+<i>52</i>&nbsp; * &lt;p&gt;Since the choice of CatalogReaders (in the InputStream case) can only
+<i>53</i>&nbsp; * be made on the basis of MIME type, the following problem occurs: only
+<i>54</i>&nbsp; * one CatalogReader can exist for all XML mime types. In order to get
+<i>55</i>&nbsp; * around this problem, the DOMCatalogReader relies on a set of external
+<i>56</i>&nbsp; * CatalogParsers to actually build the catalog.&lt;/p&gt;
+<i>57</i>&nbsp; *
+<i>58</i>&nbsp; * &lt;p&gt;The selection of CatalogParsers is made on the basis of the QName
+<i>59</i>&nbsp; * of the root element of the document.&lt;/p&gt;
+<i>60</i>&nbsp; *
+<i>61</i>&nbsp; *
+<i>62</i>&nbsp; * @see Catalog
+<i>63</i>&nbsp; * @see CatalogReader
+<i>64</i>&nbsp; * @see SAXCatalogReader
+<i>65</i>&nbsp; * @see TextCatalogReader
+<i>66</i>&nbsp; * @see DOMCatalogParser
+<i>67</i>&nbsp; *
+<i>68</i>&nbsp; * @author Norman Walsh
+<i>69</i>&nbsp; * &lt;a href=&quot;mailto:Norman.Walsh@Sun.COM&quot;&gt;Norman.Walsh@Sun.COM&lt;/a&gt;
+<i>70</i>&nbsp; *
+<i>71</i>&nbsp; */
+<i>72</i>&nbsp;public class DOMCatalogReader implements CatalogReader {
+<i>73</i>&nbsp;  /**
+<i>74</i>&nbsp;   * Mapping table from QNames to CatalogParser classes.
+<i>75</i>&nbsp;   *
+<i>76</i>&nbsp;   * &lt;p&gt;Each key in this hash table has the form &quot;elementname&quot;
+<i>77</i>&nbsp;   * or &quot;{namespaceuri}elementname&quot;. The former is used if the
+<i>78</i>&nbsp;   * namespace URI is null.&lt;/p&gt;
+<i>79</i>&nbsp;   */
+<b class="nc"><i>80</i>&nbsp;  protected Map&lt;String, String&gt; namespaceMap = new HashMap&lt;&gt;();</b>
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;  /**
+<i>83</i>&nbsp;   * Add a new parser to the reader.
+<i>84</i>&nbsp;   *
+<i>85</i>&nbsp;   * &lt;p&gt;This method associates the specified parserClass with the
+<i>86</i>&nbsp;   * namespaceURI/rootElement names specified.&lt;/p&gt;
+<i>87</i>&nbsp;   *
+<i>88</i>&nbsp;   * @param namespaceURI The namespace URI. &lt;em&gt;Not&lt;/em&gt; the prefix.
+<i>89</i>&nbsp;   * @param rootElement The name of the root element.
+<i>90</i>&nbsp;   * @param parserClass The name of the parserClass to instantiate
+<i>91</i>&nbsp;   * for this kind of catalog.
+<i>92</i>&nbsp;   */
+<i>93</i>&nbsp;  public void setCatalogParser(String namespaceURI,
+<i>94</i>&nbsp;                               String rootElement,
+<i>95</i>&nbsp;                               String parserClass) {
+<b class="nc"><i>96</i>&nbsp;    if (namespaceURI == null) {</b>
+<b class="nc"><i>97</i>&nbsp;      namespaceMap.put(rootElement, parserClass);</b>
+<i>98</i>&nbsp;    } else {
+<b class="nc"><i>99</i>&nbsp;      namespaceMap.put(&quot;{&quot;+namespaceURI+&quot;}&quot;+rootElement, parserClass);</b>
+<i>100</i>&nbsp;    }
+<i>101</i>&nbsp;  }
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;  /**
+<i>104</i>&nbsp;   * Get the name of the parser class for a given catalog type.
+<i>105</i>&nbsp;   *
+<i>106</i>&nbsp;   * &lt;p&gt;This method returns the parserClass associated with the
+<i>107</i>&nbsp;   * namespaceURI/rootElement names specified.&lt;/p&gt;
+<i>108</i>&nbsp;   *
+<i>109</i>&nbsp;   * @param namespaceURI The namespace URI. &lt;em&gt;Not&lt;/em&gt; the prefix.
+<i>110</i>&nbsp;   * @param rootElement The name of the root element.
+<i>111</i>&nbsp;   * @return The parser class.
+<i>112</i>&nbsp;   */
+<i>113</i>&nbsp;  public String getCatalogParser(String namespaceURI,
+<i>114</i>&nbsp;                                 String rootElement) {
+<b class="nc"><i>115</i>&nbsp;    if (namespaceURI == null) {</b>
+<b class="nc"><i>116</i>&nbsp;      return namespaceMap.get(rootElement);</b>
+<i>117</i>&nbsp;    } else {
+<b class="nc"><i>118</i>&nbsp;      return namespaceMap.get(&quot;{&quot;+namespaceURI+&quot;}&quot;+rootElement);</b>
+<i>119</i>&nbsp;    }
+<i>120</i>&nbsp;  }
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;  /**
+<i>123</i>&nbsp;   * Null constructor; something for subclasses to call.
+<i>124</i>&nbsp;   */
+<i>125</i>&nbsp;  public DOMCatalogReader() { }
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;  /**
+<i>128</i>&nbsp;   * Read a catalog from an input stream.
+<i>129</i>&nbsp;   *
+<i>130</i>&nbsp;   * &lt;p&gt;This class reads a catalog from an input stream:&lt;/p&gt;
+<i>131</i>&nbsp;   *
+<i>132</i>&nbsp;   * &lt;ul&gt;
+<i>133</i>&nbsp;   * &lt;li&gt;Based on the QName of the root element, it determines which
+<i>134</i>&nbsp;   * parser to instantiate for this catalog.&lt;/li&gt;
+<i>135</i>&nbsp;   * &lt;li&gt;It constructs a DOM Document from the catalog and&lt;/li&gt;
+<i>136</i>&nbsp;   * &lt;li&gt;For each child of the root node, it calls the parser&#39;s
+<i>137</i>&nbsp;   * parseCatalogEntry method. This method is expected to make
+<i>138</i>&nbsp;   * appropriate calls back into the catalog to add entries for the
+<i>139</i>&nbsp;   * entries in the catalog. It is free to do this in whatever manner
+<i>140</i>&nbsp;   * is appropriate (perhaps using just the node passed in, perhaps
+<i>141</i>&nbsp;   * wandering arbitrarily throughout the tree).&lt;/li&gt;
+<i>142</i>&nbsp;   * &lt;/ul&gt;
+<i>143</i>&nbsp;   *
+<i>144</i>&nbsp;   * @param catalog The catalog for which this reader is called.
+<i>145</i>&nbsp;   * @param is The input stream that is to be read.
+<i>146</i>&nbsp;   * @throws IOException if the URL cannot be read.
+<i>147</i>&nbsp;   * @throws UnknownCatalogFormatException if the catalog format is
+<i>148</i>&nbsp;   * not recognized.
+<i>149</i>&nbsp;   * @throws UnparseableCatalogException if the catalog cannot be parsed.
+<i>150</i>&nbsp;   * (For example, if it is supposed to be XML and isn&#39;t well-formed or
+<i>151</i>&nbsp;   * if the parser class cannot be instantiated.)
+<i>152</i>&nbsp;   */
+<i>153</i>&nbsp;  public void readCatalog(Catalog catalog, InputStream is)
+<i>154</i>&nbsp;    throws IOException, CatalogException {
+<i>155</i>&nbsp;
+<b class="nc"><i>156</i>&nbsp;    DocumentBuilderFactory factory = null;</b>
+<b class="nc"><i>157</i>&nbsp;    DocumentBuilder builder = null;</b>
+<i>158</i>&nbsp;
+<b class="nc"><i>159</i>&nbsp;    factory = DocumentBuilderFactory.newInstance();</b>
+<b class="nc"><i>160</i>&nbsp;    factory.setNamespaceAware(false);</b>
+<b class="nc"><i>161</i>&nbsp;    factory.setValidating(false);</b>
+<i>162</i>&nbsp;    try {
+<b class="nc"><i>163</i>&nbsp;      builder = factory.newDocumentBuilder();</b>
+<b class="nc"><i>164</i>&nbsp;    } catch (ParserConfigurationException pce) {</b>
+<b class="nc"><i>165</i>&nbsp;      throw new CatalogException(CatalogException.UNPARSEABLE);</b>
+<b class="nc"><i>166</i>&nbsp;    }</b>
+<i>167</i>&nbsp;
+<b class="nc"><i>168</i>&nbsp;    Document doc = null;</b>
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;    try {
+<b class="nc"><i>171</i>&nbsp;      doc = builder.parse(is);</b>
+<b class="nc"><i>172</i>&nbsp;    } catch (SAXException se) {</b>
+<b class="nc"><i>173</i>&nbsp;      throw new CatalogException(CatalogException.UNKNOWN_FORMAT);</b>
+<b class="nc"><i>174</i>&nbsp;    }</b>
+<i>175</i>&nbsp;
+<b class="nc"><i>176</i>&nbsp;    Element root = doc.getDocumentElement();</b>
+<i>177</i>&nbsp;
+<b class="nc"><i>178</i>&nbsp;    String namespaceURI = Namespaces.getNamespaceURI(root);</b>
+<b class="nc"><i>179</i>&nbsp;    String localName    = Namespaces.getLocalName(root);</b>
+<i>180</i>&nbsp;
+<b class="nc"><i>181</i>&nbsp;    String domParserClass = getCatalogParser(namespaceURI,</b>
+<i>182</i>&nbsp;                                             localName);
+<i>183</i>&nbsp;
+<b class="nc"><i>184</i>&nbsp;    if (domParserClass == null) {</b>
+<b class="nc"><i>185</i>&nbsp;      if (namespaceURI == null) {</b>
+<b class="nc"><i>186</i>&nbsp;        catalog.getCatalogManager().debug.message(1, &quot;No Catalog parser for &quot;</b>
+<i>187</i>&nbsp;                                                  + localName);
+<i>188</i>&nbsp;      } else {
+<b class="nc"><i>189</i>&nbsp;        catalog.getCatalogManager().debug.message(1, &quot;No Catalog parser for &quot;</b>
+<i>190</i>&nbsp;                                                  + &quot;{&quot; + namespaceURI + &quot;}&quot;
+<i>191</i>&nbsp;                                                  + localName);
+<i>192</i>&nbsp;      }
+<i>193</i>&nbsp;      return;
+<i>194</i>&nbsp;    }
+<i>195</i>&nbsp;
+<b class="nc"><i>196</i>&nbsp;    DOMCatalogParser domParser = null;</b>
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;    try {
+<b class="nc"><i>199</i>&nbsp;      domParser = (DOMCatalogParser) ReflectUtil.forName(domParserClass).newInstance();</b>
+<b class="nc"><i>200</i>&nbsp;    } catch (ClassNotFoundException cnfe) {</b>
+<b class="nc"><i>201</i>&nbsp;      catalog.getCatalogManager().debug.message(1, &quot;Cannot load XML Catalog Parser class&quot;, domParserClass);</b>
+<b class="nc"><i>202</i>&nbsp;      throw new CatalogException(CatalogException.UNPARSEABLE);</b>
+<b class="nc"><i>203</i>&nbsp;    } catch (InstantiationException ie) {</b>
+<b class="nc"><i>204</i>&nbsp;      catalog.getCatalogManager().debug.message(1, &quot;Cannot instantiate XML Catalog Parser class&quot;, domParserClass);</b>
+<b class="nc"><i>205</i>&nbsp;      throw new CatalogException(CatalogException.UNPARSEABLE);</b>
+<b class="nc"><i>206</i>&nbsp;    } catch (IllegalAccessException iae) {</b>
+<b class="nc"><i>207</i>&nbsp;      catalog.getCatalogManager().debug.message(1, &quot;Cannot access XML Catalog Parser class&quot;, domParserClass);</b>
+<b class="nc"><i>208</i>&nbsp;      throw new CatalogException(CatalogException.UNPARSEABLE);</b>
+<b class="nc"><i>209</i>&nbsp;    } catch (ClassCastException cce ) {</b>
+<b class="nc"><i>210</i>&nbsp;      catalog.getCatalogManager().debug.message(1, &quot;Cannot cast XML Catalog Parser class&quot;, domParserClass);</b>
+<b class="nc"><i>211</i>&nbsp;      throw new CatalogException(CatalogException.UNPARSEABLE);</b>
+<b class="nc"><i>212</i>&nbsp;    }</b>
+<i>213</i>&nbsp;
+<b class="nc"><i>214</i>&nbsp;    Node node = root.getFirstChild();</b>
+<b class="nc"><i>215</i>&nbsp;    while (node != null) {</b>
+<b class="nc"><i>216</i>&nbsp;      domParser.parseCatalogEntry(catalog, node);</b>
+<b class="nc"><i>217</i>&nbsp;      node = node.getNextSibling();</b>
+<i>218</i>&nbsp;    }
+<i>219</i>&nbsp;  }
+<i>220</i>&nbsp;
+<i>221</i>&nbsp;  /**
+<i>222</i>&nbsp;   * Read the catalog behind the specified URL.
+<i>223</i>&nbsp;   *
+<i>224</i>&nbsp;   * @see #readCatalog(Catalog, InputStream)
+<i>225</i>&nbsp;   *
+<i>226</i>&nbsp;   * @param catalog The catalog for which we are reading.
+<i>227</i>&nbsp;   * @param fileUrl The URL of the document that should be read.
+<i>228</i>&nbsp;   *
+<i>229</i>&nbsp;   * @throws MalformedURLException if the specified URL cannot be
+<i>230</i>&nbsp;   * turned into a URL object.
+<i>231</i>&nbsp;   * @throws IOException if the URL cannot be read.
+<i>232</i>&nbsp;   * @throws UnknownCatalogFormatException if the catalog format is
+<i>233</i>&nbsp;   * not recognized.
+<i>234</i>&nbsp;   * @throws UnparseableCatalogException if the catalog cannot be parsed.
+<i>235</i>&nbsp;   * (For example, if it is supposed to be XML and isn&#39;t well-formed.)
+<i>236</i>&nbsp;   */
+<i>237</i>&nbsp;  public void readCatalog(Catalog catalog, String fileUrl)
+<i>238</i>&nbsp;    throws MalformedURLException, IOException, CatalogException {
+<b class="nc"><i>239</i>&nbsp;    URL url = new URL(fileUrl);</b>
+<b class="nc"><i>240</i>&nbsp;    URLConnection urlCon = url.openConnection();</b>
+<b class="nc"><i>241</i>&nbsp;    readCatalog(catalog, urlCon.getInputStream());</b>
+<i>242</i>&nbsp;  }
+<i>243</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

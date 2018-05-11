@@ -1,0 +1,207 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PSVIDOMImplementationImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.dom</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PSVIDOMImplementationImpl (com.sun.org.apache.xerces.internal.dom)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PSVIDOMImplementationImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2002,2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.dom;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import org.w3c.dom.DOMException;
+<i>24</i>&nbsp;import org.w3c.dom.DOMImplementation;
+<i>25</i>&nbsp;import org.w3c.dom.Document;
+<i>26</i>&nbsp;import org.w3c.dom.DocumentType;
+<i>27</i>&nbsp;import org.w3c.dom.Element;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;/**
+<i>30</i>&nbsp; * The DOMImplementation class is description of a particular
+<i>31</i>&nbsp; * implementation of the Document Object Model. As such its data is
+<i>32</i>&nbsp; * static, shared by all instances of this implementation.
+<i>33</i>&nbsp; * &lt;P&gt;
+<i>34</i>&nbsp; * The DOM API requires that it be a real object rather than static
+<i>35</i>&nbsp; * methods. However, there&#39;s nothing that says it can&#39;t be a singleton,
+<i>36</i>&nbsp; * so that&#39;s how I&#39;ve implemented it.
+<i>37</i>&nbsp; *
+<i>38</i>&nbsp; * @xerces.internal
+<i>39</i>&nbsp; *
+<i>40</i>&nbsp; * @since  PR-DOM-Level-1-19980818.
+<i>41</i>&nbsp; */
+<b class="nc"><i>42</i>&nbsp;public class PSVIDOMImplementationImpl extends CoreDOMImplementationImpl {</b>
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    //
+<i>45</i>&nbsp;    // Data
+<i>46</i>&nbsp;    //
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    // static
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    /** Dom implementation singleton. */
+<b class="nc"><i>51</i>&nbsp;    static PSVIDOMImplementationImpl singleton = new PSVIDOMImplementationImpl();</b>
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    //
+<i>54</i>&nbsp;    // Public methods
+<i>55</i>&nbsp;    //
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    /** NON-DOM: Obtain and return the single shared object */
+<i>58</i>&nbsp;    public static DOMImplementation getDOMImplementation() {
+<b class="nc"><i>59</i>&nbsp;        return singleton;</b>
+<i>60</i>&nbsp;    }
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    //
+<i>63</i>&nbsp;    // DOMImplementation methods
+<i>64</i>&nbsp;    //
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    /**
+<i>67</i>&nbsp;     * Test if the DOM implementation supports a specific &quot;feature&quot; --
+<i>68</i>&nbsp;     * currently meaning language and level thereof.
+<i>69</i>&nbsp;     *
+<i>70</i>&nbsp;     * @param feature      The package name of the feature to test.
+<i>71</i>&nbsp;     * In Level 1, supported values are &quot;HTML&quot; and &quot;XML&quot; (case-insensitive).
+<i>72</i>&nbsp;     * At this writing, com.sun.org.apache.xerces.internal.dom supports only XML.
+<i>73</i>&nbsp;     *
+<i>74</i>&nbsp;     * @param version      The version number of the feature being tested.
+<i>75</i>&nbsp;     * This is interpreted as &quot;Version of the DOM API supported for the
+<i>76</i>&nbsp;     * specified Feature&quot;, and in Level 1 should be &quot;1.0&quot;
+<i>77</i>&nbsp;     *
+<i>78</i>&nbsp;     * @return    true iff this implementation is compatable with the specified
+<i>79</i>&nbsp;     * feature and version.
+<i>80</i>&nbsp;     */
+<i>81</i>&nbsp;    public boolean hasFeature(String feature, String version) {
+<b class="nc"><i>82</i>&nbsp;        return super.hasFeature(feature, version) ||</b>
+<b class="nc"><i>83</i>&nbsp;               feature.equalsIgnoreCase(&quot;psvi&quot;);</b>
+<i>84</i>&nbsp;    } // hasFeature(String,String):boolean
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    /**
+<i>87</i>&nbsp;     * Introduced in DOM Level 2. &lt;p&gt;
+<i>88</i>&nbsp;     *
+<i>89</i>&nbsp;     * Creates an XML Document object of the specified type with its document
+<i>90</i>&nbsp;     * element.
+<i>91</i>&nbsp;     *
+<i>92</i>&nbsp;     * @param namespaceURI     The namespace URI of the document
+<i>93</i>&nbsp;     *                         element to create, or null.
+<i>94</i>&nbsp;     * @param qualifiedName    The qualified name of the document
+<i>95</i>&nbsp;     *                         element to create.
+<i>96</i>&nbsp;     * @param doctype          The type of document to be created or null.&lt;p&gt;
+<i>97</i>&nbsp;     *
+<i>98</i>&nbsp;     *                         When doctype is not null, its
+<i>99</i>&nbsp;     *                         Node.ownerDocument attribute is set to
+<i>100</i>&nbsp;     *                         the document being created.
+<i>101</i>&nbsp;     * @return Document        A new Document object.
+<i>102</i>&nbsp;     * @throws DOMException    WRONG_DOCUMENT_ERR: Raised if doctype has
+<i>103</i>&nbsp;     *                         already been used with a different document.
+<i>104</i>&nbsp;     * @since WD-DOM-Level-2-19990923
+<i>105</i>&nbsp;     */
+<i>106</i>&nbsp;    public Document           createDocument(String namespaceURI,
+<i>107</i>&nbsp;                                             String qualifiedName,
+<i>108</i>&nbsp;                                             DocumentType doctype)
+<i>109</i>&nbsp;                                             throws DOMException
+<i>110</i>&nbsp;    {
+<b class="nc"><i>111</i>&nbsp;        if (doctype != null &amp;&amp; doctype.getOwnerDocument() != null) {</b>
+<b class="nc"><i>112</i>&nbsp;            throw new DOMException(DOMException.WRONG_DOCUMENT_ERR,</b>
+<b class="nc"><i>113</i>&nbsp;                                   DOMMessageFormatter.formatMessage(</b>
+<i>114</i>&nbsp;                                   DOMMessageFormatter.XML_DOMAIN,
+<i>115</i>&nbsp;                                                       &quot;WRONG_DOCUMENT_ERR&quot;, null));
+<i>116</i>&nbsp;        }
+<b class="nc"><i>117</i>&nbsp;        DocumentImpl doc = new PSVIDocumentImpl(doctype);</b>
+<b class="nc"><i>118</i>&nbsp;        Element e = doc.createElementNS( namespaceURI, qualifiedName);</b>
+<b class="nc"><i>119</i>&nbsp;        doc.appendChild(e);</b>
+<b class="nc"><i>120</i>&nbsp;        return doc;</b>
+<i>121</i>&nbsp;    }
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;} // class DOMImplementationImpl
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

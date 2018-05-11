@@ -1,0 +1,209 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PNGImageWriterSpi</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.imageio.plugins.png</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PNGImageWriterSpi (com.sun.imageio.plugins.png)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PNGImageWriterSpi</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 27)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.imageio.plugins.png;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.awt.image.ColorModel;
+<i>29</i>&nbsp;import java.awt.image.IndexColorModel;
+<i>30</i>&nbsp;import java.awt.image.SampleModel;
+<i>31</i>&nbsp;import java.util.Locale;
+<i>32</i>&nbsp;import javax.imageio.ImageWriter;
+<i>33</i>&nbsp;import javax.imageio.ImageTypeSpecifier;
+<i>34</i>&nbsp;import javax.imageio.metadata.IIOMetadataFormat;
+<i>35</i>&nbsp;import javax.imageio.metadata.IIOMetadataFormatImpl;
+<i>36</i>&nbsp;import javax.imageio.spi.ImageWriterSpi;
+<i>37</i>&nbsp;import javax.imageio.stream.ImageOutputStream;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;public class PNGImageWriterSpi extends ImageWriterSpi {
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    private static final String vendorName = &quot;Oracle Corporation&quot;;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    private static final String version = &quot;1.0&quot;;
+<i>44</i>&nbsp;
+<b class="nc"><i>45</i>&nbsp;    private static final String[] names = { &quot;png&quot;, &quot;PNG&quot; };</b>
+<i>46</i>&nbsp;
+<b class="nc"><i>47</i>&nbsp;    private static final String[] suffixes = { &quot;png&quot; };</b>
+<i>48</i>&nbsp;
+<b class="nc"><i>49</i>&nbsp;    private static final String[] MIMETypes = { &quot;image/png&quot;, &quot;image/x-png&quot; };</b>
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    private static final String writerClassName =
+<i>52</i>&nbsp;        &quot;com.sun.imageio.plugins.png.PNGImageWriter&quot;;
+<i>53</i>&nbsp;
+<b class="nc"><i>54</i>&nbsp;    private static final String[] readerSpiNames = {</b>
+<i>55</i>&nbsp;        &quot;com.sun.imageio.plugins.png.PNGImageReaderSpi&quot;
+<i>56</i>&nbsp;    };
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    public PNGImageWriterSpi() {
+<b class="nc"><i>59</i>&nbsp;          super(vendorName,</b>
+<i>60</i>&nbsp;                version,
+<i>61</i>&nbsp;                names,
+<i>62</i>&nbsp;                suffixes,
+<i>63</i>&nbsp;                MIMETypes,
+<i>64</i>&nbsp;                writerClassName,
+<i>65</i>&nbsp;                new Class[] { ImageOutputStream.class },
+<i>66</i>&nbsp;                readerSpiNames,
+<i>67</i>&nbsp;                false,
+<i>68</i>&nbsp;                null, null,
+<i>69</i>&nbsp;                null, null,
+<i>70</i>&nbsp;                true,
+<i>71</i>&nbsp;                PNGMetadata.nativeMetadataFormatName,
+<i>72</i>&nbsp;                &quot;com.sun.imageio.plugins.png.PNGMetadataFormat&quot;,
+<i>73</i>&nbsp;                null, null
+<i>74</i>&nbsp;                );
+<i>75</i>&nbsp;    }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    public boolean canEncodeImage(ImageTypeSpecifier type) {
+<b class="nc"><i>78</i>&nbsp;        SampleModel sampleModel = type.getSampleModel();</b>
+<b class="nc"><i>79</i>&nbsp;        ColorModel colorModel = type.getColorModel();</b>
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;        // Find the maximum bit depth across all channels
+<b class="nc"><i>82</i>&nbsp;        int[] sampleSize = sampleModel.getSampleSize();</b>
+<b class="nc"><i>83</i>&nbsp;        int bitDepth = sampleSize[0];</b>
+<b class="nc"><i>84</i>&nbsp;        for (int i = 1; i &lt; sampleSize.length; i++) {</b>
+<b class="nc"><i>85</i>&nbsp;            if (sampleSize[i] &gt; bitDepth) {</b>
+<b class="nc"><i>86</i>&nbsp;                bitDepth = sampleSize[i];</b>
+<i>87</i>&nbsp;            }
+<i>88</i>&nbsp;        }
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;        // Ensure bitDepth is between 1 and 16
+<b class="nc"><i>91</i>&nbsp;        if (bitDepth &lt; 1 || bitDepth &gt; 16) {</b>
+<b class="nc"><i>92</i>&nbsp;            return false;</b>
+<i>93</i>&nbsp;        }
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;        // Check number of bands, alpha
+<b class="nc"><i>96</i>&nbsp;        int numBands = sampleModel.getNumBands();</b>
+<b class="nc"><i>97</i>&nbsp;        if (numBands &lt; 1 || numBands &gt; 4) {</b>
+<b class="nc"><i>98</i>&nbsp;            return false;</b>
+<i>99</i>&nbsp;        }
+<i>100</i>&nbsp;
+<b class="nc"><i>101</i>&nbsp;        boolean hasAlpha = colorModel.hasAlpha();</b>
+<i>102</i>&nbsp;        // Fix 4464413: PNGTransparency reg-test was failing
+<i>103</i>&nbsp;        // because for IndexColorModels that have alpha,
+<i>104</i>&nbsp;        // numBands == 1 &amp;&amp; hasAlpha == true, thus causing
+<i>105</i>&nbsp;        // the check below to fail and return false.
+<b class="nc"><i>106</i>&nbsp;        if (colorModel instanceof IndexColorModel) {</b>
+<b class="nc"><i>107</i>&nbsp;            return true;</b>
+<i>108</i>&nbsp;        }
+<b class="nc"><i>109</i>&nbsp;        if ((numBands == 1 || numBands == 3) &amp;&amp; hasAlpha) {</b>
+<b class="nc"><i>110</i>&nbsp;            return false;</b>
+<i>111</i>&nbsp;        }
+<b class="nc"><i>112</i>&nbsp;        if ((numBands == 2 || numBands == 4) &amp;&amp; !hasAlpha) {</b>
+<b class="nc"><i>113</i>&nbsp;            return false;</b>
+<i>114</i>&nbsp;        }
+<i>115</i>&nbsp;
+<b class="nc"><i>116</i>&nbsp;        return true;</b>
+<i>117</i>&nbsp;    }
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;    public String getDescription(Locale locale) {
+<b class="nc"><i>120</i>&nbsp;        return &quot;Standard PNG image writer&quot;;</b>
+<i>121</i>&nbsp;    }
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;    public ImageWriter createWriterInstance(Object extension) {
+<b class="nc"><i>124</i>&nbsp;        return new PNGImageWriter(this);</b>
+<i>125</i>&nbsp;    }
+<i>126</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

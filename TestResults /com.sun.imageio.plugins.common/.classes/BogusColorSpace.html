@@ -1,0 +1,219 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BogusColorSpace</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.imageio.plugins.common</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BogusColorSpace (com.sun.imageio.plugins.common)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BogusColorSpace</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 32)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.imageio.plugins.common;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.awt.color.ColorSpace;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;/**
+<i>31</i>&nbsp; * A dummy &lt;code&gt;ColorSpace&lt;/code&gt; to enable &lt;code&gt;ColorModel&lt;/code&gt;
+<i>32</i>&nbsp; * for image data which do not have an innate color representation.
+<i>33</i>&nbsp; */
+<i>34</i>&nbsp;public class BogusColorSpace extends ColorSpace {
+<i>35</i>&nbsp;    /**
+<i>36</i>&nbsp;     * Return the type given the number of components.
+<i>37</i>&nbsp;     *
+<i>38</i>&nbsp;     * @param numComponents The number of components in the
+<i>39</i>&nbsp;     * &lt;code&gt;ColorSpace&lt;/code&gt;.
+<i>40</i>&nbsp;     * @exception IllegalArgumentException if &lt;code&gt;numComponents&lt;/code&gt;
+<i>41</i>&nbsp;     * is less than 1.
+<i>42</i>&nbsp;     */
+<i>43</i>&nbsp;    private static int getType(int numComponents) {
+<b class="nc"><i>44</i>&nbsp;        if(numComponents &lt; 1) {</b>
+<b class="nc"><i>45</i>&nbsp;            throw new IllegalArgumentException(&quot;numComponents &lt; 1!&quot;);</b>
+<i>46</i>&nbsp;        }
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;        int type;
+<b class="nc"><i>49</i>&nbsp;        switch(numComponents) {</b>
+<i>50</i>&nbsp;        case 1:
+<b class="nc"><i>51</i>&nbsp;            type = ColorSpace.TYPE_GRAY;</b>
+<b class="nc"><i>52</i>&nbsp;            break;</b>
+<i>53</i>&nbsp;        default:
+<i>54</i>&nbsp;            // Based on the constant definitions TYPE_2CLR=12 through
+<i>55</i>&nbsp;            // TYPE_FCLR=25. This will return unknown types for
+<i>56</i>&nbsp;            // numComponents &gt; 15.
+<b class="nc"><i>57</i>&nbsp;            type = numComponents + 10;</b>
+<i>58</i>&nbsp;        }
+<i>59</i>&nbsp;
+<b class="nc"><i>60</i>&nbsp;        return type;</b>
+<i>61</i>&nbsp;    }
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    /**
+<i>64</i>&nbsp;     * Constructs a bogus &lt;code&gt;ColorSpace&lt;/code&gt;.
+<i>65</i>&nbsp;     *
+<i>66</i>&nbsp;     * @param numComponents The number of components in the
+<i>67</i>&nbsp;     * &lt;code&gt;ColorSpace&lt;/code&gt;.
+<i>68</i>&nbsp;     * @exception IllegalArgumentException if &lt;code&gt;numComponents&lt;/code&gt;
+<i>69</i>&nbsp;     * is less than 1.
+<i>70</i>&nbsp;     */
+<i>71</i>&nbsp;    public BogusColorSpace(int numComponents) {
+<b class="nc"><i>72</i>&nbsp;        super(getType(numComponents), numComponents);</b>
+<i>73</i>&nbsp;    }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    //
+<i>76</i>&nbsp;    // The following methods simply copy the input array to the
+<i>77</i>&nbsp;    // output array while otherwise attempting to adhere to the
+<i>78</i>&nbsp;    // specified behavior of the methods vis-a-vis exceptions.
+<i>79</i>&nbsp;    //
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    public float[] toRGB(float[] colorvalue) {
+<b class="nc"><i>82</i>&nbsp;        if(colorvalue.length &lt; getNumComponents()) {</b>
+<b class="nc"><i>83</i>&nbsp;            throw new ArrayIndexOutOfBoundsException</b>
+<i>84</i>&nbsp;                (&quot;colorvalue.length &lt; getNumComponents()&quot;);
+<i>85</i>&nbsp;        }
+<i>86</i>&nbsp;
+<b class="nc"><i>87</i>&nbsp;        float[] rgbvalue = new float[3];</b>
+<i>88</i>&nbsp;
+<b class="nc"><i>89</i>&nbsp;        System.arraycopy(colorvalue, 0, rgbvalue, 0,</b>
+<b class="nc"><i>90</i>&nbsp;                         Math.min(3, getNumComponents()));</b>
+<i>91</i>&nbsp;
+<b class="nc"><i>92</i>&nbsp;        return colorvalue;</b>
+<i>93</i>&nbsp;    }
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    public float[] fromRGB(float[] rgbvalue) {
+<b class="nc"><i>96</i>&nbsp;        if(rgbvalue.length &lt; 3) {</b>
+<b class="nc"><i>97</i>&nbsp;            throw new ArrayIndexOutOfBoundsException</b>
+<i>98</i>&nbsp;                (&quot;rgbvalue.length &lt; 3&quot;);
+<i>99</i>&nbsp;        }
+<i>100</i>&nbsp;
+<b class="nc"><i>101</i>&nbsp;        float[] colorvalue = new float[getNumComponents()];</b>
+<i>102</i>&nbsp;
+<b class="nc"><i>103</i>&nbsp;        System.arraycopy(rgbvalue, 0, colorvalue, 0,</b>
+<b class="nc"><i>104</i>&nbsp;                         Math.min(3, colorvalue.length));</b>
+<i>105</i>&nbsp;
+<b class="nc"><i>106</i>&nbsp;        return rgbvalue;</b>
+<i>107</i>&nbsp;    }
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    public float[] toCIEXYZ(float[] colorvalue) {
+<b class="nc"><i>110</i>&nbsp;        if(colorvalue.length &lt; getNumComponents()) {</b>
+<b class="nc"><i>111</i>&nbsp;            throw new ArrayIndexOutOfBoundsException</b>
+<i>112</i>&nbsp;                (&quot;colorvalue.length &lt; getNumComponents()&quot;);
+<i>113</i>&nbsp;        }
+<i>114</i>&nbsp;
+<b class="nc"><i>115</i>&nbsp;        float[] xyzvalue = new float[3];</b>
+<i>116</i>&nbsp;
+<b class="nc"><i>117</i>&nbsp;        System.arraycopy(colorvalue, 0, xyzvalue, 0,</b>
+<b class="nc"><i>118</i>&nbsp;                         Math.min(3, getNumComponents()));</b>
+<i>119</i>&nbsp;
+<b class="nc"><i>120</i>&nbsp;        return colorvalue;</b>
+<i>121</i>&nbsp;    }
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;    public float[] fromCIEXYZ(float[] xyzvalue) {
+<b class="nc"><i>124</i>&nbsp;        if(xyzvalue.length &lt; 3) {</b>
+<b class="nc"><i>125</i>&nbsp;            throw new ArrayIndexOutOfBoundsException</b>
+<i>126</i>&nbsp;                (&quot;xyzvalue.length &lt; 3&quot;);
+<i>127</i>&nbsp;        }
+<i>128</i>&nbsp;
+<b class="nc"><i>129</i>&nbsp;        float[] colorvalue = new float[getNumComponents()];</b>
+<i>130</i>&nbsp;
+<b class="nc"><i>131</i>&nbsp;        System.arraycopy(xyzvalue, 0, colorvalue, 0,</b>
+<b class="nc"><i>132</i>&nbsp;                         Math.min(3, colorvalue.length));</b>
+<i>133</i>&nbsp;
+<b class="nc"><i>134</i>&nbsp;        return xyzvalue;</b>
+<i>135</i>&nbsp;    }
+<i>136</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

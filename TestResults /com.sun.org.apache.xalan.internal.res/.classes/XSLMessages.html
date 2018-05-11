@@ -1,0 +1,176 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XSLMessages</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.res</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XSLMessages (com.sun.org.apache.xalan.internal.res)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XSLMessages</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: XSLMessages.java,v 1.2.4.1 2005/09/09 07:41:10 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xalan.internal.res;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xalan.internal.utils.SecuritySupport;
+<i>26</i>&nbsp;import java.util.ListResourceBundle;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import com.sun.org.apache.xpath.internal.res.XPATHMessages;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;/**
+<i>31</i>&nbsp; * Sets things up for issuing error messages. This class is misnamed, and should
+<i>32</i>&nbsp; * be called XalanMessages, or some such.
+<i>33</i>&nbsp; *
+<i>34</i>&nbsp; * @xsl.usage internal
+<i>35</i>&nbsp; */
+<b class="nc"><i>36</i>&nbsp;public class XSLMessages extends XPATHMessages {</b>
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;    /**
+<i>39</i>&nbsp;     * The language specific resource object for Xalan messages.
+<i>40</i>&nbsp;     */
+<b class="nc"><i>41</i>&nbsp;    private static ListResourceBundle XSLTBundle = null;</b>
+<i>42</i>&nbsp;    /**
+<i>43</i>&nbsp;     * The class name of the Xalan error message string table.
+<i>44</i>&nbsp;     */
+<i>45</i>&nbsp;    private static final String XSLT_ERROR_RESOURCES =
+<i>46</i>&nbsp;            &quot;com.sun.org.apache.xalan.internal.res.XSLTErrorResources&quot;;
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    /**
+<i>49</i>&nbsp;     * Creates a message from the specified key and replacement arguments,
+<i>50</i>&nbsp;     * localized to the given locale.
+<i>51</i>&nbsp;     *
+<i>52</i>&nbsp;     * @param msgKey The key for the message text.
+<i>53</i>&nbsp;     * @param args The arguments to be used as replacement text in the message
+<i>54</i>&nbsp;     * created.
+<i>55</i>&nbsp;     *
+<i>56</i>&nbsp;     * @return The formatted message string.
+<i>57</i>&nbsp;     */
+<i>58</i>&nbsp;    public static String createMessage(String msgKey, Object args[]) //throws Exception
+<i>59</i>&nbsp;    {
+<b class="nc"><i>60</i>&nbsp;        if (XSLTBundle == null) {</b>
+<b class="nc"><i>61</i>&nbsp;            XSLTBundle = SecuritySupport.getResourceBundle(XSLT_ERROR_RESOURCES);</b>
+<i>62</i>&nbsp;        }
+<i>63</i>&nbsp;
+<b class="nc"><i>64</i>&nbsp;        if (XSLTBundle != null) {</b>
+<b class="nc"><i>65</i>&nbsp;            return createMsg(XSLTBundle, msgKey, args);</b>
+<i>66</i>&nbsp;        } else {
+<b class="nc"><i>67</i>&nbsp;            return &quot;Could not load any resource bundles.&quot;;</b>
+<i>68</i>&nbsp;        }
+<i>69</i>&nbsp;    }
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    /**
+<i>72</i>&nbsp;     * Creates a message from the specified key and replacement arguments,
+<i>73</i>&nbsp;     * localized to the given locale.
+<i>74</i>&nbsp;     *
+<i>75</i>&nbsp;     * @param msgKey The key for the message text.
+<i>76</i>&nbsp;     * @param args The arguments to be used as replacement text in the message
+<i>77</i>&nbsp;     * created.
+<i>78</i>&nbsp;     *
+<i>79</i>&nbsp;     * @return The formatted warning string.
+<i>80</i>&nbsp;     */
+<i>81</i>&nbsp;    public static String createWarning(String msgKey, Object args[]) //throws Exception
+<i>82</i>&nbsp;    {
+<b class="nc"><i>83</i>&nbsp;        if (XSLTBundle == null) {</b>
+<b class="nc"><i>84</i>&nbsp;            XSLTBundle = SecuritySupport.getResourceBundle(XSLT_ERROR_RESOURCES);</b>
+<i>85</i>&nbsp;        }
+<i>86</i>&nbsp;
+<b class="nc"><i>87</i>&nbsp;        if (XSLTBundle != null) {</b>
+<b class="nc"><i>88</i>&nbsp;            return createMsg(XSLTBundle, msgKey, args);</b>
+<i>89</i>&nbsp;        } else {
+<b class="nc"><i>90</i>&nbsp;            return &quot;Could not load any resource bundles.&quot;;</b>
+<i>91</i>&nbsp;        }
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

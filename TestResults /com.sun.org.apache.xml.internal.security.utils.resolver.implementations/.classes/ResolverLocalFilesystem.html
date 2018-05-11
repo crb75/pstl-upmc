@@ -1,0 +1,244 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ResolverLocalFilesystem</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.security.utils.resolver.implementations</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ResolverLocalFilesystem (com.sun.org.apache.xml.internal.security.utils.resolver.implementations)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ResolverLocalFilesystem</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 56)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one
+<i>7</i>&nbsp; * or more contributor license agreements. See the NOTICE file
+<i>8</i>&nbsp; * distributed with this work for additional information
+<i>9</i>&nbsp; * regarding copyright ownership. The ASF licenses this file
+<i>10</i>&nbsp; * to you under the Apache License, Version 2.0 (the
+<i>11</i>&nbsp; * &quot;License&quot;); you may not use this file except in compliance
+<i>12</i>&nbsp; * with the License. You may obtain a copy of the License at
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * http://www.apache.org/licenses/LICENSE-2.0
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; * Unless required by applicable law or agreed to in writing,
+<i>17</i>&nbsp; * software distributed under the License is distributed on an
+<i>18</i>&nbsp; * &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+<i>19</i>&nbsp; * KIND, either express or implied. See the License for the
+<i>20</i>&nbsp; * specific language governing permissions and limitations
+<i>21</i>&nbsp; * under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.security.utils.resolver.implementations;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.io.FileInputStream;
+<i>26</i>&nbsp;import java.net.URI;
+<i>27</i>&nbsp;import java.net.URISyntaxException;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import com.sun.org.apache.xml.internal.security.signature.XMLSignatureInput;
+<i>30</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.resolver.ResourceResolverContext;
+<i>31</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.resolver.ResourceResolverException;
+<i>32</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.resolver.ResourceResolverSpi;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;/**
+<i>35</i>&nbsp; * A simple ResourceResolver for requests into the local filesystem.
+<i>36</i>&nbsp; */
+<b class="nc"><i>37</i>&nbsp;public class ResolverLocalFilesystem extends ResourceResolverSpi {</b>
+<i>38</i>&nbsp;
+<b class="nc"><i>39</i>&nbsp;    private static final int FILE_URI_LENGTH = &quot;file:/&quot;.length();</b>
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    /** {@link org.apache.commons.logging} logging facility */
+<i>42</i>&nbsp;    private static java.util.logging.Logger log =
+<b class="nc"><i>43</i>&nbsp;        java.util.logging.Logger.getLogger(ResolverLocalFilesystem.class.getName());</b>
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    @Override
+<i>46</i>&nbsp;    public boolean engineIsThreadSafe() {
+<b class="nc"><i>47</i>&nbsp;        return true;</b>
+<i>48</i>&nbsp;    }
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    /**
+<i>51</i>&nbsp;     * @inheritDoc
+<i>52</i>&nbsp;     */
+<i>53</i>&nbsp;    @Override
+<i>54</i>&nbsp;    public XMLSignatureInput engineResolveURI(ResourceResolverContext context)
+<i>55</i>&nbsp;        throws ResourceResolverException {
+<i>56</i>&nbsp;        try {
+<i>57</i>&nbsp;            // calculate new URI
+<b class="nc"><i>58</i>&nbsp;            URI uriNew = getNewURI(context.uriToResolve, context.baseUri);</b>
+<i>59</i>&nbsp;
+<b class="nc"><i>60</i>&nbsp;            String fileName =</b>
+<b class="nc"><i>61</i>&nbsp;                ResolverLocalFilesystem.translateUriToFilename(uriNew.toString());</b>
+<b class="nc"><i>62</i>&nbsp;            FileInputStream inputStream = new FileInputStream(fileName);</b>
+<b class="nc"><i>63</i>&nbsp;            XMLSignatureInput result = new XMLSignatureInput(inputStream);</b>
+<i>64</i>&nbsp;
+<b class="nc"><i>65</i>&nbsp;            result.setSourceURI(uriNew.toString());</b>
+<i>66</i>&nbsp;
+<b class="nc"><i>67</i>&nbsp;            return result;</b>
+<b class="nc"><i>68</i>&nbsp;        } catch (Exception e) {</b>
+<b class="nc"><i>69</i>&nbsp;            throw new ResourceResolverException(&quot;generic.EmptyMessage&quot;, e, context.attr, context.baseUri);</b>
+<i>70</i>&nbsp;        }
+<i>71</i>&nbsp;    }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    /**
+<i>74</i>&nbsp;     * Method translateUriToFilename
+<i>75</i>&nbsp;     *
+<i>76</i>&nbsp;     * @param uri
+<i>77</i>&nbsp;     * @return the string of the filename
+<i>78</i>&nbsp;     */
+<i>79</i>&nbsp;    private static String translateUriToFilename(String uri) {
+<i>80</i>&nbsp;
+<b class="nc"><i>81</i>&nbsp;        String subStr = uri.substring(FILE_URI_LENGTH);</b>
+<i>82</i>&nbsp;
+<b class="nc"><i>83</i>&nbsp;        if (subStr.indexOf(&quot;%20&quot;) &gt; -1) {</b>
+<b class="nc"><i>84</i>&nbsp;            int offset = 0;</b>
+<b class="nc"><i>85</i>&nbsp;            int index = 0;</b>
+<b class="nc"><i>86</i>&nbsp;            StringBuilder temp = new StringBuilder(subStr.length());</b>
+<i>87</i>&nbsp;            do {
+<b class="nc"><i>88</i>&nbsp;                index = subStr.indexOf(&quot;%20&quot;,offset);</b>
+<b class="nc"><i>89</i>&nbsp;                if (index == -1) {</b>
+<b class="nc"><i>90</i>&nbsp;                    temp.append(subStr.substring(offset));</b>
+<i>91</i>&nbsp;                } else {
+<b class="nc"><i>92</i>&nbsp;                    temp.append(subStr.substring(offset, index));</b>
+<b class="nc"><i>93</i>&nbsp;                    temp.append(&#39; &#39;);</b>
+<b class="nc"><i>94</i>&nbsp;                    offset = index + 3;</b>
+<i>95</i>&nbsp;                }
+<b class="nc"><i>96</i>&nbsp;            } while(index != -1);</b>
+<b class="nc"><i>97</i>&nbsp;            subStr = temp.toString();</b>
+<i>98</i>&nbsp;        }
+<i>99</i>&nbsp;
+<b class="nc"><i>100</i>&nbsp;        if (subStr.charAt(1) == &#39;:&#39;) {</b>
+<i>101</i>&nbsp;            // we&#39;re running M$ Windows, so this works fine
+<b class="nc"><i>102</i>&nbsp;            return subStr;</b>
+<i>103</i>&nbsp;        }
+<i>104</i>&nbsp;        // we&#39;re running some UNIX, so we have to prepend a slash
+<b class="nc"><i>105</i>&nbsp;        return &quot;/&quot; + subStr;</b>
+<i>106</i>&nbsp;    }
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;    /**
+<i>109</i>&nbsp;     * @inheritDoc
+<i>110</i>&nbsp;     */
+<i>111</i>&nbsp;    public boolean engineCanResolveURI(ResourceResolverContext context) {
+<b class="nc"><i>112</i>&nbsp;        if (context.uriToResolve == null) {</b>
+<b class="nc"><i>113</i>&nbsp;            return false;</b>
+<i>114</i>&nbsp;        }
+<i>115</i>&nbsp;
+<b class="nc"><i>116</i>&nbsp;        if (context.uriToResolve.equals(&quot;&quot;) || (context.uriToResolve.charAt(0)==&#39;#&#39;) ||</b>
+<b class="nc"><i>117</i>&nbsp;            context.uriToResolve.startsWith(&quot;http:&quot;)) {</b>
+<b class="nc"><i>118</i>&nbsp;            return false;</b>
+<i>119</i>&nbsp;        }
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;        try {
+<b class="nc"><i>122</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>123</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;I was asked whether I can resolve &quot; + context.uriToResolve);</b>
+<i>124</i>&nbsp;            }
+<i>125</i>&nbsp;
+<b class="nc"><i>126</i>&nbsp;            if (context.uriToResolve.startsWith(&quot;file:&quot;) || context.baseUri.startsWith(&quot;file:&quot;)) {</b>
+<b class="nc"><i>127</i>&nbsp;                if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>128</i>&nbsp;                    log.log(java.util.logging.Level.FINE, &quot;I state that I can resolve &quot; + context.uriToResolve);</b>
+<i>129</i>&nbsp;                }
+<b class="nc"><i>130</i>&nbsp;                return true;</b>
+<i>131</i>&nbsp;            }
+<b class="nc"><i>132</i>&nbsp;        } catch (Exception e) {</b>
+<b class="nc"><i>133</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>134</i>&nbsp;                log.log(java.util.logging.Level.FINE, e.getMessage(), e);</b>
+<i>135</i>&nbsp;            }
+<b class="nc"><i>136</i>&nbsp;        }</b>
+<i>137</i>&nbsp;
+<b class="nc"><i>138</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>139</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;But I can&#39;t&quot;);</b>
+<i>140</i>&nbsp;        }
+<i>141</i>&nbsp;
+<b class="nc"><i>142</i>&nbsp;        return false;</b>
+<i>143</i>&nbsp;    }
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;    private static URI getNewURI(String uri, String baseURI) throws URISyntaxException {
+<b class="nc"><i>146</i>&nbsp;        URI newUri = null;</b>
+<b class="nc"><i>147</i>&nbsp;        if (baseURI == null || &quot;&quot;.equals(baseURI)) {</b>
+<b class="nc"><i>148</i>&nbsp;            newUri = new URI(uri);</b>
+<i>149</i>&nbsp;        } else {
+<b class="nc"><i>150</i>&nbsp;            newUri = new URI(baseURI).resolve(uri);</b>
+<i>151</i>&nbsp;        }
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;        // if the URI contains a fragment, ignore it
+<b class="nc"><i>154</i>&nbsp;        if (newUri.getFragment() != null) {</b>
+<b class="nc"><i>155</i>&nbsp;            URI uriNewNoFrag =</b>
+<b class="nc"><i>156</i>&nbsp;                new URI(newUri.getScheme(), newUri.getSchemeSpecificPart(), null);</b>
+<b class="nc"><i>157</i>&nbsp;            return uriNewNoFrag;</b>
+<i>158</i>&nbsp;        }
+<b class="nc"><i>159</i>&nbsp;        return newUri;</b>
+<i>160</i>&nbsp;    }
+<i>161</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

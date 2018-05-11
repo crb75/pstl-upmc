@@ -1,0 +1,1645 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XML11Configuration</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.parsers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XML11Configuration (com.sun.org.apache.xerces.internal.parsers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XML11Configuration</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 37)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 418)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.parsers;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import java.io.IOException;
+<i>24</i>&nbsp;import java.util.ArrayList;
+<i>25</i>&nbsp;import java.util.HashMap;
+<i>26</i>&nbsp;import java.util.Locale;
+<i>27</i>&nbsp;import javax.xml.XMLConstants;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.Constants;
+<i>30</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.XML11DTDScannerImpl;
+<i>31</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.XML11DocumentScannerImpl;
+<i>32</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.XML11NSDocumentScannerImpl;
+<i>33</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.XMLDTDScannerImpl;
+<i>34</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.XMLDocumentScannerImpl;
+<i>35</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.XMLEntityHandler;
+<i>36</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.XMLEntityManager;
+<i>37</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.XMLErrorReporter;
+<i>38</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl;
+<i>39</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.XMLVersionDetector;
+<i>40</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dtd.XML11DTDProcessor;
+<i>41</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dtd.XML11DTDValidator;
+<i>42</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dtd.XML11NSDTDValidator;
+<i>43</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dtd.XMLDTDProcessor;
+<i>44</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dtd.XMLDTDValidator;
+<i>45</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dtd.XMLNSDTDValidator;
+<i>46</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dv.DTDDVFactory;
+<i>47</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.msg.XMLMessageFormatter;
+<i>48</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.validation.ValidationManager;
+<i>49</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaValidator;
+<i>50</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.XSMessageFormatter;
+<i>51</i>&nbsp;import com.sun.org.apache.xerces.internal.util.FeatureState;
+<i>52</i>&nbsp;import com.sun.org.apache.xerces.internal.util.ParserConfigurationSettings;
+<i>53</i>&nbsp;import com.sun.org.apache.xerces.internal.util.PropertyState;
+<i>54</i>&nbsp;import com.sun.org.apache.xerces.internal.util.SymbolTable;
+<i>55</i>&nbsp;import com.sun.org.apache.xerces.internal.utils.XMLSecurityPropertyManager;
+<i>56</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLDTDContentModelHandler;
+<i>57</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLDTDHandler;
+<i>58</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLDocumentHandler;
+<i>59</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLLocator;
+<i>60</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XNIException;
+<i>61</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarPool;
+<i>62</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLComponent;
+<i>63</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLComponentManager;
+<i>64</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException;
+<i>65</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLDTDScanner;
+<i>66</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentScanner;
+<i>67</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentSource;
+<i>68</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLEntityResolver;
+<i>69</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLErrorHandler;
+<i>70</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
+<i>71</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLPullParserConfiguration;
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;/**
+<i>74</i>&nbsp; * This class is the configuration used to parse XML 1.0 and XML 1.1 documents.
+<i>75</i>&nbsp; *
+<i>76</i>&nbsp; * @author Elena Litani, IBM
+<i>77</i>&nbsp; * @author Neil Graham, IBM
+<i>78</i>&nbsp; * @author Michael Glavassevich, IBM
+<i>79</i>&nbsp; *
+<i>80</i>&nbsp; * @version $Id: XML11Configuration.java,v 1.9 2010-11-01 04:40:10 joehw Exp $
+<i>81</i>&nbsp; */
+<i>82</i>&nbsp;public class XML11Configuration extends ParserConfigurationSettings
+<i>83</i>&nbsp;    implements XMLPullParserConfiguration, XML11Configurable {
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    //
+<i>86</i>&nbsp;    // Constants
+<i>87</i>&nbsp;    //
+<i>88</i>&nbsp;    protected final static String XML11_DATATYPE_VALIDATOR_FACTORY =
+<i>89</i>&nbsp;        &quot;com.sun.org.apache.xerces.internal.impl.dv.dtd.XML11DTDDVFactoryImpl&quot;;
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    // feature identifiers
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    /** Feature identifier: warn on duplicate attribute definition. */
+<i>94</i>&nbsp;    protected static final String WARN_ON_DUPLICATE_ATTDEF =
+<i>95</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.WARN_ON_DUPLICATE_ATTDEF_FEATURE;
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    /** Feature identifier: warn on duplicate entity definition. */
+<i>98</i>&nbsp;    protected static final String WARN_ON_DUPLICATE_ENTITYDEF =
+<i>99</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.WARN_ON_DUPLICATE_ENTITYDEF_FEATURE;
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;    /** Feature identifier: warn on undeclared element definition. */
+<i>102</i>&nbsp;    protected static final String WARN_ON_UNDECLARED_ELEMDEF =
+<i>103</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.WARN_ON_UNDECLARED_ELEMDEF_FEATURE;
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;    /** Feature identifier: allow Java encodings. */
+<i>106</i>&nbsp;    protected static final String ALLOW_JAVA_ENCODINGS =
+<i>107</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.ALLOW_JAVA_ENCODINGS_FEATURE;
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    /** Feature identifier: continue after fatal error. */
+<i>110</i>&nbsp;    protected static final String CONTINUE_AFTER_FATAL_ERROR =
+<i>111</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.CONTINUE_AFTER_FATAL_ERROR_FEATURE;
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    /** Feature identifier: load external DTD. */
+<i>114</i>&nbsp;    protected static final String LOAD_EXTERNAL_DTD =
+<i>115</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.LOAD_EXTERNAL_DTD_FEATURE;
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    /** Feature identifier: notify built-in refereces. */
+<i>118</i>&nbsp;    protected static final String NOTIFY_BUILTIN_REFS =
+<i>119</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.NOTIFY_BUILTIN_REFS_FEATURE;
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;    /** Feature identifier: notify character refereces. */
+<i>122</i>&nbsp;    protected static final String NOTIFY_CHAR_REFS =
+<i>123</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.NOTIFY_CHAR_REFS_FEATURE;
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    /** Feature identifier: expose schema normalized value */
+<i>126</i>&nbsp;    protected static final String NORMALIZE_DATA =
+<i>127</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.SCHEMA_NORMALIZED_VALUE;
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;    /** Feature identifier: send element default value via characters() */
+<i>130</i>&nbsp;    protected static final String SCHEMA_ELEMENT_DEFAULT =
+<i>131</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.SCHEMA_ELEMENT_DEFAULT;
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;    /** Feature identifier: augment PSVI */
+<i>134</i>&nbsp;    protected static final String SCHEMA_AUGMENT_PSVI =
+<i>135</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.SCHEMA_AUGMENT_PSVI;
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;    /** feature identifier: XML Schema validation */
+<i>138</i>&nbsp;    protected static final String XMLSCHEMA_VALIDATION =
+<i>139</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.SCHEMA_VALIDATION_FEATURE;
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;    /** feature identifier: XML Schema validation -- full checking */
+<i>142</i>&nbsp;    protected static final String XMLSCHEMA_FULL_CHECKING =
+<i>143</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.SCHEMA_FULL_CHECKING;
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;    /** Feature: generate synthetic annotations */
+<i>146</i>&nbsp;    protected static final String GENERATE_SYNTHETIC_ANNOTATIONS =
+<i>147</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.GENERATE_SYNTHETIC_ANNOTATIONS_FEATURE;
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    /** Feature identifier: validate annotations */
+<i>150</i>&nbsp;    protected static final String VALIDATE_ANNOTATIONS =
+<i>151</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.VALIDATE_ANNOTATIONS_FEATURE;
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;    /** Feature identifier: honour all schemaLocations */
+<i>154</i>&nbsp;    protected static final String HONOUR_ALL_SCHEMALOCATIONS =
+<i>155</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.HONOUR_ALL_SCHEMALOCATIONS_FEATURE;
+<i>156</i>&nbsp;
+<i>157</i>&nbsp;    /** Feature identifier: namespace growth */
+<i>158</i>&nbsp;    protected static final String NAMESPACE_GROWTH =
+<i>159</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.NAMESPACE_GROWTH_FEATURE;
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;    /** Feature identifier: tolerate duplicates */
+<i>162</i>&nbsp;    protected static final String TOLERATE_DUPLICATES =
+<i>163</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.TOLERATE_DUPLICATES_FEATURE;
+<i>164</i>&nbsp;
+<i>165</i>&nbsp;    /** Feature identifier: use grammar pool only */
+<i>166</i>&nbsp;    protected static final String USE_GRAMMAR_POOL_ONLY =
+<i>167</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.USE_GRAMMAR_POOL_ONLY_FEATURE;
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;    // feature identifiers
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;    /** Feature identifier: validation. */
+<i>172</i>&nbsp;    protected static final String VALIDATION =
+<i>173</i>&nbsp;        Constants.SAX_FEATURE_PREFIX + Constants.VALIDATION_FEATURE;
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;    /** Feature identifier: namespaces. */
+<i>176</i>&nbsp;    protected static final String NAMESPACES =
+<i>177</i>&nbsp;        Constants.SAX_FEATURE_PREFIX + Constants.NAMESPACES_FEATURE;
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;    /** Feature identifier: external general entities. */
+<i>180</i>&nbsp;    protected static final String EXTERNAL_GENERAL_ENTITIES =
+<i>181</i>&nbsp;        Constants.SAX_FEATURE_PREFIX + Constants.EXTERNAL_GENERAL_ENTITIES_FEATURE;
+<i>182</i>&nbsp;
+<i>183</i>&nbsp;    /** Feature identifier: external parameter entities. */
+<i>184</i>&nbsp;    protected static final String EXTERNAL_PARAMETER_ENTITIES =
+<i>185</i>&nbsp;        Constants.SAX_FEATURE_PREFIX + Constants.EXTERNAL_PARAMETER_ENTITIES_FEATURE;
+<i>186</i>&nbsp;
+<i>187</i>&nbsp;    // property identifiers
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;    /** Property identifier: xml string. */
+<i>190</i>&nbsp;    protected static final String XML_STRING =
+<i>191</i>&nbsp;        Constants.SAX_PROPERTY_PREFIX + Constants.XML_STRING_PROPERTY;
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;    /** Property identifier: symbol table. */
+<i>194</i>&nbsp;    protected static final String SYMBOL_TABLE =
+<i>195</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY;
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;    /** Property identifier: error handler. */
+<i>198</i>&nbsp;    protected static final String ERROR_HANDLER =
+<i>199</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_HANDLER_PROPERTY;
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;    /** Property identifier: entity resolver. */
+<i>202</i>&nbsp;    protected static final String ENTITY_RESOLVER =
+<i>203</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.ENTITY_RESOLVER_PROPERTY;
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;    /** Property identifier: XML Schema validator. */
+<i>206</i>&nbsp;    protected static final String SCHEMA_VALIDATOR =
+<i>207</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.SCHEMA_VALIDATOR_PROPERTY;
+<i>208</i>&nbsp;
+<i>209</i>&nbsp;    /** Property identifier: schema location. */
+<i>210</i>&nbsp;    protected static final String SCHEMA_LOCATION =
+<i>211</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.SCHEMA_LOCATION;
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;    /** Property identifier: no namespace schema location. */
+<i>214</i>&nbsp;    protected static final String SCHEMA_NONS_LOCATION =
+<i>215</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.SCHEMA_NONS_LOCATION;
+<i>216</i>&nbsp;
+<i>217</i>&nbsp;    /** Property identifier: error reporter. */
+<i>218</i>&nbsp;    protected static final String ERROR_REPORTER =
+<i>219</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_REPORTER_PROPERTY;
+<i>220</i>&nbsp;
+<i>221</i>&nbsp;    /** Property identifier: entity manager. */
+<i>222</i>&nbsp;    protected static final String ENTITY_MANAGER =
+<i>223</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.ENTITY_MANAGER_PROPERTY;
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;    /** Property identifier document scanner: */
+<i>226</i>&nbsp;    protected static final String DOCUMENT_SCANNER =
+<i>227</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.DOCUMENT_SCANNER_PROPERTY;
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;    /** Property identifier: DTD scanner. */
+<i>230</i>&nbsp;    protected static final String DTD_SCANNER =
+<i>231</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.DTD_SCANNER_PROPERTY;
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;    /** Property identifier: grammar pool. */
+<i>234</i>&nbsp;    protected static final String XMLGRAMMAR_POOL =
+<i>235</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.XMLGRAMMAR_POOL_PROPERTY;
+<i>236</i>&nbsp;
+<i>237</i>&nbsp;    /** Property identifier: DTD loader. */
+<i>238</i>&nbsp;    protected static final String DTD_PROCESSOR =
+<i>239</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.DTD_PROCESSOR_PROPERTY;
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;    /** Property identifier: DTD validator. */
+<i>242</i>&nbsp;    protected static final String DTD_VALIDATOR =
+<i>243</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.DTD_VALIDATOR_PROPERTY;
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;    /** Property identifier: namespace binder. */
+<i>246</i>&nbsp;    protected static final String NAMESPACE_BINDER =
+<i>247</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.NAMESPACE_BINDER_PROPERTY;
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;    /** Property identifier: datatype validator factory. */
+<i>250</i>&nbsp;    protected static final String DATATYPE_VALIDATOR_FACTORY =
+<i>251</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.DATATYPE_VALIDATOR_FACTORY_PROPERTY;
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;    protected static final String VALIDATION_MANAGER =
+<i>254</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.VALIDATION_MANAGER_PROPERTY;
+<i>255</i>&nbsp;
+<i>256</i>&nbsp;    /** Property identifier: JAXP schema language / DOM schema-type. */
+<i>257</i>&nbsp;    protected static final String JAXP_SCHEMA_LANGUAGE =
+<i>258</i>&nbsp;        Constants.JAXP_PROPERTY_PREFIX + Constants.SCHEMA_LANGUAGE;
+<i>259</i>&nbsp;
+<i>260</i>&nbsp;    /** Property identifier: JAXP schema source/ DOM schema-location. */
+<i>261</i>&nbsp;    protected static final String JAXP_SCHEMA_SOURCE =
+<i>262</i>&nbsp;        Constants.JAXP_PROPERTY_PREFIX + Constants.SCHEMA_SOURCE;
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;    /** Property identifier: locale. */
+<i>265</i>&nbsp;    protected static final String LOCALE =
+<i>266</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.LOCALE_PROPERTY;
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;    /** Property identifier: Schema DV Factory */
+<i>269</i>&nbsp;    protected static final String SCHEMA_DV_FACTORY =
+<i>270</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.SCHEMA_DV_FACTORY_PROPERTY;
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;    /** Property identifier: Security property manager. */
+<i>273</i>&nbsp;    private static final String XML_SECURITY_PROPERTY_MANAGER =
+<i>274</i>&nbsp;            Constants.XML_SECURITY_PROPERTY_MANAGER;
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;    /** Property identifier: Security manager. */
+<i>277</i>&nbsp;    private static final String SECURITY_MANAGER = Constants.SECURITY_MANAGER;
+<i>278</i>&nbsp;
+<i>279</i>&nbsp;    // debugging
+<i>280</i>&nbsp;
+<i>281</i>&nbsp;    /** Set to true and recompile to print exception stack trace. */
+<i>282</i>&nbsp;    protected static final boolean PRINT_EXCEPTION_STACK_TRACE = false;
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;    //
+<i>285</i>&nbsp;    // Data
+<i>286</i>&nbsp;    //
+<i>287</i>&nbsp;
+<i>288</i>&nbsp;    protected SymbolTable fSymbolTable;
+<i>289</i>&nbsp;    protected XMLInputSource fInputSource;
+<i>290</i>&nbsp;    protected ValidationManager fValidationManager;
+<i>291</i>&nbsp;    protected XMLVersionDetector fVersionDetector;
+<i>292</i>&nbsp;    protected XMLLocator fLocator;
+<i>293</i>&nbsp;    protected Locale fLocale;
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;    /** XML 1.0 Components. */
+<i>296</i>&nbsp;    protected ArrayList&lt;XMLComponent&gt; fComponents;
+<i>297</i>&nbsp;
+<i>298</i>&nbsp;    /** XML 1.1. Components. */
+<b class="nc"><i>299</i>&nbsp;    protected ArrayList&lt;XMLComponent&gt; fXML11Components = null;</b>
+<i>300</i>&nbsp;
+<i>301</i>&nbsp;    /** Common components: XMLEntityManager, XMLErrorReporter, XMLSchemaValidator */
+<b class="nc"><i>302</i>&nbsp;    protected ArrayList&lt;XMLComponent&gt; fCommonComponents = null;</b>
+<i>303</i>&nbsp;
+<i>304</i>&nbsp;    /** The document handler. */
+<i>305</i>&nbsp;    protected XMLDocumentHandler fDocumentHandler;
+<i>306</i>&nbsp;
+<i>307</i>&nbsp;    /** The DTD handler. */
+<i>308</i>&nbsp;    protected XMLDTDHandler fDTDHandler;
+<i>309</i>&nbsp;
+<i>310</i>&nbsp;    /** The DTD content model handler. */
+<i>311</i>&nbsp;    protected XMLDTDContentModelHandler fDTDContentModelHandler;
+<i>312</i>&nbsp;
+<i>313</i>&nbsp;    /** Last component in the document pipeline */
+<i>314</i>&nbsp;    protected XMLDocumentSource fLastComponent;
+<i>315</i>&nbsp;
+<i>316</i>&nbsp;    /**
+<i>317</i>&nbsp;     * True if a parse is in progress. This state is needed because
+<i>318</i>&nbsp;     * some features/properties cannot be set while parsing (e.g.
+<i>319</i>&nbsp;     * validation and namespaces).
+<i>320</i>&nbsp;     */
+<b class="nc"><i>321</i>&nbsp;    protected boolean fParseInProgress = false;</b>
+<i>322</i>&nbsp;
+<i>323</i>&nbsp;    /** fConfigUpdated is set to true if there has been any change to the configuration settings,
+<i>324</i>&nbsp;     * i.e a feature or a property was changed.
+<i>325</i>&nbsp;     */
+<b class="nc"><i>326</i>&nbsp;        protected boolean fConfigUpdated = false;</b>
+<i>327</i>&nbsp;
+<i>328</i>&nbsp;    //
+<i>329</i>&nbsp;    // XML 1.0 components
+<i>330</i>&nbsp;    //
+<i>331</i>&nbsp;
+<i>332</i>&nbsp;    /** The XML 1.0 Datatype validator factory. */
+<i>333</i>&nbsp;    protected DTDDVFactory fDatatypeValidatorFactory;
+<i>334</i>&nbsp;
+<i>335</i>&nbsp;    /** The XML 1.0 Document scanner that does namespace binding. */
+<i>336</i>&nbsp;    protected XMLNSDocumentScannerImpl fNamespaceScanner;
+<i>337</i>&nbsp;    /** The XML 1.0 Non-namespace implementation of scanner */
+<i>338</i>&nbsp;    protected XMLDocumentScannerImpl fNonNSScanner;
+<i>339</i>&nbsp;    /** The XML 1.0 DTD Validator: binds namespaces */
+<i>340</i>&nbsp;    protected XMLDTDValidator fDTDValidator;
+<i>341</i>&nbsp;    /** The XML 1.0 DTD Validator that does not bind namespaces */
+<i>342</i>&nbsp;    protected XMLDTDValidator fNonNSDTDValidator;
+<i>343</i>&nbsp;    /** The XML 1.0 DTD scanner. */
+<i>344</i>&nbsp;    protected XMLDTDScanner fDTDScanner;
+<i>345</i>&nbsp;    /** The XML 1.0 DTD Processor . */
+<i>346</i>&nbsp;    protected XMLDTDProcessor fDTDProcessor;
+<i>347</i>&nbsp;
+<i>348</i>&nbsp;    //
+<i>349</i>&nbsp;    // XML 1.1 components
+<i>350</i>&nbsp;    //
+<i>351</i>&nbsp;
+<i>352</i>&nbsp;    /** The XML 1.1 datatype factory. **/
+<b class="nc"><i>353</i>&nbsp;    protected DTDDVFactory fXML11DatatypeFactory = null;</b>
+<i>354</i>&nbsp;
+<i>355</i>&nbsp;    /** The XML 1.1 document scanner that does namespace binding. **/
+<b class="nc"><i>356</i>&nbsp;    protected XML11NSDocumentScannerImpl fXML11NSDocScanner = null;</b>
+<i>357</i>&nbsp;
+<i>358</i>&nbsp;    /** The XML 1.1 document scanner that does not do namespace binding. **/
+<b class="nc"><i>359</i>&nbsp;    protected XML11DocumentScannerImpl fXML11DocScanner = null;</b>
+<i>360</i>&nbsp;
+<i>361</i>&nbsp;    /** The XML 1.1 DTD validator that does namespace binding. **/
+<b class="nc"><i>362</i>&nbsp;    protected XML11NSDTDValidator fXML11NSDTDValidator = null;</b>
+<i>363</i>&nbsp;
+<i>364</i>&nbsp;    /** The XML 1.1 DTD validator that does not do namespace binding. **/
+<b class="nc"><i>365</i>&nbsp;    protected XML11DTDValidator fXML11DTDValidator = null;</b>
+<i>366</i>&nbsp;
+<i>367</i>&nbsp;    /** The XML 1.1 DTD scanner. **/
+<b class="nc"><i>368</i>&nbsp;    protected XML11DTDScannerImpl fXML11DTDScanner = null;</b>
+<i>369</i>&nbsp;    /** The XML 1.1 DTD processor. **/
+<b class="nc"><i>370</i>&nbsp;    protected XML11DTDProcessor fXML11DTDProcessor = null;</b>
+<i>371</i>&nbsp;
+<i>372</i>&nbsp;    //
+<i>373</i>&nbsp;    // Common components
+<i>374</i>&nbsp;    //
+<i>375</i>&nbsp;
+<i>376</i>&nbsp;    /** Grammar pool. */
+<i>377</i>&nbsp;    protected XMLGrammarPool fGrammarPool;
+<i>378</i>&nbsp;
+<i>379</i>&nbsp;    /** Error reporter. */
+<i>380</i>&nbsp;    protected XMLErrorReporter fErrorReporter;
+<i>381</i>&nbsp;
+<i>382</i>&nbsp;    /** Entity manager. */
+<i>383</i>&nbsp;    protected XMLEntityManager fEntityManager;
+<i>384</i>&nbsp;
+<i>385</i>&nbsp;    /** XML Schema Validator. */
+<i>386</i>&nbsp;    protected XMLSchemaValidator fSchemaValidator;
+<i>387</i>&nbsp;
+<i>388</i>&nbsp;    /** Current scanner */
+<i>389</i>&nbsp;    protected XMLDocumentScanner fCurrentScanner;
+<i>390</i>&nbsp;    /** Current Datatype validator factory. */
+<i>391</i>&nbsp;    protected DTDDVFactory fCurrentDVFactory;
+<i>392</i>&nbsp;    /** Current DTD scanner. */
+<i>393</i>&nbsp;    protected XMLDTDScanner fCurrentDTDScanner;
+<i>394</i>&nbsp;
+<i>395</i>&nbsp;    /** Flag indiciating whether XML11 components have been initialized. */
+<b class="nc"><i>396</i>&nbsp;    private boolean f11Initialized = false;</b>
+<i>397</i>&nbsp;
+<i>398</i>&nbsp;    //
+<i>399</i>&nbsp;    // Constructors
+<i>400</i>&nbsp;    //
+<i>401</i>&nbsp;
+<i>402</i>&nbsp;    /** Default constructor. */
+<i>403</i>&nbsp;    public XML11Configuration() {
+<b class="nc"><i>404</i>&nbsp;        this(null, null, null);</b>
+<i>405</i>&nbsp;    } // &lt;init&gt;()
+<i>406</i>&nbsp;
+<i>407</i>&nbsp;    /**
+<i>408</i>&nbsp;     * Constructs a parser configuration using the specified symbol table.
+<i>409</i>&nbsp;     *
+<i>410</i>&nbsp;     * @param symbolTable The symbol table to use.
+<i>411</i>&nbsp;     */
+<i>412</i>&nbsp;    public XML11Configuration(SymbolTable symbolTable) {
+<b class="nc"><i>413</i>&nbsp;        this(symbolTable, null, null);</b>
+<i>414</i>&nbsp;    } // &lt;init&gt;(SymbolTable)
+<i>415</i>&nbsp;
+<i>416</i>&nbsp;    /**
+<i>417</i>&nbsp;     * Constructs a parser configuration using the specified symbol table and
+<i>418</i>&nbsp;     * grammar pool.
+<i>419</i>&nbsp;     * &lt;p&gt;
+<i>420</i>&nbsp;     * &lt;strong&gt;REVISIT:&lt;/strong&gt;
+<i>421</i>&nbsp;     * Grammar pool will be updated when the new validation engine is
+<i>422</i>&nbsp;     * implemented.
+<i>423</i>&nbsp;     *
+<i>424</i>&nbsp;     * @param symbolTable The symbol table to use.
+<i>425</i>&nbsp;     * @param grammarPool The grammar pool to use.
+<i>426</i>&nbsp;     */
+<i>427</i>&nbsp;    public XML11Configuration(SymbolTable symbolTable, XMLGrammarPool grammarPool) {
+<b class="nc"><i>428</i>&nbsp;        this(symbolTable, grammarPool, null);</b>
+<i>429</i>&nbsp;    } // &lt;init&gt;(SymbolTable,XMLGrammarPool)
+<i>430</i>&nbsp;
+<i>431</i>&nbsp;    /**
+<i>432</i>&nbsp;     * Constructs a parser configuration using the specified symbol table,
+<i>433</i>&nbsp;     * grammar pool, and parent settings.
+<i>434</i>&nbsp;     * &lt;p&gt;
+<i>435</i>&nbsp;     * &lt;strong&gt;REVISIT:&lt;/strong&gt;
+<i>436</i>&nbsp;     * Grammar pool will be updated when the new validation engine is
+<i>437</i>&nbsp;     * implemented.
+<i>438</i>&nbsp;     *
+<i>439</i>&nbsp;     * @param symbolTable    The symbol table to use.
+<i>440</i>&nbsp;     * @param grammarPool    The grammar pool to use.
+<i>441</i>&nbsp;     * @param parentSettings The parent settings.
+<i>442</i>&nbsp;     */
+<i>443</i>&nbsp;    public XML11Configuration(
+<i>444</i>&nbsp;        SymbolTable symbolTable,
+<i>445</i>&nbsp;        XMLGrammarPool grammarPool,
+<i>446</i>&nbsp;        XMLComponentManager parentSettings) {
+<i>447</i>&nbsp;
+<b class="nc"><i>448</i>&nbsp;        super(parentSettings);</b>
+<i>449</i>&nbsp;
+<i>450</i>&nbsp;        // create a vector to hold all the components in use
+<i>451</i>&nbsp;        // XML 1.0 specialized components
+<b class="nc"><i>452</i>&nbsp;        fComponents = new ArrayList&lt;&gt;();</b>
+<i>453</i>&nbsp;        // XML 1.1 specialized components
+<b class="nc"><i>454</i>&nbsp;        fXML11Components = new ArrayList&lt;&gt;();</b>
+<i>455</i>&nbsp;        // Common components for XML 1.1. and XML 1.0
+<b class="nc"><i>456</i>&nbsp;        fCommonComponents = new ArrayList&lt;&gt;();</b>
+<i>457</i>&nbsp;
+<i>458</i>&nbsp;        // create table for features and properties
+<b class="nc"><i>459</i>&nbsp;        fFeatures = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>460</i>&nbsp;        fProperties = new HashMap&lt;&gt;();</b>
+<i>461</i>&nbsp;
+<i>462</i>&nbsp;        // add default recognized features
+<b class="nc"><i>463</i>&nbsp;        final String[] recognizedFeatures =</b>
+<i>464</i>&nbsp;            {
+<i>465</i>&nbsp;                CONTINUE_AFTER_FATAL_ERROR, LOAD_EXTERNAL_DTD, // from XMLDTDScannerImpl
+<i>466</i>&nbsp;                VALIDATION,
+<i>467</i>&nbsp;                NAMESPACES,
+<i>468</i>&nbsp;                NORMALIZE_DATA, SCHEMA_ELEMENT_DEFAULT, SCHEMA_AUGMENT_PSVI,
+<i>469</i>&nbsp;                GENERATE_SYNTHETIC_ANNOTATIONS, VALIDATE_ANNOTATIONS,
+<i>470</i>&nbsp;                HONOUR_ALL_SCHEMALOCATIONS, NAMESPACE_GROWTH,
+<i>471</i>&nbsp;                TOLERATE_DUPLICATES,
+<i>472</i>&nbsp;                USE_GRAMMAR_POOL_ONLY,
+<i>473</i>&nbsp;                // NOTE: These shouldn&#39;t really be here but since the XML Schema
+<i>474</i>&nbsp;                //       validator is constructed dynamically, its recognized
+<i>475</i>&nbsp;                //       features might not have been set and it would cause a
+<i>476</i>&nbsp;                //       not-recognized exception to be thrown. -Ac
+<i>477</i>&nbsp;                XMLSCHEMA_VALIDATION, XMLSCHEMA_FULL_CHECKING,
+<i>478</i>&nbsp;                EXTERNAL_GENERAL_ENTITIES,
+<i>479</i>&nbsp;                EXTERNAL_PARAMETER_ENTITIES,
+<i>480</i>&nbsp;                PARSER_SETTINGS,
+<i>481</i>&nbsp;                XMLConstants.FEATURE_SECURE_PROCESSING
+<i>482</i>&nbsp;                        };
+<b class="nc"><i>483</i>&nbsp;        addRecognizedFeatures(recognizedFeatures);</b>
+<i>484</i>&nbsp;        // set state for default features
+<b class="nc"><i>485</i>&nbsp;        fFeatures.put(VALIDATION, Boolean.FALSE);</b>
+<b class="nc"><i>486</i>&nbsp;        fFeatures.put(NAMESPACES, Boolean.TRUE);</b>
+<b class="nc"><i>487</i>&nbsp;        fFeatures.put(EXTERNAL_GENERAL_ENTITIES, Boolean.TRUE);</b>
+<b class="nc"><i>488</i>&nbsp;        fFeatures.put(EXTERNAL_PARAMETER_ENTITIES, Boolean.TRUE);</b>
+<b class="nc"><i>489</i>&nbsp;        fFeatures.put(CONTINUE_AFTER_FATAL_ERROR, Boolean.FALSE);</b>
+<b class="nc"><i>490</i>&nbsp;        fFeatures.put(LOAD_EXTERNAL_DTD, Boolean.TRUE);</b>
+<b class="nc"><i>491</i>&nbsp;        fFeatures.put(SCHEMA_ELEMENT_DEFAULT, Boolean.TRUE);</b>
+<b class="nc"><i>492</i>&nbsp;        fFeatures.put(NORMALIZE_DATA, Boolean.TRUE);</b>
+<b class="nc"><i>493</i>&nbsp;        fFeatures.put(SCHEMA_AUGMENT_PSVI, Boolean.TRUE);</b>
+<b class="nc"><i>494</i>&nbsp;        fFeatures.put(GENERATE_SYNTHETIC_ANNOTATIONS, Boolean.FALSE);</b>
+<b class="nc"><i>495</i>&nbsp;        fFeatures.put(VALIDATE_ANNOTATIONS, Boolean.FALSE);</b>
+<b class="nc"><i>496</i>&nbsp;        fFeatures.put(HONOUR_ALL_SCHEMALOCATIONS, Boolean.FALSE);</b>
+<b class="nc"><i>497</i>&nbsp;        fFeatures.put(NAMESPACE_GROWTH, Boolean.FALSE);</b>
+<b class="nc"><i>498</i>&nbsp;        fFeatures.put(TOLERATE_DUPLICATES, Boolean.FALSE);</b>
+<b class="nc"><i>499</i>&nbsp;        fFeatures.put(USE_GRAMMAR_POOL_ONLY, Boolean.FALSE);</b>
+<b class="nc"><i>500</i>&nbsp;        fFeatures.put(PARSER_SETTINGS, Boolean.TRUE);</b>
+<b class="nc"><i>501</i>&nbsp;        fFeatures.put(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);</b>
+<i>502</i>&nbsp;
+<i>503</i>&nbsp;        // add default recognized properties
+<b class="nc"><i>504</i>&nbsp;        final String[] recognizedProperties =</b>
+<i>505</i>&nbsp;            {
+<i>506</i>&nbsp;                                SYMBOL_TABLE,
+<i>507</i>&nbsp;                                ERROR_HANDLER,
+<i>508</i>&nbsp;                                ENTITY_RESOLVER,
+<i>509</i>&nbsp;                ERROR_REPORTER,
+<i>510</i>&nbsp;                ENTITY_MANAGER,
+<i>511</i>&nbsp;                DOCUMENT_SCANNER,
+<i>512</i>&nbsp;                DTD_SCANNER,
+<i>513</i>&nbsp;                DTD_PROCESSOR,
+<i>514</i>&nbsp;                DTD_VALIDATOR,
+<i>515</i>&nbsp;                                DATATYPE_VALIDATOR_FACTORY,
+<i>516</i>&nbsp;                                VALIDATION_MANAGER,
+<i>517</i>&nbsp;                                SCHEMA_VALIDATOR,
+<i>518</i>&nbsp;                                XML_STRING,
+<i>519</i>&nbsp;                XMLGRAMMAR_POOL,
+<i>520</i>&nbsp;                JAXP_SCHEMA_SOURCE,
+<i>521</i>&nbsp;                JAXP_SCHEMA_LANGUAGE,
+<i>522</i>&nbsp;                // NOTE: These shouldn&#39;t really be here but since the XML Schema
+<i>523</i>&nbsp;                //       validator is constructed dynamically, its recognized
+<i>524</i>&nbsp;                //       properties might not have been set and it would cause a
+<i>525</i>&nbsp;                //       not-recognized exception to be thrown. -Ac
+<i>526</i>&nbsp;                SCHEMA_LOCATION,
+<i>527</i>&nbsp;                SCHEMA_NONS_LOCATION,
+<i>528</i>&nbsp;                LOCALE,
+<i>529</i>&nbsp;                SCHEMA_DV_FACTORY,
+<i>530</i>&nbsp;                SECURITY_MANAGER,
+<i>531</i>&nbsp;                XML_SECURITY_PROPERTY_MANAGER
+<i>532</i>&nbsp;        };
+<b class="nc"><i>533</i>&nbsp;        addRecognizedProperties(recognizedProperties);</b>
+<i>534</i>&nbsp;
+<b class="nc"><i>535</i>&nbsp;                if (symbolTable == null) {</b>
+<b class="nc"><i>536</i>&nbsp;                        symbolTable = new SymbolTable();</b>
+<i>537</i>&nbsp;                }
+<b class="nc"><i>538</i>&nbsp;                fSymbolTable = symbolTable;</b>
+<b class="nc"><i>539</i>&nbsp;                fProperties.put(SYMBOL_TABLE, fSymbolTable);</b>
+<i>540</i>&nbsp;
+<b class="nc"><i>541</i>&nbsp;        fGrammarPool = grammarPool;</b>
+<b class="nc"><i>542</i>&nbsp;        if (fGrammarPool != null) {</b>
+<b class="nc"><i>543</i>&nbsp;                        fProperties.put(XMLGRAMMAR_POOL, fGrammarPool);</b>
+<i>544</i>&nbsp;        }
+<i>545</i>&nbsp;
+<b class="nc"><i>546</i>&nbsp;        fEntityManager = new XMLEntityManager();</b>
+<b class="nc"><i>547</i>&nbsp;        fProperties.put(ENTITY_MANAGER, fEntityManager);</b>
+<b class="nc"><i>548</i>&nbsp;        addCommonComponent(fEntityManager);</b>
+<i>549</i>&nbsp;
+<b class="nc"><i>550</i>&nbsp;        fErrorReporter = new XMLErrorReporter();</b>
+<b class="nc"><i>551</i>&nbsp;        fErrorReporter.setDocumentLocator(fEntityManager.getEntityScanner());</b>
+<b class="nc"><i>552</i>&nbsp;        fProperties.put(ERROR_REPORTER, fErrorReporter);</b>
+<b class="nc"><i>553</i>&nbsp;        addCommonComponent(fErrorReporter);</b>
+<i>554</i>&nbsp;
+<b class="nc"><i>555</i>&nbsp;        fNamespaceScanner = new XMLNSDocumentScannerImpl();</b>
+<b class="nc"><i>556</i>&nbsp;        fProperties.put(DOCUMENT_SCANNER, fNamespaceScanner);</b>
+<b class="nc"><i>557</i>&nbsp;        addComponent((XMLComponent) fNamespaceScanner);</b>
+<i>558</i>&nbsp;
+<b class="nc"><i>559</i>&nbsp;        fDTDScanner = new XMLDTDScannerImpl();</b>
+<b class="nc"><i>560</i>&nbsp;        fProperties.put(DTD_SCANNER, fDTDScanner);</b>
+<b class="nc"><i>561</i>&nbsp;        addComponent((XMLComponent) fDTDScanner);</b>
+<i>562</i>&nbsp;
+<b class="nc"><i>563</i>&nbsp;        fDTDProcessor = new XMLDTDProcessor();</b>
+<b class="nc"><i>564</i>&nbsp;        fProperties.put(DTD_PROCESSOR, fDTDProcessor);</b>
+<b class="nc"><i>565</i>&nbsp;        addComponent((XMLComponent) fDTDProcessor);</b>
+<i>566</i>&nbsp;
+<b class="nc"><i>567</i>&nbsp;        fDTDValidator = new XMLNSDTDValidator();</b>
+<b class="nc"><i>568</i>&nbsp;        fProperties.put(DTD_VALIDATOR, fDTDValidator);</b>
+<b class="nc"><i>569</i>&nbsp;        addComponent(fDTDValidator);</b>
+<i>570</i>&nbsp;
+<b class="nc"><i>571</i>&nbsp;        fDatatypeValidatorFactory = DTDDVFactory.getInstance();</b>
+<b class="nc"><i>572</i>&nbsp;        fProperties.put(DATATYPE_VALIDATOR_FACTORY, fDatatypeValidatorFactory);</b>
+<i>573</i>&nbsp;
+<b class="nc"><i>574</i>&nbsp;        fValidationManager = new ValidationManager();</b>
+<b class="nc"><i>575</i>&nbsp;        fProperties.put(VALIDATION_MANAGER, fValidationManager);</b>
+<i>576</i>&nbsp;
+<b class="nc"><i>577</i>&nbsp;        fVersionDetector = new XMLVersionDetector();</b>
+<i>578</i>&nbsp;
+<i>579</i>&nbsp;        // add message formatters
+<b class="nc"><i>580</i>&nbsp;        if (fErrorReporter.getMessageFormatter(XMLMessageFormatter.XML_DOMAIN) == null) {</b>
+<b class="nc"><i>581</i>&nbsp;            XMLMessageFormatter xmft = new XMLMessageFormatter();</b>
+<b class="nc"><i>582</i>&nbsp;            fErrorReporter.putMessageFormatter(XMLMessageFormatter.XML_DOMAIN, xmft);</b>
+<b class="nc"><i>583</i>&nbsp;            fErrorReporter.putMessageFormatter(XMLMessageFormatter.XMLNS_DOMAIN, xmft);</b>
+<i>584</i>&nbsp;        }
+<i>585</i>&nbsp;
+<i>586</i>&nbsp;        // set locale
+<i>587</i>&nbsp;        try {
+<b class="nc"><i>588</i>&nbsp;            setLocale(Locale.getDefault());</b>
+<b class="nc"><i>589</i>&nbsp;        } catch (XNIException e) {</b>
+<i>590</i>&nbsp;            // do nothing
+<i>591</i>&nbsp;            // REVISIT: What is the right thing to do? -Ac
+<b class="nc"><i>592</i>&nbsp;        }</b>
+<i>593</i>&nbsp;
+<b class="nc"><i>594</i>&nbsp;                fConfigUpdated = false;</b>
+<i>595</i>&nbsp;
+<i>596</i>&nbsp;    } // &lt;init&gt;(SymbolTable,XMLGrammarPool)
+<i>597</i>&nbsp;
+<i>598</i>&nbsp;    //
+<i>599</i>&nbsp;    // Public methods
+<i>600</i>&nbsp;    //
+<i>601</i>&nbsp;    /**
+<i>602</i>&nbsp;     * Sets the input source for the document to parse.
+<i>603</i>&nbsp;     *
+<i>604</i>&nbsp;     * @param inputSource The document&#39;s input source.
+<i>605</i>&nbsp;     *
+<i>606</i>&nbsp;     * @exception XMLConfigurationException Thrown if there is a
+<i>607</i>&nbsp;     *                        configuration error when initializing the
+<i>608</i>&nbsp;     *                        parser.
+<i>609</i>&nbsp;     * @exception IOException Thrown on I/O error.
+<i>610</i>&nbsp;     *
+<i>611</i>&nbsp;     * @see #parse(boolean)
+<i>612</i>&nbsp;     */
+<i>613</i>&nbsp;    public void setInputSource(XMLInputSource inputSource)
+<i>614</i>&nbsp;        throws XMLConfigurationException, IOException {
+<i>615</i>&nbsp;
+<i>616</i>&nbsp;        // REVISIT: this method used to reset all the components and
+<i>617</i>&nbsp;        //          construct the pipeline. Now reset() is called
+<i>618</i>&nbsp;        //          in parse (boolean) just before we parse the document
+<i>619</i>&nbsp;        //          Should this method still throw exceptions..?
+<i>620</i>&nbsp;
+<b class="nc"><i>621</i>&nbsp;        fInputSource = inputSource;</b>
+<i>622</i>&nbsp;
+<i>623</i>&nbsp;    } // setInputSource(XMLInputSource)
+<i>624</i>&nbsp;
+<i>625</i>&nbsp;    /**
+<i>626</i>&nbsp;     * Set the locale to use for messages.
+<i>627</i>&nbsp;     *
+<i>628</i>&nbsp;     * @param locale The locale object to use for localization of messages.
+<i>629</i>&nbsp;     *
+<i>630</i>&nbsp;     * @exception XNIException Thrown if the parser does not support the
+<i>631</i>&nbsp;     *                         specified locale.
+<i>632</i>&nbsp;     */
+<i>633</i>&nbsp;    public void setLocale(Locale locale) throws XNIException {
+<b class="nc"><i>634</i>&nbsp;        fLocale = locale;</b>
+<b class="nc"><i>635</i>&nbsp;        fErrorReporter.setLocale(locale);</b>
+<i>636</i>&nbsp;    } // setLocale(Locale)
+<i>637</i>&nbsp;        /**
+<i>638</i>&nbsp;         * Sets the document handler on the last component in the pipeline
+<i>639</i>&nbsp;         * to receive information about the document.
+<i>640</i>&nbsp;         *
+<i>641</i>&nbsp;         * @param documentHandler   The document handler.
+<i>642</i>&nbsp;         */
+<i>643</i>&nbsp;        public void setDocumentHandler(XMLDocumentHandler documentHandler) {
+<b class="nc"><i>644</i>&nbsp;                fDocumentHandler = documentHandler;</b>
+<b class="nc"><i>645</i>&nbsp;                if (fLastComponent != null) {</b>
+<b class="nc"><i>646</i>&nbsp;                        fLastComponent.setDocumentHandler(fDocumentHandler);</b>
+<b class="nc"><i>647</i>&nbsp;                        if (fDocumentHandler !=null){</b>
+<b class="nc"><i>648</i>&nbsp;                                fDocumentHandler.setDocumentSource(fLastComponent);</b>
+<i>649</i>&nbsp;                        }
+<i>650</i>&nbsp;                }
+<i>651</i>&nbsp;        } // setDocumentHandler(XMLDocumentHandler)
+<i>652</i>&nbsp;
+<i>653</i>&nbsp;        /** Returns the registered document handler. */
+<i>654</i>&nbsp;        public XMLDocumentHandler getDocumentHandler() {
+<b class="nc"><i>655</i>&nbsp;                return fDocumentHandler;</b>
+<i>656</i>&nbsp;        } // getDocumentHandler():XMLDocumentHandler
+<i>657</i>&nbsp;
+<i>658</i>&nbsp;        /**
+<i>659</i>&nbsp;         * Sets the DTD handler.
+<i>660</i>&nbsp;         *
+<i>661</i>&nbsp;         * @param dtdHandler The DTD handler.
+<i>662</i>&nbsp;         */
+<i>663</i>&nbsp;        public void setDTDHandler(XMLDTDHandler dtdHandler) {
+<b class="nc"><i>664</i>&nbsp;                fDTDHandler = dtdHandler;</b>
+<i>665</i>&nbsp;        } // setDTDHandler(XMLDTDHandler)
+<i>666</i>&nbsp;
+<i>667</i>&nbsp;        /** Returns the registered DTD handler. */
+<i>668</i>&nbsp;        public XMLDTDHandler getDTDHandler() {
+<b class="nc"><i>669</i>&nbsp;                return fDTDHandler;</b>
+<i>670</i>&nbsp;        } // getDTDHandler():XMLDTDHandler
+<i>671</i>&nbsp;
+<i>672</i>&nbsp;        /**
+<i>673</i>&nbsp;         * Sets the DTD content model handler.
+<i>674</i>&nbsp;         *
+<i>675</i>&nbsp;         * @param handler The DTD content model handler.
+<i>676</i>&nbsp;         */
+<i>677</i>&nbsp;        public void setDTDContentModelHandler(XMLDTDContentModelHandler handler) {
+<b class="nc"><i>678</i>&nbsp;                fDTDContentModelHandler = handler;</b>
+<i>679</i>&nbsp;        } // setDTDContentModelHandler(XMLDTDContentModelHandler)
+<i>680</i>&nbsp;
+<i>681</i>&nbsp;        /** Returns the registered DTD content model handler. */
+<i>682</i>&nbsp;        public XMLDTDContentModelHandler getDTDContentModelHandler() {
+<b class="nc"><i>683</i>&nbsp;                return fDTDContentModelHandler;</b>
+<i>684</i>&nbsp;        } // getDTDContentModelHandler():XMLDTDContentModelHandler
+<i>685</i>&nbsp;
+<i>686</i>&nbsp;        /**
+<i>687</i>&nbsp;         * Sets the resolver used to resolve external entities. The EntityResolver
+<i>688</i>&nbsp;         * interface supports resolution of public and system identifiers.
+<i>689</i>&nbsp;         *
+<i>690</i>&nbsp;         * @param resolver The new entity resolver. Passing a null value will
+<i>691</i>&nbsp;         *                 uninstall the currently installed resolver.
+<i>692</i>&nbsp;         */
+<i>693</i>&nbsp;        public void setEntityResolver(XMLEntityResolver resolver) {
+<b class="nc"><i>694</i>&nbsp;                fProperties.put(ENTITY_RESOLVER, resolver);</b>
+<i>695</i>&nbsp;        } // setEntityResolver(XMLEntityResolver)
+<i>696</i>&nbsp;
+<i>697</i>&nbsp;        /**
+<i>698</i>&nbsp;         * Return the current entity resolver.
+<i>699</i>&nbsp;         *
+<i>700</i>&nbsp;         * @return The current entity resolver, or null if none
+<i>701</i>&nbsp;         *         has been registered.
+<i>702</i>&nbsp;         * @see #setEntityResolver
+<i>703</i>&nbsp;         */
+<i>704</i>&nbsp;        public XMLEntityResolver getEntityResolver() {
+<b class="nc"><i>705</i>&nbsp;                return (XMLEntityResolver)fProperties.get(ENTITY_RESOLVER);</b>
+<i>706</i>&nbsp;        } // getEntityResolver():XMLEntityResolver
+<i>707</i>&nbsp;
+<i>708</i>&nbsp;        /**
+<i>709</i>&nbsp;         * Allow an application to register an error event handler.
+<i>710</i>&nbsp;         *
+<i>711</i>&nbsp;         * &lt;p&gt;If the application does not register an error handler, all
+<i>712</i>&nbsp;         * error events reported by the SAX parser will be silently
+<i>713</i>&nbsp;         * ignored; however, normal processing may not continue.  It is
+<i>714</i>&nbsp;         * highly recommended that all SAX applications implement an
+<i>715</i>&nbsp;         * error handler to avoid unexpected bugs.&lt;/p&gt;
+<i>716</i>&nbsp;         *
+<i>717</i>&nbsp;         * &lt;p&gt;Applications may register a new or different handler in the
+<i>718</i>&nbsp;         * middle of a parse, and the SAX parser must begin using the new
+<i>719</i>&nbsp;         * handler immediately.&lt;/p&gt;
+<i>720</i>&nbsp;         *
+<i>721</i>&nbsp;         * @param errorHandler The error handler.
+<i>722</i>&nbsp;         * @exception java.lang.NullPointerException If the handler
+<i>723</i>&nbsp;         *            argument is null.
+<i>724</i>&nbsp;         * @see #getErrorHandler
+<i>725</i>&nbsp;         */
+<i>726</i>&nbsp;        public void setErrorHandler(XMLErrorHandler errorHandler) {
+<b class="nc"><i>727</i>&nbsp;                fProperties.put(ERROR_HANDLER, errorHandler);</b>
+<i>728</i>&nbsp;        } // setErrorHandler(XMLErrorHandler)
+<i>729</i>&nbsp;
+<i>730</i>&nbsp;        /**
+<i>731</i>&nbsp;         * Return the current error handler.
+<i>732</i>&nbsp;         *
+<i>733</i>&nbsp;         * @return The current error handler, or null if none
+<i>734</i>&nbsp;         *         has been registered.
+<i>735</i>&nbsp;         * @see #setErrorHandler
+<i>736</i>&nbsp;         */
+<i>737</i>&nbsp;        public XMLErrorHandler getErrorHandler() {
+<i>738</i>&nbsp;                // REVISIT: Should this be a property?
+<b class="nc"><i>739</i>&nbsp;                return (XMLErrorHandler)fProperties.get(ERROR_HANDLER);</b>
+<i>740</i>&nbsp;        } // getErrorHandler():XMLErrorHandler
+<i>741</i>&nbsp;
+<i>742</i>&nbsp;
+<i>743</i>&nbsp;    /**
+<i>744</i>&nbsp;     * If the application decides to terminate parsing before the xml document
+<i>745</i>&nbsp;     * is fully parsed, the application should call this method to free any
+<i>746</i>&nbsp;     * resource allocated during parsing. For example, close all opened streams.
+<i>747</i>&nbsp;     */
+<i>748</i>&nbsp;    public void cleanup() {
+<b class="nc"><i>749</i>&nbsp;        fEntityManager.closeReaders();</b>
+<i>750</i>&nbsp;    }
+<i>751</i>&nbsp;
+<i>752</i>&nbsp;    /**
+<i>753</i>&nbsp;     * Parses the specified input source.
+<i>754</i>&nbsp;     *
+<i>755</i>&nbsp;     * @param source The input source.
+<i>756</i>&nbsp;     *
+<i>757</i>&nbsp;     * @exception XNIException Throws exception on XNI error.
+<i>758</i>&nbsp;     * @exception java.io.IOException Throws exception on i/o error.
+<i>759</i>&nbsp;     */
+<i>760</i>&nbsp;    public void parse(XMLInputSource source) throws XNIException, IOException {
+<i>761</i>&nbsp;
+<b class="nc"><i>762</i>&nbsp;        if (fParseInProgress) {</b>
+<i>763</i>&nbsp;            // REVISIT - need to add new error message
+<b class="nc"><i>764</i>&nbsp;            throw new XNIException(&quot;FWK005 parse may not be called while parsing.&quot;);</b>
+<i>765</i>&nbsp;        }
+<b class="nc"><i>766</i>&nbsp;        fParseInProgress = true;</b>
+<i>767</i>&nbsp;
+<i>768</i>&nbsp;        try {
+<b class="nc"><i>769</i>&nbsp;            setInputSource(source);</b>
+<b class="nc"><i>770</i>&nbsp;            parse(true);</b>
+<b class="nc"><i>771</i>&nbsp;        } catch (XNIException ex) {</b>
+<i>772</i>&nbsp;            if (PRINT_EXCEPTION_STACK_TRACE)
+<i>773</i>&nbsp;                ex.printStackTrace();
+<b class="nc"><i>774</i>&nbsp;            throw ex;</b>
+<b class="nc"><i>775</i>&nbsp;        } catch (IOException ex) {</b>
+<i>776</i>&nbsp;            if (PRINT_EXCEPTION_STACK_TRACE)
+<i>777</i>&nbsp;                ex.printStackTrace();
+<b class="nc"><i>778</i>&nbsp;            throw ex;</b>
+<b class="nc"><i>779</i>&nbsp;        } catch (RuntimeException ex) {</b>
+<i>780</i>&nbsp;            if (PRINT_EXCEPTION_STACK_TRACE)
+<i>781</i>&nbsp;                ex.printStackTrace();
+<b class="nc"><i>782</i>&nbsp;            throw ex;</b>
+<b class="nc"><i>783</i>&nbsp;        } catch (Exception ex) {</b>
+<i>784</i>&nbsp;            if (PRINT_EXCEPTION_STACK_TRACE)
+<i>785</i>&nbsp;                ex.printStackTrace();
+<b class="nc"><i>786</i>&nbsp;            throw new XNIException(ex);</b>
+<i>787</i>&nbsp;        } finally {
+<b class="nc"><i>788</i>&nbsp;            fParseInProgress = false;</b>
+<i>789</i>&nbsp;            // close all streams opened by xerces
+<b class="nc"><i>790</i>&nbsp;            this.cleanup();</b>
+<b class="nc"><i>791</i>&nbsp;        }</b>
+<i>792</i>&nbsp;
+<i>793</i>&nbsp;    } // parse(InputSource)
+<i>794</i>&nbsp;
+<i>795</i>&nbsp;    public boolean parse(boolean complete) throws XNIException, IOException {
+<i>796</i>&nbsp;        //
+<i>797</i>&nbsp;        // reset and configure pipeline and set InputSource.
+<b class="nc"><i>798</i>&nbsp;        if (fInputSource != null) {</b>
+<i>799</i>&nbsp;            try {
+<b class="nc"><i>800</i>&nbsp;                fValidationManager.reset();</b>
+<b class="nc"><i>801</i>&nbsp;                fVersionDetector.reset(this);</b>
+<b class="nc"><i>802</i>&nbsp;                fConfigUpdated = true;</b>
+<b class="nc"><i>803</i>&nbsp;                resetCommon();</b>
+<i>804</i>&nbsp;
+<b class="nc"><i>805</i>&nbsp;                short version = fVersionDetector.determineDocVersion(fInputSource);</b>
+<b class="nc"><i>806</i>&nbsp;                if (version == Constants.XML_VERSION_1_1) {</b>
+<b class="nc"><i>807</i>&nbsp;                    initXML11Components();</b>
+<b class="nc"><i>808</i>&nbsp;                    configureXML11Pipeline();</b>
+<b class="nc"><i>809</i>&nbsp;                    resetXML11();</b>
+<i>810</i>&nbsp;                } else {
+<b class="nc"><i>811</i>&nbsp;                    configurePipeline();</b>
+<b class="nc"><i>812</i>&nbsp;                    reset();</b>
+<i>813</i>&nbsp;                }
+<i>814</i>&nbsp;
+<i>815</i>&nbsp;                // mark configuration as fixed
+<b class="nc"><i>816</i>&nbsp;                fConfigUpdated = false;</b>
+<i>817</i>&nbsp;
+<i>818</i>&nbsp;                // resets and sets the pipeline.
+<b class="nc"><i>819</i>&nbsp;                fVersionDetector.startDocumentParsing((XMLEntityHandler) fCurrentScanner, version);</b>
+<b class="nc"><i>820</i>&nbsp;                fInputSource = null;</b>
+<b class="nc"><i>821</i>&nbsp;            } catch (XNIException ex) {</b>
+<i>822</i>&nbsp;                if (PRINT_EXCEPTION_STACK_TRACE)
+<i>823</i>&nbsp;                    ex.printStackTrace();
+<b class="nc"><i>824</i>&nbsp;                throw ex;</b>
+<b class="nc"><i>825</i>&nbsp;            } catch (IOException ex) {</b>
+<i>826</i>&nbsp;                if (PRINT_EXCEPTION_STACK_TRACE)
+<i>827</i>&nbsp;                    ex.printStackTrace();
+<b class="nc"><i>828</i>&nbsp;                throw ex;</b>
+<b class="nc"><i>829</i>&nbsp;            } catch (RuntimeException ex) {</b>
+<i>830</i>&nbsp;                if (PRINT_EXCEPTION_STACK_TRACE)
+<i>831</i>&nbsp;                    ex.printStackTrace();
+<b class="nc"><i>832</i>&nbsp;                throw ex;</b>
+<b class="nc"><i>833</i>&nbsp;            } catch (Exception ex) {</b>
+<i>834</i>&nbsp;                if (PRINT_EXCEPTION_STACK_TRACE)
+<i>835</i>&nbsp;                    ex.printStackTrace();
+<b class="nc"><i>836</i>&nbsp;                throw new XNIException(ex);</b>
+<b class="nc"><i>837</i>&nbsp;            }</b>
+<i>838</i>&nbsp;        }
+<i>839</i>&nbsp;
+<i>840</i>&nbsp;        try {
+<b class="nc"><i>841</i>&nbsp;            return fCurrentScanner.scanDocument(complete);</b>
+<b class="nc"><i>842</i>&nbsp;        } catch (XNIException ex) {</b>
+<i>843</i>&nbsp;            if (PRINT_EXCEPTION_STACK_TRACE)
+<i>844</i>&nbsp;                ex.printStackTrace();
+<b class="nc"><i>845</i>&nbsp;            throw ex;</b>
+<b class="nc"><i>846</i>&nbsp;        } catch (IOException ex) {</b>
+<i>847</i>&nbsp;            if (PRINT_EXCEPTION_STACK_TRACE)
+<i>848</i>&nbsp;                ex.printStackTrace();
+<b class="nc"><i>849</i>&nbsp;            throw ex;</b>
+<b class="nc"><i>850</i>&nbsp;        } catch (RuntimeException ex) {</b>
+<i>851</i>&nbsp;            if (PRINT_EXCEPTION_STACK_TRACE)
+<i>852</i>&nbsp;                ex.printStackTrace();
+<b class="nc"><i>853</i>&nbsp;            throw ex;</b>
+<b class="nc"><i>854</i>&nbsp;        } catch (Exception ex) {</b>
+<i>855</i>&nbsp;            if (PRINT_EXCEPTION_STACK_TRACE)
+<i>856</i>&nbsp;                ex.printStackTrace();
+<b class="nc"><i>857</i>&nbsp;            throw new XNIException(ex);</b>
+<i>858</i>&nbsp;        }
+<i>859</i>&nbsp;
+<i>860</i>&nbsp;    } // parse(boolean):boolean
+<i>861</i>&nbsp;
+<i>862</i>&nbsp;        /**
+<i>863</i>&nbsp;         * Returns the state of a feature.
+<i>864</i>&nbsp;         *
+<i>865</i>&nbsp;         * @param featureId The feature identifier.
+<i>866</i>&nbsp;         * @return true if the feature is supported
+<i>867</i>&nbsp;         *
+<i>868</i>&nbsp;         * @throws XMLConfigurationException Thrown for configuration error.
+<i>869</i>&nbsp;         *                                   In general, components should
+<i>870</i>&nbsp;         *                                   only throw this exception if
+<i>871</i>&nbsp;         *                                   it is &lt;strong&gt;really&lt;/strong&gt;
+<i>872</i>&nbsp;         *                                   a critical error.
+<i>873</i>&nbsp;         */
+<i>874</i>&nbsp;        public FeatureState getFeatureState(String featureId)
+<i>875</i>&nbsp;                throws XMLConfigurationException {
+<i>876</i>&nbsp;                        // make this feature special
+<b class="nc"><i>877</i>&nbsp;        if (featureId.equals(PARSER_SETTINGS)){</b>
+<b class="nc"><i>878</i>&nbsp;                return FeatureState.is(fConfigUpdated);</b>
+<i>879</i>&nbsp;        }
+<b class="nc"><i>880</i>&nbsp;        return super.getFeatureState(featureId);</b>
+<i>881</i>&nbsp;
+<i>882</i>&nbsp;        } // getFeature(String):boolean
+<i>883</i>&nbsp;
+<i>884</i>&nbsp;        /**
+<i>885</i>&nbsp;         * Set the state of a feature.
+<i>886</i>&nbsp;         *
+<i>887</i>&nbsp;         * Set the state of any feature in a SAX2 parser.  The parser
+<i>888</i>&nbsp;         * might not recognize the feature, and if it does recognize
+<i>889</i>&nbsp;         * it, it might not be able to fulfill the request.
+<i>890</i>&nbsp;         *
+<i>891</i>&nbsp;         * @param featureId The unique identifier (URI) of the feature.
+<i>892</i>&nbsp;         * @param state The requested state of the feature (true or false).
+<i>893</i>&nbsp;         *
+<i>894</i>&nbsp;         * @exception com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException If the
+<i>895</i>&nbsp;         *            requested feature is not known.
+<i>896</i>&nbsp;         */
+<i>897</i>&nbsp;        public void setFeature(String featureId, boolean state)
+<i>898</i>&nbsp;                throws XMLConfigurationException {
+<b class="nc"><i>899</i>&nbsp;                fConfigUpdated = true;</b>
+<i>900</i>&nbsp;                // forward to every XML 1.0 component
+<b class="nc"><i>901</i>&nbsp;                int count = fComponents.size();</b>
+<b class="nc"><i>902</i>&nbsp;                for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc"><i>903</i>&nbsp;                        XMLComponent c = fComponents.get(i);</b>
+<b class="nc"><i>904</i>&nbsp;                        c.setFeature(featureId, state);</b>
+<i>905</i>&nbsp;                }
+<i>906</i>&nbsp;                // forward it to common components
+<b class="nc"><i>907</i>&nbsp;                count = fCommonComponents.size();</b>
+<b class="nc"><i>908</i>&nbsp;                for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc"><i>909</i>&nbsp;                        XMLComponent c = fCommonComponents.get(i);</b>
+<b class="nc"><i>910</i>&nbsp;                        c.setFeature(featureId, state);</b>
+<i>911</i>&nbsp;                }
+<i>912</i>&nbsp;
+<i>913</i>&nbsp;                // forward to every XML 1.1 component
+<b class="nc"><i>914</i>&nbsp;                count = fXML11Components.size();</b>
+<b class="nc"><i>915</i>&nbsp;                for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc"><i>916</i>&nbsp;                        XMLComponent c = fXML11Components.get(i);</b>
+<i>917</i>&nbsp;                        try{
+<b class="nc"><i>918</i>&nbsp;                                c.setFeature(featureId, state);</b>
+<i>919</i>&nbsp;                        }
+<b class="nc"><i>920</i>&nbsp;                        catch (Exception e){</b>
+<i>921</i>&nbsp;                                // no op
+<b class="nc"><i>922</i>&nbsp;                        }</b>
+<i>923</i>&nbsp;                }
+<i>924</i>&nbsp;                // save state if noone &quot;objects&quot;
+<b class="nc"><i>925</i>&nbsp;                super.setFeature(featureId, state);</b>
+<i>926</i>&nbsp;
+<i>927</i>&nbsp;        } // setFeature(String,boolean)
+<i>928</i>&nbsp;
+<i>929</i>&nbsp;    /**
+<i>930</i>&nbsp;     * Returns the value of a property.
+<i>931</i>&nbsp;     *
+<i>932</i>&nbsp;     * @param propertyId The property identifier.
+<i>933</i>&nbsp;     * @return the value of the property
+<i>934</i>&nbsp;     *
+<i>935</i>&nbsp;     * @throws XMLConfigurationException Thrown for configuration error.
+<i>936</i>&nbsp;     *                                   In general, components should
+<i>937</i>&nbsp;     *                                   only throw this exception if
+<i>938</i>&nbsp;     *                                   it is &lt;strong&gt;really&lt;/strong&gt;
+<i>939</i>&nbsp;     *                                   a critical error.
+<i>940</i>&nbsp;     */
+<i>941</i>&nbsp;    public PropertyState getPropertyState(String propertyId)
+<i>942</i>&nbsp;        throws XMLConfigurationException {
+<b class="nc"><i>943</i>&nbsp;        if (LOCALE.equals(propertyId)) {</b>
+<b class="nc"><i>944</i>&nbsp;            return PropertyState.is(getLocale());</b>
+<i>945</i>&nbsp;        }
+<b class="nc"><i>946</i>&nbsp;        return super.getPropertyState(propertyId);</b>
+<i>947</i>&nbsp;    }
+<i>948</i>&nbsp;
+<i>949</i>&nbsp;        /**
+<i>950</i>&nbsp;         * setProperty
+<i>951</i>&nbsp;         *
+<i>952</i>&nbsp;         * @param propertyId
+<i>953</i>&nbsp;         * @param value
+<i>954</i>&nbsp;         */
+<i>955</i>&nbsp;        public void setProperty(String propertyId, Object value)
+<i>956</i>&nbsp;                throws XMLConfigurationException {
+<b class="nc"><i>957</i>&nbsp;                fConfigUpdated = true;</b>
+<b class="nc"><i>958</i>&nbsp;                if (LOCALE.equals(propertyId)) {</b>
+<b class="nc"><i>959</i>&nbsp;                    setLocale((Locale) value);</b>
+<i>960</i>&nbsp;                }
+<i>961</i>&nbsp;                // forward to every XML 1.0 component
+<b class="nc"><i>962</i>&nbsp;                int count = fComponents.size();</b>
+<b class="nc"><i>963</i>&nbsp;                for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc"><i>964</i>&nbsp;                        XMLComponent c = fComponents.get(i);</b>
+<b class="nc"><i>965</i>&nbsp;                        c.setProperty(propertyId, value);</b>
+<i>966</i>&nbsp;                }
+<i>967</i>&nbsp;                // forward it to every common Component
+<b class="nc"><i>968</i>&nbsp;                count = fCommonComponents.size();</b>
+<b class="nc"><i>969</i>&nbsp;                for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc"><i>970</i>&nbsp;                        XMLComponent c = fCommonComponents.get(i);</b>
+<b class="nc"><i>971</i>&nbsp;                        c.setProperty(propertyId, value);</b>
+<i>972</i>&nbsp;                }
+<i>973</i>&nbsp;                // forward it to every XML 1.1 component
+<b class="nc"><i>974</i>&nbsp;                count = fXML11Components.size();</b>
+<b class="nc"><i>975</i>&nbsp;                for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc"><i>976</i>&nbsp;                        XMLComponent c = fXML11Components.get(i);</b>
+<i>977</i>&nbsp;                        try{
+<b class="nc"><i>978</i>&nbsp;                                c.setProperty(propertyId, value);</b>
+<i>979</i>&nbsp;                        }
+<b class="nc"><i>980</i>&nbsp;                        catch (Exception e){</b>
+<i>981</i>&nbsp;                                // ignore it
+<b class="nc"><i>982</i>&nbsp;                        }</b>
+<i>983</i>&nbsp;                }
+<i>984</i>&nbsp;
+<i>985</i>&nbsp;                // store value if noone &quot;objects&quot;
+<b class="nc"><i>986</i>&nbsp;                super.setProperty(propertyId, value);</b>
+<i>987</i>&nbsp;
+<i>988</i>&nbsp;        } // setProperty(String,Object)
+<i>989</i>&nbsp;
+<i>990</i>&nbsp;
+<i>991</i>&nbsp;        /** Returns the locale. */
+<i>992</i>&nbsp;        public Locale getLocale() {
+<b class="nc"><i>993</i>&nbsp;                return fLocale;</b>
+<i>994</i>&nbsp;        } // getLocale():Locale
+<i>995</i>&nbsp;
+<i>996</i>&nbsp;        /**
+<i>997</i>&nbsp;         * reset all XML 1.0 components before parsing and namespace context
+<i>998</i>&nbsp;         */
+<i>999</i>&nbsp;        protected void reset() throws XNIException {
+<b class="nc"><i>1000</i>&nbsp;                int count = fComponents.size();</b>
+<b class="nc"><i>1001</i>&nbsp;                for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc"><i>1002</i>&nbsp;                        XMLComponent c = fComponents.get(i);</b>
+<b class="nc"><i>1003</i>&nbsp;                        c.reset(this);</b>
+<i>1004</i>&nbsp;                }
+<i>1005</i>&nbsp;
+<i>1006</i>&nbsp;        } // reset()
+<i>1007</i>&nbsp;
+<i>1008</i>&nbsp;        /**
+<i>1009</i>&nbsp;         * reset all common components before parsing
+<i>1010</i>&nbsp;         */
+<i>1011</i>&nbsp;        protected void resetCommon() throws XNIException {
+<i>1012</i>&nbsp;                // reset common components
+<b class="nc"><i>1013</i>&nbsp;                int count = fCommonComponents.size();</b>
+<b class="nc"><i>1014</i>&nbsp;                for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc"><i>1015</i>&nbsp;                        XMLComponent c = fCommonComponents.get(i);</b>
+<b class="nc"><i>1016</i>&nbsp;                        c.reset(this);</b>
+<i>1017</i>&nbsp;                }
+<i>1018</i>&nbsp;
+<i>1019</i>&nbsp;        } // resetCommon()
+<i>1020</i>&nbsp;
+<i>1021</i>&nbsp;
+<i>1022</i>&nbsp;        /**
+<i>1023</i>&nbsp;         * reset all components before parsing and namespace context
+<i>1024</i>&nbsp;         */
+<i>1025</i>&nbsp;        protected void resetXML11() throws XNIException {
+<i>1026</i>&nbsp;                // reset every component
+<b class="nc"><i>1027</i>&nbsp;                int count = fXML11Components.size();</b>
+<b class="nc"><i>1028</i>&nbsp;                for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc"><i>1029</i>&nbsp;                        XMLComponent c = fXML11Components.get(i);</b>
+<b class="nc"><i>1030</i>&nbsp;                        c.reset(this);</b>
+<i>1031</i>&nbsp;                }
+<i>1032</i>&nbsp;
+<i>1033</i>&nbsp;        } // resetXML11()
+<i>1034</i>&nbsp;
+<i>1035</i>&nbsp;
+<i>1036</i>&nbsp;    /**
+<i>1037</i>&nbsp;     *  Configures the XML 1.1 pipeline.
+<i>1038</i>&nbsp;     *  Note: this method also resets the new XML11 components.
+<i>1039</i>&nbsp;     */
+<i>1040</i>&nbsp;    protected void configureXML11Pipeline() {
+<b class="nc"><i>1041</i>&nbsp;        if (fCurrentDVFactory != fXML11DatatypeFactory) {</b>
+<b class="nc"><i>1042</i>&nbsp;            fCurrentDVFactory = fXML11DatatypeFactory;</b>
+<b class="nc"><i>1043</i>&nbsp;            setProperty(DATATYPE_VALIDATOR_FACTORY, fCurrentDVFactory);</b>
+<i>1044</i>&nbsp;        }
+<b class="nc"><i>1045</i>&nbsp;        if (fCurrentDTDScanner != fXML11DTDScanner) {</b>
+<b class="nc"><i>1046</i>&nbsp;            fCurrentDTDScanner = fXML11DTDScanner;</b>
+<b class="nc"><i>1047</i>&nbsp;            setProperty(DTD_SCANNER, fCurrentDTDScanner);</b>
+<b class="nc"><i>1048</i>&nbsp;                        setProperty(DTD_PROCESSOR, fXML11DTDProcessor);</b>
+<i>1049</i>&nbsp;        }
+<i>1050</i>&nbsp;
+<b class="nc"><i>1051</i>&nbsp;        fXML11DTDScanner.setDTDHandler(fXML11DTDProcessor);</b>
+<b class="nc"><i>1052</i>&nbsp;        fXML11DTDProcessor.setDTDSource(fXML11DTDScanner);</b>
+<b class="nc"><i>1053</i>&nbsp;        fXML11DTDProcessor.setDTDHandler(fDTDHandler);</b>
+<b class="nc"><i>1054</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1055</i>&nbsp;            fDTDHandler.setDTDSource(fXML11DTDProcessor);</b>
+<i>1056</i>&nbsp;        }
+<i>1057</i>&nbsp;
+<b class="nc"><i>1058</i>&nbsp;        fXML11DTDScanner.setDTDContentModelHandler(fXML11DTDProcessor);</b>
+<b class="nc"><i>1059</i>&nbsp;        fXML11DTDProcessor.setDTDContentModelSource(fXML11DTDScanner);</b>
+<b class="nc"><i>1060</i>&nbsp;        fXML11DTDProcessor.setDTDContentModelHandler(fDTDContentModelHandler);</b>
+<b class="nc"><i>1061</i>&nbsp;        if (fDTDContentModelHandler != null) {</b>
+<b class="nc"><i>1062</i>&nbsp;            fDTDContentModelHandler.setDTDContentModelSource(fXML11DTDProcessor);</b>
+<i>1063</i>&nbsp;        }
+<i>1064</i>&nbsp;
+<i>1065</i>&nbsp;        // setup XML 1.1 document pipeline
+<b class="nc"><i>1066</i>&nbsp;        if (fFeatures.get(NAMESPACES) == Boolean.TRUE) {</b>
+<b class="nc"><i>1067</i>&nbsp;            if (fCurrentScanner != fXML11NSDocScanner) {</b>
+<b class="nc"><i>1068</i>&nbsp;                fCurrentScanner = fXML11NSDocScanner;</b>
+<b class="nc"><i>1069</i>&nbsp;                setProperty(DOCUMENT_SCANNER, fXML11NSDocScanner);</b>
+<b class="nc"><i>1070</i>&nbsp;                setProperty(DTD_VALIDATOR, fXML11NSDTDValidator);</b>
+<i>1071</i>&nbsp;            }
+<i>1072</i>&nbsp;
+<b class="nc"><i>1073</i>&nbsp;            fXML11NSDocScanner.setDTDValidator(fXML11NSDTDValidator);</b>
+<b class="nc"><i>1074</i>&nbsp;            fXML11NSDocScanner.setDocumentHandler(fXML11NSDTDValidator);</b>
+<b class="nc"><i>1075</i>&nbsp;            fXML11NSDTDValidator.setDocumentSource(fXML11NSDocScanner);</b>
+<b class="nc"><i>1076</i>&nbsp;            fXML11NSDTDValidator.setDocumentHandler(fDocumentHandler);</b>
+<i>1077</i>&nbsp;
+<b class="nc"><i>1078</i>&nbsp;            if (fDocumentHandler != null) {</b>
+<b class="nc"><i>1079</i>&nbsp;                fDocumentHandler.setDocumentSource(fXML11NSDTDValidator);</b>
+<i>1080</i>&nbsp;            }
+<b class="nc"><i>1081</i>&nbsp;            fLastComponent = fXML11NSDTDValidator;</b>
+<i>1082</i>&nbsp;
+<i>1083</i>&nbsp;        } else {
+<i>1084</i>&nbsp;                        // create components
+<b class="nc"><i>1085</i>&nbsp;                          if (fXML11DocScanner == null) {</b>
+<i>1086</i>&nbsp;                                        // non namespace document pipeline
+<b class="nc"><i>1087</i>&nbsp;                                        fXML11DocScanner = new XML11DocumentScannerImpl();</b>
+<b class="nc"><i>1088</i>&nbsp;                                        addXML11Component(fXML11DocScanner);</b>
+<b class="nc"><i>1089</i>&nbsp;                                        fXML11DTDValidator = new XML11DTDValidator();</b>
+<b class="nc"><i>1090</i>&nbsp;                                        addXML11Component(fXML11DTDValidator);</b>
+<i>1091</i>&nbsp;                          }
+<b class="nc"><i>1092</i>&nbsp;            if (fCurrentScanner != fXML11DocScanner) {</b>
+<b class="nc"><i>1093</i>&nbsp;                fCurrentScanner = fXML11DocScanner;</b>
+<b class="nc"><i>1094</i>&nbsp;                setProperty(DOCUMENT_SCANNER, fXML11DocScanner);</b>
+<b class="nc"><i>1095</i>&nbsp;                setProperty(DTD_VALIDATOR, fXML11DTDValidator);</b>
+<i>1096</i>&nbsp;            }
+<b class="nc"><i>1097</i>&nbsp;            fXML11DocScanner.setDocumentHandler(fXML11DTDValidator);</b>
+<b class="nc"><i>1098</i>&nbsp;            fXML11DTDValidator.setDocumentSource(fXML11DocScanner);</b>
+<b class="nc"><i>1099</i>&nbsp;            fXML11DTDValidator.setDocumentHandler(fDocumentHandler);</b>
+<i>1100</i>&nbsp;
+<b class="nc"><i>1101</i>&nbsp;            if (fDocumentHandler != null) {</b>
+<b class="nc"><i>1102</i>&nbsp;                fDocumentHandler.setDocumentSource(fXML11DTDValidator);</b>
+<i>1103</i>&nbsp;            }
+<b class="nc"><i>1104</i>&nbsp;            fLastComponent = fXML11DTDValidator;</b>
+<i>1105</i>&nbsp;        }
+<i>1106</i>&nbsp;
+<i>1107</i>&nbsp;        // setup document pipeline
+<b class="nc"><i>1108</i>&nbsp;        if (fFeatures.get(XMLSCHEMA_VALIDATION) == Boolean.TRUE) {</b>
+<i>1109</i>&nbsp;            // If schema validator was not in the pipeline insert it.
+<b class="nc"><i>1110</i>&nbsp;            if (fSchemaValidator == null) {</b>
+<b class="nc"><i>1111</i>&nbsp;                fSchemaValidator = new XMLSchemaValidator();</b>
+<i>1112</i>&nbsp;                // add schema component
+<b class="nc"><i>1113</i>&nbsp;                setProperty(SCHEMA_VALIDATOR, fSchemaValidator);</b>
+<b class="nc"><i>1114</i>&nbsp;                                addCommonComponent(fSchemaValidator);</b>
+<b class="nc"><i>1115</i>&nbsp;                                fSchemaValidator.reset(this);</b>
+<i>1116</i>&nbsp;                // add schema message formatter
+<b class="nc"><i>1117</i>&nbsp;                if (fErrorReporter.getMessageFormatter(XSMessageFormatter.SCHEMA_DOMAIN) == null) {</b>
+<b class="nc"><i>1118</i>&nbsp;                    XSMessageFormatter xmft = new XSMessageFormatter();</b>
+<b class="nc"><i>1119</i>&nbsp;                    fErrorReporter.putMessageFormatter(XSMessageFormatter.SCHEMA_DOMAIN, xmft);</b>
+<i>1120</i>&nbsp;                }
+<i>1121</i>&nbsp;            }
+<i>1122</i>&nbsp;
+<b class="nc"><i>1123</i>&nbsp;            fLastComponent.setDocumentHandler(fSchemaValidator);</b>
+<b class="nc"><i>1124</i>&nbsp;            fSchemaValidator.setDocumentSource(fLastComponent);</b>
+<b class="nc"><i>1125</i>&nbsp;            fSchemaValidator.setDocumentHandler(fDocumentHandler);</b>
+<b class="nc"><i>1126</i>&nbsp;            if (fDocumentHandler != null) {</b>
+<b class="nc"><i>1127</i>&nbsp;                fDocumentHandler.setDocumentSource(fSchemaValidator);</b>
+<i>1128</i>&nbsp;            }
+<b class="nc"><i>1129</i>&nbsp;            fLastComponent = fSchemaValidator;</b>
+<i>1130</i>&nbsp;        }
+<i>1131</i>&nbsp;
+<i>1132</i>&nbsp;    } // configureXML11Pipeline()
+<i>1133</i>&nbsp;
+<i>1134</i>&nbsp;    /** Configures the pipeline. */
+<i>1135</i>&nbsp;    protected void configurePipeline() {
+<b class="nc"><i>1136</i>&nbsp;        if (fCurrentDVFactory != fDatatypeValidatorFactory) {</b>
+<b class="nc"><i>1137</i>&nbsp;            fCurrentDVFactory = fDatatypeValidatorFactory;</b>
+<i>1138</i>&nbsp;            // use XML 1.0 datatype library
+<b class="nc"><i>1139</i>&nbsp;            setProperty(DATATYPE_VALIDATOR_FACTORY, fCurrentDVFactory);</b>
+<i>1140</i>&nbsp;        }
+<i>1141</i>&nbsp;
+<i>1142</i>&nbsp;        // setup DTD pipeline
+<b class="nc"><i>1143</i>&nbsp;        if (fCurrentDTDScanner != fDTDScanner) {</b>
+<b class="nc"><i>1144</i>&nbsp;            fCurrentDTDScanner = fDTDScanner;</b>
+<b class="nc"><i>1145</i>&nbsp;            setProperty(DTD_SCANNER, fCurrentDTDScanner);</b>
+<b class="nc"><i>1146</i>&nbsp;            setProperty(DTD_PROCESSOR, fDTDProcessor);</b>
+<i>1147</i>&nbsp;        }
+<b class="nc"><i>1148</i>&nbsp;        fDTDScanner.setDTDHandler(fDTDProcessor);</b>
+<b class="nc"><i>1149</i>&nbsp;        fDTDProcessor.setDTDSource(fDTDScanner);</b>
+<b class="nc"><i>1150</i>&nbsp;        fDTDProcessor.setDTDHandler(fDTDHandler);</b>
+<b class="nc"><i>1151</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1152</i>&nbsp;            fDTDHandler.setDTDSource(fDTDProcessor);</b>
+<i>1153</i>&nbsp;        }
+<i>1154</i>&nbsp;
+<b class="nc"><i>1155</i>&nbsp;        fDTDScanner.setDTDContentModelHandler(fDTDProcessor);</b>
+<b class="nc"><i>1156</i>&nbsp;        fDTDProcessor.setDTDContentModelSource(fDTDScanner);</b>
+<b class="nc"><i>1157</i>&nbsp;        fDTDProcessor.setDTDContentModelHandler(fDTDContentModelHandler);</b>
+<b class="nc"><i>1158</i>&nbsp;        if (fDTDContentModelHandler != null) {</b>
+<b class="nc"><i>1159</i>&nbsp;            fDTDContentModelHandler.setDTDContentModelSource(fDTDProcessor);</b>
+<i>1160</i>&nbsp;        }
+<i>1161</i>&nbsp;
+<i>1162</i>&nbsp;        // setup document pipeline
+<b class="nc"><i>1163</i>&nbsp;        if (fFeatures.get(NAMESPACES) == Boolean.TRUE) {</b>
+<b class="nc"><i>1164</i>&nbsp;            if (fCurrentScanner != fNamespaceScanner) {</b>
+<b class="nc"><i>1165</i>&nbsp;                fCurrentScanner = fNamespaceScanner;</b>
+<b class="nc"><i>1166</i>&nbsp;                setProperty(DOCUMENT_SCANNER, fNamespaceScanner);</b>
+<b class="nc"><i>1167</i>&nbsp;                setProperty(DTD_VALIDATOR, fDTDValidator);</b>
+<i>1168</i>&nbsp;            }
+<b class="nc"><i>1169</i>&nbsp;            fNamespaceScanner.setDTDValidator(fDTDValidator);</b>
+<b class="nc"><i>1170</i>&nbsp;            fNamespaceScanner.setDocumentHandler(fDTDValidator);</b>
+<b class="nc"><i>1171</i>&nbsp;            fDTDValidator.setDocumentSource(fNamespaceScanner);</b>
+<b class="nc"><i>1172</i>&nbsp;            fDTDValidator.setDocumentHandler(fDocumentHandler);</b>
+<b class="nc"><i>1173</i>&nbsp;            if (fDocumentHandler != null) {</b>
+<b class="nc"><i>1174</i>&nbsp;                fDocumentHandler.setDocumentSource(fDTDValidator);</b>
+<i>1175</i>&nbsp;            }
+<b class="nc"><i>1176</i>&nbsp;            fLastComponent = fDTDValidator;</b>
+<i>1177</i>&nbsp;        } else {
+<i>1178</i>&nbsp;            // create components
+<b class="nc"><i>1179</i>&nbsp;            if (fNonNSScanner == null) {</b>
+<b class="nc"><i>1180</i>&nbsp;                fNonNSScanner = new XMLDocumentScannerImpl();</b>
+<b class="nc"><i>1181</i>&nbsp;                fNonNSDTDValidator = new XMLDTDValidator();</b>
+<i>1182</i>&nbsp;                // add components
+<b class="nc"><i>1183</i>&nbsp;                addComponent((XMLComponent) fNonNSScanner);</b>
+<b class="nc"><i>1184</i>&nbsp;                addComponent((XMLComponent) fNonNSDTDValidator);</b>
+<i>1185</i>&nbsp;            }
+<b class="nc"><i>1186</i>&nbsp;            if (fCurrentScanner != fNonNSScanner) {</b>
+<b class="nc"><i>1187</i>&nbsp;                fCurrentScanner = fNonNSScanner;</b>
+<b class="nc"><i>1188</i>&nbsp;                setProperty(DOCUMENT_SCANNER, fNonNSScanner);</b>
+<b class="nc"><i>1189</i>&nbsp;                setProperty(DTD_VALIDATOR, fNonNSDTDValidator);</b>
+<i>1190</i>&nbsp;            }
+<i>1191</i>&nbsp;
+<b class="nc"><i>1192</i>&nbsp;            fNonNSScanner.setDocumentHandler(fNonNSDTDValidator);</b>
+<b class="nc"><i>1193</i>&nbsp;            fNonNSDTDValidator.setDocumentSource(fNonNSScanner);</b>
+<b class="nc"><i>1194</i>&nbsp;            fNonNSDTDValidator.setDocumentHandler(fDocumentHandler);</b>
+<b class="nc"><i>1195</i>&nbsp;            if (fDocumentHandler != null) {</b>
+<b class="nc"><i>1196</i>&nbsp;                fDocumentHandler.setDocumentSource(fNonNSDTDValidator);</b>
+<i>1197</i>&nbsp;            }
+<b class="nc"><i>1198</i>&nbsp;            fLastComponent = fNonNSDTDValidator;</b>
+<i>1199</i>&nbsp;        }
+<i>1200</i>&nbsp;
+<i>1201</i>&nbsp;        // add XML Schema validator if needed
+<b class="nc"><i>1202</i>&nbsp;        if (fFeatures.get(XMLSCHEMA_VALIDATION) == Boolean.TRUE) {</b>
+<i>1203</i>&nbsp;            // If schema validator was not in the pipeline insert it.
+<b class="nc"><i>1204</i>&nbsp;            if (fSchemaValidator == null) {</b>
+<b class="nc"><i>1205</i>&nbsp;                fSchemaValidator = new XMLSchemaValidator();</b>
+<i>1206</i>&nbsp;                // add schema component
+<b class="nc"><i>1207</i>&nbsp;                setProperty(SCHEMA_VALIDATOR, fSchemaValidator);</b>
+<b class="nc"><i>1208</i>&nbsp;                addCommonComponent(fSchemaValidator);</b>
+<b class="nc"><i>1209</i>&nbsp;                fSchemaValidator.reset(this);</b>
+<i>1210</i>&nbsp;                // add schema message formatter
+<b class="nc"><i>1211</i>&nbsp;                if (fErrorReporter.getMessageFormatter(XSMessageFormatter.SCHEMA_DOMAIN) == null) {</b>
+<b class="nc"><i>1212</i>&nbsp;                    XSMessageFormatter xmft = new XSMessageFormatter();</b>
+<b class="nc"><i>1213</i>&nbsp;                    fErrorReporter.putMessageFormatter(XSMessageFormatter.SCHEMA_DOMAIN, xmft);</b>
+<i>1214</i>&nbsp;                }
+<i>1215</i>&nbsp;
+<i>1216</i>&nbsp;            }
+<b class="nc"><i>1217</i>&nbsp;            fLastComponent.setDocumentHandler(fSchemaValidator);</b>
+<b class="nc"><i>1218</i>&nbsp;            fSchemaValidator.setDocumentSource(fLastComponent);</b>
+<b class="nc"><i>1219</i>&nbsp;            fSchemaValidator.setDocumentHandler(fDocumentHandler);</b>
+<b class="nc"><i>1220</i>&nbsp;            if (fDocumentHandler != null) {</b>
+<b class="nc"><i>1221</i>&nbsp;                fDocumentHandler.setDocumentSource(fSchemaValidator);</b>
+<i>1222</i>&nbsp;            }
+<b class="nc"><i>1223</i>&nbsp;            fLastComponent = fSchemaValidator;</b>
+<i>1224</i>&nbsp;        }
+<i>1225</i>&nbsp;    } // configurePipeline()
+<i>1226</i>&nbsp;
+<i>1227</i>&nbsp;
+<i>1228</i>&nbsp;    // features and properties
+<i>1229</i>&nbsp;
+<i>1230</i>&nbsp;    /**
+<i>1231</i>&nbsp;     * Check a feature. If feature is know and supported, this method simply
+<i>1232</i>&nbsp;     * returns. Otherwise, the appropriate exception is thrown.
+<i>1233</i>&nbsp;     *
+<i>1234</i>&nbsp;     * @param featureId The unique identifier (URI) of the feature.
+<i>1235</i>&nbsp;     *
+<i>1236</i>&nbsp;     * @throws XMLConfigurationException Thrown for configuration error.
+<i>1237</i>&nbsp;     *                                   In general, components should
+<i>1238</i>&nbsp;     *                                   only throw this exception if
+<i>1239</i>&nbsp;     *                                   it is &lt;strong&gt;really&lt;/strong&gt;
+<i>1240</i>&nbsp;     *                                   a critical error.
+<i>1241</i>&nbsp;     */
+<i>1242</i>&nbsp;    protected FeatureState checkFeature(String featureId) throws XMLConfigurationException {
+<i>1243</i>&nbsp;
+<i>1244</i>&nbsp;        //
+<i>1245</i>&nbsp;        // Xerces Features
+<i>1246</i>&nbsp;        //
+<i>1247</i>&nbsp;
+<b class="nc"><i>1248</i>&nbsp;        if (featureId.startsWith(Constants.XERCES_FEATURE_PREFIX)) {</b>
+<b class="nc"><i>1249</i>&nbsp;            final int suffixLength = featureId.length() - Constants.XERCES_FEATURE_PREFIX.length();</b>
+<i>1250</i>&nbsp;
+<i>1251</i>&nbsp;            //
+<i>1252</i>&nbsp;            // http://apache.org/xml/features/validation/dynamic
+<i>1253</i>&nbsp;            //   Allows the parser to validate a document only when it
+<i>1254</i>&nbsp;            //   contains a grammar. Validation is turned on/off based
+<i>1255</i>&nbsp;            //   on each document instance, automatically.
+<i>1256</i>&nbsp;            //
+<b class="nc"><i>1257</i>&nbsp;            if (suffixLength == Constants.DYNAMIC_VALIDATION_FEATURE.length() &amp;&amp;</b>
+<b class="nc"><i>1258</i>&nbsp;                featureId.endsWith(Constants.DYNAMIC_VALIDATION_FEATURE)) {</b>
+<b class="nc"><i>1259</i>&nbsp;                return FeatureState.RECOGNIZED;</b>
+<i>1260</i>&nbsp;            }
+<i>1261</i>&nbsp;
+<i>1262</i>&nbsp;            //
+<i>1263</i>&nbsp;            // http://apache.org/xml/features/validation/default-attribute-values
+<i>1264</i>&nbsp;            //
+<b class="nc"><i>1265</i>&nbsp;            if (suffixLength == Constants.DEFAULT_ATTRIBUTE_VALUES_FEATURE.length() &amp;&amp;</b>
+<b class="nc"><i>1266</i>&nbsp;                featureId.endsWith(Constants.DEFAULT_ATTRIBUTE_VALUES_FEATURE)) {</b>
+<i>1267</i>&nbsp;                // REVISIT
+<b class="nc"><i>1268</i>&nbsp;                return FeatureState.NOT_SUPPORTED;</b>
+<i>1269</i>&nbsp;            }
+<i>1270</i>&nbsp;            //
+<i>1271</i>&nbsp;            // http://apache.org/xml/features/validation/default-attribute-values
+<i>1272</i>&nbsp;            //
+<b class="nc"><i>1273</i>&nbsp;            if (suffixLength == Constants.VALIDATE_CONTENT_MODELS_FEATURE.length() &amp;&amp;</b>
+<b class="nc"><i>1274</i>&nbsp;                featureId.endsWith(Constants.VALIDATE_CONTENT_MODELS_FEATURE)) {</b>
+<i>1275</i>&nbsp;                // REVISIT
+<b class="nc"><i>1276</i>&nbsp;                return FeatureState.NOT_SUPPORTED;</b>
+<i>1277</i>&nbsp;            }
+<i>1278</i>&nbsp;            //
+<i>1279</i>&nbsp;            // http://apache.org/xml/features/validation/nonvalidating/load-dtd-grammar
+<i>1280</i>&nbsp;            //
+<b class="nc"><i>1281</i>&nbsp;            if (suffixLength == Constants.LOAD_DTD_GRAMMAR_FEATURE.length() &amp;&amp;</b>
+<b class="nc"><i>1282</i>&nbsp;                featureId.endsWith(Constants.LOAD_DTD_GRAMMAR_FEATURE)) {</b>
+<b class="nc"><i>1283</i>&nbsp;                return FeatureState.RECOGNIZED;</b>
+<i>1284</i>&nbsp;            }
+<i>1285</i>&nbsp;            //
+<i>1286</i>&nbsp;            // http://apache.org/xml/features/validation/nonvalidating/load-external-dtd
+<i>1287</i>&nbsp;            //
+<b class="nc"><i>1288</i>&nbsp;            if (suffixLength == Constants.LOAD_EXTERNAL_DTD_FEATURE.length() &amp;&amp;</b>
+<b class="nc"><i>1289</i>&nbsp;                featureId.endsWith(Constants.LOAD_EXTERNAL_DTD_FEATURE)) {</b>
+<b class="nc"><i>1290</i>&nbsp;                return FeatureState.RECOGNIZED;</b>
+<i>1291</i>&nbsp;            }
+<i>1292</i>&nbsp;
+<i>1293</i>&nbsp;            //
+<i>1294</i>&nbsp;            // http://apache.org/xml/features/validation/default-attribute-values
+<i>1295</i>&nbsp;            //
+<b class="nc"><i>1296</i>&nbsp;            if (suffixLength == Constants.VALIDATE_DATATYPES_FEATURE.length() &amp;&amp;</b>
+<b class="nc"><i>1297</i>&nbsp;                featureId.endsWith(Constants.VALIDATE_DATATYPES_FEATURE)) {</b>
+<b class="nc"><i>1298</i>&nbsp;                return FeatureState.NOT_SUPPORTED;</b>
+<i>1299</i>&nbsp;            }
+<i>1300</i>&nbsp;
+<i>1301</i>&nbsp;            //
+<i>1302</i>&nbsp;            // http://apache.org/xml/features/validation/schema
+<i>1303</i>&nbsp;            //   Lets the user turn Schema validation support on/off.
+<i>1304</i>&nbsp;            //
+<b class="nc"><i>1305</i>&nbsp;            if (suffixLength == Constants.SCHEMA_VALIDATION_FEATURE.length() &amp;&amp;</b>
+<b class="nc"><i>1306</i>&nbsp;                featureId.endsWith(Constants.SCHEMA_VALIDATION_FEATURE)) {</b>
+<b class="nc"><i>1307</i>&nbsp;                return FeatureState.RECOGNIZED;</b>
+<i>1308</i>&nbsp;            }
+<i>1309</i>&nbsp;            // activate full schema checking
+<b class="nc"><i>1310</i>&nbsp;            if (suffixLength == Constants.SCHEMA_FULL_CHECKING.length() &amp;&amp;</b>
+<b class="nc"><i>1311</i>&nbsp;                featureId.endsWith(Constants.SCHEMA_FULL_CHECKING)) {</b>
+<b class="nc"><i>1312</i>&nbsp;                return FeatureState.RECOGNIZED;</b>
+<i>1313</i>&nbsp;            }
+<i>1314</i>&nbsp;            // Feature identifier: expose schema normalized value
+<i>1315</i>&nbsp;            //  http://apache.org/xml/features/validation/schema/normalized-value
+<b class="nc"><i>1316</i>&nbsp;            if (suffixLength == Constants.SCHEMA_NORMALIZED_VALUE.length() &amp;&amp;</b>
+<b class="nc"><i>1317</i>&nbsp;                featureId.endsWith(Constants.SCHEMA_NORMALIZED_VALUE)) {</b>
+<b class="nc"><i>1318</i>&nbsp;                return FeatureState.RECOGNIZED;</b>
+<i>1319</i>&nbsp;            }
+<i>1320</i>&nbsp;            // Feature identifier: send element default value via characters()
+<i>1321</i>&nbsp;            // http://apache.org/xml/features/validation/schema/element-default
+<b class="nc"><i>1322</i>&nbsp;            if (suffixLength == Constants.SCHEMA_ELEMENT_DEFAULT.length() &amp;&amp;</b>
+<b class="nc"><i>1323</i>&nbsp;                featureId.endsWith(Constants.SCHEMA_ELEMENT_DEFAULT)) {</b>
+<b class="nc"><i>1324</i>&nbsp;                return FeatureState.RECOGNIZED;</b>
+<i>1325</i>&nbsp;            }
+<i>1326</i>&nbsp;
+<i>1327</i>&nbsp;            // special performance feature: only component manager is allowed to set it.
+<b class="nc"><i>1328</i>&nbsp;            if (suffixLength == Constants.PARSER_SETTINGS.length() &amp;&amp;</b>
+<b class="nc"><i>1329</i>&nbsp;                featureId.endsWith(Constants.PARSER_SETTINGS)) {</b>
+<b class="nc"><i>1330</i>&nbsp;                return FeatureState.NOT_SUPPORTED;</b>
+<i>1331</i>&nbsp;            }
+<i>1332</i>&nbsp;
+<i>1333</i>&nbsp;        }
+<i>1334</i>&nbsp;
+<i>1335</i>&nbsp;        //
+<i>1336</i>&nbsp;        // Not recognized
+<i>1337</i>&nbsp;        //
+<i>1338</i>&nbsp;
+<b class="nc"><i>1339</i>&nbsp;        return super.checkFeature(featureId);</b>
+<i>1340</i>&nbsp;
+<i>1341</i>&nbsp;    } // checkFeature(String)
+<i>1342</i>&nbsp;
+<i>1343</i>&nbsp;    /**
+<i>1344</i>&nbsp;     * Check a property. If the property is know and supported, this method
+<i>1345</i>&nbsp;     * simply returns. Otherwise, the appropriate exception is thrown.
+<i>1346</i>&nbsp;     *
+<i>1347</i>&nbsp;     * @param propertyId The unique identifier (URI) of the property
+<i>1348</i>&nbsp;     *                   being set.
+<i>1349</i>&nbsp;     *
+<i>1350</i>&nbsp;     * @throws XMLConfigurationException Thrown for configuration error.
+<i>1351</i>&nbsp;     *                                   In general, components should
+<i>1352</i>&nbsp;     *                                   only throw this exception if
+<i>1353</i>&nbsp;     *                                   it is &lt;strong&gt;really&lt;/strong&gt;
+<i>1354</i>&nbsp;     *                                   a critical error.
+<i>1355</i>&nbsp;     */
+<i>1356</i>&nbsp;    protected PropertyState checkProperty(String propertyId) throws XMLConfigurationException {
+<i>1357</i>&nbsp;
+<i>1358</i>&nbsp;        //
+<i>1359</i>&nbsp;        // Xerces Properties
+<i>1360</i>&nbsp;        //
+<i>1361</i>&nbsp;
+<b class="nc"><i>1362</i>&nbsp;        if (propertyId.startsWith(Constants.XERCES_PROPERTY_PREFIX)) {</b>
+<b class="nc"><i>1363</i>&nbsp;            final int suffixLength = propertyId.length() - Constants.XERCES_PROPERTY_PREFIX.length();</b>
+<i>1364</i>&nbsp;
+<b class="nc"><i>1365</i>&nbsp;            if (suffixLength == Constants.DTD_SCANNER_PROPERTY.length() &amp;&amp;</b>
+<b class="nc"><i>1366</i>&nbsp;                propertyId.endsWith(Constants.DTD_SCANNER_PROPERTY)) {</b>
+<b class="nc"><i>1367</i>&nbsp;                return PropertyState.RECOGNIZED;</b>
+<i>1368</i>&nbsp;            }
+<b class="nc"><i>1369</i>&nbsp;            if (suffixLength == Constants.SCHEMA_LOCATION.length() &amp;&amp;</b>
+<b class="nc"><i>1370</i>&nbsp;                propertyId.endsWith(Constants.SCHEMA_LOCATION)) {</b>
+<b class="nc"><i>1371</i>&nbsp;                return PropertyState.RECOGNIZED;</b>
+<i>1372</i>&nbsp;            }
+<b class="nc"><i>1373</i>&nbsp;            if (suffixLength == Constants.SCHEMA_NONS_LOCATION.length() &amp;&amp;</b>
+<b class="nc"><i>1374</i>&nbsp;                propertyId.endsWith(Constants.SCHEMA_NONS_LOCATION)) {</b>
+<b class="nc"><i>1375</i>&nbsp;                return PropertyState.RECOGNIZED;</b>
+<i>1376</i>&nbsp;            }
+<i>1377</i>&nbsp;        }
+<i>1378</i>&nbsp;
+<b class="nc"><i>1379</i>&nbsp;        if (propertyId.startsWith(Constants.JAXP_PROPERTY_PREFIX)) {</b>
+<b class="nc"><i>1380</i>&nbsp;            final int suffixLength = propertyId.length() - Constants.JAXP_PROPERTY_PREFIX.length();</b>
+<i>1381</i>&nbsp;
+<b class="nc"><i>1382</i>&nbsp;            if (suffixLength == Constants.SCHEMA_SOURCE.length() &amp;&amp;</b>
+<b class="nc"><i>1383</i>&nbsp;                propertyId.endsWith(Constants.SCHEMA_SOURCE)) {</b>
+<b class="nc"><i>1384</i>&nbsp;                return PropertyState.RECOGNIZED;</b>
+<i>1385</i>&nbsp;            }
+<i>1386</i>&nbsp;        }
+<i>1387</i>&nbsp;
+<i>1388</i>&nbsp;        // special cases
+<b class="nc"><i>1389</i>&nbsp;        if (propertyId.startsWith(Constants.SAX_PROPERTY_PREFIX)) {</b>
+<b class="nc"><i>1390</i>&nbsp;            final int suffixLength = propertyId.length() - Constants.SAX_PROPERTY_PREFIX.length();</b>
+<i>1391</i>&nbsp;
+<i>1392</i>&nbsp;            //
+<i>1393</i>&nbsp;            // http://xml.org/sax/properties/xml-string
+<i>1394</i>&nbsp;            // Value type: String
+<i>1395</i>&nbsp;            // Access: read-only
+<i>1396</i>&nbsp;            //   Get the literal string of characters associated with the
+<i>1397</i>&nbsp;            //   current event.  If the parser recognises and supports this
+<i>1398</i>&nbsp;            //   property but is not currently parsing text, it should return
+<i>1399</i>&nbsp;            //   null (this is a good way to check for availability before the
+<i>1400</i>&nbsp;            //   parse begins).
+<i>1401</i>&nbsp;            //
+<b class="nc"><i>1402</i>&nbsp;            if (suffixLength == Constants.XML_STRING_PROPERTY.length() &amp;&amp;</b>
+<b class="nc"><i>1403</i>&nbsp;                propertyId.endsWith(Constants.XML_STRING_PROPERTY)) {</b>
+<i>1404</i>&nbsp;                // REVISIT - we should probably ask xml-dev for a precise
+<i>1405</i>&nbsp;                // definition of what this is actually supposed to return, and
+<i>1406</i>&nbsp;                // in exactly which circumstances.
+<b class="nc"><i>1407</i>&nbsp;                return PropertyState.NOT_SUPPORTED;</b>
+<i>1408</i>&nbsp;            }
+<i>1409</i>&nbsp;        }
+<i>1410</i>&nbsp;
+<i>1411</i>&nbsp;        //
+<i>1412</i>&nbsp;        // Not recognized
+<i>1413</i>&nbsp;        //
+<i>1414</i>&nbsp;
+<b class="nc"><i>1415</i>&nbsp;        return super.checkProperty(propertyId);</b>
+<i>1416</i>&nbsp;
+<i>1417</i>&nbsp;    } // checkProperty(String)
+<i>1418</i>&nbsp;
+<i>1419</i>&nbsp;
+<i>1420</i>&nbsp;    /**
+<i>1421</i>&nbsp;     * Adds a component to the parser configuration. This method will
+<i>1422</i>&nbsp;     * also add all of the component&#39;s recognized features and properties
+<i>1423</i>&nbsp;     * to the list of default recognized features and properties.
+<i>1424</i>&nbsp;     *
+<i>1425</i>&nbsp;     * @param component The component to add.
+<i>1426</i>&nbsp;     */
+<i>1427</i>&nbsp;    protected void addComponent(XMLComponent component) {
+<i>1428</i>&nbsp;
+<i>1429</i>&nbsp;        // don&#39;t add a component more than once
+<b class="nc"><i>1430</i>&nbsp;        if (fComponents.contains(component)) {</b>
+<i>1431</i>&nbsp;            return;
+<i>1432</i>&nbsp;        }
+<b class="nc"><i>1433</i>&nbsp;        fComponents.add(component);</b>
+<b class="nc"><i>1434</i>&nbsp;        addRecognizedParamsAndSetDefaults(component);</b>
+<i>1435</i>&nbsp;
+<i>1436</i>&nbsp;    } // addComponent(XMLComponent)
+<i>1437</i>&nbsp;
+<i>1438</i>&nbsp;    /**
+<i>1439</i>&nbsp;     * Adds common component to the parser configuration. This method will
+<i>1440</i>&nbsp;     * also add all of the component&#39;s recognized features and properties
+<i>1441</i>&nbsp;     * to the list of default recognized features and properties.
+<i>1442</i>&nbsp;     *
+<i>1443</i>&nbsp;     * @param component The component to add.
+<i>1444</i>&nbsp;     */
+<i>1445</i>&nbsp;    protected void addCommonComponent(XMLComponent component) {
+<i>1446</i>&nbsp;
+<i>1447</i>&nbsp;        // don&#39;t add a component more than once
+<b class="nc"><i>1448</i>&nbsp;        if (fCommonComponents.contains(component)) {</b>
+<i>1449</i>&nbsp;            return;
+<i>1450</i>&nbsp;        }
+<b class="nc"><i>1451</i>&nbsp;        fCommonComponents.add(component);</b>
+<b class="nc"><i>1452</i>&nbsp;        addRecognizedParamsAndSetDefaults(component);</b>
+<i>1453</i>&nbsp;
+<i>1454</i>&nbsp;    } // addCommonComponent(XMLComponent)
+<i>1455</i>&nbsp;
+<i>1456</i>&nbsp;    /**
+<i>1457</i>&nbsp;     * Adds an XML 1.1 component to the parser configuration. This method will
+<i>1458</i>&nbsp;     * also add all of the component&#39;s recognized features and properties
+<i>1459</i>&nbsp;     * to the list of default recognized features and properties.
+<i>1460</i>&nbsp;     *
+<i>1461</i>&nbsp;     * @param component The component to add.
+<i>1462</i>&nbsp;     */
+<i>1463</i>&nbsp;    protected void addXML11Component(XMLComponent component) {
+<i>1464</i>&nbsp;
+<i>1465</i>&nbsp;        // don&#39;t add a component more than once
+<b class="nc"><i>1466</i>&nbsp;        if (fXML11Components.contains(component)) {</b>
+<i>1467</i>&nbsp;            return;
+<i>1468</i>&nbsp;        }
+<b class="nc"><i>1469</i>&nbsp;        fXML11Components.add(component);</b>
+<b class="nc"><i>1470</i>&nbsp;        addRecognizedParamsAndSetDefaults(component);</b>
+<i>1471</i>&nbsp;
+<i>1472</i>&nbsp;    } // addXML11Component(XMLComponent)
+<i>1473</i>&nbsp;
+<i>1474</i>&nbsp;    /**
+<i>1475</i>&nbsp;     * Adds all of the component&#39;s recognized features and properties
+<i>1476</i>&nbsp;     * to the list of default recognized features and properties, and
+<i>1477</i>&nbsp;     * sets default values on the configuration for features and
+<i>1478</i>&nbsp;     * properties which were previously absent from the configuration.
+<i>1479</i>&nbsp;     *
+<i>1480</i>&nbsp;     * @param component The component whose recognized features
+<i>1481</i>&nbsp;     * and properties will be added to the configuration
+<i>1482</i>&nbsp;     */
+<i>1483</i>&nbsp;    protected void addRecognizedParamsAndSetDefaults(XMLComponent component) {
+<i>1484</i>&nbsp;
+<i>1485</i>&nbsp;        // register component&#39;s recognized features
+<b class="nc"><i>1486</i>&nbsp;        String[] recognizedFeatures = component.getRecognizedFeatures();</b>
+<b class="nc"><i>1487</i>&nbsp;        addRecognizedFeatures(recognizedFeatures);</b>
+<i>1488</i>&nbsp;
+<i>1489</i>&nbsp;        // register component&#39;s recognized properties
+<b class="nc"><i>1490</i>&nbsp;        String[] recognizedProperties = component.getRecognizedProperties();</b>
+<b class="nc"><i>1491</i>&nbsp;        addRecognizedProperties(recognizedProperties);</b>
+<i>1492</i>&nbsp;
+<i>1493</i>&nbsp;        // set default values
+<b class="nc"><i>1494</i>&nbsp;        if (recognizedFeatures != null) {</b>
+<b class="nc"><i>1495</i>&nbsp;            for (int i = 0; i &lt; recognizedFeatures.length; ++i) {</b>
+<b class="nc"><i>1496</i>&nbsp;                String featureId = recognizedFeatures[i];</b>
+<b class="nc"><i>1497</i>&nbsp;                Boolean state = component.getFeatureDefault(featureId);</b>
+<b class="nc"><i>1498</i>&nbsp;                if (state != null) {</b>
+<i>1499</i>&nbsp;                    // Do not overwrite values already set on the configuration.
+<b class="nc"><i>1500</i>&nbsp;                    if (!fFeatures.containsKey(featureId)) {</b>
+<b class="nc"><i>1501</i>&nbsp;                        fFeatures.put(featureId, state);</b>
+<i>1502</i>&nbsp;                        // For newly added components who recognize this feature
+<i>1503</i>&nbsp;                        // but did not offer a default value, we need to make
+<i>1504</i>&nbsp;                        // sure these components will get an opportunity to read
+<i>1505</i>&nbsp;                        // the value before parsing begins.
+<b class="nc"><i>1506</i>&nbsp;                        fConfigUpdated = true;</b>
+<i>1507</i>&nbsp;                    }
+<i>1508</i>&nbsp;                }
+<i>1509</i>&nbsp;            }
+<i>1510</i>&nbsp;        }
+<b class="nc"><i>1511</i>&nbsp;        if (recognizedProperties != null) {</b>
+<b class="nc"><i>1512</i>&nbsp;            for (int i = 0; i &lt; recognizedProperties.length; ++i) {</b>
+<b class="nc"><i>1513</i>&nbsp;                String propertyId = recognizedProperties[i];</b>
+<b class="nc"><i>1514</i>&nbsp;                Object value = component.getPropertyDefault(propertyId);</b>
+<b class="nc"><i>1515</i>&nbsp;                if (value != null) {</b>
+<i>1516</i>&nbsp;                    // Do not overwrite values already set on the configuration.
+<b class="nc"><i>1517</i>&nbsp;                    if (!fProperties.containsKey(propertyId)) {</b>
+<b class="nc"><i>1518</i>&nbsp;                        fProperties.put(propertyId, value);</b>
+<i>1519</i>&nbsp;                        // For newly added components who recognize this property
+<i>1520</i>&nbsp;                        // but did not offer a default value, we need to make
+<i>1521</i>&nbsp;                        // sure these components will get an opportunity to read
+<i>1522</i>&nbsp;                        // the value before parsing begins.
+<b class="nc"><i>1523</i>&nbsp;                        fConfigUpdated = true;</b>
+<i>1524</i>&nbsp;                    }
+<i>1525</i>&nbsp;                }
+<i>1526</i>&nbsp;            }
+<i>1527</i>&nbsp;        }
+<i>1528</i>&nbsp;    }
+<i>1529</i>&nbsp;
+<i>1530</i>&nbsp;    private void initXML11Components() {
+<b class="nc"><i>1531</i>&nbsp;        if (!f11Initialized) {</b>
+<i>1532</i>&nbsp;
+<i>1533</i>&nbsp;            // create datatype factory
+<b class="nc"><i>1534</i>&nbsp;            fXML11DatatypeFactory = DTDDVFactory.getInstance(XML11_DATATYPE_VALIDATOR_FACTORY);</b>
+<i>1535</i>&nbsp;
+<i>1536</i>&nbsp;            // setup XML 1.1 DTD pipeline
+<b class="nc"><i>1537</i>&nbsp;            fXML11DTDScanner = new XML11DTDScannerImpl();</b>
+<b class="nc"><i>1538</i>&nbsp;            addXML11Component(fXML11DTDScanner);</b>
+<b class="nc"><i>1539</i>&nbsp;            fXML11DTDProcessor = new XML11DTDProcessor();</b>
+<b class="nc"><i>1540</i>&nbsp;            addXML11Component(fXML11DTDProcessor);</b>
+<i>1541</i>&nbsp;
+<i>1542</i>&nbsp;            // setup XML 1.1. document pipeline - namespace aware
+<b class="nc"><i>1543</i>&nbsp;            fXML11NSDocScanner = new XML11NSDocumentScannerImpl();</b>
+<b class="nc"><i>1544</i>&nbsp;            addXML11Component(fXML11NSDocScanner);</b>
+<b class="nc"><i>1545</i>&nbsp;            fXML11NSDTDValidator = new XML11NSDTDValidator();</b>
+<b class="nc"><i>1546</i>&nbsp;            addXML11Component(fXML11NSDTDValidator);</b>
+<i>1547</i>&nbsp;
+<b class="nc"><i>1548</i>&nbsp;            f11Initialized = true;</b>
+<i>1549</i>&nbsp;        }
+<i>1550</i>&nbsp;    }
+<i>1551</i>&nbsp;
+<i>1552</i>&nbsp;    /**
+<i>1553</i>&nbsp;     * Returns the state of a feature. This method calls getFeature()
+<i>1554</i>&nbsp;     * on ParserConfigurationSettings, bypassing getFeature() on this
+<i>1555</i>&nbsp;     * class.
+<i>1556</i>&nbsp;     */
+<i>1557</i>&nbsp;    FeatureState getFeatureState0(String featureId)
+<i>1558</i>&nbsp;        throws XMLConfigurationException {
+<b class="nc"><i>1559</i>&nbsp;        return super.getFeatureState(featureId);</b>
+<i>1560</i>&nbsp;    }
+<i>1561</i>&nbsp;
+<i>1562</i>&nbsp;} // class XML11Configuration
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

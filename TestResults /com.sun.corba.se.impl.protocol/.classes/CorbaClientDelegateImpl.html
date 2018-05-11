@@ -1,0 +1,526 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CorbaClientDelegateImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.protocol</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CorbaClientDelegateImpl (com.sun.corba.se.impl.protocol)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CorbaClientDelegateImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 25)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 130)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2001, 2004, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.protocol;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.util.Iterator;
+<i>29</i>&nbsp;import java.util.HashMap;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import javax.rmi.CORBA.Tie;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import org.omg.CORBA.CompletionStatus;
+<i>34</i>&nbsp;import org.omg.CORBA.Context;
+<i>35</i>&nbsp;import org.omg.CORBA.ContextList;
+<i>36</i>&nbsp;import org.omg.CORBA.ExceptionList;
+<i>37</i>&nbsp;import org.omg.CORBA.NamedValue;
+<i>38</i>&nbsp;import org.omg.CORBA.NVList;
+<i>39</i>&nbsp;import org.omg.CORBA.Request;
+<i>40</i>&nbsp;import org.omg.CORBA.TypeCode;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import org.omg.CORBA.portable.ApplicationException;
+<i>43</i>&nbsp;import org.omg.CORBA.portable.Delegate;
+<i>44</i>&nbsp;import org.omg.CORBA.portable.InputStream;
+<i>45</i>&nbsp;import org.omg.CORBA.portable.OutputStream;
+<i>46</i>&nbsp;import org.omg.CORBA.portable.RemarshalException;
+<i>47</i>&nbsp;import org.omg.CORBA.portable.ServantObject;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;import com.sun.corba.se.pept.broker.Broker;
+<i>50</i>&nbsp;import com.sun.corba.se.pept.encoding.InputObject;
+<i>51</i>&nbsp;import com.sun.corba.se.pept.encoding.OutputObject;
+<i>52</i>&nbsp;import com.sun.corba.se.pept.protocol.ClientInvocationInfo;
+<i>53</i>&nbsp;import com.sun.corba.se.pept.protocol.ClientRequestDispatcher;
+<i>54</i>&nbsp;import com.sun.corba.se.pept.transport.ContactInfo;
+<i>55</i>&nbsp;import com.sun.corba.se.pept.transport.ContactInfoList;
+<i>56</i>&nbsp;import com.sun.corba.se.pept.transport.ContactInfoListIterator;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;import com.sun.corba.se.spi.presentation.rmi.StubAdapter;
+<i>59</i>&nbsp;import com.sun.corba.se.spi.ior.IOR;
+<i>60</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains;
+<i>61</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>62</i>&nbsp;import com.sun.corba.se.spi.protocol.CorbaClientDelegate ;
+<i>63</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaContactInfo;
+<i>64</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaContactInfoList;
+<i>65</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaContactInfoListIterator;
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;import com.sun.corba.se.impl.corba.RequestImpl;
+<i>68</i>&nbsp;import com.sun.corba.se.impl.protocol.CorbaInvocationInfo;
+<i>69</i>&nbsp;import com.sun.corba.se.impl.transport.CorbaContactInfoListImpl;
+<i>70</i>&nbsp;import com.sun.corba.se.impl.util.JDKBridge;
+<i>71</i>&nbsp;import com.sun.corba.se.impl.logging.ORBUtilSystemException;
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;// implements com.sun.corba.se.impl.core.ClientRequestDispatcher
+<i>74</i>&nbsp;// so RMI-IIOP Util.isLocal can call ClientRequestDispatcher.useLocalInvocation.
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;/**
+<i>77</i>&nbsp; * @author Harold Carr
+<i>78</i>&nbsp; */
+<i>79</i>&nbsp;public class CorbaClientDelegateImpl extends CorbaClientDelegate
+<i>80</i>&nbsp;{
+<i>81</i>&nbsp;    private ORB orb;
+<i>82</i>&nbsp;    private ORBUtilSystemException wrapper ;
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    private CorbaContactInfoList contactInfoList;
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    public CorbaClientDelegateImpl(ORB orb,
+<i>87</i>&nbsp;                                   CorbaContactInfoList contactInfoList)
+<b class="nc"><i>88</i>&nbsp;    {</b>
+<b class="nc"><i>89</i>&nbsp;        this.orb = orb;</b>
+<b class="nc"><i>90</i>&nbsp;        this.wrapper = ORBUtilSystemException.get( orb,</b>
+<i>91</i>&nbsp;            CORBALogDomains.RPC_PROTOCOL ) ;
+<b class="nc"><i>92</i>&nbsp;        this.contactInfoList = contactInfoList;</b>
+<i>93</i>&nbsp;    }
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    //
+<i>96</i>&nbsp;    // framework.subcontract.Delegate
+<i>97</i>&nbsp;    //
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    public Broker getBroker()
+<i>100</i>&nbsp;    {
+<b class="nc"><i>101</i>&nbsp;        return orb;</b>
+<i>102</i>&nbsp;    }
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    public ContactInfoList getContactInfoList()
+<i>105</i>&nbsp;    {
+<b class="nc"><i>106</i>&nbsp;        return contactInfoList;</b>
+<i>107</i>&nbsp;    }
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    //
+<i>110</i>&nbsp;    // CORBA_2_3.portable.Delegate
+<i>111</i>&nbsp;    //
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    public OutputStream request(org.omg.CORBA.Object self,
+<i>114</i>&nbsp;                                String operation,
+<i>115</i>&nbsp;                                boolean responseExpected)
+<i>116</i>&nbsp;    {
+<b class="nc"><i>117</i>&nbsp;        ClientInvocationInfo invocationInfo =</b>
+<b class="nc"><i>118</i>&nbsp;            orb.createOrIncrementInvocationInfo();</b>
+<b class="nc"><i>119</i>&nbsp;        Iterator contactInfoListIterator =</b>
+<b class="nc"><i>120</i>&nbsp;            invocationInfo.getContactInfoListIterator();</b>
+<b class="nc"><i>121</i>&nbsp;        if (contactInfoListIterator == null) {</b>
+<b class="nc"><i>122</i>&nbsp;            contactInfoListIterator = contactInfoList.iterator();</b>
+<b class="nc"><i>123</i>&nbsp;            invocationInfo.setContactInfoListIterator(contactInfoListIterator);</b>
+<i>124</i>&nbsp;        }
+<b class="nc"><i>125</i>&nbsp;        if (! contactInfoListIterator.hasNext()) {</b>
+<b class="nc"><i>126</i>&nbsp;            throw ((CorbaContactInfoListIterator)contactInfoListIterator)</b>
+<b class="nc"><i>127</i>&nbsp;                .getFailureException();</b>
+<i>128</i>&nbsp;        }
+<b class="nc"><i>129</i>&nbsp;        CorbaContactInfo contactInfo = (CorbaContactInfo) contactInfoListIterator.next();</b>
+<b class="nc"><i>130</i>&nbsp;        ClientRequestDispatcher subcontract = contactInfo.getClientRequestDispatcher();</b>
+<i>131</i>&nbsp;        // Remember chosen subcontract for invoke and releaseReply.
+<i>132</i>&nbsp;        // NOTE: This is necessary since a stream is not available in
+<i>133</i>&nbsp;        // releaseReply if there is a client marshaling error or an
+<i>134</i>&nbsp;        // error in _invoke.
+<b class="nc"><i>135</i>&nbsp;        invocationInfo.setClientRequestDispatcher(subcontract);</b>
+<b class="nc"><i>136</i>&nbsp;        return (OutputStream)</b>
+<b class="nc"><i>137</i>&nbsp;            subcontract.beginRequest(self, operation,</b>
+<i>138</i>&nbsp;                                     !responseExpected, contactInfo);
+<i>139</i>&nbsp;    }
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;    public InputStream invoke(org.omg.CORBA.Object self, OutputStream output)
+<i>142</i>&nbsp;        throws
+<i>143</i>&nbsp;            ApplicationException,
+<i>144</i>&nbsp;            RemarshalException
+<i>145</i>&nbsp;    {
+<b class="nc"><i>146</i>&nbsp;        ClientRequestDispatcher subcontract = getClientRequestDispatcher();</b>
+<b class="nc"><i>147</i>&nbsp;        return (InputStream)</b>
+<b class="nc"><i>148</i>&nbsp;            subcontract.marshalingComplete((Object)self, (OutputObject)output);</b>
+<i>149</i>&nbsp;    }
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;    public void releaseReply(org.omg.CORBA.Object self, InputStream input)
+<i>152</i>&nbsp;    {
+<i>153</i>&nbsp;        // NOTE: InputStream may be null (e.g., exception request from PI).
+<b class="nc"><i>154</i>&nbsp;        ClientRequestDispatcher subcontract = getClientRequestDispatcher();</b>
+<b class="nc"><i>155</i>&nbsp;        subcontract.endRequest(orb, self, (InputObject)input);</b>
+<b class="nc"><i>156</i>&nbsp;        orb.releaseOrDecrementInvocationInfo();</b>
+<i>157</i>&nbsp;    }
+<i>158</i>&nbsp;
+<i>159</i>&nbsp;    private ClientRequestDispatcher getClientRequestDispatcher()
+<i>160</i>&nbsp;    {
+<b class="nc"><i>161</i>&nbsp;        return (ClientRequestDispatcher)</b>
+<b class="nc"><i>162</i>&nbsp;            ((CorbaInvocationInfo)orb.getInvocationInfo())</b>
+<b class="nc"><i>163</i>&nbsp;            .getClientRequestDispatcher();</b>
+<i>164</i>&nbsp;    }
+<i>165</i>&nbsp;
+<i>166</i>&nbsp;    public org.omg.CORBA.Object get_interface_def(org.omg.CORBA.Object obj)
+<i>167</i>&nbsp;    {
+<b class="nc"><i>168</i>&nbsp;        InputStream is = null;</b>
+<i>169</i>&nbsp;        // instantiate the stub
+<b class="nc"><i>170</i>&nbsp;        org.omg.CORBA.Object stub = null ;</b>
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;        try {
+<b class="nc"><i>173</i>&nbsp;            OutputStream os = request(null, &quot;_interface&quot;, true);</b>
+<b class="nc"><i>174</i>&nbsp;            is = (InputStream) invoke((org.omg.CORBA.Object)null, os);</b>
+<i>175</i>&nbsp;
+<b class="nc"><i>176</i>&nbsp;            org.omg.CORBA.Object objimpl =</b>
+<b class="nc"><i>177</i>&nbsp;                (org.omg.CORBA.Object) is.read_Object();</b>
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;            // check if returned object is of correct type
+<b class="nc"><i>180</i>&nbsp;            if ( !objimpl._is_a(&quot;IDL:omg.org/CORBA/InterfaceDef:1.0&quot;) )</b>
+<b class="nc"><i>181</i>&nbsp;                throw wrapper.wrongInterfaceDef(CompletionStatus.COMPLETED_MAYBE);</b>
+<i>182</i>&nbsp;
+<i>183</i>&nbsp;            try {
+<b class="nc"><i>184</i>&nbsp;                stub = (org.omg.CORBA.Object)</b>
+<b class="nc"><i>185</i>&nbsp;                    JDKBridge.loadClass(&quot;org.omg.CORBA._InterfaceDefStub&quot;).</b>
+<b class="nc"><i>186</i>&nbsp;                        newInstance();</b>
+<b class="nc"><i>187</i>&nbsp;            } catch (Exception ex) {</b>
+<b class="nc"><i>188</i>&nbsp;                throw wrapper.noInterfaceDefStub( ex ) ;</b>
+<b class="nc"><i>189</i>&nbsp;            }</b>
+<i>190</i>&nbsp;
+<b class="nc"><i>191</i>&nbsp;            org.omg.CORBA.portable.Delegate del =</b>
+<b class="nc"><i>192</i>&nbsp;                StubAdapter.getDelegate( objimpl ) ;</b>
+<b class="nc"><i>193</i>&nbsp;            StubAdapter.setDelegate( stub, del ) ;</b>
+<b class="nc"><i>194</i>&nbsp;        } catch (ApplicationException e) {</b>
+<i>195</i>&nbsp;            // This cannot happen.
+<b class="nc"><i>196</i>&nbsp;            throw wrapper.applicationExceptionInSpecialMethod( e ) ;</b>
+<b class="nc"><i>197</i>&nbsp;        } catch (RemarshalException e) {</b>
+<b class="nc"><i>198</i>&nbsp;            return get_interface_def(obj);</b>
+<i>199</i>&nbsp;        } finally {
+<b class="nc"><i>200</i>&nbsp;            releaseReply((org.omg.CORBA.Object)null, (InputStream)is);</b>
+<b class="nc"><i>201</i>&nbsp;        }</b>
+<i>202</i>&nbsp;
+<b class="nc"><i>203</i>&nbsp;        return stub;</b>
+<i>204</i>&nbsp;    }
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;    public boolean is_a(org.omg.CORBA.Object obj, String dest)
+<i>207</i>&nbsp;    {
+<i>208</i>&nbsp;        // dest is the typeId of the interface to compare against.
+<i>209</i>&nbsp;        // repositoryIds is the list of typeIds that the stub knows about.
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;        // First we look for an answer using local information.
+<i>212</i>&nbsp;
+<b class="nc"><i>213</i>&nbsp;        String [] repositoryIds = StubAdapter.getTypeIds( obj ) ;</b>
+<b class="nc"><i>214</i>&nbsp;        String myid = contactInfoList.getTargetIOR().getTypeId();</b>
+<b class="nc"><i>215</i>&nbsp;        if ( dest.equals(myid) ) {</b>
+<b class="nc"><i>216</i>&nbsp;            return true;</b>
+<i>217</i>&nbsp;        }
+<b class="nc"><i>218</i>&nbsp;        for ( int i=0; i&lt;repositoryIds.length; i++ ) {</b>
+<b class="nc"><i>219</i>&nbsp;            if ( dest.equals(repositoryIds[i]) ) {</b>
+<b class="nc"><i>220</i>&nbsp;                return true;</b>
+<i>221</i>&nbsp;            }
+<i>222</i>&nbsp;        }
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;        // But repositoryIds may not be complete, so it may be necessary to
+<i>225</i>&nbsp;        // go to server.
+<i>226</i>&nbsp;
+<b class="nc"><i>227</i>&nbsp;        InputStream is = null;</b>
+<i>228</i>&nbsp;        try {
+<b class="nc"><i>229</i>&nbsp;            OutputStream os = request(null, &quot;_is_a&quot;, true);</b>
+<b class="nc"><i>230</i>&nbsp;            os.write_string(dest);</b>
+<b class="nc"><i>231</i>&nbsp;            is = (InputStream) invoke((org.omg.CORBA.Object) null, os);</b>
+<i>232</i>&nbsp;
+<b class="nc"><i>233</i>&nbsp;            return is.read_boolean();</b>
+<i>234</i>&nbsp;
+<b class="nc"><i>235</i>&nbsp;        } catch (ApplicationException e) {</b>
+<i>236</i>&nbsp;            // This cannot happen.
+<b class="nc"><i>237</i>&nbsp;            throw wrapper.applicationExceptionInSpecialMethod( e ) ;</b>
+<b class="nc"><i>238</i>&nbsp;        } catch (RemarshalException e) {</b>
+<b class="nc"><i>239</i>&nbsp;            return is_a(obj, dest);</b>
+<i>240</i>&nbsp;        } finally {
+<b class="nc"><i>241</i>&nbsp;            releaseReply((org.omg.CORBA.Object)null, (InputStream)is);</b>
+<i>242</i>&nbsp;        }
+<i>243</i>&nbsp;    }
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;    public boolean non_existent(org.omg.CORBA.Object obj)
+<i>246</i>&nbsp;    {
+<b class="nc"><i>247</i>&nbsp;        InputStream is = null;</b>
+<i>248</i>&nbsp;        try {
+<b class="nc"><i>249</i>&nbsp;            OutputStream os = request(null, &quot;_non_existent&quot;, true);</b>
+<b class="nc"><i>250</i>&nbsp;            is = (InputStream) invoke((org.omg.CORBA.Object)null, os);</b>
+<i>251</i>&nbsp;
+<b class="nc"><i>252</i>&nbsp;            return is.read_boolean();</b>
+<i>253</i>&nbsp;
+<b class="nc"><i>254</i>&nbsp;        } catch (ApplicationException e) {</b>
+<i>255</i>&nbsp;            // This cannot happen.
+<b class="nc"><i>256</i>&nbsp;            throw wrapper.applicationExceptionInSpecialMethod( e ) ;</b>
+<b class="nc"><i>257</i>&nbsp;        } catch (RemarshalException e) {</b>
+<b class="nc"><i>258</i>&nbsp;            return non_existent(obj);</b>
+<i>259</i>&nbsp;        } finally {
+<b class="nc"><i>260</i>&nbsp;            releaseReply((org.omg.CORBA.Object)null, (InputStream)is);</b>
+<i>261</i>&nbsp;        }
+<i>262</i>&nbsp;    }
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;    public org.omg.CORBA.Object duplicate(org.omg.CORBA.Object obj)
+<i>265</i>&nbsp;    {
+<b class="nc"><i>266</i>&nbsp;        return obj;</b>
+<i>267</i>&nbsp;    }
+<i>268</i>&nbsp;
+<i>269</i>&nbsp;    public void release(org.omg.CORBA.Object obj)
+<i>270</i>&nbsp;    {
+<i>271</i>&nbsp;        // DO NOT clear out internal variables to release memory
+<i>272</i>&nbsp;        // This delegate may be pointed-to by other objrefs.
+<i>273</i>&nbsp;    }
+<i>274</i>&nbsp;
+<i>275</i>&nbsp;    // obj._get_delegate() == this due to the argument passing conventions in
+<i>276</i>&nbsp;    // portable.ObjectImpl, so we just ignore obj here.
+<i>277</i>&nbsp;    public boolean is_equivalent(org.omg.CORBA.Object obj,
+<i>278</i>&nbsp;                                 org.omg.CORBA.Object ref)
+<i>279</i>&nbsp;    {
+<b class="nc"><i>280</i>&nbsp;        if ( ref == null )</b>
+<b class="nc"><i>281</i>&nbsp;            return false;</b>
+<i>282</i>&nbsp;
+<i>283</i>&nbsp;        // If ref is a local object, it is not a Stub!
+<b class="nc"><i>284</i>&nbsp;        if (!StubAdapter.isStub(ref))</b>
+<b class="nc"><i>285</i>&nbsp;            return false ;</b>
+<i>286</i>&nbsp;
+<b class="nc"><i>287</i>&nbsp;        Delegate del = StubAdapter.getDelegate(ref) ;</b>
+<b class="nc"><i>288</i>&nbsp;        if (del == null)</b>
+<b class="nc"><i>289</i>&nbsp;            return false ;</b>
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;        // Optimize the x.is_equivalent( x ) case
+<b class="nc"><i>292</i>&nbsp;        if (del == this)</b>
+<b class="nc"><i>293</i>&nbsp;            return true;</b>
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;        // If delegate was created by a different ORB, return false
+<b class="nc"><i>296</i>&nbsp;        if (!(del instanceof CorbaClientDelegateImpl))</b>
+<b class="nc"><i>297</i>&nbsp;            return false ;</b>
+<i>298</i>&nbsp;
+<b class="nc"><i>299</i>&nbsp;        CorbaClientDelegateImpl corbaDelegate = (CorbaClientDelegateImpl)del ;</b>
+<b class="nc"><i>300</i>&nbsp;        CorbaContactInfoList ccil =</b>
+<b class="nc"><i>301</i>&nbsp;            (CorbaContactInfoList)corbaDelegate.getContactInfoList() ;</b>
+<b class="nc"><i>302</i>&nbsp;        return this.contactInfoList.getTargetIOR().isEquivalent(</b>
+<b class="nc"><i>303</i>&nbsp;            ccil.getTargetIOR() );</b>
+<i>304</i>&nbsp;    }
+<i>305</i>&nbsp;
+<i>306</i>&nbsp;    /**
+<i>307</i>&nbsp;     * This method overrides the org.omg.CORBA.portable.Delegate.equals method,
+<i>308</i>&nbsp;     * and does the equality check based on IOR equality.
+<i>309</i>&nbsp;     */
+<i>310</i>&nbsp;    public boolean equals(org.omg.CORBA.Object self, java.lang.Object other)
+<i>311</i>&nbsp;    {
+<b class="nc"><i>312</i>&nbsp;        if (other == null)</b>
+<b class="nc"><i>313</i>&nbsp;            return false ;</b>
+<i>314</i>&nbsp;
+<b class="nc"><i>315</i>&nbsp;        if (!StubAdapter.isStub(other)) {</b>
+<b class="nc"><i>316</i>&nbsp;            return false;</b>
+<i>317</i>&nbsp;        }
+<i>318</i>&nbsp;
+<b class="nc"><i>319</i>&nbsp;        Delegate delegate = StubAdapter.getDelegate( other ) ;</b>
+<b class="nc"><i>320</i>&nbsp;        if (delegate == null)</b>
+<b class="nc"><i>321</i>&nbsp;            return false ;</b>
+<i>322</i>&nbsp;
+<b class="nc"><i>323</i>&nbsp;        if (delegate instanceof CorbaClientDelegateImpl) {</b>
+<b class="nc"><i>324</i>&nbsp;            CorbaClientDelegateImpl otherDel = (CorbaClientDelegateImpl)</b>
+<i>325</i>&nbsp;                delegate ;
+<b class="nc"><i>326</i>&nbsp;            IOR otherIor = otherDel.contactInfoList.getTargetIOR();</b>
+<b class="nc"><i>327</i>&nbsp;            return this.contactInfoList.getTargetIOR().equals(otherIor);</b>
+<i>328</i>&nbsp;        }
+<i>329</i>&nbsp;
+<i>330</i>&nbsp;        // Come here if other is not implemented by our ORB.
+<b class="nc"><i>331</i>&nbsp;        return false;</b>
+<i>332</i>&nbsp;    }
+<i>333</i>&nbsp;
+<i>334</i>&nbsp;    public int hashCode(org.omg.CORBA.Object obj)
+<i>335</i>&nbsp;    {
+<b class="nc"><i>336</i>&nbsp;        return this.hashCode() ;</b>
+<i>337</i>&nbsp;    }
+<i>338</i>&nbsp;
+<i>339</i>&nbsp;    public int hash(org.omg.CORBA.Object obj, int maximum)
+<i>340</i>&nbsp;    {
+<b class="nc"><i>341</i>&nbsp;        int h = this.hashCode();</b>
+<b class="nc"><i>342</i>&nbsp;        if ( h &gt; maximum )</b>
+<b class="nc"><i>343</i>&nbsp;            return 0;</b>
+<b class="nc"><i>344</i>&nbsp;        return h;</b>
+<i>345</i>&nbsp;    }
+<i>346</i>&nbsp;
+<i>347</i>&nbsp;    public Request request(org.omg.CORBA.Object obj, String operation)
+<i>348</i>&nbsp;    {
+<b class="nc"><i>349</i>&nbsp;        return new RequestImpl(orb, obj, null, operation, null, null, null,</b>
+<i>350</i>&nbsp;                               null);
+<i>351</i>&nbsp;    }
+<i>352</i>&nbsp;
+<i>353</i>&nbsp;    public Request create_request(org.omg.CORBA.Object obj,
+<i>354</i>&nbsp;                                  Context ctx,
+<i>355</i>&nbsp;                                  String operation,
+<i>356</i>&nbsp;                                  NVList arg_list,
+<i>357</i>&nbsp;                                  NamedValue result)
+<i>358</i>&nbsp;    {
+<b class="nc"><i>359</i>&nbsp;        return new RequestImpl(orb, obj, ctx, operation, arg_list,</b>
+<i>360</i>&nbsp;                               result, null, null);
+<i>361</i>&nbsp;    }
+<i>362</i>&nbsp;
+<i>363</i>&nbsp;    public Request create_request(org.omg.CORBA.Object obj,
+<i>364</i>&nbsp;                                  Context ctx,
+<i>365</i>&nbsp;                                  String operation,
+<i>366</i>&nbsp;                                  NVList arg_list,
+<i>367</i>&nbsp;                                  NamedValue result,
+<i>368</i>&nbsp;                                  ExceptionList exclist,
+<i>369</i>&nbsp;                                  ContextList ctxlist)
+<i>370</i>&nbsp;    {
+<b class="nc"><i>371</i>&nbsp;        return new RequestImpl(orb, obj, ctx, operation, arg_list, result,</b>
+<i>372</i>&nbsp;                               exclist, ctxlist);
+<i>373</i>&nbsp;    }
+<i>374</i>&nbsp;
+<i>375</i>&nbsp;    public org.omg.CORBA.ORB orb(org.omg.CORBA.Object obj)
+<i>376</i>&nbsp;    {
+<b class="nc"><i>377</i>&nbsp;        return this.orb;</b>
+<i>378</i>&nbsp;    }
+<i>379</i>&nbsp;
+<i>380</i>&nbsp;    /**
+<i>381</i>&nbsp;     * Returns true if this object is implemented by a local servant.
+<i>382</i>&nbsp;     *
+<i>383</i>&nbsp;     * REVISIT: locatedIOR should be replaced with a method call that
+<i>384</i>&nbsp;     *      returns the current IOR for this request (e.g. ContactInfoChooser).
+<i>385</i>&nbsp;     *
+<i>386</i>&nbsp;     * @param self The object reference which delegated to this delegate.
+<i>387</i>&nbsp;     * @return true only if the servant incarnating this object is located in
+<i>388</i>&nbsp;     * this ORB.
+<i>389</i>&nbsp;     */
+<i>390</i>&nbsp;    public boolean is_local(org.omg.CORBA.Object self)
+<i>391</i>&nbsp;    {
+<i>392</i>&nbsp;        // XXX this need to check isNextCallValid
+<b class="nc"><i>393</i>&nbsp;        return contactInfoList.getEffectiveTargetIOR().getProfile().</b>
+<b class="nc"><i>394</i>&nbsp;            isLocal();</b>
+<i>395</i>&nbsp;    }
+<i>396</i>&nbsp;
+<i>397</i>&nbsp;    public ServantObject servant_preinvoke(org.omg.CORBA.Object self,
+<i>398</i>&nbsp;                                           String operation,
+<i>399</i>&nbsp;                                           Class expectedType)
+<i>400</i>&nbsp;    {
+<b class="nc"><i>401</i>&nbsp;        return</b>
+<b class="nc"><i>402</i>&nbsp;            contactInfoList.getLocalClientRequestDispatcher()</b>
+<b class="nc"><i>403</i>&nbsp;            .servant_preinvoke(self, operation, expectedType);</b>
+<i>404</i>&nbsp;    }
+<i>405</i>&nbsp;
+<i>406</i>&nbsp;    public void servant_postinvoke(org.omg.CORBA.Object self,
+<i>407</i>&nbsp;                                   ServantObject servant)
+<i>408</i>&nbsp;    {
+<b class="nc"><i>409</i>&nbsp;        contactInfoList.getLocalClientRequestDispatcher()</b>
+<b class="nc"><i>410</i>&nbsp;            .servant_postinvoke(self, servant);</b>
+<i>411</i>&nbsp;    }
+<i>412</i>&nbsp;
+<i>413</i>&nbsp;    // XXX Should this be public?
+<i>414</i>&nbsp;    /* Returns the codebase for object reference provided.
+<i>415</i>&nbsp;     * @param self the object reference whose codebase needs to be returned.
+<i>416</i>&nbsp;     * @return the codebase as a space delimited list of url strings or
+<i>417</i>&nbsp;     * null if none.
+<i>418</i>&nbsp;     */
+<i>419</i>&nbsp;    public String get_codebase(org.omg.CORBA.Object self)
+<i>420</i>&nbsp;    {
+<b class="nc"><i>421</i>&nbsp;        if (contactInfoList.getTargetIOR() != null) {</b>
+<b class="nc"><i>422</i>&nbsp;            return contactInfoList.getTargetIOR().getProfile().getCodebase();</b>
+<i>423</i>&nbsp;        }
+<b class="nc"><i>424</i>&nbsp;        return null;</b>
+<i>425</i>&nbsp;    }
+<i>426</i>&nbsp;
+<i>427</i>&nbsp;    public String toString(org.omg.CORBA.Object self)
+<i>428</i>&nbsp;    {
+<b class="nc"><i>429</i>&nbsp;        return contactInfoList.getTargetIOR().stringify();</b>
+<i>430</i>&nbsp;    }
+<i>431</i>&nbsp;
+<i>432</i>&nbsp;    ////////////////////////////////////////////////////
+<i>433</i>&nbsp;    //
+<i>434</i>&nbsp;    // java.lang.Object
+<i>435</i>&nbsp;    //
+<i>436</i>&nbsp;
+<i>437</i>&nbsp;    public int hashCode()
+<i>438</i>&nbsp;    {
+<b class="nc"><i>439</i>&nbsp;        return this.contactInfoList.hashCode();</b>
+<i>440</i>&nbsp;    }
+<i>441</i>&nbsp;}
+<i>442</i>&nbsp;
+<i>443</i>&nbsp;// End of file.
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

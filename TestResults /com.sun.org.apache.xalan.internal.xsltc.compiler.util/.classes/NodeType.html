@@ -1,0 +1,407 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: NodeType</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: NodeType (com.sun.org.apache.xalan.internal.xsltc.compiler.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">NodeType</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 92)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: NodeType.java,v 1.2.4.1 2005/09/05 11:24:25 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler.util;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.BranchHandle;
+<i>27</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.CHECKCAST;
+<i>28</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+<i>29</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.GETFIELD;
+<i>30</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.GOTO;
+<i>31</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.IFEQ;
+<i>32</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ILOAD;
+<i>33</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKEINTERFACE;
+<i>34</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKESPECIAL;
+<i>35</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ISTORE;
+<i>36</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.Instruction;
+<i>37</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>38</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.NEW;
+<i>39</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.PUSH;
+<i>40</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.Constants;
+<i>41</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.FlowList;
+<i>42</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.NodeTest;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;/**
+<i>45</i>&nbsp; * @author Jacek Ambroziak
+<i>46</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>47</i>&nbsp; */
+<i>48</i>&nbsp;public final class NodeType extends Type {
+<i>49</i>&nbsp;    private final int _type;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    protected NodeType() {
+<b class="nc"><i>52</i>&nbsp;        this(NodeTest.ANODE);</b>
+<i>53</i>&nbsp;    }
+<i>54</i>&nbsp;
+<b class="nc"><i>55</i>&nbsp;    protected NodeType(int type) {</b>
+<b class="nc"><i>56</i>&nbsp;        _type = type;</b>
+<i>57</i>&nbsp;    }
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    public int getType() {
+<b class="nc"><i>60</i>&nbsp;        return _type;</b>
+<i>61</i>&nbsp;    }
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    public String toString() {
+<b class="nc"><i>64</i>&nbsp;        return &quot;node-type&quot;;</b>
+<i>65</i>&nbsp;    }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    public boolean identicalTo(Type other) {
+<b class="nc"><i>68</i>&nbsp;        return other instanceof NodeType;</b>
+<i>69</i>&nbsp;    }
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    public int hashCode() {
+<b class="nc"><i>72</i>&nbsp;        return _type;</b>
+<i>73</i>&nbsp;    }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    public String toSignature() {
+<b class="nc"><i>76</i>&nbsp;        return &quot;I&quot;;</b>
+<i>77</i>&nbsp;    }
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    public com.sun.org.apache.bcel.internal.generic.Type toJCType() {
+<b class="nc"><i>80</i>&nbsp;        return com.sun.org.apache.bcel.internal.generic.Type.INT;</b>
+<i>81</i>&nbsp;    }
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    /**
+<i>84</i>&nbsp;     * Translates a node into an object of internal type &lt;code&gt;type&lt;/code&gt;.
+<i>85</i>&nbsp;     * The translation to int is undefined since nodes are always converted
+<i>86</i>&nbsp;     * to reals in arithmetic expressions.
+<i>87</i>&nbsp;     *
+<i>88</i>&nbsp;     * @see     com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type#translateTo
+<i>89</i>&nbsp;     */
+<i>90</i>&nbsp;    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
+<i>91</i>&nbsp;                            Type type) {
+<b class="nc"><i>92</i>&nbsp;        if (type == Type.String) {</b>
+<b class="nc"><i>93</i>&nbsp;            translateTo(classGen, methodGen, (StringType) type);</b>
+<i>94</i>&nbsp;        }
+<b class="nc"><i>95</i>&nbsp;        else if (type == Type.Boolean) {</b>
+<b class="nc"><i>96</i>&nbsp;            translateTo(classGen, methodGen, (BooleanType) type);</b>
+<i>97</i>&nbsp;        }
+<b class="nc"><i>98</i>&nbsp;        else if (type == Type.Real) {</b>
+<b class="nc"><i>99</i>&nbsp;            translateTo(classGen, methodGen, (RealType) type);</b>
+<i>100</i>&nbsp;        }
+<b class="nc"><i>101</i>&nbsp;        else if (type == Type.NodeSet) {</b>
+<b class="nc"><i>102</i>&nbsp;            translateTo(classGen, methodGen, (NodeSetType) type);</b>
+<i>103</i>&nbsp;        }
+<b class="nc"><i>104</i>&nbsp;        else if (type == Type.Reference) {</b>
+<b class="nc"><i>105</i>&nbsp;            translateTo(classGen, methodGen, (ReferenceType) type);</b>
+<i>106</i>&nbsp;        }
+<b class="nc"><i>107</i>&nbsp;        else if (type == Type.Object) {</b>
+<b class="nc"><i>108</i>&nbsp;            translateTo(classGen, methodGen, (ObjectType) type);</b>
+<i>109</i>&nbsp;        }
+<i>110</i>&nbsp;        else {
+<b class="nc"><i>111</i>&nbsp;            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,</b>
+<b class="nc"><i>112</i>&nbsp;                                        toString(), type.toString());</b>
+<b class="nc"><i>113</i>&nbsp;            classGen.getParser().reportError(Constants.FATAL, err);</b>
+<i>114</i>&nbsp;        }
+<i>115</i>&nbsp;    }
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    /**
+<i>118</i>&nbsp;     * Expects a node on the stack and pushes its string value.
+<i>119</i>&nbsp;     *
+<i>120</i>&nbsp;     * @see     com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type#translateTo
+<i>121</i>&nbsp;     */
+<i>122</i>&nbsp;    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
+<i>123</i>&nbsp;                            StringType type) {
+<b class="nc"><i>124</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>125</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<i>126</i>&nbsp;
+<b class="nc"><i>127</i>&nbsp;        switch (_type) {</b>
+<i>128</i>&nbsp;        case NodeTest.ROOT:
+<i>129</i>&nbsp;        case NodeTest.ELEMENT:
+<b class="nc"><i>130</i>&nbsp;            il.append(methodGen.loadDOM());</b>
+<b class="nc"><i>131</i>&nbsp;            il.append(SWAP); // dom ref must be below node index</b>
+<b class="nc"><i>132</i>&nbsp;            int index = cpg.addInterfaceMethodref(DOM_INTF,</b>
+<i>133</i>&nbsp;                                                  GET_ELEMENT_VALUE,
+<i>134</i>&nbsp;                                                  GET_ELEMENT_VALUE_SIG);
+<b class="nc"><i>135</i>&nbsp;            il.append(new INVOKEINTERFACE(index, 2));</b>
+<b class="nc"><i>136</i>&nbsp;            break;</b>
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;        case NodeTest.ANODE:
+<i>139</i>&nbsp;        case NodeTest.COMMENT:
+<i>140</i>&nbsp;        case NodeTest.ATTRIBUTE:
+<i>141</i>&nbsp;        case NodeTest.PI:
+<b class="nc"><i>142</i>&nbsp;            il.append(methodGen.loadDOM());</b>
+<b class="nc"><i>143</i>&nbsp;            il.append(SWAP); // dom ref must be below node index</b>
+<b class="nc"><i>144</i>&nbsp;            index = cpg.addInterfaceMethodref(DOM_INTF,</b>
+<i>145</i>&nbsp;                                              GET_NODE_VALUE,
+<i>146</i>&nbsp;                                              GET_NODE_VALUE_SIG);
+<b class="nc"><i>147</i>&nbsp;            il.append(new INVOKEINTERFACE(index, 2));</b>
+<b class="nc"><i>148</i>&nbsp;            break;</b>
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;        default:
+<b class="nc"><i>151</i>&nbsp;            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,</b>
+<b class="nc"><i>152</i>&nbsp;                                        toString(), type.toString());</b>
+<b class="nc"><i>153</i>&nbsp;            classGen.getParser().reportError(Constants.FATAL, err);</b>
+<i>154</i>&nbsp;            break;
+<i>155</i>&nbsp;        }
+<i>156</i>&nbsp;    }
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;    /**
+<i>159</i>&nbsp;     * Translates a node into a synthesized boolean.
+<i>160</i>&nbsp;     * If the expression is &quot;@attr&quot;,
+<i>161</i>&nbsp;     * then &quot;true&quot; is pushed iff &quot;attr&quot; is an attribute of the current node.
+<i>162</i>&nbsp;     * If the expression is &quot;.&quot;, the result is always &quot;true&quot;.
+<i>163</i>&nbsp;     *
+<i>164</i>&nbsp;     * @see     com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type#translateTo
+<i>165</i>&nbsp;     */
+<i>166</i>&nbsp;    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
+<i>167</i>&nbsp;                            BooleanType type) {
+<b class="nc"><i>168</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<b class="nc"><i>169</i>&nbsp;        FlowList falsel = translateToDesynthesized(classGen, methodGen, type);</b>
+<b class="nc"><i>170</i>&nbsp;        il.append(ICONST_1);</b>
+<b class="nc"><i>171</i>&nbsp;        final BranchHandle truec = il.append(new GOTO(null));</b>
+<b class="nc"><i>172</i>&nbsp;        falsel.backPatch(il.append(ICONST_0));</b>
+<b class="nc"><i>173</i>&nbsp;        truec.setTarget(il.append(NOP));</b>
+<i>174</i>&nbsp;    }
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    /**
+<i>177</i>&nbsp;     * Expects a node on the stack and pushes a real.
+<i>178</i>&nbsp;     * First the node is converted to string, and from string to real.
+<i>179</i>&nbsp;     *
+<i>180</i>&nbsp;     * @see     com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type#translateTo
+<i>181</i>&nbsp;     */
+<i>182</i>&nbsp;    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
+<i>183</i>&nbsp;                            RealType type) {
+<b class="nc"><i>184</i>&nbsp;        translateTo(classGen, methodGen, Type.String);</b>
+<b class="nc"><i>185</i>&nbsp;        Type.String.translateTo(classGen, methodGen, Type.Real);</b>
+<i>186</i>&nbsp;    }
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;    /**
+<i>189</i>&nbsp;     * Expects a node on the stack and pushes a singleton node-set. Singleton
+<i>190</i>&nbsp;     * iterators are already started after construction.
+<i>191</i>&nbsp;     *
+<i>192</i>&nbsp;     * @see     com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type#translateTo
+<i>193</i>&nbsp;     */
+<i>194</i>&nbsp;    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
+<i>195</i>&nbsp;                            NodeSetType type) {
+<b class="nc"><i>196</i>&nbsp;        ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>197</i>&nbsp;        InstructionList il = methodGen.getInstructionList();</b>
+<i>198</i>&nbsp;
+<i>199</i>&nbsp;        // Create a new instance of SingletonIterator
+<b class="nc"><i>200</i>&nbsp;        il.append(new NEW(cpg.addClass(SINGLETON_ITERATOR)));</b>
+<b class="nc"><i>201</i>&nbsp;        il.append(DUP_X1);</b>
+<b class="nc"><i>202</i>&nbsp;        il.append(SWAP);</b>
+<b class="nc"><i>203</i>&nbsp;        final int init = cpg.addMethodref(SINGLETON_ITERATOR, &quot;&lt;init&gt;&quot;,</b>
+<i>204</i>&nbsp;                                          &quot;(&quot; + NODE_SIG +&quot;)V&quot;);
+<b class="nc"><i>205</i>&nbsp;        il.append(new INVOKESPECIAL(init));</b>
+<i>206</i>&nbsp;    }
+<i>207</i>&nbsp;
+<i>208</i>&nbsp;    /**
+<i>209</i>&nbsp;     * Subsume Node into ObjectType.
+<i>210</i>&nbsp;     *
+<i>211</i>&nbsp;     * @see     com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type#translateTo
+<i>212</i>&nbsp;     */
+<i>213</i>&nbsp;    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
+<i>214</i>&nbsp;                            ObjectType type) {
+<b class="nc"><i>215</i>&nbsp;            methodGen.getInstructionList().append(NOP);</b>
+<i>216</i>&nbsp;    }
+<i>217</i>&nbsp;
+<i>218</i>&nbsp;    /**
+<i>219</i>&nbsp;     * Translates a node into a non-synthesized boolean. It does not push a
+<i>220</i>&nbsp;     * 0 or a 1 but instead returns branchhandle list to be appended to the
+<i>221</i>&nbsp;     * false list.
+<i>222</i>&nbsp;     *
+<i>223</i>&nbsp;     * @see     com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type#translateToDesynthesized
+<i>224</i>&nbsp;     */
+<i>225</i>&nbsp;    public FlowList translateToDesynthesized(ClassGenerator classGen,
+<i>226</i>&nbsp;                                             MethodGenerator methodGen,
+<i>227</i>&nbsp;                                             BooleanType type) {
+<b class="nc"><i>228</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<b class="nc"><i>229</i>&nbsp;        return new FlowList(il.append(new IFEQ(null)));</b>
+<i>230</i>&nbsp;    }
+<i>231</i>&nbsp;
+<i>232</i>&nbsp;    /**
+<i>233</i>&nbsp;     * Expects a node on the stack and pushes a boxed node. Boxed nodes
+<i>234</i>&nbsp;     * are represented by an instance of &lt;code&gt;com.sun.org.apache.xalan.internal.xsltc.dom.Node&lt;/code&gt;.
+<i>235</i>&nbsp;     *
+<i>236</i>&nbsp;     * @see     com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type#translateTo
+<i>237</i>&nbsp;     */
+<i>238</i>&nbsp;    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
+<i>239</i>&nbsp;                            ReferenceType type) {
+<b class="nc"><i>240</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>241</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<b class="nc"><i>242</i>&nbsp;        il.append(new NEW(cpg.addClass(RUNTIME_NODE_CLASS)));</b>
+<b class="nc"><i>243</i>&nbsp;        il.append(DUP_X1);</b>
+<b class="nc"><i>244</i>&nbsp;        il.append(SWAP);</b>
+<b class="nc"><i>245</i>&nbsp;        il.append(new PUSH(cpg, _type));</b>
+<b class="nc"><i>246</i>&nbsp;        il.append(new INVOKESPECIAL(cpg.addMethodref(RUNTIME_NODE_CLASS,</b>
+<i>247</i>&nbsp;                                                     &quot;&lt;init&gt;&quot;, &quot;(II)V&quot;)));
+<i>248</i>&nbsp;    }
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;    /**
+<i>251</i>&nbsp;     * Translates a node into the Java type denoted by &lt;code&gt;clazz&lt;/code&gt;.
+<i>252</i>&nbsp;     * Expects a node on the stack and pushes an object of the appropriate
+<i>253</i>&nbsp;     * type after coercion.
+<i>254</i>&nbsp;     */
+<i>255</i>&nbsp;    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
+<i>256</i>&nbsp;                            Class clazz) {
+<b class="nc"><i>257</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>258</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<i>259</i>&nbsp;
+<b class="nc"><i>260</i>&nbsp;        String className = clazz.getName();</b>
+<b class="nc"><i>261</i>&nbsp;        if (className.equals(&quot;java.lang.String&quot;)) {</b>
+<b class="nc"><i>262</i>&nbsp;           translateTo(classGen, methodGen, Type.String);</b>
+<i>263</i>&nbsp;           return;
+<i>264</i>&nbsp;        }
+<i>265</i>&nbsp;
+<b class="nc"><i>266</i>&nbsp;        il.append(methodGen.loadDOM());</b>
+<b class="nc"><i>267</i>&nbsp;        il.append(SWAP);                // dom ref must be below node index</b>
+<i>268</i>&nbsp;
+<b class="nc"><i>269</i>&nbsp;        if (className.equals(&quot;org.w3c.dom.Node&quot;) ||</b>
+<b class="nc"><i>270</i>&nbsp;            className.equals(&quot;java.lang.Object&quot;)) {</b>
+<b class="nc"><i>271</i>&nbsp;            int index = cpg.addInterfaceMethodref(DOM_INTF,</b>
+<i>272</i>&nbsp;                                                  MAKE_NODE,
+<i>273</i>&nbsp;                                                  MAKE_NODE_SIG);
+<b class="nc"><i>274</i>&nbsp;            il.append(new INVOKEINTERFACE(index, 2));</b>
+<b class="nc"><i>275</i>&nbsp;        }</b>
+<b class="nc"><i>276</i>&nbsp;        else if (className.equals(&quot;org.w3c.dom.NodeList&quot;)) {</b>
+<b class="nc"><i>277</i>&nbsp;            int index = cpg.addInterfaceMethodref(DOM_INTF,</b>
+<i>278</i>&nbsp;                                                  MAKE_NODE_LIST,
+<i>279</i>&nbsp;                                                  MAKE_NODE_LIST_SIG);
+<b class="nc"><i>280</i>&nbsp;            il.append(new INVOKEINTERFACE(index, 2));</b>
+<b class="nc"><i>281</i>&nbsp;        }</b>
+<i>282</i>&nbsp;        else {
+<b class="nc"><i>283</i>&nbsp;            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,</b>
+<b class="nc"><i>284</i>&nbsp;                                        toString(), className);</b>
+<b class="nc"><i>285</i>&nbsp;            classGen.getParser().reportError(Constants.FATAL, err);</b>
+<i>286</i>&nbsp;        }
+<i>287</i>&nbsp;    }
+<i>288</i>&nbsp;
+<i>289</i>&nbsp;    /**
+<i>290</i>&nbsp;     * Translates an object of this type to its boxed representation.
+<i>291</i>&nbsp;     */
+<i>292</i>&nbsp;    public void translateBox(ClassGenerator classGen,
+<i>293</i>&nbsp;                             MethodGenerator methodGen) {
+<b class="nc"><i>294</i>&nbsp;        translateTo(classGen, methodGen, Type.Reference);</b>
+<i>295</i>&nbsp;    }
+<i>296</i>&nbsp;
+<i>297</i>&nbsp;    /**
+<i>298</i>&nbsp;     * Translates an object of this type to its unboxed representation.
+<i>299</i>&nbsp;     */
+<i>300</i>&nbsp;    public void translateUnBox(ClassGenerator classGen,
+<i>301</i>&nbsp;                               MethodGenerator methodGen) {
+<b class="nc"><i>302</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>303</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<b class="nc"><i>304</i>&nbsp;        il.append(new CHECKCAST(cpg.addClass(RUNTIME_NODE_CLASS)));</b>
+<b class="nc"><i>305</i>&nbsp;        il.append(new GETFIELD(cpg.addFieldref(RUNTIME_NODE_CLASS,</b>
+<i>306</i>&nbsp;                                               NODE_FIELD,
+<i>307</i>&nbsp;                                               NODE_FIELD_SIG)));
+<i>308</i>&nbsp;    }
+<i>309</i>&nbsp;
+<i>310</i>&nbsp;    /**
+<i>311</i>&nbsp;     * Returns the class name of an internal type&#39;s external representation.
+<i>312</i>&nbsp;     */
+<i>313</i>&nbsp;    public String getClassName() {
+<b class="nc"><i>314</i>&nbsp;        return(RUNTIME_NODE_CLASS);</b>
+<i>315</i>&nbsp;    }
+<i>316</i>&nbsp;
+<i>317</i>&nbsp;    public Instruction LOAD(int slot) {
+<b class="nc"><i>318</i>&nbsp;        return new ILOAD(slot);</b>
+<i>319</i>&nbsp;    }
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;    public Instruction STORE(int slot) {
+<b class="nc"><i>322</i>&nbsp;        return new ISTORE(slot);</b>
+<i>323</i>&nbsp;    }
+<i>324</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

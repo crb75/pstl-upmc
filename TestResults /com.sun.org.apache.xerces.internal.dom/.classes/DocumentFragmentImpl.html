@@ -1,0 +1,238 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DocumentFragmentImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.dom</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DocumentFragmentImpl (com.sun.org.apache.xerces.internal.dom)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DocumentFragmentImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.dom;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import org.w3c.dom.DocumentFragment;
+<i>24</i>&nbsp;import org.w3c.dom.Node;
+<i>25</i>&nbsp;import org.w3c.dom.Text;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;/**
+<i>28</i>&nbsp; * DocumentFragment is a &quot;lightweight&quot; or &quot;minimal&quot; Document
+<i>29</i>&nbsp; * object. It is very common to want to be able to extract a portion
+<i>30</i>&nbsp; * of a document&#39;s tree or to create a new fragment of a
+<i>31</i>&nbsp; * document. Imagine implementing a user command like cut or
+<i>32</i>&nbsp; * rearranging a document by moving fragments around. It is desirable
+<i>33</i>&nbsp; * to have an object which can hold such fragments and it is quite
+<i>34</i>&nbsp; * natural to use a Node for this purpose. While it is true that a
+<i>35</i>&nbsp; * Document object could fulfil this role, a Document object can
+<i>36</i>&nbsp; * potentially be a heavyweight object, depending on the underlying
+<i>37</i>&nbsp; * implementation... and in DOM Level 1, nodes aren&#39;t allowed to cross
+<i>38</i>&nbsp; * Document boundaries anyway. What is really needed for this is a
+<i>39</i>&nbsp; * very lightweight object.  DocumentFragment is such an object.
+<i>40</i>&nbsp; * &lt;P&gt;
+<i>41</i>&nbsp; * Furthermore, various operations -- such as inserting nodes as
+<i>42</i>&nbsp; * children of another Node -- may take DocumentFragment objects as
+<i>43</i>&nbsp; * arguments; this results in all the child nodes of the
+<i>44</i>&nbsp; * DocumentFragment being moved to the child list of this node.
+<i>45</i>&nbsp; * &lt;P&gt;
+<i>46</i>&nbsp; * The children of a DocumentFragment node are zero or more nodes
+<i>47</i>&nbsp; * representing the tops of any sub-trees defining the structure of
+<i>48</i>&nbsp; * the document.  DocumentFragment do not need to be well-formed XML
+<i>49</i>&nbsp; * documents (although they do need to follow the rules imposed upon
+<i>50</i>&nbsp; * well-formed XML parsed entities, which can have multiple top
+<i>51</i>&nbsp; * nodes). For example, a DocumentFragment might have only one child
+<i>52</i>&nbsp; * and that child node could be a Text node. Such a structure model
+<i>53</i>&nbsp; * represents neither an HTML document nor a well-formed XML document.
+<i>54</i>&nbsp; * &lt;P&gt;
+<i>55</i>&nbsp; * When a DocumentFragment is inserted into a Document (or indeed any
+<i>56</i>&nbsp; * other Node that may take children) the children of the
+<i>57</i>&nbsp; * DocumentFragment and not the DocumentFragment itself are inserted
+<i>58</i>&nbsp; * into the Node. This makes the DocumentFragment very useful when the
+<i>59</i>&nbsp; * user wishes to create nodes that are siblings; the DocumentFragment
+<i>60</i>&nbsp; * acts as the parent of these nodes so that the user can use the
+<i>61</i>&nbsp; * standard methods from the Node interface, such as insertBefore()
+<i>62</i>&nbsp; * and appendChild().
+<i>63</i>&nbsp; *
+<i>64</i>&nbsp; * @xerces.internal
+<i>65</i>&nbsp; *
+<i>66</i>&nbsp; * @since  PR-DOM-Level-1-19980818.
+<i>67</i>&nbsp; */
+<i>68</i>&nbsp;public class DocumentFragmentImpl
+<i>69</i>&nbsp;    extends ParentNode
+<i>70</i>&nbsp;    implements DocumentFragment {
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;    //
+<i>73</i>&nbsp;    // Constants
+<i>74</i>&nbsp;    //
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;    /** Serialization version. */
+<i>77</i>&nbsp;    static final long serialVersionUID = -7596449967279236746L;
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    //
+<i>80</i>&nbsp;    // Constructors
+<i>81</i>&nbsp;    //
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    /** Factory constructor. */
+<i>84</i>&nbsp;    public DocumentFragmentImpl(CoreDocumentImpl ownerDoc) {
+<b class="nc"><i>85</i>&nbsp;        super(ownerDoc);</b>
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    /** Constructor for serialization. */
+<b class="nc"><i>89</i>&nbsp;    public DocumentFragmentImpl() {}</b>
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    //
+<i>92</i>&nbsp;    // Node methods
+<i>93</i>&nbsp;    //
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    /**
+<i>96</i>&nbsp;     * A short integer indicating what type of node this is. The named
+<i>97</i>&nbsp;     * constants for this value are defined in the org.w3c.dom.Node interface.
+<i>98</i>&nbsp;     */
+<i>99</i>&nbsp;    public short getNodeType() {
+<b class="nc"><i>100</i>&nbsp;        return Node.DOCUMENT_FRAGMENT_NODE;</b>
+<i>101</i>&nbsp;    }
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    /** Returns the node name. */
+<i>104</i>&nbsp;    public String getNodeName() {
+<b class="nc"><i>105</i>&nbsp;        return &quot;#document-fragment&quot;;</b>
+<i>106</i>&nbsp;    }
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;    /**
+<i>109</i>&nbsp;     * Override default behavior to call normalize() on this Node&#39;s
+<i>110</i>&nbsp;     * children. It is up to implementors or Node to override normalize()
+<i>111</i>&nbsp;     * to take action.
+<i>112</i>&nbsp;     */
+<i>113</i>&nbsp;    public void normalize() {
+<i>114</i>&nbsp;        // No need to normalize if already normalized.
+<b class="nc"><i>115</i>&nbsp;        if (isNormalized()) {</b>
+<i>116</i>&nbsp;            return;
+<i>117</i>&nbsp;        }
+<b class="nc"><i>118</i>&nbsp;        if (needsSyncChildren()) {</b>
+<b class="nc"><i>119</i>&nbsp;            synchronizeChildren();</b>
+<i>120</i>&nbsp;        }
+<i>121</i>&nbsp;        ChildNode kid, next;
+<i>122</i>&nbsp;
+<b class="nc"><i>123</i>&nbsp;        for (kid = firstChild; kid != null; kid = next) {</b>
+<b class="nc"><i>124</i>&nbsp;            next = kid.nextSibling;</b>
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;            // If kid is a text node, we need to check for one of two
+<i>127</i>&nbsp;            // conditions:
+<i>128</i>&nbsp;            //   1) There is an adjacent text node
+<i>129</i>&nbsp;            //   2) There is no adjacent text node, but kid is
+<i>130</i>&nbsp;            //      an empty text node.
+<b class="nc"><i>131</i>&nbsp;            if ( kid.getNodeType() == Node.TEXT_NODE )</b>
+<i>132</i>&nbsp;            {
+<i>133</i>&nbsp;                // If an adjacent text node, merge it with kid
+<b class="nc"><i>134</i>&nbsp;                if ( next!=null &amp;&amp; next.getNodeType() == Node.TEXT_NODE )</b>
+<i>135</i>&nbsp;                {
+<b class="nc"><i>136</i>&nbsp;                    ((Text)kid).appendData(next.getNodeValue());</b>
+<b class="nc"><i>137</i>&nbsp;                    removeChild( next );</b>
+<b class="nc"><i>138</i>&nbsp;                    next = kid; // Don&#39;t advance; there might be another.</b>
+<i>139</i>&nbsp;                }
+<i>140</i>&nbsp;                else
+<i>141</i>&nbsp;                {
+<i>142</i>&nbsp;                    // If kid is empty, remove it
+<b class="nc"><i>143</i>&nbsp;                    if ( kid.getNodeValue() == null || kid.getNodeValue().length() == 0 ) {</b>
+<b class="nc"><i>144</i>&nbsp;                        removeChild( kid );</b>
+<i>145</i>&nbsp;                    }
+<i>146</i>&nbsp;                }
+<i>147</i>&nbsp;            }
+<i>148</i>&nbsp;
+<b class="nc"><i>149</i>&nbsp;            kid.normalize();</b>
+<i>150</i>&nbsp;        }
+<i>151</i>&nbsp;
+<b class="nc"><i>152</i>&nbsp;        isNormalized(true);</b>
+<i>153</i>&nbsp;    }
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;} // class DocumentFragmentImpl
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

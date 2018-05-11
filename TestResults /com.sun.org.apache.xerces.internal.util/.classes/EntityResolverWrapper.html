@@ -1,0 +1,224 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: EntityResolverWrapper</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: EntityResolverWrapper (com.sun.org.apache.xerces.internal.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EntityResolverWrapper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 30)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001, 2002,2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.util;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import java.io.InputStream;
+<i>24</i>&nbsp;import java.io.IOException;
+<i>25</i>&nbsp;import java.io.Reader;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XNIException;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLEntityResolver;
+<i>30</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import org.xml.sax.EntityResolver;
+<i>33</i>&nbsp;import org.xml.sax.InputSource;
+<i>34</i>&nbsp;import org.xml.sax.SAXException;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; * This class wraps a SAX entity resolver in an XNI entity resolver.
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; * @see EntityResolver
+<i>40</i>&nbsp; *
+<i>41</i>&nbsp; * @author Andy Clark, IBM
+<i>42</i>&nbsp; *
+<i>43</i>&nbsp; */
+<i>44</i>&nbsp;public class EntityResolverWrapper
+<i>45</i>&nbsp;    implements XMLEntityResolver {
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    //
+<i>48</i>&nbsp;    // Data
+<i>49</i>&nbsp;    //
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    /** The SAX entity resolver. */
+<i>52</i>&nbsp;    protected EntityResolver fEntityResolver;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    //
+<i>55</i>&nbsp;    // Constructors
+<i>56</i>&nbsp;    //
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    /** Default constructor. */
+<b class="nc"><i>59</i>&nbsp;    public EntityResolverWrapper() {}</b>
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    /** Wraps the specified SAX entity resolver. */
+<b class="nc"><i>62</i>&nbsp;    public EntityResolverWrapper(EntityResolver entityResolver) {</b>
+<b class="nc"><i>63</i>&nbsp;        setEntityResolver(entityResolver);</b>
+<i>64</i>&nbsp;    } // &lt;init&gt;(EntityResolver)
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    //
+<i>67</i>&nbsp;    // Public methods
+<i>68</i>&nbsp;    //
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    /** Sets the SAX entity resolver. */
+<i>71</i>&nbsp;    public void setEntityResolver(EntityResolver entityResolver) {
+<b class="nc"><i>72</i>&nbsp;        fEntityResolver = entityResolver;</b>
+<i>73</i>&nbsp;    } // setEntityResolver(EntityResolver)
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    /** Returns the SAX entity resolver. */
+<i>76</i>&nbsp;    public EntityResolver getEntityResolver() {
+<b class="nc"><i>77</i>&nbsp;        return fEntityResolver;</b>
+<i>78</i>&nbsp;    } // getEntityResolver():EntityResolver
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    //
+<i>81</i>&nbsp;    // XMLEntityResolver methods
+<i>82</i>&nbsp;    //
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    /**
+<i>85</i>&nbsp;     * Resolves an external parsed entity. If the entity cannot be
+<i>86</i>&nbsp;     * resolved, this method should return null.
+<i>87</i>&nbsp;     *
+<i>88</i>&nbsp;     * @param resourceIdentifier        contains the physical co-ordinates of the resource to be resolved
+<i>89</i>&nbsp;     *
+<i>90</i>&nbsp;     * @throws XNIException Thrown on general error.
+<i>91</i>&nbsp;     * @throws IOException  Thrown if resolved entity stream cannot be
+<i>92</i>&nbsp;     *                      opened or some other i/o error occurs.
+<i>93</i>&nbsp;     */
+<i>94</i>&nbsp;    public XMLInputSource resolveEntity(XMLResourceIdentifier resourceIdentifier)
+<i>95</i>&nbsp;        throws XNIException, IOException {
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;        // When both pubId and sysId are null, the user&#39;s entity resolver
+<i>98</i>&nbsp;        // can do nothing about it. We&#39;d better not bother calling it.
+<i>99</i>&nbsp;        // This happens when the resourceIdentifier is a GrammarDescription,
+<i>100</i>&nbsp;        // which describes a schema grammar of some namespace, but without
+<i>101</i>&nbsp;        // any schema location hint. -Sg
+<b class="nc"><i>102</i>&nbsp;        String pubId = resourceIdentifier.getPublicId();</b>
+<b class="nc"><i>103</i>&nbsp;        String sysId = resourceIdentifier.getExpandedSystemId();</b>
+<b class="nc"><i>104</i>&nbsp;        if (pubId == null &amp;&amp; sysId == null)</b>
+<b class="nc"><i>105</i>&nbsp;            return null;</b>
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;        // resolve entity using SAX entity resolver
+<b class="nc"><i>108</i>&nbsp;        if (fEntityResolver != null &amp;&amp; resourceIdentifier != null) {</b>
+<i>109</i>&nbsp;            try {
+<b class="nc"><i>110</i>&nbsp;                InputSource inputSource = fEntityResolver.resolveEntity(pubId, sysId);</b>
+<b class="nc"><i>111</i>&nbsp;                if (inputSource != null) {</b>
+<b class="nc"><i>112</i>&nbsp;                    String publicId = inputSource.getPublicId();</b>
+<b class="nc"><i>113</i>&nbsp;                    String systemId = inputSource.getSystemId();</b>
+<b class="nc"><i>114</i>&nbsp;                    String baseSystemId = resourceIdentifier.getBaseSystemId();</b>
+<b class="nc"><i>115</i>&nbsp;                    InputStream byteStream = inputSource.getByteStream();</b>
+<b class="nc"><i>116</i>&nbsp;                    Reader charStream = inputSource.getCharacterStream();</b>
+<b class="nc"><i>117</i>&nbsp;                    String encoding = inputSource.getEncoding();</b>
+<b class="nc"><i>118</i>&nbsp;                    XMLInputSource xmlInputSource =</b>
+<i>119</i>&nbsp;                        new XMLInputSource(publicId, systemId, baseSystemId);
+<b class="nc"><i>120</i>&nbsp;                    xmlInputSource.setByteStream(byteStream);</b>
+<b class="nc"><i>121</i>&nbsp;                    xmlInputSource.setCharacterStream(charStream);</b>
+<b class="nc"><i>122</i>&nbsp;                    xmlInputSource.setEncoding(encoding);</b>
+<b class="nc"><i>123</i>&nbsp;                    return xmlInputSource;</b>
+<i>124</i>&nbsp;                }
+<i>125</i>&nbsp;            }
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;            // error resolving entity
+<b class="nc"><i>128</i>&nbsp;            catch (SAXException e) {</b>
+<b class="nc"><i>129</i>&nbsp;                Exception ex = e.getException();</b>
+<b class="nc"><i>130</i>&nbsp;                if (ex == null) {</b>
+<b class="nc"><i>131</i>&nbsp;                    ex = e;</b>
+<i>132</i>&nbsp;                }
+<b class="nc"><i>133</i>&nbsp;                throw new XNIException(ex);</b>
+<b class="nc"><i>134</i>&nbsp;            }</b>
+<i>135</i>&nbsp;        }
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;        // unable to resolve entity
+<b class="nc"><i>138</i>&nbsp;        return null;</b>
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;    } // resolveEntity(String,String,String):XMLInputSource
+<i>141</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

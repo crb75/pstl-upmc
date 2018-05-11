@@ -1,0 +1,436 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PrivateKeyResolver</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PrivateKeyResolver (com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PrivateKeyResolver</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 138)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;package com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import java.security.Key;
+<i>8</i>&nbsp;import java.security.KeyStore;
+<i>9</i>&nbsp;import java.security.KeyStoreException;
+<i>10</i>&nbsp;import java.security.PrivateKey;
+<i>11</i>&nbsp;import java.security.PublicKey;
+<i>12</i>&nbsp;import java.security.cert.Certificate;
+<i>13</i>&nbsp;import java.security.cert.CertificateEncodingException;
+<i>14</i>&nbsp;import java.security.cert.X509Certificate;
+<i>15</i>&nbsp;import java.util.Arrays;
+<i>16</i>&nbsp;import java.util.Enumeration;
+<i>17</i>&nbsp;import javax.crypto.SecretKey;
+<i>18</i>&nbsp;import com.sun.org.apache.xml.internal.security.exceptions.XMLSecurityException;
+<i>19</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.X509Data;
+<i>20</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.x509.XMLX509Certificate;
+<i>21</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.x509.XMLX509IssuerSerial;
+<i>22</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.x509.XMLX509SKI;
+<i>23</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.x509.XMLX509SubjectName;
+<i>24</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.KeyResolverException;
+<i>25</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.KeyResolverSpi;
+<i>26</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.storage.StorageResolver;
+<i>27</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.Constants;
+<i>28</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.XMLUtils;
+<i>29</i>&nbsp;import org.w3c.dom.Element;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;/**
+<i>32</i>&nbsp; * Resolves a PrivateKey within a KeyStore based on the KeyInfo hints.
+<i>33</i>&nbsp; * For X509Data hints, the certificate associated with the private key entry must match.
+<i>34</i>&nbsp; * For a KeyName hint, the KeyName must match the alias of a PrivateKey entry within the KeyStore.
+<i>35</i>&nbsp; */
+<i>36</i>&nbsp;public class PrivateKeyResolver extends KeyResolverSpi {
+<i>37</i>&nbsp;    /** {@link org.apache.commons.logging} logging facility */
+<i>38</i>&nbsp;    private static java.util.logging.Logger log =
+<b class="nc"><i>39</i>&nbsp;        java.util.logging.Logger.getLogger(PrivateKeyResolver.class.getName());</b>
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    private KeyStore keyStore;
+<i>42</i>&nbsp;    private char[] password;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    /**
+<i>45</i>&nbsp;     * Constructor.
+<i>46</i>&nbsp;     */
+<b class="nc"><i>47</i>&nbsp;    public PrivateKeyResolver(KeyStore keyStore, char[] password) {</b>
+<b class="nc"><i>48</i>&nbsp;        this.keyStore = keyStore;</b>
+<b class="nc"><i>49</i>&nbsp;        this.password = password;</b>
+<i>50</i>&nbsp;    }
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    /**
+<i>53</i>&nbsp;     * This method returns whether the KeyResolverSpi is able to perform the requested action.
+<i>54</i>&nbsp;     *
+<i>55</i>&nbsp;     * @param element
+<i>56</i>&nbsp;     * @param BaseURI
+<i>57</i>&nbsp;     * @param storage
+<i>58</i>&nbsp;     * @return whether the KeyResolverSpi is able to perform the requested action.
+<i>59</i>&nbsp;     */
+<i>60</i>&nbsp;    public boolean engineCanResolve(Element element, String BaseURI, StorageResolver storage) {
+<b class="nc"><i>61</i>&nbsp;        if (XMLUtils.elementIsInSignatureSpace(element, Constants._TAG_X509DATA)</b>
+<b class="nc"><i>62</i>&nbsp;            || XMLUtils.elementIsInSignatureSpace(element, Constants._TAG_KEYNAME)) {</b>
+<b class="nc"><i>63</i>&nbsp;            return true;</b>
+<i>64</i>&nbsp;        }
+<i>65</i>&nbsp;
+<b class="nc"><i>66</i>&nbsp;        return false;</b>
+<i>67</i>&nbsp;    }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    /**
+<i>70</i>&nbsp;     * Method engineLookupAndResolvePublicKey
+<i>71</i>&nbsp;     *
+<i>72</i>&nbsp;     * @param element
+<i>73</i>&nbsp;     * @param BaseURI
+<i>74</i>&nbsp;     * @param storage
+<i>75</i>&nbsp;     * @return null if no {@link PublicKey} could be obtained
+<i>76</i>&nbsp;     * @throws KeyResolverException
+<i>77</i>&nbsp;     */
+<i>78</i>&nbsp;    public PublicKey engineLookupAndResolvePublicKey(
+<i>79</i>&nbsp;        Element element, String BaseURI, StorageResolver storage
+<i>80</i>&nbsp;    ) throws KeyResolverException {
+<b class="nc"><i>81</i>&nbsp;        return null;</b>
+<i>82</i>&nbsp;    }
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    /**
+<i>85</i>&nbsp;     * Method engineResolveX509Certificate
+<i>86</i>&nbsp;     * @inheritDoc
+<i>87</i>&nbsp;     * @param element
+<i>88</i>&nbsp;     * @param BaseURI
+<i>89</i>&nbsp;     * @param storage
+<i>90</i>&nbsp;     * @throws KeyResolverException
+<i>91</i>&nbsp;     */
+<i>92</i>&nbsp;    public X509Certificate engineLookupResolveX509Certificate(
+<i>93</i>&nbsp;        Element element, String BaseURI, StorageResolver storage
+<i>94</i>&nbsp;    ) throws KeyResolverException {
+<b class="nc"><i>95</i>&nbsp;        return null;</b>
+<i>96</i>&nbsp;    }
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;    /**
+<i>99</i>&nbsp;     * Method engineResolveSecretKey
+<i>100</i>&nbsp;     *
+<i>101</i>&nbsp;     * @param element
+<i>102</i>&nbsp;     * @param BaseURI
+<i>103</i>&nbsp;     * @param storage
+<i>104</i>&nbsp;     * @return resolved SecretKey key or null if no {@link SecretKey} could be obtained
+<i>105</i>&nbsp;     *
+<i>106</i>&nbsp;     * @throws KeyResolverException
+<i>107</i>&nbsp;     */
+<i>108</i>&nbsp;    public SecretKey engineResolveSecretKey(
+<i>109</i>&nbsp;        Element element, String BaseURI, StorageResolver storage
+<i>110</i>&nbsp;    ) throws KeyResolverException {
+<b class="nc"><i>111</i>&nbsp;        return null;</b>
+<i>112</i>&nbsp;    }
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;    /**
+<i>115</i>&nbsp;     * Method engineResolvePrivateKey
+<i>116</i>&nbsp;     * @inheritDoc
+<i>117</i>&nbsp;     * @param element
+<i>118</i>&nbsp;     * @param baseURI
+<i>119</i>&nbsp;     * @param storage
+<i>120</i>&nbsp;     * @return resolved PrivateKey key or null if no {@link PrivateKey} could be obtained
+<i>121</i>&nbsp;     * @throws KeyResolverException
+<i>122</i>&nbsp;     */
+<i>123</i>&nbsp;    public PrivateKey engineLookupAndResolvePrivateKey(
+<i>124</i>&nbsp;        Element element, String baseURI, StorageResolver storage
+<i>125</i>&nbsp;    ) throws KeyResolverException {
+<b class="nc"><i>126</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>127</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;Can I resolve &quot; + element.getTagName() + &quot;?&quot;);</b>
+<i>128</i>&nbsp;        }
+<i>129</i>&nbsp;
+<b class="nc"><i>130</i>&nbsp;        if (XMLUtils.elementIsInSignatureSpace(element, Constants._TAG_X509DATA)) {</b>
+<b class="nc"><i>131</i>&nbsp;            PrivateKey privKey = resolveX509Data(element, baseURI);</b>
+<b class="nc"><i>132</i>&nbsp;            if (privKey != null) {</b>
+<b class="nc"><i>133</i>&nbsp;                return privKey;</b>
+<i>134</i>&nbsp;            }
+<b class="nc"><i>135</i>&nbsp;        } else if (XMLUtils.elementIsInSignatureSpace(element, Constants._TAG_KEYNAME)) {</b>
+<b class="nc"><i>136</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;Can I resolve KeyName?&quot;);</b>
+<b class="nc"><i>137</i>&nbsp;            String keyName = element.getFirstChild().getNodeValue();</b>
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;            try {
+<b class="nc"><i>140</i>&nbsp;                Key key = keyStore.getKey(keyName, password);</b>
+<b class="nc"><i>141</i>&nbsp;                if (key instanceof PrivateKey) {</b>
+<b class="nc"><i>142</i>&nbsp;                    return (PrivateKey) key;</b>
+<i>143</i>&nbsp;                }
+<b class="nc"><i>144</i>&nbsp;            } catch (Exception e) {</b>
+<b class="nc"><i>145</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;Cannot recover the key&quot;, e);</b>
+<b class="nc"><i>146</i>&nbsp;            }</b>
+<i>147</i>&nbsp;        }
+<i>148</i>&nbsp;
+<b class="nc"><i>149</i>&nbsp;        log.log(java.util.logging.Level.FINE, &quot;I can&#39;t&quot;);</b>
+<b class="nc"><i>150</i>&nbsp;        return null;</b>
+<i>151</i>&nbsp;    }
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;    private PrivateKey resolveX509Data(Element element, String baseURI) {
+<b class="nc"><i>154</i>&nbsp;        log.log(java.util.logging.Level.FINE, &quot;Can I resolve X509Data?&quot;);</b>
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;        try {
+<b class="nc"><i>157</i>&nbsp;            X509Data x509Data = new X509Data(element, baseURI);</b>
+<i>158</i>&nbsp;
+<b class="nc"><i>159</i>&nbsp;            int len = x509Data.lengthSKI();</b>
+<b class="nc"><i>160</i>&nbsp;            for (int i = 0; i &lt; len; i++) {</b>
+<b class="nc"><i>161</i>&nbsp;                XMLX509SKI x509SKI = x509Data.itemSKI(i);</b>
+<b class="nc"><i>162</i>&nbsp;                PrivateKey privKey = resolveX509SKI(x509SKI);</b>
+<b class="nc"><i>163</i>&nbsp;                if (privKey != null) {</b>
+<b class="nc"><i>164</i>&nbsp;                    return privKey;</b>
+<i>165</i>&nbsp;                }
+<i>166</i>&nbsp;            }
+<i>167</i>&nbsp;
+<b class="nc"><i>168</i>&nbsp;            len = x509Data.lengthIssuerSerial();</b>
+<b class="nc"><i>169</i>&nbsp;            for (int i = 0; i &lt; len; i++) {</b>
+<b class="nc"><i>170</i>&nbsp;                XMLX509IssuerSerial x509Serial = x509Data.itemIssuerSerial(i);</b>
+<b class="nc"><i>171</i>&nbsp;                PrivateKey privKey = resolveX509IssuerSerial(x509Serial);</b>
+<b class="nc"><i>172</i>&nbsp;                if (privKey != null) {</b>
+<b class="nc"><i>173</i>&nbsp;                    return privKey;</b>
+<i>174</i>&nbsp;                }
+<i>175</i>&nbsp;            }
+<i>176</i>&nbsp;
+<b class="nc"><i>177</i>&nbsp;            len = x509Data.lengthSubjectName();</b>
+<b class="nc"><i>178</i>&nbsp;            for (int i = 0; i &lt; len; i++) {</b>
+<b class="nc"><i>179</i>&nbsp;                XMLX509SubjectName x509SubjectName = x509Data.itemSubjectName(i);</b>
+<b class="nc"><i>180</i>&nbsp;                PrivateKey privKey = resolveX509SubjectName(x509SubjectName);</b>
+<b class="nc"><i>181</i>&nbsp;                if (privKey != null) {</b>
+<b class="nc"><i>182</i>&nbsp;                    return privKey;</b>
+<i>183</i>&nbsp;                }
+<i>184</i>&nbsp;            }
+<i>185</i>&nbsp;
+<b class="nc"><i>186</i>&nbsp;            len = x509Data.lengthCertificate();</b>
+<b class="nc"><i>187</i>&nbsp;            for (int i = 0; i &lt; len; i++) {</b>
+<b class="nc"><i>188</i>&nbsp;                XMLX509Certificate x509Cert = x509Data.itemCertificate(i);</b>
+<b class="nc"><i>189</i>&nbsp;                PrivateKey privKey = resolveX509Certificate(x509Cert);</b>
+<b class="nc"><i>190</i>&nbsp;                if (privKey != null) {</b>
+<b class="nc"><i>191</i>&nbsp;                    return privKey;</b>
+<i>192</i>&nbsp;                }
+<i>193</i>&nbsp;            }
+<b class="nc"><i>194</i>&nbsp;        } catch (XMLSecurityException e) {</b>
+<b class="nc"><i>195</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;XMLSecurityException&quot;, e);</b>
+<b class="nc"><i>196</i>&nbsp;        } catch (KeyStoreException e) {</b>
+<b class="nc"><i>197</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;KeyStoreException&quot;, e);</b>
+<b class="nc"><i>198</i>&nbsp;        }</b>
+<i>199</i>&nbsp;
+<b class="nc"><i>200</i>&nbsp;        return null;</b>
+<i>201</i>&nbsp;    }
+<i>202</i>&nbsp;
+<i>203</i>&nbsp;    /*
+<i>204</i>&nbsp;     * Search for a private key entry in the KeyStore with the same Subject Key Identifier
+<i>205</i>&nbsp;     */
+<i>206</i>&nbsp;    private PrivateKey resolveX509SKI(XMLX509SKI x509SKI) throws XMLSecurityException, KeyStoreException {
+<b class="nc"><i>207</i>&nbsp;        log.log(java.util.logging.Level.FINE, &quot;Can I resolve X509SKI?&quot;);</b>
+<i>208</i>&nbsp;
+<b class="nc"><i>209</i>&nbsp;        Enumeration&lt;String&gt; aliases = keyStore.aliases();</b>
+<b class="nc"><i>210</i>&nbsp;        while (aliases.hasMoreElements()) {</b>
+<b class="nc"><i>211</i>&nbsp;            String alias = aliases.nextElement();</b>
+<b class="nc"><i>212</i>&nbsp;            if (keyStore.isKeyEntry(alias)) {</b>
+<i>213</i>&nbsp;
+<b class="nc"><i>214</i>&nbsp;                Certificate cert = keyStore.getCertificate(alias);</b>
+<b class="nc"><i>215</i>&nbsp;                if (cert instanceof X509Certificate) {</b>
+<b class="nc"><i>216</i>&nbsp;                    XMLX509SKI certSKI = new XMLX509SKI(x509SKI.getDocument(), (X509Certificate) cert);</b>
+<i>217</i>&nbsp;
+<b class="nc"><i>218</i>&nbsp;                    if (certSKI.equals(x509SKI)) {</b>
+<b class="nc"><i>219</i>&nbsp;                        log.log(java.util.logging.Level.FINE, &quot;match !!! &quot;);</b>
+<i>220</i>&nbsp;
+<i>221</i>&nbsp;                        try {
+<b class="nc"><i>222</i>&nbsp;                            Key key = keyStore.getKey(alias, password);</b>
+<b class="nc"><i>223</i>&nbsp;                            if (key instanceof PrivateKey) {</b>
+<b class="nc"><i>224</i>&nbsp;                                return (PrivateKey) key;</b>
+<i>225</i>&nbsp;                            }
+<b class="nc"><i>226</i>&nbsp;                        } catch (Exception e) {</b>
+<b class="nc"><i>227</i>&nbsp;                            log.log(java.util.logging.Level.FINE, &quot;Cannot recover the key&quot;, e);</b>
+<i>228</i>&nbsp;                            // Keep searching
+<b class="nc"><i>229</i>&nbsp;                        }</b>
+<i>230</i>&nbsp;                    }
+<i>231</i>&nbsp;                }
+<i>232</i>&nbsp;            }
+<b class="nc"><i>233</i>&nbsp;        }</b>
+<i>234</i>&nbsp;
+<b class="nc"><i>235</i>&nbsp;        return null;</b>
+<i>236</i>&nbsp;    }
+<i>237</i>&nbsp;
+<i>238</i>&nbsp;    /*
+<i>239</i>&nbsp;     * Search for a private key entry in the KeyStore with the same Issuer/Serial Number pair.
+<i>240</i>&nbsp;     */
+<i>241</i>&nbsp;    private PrivateKey resolveX509IssuerSerial(XMLX509IssuerSerial x509Serial) throws KeyStoreException {
+<b class="nc"><i>242</i>&nbsp;        log.log(java.util.logging.Level.FINE, &quot;Can I resolve X509IssuerSerial?&quot;);</b>
+<i>243</i>&nbsp;
+<b class="nc"><i>244</i>&nbsp;        Enumeration&lt;String&gt; aliases = keyStore.aliases();</b>
+<b class="nc"><i>245</i>&nbsp;        while (aliases.hasMoreElements()) {</b>
+<b class="nc"><i>246</i>&nbsp;            String alias = aliases.nextElement();</b>
+<b class="nc"><i>247</i>&nbsp;            if (keyStore.isKeyEntry(alias)) {</b>
+<i>248</i>&nbsp;
+<b class="nc"><i>249</i>&nbsp;                Certificate cert = keyStore.getCertificate(alias);</b>
+<b class="nc"><i>250</i>&nbsp;                if (cert instanceof X509Certificate) {</b>
+<b class="nc"><i>251</i>&nbsp;                    XMLX509IssuerSerial certSerial =</b>
+<b class="nc"><i>252</i>&nbsp;                        new XMLX509IssuerSerial(x509Serial.getDocument(), (X509Certificate) cert);</b>
+<i>253</i>&nbsp;
+<b class="nc"><i>254</i>&nbsp;                    if (certSerial.equals(x509Serial)) {</b>
+<b class="nc"><i>255</i>&nbsp;                        log.log(java.util.logging.Level.FINE, &quot;match !!! &quot;);</b>
+<i>256</i>&nbsp;
+<i>257</i>&nbsp;                        try {
+<b class="nc"><i>258</i>&nbsp;                            Key key = keyStore.getKey(alias, password);</b>
+<b class="nc"><i>259</i>&nbsp;                            if (key instanceof PrivateKey) {</b>
+<b class="nc"><i>260</i>&nbsp;                                return (PrivateKey) key;</b>
+<i>261</i>&nbsp;                            }
+<b class="nc"><i>262</i>&nbsp;                        } catch (Exception e) {</b>
+<b class="nc"><i>263</i>&nbsp;                            log.log(java.util.logging.Level.FINE, &quot;Cannot recover the key&quot;, e);</b>
+<i>264</i>&nbsp;                            // Keep searching
+<b class="nc"><i>265</i>&nbsp;                        }</b>
+<i>266</i>&nbsp;                    }
+<i>267</i>&nbsp;                }
+<i>268</i>&nbsp;            }
+<b class="nc"><i>269</i>&nbsp;        }</b>
+<i>270</i>&nbsp;
+<b class="nc"><i>271</i>&nbsp;        return null;</b>
+<i>272</i>&nbsp;    }
+<i>273</i>&nbsp;
+<i>274</i>&nbsp;    /*
+<i>275</i>&nbsp;     * Search for a private key entry in the KeyStore with the same Subject Name.
+<i>276</i>&nbsp;     */
+<i>277</i>&nbsp;    private PrivateKey resolveX509SubjectName(XMLX509SubjectName x509SubjectName) throws KeyStoreException {
+<b class="nc"><i>278</i>&nbsp;        log.log(java.util.logging.Level.FINE, &quot;Can I resolve X509SubjectName?&quot;);</b>
+<i>279</i>&nbsp;
+<b class="nc"><i>280</i>&nbsp;        Enumeration&lt;String&gt; aliases = keyStore.aliases();</b>
+<b class="nc"><i>281</i>&nbsp;        while (aliases.hasMoreElements()) {</b>
+<b class="nc"><i>282</i>&nbsp;            String alias = aliases.nextElement();</b>
+<b class="nc"><i>283</i>&nbsp;            if (keyStore.isKeyEntry(alias)) {</b>
+<i>284</i>&nbsp;
+<b class="nc"><i>285</i>&nbsp;                Certificate cert = keyStore.getCertificate(alias);</b>
+<b class="nc"><i>286</i>&nbsp;                if (cert instanceof X509Certificate) {</b>
+<b class="nc"><i>287</i>&nbsp;                    XMLX509SubjectName certSN =</b>
+<b class="nc"><i>288</i>&nbsp;                        new XMLX509SubjectName(x509SubjectName.getDocument(), (X509Certificate) cert);</b>
+<i>289</i>&nbsp;
+<b class="nc"><i>290</i>&nbsp;                    if (certSN.equals(x509SubjectName)) {</b>
+<b class="nc"><i>291</i>&nbsp;                        log.log(java.util.logging.Level.FINE, &quot;match !!! &quot;);</b>
+<i>292</i>&nbsp;
+<i>293</i>&nbsp;                        try {
+<b class="nc"><i>294</i>&nbsp;                            Key key = keyStore.getKey(alias, password);</b>
+<b class="nc"><i>295</i>&nbsp;                            if (key instanceof PrivateKey) {</b>
+<b class="nc"><i>296</i>&nbsp;                                return (PrivateKey) key;</b>
+<i>297</i>&nbsp;                            }
+<b class="nc"><i>298</i>&nbsp;                        } catch (Exception e) {</b>
+<b class="nc"><i>299</i>&nbsp;                            log.log(java.util.logging.Level.FINE, &quot;Cannot recover the key&quot;, e);</b>
+<i>300</i>&nbsp;                            // Keep searching
+<b class="nc"><i>301</i>&nbsp;                        }</b>
+<i>302</i>&nbsp;                    }
+<i>303</i>&nbsp;                }
+<i>304</i>&nbsp;            }
+<b class="nc"><i>305</i>&nbsp;        }</b>
+<i>306</i>&nbsp;
+<b class="nc"><i>307</i>&nbsp;        return null;</b>
+<i>308</i>&nbsp;    }
+<i>309</i>&nbsp;
+<i>310</i>&nbsp;    /*
+<i>311</i>&nbsp;     * Search for a private key entry in the KeyStore with the same Certificate.
+<i>312</i>&nbsp;     */
+<i>313</i>&nbsp;    private PrivateKey resolveX509Certificate(
+<i>314</i>&nbsp;        XMLX509Certificate x509Cert
+<i>315</i>&nbsp;    ) throws XMLSecurityException, KeyStoreException {
+<b class="nc"><i>316</i>&nbsp;        log.log(java.util.logging.Level.FINE, &quot;Can I resolve X509Certificate?&quot;);</b>
+<b class="nc"><i>317</i>&nbsp;        byte[] x509CertBytes = x509Cert.getCertificateBytes();</b>
+<i>318</i>&nbsp;
+<b class="nc"><i>319</i>&nbsp;        Enumeration&lt;String&gt; aliases = keyStore.aliases();</b>
+<b class="nc"><i>320</i>&nbsp;        while (aliases.hasMoreElements()) {</b>
+<b class="nc"><i>321</i>&nbsp;            String alias = aliases.nextElement();</b>
+<b class="nc"><i>322</i>&nbsp;            if (keyStore.isKeyEntry(alias)) {</b>
+<i>323</i>&nbsp;
+<b class="nc"><i>324</i>&nbsp;                Certificate cert = keyStore.getCertificate(alias);</b>
+<b class="nc"><i>325</i>&nbsp;                if (cert instanceof X509Certificate) {</b>
+<b class="nc"><i>326</i>&nbsp;                    byte[] certBytes = null;</b>
+<i>327</i>&nbsp;
+<i>328</i>&nbsp;                    try {
+<b class="nc"><i>329</i>&nbsp;                        certBytes = cert.getEncoded();</b>
+<b class="nc"><i>330</i>&nbsp;                    } catch (CertificateEncodingException e1) {</b>
+<b class="nc"><i>331</i>&nbsp;                    }</b>
+<i>332</i>&nbsp;
+<b class="nc"><i>333</i>&nbsp;                    if (certBytes != null &amp;&amp; Arrays.equals(certBytes, x509CertBytes)) {</b>
+<b class="nc"><i>334</i>&nbsp;                        log.log(java.util.logging.Level.FINE, &quot;match !!! &quot;);</b>
+<i>335</i>&nbsp;
+<i>336</i>&nbsp;                        try {
+<b class="nc"><i>337</i>&nbsp;                            Key key = keyStore.getKey(alias, password);</b>
+<b class="nc"><i>338</i>&nbsp;                            if (key instanceof PrivateKey) {</b>
+<b class="nc"><i>339</i>&nbsp;                                return (PrivateKey) key;</b>
+<i>340</i>&nbsp;                            }
+<i>341</i>&nbsp;                        }
+<b class="nc"><i>342</i>&nbsp;                        catch (Exception e) {</b>
+<b class="nc"><i>343</i>&nbsp;                            log.log(java.util.logging.Level.FINE, &quot;Cannot recover the key&quot;, e);</b>
+<i>344</i>&nbsp;                            // Keep searching
+<b class="nc"><i>345</i>&nbsp;                        }</b>
+<i>346</i>&nbsp;                    }
+<i>347</i>&nbsp;                }
+<i>348</i>&nbsp;            }
+<b class="nc"><i>349</i>&nbsp;        }</b>
+<i>350</i>&nbsp;
+<b class="nc"><i>351</i>&nbsp;        return null;</b>
+<i>352</i>&nbsp;    }
+<i>353</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

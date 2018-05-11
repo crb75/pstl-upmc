@@ -1,0 +1,485 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: GIFWritableImageMetadata</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.imageio.plugins.gif</a> ]
+</div>
+
+<h1>Coverage Summary for Class: GIFWritableImageMetadata (com.sun.imageio.plugins.gif)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GIFWritableImageMetadata</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 178)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, 2008, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.imageio.plugins.gif;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.io.UnsupportedEncodingException;
+<i>29</i>&nbsp;import java.nio.charset.Charset;
+<i>30</i>&nbsp;import java.util.ArrayList;
+<i>31</i>&nbsp;import java.util.Iterator;
+<i>32</i>&nbsp;import java.util.List;
+<i>33</i>&nbsp;import javax.imageio.ImageTypeSpecifier;
+<i>34</i>&nbsp;import javax.imageio.metadata.IIOInvalidTreeException;
+<i>35</i>&nbsp;import javax.imageio.metadata.IIOMetadata;
+<i>36</i>&nbsp;import javax.imageio.metadata.IIOMetadataNode;
+<i>37</i>&nbsp;import javax.imageio.metadata.IIOMetadataFormat;
+<i>38</i>&nbsp;import javax.imageio.metadata.IIOMetadataFormatImpl;
+<i>39</i>&nbsp;import org.w3c.dom.Node;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;class GIFWritableImageMetadata extends GIFImageMetadata {
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    // package scope
+<i>44</i>&nbsp;    static final String
+<i>45</i>&nbsp;    NATIVE_FORMAT_NAME = &quot;javax_imageio_gif_image_1.0&quot;;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    GIFWritableImageMetadata() {
+<b class="nc"><i>48</i>&nbsp;        super(true,</b>
+<i>49</i>&nbsp;              NATIVE_FORMAT_NAME,
+<i>50</i>&nbsp;              &quot;com.sun.imageio.plugins.gif.GIFImageMetadataFormat&quot;,
+<i>51</i>&nbsp;              null, null);
+<i>52</i>&nbsp;    }
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    public boolean isReadOnly() {
+<b class="nc"><i>55</i>&nbsp;        return false;</b>
+<i>56</i>&nbsp;    }
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    public void reset() {
+<i>59</i>&nbsp;        // Fields from Image Descriptor
+<b class="nc"><i>60</i>&nbsp;        imageLeftPosition = 0;</b>
+<b class="nc"><i>61</i>&nbsp;        imageTopPosition = 0;</b>
+<b class="nc"><i>62</i>&nbsp;        imageWidth = 0;</b>
+<b class="nc"><i>63</i>&nbsp;        imageHeight = 0;</b>
+<b class="nc"><i>64</i>&nbsp;        interlaceFlag = false;</b>
+<b class="nc"><i>65</i>&nbsp;        sortFlag = false;</b>
+<b class="nc"><i>66</i>&nbsp;        localColorTable = null;</b>
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;        // Fields from Graphic Control Extension
+<b class="nc"><i>69</i>&nbsp;        disposalMethod = 0;</b>
+<b class="nc"><i>70</i>&nbsp;        userInputFlag = false;</b>
+<b class="nc"><i>71</i>&nbsp;        transparentColorFlag = false;</b>
+<b class="nc"><i>72</i>&nbsp;        delayTime = 0;</b>
+<b class="nc"><i>73</i>&nbsp;        transparentColorIndex = 0;</b>
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;        // Fields from Plain Text Extension
+<b class="nc"><i>76</i>&nbsp;        hasPlainTextExtension = false;</b>
+<b class="nc"><i>77</i>&nbsp;        textGridLeft = 0;</b>
+<b class="nc"><i>78</i>&nbsp;        textGridTop = 0;</b>
+<b class="nc"><i>79</i>&nbsp;        textGridWidth = 0;</b>
+<b class="nc"><i>80</i>&nbsp;        textGridHeight = 0;</b>
+<b class="nc"><i>81</i>&nbsp;        characterCellWidth = 0;</b>
+<b class="nc"><i>82</i>&nbsp;        characterCellHeight = 0;</b>
+<b class="nc"><i>83</i>&nbsp;        textForegroundColor = 0;</b>
+<b class="nc"><i>84</i>&nbsp;        textBackgroundColor = 0;</b>
+<b class="nc"><i>85</i>&nbsp;        text = null;</b>
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;        // Fields from ApplicationExtension
+<b class="nc"><i>88</i>&nbsp;        applicationIDs = null;</b>
+<b class="nc"><i>89</i>&nbsp;        authenticationCodes = null;</b>
+<b class="nc"><i>90</i>&nbsp;        applicationData = null;</b>
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;        // Fields from CommentExtension
+<i>93</i>&nbsp;        // List of byte[]
+<b class="nc"><i>94</i>&nbsp;        comments = null;</b>
+<i>95</i>&nbsp;    }
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    private byte[] fromISO8859(String data) {
+<i>98</i>&nbsp;        try {
+<b class="nc"><i>99</i>&nbsp;            return data.getBytes(&quot;ISO-8859-1&quot;);</b>
+<b class="nc"><i>100</i>&nbsp;        } catch (UnsupportedEncodingException e) {</b>
+<b class="nc"><i>101</i>&nbsp;            return &quot;&quot;.getBytes();</b>
+<i>102</i>&nbsp;        }
+<i>103</i>&nbsp;    }
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;    protected void mergeNativeTree(Node root) throws IIOInvalidTreeException {
+<b class="nc"><i>106</i>&nbsp;        Node node = root;</b>
+<b class="nc"><i>107</i>&nbsp;        if (!node.getNodeName().equals(nativeMetadataFormatName)) {</b>
+<b class="nc"><i>108</i>&nbsp;            fatal(node, &quot;Root must be &quot; + nativeMetadataFormatName);</b>
+<i>109</i>&nbsp;        }
+<i>110</i>&nbsp;
+<b class="nc"><i>111</i>&nbsp;        node = node.getFirstChild();</b>
+<b class="nc"><i>112</i>&nbsp;        while (node != null) {</b>
+<b class="nc"><i>113</i>&nbsp;            String name = node.getNodeName();</b>
+<i>114</i>&nbsp;
+<b class="nc"><i>115</i>&nbsp;            if (name.equals(&quot;ImageDescriptor&quot;)) {</b>
+<b class="nc"><i>116</i>&nbsp;                imageLeftPosition = getIntAttribute(node,</b>
+<i>117</i>&nbsp;                                                    &quot;imageLeftPosition&quot;,
+<i>118</i>&nbsp;                                                    -1, true,
+<i>119</i>&nbsp;                                                    true, 0, 65535);
+<i>120</i>&nbsp;
+<b class="nc"><i>121</i>&nbsp;                imageTopPosition = getIntAttribute(node,</b>
+<i>122</i>&nbsp;                                                   &quot;imageTopPosition&quot;,
+<i>123</i>&nbsp;                                                   -1, true,
+<i>124</i>&nbsp;                                                   true, 0, 65535);
+<i>125</i>&nbsp;
+<b class="nc"><i>126</i>&nbsp;                imageWidth = getIntAttribute(node,</b>
+<i>127</i>&nbsp;                                             &quot;imageWidth&quot;,
+<i>128</i>&nbsp;                                             -1, true,
+<i>129</i>&nbsp;                                             true, 1, 65535);
+<i>130</i>&nbsp;
+<b class="nc"><i>131</i>&nbsp;                imageHeight = getIntAttribute(node,</b>
+<i>132</i>&nbsp;                                              &quot;imageHeight&quot;,
+<i>133</i>&nbsp;                                              -1, true,
+<i>134</i>&nbsp;                                              true, 1, 65535);
+<i>135</i>&nbsp;
+<b class="nc"><i>136</i>&nbsp;                interlaceFlag = getBooleanAttribute(node, &quot;interlaceFlag&quot;,</b>
+<i>137</i>&nbsp;                                                    false, true);
+<b class="nc"><i>138</i>&nbsp;            } else if (name.equals(&quot;LocalColorTable&quot;)) {</b>
+<b class="nc"><i>139</i>&nbsp;                int sizeOfLocalColorTable =</b>
+<b class="nc"><i>140</i>&nbsp;                    getIntAttribute(node, &quot;sizeOfLocalColorTable&quot;,</b>
+<i>141</i>&nbsp;                                    true, 2, 256);
+<b class="nc"><i>142</i>&nbsp;                if (sizeOfLocalColorTable != 2 &amp;&amp;</b>
+<i>143</i>&nbsp;                    sizeOfLocalColorTable != 4 &amp;&amp;
+<i>144</i>&nbsp;                    sizeOfLocalColorTable != 8 &amp;&amp;
+<i>145</i>&nbsp;                    sizeOfLocalColorTable != 16 &amp;&amp;
+<i>146</i>&nbsp;                    sizeOfLocalColorTable != 32 &amp;&amp;
+<i>147</i>&nbsp;                    sizeOfLocalColorTable != 64 &amp;&amp;
+<i>148</i>&nbsp;                    sizeOfLocalColorTable != 128 &amp;&amp;
+<i>149</i>&nbsp;                    sizeOfLocalColorTable != 256) {
+<b class="nc"><i>150</i>&nbsp;                    fatal(node,</b>
+<i>151</i>&nbsp;                          &quot;Bad value for LocalColorTable attribute sizeOfLocalColorTable!&quot;);
+<i>152</i>&nbsp;                }
+<i>153</i>&nbsp;
+<b class="nc"><i>154</i>&nbsp;                sortFlag = getBooleanAttribute(node, &quot;sortFlag&quot;, false, true);</b>
+<i>155</i>&nbsp;
+<b class="nc"><i>156</i>&nbsp;                localColorTable = getColorTable(node, &quot;ColorTableEntry&quot;,</b>
+<i>157</i>&nbsp;                                                true, sizeOfLocalColorTable);
+<b class="nc"><i>158</i>&nbsp;            } else if (name.equals(&quot;GraphicControlExtension&quot;)) {</b>
+<b class="nc"><i>159</i>&nbsp;                String disposalMethodName =</b>
+<b class="nc"><i>160</i>&nbsp;                    getStringAttribute(node, &quot;disposalMethod&quot;, null,</b>
+<i>161</i>&nbsp;                                       true, disposalMethodNames);
+<b class="nc"><i>162</i>&nbsp;                disposalMethod = 0;</b>
+<b class="nc"><i>163</i>&nbsp;                while(!disposalMethodName.equals(disposalMethodNames[disposalMethod])) {</b>
+<b class="nc"><i>164</i>&nbsp;                    disposalMethod++;</b>
+<i>165</i>&nbsp;                }
+<i>166</i>&nbsp;
+<b class="nc"><i>167</i>&nbsp;                userInputFlag = getBooleanAttribute(node, &quot;userInputFlag&quot;,</b>
+<i>168</i>&nbsp;                                                    false, true);
+<i>169</i>&nbsp;
+<b class="nc"><i>170</i>&nbsp;                transparentColorFlag =</b>
+<b class="nc"><i>171</i>&nbsp;                    getBooleanAttribute(node, &quot;transparentColorFlag&quot;,</b>
+<i>172</i>&nbsp;                                        false, true);
+<i>173</i>&nbsp;
+<b class="nc"><i>174</i>&nbsp;                delayTime = getIntAttribute(node,</b>
+<i>175</i>&nbsp;                                            &quot;delayTime&quot;,
+<i>176</i>&nbsp;                                            -1, true,
+<i>177</i>&nbsp;                                            true, 0, 65535);
+<i>178</i>&nbsp;
+<b class="nc"><i>179</i>&nbsp;                transparentColorIndex =</b>
+<b class="nc"><i>180</i>&nbsp;                    getIntAttribute(node, &quot;transparentColorIndex&quot;,</b>
+<i>181</i>&nbsp;                                    -1, true,
+<i>182</i>&nbsp;                                    true, 0, 65535);
+<b class="nc"><i>183</i>&nbsp;            } else if (name.equals(&quot;PlainTextExtension&quot;)) {</b>
+<b class="nc"><i>184</i>&nbsp;                hasPlainTextExtension = true;</b>
+<i>185</i>&nbsp;
+<b class="nc"><i>186</i>&nbsp;                textGridLeft = getIntAttribute(node,</b>
+<i>187</i>&nbsp;                                               &quot;textGridLeft&quot;,
+<i>188</i>&nbsp;                                               -1, true,
+<i>189</i>&nbsp;                                               true, 0, 65535);
+<i>190</i>&nbsp;
+<b class="nc"><i>191</i>&nbsp;                textGridTop = getIntAttribute(node,</b>
+<i>192</i>&nbsp;                                              &quot;textGridTop&quot;,
+<i>193</i>&nbsp;                                              -1, true,
+<i>194</i>&nbsp;                                              true, 0, 65535);
+<i>195</i>&nbsp;
+<b class="nc"><i>196</i>&nbsp;                textGridWidth = getIntAttribute(node,</b>
+<i>197</i>&nbsp;                                                &quot;textGridWidth&quot;,
+<i>198</i>&nbsp;                                                -1, true,
+<i>199</i>&nbsp;                                                true, 1, 65535);
+<i>200</i>&nbsp;
+<b class="nc"><i>201</i>&nbsp;                textGridHeight = getIntAttribute(node,</b>
+<i>202</i>&nbsp;                                                 &quot;textGridHeight&quot;,
+<i>203</i>&nbsp;                                                 -1, true,
+<i>204</i>&nbsp;                                                 true, 1, 65535);
+<i>205</i>&nbsp;
+<b class="nc"><i>206</i>&nbsp;                characterCellWidth = getIntAttribute(node,</b>
+<i>207</i>&nbsp;                                                     &quot;characterCellWidth&quot;,
+<i>208</i>&nbsp;                                                     -1, true,
+<i>209</i>&nbsp;                                                     true, 1, 65535);
+<i>210</i>&nbsp;
+<b class="nc"><i>211</i>&nbsp;                characterCellHeight = getIntAttribute(node,</b>
+<i>212</i>&nbsp;                                                      &quot;characterCellHeight&quot;,
+<i>213</i>&nbsp;                                                      -1, true,
+<i>214</i>&nbsp;                                                      true, 1, 65535);
+<i>215</i>&nbsp;
+<b class="nc"><i>216</i>&nbsp;                textForegroundColor = getIntAttribute(node,</b>
+<i>217</i>&nbsp;                                                      &quot;textForegroundColor&quot;,
+<i>218</i>&nbsp;                                                      -1, true,
+<i>219</i>&nbsp;                                                      true, 0, 255);
+<i>220</i>&nbsp;
+<b class="nc"><i>221</i>&nbsp;                textBackgroundColor = getIntAttribute(node,</b>
+<i>222</i>&nbsp;                                                      &quot;textBackgroundColor&quot;,
+<i>223</i>&nbsp;                                                      -1, true,
+<i>224</i>&nbsp;                                                      true, 0, 255);
+<i>225</i>&nbsp;
+<i>226</i>&nbsp;                // XXX The &quot;text&quot; attribute of the PlainTextExtension element
+<i>227</i>&nbsp;                // is not defined in the GIF image metadata format but it is
+<i>228</i>&nbsp;                // present in the GIFImageMetadata class. Consequently it is
+<i>229</i>&nbsp;                // used here but not required and with a default of &quot;&quot;. See
+<i>230</i>&nbsp;                // bug 5082763.
+<i>231</i>&nbsp;
+<b class="nc"><i>232</i>&nbsp;                String textString =</b>
+<b class="nc"><i>233</i>&nbsp;                    getStringAttribute(node, &quot;text&quot;, &quot;&quot;, false, null);</b>
+<b class="nc"><i>234</i>&nbsp;                text = fromISO8859(textString);</b>
+<b class="nc"><i>235</i>&nbsp;            } else if (name.equals(&quot;ApplicationExtensions&quot;)) {</b>
+<b class="nc"><i>236</i>&nbsp;                IIOMetadataNode applicationExtension =</b>
+<b class="nc"><i>237</i>&nbsp;                    (IIOMetadataNode)node.getFirstChild();</b>
+<i>238</i>&nbsp;
+<b class="nc"><i>239</i>&nbsp;                if (!applicationExtension.getNodeName().equals(&quot;ApplicationExtension&quot;)) {</b>
+<b class="nc"><i>240</i>&nbsp;                    fatal(node,</b>
+<i>241</i>&nbsp;                          &quot;Only a ApplicationExtension may be a child of a ApplicationExtensions!&quot;);
+<i>242</i>&nbsp;                }
+<i>243</i>&nbsp;
+<b class="nc"><i>244</i>&nbsp;                String applicationIDString =</b>
+<b class="nc"><i>245</i>&nbsp;                    getStringAttribute(applicationExtension, &quot;applicationID&quot;,</b>
+<i>246</i>&nbsp;                                       null, true, null);
+<i>247</i>&nbsp;
+<b class="nc"><i>248</i>&nbsp;                String authenticationCodeString =</b>
+<b class="nc"><i>249</i>&nbsp;                    getStringAttribute(applicationExtension, &quot;authenticationCode&quot;,</b>
+<i>250</i>&nbsp;                                       null, true, null);
+<i>251</i>&nbsp;
+<b class="nc"><i>252</i>&nbsp;                Object applicationExtensionData =</b>
+<b class="nc"><i>253</i>&nbsp;                    applicationExtension.getUserObject();</b>
+<b class="nc"><i>254</i>&nbsp;                if (applicationExtensionData == null ||</b>
+<i>255</i>&nbsp;                    !(applicationExtensionData instanceof byte[])) {
+<b class="nc"><i>256</i>&nbsp;                    fatal(applicationExtension,</b>
+<i>257</i>&nbsp;                          &quot;Bad user object in ApplicationExtension!&quot;);
+<i>258</i>&nbsp;                }
+<i>259</i>&nbsp;
+<b class="nc"><i>260</i>&nbsp;                if (applicationIDs == null) {</b>
+<b class="nc"><i>261</i>&nbsp;                    applicationIDs = new ArrayList();</b>
+<b class="nc"><i>262</i>&nbsp;                    authenticationCodes = new ArrayList();</b>
+<b class="nc"><i>263</i>&nbsp;                    applicationData = new ArrayList();</b>
+<i>264</i>&nbsp;                }
+<i>265</i>&nbsp;
+<b class="nc"><i>266</i>&nbsp;                applicationIDs.add(fromISO8859(applicationIDString));</b>
+<b class="nc"><i>267</i>&nbsp;                authenticationCodes.add(fromISO8859(authenticationCodeString));</b>
+<b class="nc"><i>268</i>&nbsp;                applicationData.add(applicationExtensionData);</b>
+<b class="nc"><i>269</i>&nbsp;            } else if (name.equals(&quot;CommentExtensions&quot;)) {</b>
+<b class="nc"><i>270</i>&nbsp;                Node commentExtension = node.getFirstChild();</b>
+<b class="nc"><i>271</i>&nbsp;                if (commentExtension != null) {</b>
+<b class="nc"><i>272</i>&nbsp;                    while(commentExtension != null) {</b>
+<b class="nc"><i>273</i>&nbsp;                        if (!commentExtension.getNodeName().equals(&quot;CommentExtension&quot;)) {</b>
+<b class="nc"><i>274</i>&nbsp;                            fatal(node,</b>
+<i>275</i>&nbsp;                                  &quot;Only a CommentExtension may be a child of a CommentExtensions!&quot;);
+<i>276</i>&nbsp;                        }
+<i>277</i>&nbsp;
+<b class="nc"><i>278</i>&nbsp;                        if (comments == null) {</b>
+<b class="nc"><i>279</i>&nbsp;                            comments = new ArrayList();</b>
+<i>280</i>&nbsp;                        }
+<i>281</i>&nbsp;
+<b class="nc"><i>282</i>&nbsp;                        String comment =</b>
+<b class="nc"><i>283</i>&nbsp;                            getStringAttribute(commentExtension, &quot;value&quot;, null,</b>
+<i>284</i>&nbsp;                                               true, null);
+<i>285</i>&nbsp;
+<b class="nc"><i>286</i>&nbsp;                        comments.add(fromISO8859(comment));</b>
+<i>287</i>&nbsp;
+<b class="nc"><i>288</i>&nbsp;                        commentExtension = commentExtension.getNextSibling();</b>
+<b class="nc"><i>289</i>&nbsp;                    }</b>
+<i>290</i>&nbsp;                }
+<b class="nc"><i>291</i>&nbsp;            } else {</b>
+<b class="nc"><i>292</i>&nbsp;                fatal(node, &quot;Unknown child of root node!&quot;);</b>
+<i>293</i>&nbsp;            }
+<i>294</i>&nbsp;
+<b class="nc"><i>295</i>&nbsp;            node = node.getNextSibling();</b>
+<b class="nc"><i>296</i>&nbsp;        }</b>
+<i>297</i>&nbsp;    }
+<i>298</i>&nbsp;
+<i>299</i>&nbsp;    protected void mergeStandardTree(Node root)
+<i>300</i>&nbsp;      throws IIOInvalidTreeException {
+<b class="nc"><i>301</i>&nbsp;        Node node = root;</b>
+<b class="nc"><i>302</i>&nbsp;        if (!node.getNodeName()</b>
+<b class="nc"><i>303</i>&nbsp;            .equals(IIOMetadataFormatImpl.standardMetadataFormatName)) {</b>
+<b class="nc"><i>304</i>&nbsp;            fatal(node, &quot;Root must be &quot; +</b>
+<i>305</i>&nbsp;                  IIOMetadataFormatImpl.standardMetadataFormatName);
+<i>306</i>&nbsp;        }
+<i>307</i>&nbsp;
+<b class="nc"><i>308</i>&nbsp;        node = node.getFirstChild();</b>
+<b class="nc"><i>309</i>&nbsp;        while (node != null) {</b>
+<b class="nc"><i>310</i>&nbsp;            String name = node.getNodeName();</b>
+<i>311</i>&nbsp;
+<b class="nc"><i>312</i>&nbsp;            if (name.equals(&quot;Chroma&quot;)) {</b>
+<b class="nc"><i>313</i>&nbsp;                Node childNode = node.getFirstChild();</b>
+<b class="nc"><i>314</i>&nbsp;                while(childNode != null) {</b>
+<b class="nc"><i>315</i>&nbsp;                    String childName = childNode.getNodeName();</b>
+<b class="nc"><i>316</i>&nbsp;                    if (childName.equals(&quot;Palette&quot;)) {</b>
+<b class="nc"><i>317</i>&nbsp;                        localColorTable = getColorTable(childNode,</b>
+<i>318</i>&nbsp;                                                        &quot;PaletteEntry&quot;,
+<i>319</i>&nbsp;                                                        false, -1);
+<b class="nc"><i>320</i>&nbsp;                        break;</b>
+<i>321</i>&nbsp;                    }
+<b class="nc"><i>322</i>&nbsp;                    childNode = childNode.getNextSibling();</b>
+<b class="nc"><i>323</i>&nbsp;                }</b>
+<b class="nc"><i>324</i>&nbsp;            } else if (name.equals(&quot;Compression&quot;)) {</b>
+<b class="nc"><i>325</i>&nbsp;                Node childNode = node.getFirstChild();</b>
+<b class="nc"><i>326</i>&nbsp;                while(childNode != null) {</b>
+<b class="nc"><i>327</i>&nbsp;                    String childName = childNode.getNodeName();</b>
+<b class="nc"><i>328</i>&nbsp;                    if (childName.equals(&quot;NumProgressiveScans&quot;)) {</b>
+<b class="nc"><i>329</i>&nbsp;                        int numProgressiveScans =</b>
+<b class="nc"><i>330</i>&nbsp;                            getIntAttribute(childNode, &quot;value&quot;, 4, false,</b>
+<i>331</i>&nbsp;                                            true, 1, Integer.MAX_VALUE);
+<b class="nc"><i>332</i>&nbsp;                        if (numProgressiveScans &gt; 1) {</b>
+<b class="nc"><i>333</i>&nbsp;                            interlaceFlag = true;</b>
+<i>334</i>&nbsp;                        }
+<i>335</i>&nbsp;                        break;
+<i>336</i>&nbsp;                    }
+<b class="nc"><i>337</i>&nbsp;                    childNode = childNode.getNextSibling();</b>
+<b class="nc"><i>338</i>&nbsp;                }</b>
+<b class="nc"><i>339</i>&nbsp;            } else if (name.equals(&quot;Dimension&quot;)) {</b>
+<b class="nc"><i>340</i>&nbsp;                Node childNode = node.getFirstChild();</b>
+<b class="nc"><i>341</i>&nbsp;                while(childNode != null) {</b>
+<b class="nc"><i>342</i>&nbsp;                    String childName = childNode.getNodeName();</b>
+<b class="nc"><i>343</i>&nbsp;                    if (childName.equals(&quot;HorizontalPixelOffset&quot;)) {</b>
+<b class="nc"><i>344</i>&nbsp;                        imageLeftPosition = getIntAttribute(childNode,</b>
+<i>345</i>&nbsp;                                                            &quot;value&quot;,
+<i>346</i>&nbsp;                                                            -1, true,
+<i>347</i>&nbsp;                                                            true, 0, 65535);
+<b class="nc"><i>348</i>&nbsp;                    } else if (childName.equals(&quot;VerticalPixelOffset&quot;)) {</b>
+<b class="nc"><i>349</i>&nbsp;                        imageTopPosition = getIntAttribute(childNode,</b>
+<i>350</i>&nbsp;                                                           &quot;value&quot;,
+<i>351</i>&nbsp;                                                           -1, true,
+<i>352</i>&nbsp;                                                           true, 0, 65535);
+<i>353</i>&nbsp;                    }
+<b class="nc"><i>354</i>&nbsp;                    childNode = childNode.getNextSibling();</b>
+<b class="nc"><i>355</i>&nbsp;                }</b>
+<b class="nc"><i>356</i>&nbsp;            } else if (name.equals(&quot;Text&quot;)) {</b>
+<b class="nc"><i>357</i>&nbsp;                Node childNode = node.getFirstChild();</b>
+<b class="nc"><i>358</i>&nbsp;                while(childNode != null) {</b>
+<b class="nc"><i>359</i>&nbsp;                    String childName = childNode.getNodeName();</b>
+<b class="nc"><i>360</i>&nbsp;                    if (childName.equals(&quot;TextEntry&quot;) &amp;&amp;</b>
+<b class="nc"><i>361</i>&nbsp;                        getAttribute(childNode, &quot;compression&quot;,</b>
+<b class="nc"><i>362</i>&nbsp;                                     &quot;none&quot;, false).equals(&quot;none&quot;) &amp;&amp;</b>
+<b class="nc"><i>363</i>&nbsp;                        Charset.isSupported(getAttribute(childNode,</b>
+<i>364</i>&nbsp;                                                         &quot;encoding&quot;,
+<i>365</i>&nbsp;                                                         &quot;ISO-8859-1&quot;,
+<i>366</i>&nbsp;                                                         false))) {
+<b class="nc"><i>367</i>&nbsp;                        String value = getAttribute(childNode, &quot;value&quot;);</b>
+<b class="nc"><i>368</i>&nbsp;                        byte[] comment = fromISO8859(value);</b>
+<b class="nc"><i>369</i>&nbsp;                        if (comments == null) {</b>
+<b class="nc"><i>370</i>&nbsp;                            comments = new ArrayList();</b>
+<i>371</i>&nbsp;                        }
+<b class="nc"><i>372</i>&nbsp;                        comments.add(comment);</b>
+<i>373</i>&nbsp;                    }
+<b class="nc"><i>374</i>&nbsp;                    childNode = childNode.getNextSibling();</b>
+<b class="nc"><i>375</i>&nbsp;                }</b>
+<b class="nc"><i>376</i>&nbsp;            } else if (name.equals(&quot;Transparency&quot;)) {</b>
+<b class="nc"><i>377</i>&nbsp;                Node childNode = node.getFirstChild();</b>
+<b class="nc"><i>378</i>&nbsp;                while(childNode != null) {</b>
+<b class="nc"><i>379</i>&nbsp;                    String childName = childNode.getNodeName();</b>
+<b class="nc"><i>380</i>&nbsp;                    if (childName.equals(&quot;TransparentIndex&quot;)) {</b>
+<b class="nc"><i>381</i>&nbsp;                        transparentColorIndex = getIntAttribute(childNode,</b>
+<i>382</i>&nbsp;                                                                &quot;value&quot;,
+<i>383</i>&nbsp;                                                                -1, true,
+<i>384</i>&nbsp;                                                                true, 0, 255);
+<b class="nc"><i>385</i>&nbsp;                        transparentColorFlag = true;</b>
+<b class="nc"><i>386</i>&nbsp;                        break;</b>
+<i>387</i>&nbsp;                    }
+<b class="nc"><i>388</i>&nbsp;                    childNode = childNode.getNextSibling();</b>
+<b class="nc"><i>389</i>&nbsp;                }</b>
+<i>390</i>&nbsp;            }
+<i>391</i>&nbsp;
+<b class="nc"><i>392</i>&nbsp;            node = node.getNextSibling();</b>
+<b class="nc"><i>393</i>&nbsp;        }</b>
+<i>394</i>&nbsp;    }
+<i>395</i>&nbsp;
+<i>396</i>&nbsp;    public void setFromTree(String formatName, Node root)
+<i>397</i>&nbsp;        throws IIOInvalidTreeException
+<i>398</i>&nbsp;    {
+<b class="nc"><i>399</i>&nbsp;        reset();</b>
+<b class="nc"><i>400</i>&nbsp;        mergeTree(formatName, root);</b>
+<i>401</i>&nbsp;    }
+<i>402</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

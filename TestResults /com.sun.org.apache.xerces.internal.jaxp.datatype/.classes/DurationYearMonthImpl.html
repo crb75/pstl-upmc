@@ -1,0 +1,283 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DurationYearMonthImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.jaxp.datatype</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DurationYearMonthImpl (com.sun.org.apache.xerces.internal.jaxp.datatype)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DurationYearMonthImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2010, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.org.apache.xerces.internal.jaxp.datatype;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.math.BigInteger;
+<i>29</i>&nbsp;import javax.xml.datatype.DatatypeConstants;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;/**
+<i>33</i>&nbsp; * &lt;p&gt;Represent a subtype &lt;code&gt;xdt:yearMonthDuration&lt;/code&gt; of a &lt;code&gt;Duration&lt;/code&gt;
+<i>34</i>&nbsp; * as specified in &lt;a href=&quot;http://www.w3.org/TR/xpath-datamodel#yearMonthDuration&quot;&gt;
+<i>35</i>&nbsp; *   XQuery 1.0 and XPath 2.0 Data Model, xdt:yearMonthDuration&lt;/a&gt;.&lt;/p&gt;
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; *
+<i>38</i>&nbsp; * &lt;p&gt;The DurationYearMonth object represents a period of Gregorian time,
+<i>39</i>&nbsp; * with a lexical representation, &quot;&lt;em&gt;PnYnM&lt;/em&gt;&quot; that contains only year and month components.
+<i>40</i>&nbsp; * &lt;/p&gt;
+<i>41</i>&nbsp; *
+<i>42</i>&nbsp; *
+<i>43</i>&nbsp; * @author &lt;a href=&quot;mailto:Vikram.Aroskar@Sun.COM&quot;&gt;Vikram Aroskar&lt;/a&gt;
+<i>44</i>&nbsp; * @author &lt;a href=&quot;mailto:Huizhe.wang@oracle.com&quot;&gt;Joe Wang&lt;/a&gt;
+<i>45</i>&nbsp; * @version $Revision: 1.1 $, $Date: 2010/05/19 05:02:55 $
+<i>46</i>&nbsp;
+<i>47</i>&nbsp; * @see XMLGregorianCalendar#add(Duration)
+<i>48</i>&nbsp; */
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;class DurationYearMonthImpl
+<i>51</i>&nbsp;        extends DurationImpl {
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /**
+<i>55</i>&nbsp;     * &lt;p&gt;Constructs a new Duration object by specifying each field individually.&lt;/p&gt;
+<i>56</i>&nbsp;     *
+<i>57</i>&nbsp;     * &lt;p&gt;All the parameters are optional as long as at least one field is present.
+<i>58</i>&nbsp;     * If specified, parameters have to be zero or positive.&lt;/p&gt;
+<i>59</i>&nbsp;     *
+<i>60</i>&nbsp;     * @param isPositive Set to &lt;code&gt;false&lt;/code&gt; to create a negative duration. When the length
+<i>61</i>&nbsp;     *   of the duration is zero, this parameter will be ignored.
+<i>62</i>&nbsp;     * @param years of this &lt;code&gt;Duration&lt;/code&gt;
+<i>63</i>&nbsp;     * @param months of this &lt;code&gt;Duration&lt;/code&gt;
+<i>64</i>&nbsp;     *
+<i>65</i>&nbsp;     * @throws IllegalArgumentException
+<i>66</i>&nbsp;     *    If years, months parameters are all &lt;code&gt;null&lt;/code&gt;. Or if any
+<i>67</i>&nbsp;     *    of those parameters are negative.
+<i>68</i>&nbsp;     */
+<i>69</i>&nbsp;    public DurationYearMonthImpl(
+<i>70</i>&nbsp;        boolean isPositive,
+<i>71</i>&nbsp;        BigInteger years,
+<i>72</i>&nbsp;        BigInteger months) {
+<i>73</i>&nbsp;
+<b class="nc"><i>74</i>&nbsp;        super(isPositive, years, months, null, null, null, null);</b>
+<b class="nc"><i>75</i>&nbsp;        convertToCanonicalYearMonth();</b>
+<i>76</i>&nbsp;    }
+<i>77</i>&nbsp;        /**
+<i>78</i>&nbsp;         * &lt;p&gt;Construct a &lt;code&gt;Duration&lt;/code&gt; of type &lt;code&gt;xdt:yearMonthDuration&lt;/code&gt; using the specified
+<i>79</i>&nbsp;         * &lt;code&gt;year&lt;/code&gt; and &lt;code&gt;month&lt;/code&gt; as defined in
+<i>80</i>&nbsp;         * &lt;a href=&quot;http://www.w3.org/TR/xpath-datamodel#yearMonthDuration&quot;&gt;
+<i>81</i>&nbsp;         *   XQuery 1.0 and XPath 2.0 Data Model, xdt:yearMonthDuration&lt;/a&gt;.&lt;/p&gt;
+<i>82</i>&nbsp;         *
+<i>83</i>&nbsp;     * &lt;p&gt;A {@link DatatypeConstants#FIELD_UNDEFINED} value indicates that field is not set.&lt;/p&gt;
+<i>84</i>&nbsp;     *
+<i>85</i>&nbsp;     * @param isPositive Set to &lt;code&gt;false&lt;/code&gt; to create a negative duration. When the length
+<i>86</i>&nbsp;     *   of the duration is zero, this parameter will be ignored.
+<i>87</i>&nbsp;         * @param year Year of &lt;code&gt;Duration&lt;/code&gt;.
+<i>88</i>&nbsp;         * @param month Month of &lt;code&gt;Duration&lt;/code&gt;.
+<i>89</i>&nbsp;         *
+<i>90</i>&nbsp;         * @throws IllegalArgumentException If the values are not a valid representation of a
+<i>91</i>&nbsp;         * &lt;code&gt;Duration&lt;/code&gt;: if any of the fields (year, month) is negative.
+<i>92</i>&nbsp;         */
+<i>93</i>&nbsp;    protected DurationYearMonthImpl(
+<i>94</i>&nbsp;        final boolean isPositive,
+<i>95</i>&nbsp;        final int years,
+<i>96</i>&nbsp;        final int months) {
+<i>97</i>&nbsp;
+<b class="nc"><i>98</i>&nbsp;        this(isPositive,</b>
+<b class="nc"><i>99</i>&nbsp;            wrap(years),</b>
+<b class="nc"><i>100</i>&nbsp;            wrap(months));</b>
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    }
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;        /**
+<i>107</i>&nbsp;         * &lt;p&gt;Construct a &lt;code&gt;Duration&lt;/code&gt; of type &lt;code&gt;xdt:yearMonthDuration&lt;/code&gt; using the specified milliseconds as defined in
+<i>108</i>&nbsp;         * &lt;a href=&quot;http://www.w3.org/TR/xpath-datamodel#yearMonthDuration&quot;&gt;
+<i>109</i>&nbsp;         *   XQuery 1.0 and XPath 2.0 Data Model, xdt:yearMonthDuration&lt;/a&gt;.&lt;/p&gt;
+<i>110</i>&nbsp;         *
+<i>111</i>&nbsp;         * &lt;p&gt;The datatype &lt;code&gt;xdt:yearMonthDuration&lt;/code&gt; is a subtype of &lt;code&gt;xs:duration&lt;/code&gt;
+<i>112</i>&nbsp;         * whose lexical representation contains only year and month components.
+<i>113</i>&nbsp;         * This datatype resides in the namespace {@link javax.xml.XMLConstants#W3C_XPATH_DATATYPE_NS_URI}.&lt;/p&gt;
+<i>114</i>&nbsp;         *
+<i>115</i>&nbsp;     * &lt;p&gt;Both values are set by computing their values from the specified milliseconds
+<i>116</i>&nbsp;     * and are availabe using the &lt;code&gt;get&lt;/code&gt; methods of  the created {@link Duration}.
+<i>117</i>&nbsp;     * The values conform to and are defined by:&lt;/p&gt;
+<i>118</i>&nbsp;     * &lt;ul&gt;
+<i>119</i>&nbsp;     *   &lt;li&gt;ISO 8601:2000(E) Section 5.5.3.2 Alternative format&lt;/li&gt;
+<i>120</i>&nbsp;     *   &lt;li&gt;&lt;a href=&quot;http://www.w3.org/TR/xmlschema-2/#isoformats&quot;&gt;
+<i>121</i>&nbsp;     *     W3C XML Schema 1.0 Part 2, Appendix D, ISO 8601 Date and Time Formats&lt;/a&gt;
+<i>122</i>&nbsp;     *   &lt;/li&gt;
+<i>123</i>&nbsp;     *   &lt;li&gt;{@link XMLGregorianCalendar}  Date/Time Datatype Field Mapping Between XML Schema 1.0 and Java Representation&lt;/li&gt;
+<i>124</i>&nbsp;     * &lt;/ul&gt;
+<i>125</i>&nbsp;     *
+<i>126</i>&nbsp;         * &lt;p&gt;The default start instance is defined by {@link GregorianCalendar}&#39;s use of the start of the epoch: i.e.,
+<i>127</i>&nbsp;         * {@link java.util.Calendar#YEAR} = 1970,
+<i>128</i>&nbsp;         * {@link java.util.Calendar#MONTH} = {@link java.util.Calendar#JANUARY},
+<i>129</i>&nbsp;         * {@link java.util.Calendar#DATE} = 1, etc.
+<i>130</i>&nbsp;         * This is important as there are variations in the Gregorian Calendar,
+<i>131</i>&nbsp;         * e.g. leap years have different days in the month = {@link java.util.Calendar#FEBRUARY}
+<i>132</i>&nbsp;         * so the result of {@link Duration#getMonths()} can be influenced.&lt;/p&gt;
+<i>133</i>&nbsp;         *
+<i>134</i>&nbsp;     * &lt;p&gt;Any remaining milliseconds after determining the year and month are discarded.&lt;/p&gt;
+<i>135</i>&nbsp;         *
+<i>136</i>&nbsp;         * @param durationInMilliseconds Milliseconds of &lt;code&gt;Duration&lt;/code&gt; to create.
+<i>137</i>&nbsp;         */
+<i>138</i>&nbsp;    protected DurationYearMonthImpl(long durationInMilliseconds) {
+<i>139</i>&nbsp;
+<b class="nc"><i>140</i>&nbsp;        super(durationInMilliseconds);</b>
+<b class="nc"><i>141</i>&nbsp;        convertToCanonicalYearMonth();</b>
+<i>142</i>&nbsp;        //Any remaining milliseconds after determining the year and month are discarded.
+<b class="nc"><i>143</i>&nbsp;        days = null;</b>
+<b class="nc"><i>144</i>&nbsp;        hours = null;</b>
+<b class="nc"><i>145</i>&nbsp;        minutes = null;</b>
+<b class="nc"><i>146</i>&nbsp;        seconds = null;</b>
+<b class="nc"><i>147</i>&nbsp;        signum = calcSignum((signum&lt;0)?false:true);</b>
+<i>148</i>&nbsp;    }
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;        /**
+<i>152</i>&nbsp;         * &lt;p&gt;Construct a &lt;code&gt;Duration&lt;/code&gt; of type &lt;code&gt;xdt:yearMonthDuration&lt;/code&gt; by parsing its &lt;code&gt;String&lt;/code&gt; representation,
+<i>153</i>&nbsp;         * &quot;&lt;em&gt;PnYnM&lt;/em&gt;&quot;, &lt;a href=&quot;http://www.w3.org/TR/xpath-datamodel#yearMonthDuration&quot;&gt;
+<i>154</i>&nbsp;         *   XQuery 1.0 and XPath 2.0 Data Model, xdt:yearMonthDuration&lt;/a&gt;.&lt;/p&gt;
+<i>155</i>&nbsp;         *
+<i>156</i>&nbsp;         * &lt;p&gt;The datatype &lt;code&gt;xdt:yearMonthDuration&lt;/code&gt; is a subtype of &lt;code&gt;xs:duration&lt;/code&gt;
+<i>157</i>&nbsp;         * whose lexical representation contains only year and month components.
+<i>158</i>&nbsp;         * This datatype resides in the namespace {@link javax.xml.XMLConstants#W3C_XPATH_DATATYPE_NS_URI}.&lt;/p&gt;
+<i>159</i>&nbsp;         *
+<i>160</i>&nbsp;     * &lt;p&gt;Both values are set and availabe from the created {@link Duration}&lt;/p&gt;
+<i>161</i>&nbsp;         *
+<i>162</i>&nbsp;     * &lt;p&gt;The XML Schema specification states that values can be of an arbitrary size.
+<i>163</i>&nbsp;     * Implementations may chose not to or be incapable of supporting arbitrarily large and/or small values.
+<i>164</i>&nbsp;     * An {@link UnsupportedOperationException} will be thrown with a message indicating implementation limits
+<i>165</i>&nbsp;     * if implementation capacities are exceeded.&lt;/p&gt;
+<i>166</i>&nbsp;     *
+<i>167</i>&nbsp;         * @param lexicalRepresentation Lexical representation of a duration.
+<i>168</i>&nbsp;         *
+<i>169</i>&nbsp;         * @throws IllegalArgumentException If &lt;code&gt;lexicalRepresentation&lt;/code&gt; is not a valid representation of a &lt;code&gt;Duration&lt;/code&gt; expressed only in terms of years and months.
+<i>170</i>&nbsp;         * @throws UnsupportedOperationException If implementation cannot support requested values.
+<i>171</i>&nbsp;         * @throws NullPointerException If &lt;code&gt;lexicalRepresentation&lt;/code&gt; is &lt;code&gt;null&lt;/code&gt;.
+<i>172</i>&nbsp;         */
+<i>173</i>&nbsp;    protected DurationYearMonthImpl(String lexicalRepresentation) {
+<b class="nc"><i>174</i>&nbsp;        super(lexicalRepresentation);</b>
+<b class="nc"><i>175</i>&nbsp;        if (getDays() &gt; 0 || getHours() &gt; 0</b>
+<b class="nc"><i>176</i>&nbsp;                || getMinutes() &gt; 0 || getSeconds() &gt; 0) {</b>
+<b class="nc"><i>177</i>&nbsp;            throw new IllegalArgumentException(</b>
+<i>178</i>&nbsp;                    &quot;Trying to create an xdt:yearMonthDuration with an invalid&quot;
+<i>179</i>&nbsp;                    + &quot; lexical representation of \&quot;&quot; + lexicalRepresentation
+<i>180</i>&nbsp;                    + &quot;\&quot;, data model requires PnYnM.&quot;);
+<i>181</i>&nbsp;        }
+<b class="nc"><i>182</i>&nbsp;        convertToCanonicalYearMonth();</b>
+<i>183</i>&nbsp;    }
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;    /**
+<i>186</i>&nbsp;     * The value space of xs:yearMonthDuration is the set of xs:integer month values.
+<i>187</i>&nbsp;     * @return the value of yearMonthDuration
+<i>188</i>&nbsp;     */
+<i>189</i>&nbsp;    public int getValue() {
+<b class="nc"><i>190</i>&nbsp;        return getYears() * 12 + getMonths();</b>
+<i>191</i>&nbsp;    }
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;    private void convertToCanonicalYearMonth() {
+<b class="nc"><i>194</i>&nbsp;        while (getMonths() &gt;= 12)</b>
+<i>195</i>&nbsp;        {
+<b class="nc"><i>196</i>&nbsp;            months = months.subtract(BigInteger.valueOf(12));</b>
+<b class="nc"><i>197</i>&nbsp;            years = BigInteger.valueOf((long) getYears()).add(BigInteger.ONE);</b>
+<i>198</i>&nbsp;        }
+<i>199</i>&nbsp;    }
+<i>200</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

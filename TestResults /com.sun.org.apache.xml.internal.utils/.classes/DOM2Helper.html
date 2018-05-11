@@ -1,0 +1,399 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DOM2Helper</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.utils</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DOM2Helper (com.sun.org.apache.xml.internal.utils)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DOM2Helper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 30)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: DOM2Helper.java,v 1.2.4.1 2005/09/15 08:15:37 suresh_emailid Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.utils;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.io.IOException;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import javax.xml.parsers.DocumentBuilder;
+<i>28</i>&nbsp;import javax.xml.parsers.DocumentBuilderFactory;
+<i>29</i>&nbsp;import javax.xml.parsers.ParserConfigurationException;
+<i>30</i>&nbsp;import javax.xml.transform.TransformerException;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import org.w3c.dom.Attr;
+<i>33</i>&nbsp;import org.w3c.dom.Document;
+<i>34</i>&nbsp;import org.w3c.dom.Element;
+<i>35</i>&nbsp;import org.w3c.dom.Node;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import org.xml.sax.InputSource;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**
+<i>40</i>&nbsp; * @deprecated Since the introduction of the DTM, this class will be removed.
+<i>41</i>&nbsp; * This class provides a DOM level 2 &quot;helper&quot;, which provides services currently
+<i>42</i>&nbsp; * not provided be the DOM standard.
+<i>43</i>&nbsp; */
+<i>44</i>&nbsp;public class DOM2Helper extends DOMHelper
+<i>45</i>&nbsp;{
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;  /**
+<i>48</i>&nbsp;   * Construct an instance.
+<i>49</i>&nbsp;   */
+<b class="nc"><i>50</i>&nbsp;  public DOM2Helper(){}</b>
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;  /**
+<i>53</i>&nbsp;   * Check node to see if it was created by a DOM implementation
+<i>54</i>&nbsp;   * that this helper is intended to support. This is currently
+<i>55</i>&nbsp;   * disabled, and assumes all nodes are acceptable rather than checking
+<i>56</i>&nbsp;   * that they implement com.sun.org.apache.xerces.internal.dom.NodeImpl.
+<i>57</i>&nbsp;   *
+<i>58</i>&nbsp;   * @param node The node to be tested.
+<i>59</i>&nbsp;   *
+<i>60</i>&nbsp;   * @throws TransformerException if the node is not one which this
+<i>61</i>&nbsp;   * DOM2Helper can support. If we return without throwing the exception,
+<i>62</i>&nbsp;   * the node is compatable.
+<i>63</i>&nbsp;   * @xsl.usage internal
+<i>64</i>&nbsp;   */
+<i>65</i>&nbsp;  public void checkNode(Node node) throws TransformerException
+<i>66</i>&nbsp;  {
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    // if(!(node instanceof com.sun.org.apache.xerces.internal.dom.NodeImpl))
+<i>69</i>&nbsp;    //  throw new TransformerException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_XERCES_CANNOT_HANDLE_NODES, new Object[]{((Object)node).getClass()})); //&quot;DOM2Helper can not handle nodes of type&quot;
+<i>70</i>&nbsp;    //+((Object)node).getClass());
+<i>71</i>&nbsp;  }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;  /**
+<i>74</i>&nbsp;   * Returns true if the DOM implementation handled by this helper
+<i>75</i>&nbsp;   * supports the SAX ContentHandler interface.
+<i>76</i>&nbsp;   *
+<i>77</i>&nbsp;   * @return true (since Xerces does).
+<i>78</i>&nbsp;   */
+<i>79</i>&nbsp;  public boolean supportsSAX()
+<i>80</i>&nbsp;  {
+<b class="nc"><i>81</i>&nbsp;    return true;</b>
+<i>82</i>&nbsp;  }
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;  /** Field m_doc: Document Node for the document this helper is currently
+<i>85</i>&nbsp;   * accessing or building
+<i>86</i>&nbsp;   * @see #setDocument
+<i>87</i>&nbsp;   * @see #getDocument
+<i>88</i>&nbsp;   *  */
+<i>89</i>&nbsp;  private Document m_doc;
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;  /**
+<i>92</i>&nbsp;   * Specify which document this helper is currently operating on.
+<i>93</i>&nbsp;   *
+<i>94</i>&nbsp;   * @param doc The DOM Document node for this document.
+<i>95</i>&nbsp;   * @see #getDocument
+<i>96</i>&nbsp;   */
+<i>97</i>&nbsp;  public void setDocument(Document doc)
+<i>98</i>&nbsp;  {
+<b class="nc"><i>99</i>&nbsp;    m_doc = doc;</b>
+<i>100</i>&nbsp;  }
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;  /**
+<i>103</i>&nbsp;   * Query which document this helper is currently operating on.
+<i>104</i>&nbsp;   *
+<i>105</i>&nbsp;   * @return The DOM Document node for this document.
+<i>106</i>&nbsp;   * @see #setDocument
+<i>107</i>&nbsp;   */
+<i>108</i>&nbsp;  public Document getDocument()
+<i>109</i>&nbsp;  {
+<b class="nc"><i>110</i>&nbsp;    return m_doc;</b>
+<i>111</i>&nbsp;  }
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;  /**
+<i>114</i>&nbsp;   * Parse an XML document.
+<i>115</i>&nbsp;   *
+<i>116</i>&nbsp;   * &lt;p&gt;Right now the Xerces DOMParser class is used.  This needs
+<i>117</i>&nbsp;   * fixing, either via jaxp, or via some other, standard method.&lt;/p&gt;
+<i>118</i>&nbsp;   *
+<i>119</i>&nbsp;   * &lt;p&gt;The application can use this method to instruct the SAX parser
+<i>120</i>&nbsp;   * to begin parsing an XML document from any valid input
+<i>121</i>&nbsp;   * source (a character stream, a byte stream, or a URI).&lt;/p&gt;
+<i>122</i>&nbsp;   *
+<i>123</i>&nbsp;   * &lt;p&gt;Applications may not invoke this method while a parse is in
+<i>124</i>&nbsp;   * progress (they should create a new Parser instead for each
+<i>125</i>&nbsp;   * additional XML document).  Once a parse is complete, an
+<i>126</i>&nbsp;   * application may reuse the same Parser object, possibly with a
+<i>127</i>&nbsp;   * different input source.&lt;/p&gt;
+<i>128</i>&nbsp;   *
+<i>129</i>&nbsp;   * @param source The input source for the top-level of the
+<i>130</i>&nbsp;   *        XML document.
+<i>131</i>&nbsp;   *
+<i>132</i>&nbsp;   * @throws TransformerException if any checked exception is thrown.
+<i>133</i>&nbsp;   * @xsl.usage internal
+<i>134</i>&nbsp;   */
+<i>135</i>&nbsp;  public void parse(InputSource source) throws TransformerException
+<i>136</i>&nbsp;  {
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;    try
+<i>139</i>&nbsp;    {
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;      // I guess I should use JAXP factory here... when it&#39;s legal.
+<i>142</i>&nbsp;      // com.sun.org.apache.xerces.internal.parsers.DOMParser parser
+<i>143</i>&nbsp;      //  = new com.sun.org.apache.xerces.internal.parsers.DOMParser();
+<i>144</i>&nbsp;      DocumentBuilderFactory builderFactory =
+<b class="nc"><i>145</i>&nbsp;        DocumentBuilderFactory.newInstance();</b>
+<i>146</i>&nbsp;
+<b class="nc"><i>147</i>&nbsp;      builderFactory.setNamespaceAware(true);</b>
+<b class="nc"><i>148</i>&nbsp;      builderFactory.setValidating(true);</b>
+<i>149</i>&nbsp;
+<b class="nc"><i>150</i>&nbsp;      DocumentBuilder parser = builderFactory.newDocumentBuilder();</b>
+<i>151</i>&nbsp;
+<i>152</i>&nbsp;      /*
+<i>153</i>&nbsp;      // domParser.setFeature(&quot;http://apache.org/xml/features/dom/create-entity-ref-nodes&quot;, getShouldExpandEntityRefs()? false : true);
+<i>154</i>&nbsp;      if(m_useDOM2getNamespaceURI)
+<i>155</i>&nbsp;      {
+<i>156</i>&nbsp;      parser.setFeature(&quot;http://apache.org/xml/features/dom/defer-node-expansion&quot;, true);
+<i>157</i>&nbsp;      parser.setFeature(&quot;http://xml.org/sax/features/namespaces&quot;, true);
+<i>158</i>&nbsp;      }
+<i>159</i>&nbsp;      else
+<i>160</i>&nbsp;      {
+<i>161</i>&nbsp;      parser.setFeature(&quot;http://apache.org/xml/features/dom/defer-node-expansion&quot;, false);
+<i>162</i>&nbsp;      }
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;      parser.setFeature(&quot;http://apache.org/xml/features/allow-java-encodings&quot;, true);
+<i>165</i>&nbsp;      */
+<i>166</i>&nbsp;
+<b class="nc"><i>167</i>&nbsp;      parser.setErrorHandler(</b>
+<i>168</i>&nbsp;        new com.sun.org.apache.xml.internal.utils.DefaultErrorHandler());
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;      // if(null != m_entityResolver)
+<i>171</i>&nbsp;      // {
+<i>172</i>&nbsp;      // System.out.println(&quot;Setting the entity resolver.&quot;);
+<i>173</i>&nbsp;      //  parser.setEntityResolver(m_entityResolver);
+<i>174</i>&nbsp;      // }
+<b class="nc"><i>175</i>&nbsp;      setDocument(parser.parse(source));</b>
+<i>176</i>&nbsp;    }
+<b class="nc"><i>177</i>&nbsp;    catch (org.xml.sax.SAXException se)</b>
+<i>178</i>&nbsp;    {
+<b class="nc"><i>179</i>&nbsp;      throw new TransformerException(se);</b>
+<i>180</i>&nbsp;    }
+<b class="nc"><i>181</i>&nbsp;    catch (ParserConfigurationException pce)</b>
+<i>182</i>&nbsp;    {
+<b class="nc"><i>183</i>&nbsp;      throw new TransformerException(pce);</b>
+<i>184</i>&nbsp;    }
+<b class="nc"><i>185</i>&nbsp;    catch (IOException ioe)</b>
+<i>186</i>&nbsp;    {
+<b class="nc"><i>187</i>&nbsp;      throw new TransformerException(ioe);</b>
+<b class="nc"><i>188</i>&nbsp;    }</b>
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;    // setDocument(((com.sun.org.apache.xerces.internal.parsers.DOMParser)parser).getDocument());
+<i>191</i>&nbsp;  }
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;  /**
+<i>194</i>&nbsp;   * Given an XML ID, return the element. This requires assistance from the
+<i>195</i>&nbsp;   * DOM and parser, and is meaningful only in the context of a DTD
+<i>196</i>&nbsp;   * or schema which declares attributes as being of type ID. This
+<i>197</i>&nbsp;   * information may or may not be available in all parsers, may or
+<i>198</i>&nbsp;   * may not be available for specific documents, and may or may not
+<i>199</i>&nbsp;   * be available when validation is not turned on.
+<i>200</i>&nbsp;   *
+<i>201</i>&nbsp;   * @param id The ID to search for, as a String.
+<i>202</i>&nbsp;   * @param doc The document to search within, as a DOM Document node.
+<i>203</i>&nbsp;   * @return DOM Element node with an attribute of type ID whose value
+<i>204</i>&nbsp;   * uniquely matches the requested id string, or null if there isn&#39;t
+<i>205</i>&nbsp;   * such an element or if the DOM can&#39;t answer the question for other
+<i>206</i>&nbsp;   * reasons.
+<i>207</i>&nbsp;   */
+<i>208</i>&nbsp;  public Element getElementByID(String id, Document doc)
+<i>209</i>&nbsp;  {
+<b class="nc"><i>210</i>&nbsp;    return doc.getElementById(id);</b>
+<i>211</i>&nbsp;  }
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;  /**
+<i>214</i>&nbsp;   * Figure out whether node2 should be considered as being later
+<i>215</i>&nbsp;   * in the document than node1, in Document Order as defined
+<i>216</i>&nbsp;   * by the XPath model. This may not agree with the ordering defined
+<i>217</i>&nbsp;   * by other XML applications.
+<i>218</i>&nbsp;   * &lt;p&gt;
+<i>219</i>&nbsp;   * There are some cases where ordering isn&#39;t defined, and neither are
+<i>220</i>&nbsp;   * the results of this function -- though we&#39;ll generally return true.
+<i>221</i>&nbsp;   * &lt;p&gt;
+<i>222</i>&nbsp;   * TODO: Make sure this does the right thing with attribute nodes!!!
+<i>223</i>&nbsp;   *
+<i>224</i>&nbsp;   * @param node1 DOM Node to perform position comparison on.
+<i>225</i>&nbsp;   * @param node2 DOM Node to perform position comparison on .
+<i>226</i>&nbsp;   *
+<i>227</i>&nbsp;   * @return false if node2 comes before node1, otherwise return true.
+<i>228</i>&nbsp;   * You can think of this as
+<i>229</i>&nbsp;   * &lt;code&gt;(node1.documentOrderPosition &amp;lt;= node2.documentOrderPosition)&lt;/code&gt;.
+<i>230</i>&nbsp;   */
+<i>231</i>&nbsp;  public static boolean isNodeAfter(Node node1, Node node2)
+<i>232</i>&nbsp;  {
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;    // Assume first that the nodes are DTM nodes, since discovering node
+<i>235</i>&nbsp;    // order is massivly faster for the DTM.
+<b class="nc"><i>236</i>&nbsp;    if(node1 instanceof DOMOrder &amp;&amp; node2 instanceof DOMOrder)</b>
+<i>237</i>&nbsp;    {
+<b class="nc"><i>238</i>&nbsp;      int index1 = ((DOMOrder) node1).getUid();</b>
+<b class="nc"><i>239</i>&nbsp;      int index2 = ((DOMOrder) node2).getUid();</b>
+<i>240</i>&nbsp;
+<b class="nc"><i>241</i>&nbsp;      return index1 &lt;= index2;</b>
+<i>242</i>&nbsp;    }
+<i>243</i>&nbsp;    else
+<i>244</i>&nbsp;    {
+<i>245</i>&nbsp;
+<i>246</i>&nbsp;      // isNodeAfter will return true if node is after countedNode
+<i>247</i>&nbsp;      // in document order. The base isNodeAfter is sloooow (relatively).
+<b class="nc"><i>248</i>&nbsp;      return DOMHelper.isNodeAfter(node1, node2);</b>
+<i>249</i>&nbsp;    }
+<i>250</i>&nbsp;  }
+<i>251</i>&nbsp;
+<i>252</i>&nbsp;  /**
+<i>253</i>&nbsp;   * Get the XPath-model parent of a node.  This version takes advantage
+<i>254</i>&nbsp;   * of the DOM Level 2 Attr.ownerElement() method; the base version we
+<i>255</i>&nbsp;   * would otherwise inherit is prepared to fall back on exhaustively
+<i>256</i>&nbsp;   * walking the document to find an Attr&#39;s parent.
+<i>257</i>&nbsp;   *
+<i>258</i>&nbsp;   * @param node Node to be examined
+<i>259</i>&nbsp;   *
+<i>260</i>&nbsp;   * @return the DOM parent of the input node, if there is one, or the
+<i>261</i>&nbsp;   * ownerElement if the input node is an Attr, or null if the node is
+<i>262</i>&nbsp;   * a Document, a DocumentFragment, or an orphan.
+<i>263</i>&nbsp;   */
+<i>264</i>&nbsp;  public static Node getParentOfNode(Node node)
+<i>265</i>&nbsp;  {
+<b class="nc"><i>266</i>&nbsp;          Node parent=node.getParentNode();</b>
+<b class="nc"><i>267</i>&nbsp;          if(parent==null &amp;&amp; (Node.ATTRIBUTE_NODE == node.getNodeType()) )</b>
+<b class="nc"><i>268</i>&nbsp;           parent=((Attr) node).getOwnerElement();</b>
+<b class="nc"><i>269</i>&nbsp;          return parent;</b>
+<i>270</i>&nbsp;  }
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;  /**
+<i>273</i>&nbsp;   * Returns the local name of the given node, as defined by the
+<i>274</i>&nbsp;   * XML Namespaces specification. This is prepared to handle documents
+<i>275</i>&nbsp;   * built using DOM Level 1 methods by falling back upon explicitly
+<i>276</i>&nbsp;   * parsing the node name.
+<i>277</i>&nbsp;   *
+<i>278</i>&nbsp;   * @param n Node to be examined
+<i>279</i>&nbsp;   *
+<i>280</i>&nbsp;   * @return String containing the local name, or null if the node
+<i>281</i>&nbsp;   * was not assigned a Namespace.
+<i>282</i>&nbsp;   */
+<i>283</i>&nbsp;  public String getLocalNameOfNode(Node n)
+<i>284</i>&nbsp;  {
+<i>285</i>&nbsp;
+<b class="nc"><i>286</i>&nbsp;    String name = n.getLocalName();</b>
+<i>287</i>&nbsp;
+<b class="nc"><i>288</i>&nbsp;    return (null == name) ? super.getLocalNameOfNode(n) : name;</b>
+<i>289</i>&nbsp;  }
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;  /**
+<i>292</i>&nbsp;   * Returns the Namespace Name (Namespace URI) for the given node.
+<i>293</i>&nbsp;   * In a Level 2 DOM, you can ask the node itself. Note, however, that
+<i>294</i>&nbsp;   * doing so conflicts with our decision in getLocalNameOfNode not
+<i>295</i>&nbsp;   * to trust the that the DOM was indeed created using the Level 2
+<i>296</i>&nbsp;   * methods. If Level 1 methods were used, these two functions will
+<i>297</i>&nbsp;   * disagree with each other.
+<i>298</i>&nbsp;   * &lt;p&gt;
+<i>299</i>&nbsp;   * TODO: Reconcile with getLocalNameOfNode.
+<i>300</i>&nbsp;   *
+<i>301</i>&nbsp;   * @param n Node to be examined
+<i>302</i>&nbsp;   *
+<i>303</i>&nbsp;   * @return String containing the Namespace URI bound to this DOM node
+<i>304</i>&nbsp;   * at the time the Node was created.
+<i>305</i>&nbsp;   */
+<i>306</i>&nbsp;  public String getNamespaceOfNode(Node n)
+<i>307</i>&nbsp;  {
+<b class="nc"><i>308</i>&nbsp;    return n.getNamespaceURI();</b>
+<i>309</i>&nbsp;  }
+<i>310</i>&nbsp;
+<i>311</i>&nbsp;  /** Field m_useDOM2getNamespaceURI is a compile-time flag which
+<i>312</i>&nbsp;   *  gates some of the parser options used to build a DOM -- but
+<i>313</i>&nbsp;   * that code is commented out at this time and nobody else
+<i>314</i>&nbsp;   * references it, so I&#39;ve commented this out as well. */
+<i>315</i>&nbsp;  //private boolean m_useDOM2getNamespaceURI = false;
+<i>316</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

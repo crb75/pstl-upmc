@@ -1,0 +1,605 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XSDSimpleTypeTraverser</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.xs.traversers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XSDSimpleTypeTraverser (com.sun.org.apache.xerces.internal.impl.xs.traversers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XSDSimpleTypeTraverser</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 216)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.xs.traversers;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import java.util.ArrayList;
+<i>24</i>&nbsp;import java.util.Vector;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dv.InvalidDatatypeFacetException;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dv.SchemaDVFactory;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dv.XSSimpleType;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl;
+<i>30</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dv.xs.XSSimpleTypeDecl;
+<i>31</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.SchemaGrammar;
+<i>32</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.SchemaSymbols;
+<i>33</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.XSAnnotationImpl;
+<i>34</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.util.XInt;
+<i>35</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.util.XSObjectListImpl;
+<i>36</i>&nbsp;import com.sun.org.apache.xerces.internal.util.DOMUtil;
+<i>37</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.QName;
+<i>38</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSConstants;
+<i>39</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSObjectList;
+<i>40</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
+<i>41</i>&nbsp;import org.w3c.dom.Element;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;/**
+<i>44</i>&nbsp; * The simple type definition schema component traverser.
+<i>45</i>&nbsp; *
+<i>46</i>&nbsp; * &lt;simpleType
+<i>47</i>&nbsp; *   final = (#all | (list | union | restriction))
+<i>48</i>&nbsp; *   id = ID
+<i>49</i>&nbsp; *   name = NCName
+<i>50</i>&nbsp; *   {any attributes with non-schema namespace . . .}&gt;
+<i>51</i>&nbsp; *   Content: (annotation?, (restriction | list | union))
+<i>52</i>&nbsp; * &lt;/simpleType&gt;
+<i>53</i>&nbsp; *
+<i>54</i>&nbsp; * &lt;restriction
+<i>55</i>&nbsp; *   base = QName
+<i>56</i>&nbsp; *   id = ID
+<i>57</i>&nbsp; *   {any attributes with non-schema namespace . . .}&gt;
+<i>58</i>&nbsp; *   Content: (annotation?, (simpleType?, (minExclusive | minInclusive | maxExclusive | maxInclusive | totalDigits | fractionDigits | length | minLength | maxLength | enumeration | whiteSpace | pattern)*))
+<i>59</i>&nbsp; * &lt;/restriction&gt;
+<i>60</i>&nbsp; *
+<i>61</i>&nbsp; * &lt;list
+<i>62</i>&nbsp; *   id = ID
+<i>63</i>&nbsp; *   itemType = QName
+<i>64</i>&nbsp; *   {any attributes with non-schema namespace . . .}&gt;
+<i>65</i>&nbsp; *   Content: (annotation?, (simpleType?))
+<i>66</i>&nbsp; * &lt;/list&gt;
+<i>67</i>&nbsp; *
+<i>68</i>&nbsp; * &lt;union
+<i>69</i>&nbsp; *   id = ID
+<i>70</i>&nbsp; *   memberTypes = List of QName
+<i>71</i>&nbsp; *   {any attributes with non-schema namespace . . .}&gt;
+<i>72</i>&nbsp; *   Content: (annotation?, (simpleType*))
+<i>73</i>&nbsp; * &lt;/union&gt;
+<i>74</i>&nbsp; *
+<i>75</i>&nbsp; * @xerces.internal
+<i>76</i>&nbsp; *
+<i>77</i>&nbsp; * @author Elena Litani, IBM
+<i>78</i>&nbsp; * @author Neeraj Bajaj, Sun Microsystems, Inc.
+<i>79</i>&nbsp; * @author Sandy Gao, IBM
+<i>80</i>&nbsp; *
+<i>81</i>&nbsp; * @version $Id: XSDSimpleTypeTraverser.java,v 1.7 2010-11-01 04:40:02 joehw Exp $
+<i>82</i>&nbsp; */
+<i>83</i>&nbsp;class XSDSimpleTypeTraverser extends XSDAbstractTraverser {
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    // whether the type being parsed is a S4S built-in type.
+<b class="nc"><i>86</i>&nbsp;    private boolean fIsBuiltIn = false;</b>
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    XSDSimpleTypeTraverser (XSDHandler handler,
+<i>89</i>&nbsp;            XSAttributeChecker gAttrCheck) {
+<b class="nc"><i>90</i>&nbsp;        super(handler, gAttrCheck);</b>
+<i>91</i>&nbsp;    }
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    //return qualified name of simpleType or empty string if error occured
+<i>94</i>&nbsp;    XSSimpleType traverseGlobal(Element elmNode,
+<i>95</i>&nbsp;            XSDocumentInfo schemaDoc,
+<i>96</i>&nbsp;            SchemaGrammar grammar) {
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;        // General Attribute Checking
+<b class="nc"><i>99</i>&nbsp;        Object[] attrValues = fAttrChecker.checkAttributes(elmNode, true, schemaDoc);</b>
+<b class="nc"><i>100</i>&nbsp;        String nameAtt = (String)attrValues[XSAttributeChecker.ATTIDX_NAME];</b>
+<b class="nc"><i>101</i>&nbsp;        if (nameAtt == null) {</b>
+<b class="nc"><i>102</i>&nbsp;            attrValues[XSAttributeChecker.ATTIDX_NAME] = NO_NAME;</b>
+<i>103</i>&nbsp;        }
+<b class="nc"><i>104</i>&nbsp;        XSSimpleType type = traverseSimpleTypeDecl(elmNode, attrValues, schemaDoc, grammar);</b>
+<b class="nc"><i>105</i>&nbsp;        fAttrChecker.returnAttrArray(attrValues, schemaDoc);</b>
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;        // if it&#39;s a global type without a name, return null
+<b class="nc"><i>108</i>&nbsp;        if (nameAtt == null) {</b>
+<b class="nc"><i>109</i>&nbsp;            reportSchemaError(&quot;s4s-att-must-appear&quot;, new Object[]{SchemaSymbols.ELT_SIMPLETYPE, SchemaSymbols.ATT_NAME}, elmNode);</b>
+<b class="nc"><i>110</i>&nbsp;            type = null;</b>
+<i>111</i>&nbsp;        }
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;        // don&#39;t add global components without name to the grammar
+<b class="nc"><i>114</i>&nbsp;        if (type != null) {</b>
+<b class="nc"><i>115</i>&nbsp;            if (grammar.getGlobalTypeDecl(type.getName()) == null) {</b>
+<b class="nc"><i>116</i>&nbsp;                grammar.addGlobalSimpleTypeDecl(type);</b>
+<i>117</i>&nbsp;            }
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;            // also add it to extended map
+<b class="nc"><i>120</i>&nbsp;            final String loc = fSchemaHandler.schemaDocument2SystemId(schemaDoc);</b>
+<b class="nc"><i>121</i>&nbsp;            final XSTypeDefinition type2 = grammar.getGlobalTypeDecl(type.getName(), loc);</b>
+<b class="nc"><i>122</i>&nbsp;            if (type2 == null) {</b>
+<b class="nc"><i>123</i>&nbsp;                grammar.addGlobalSimpleTypeDecl(type, loc);</b>
+<i>124</i>&nbsp;            }
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;            // handle duplicates
+<b class="nc"><i>127</i>&nbsp;            if (fSchemaHandler.fTolerateDuplicates) {</b>
+<b class="nc"><i>128</i>&nbsp;                if (type2 != null) {</b>
+<b class="nc"><i>129</i>&nbsp;                    if (type2 instanceof XSSimpleType) {</b>
+<b class="nc"><i>130</i>&nbsp;                        type = (XSSimpleType) type2;</b>
+<i>131</i>&nbsp;                    }
+<i>132</i>&nbsp;                }
+<b class="nc"><i>133</i>&nbsp;                fSchemaHandler.addGlobalTypeDecl(type);</b>
+<i>134</i>&nbsp;            }
+<i>135</i>&nbsp;        }
+<i>136</i>&nbsp;
+<b class="nc"><i>137</i>&nbsp;        return type;</b>
+<i>138</i>&nbsp;    }
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;    XSSimpleType traverseLocal(Element elmNode,
+<i>141</i>&nbsp;            XSDocumentInfo schemaDoc,
+<i>142</i>&nbsp;            SchemaGrammar grammar) {
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;        // General Attribute Checking
+<b class="nc"><i>145</i>&nbsp;        Object[] attrValues = fAttrChecker.checkAttributes(elmNode, false, schemaDoc);</b>
+<b class="nc"><i>146</i>&nbsp;        String name = genAnonTypeName(elmNode);</b>
+<b class="nc"><i>147</i>&nbsp;        XSSimpleType type = getSimpleType (name, elmNode, attrValues, schemaDoc, grammar);</b>
+<b class="nc"><i>148</i>&nbsp;        if (type instanceof XSSimpleTypeDecl) {</b>
+<b class="nc"><i>149</i>&nbsp;            ((XSSimpleTypeDecl)type).setAnonymous(true);</b>
+<i>150</i>&nbsp;        }
+<b class="nc"><i>151</i>&nbsp;        fAttrChecker.returnAttrArray(attrValues, schemaDoc);</b>
+<i>152</i>&nbsp;
+<b class="nc"><i>153</i>&nbsp;        return type;</b>
+<i>154</i>&nbsp;    }
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;    private XSSimpleType traverseSimpleTypeDecl(Element simpleTypeDecl,
+<i>157</i>&nbsp;            Object[] attrValues,
+<i>158</i>&nbsp;            XSDocumentInfo schemaDoc,
+<i>159</i>&nbsp;            SchemaGrammar grammar) {
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;        // get name and final values
+<b class="nc"><i>162</i>&nbsp;        String name = (String)attrValues[XSAttributeChecker.ATTIDX_NAME];</b>
+<b class="nc"><i>163</i>&nbsp;        return getSimpleType(name, simpleTypeDecl, attrValues, schemaDoc, grammar);</b>
+<i>164</i>&nbsp;    }
+<i>165</i>&nbsp;
+<i>166</i>&nbsp;    /*
+<i>167</i>&nbsp;     * Generate a name for an anonymous type
+<i>168</i>&nbsp;     */
+<i>169</i>&nbsp;    private String genAnonTypeName(Element simpleTypeDecl) {
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;        // Generate a unique name for the anonymous type by concatenating together the
+<i>172</i>&nbsp;        // names of parent nodes
+<i>173</i>&nbsp;        // The name is quite good for debugging/error purposes, but we may want to
+<i>174</i>&nbsp;        // revisit how this is done for performance reasons (LM).
+<b class="nc"><i>175</i>&nbsp;        StringBuffer typeName = new StringBuffer(&quot;#AnonType_&quot;);</b>
+<b class="nc"><i>176</i>&nbsp;        Element node = DOMUtil.getParent(simpleTypeDecl);</b>
+<b class="nc"><i>177</i>&nbsp;        while (node != null &amp;&amp; (node != DOMUtil.getRoot(DOMUtil.getDocument(node)))) {</b>
+<b class="nc"><i>178</i>&nbsp;            typeName.append(node.getAttribute(SchemaSymbols.ATT_NAME));</b>
+<b class="nc"><i>179</i>&nbsp;            node = DOMUtil.getParent(node);</b>
+<i>180</i>&nbsp;        }
+<b class="nc"><i>181</i>&nbsp;        return typeName.toString();</b>
+<i>182</i>&nbsp;    }
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;    /**
+<i>185</i>&nbsp;     * @param name
+<i>186</i>&nbsp;     * @param simpleTypeDecl
+<i>187</i>&nbsp;     * @param attrValues
+<i>188</i>&nbsp;     * @param schemaDoc
+<i>189</i>&nbsp;     * @param grammar
+<i>190</i>&nbsp;     * @return
+<i>191</i>&nbsp;     */
+<i>192</i>&nbsp;    private XSSimpleType getSimpleType(String name, Element simpleTypeDecl, Object[] attrValues, XSDocumentInfo schemaDoc, SchemaGrammar grammar) {
+<b class="nc"><i>193</i>&nbsp;        XInt finalAttr = (XInt)attrValues[XSAttributeChecker.ATTIDX_FINAL];</b>
+<b class="nc"><i>194</i>&nbsp;        int finalProperty = finalAttr == null ? schemaDoc.fFinalDefault : finalAttr.intValue();</b>
+<i>195</i>&nbsp;        // annotation?,(list|restriction|union)
+<b class="nc"><i>196</i>&nbsp;        Element child = DOMUtil.getFirstChildElement(simpleTypeDecl);</b>
+<b class="nc"><i>197</i>&nbsp;        XSAnnotationImpl [] annotations = null;</b>
+<b class="nc"><i>198</i>&nbsp;        if (child != null &amp;&amp; DOMUtil.getLocalName(child).equals(SchemaSymbols.ELT_ANNOTATION)) {</b>
+<b class="nc"><i>199</i>&nbsp;            XSAnnotationImpl annotation = traverseAnnotationDecl(child, attrValues, false, schemaDoc);</b>
+<b class="nc"><i>200</i>&nbsp;            if (annotation != null)</b>
+<b class="nc"><i>201</i>&nbsp;                annotations = new XSAnnotationImpl [] {annotation};</b>
+<b class="nc"><i>202</i>&nbsp;            child = DOMUtil.getNextSiblingElement(child);</b>
+<b class="nc"><i>203</i>&nbsp;        }</b>
+<i>204</i>&nbsp;        else {
+<b class="nc"><i>205</i>&nbsp;            String text = DOMUtil.getSyntheticAnnotation(simpleTypeDecl);</b>
+<b class="nc"><i>206</i>&nbsp;            if (text != null) {</b>
+<b class="nc"><i>207</i>&nbsp;                XSAnnotationImpl annotation = traverseSyntheticAnnotation(simpleTypeDecl, text, attrValues, false, schemaDoc);</b>
+<b class="nc"><i>208</i>&nbsp;                annotations = new XSAnnotationImpl[] {annotation};</b>
+<i>209</i>&nbsp;            }
+<i>210</i>&nbsp;        }
+<i>211</i>&nbsp;        // (list|restriction|union)
+<b class="nc"><i>212</i>&nbsp;        if (child == null) {</b>
+<b class="nc"><i>213</i>&nbsp;            reportSchemaError(&quot;s4s-elt-must-match.2&quot;, new Object[]{SchemaSymbols.ELT_SIMPLETYPE, &quot;(annotation?, (restriction | list | union))&quot;}, simpleTypeDecl);</b>
+<b class="nc"><i>214</i>&nbsp;            return errorType(name, schemaDoc.fTargetNamespace, XSConstants.DERIVATION_RESTRICTION);</b>
+<i>215</i>&nbsp;        }
+<i>216</i>&nbsp;        // derivation type: restriction/list/union
+<b class="nc"><i>217</i>&nbsp;        String varietyProperty = DOMUtil.getLocalName(child);</b>
+<b class="nc"><i>218</i>&nbsp;        short refType = XSConstants.DERIVATION_RESTRICTION;</b>
+<b class="nc"><i>219</i>&nbsp;        boolean restriction = false, list = false, union = false;</b>
+<b class="nc"><i>220</i>&nbsp;        if (varietyProperty.equals(SchemaSymbols.ELT_RESTRICTION)) {</b>
+<b class="nc"><i>221</i>&nbsp;            refType = XSConstants.DERIVATION_RESTRICTION;</b>
+<b class="nc"><i>222</i>&nbsp;            restriction = true;</b>
+<i>223</i>&nbsp;        }
+<b class="nc"><i>224</i>&nbsp;        else if (varietyProperty.equals(SchemaSymbols.ELT_LIST)) {</b>
+<b class="nc"><i>225</i>&nbsp;            refType = XSConstants.DERIVATION_LIST;</b>
+<b class="nc"><i>226</i>&nbsp;            list = true;</b>
+<i>227</i>&nbsp;        }
+<b class="nc"><i>228</i>&nbsp;        else if (varietyProperty.equals(SchemaSymbols.ELT_UNION)) {</b>
+<b class="nc"><i>229</i>&nbsp;            refType = XSConstants.DERIVATION_UNION;</b>
+<b class="nc"><i>230</i>&nbsp;            union = true;</b>
+<i>231</i>&nbsp;        }
+<i>232</i>&nbsp;        else {
+<b class="nc"><i>233</i>&nbsp;            reportSchemaError(&quot;s4s-elt-must-match.1&quot;, new Object[]{SchemaSymbols.ELT_SIMPLETYPE, &quot;(annotation?, (restriction | list | union))&quot;, varietyProperty}, simpleTypeDecl);</b>
+<b class="nc"><i>234</i>&nbsp;            return errorType(name, schemaDoc.fTargetNamespace, XSConstants.DERIVATION_RESTRICTION);</b>
+<i>235</i>&nbsp;        }
+<i>236</i>&nbsp;        // nothing should follow this element
+<b class="nc"><i>237</i>&nbsp;        Element nextChild = DOMUtil.getNextSiblingElement(child);</b>
+<b class="nc"><i>238</i>&nbsp;        if (nextChild != null) {</b>
+<b class="nc"><i>239</i>&nbsp;            reportSchemaError(&quot;s4s-elt-must-match.1&quot;, new Object[]{SchemaSymbols.ELT_SIMPLETYPE, &quot;(annotation?, (restriction | list | union))&quot;, DOMUtil.getLocalName(nextChild)}, nextChild);</b>
+<i>240</i>&nbsp;        }
+<i>241</i>&nbsp;        // General Attribute Checking: get base/item/member types
+<b class="nc"><i>242</i>&nbsp;        Object[] contentAttrs = fAttrChecker.checkAttributes(child, false, schemaDoc);</b>
+<b class="nc"><i>243</i>&nbsp;        QName baseTypeName = (QName)contentAttrs[restriction ?</b>
+<i>244</i>&nbsp;                XSAttributeChecker.ATTIDX_BASE :
+<i>245</i>&nbsp;                    XSAttributeChecker.ATTIDX_ITEMTYPE];
+<b class="nc"><i>246</i>&nbsp;        Vector memberTypes = (Vector)contentAttrs[XSAttributeChecker.ATTIDX_MEMBERTYPES];</b>
+<i>247</i>&nbsp;        //content = {annotation?,simpleType?...}
+<b class="nc"><i>248</i>&nbsp;        Element content = DOMUtil.getFirstChildElement(child);</b>
+<i>249</i>&nbsp;        //check content (annotation?, ...)
+<b class="nc"><i>250</i>&nbsp;        if (content != null &amp;&amp; DOMUtil.getLocalName(content).equals(SchemaSymbols.ELT_ANNOTATION)) {</b>
+<b class="nc"><i>251</i>&nbsp;            XSAnnotationImpl annotation = traverseAnnotationDecl(content, contentAttrs, false, schemaDoc);</b>
+<b class="nc"><i>252</i>&nbsp;            if (annotation != null ) {</b>
+<b class="nc"><i>253</i>&nbsp;                if(annotations == null) {</b>
+<b class="nc"><i>254</i>&nbsp;                    annotations = new XSAnnotationImpl [] {annotation};</b>
+<i>255</i>&nbsp;                }
+<i>256</i>&nbsp;                else {
+<b class="nc"><i>257</i>&nbsp;                    XSAnnotationImpl [] tempArray = new XSAnnotationImpl[2];</b>
+<b class="nc"><i>258</i>&nbsp;                    tempArray[0] = annotations[0];</b>
+<b class="nc"><i>259</i>&nbsp;                    annotations = tempArray;</b>
+<b class="nc"><i>260</i>&nbsp;                    annotations[1] = annotation;</b>
+<i>261</i>&nbsp;                }
+<i>262</i>&nbsp;            }
+<b class="nc"><i>263</i>&nbsp;            content = DOMUtil.getNextSiblingElement(content);</b>
+<b class="nc"><i>264</i>&nbsp;        }</b>
+<i>265</i>&nbsp;        else {
+<b class="nc"><i>266</i>&nbsp;            String text = DOMUtil.getSyntheticAnnotation(child);</b>
+<b class="nc"><i>267</i>&nbsp;            if (text != null) {</b>
+<b class="nc"><i>268</i>&nbsp;                XSAnnotationImpl annotation = traverseSyntheticAnnotation(child, text, contentAttrs, false, schemaDoc);</b>
+<b class="nc"><i>269</i>&nbsp;                if (annotations == null) {</b>
+<b class="nc"><i>270</i>&nbsp;                    annotations = new XSAnnotationImpl [] {annotation};</b>
+<i>271</i>&nbsp;                }
+<i>272</i>&nbsp;                else {
+<b class="nc"><i>273</i>&nbsp;                    XSAnnotationImpl [] tempArray = new XSAnnotationImpl[2];</b>
+<b class="nc"><i>274</i>&nbsp;                    tempArray[0] = annotations[0];</b>
+<b class="nc"><i>275</i>&nbsp;                    annotations = tempArray;</b>
+<b class="nc"><i>276</i>&nbsp;                    annotations[1] = annotation;</b>
+<i>277</i>&nbsp;                }
+<i>278</i>&nbsp;            }
+<i>279</i>&nbsp;        }
+<i>280</i>&nbsp;        // get base type from &quot;base&quot; attribute
+<b class="nc"><i>281</i>&nbsp;        XSSimpleType baseValidator = null;</b>
+<b class="nc"><i>282</i>&nbsp;        if ((restriction || list) &amp;&amp; baseTypeName != null) {</b>
+<b class="nc"><i>283</i>&nbsp;            baseValidator = findDTValidator(child, name, baseTypeName, refType, schemaDoc);</b>
+<i>284</i>&nbsp;            // if its the built-in type, return null from here
+<b class="nc"><i>285</i>&nbsp;            if (baseValidator == null &amp;&amp; fIsBuiltIn) {</b>
+<b class="nc"><i>286</i>&nbsp;                fIsBuiltIn = false;</b>
+<b class="nc"><i>287</i>&nbsp;                return null;</b>
+<i>288</i>&nbsp;            }
+<i>289</i>&nbsp;        }
+<i>290</i>&nbsp;        // get types from &quot;memberTypes&quot; attribute
+<b class="nc"><i>291</i>&nbsp;        ArrayList dTValidators = null;</b>
+<b class="nc"><i>292</i>&nbsp;        XSSimpleType dv = null;</b>
+<i>293</i>&nbsp;        XSObjectList dvs;
+<b class="nc"><i>294</i>&nbsp;        if (union &amp;&amp; memberTypes != null &amp;&amp; memberTypes.size() &gt; 0) {</b>
+<b class="nc"><i>295</i>&nbsp;            int size = memberTypes.size();</b>
+<b class="nc"><i>296</i>&nbsp;            dTValidators = new ArrayList(size);</b>
+<i>297</i>&nbsp;            // for each qname in the list
+<b class="nc"><i>298</i>&nbsp;            for (int i = 0; i &lt; size; i++) {</b>
+<i>299</i>&nbsp;                // get the type decl
+<b class="nc"><i>300</i>&nbsp;                dv = findDTValidator(child, name, (QName)memberTypes.elementAt(i),</b>
+<i>301</i>&nbsp;                        XSConstants.DERIVATION_UNION, schemaDoc);
+<b class="nc"><i>302</i>&nbsp;                if (dv != null) {</b>
+<i>303</i>&nbsp;                    // if it&#39;s a union, expand it
+<b class="nc"><i>304</i>&nbsp;                    if (dv.getVariety() == XSSimpleType.VARIETY_UNION) {</b>
+<b class="nc"><i>305</i>&nbsp;                        dvs = dv.getMemberTypes();</b>
+<b class="nc"><i>306</i>&nbsp;                        for (int j = 0; j &lt; dvs.getLength(); j++)</b>
+<b class="nc"><i>307</i>&nbsp;                            dTValidators.add(dvs.item(j));</b>
+<i>308</i>&nbsp;                    } else {
+<b class="nc"><i>309</i>&nbsp;                        dTValidators.add(dv);</b>
+<i>310</i>&nbsp;                    }
+<i>311</i>&nbsp;                }
+<i>312</i>&nbsp;            }
+<i>313</i>&nbsp;        }
+<i>314</i>&nbsp;
+<i>315</i>&nbsp;        // check if there is a child &quot;simpleType&quot;
+<b class="nc"><i>316</i>&nbsp;        if (content != null &amp;&amp; DOMUtil.getLocalName(content).equals(SchemaSymbols.ELT_SIMPLETYPE)) {</b>
+<b class="nc"><i>317</i>&nbsp;            if (restriction || list) {</b>
+<i>318</i>&nbsp;                // it&#39;s an error for both &quot;base&quot; and &quot;simpleType&quot; to appear
+<b class="nc"><i>319</i>&nbsp;                if (baseTypeName != null) {</b>
+<b class="nc"><i>320</i>&nbsp;                    reportSchemaError(list ? &quot;src-simple-type.3.a&quot; : &quot;src-simple-type.2.a&quot;, null, content);</b>
+<i>321</i>&nbsp;                }
+<b class="nc"><i>322</i>&nbsp;                if (baseValidator == null) {</b>
+<i>323</i>&nbsp;                    // traverse this child to get the base type
+<b class="nc"><i>324</i>&nbsp;                    baseValidator = traverseLocal(content, schemaDoc, grammar);</b>
+<i>325</i>&nbsp;                }
+<i>326</i>&nbsp;                // get the next element
+<b class="nc"><i>327</i>&nbsp;                content = DOMUtil.getNextSiblingElement(content);</b>
+<i>328</i>&nbsp;            }
+<b class="nc"><i>329</i>&nbsp;            else if (union) {</b>
+<b class="nc"><i>330</i>&nbsp;                if (dTValidators == null) {</b>
+<b class="nc"><i>331</i>&nbsp;                    dTValidators = new ArrayList(2);</b>
+<i>332</i>&nbsp;                }
+<i>333</i>&nbsp;                do {
+<i>334</i>&nbsp;                    // traverse this child to get the member type
+<b class="nc"><i>335</i>&nbsp;                    dv = traverseLocal(content, schemaDoc, grammar);</b>
+<b class="nc"><i>336</i>&nbsp;                    if (dv != null) {</b>
+<i>337</i>&nbsp;                        // if it&#39;s a union, expand it
+<b class="nc"><i>338</i>&nbsp;                        if (dv.getVariety() == XSSimpleType.VARIETY_UNION) {</b>
+<b class="nc"><i>339</i>&nbsp;                            dvs = dv.getMemberTypes();</b>
+<b class="nc"><i>340</i>&nbsp;                            for (int j = 0; j &lt; dvs.getLength(); j++) {</b>
+<b class="nc"><i>341</i>&nbsp;                                dTValidators.add(dvs.item(j));</b>
+<i>342</i>&nbsp;                            }
+<i>343</i>&nbsp;                        }
+<i>344</i>&nbsp;                        else {
+<b class="nc"><i>345</i>&nbsp;                            dTValidators.add(dv);</b>
+<i>346</i>&nbsp;                        }
+<i>347</i>&nbsp;                    }
+<i>348</i>&nbsp;                    // get the next element
+<b class="nc"><i>349</i>&nbsp;                    content = DOMUtil.getNextSiblingElement(content);</b>
+<b class="nc"><i>350</i>&nbsp;                } while (content != null &amp;&amp; DOMUtil.getLocalName(content).equals(SchemaSymbols.ELT_SIMPLETYPE));</b>
+<i>351</i>&nbsp;            }
+<i>352</i>&nbsp;        }
+<b class="nc"><i>353</i>&nbsp;        else if ((restriction || list) &amp;&amp; baseTypeName == null) {</b>
+<i>354</i>&nbsp;            // it&#39;s an error if neither &quot;base/itemType&quot; nor &quot;simpleType&quot; appears
+<b class="nc"><i>355</i>&nbsp;            reportSchemaError(list ? &quot;src-simple-type.3.b&quot; : &quot;src-simple-type.2.b&quot;, null, child);</b>
+<i>356</i>&nbsp;        }
+<b class="nc"><i>357</i>&nbsp;        else if (union &amp;&amp; (memberTypes == null || memberTypes.size() == 0)) {</b>
+<i>358</i>&nbsp;            // it&#39;s an error if &quot;memberTypes&quot; is empty and no &quot;simpleType&quot; appears
+<b class="nc"><i>359</i>&nbsp;            reportSchemaError(&quot;src-union-memberTypes-or-simpleTypes&quot;, null, child);</b>
+<i>360</i>&nbsp;        }
+<i>361</i>&nbsp;        // error finding &quot;base&quot; or error traversing &quot;simpleType&quot;.
+<i>362</i>&nbsp;        // don&#39;t need to report an error, since some error has been reported.
+<b class="nc"><i>363</i>&nbsp;        if ((restriction || list) &amp;&amp; baseValidator == null) {</b>
+<b class="nc"><i>364</i>&nbsp;            fAttrChecker.returnAttrArray(contentAttrs, schemaDoc);</b>
+<b class="nc"><i>365</i>&nbsp;            return errorType(name, schemaDoc.fTargetNamespace,</b>
+<i>366</i>&nbsp;                    restriction ? XSConstants.DERIVATION_RESTRICTION : XSConstants.DERIVATION_LIST);
+<i>367</i>&nbsp;        }
+<i>368</i>&nbsp;        // error finding &quot;memberTypes&quot; or error traversing &quot;simpleType&quot;.
+<i>369</i>&nbsp;        // don&#39;t need to report an error, since some error has been reported.
+<b class="nc"><i>370</i>&nbsp;        if (union &amp;&amp; (dTValidators == null || dTValidators.size() == 0)) {</b>
+<b class="nc"><i>371</i>&nbsp;            fAttrChecker.returnAttrArray(contentAttrs, schemaDoc);</b>
+<b class="nc"><i>372</i>&nbsp;            return errorType(name, schemaDoc.fTargetNamespace,</b>
+<i>373</i>&nbsp;                    XSConstants.DERIVATION_UNION);
+<i>374</i>&nbsp;        }
+<i>375</i>&nbsp;        // item type of list types can&#39;t have list content
+<b class="nc"><i>376</i>&nbsp;        if (list &amp;&amp; isListDatatype(baseValidator)) {</b>
+<b class="nc"><i>377</i>&nbsp;            reportSchemaError(&quot;cos-st-restricts.2.1&quot;, new Object[]{name, baseValidator.getName()}, child);</b>
+<b class="nc"><i>378</i>&nbsp;            fAttrChecker.returnAttrArray(contentAttrs, schemaDoc);</b>
+<b class="nc"><i>379</i>&nbsp;            return errorType(name, schemaDoc.fTargetNamespace,</b>
+<i>380</i>&nbsp;                    XSConstants.DERIVATION_LIST);
+<i>381</i>&nbsp;        }
+<i>382</i>&nbsp;        // create the simple type based on the &quot;base&quot; type
+<b class="nc"><i>383</i>&nbsp;        XSSimpleType newDecl = null;</b>
+<b class="nc"><i>384</i>&nbsp;        if (restriction) {</b>
+<b class="nc"><i>385</i>&nbsp;            newDecl = fSchemaHandler.fDVFactory.createTypeRestriction(name, schemaDoc.fTargetNamespace, (short)finalProperty, baseValidator,</b>
+<i>386</i>&nbsp;                    annotations == null? null : new XSObjectListImpl(annotations, annotations.length));
+<i>387</i>&nbsp;        }
+<b class="nc"><i>388</i>&nbsp;        else if (list) {</b>
+<b class="nc"><i>389</i>&nbsp;            newDecl = fSchemaHandler.fDVFactory.createTypeList(name, schemaDoc.fTargetNamespace, (short)finalProperty, baseValidator,</b>
+<i>390</i>&nbsp;                    annotations == null? null : new XSObjectListImpl(annotations, annotations.length));
+<i>391</i>&nbsp;        }
+<b class="nc"><i>392</i>&nbsp;        else if (union) {</b>
+<b class="nc"><i>393</i>&nbsp;            XSSimpleType[] memberDecls = (XSSimpleType[]) dTValidators.toArray(new XSSimpleType[dTValidators.size()]);</b>
+<b class="nc"><i>394</i>&nbsp;            newDecl = fSchemaHandler.fDVFactory.createTypeUnion(name, schemaDoc.fTargetNamespace, (short)finalProperty, memberDecls,</b>
+<i>395</i>&nbsp;                    annotations == null? null : new XSObjectListImpl(annotations, annotations.length));
+<i>396</i>&nbsp;        }
+<i>397</i>&nbsp;        // now traverse facets, if it&#39;s derived by restriction
+<b class="nc"><i>398</i>&nbsp;        if (restriction &amp;&amp; content != null) {</b>
+<b class="nc"><i>399</i>&nbsp;            FacetInfo fi = traverseFacets(content, baseValidator, schemaDoc);</b>
+<b class="nc"><i>400</i>&nbsp;            content = fi.nodeAfterFacets;</b>
+<i>401</i>&nbsp;
+<i>402</i>&nbsp;            try {
+<b class="nc"><i>403</i>&nbsp;                fValidationState.setNamespaceSupport(schemaDoc.fNamespaceSupport);</b>
+<b class="nc"><i>404</i>&nbsp;                newDecl.applyFacets(fi.facetdata, fi.fPresentFacets, fi.fFixedFacets, fValidationState);</b>
+<b class="nc"><i>405</i>&nbsp;            } catch (InvalidDatatypeFacetException ex) {</b>
+<b class="nc"><i>406</i>&nbsp;                reportSchemaError(ex.getKey(), ex.getArgs(), child);</b>
+<i>407</i>&nbsp;                // Recreate the type, ignoring the facets
+<b class="nc"><i>408</i>&nbsp;                newDecl = fSchemaHandler.fDVFactory.createTypeRestriction(name, schemaDoc.fTargetNamespace, (short)finalProperty, baseValidator,</b>
+<i>409</i>&nbsp;                        annotations == null? null : new XSObjectListImpl(annotations, annotations.length));
+<b class="nc"><i>410</i>&nbsp;            }</b>
+<i>411</i>&nbsp;        }
+<i>412</i>&nbsp;        // no element should appear after this point
+<b class="nc"><i>413</i>&nbsp;        if (content != null) {</b>
+<b class="nc"><i>414</i>&nbsp;            if (restriction) {</b>
+<b class="nc"><i>415</i>&nbsp;                reportSchemaError(&quot;s4s-elt-must-match.1&quot;, new Object[]{SchemaSymbols.ELT_RESTRICTION, &quot;(annotation?, (simpleType?, (minExclusive | minInclusive | maxExclusive | maxInclusive | totalDigits | fractionDigits | length | minLength | maxLength | enumeration | whiteSpace | pattern)*))&quot;, DOMUtil.getLocalName(content)}, content);</b>
+<i>416</i>&nbsp;            }
+<b class="nc"><i>417</i>&nbsp;            else if (list) {</b>
+<b class="nc"><i>418</i>&nbsp;                reportSchemaError(&quot;s4s-elt-must-match.1&quot;, new Object[]{SchemaSymbols.ELT_LIST, &quot;(annotation?, (simpleType?))&quot;, DOMUtil.getLocalName(content)}, content);</b>
+<i>419</i>&nbsp;            }
+<b class="nc"><i>420</i>&nbsp;            else if (union) {</b>
+<b class="nc"><i>421</i>&nbsp;                reportSchemaError(&quot;s4s-elt-must-match.1&quot;, new Object[]{SchemaSymbols.ELT_UNION, &quot;(annotation?, (simpleType*))&quot;, DOMUtil.getLocalName(content)}, content);</b>
+<i>422</i>&nbsp;            }
+<i>423</i>&nbsp;        }
+<b class="nc"><i>424</i>&nbsp;        fAttrChecker.returnAttrArray(contentAttrs, schemaDoc);</b>
+<i>425</i>&nbsp;        // return the new type
+<b class="nc"><i>426</i>&nbsp;        return newDecl;</b>
+<i>427</i>&nbsp;    }
+<i>428</i>&nbsp;
+<i>429</i>&nbsp;    //@param: elm - top element
+<i>430</i>&nbsp;    //@param: baseTypeStr - type (base/itemType/memberTypes)
+<i>431</i>&nbsp;    //@param: baseRefContext:  whether the caller is using this type as a base for restriction, union or list
+<i>432</i>&nbsp;    //return XSSimpleType available for the baseTypeStr, null if not found or disallowed.
+<i>433</i>&nbsp;    // also throws an error if the base type won&#39;t allow itself to be used in this context.
+<i>434</i>&nbsp;    // REVISIT: can this code be re-used?
+<i>435</i>&nbsp;    private XSSimpleType findDTValidator(Element elm, String refName,
+<i>436</i>&nbsp;            QName baseTypeStr, short baseRefContext,
+<i>437</i>&nbsp;            XSDocumentInfo schemaDoc) {
+<b class="nc"><i>438</i>&nbsp;        if (baseTypeStr == null)</b>
+<b class="nc"><i>439</i>&nbsp;            return null;</b>
+<i>440</i>&nbsp;
+<b class="nc"><i>441</i>&nbsp;        XSTypeDefinition baseType = (XSTypeDefinition)fSchemaHandler.getGlobalDecl(schemaDoc, XSDHandler.TYPEDECL_TYPE, baseTypeStr, elm);</b>
+<b class="nc"><i>442</i>&nbsp;        if (baseType == null) {</b>
+<b class="nc"><i>443</i>&nbsp;            return null;</b>
+<i>444</i>&nbsp;        }
+<b class="nc"><i>445</i>&nbsp;        if (baseType.getTypeCategory() != XSTypeDefinition.SIMPLE_TYPE) {</b>
+<b class="nc"><i>446</i>&nbsp;            reportSchemaError(&quot;cos-st-restricts.1.1&quot;, new Object[]{baseTypeStr.rawname, refName}, elm);</b>
+<b class="nc"><i>447</i>&nbsp;            return null;</b>
+<i>448</i>&nbsp;        }
+<i>449</i>&nbsp;
+<i>450</i>&nbsp;        // if it&#39;s a complex type, or if its restriction of anySimpleType
+<b class="nc"><i>451</i>&nbsp;        if (baseType == SchemaGrammar.fAnySimpleType &amp;&amp;</b>
+<i>452</i>&nbsp;            baseRefContext == XSConstants.DERIVATION_RESTRICTION) {
+<i>453</i>&nbsp;            // if the base type is anySimpleType and the current type is
+<i>454</i>&nbsp;            // a S4S built-in type, return null. (not an error).
+<b class="nc"><i>455</i>&nbsp;            if (checkBuiltIn(refName, schemaDoc.fTargetNamespace)) {</b>
+<b class="nc"><i>456</i>&nbsp;                return null;</b>
+<i>457</i>&nbsp;            }
+<b class="nc"><i>458</i>&nbsp;            reportSchemaError(&quot;cos-st-restricts.1.1&quot;, new Object[]{baseTypeStr.rawname, refName}, elm);</b>
+<b class="nc"><i>459</i>&nbsp;            return null;</b>
+<i>460</i>&nbsp;        }
+<i>461</i>&nbsp;
+<b class="nc"><i>462</i>&nbsp;        if ((baseType.getFinal() &amp; baseRefContext) != 0) {</b>
+<b class="nc"><i>463</i>&nbsp;            if (baseRefContext == XSConstants.DERIVATION_RESTRICTION) {</b>
+<b class="nc"><i>464</i>&nbsp;                reportSchemaError(&quot;st-props-correct.3&quot;, new Object[]{refName, baseTypeStr.rawname}, elm);</b>
+<i>465</i>&nbsp;            }
+<b class="nc"><i>466</i>&nbsp;            else if (baseRefContext == XSConstants.DERIVATION_LIST) {</b>
+<b class="nc"><i>467</i>&nbsp;                reportSchemaError(&quot;cos-st-restricts.2.3.1.1&quot;, new Object[]{baseTypeStr.rawname, refName}, elm);</b>
+<i>468</i>&nbsp;            }
+<b class="nc"><i>469</i>&nbsp;            else if (baseRefContext == XSConstants.DERIVATION_UNION) {</b>
+<b class="nc"><i>470</i>&nbsp;                reportSchemaError(&quot;cos-st-restricts.3.3.1.1&quot;, new Object[]{baseTypeStr.rawname, refName}, elm);</b>
+<i>471</i>&nbsp;            }
+<b class="nc"><i>472</i>&nbsp;            return null;</b>
+<i>473</i>&nbsp;        }
+<i>474</i>&nbsp;
+<b class="nc"><i>475</i>&nbsp;        return (XSSimpleType)baseType;</b>
+<i>476</i>&nbsp;    }
+<i>477</i>&nbsp;
+<i>478</i>&nbsp;    // check whethe the type denoted by the name and namespace is a S4S
+<i>479</i>&nbsp;    // built-in type. update fIsBuiltIn at the same time.
+<i>480</i>&nbsp;    private final boolean checkBuiltIn(String name, String namespace) {
+<b class="nc"><i>481</i>&nbsp;        if (namespace != SchemaSymbols.URI_SCHEMAFORSCHEMA)</b>
+<b class="nc"><i>482</i>&nbsp;            return false;</b>
+<b class="nc"><i>483</i>&nbsp;        if (SchemaGrammar.SG_SchemaNS.getGlobalTypeDecl(name) != null)</b>
+<b class="nc"><i>484</i>&nbsp;            fIsBuiltIn = true;</b>
+<b class="nc"><i>485</i>&nbsp;        return fIsBuiltIn;</b>
+<i>486</i>&nbsp;    }
+<i>487</i>&nbsp;
+<i>488</i>&nbsp;    // find if a datatype validator is a list or has list datatype member.
+<i>489</i>&nbsp;    private boolean isListDatatype(XSSimpleType validator) {
+<b class="nc"><i>490</i>&nbsp;        if (validator.getVariety() == XSSimpleType.VARIETY_LIST)</b>
+<b class="nc"><i>491</i>&nbsp;            return true;</b>
+<i>492</i>&nbsp;
+<b class="nc"><i>493</i>&nbsp;        if (validator.getVariety() == XSSimpleType.VARIETY_UNION) {</b>
+<b class="nc"><i>494</i>&nbsp;            XSObjectList temp = validator.getMemberTypes();</b>
+<b class="nc"><i>495</i>&nbsp;            for (int i = 0; i &lt; temp.getLength(); i++) {</b>
+<b class="nc"><i>496</i>&nbsp;                if (((XSSimpleType)temp.item(i)).getVariety() == XSSimpleType.VARIETY_LIST) {</b>
+<b class="nc"><i>497</i>&nbsp;                    return true;</b>
+<i>498</i>&nbsp;                }
+<i>499</i>&nbsp;            }
+<i>500</i>&nbsp;        }
+<i>501</i>&nbsp;
+<b class="nc"><i>502</i>&nbsp;        return false;</b>
+<i>503</i>&nbsp;    }//isListDatatype(XSSimpleTypeDecl):boolean
+<i>504</i>&nbsp;
+<i>505</i>&nbsp;    private XSSimpleType errorType(String name, String namespace, short refType) {
+<b class="nc"><i>506</i>&nbsp;        XSSimpleType stringType = (XSSimpleType)SchemaGrammar.SG_SchemaNS.getTypeDefinition(&quot;string&quot;);</b>
+<b class="nc"><i>507</i>&nbsp;        switch (refType) {</b>
+<i>508</i>&nbsp;        case XSConstants.DERIVATION_RESTRICTION:
+<b class="nc"><i>509</i>&nbsp;            return fSchemaHandler.fDVFactory.createTypeRestriction(name, namespace, (short)0,</b>
+<i>510</i>&nbsp;                    stringType, null);
+<i>511</i>&nbsp;        case XSConstants.DERIVATION_LIST:
+<b class="nc"><i>512</i>&nbsp;            return fSchemaHandler.fDVFactory.createTypeList(name, namespace, (short)0,</b>
+<i>513</i>&nbsp;                    stringType, null);
+<i>514</i>&nbsp;        case XSConstants.DERIVATION_UNION:
+<b class="nc"><i>515</i>&nbsp;            return fSchemaHandler.fDVFactory.createTypeUnion(name, namespace, (short)0,</b>
+<i>516</i>&nbsp;                    new XSSimpleType[]{stringType}, null);
+<i>517</i>&nbsp;        }
+<i>518</i>&nbsp;
+<b class="nc"><i>519</i>&nbsp;        return null;</b>
+<i>520</i>&nbsp;    }
+<i>521</i>&nbsp;
+<i>522</i>&nbsp;}//class XSDSimpleTypeTraverser
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

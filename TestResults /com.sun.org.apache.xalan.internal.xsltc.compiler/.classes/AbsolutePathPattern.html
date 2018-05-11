@@ -1,0 +1,225 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: AbsolutePathPattern</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler</a> ]
+</div>
+
+<h1>Coverage Summary for Class: AbsolutePathPattern (com.sun.org.apache.xalan.internal.xsltc.compiler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AbsolutePathPattern</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 46)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: AbsolutePathPattern.java,v 1.2.4.1 2005/09/01 09:17:09 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.BranchHandle;
+<i>27</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+<i>28</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.GOTO_W;
+<i>29</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.IF_ICMPEQ;
+<i>30</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ILOAD;
+<i>31</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKEINTERFACE;
+<i>32</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ISTORE;
+<i>33</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+<i>34</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>35</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.LocalVariableGen;
+<i>36</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.PUSH;
+<i>37</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
+<i>38</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+<i>39</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
+<i>40</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+<i>41</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
+<i>42</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTM;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;/**
+<i>45</i>&nbsp; * @author Jacek Ambroziak
+<i>46</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>47</i>&nbsp; */
+<i>48</i>&nbsp;final class AbsolutePathPattern extends LocationPathPattern {
+<i>49</i>&nbsp;    private final RelativePathPattern _left; // may be null
+<i>50</i>&nbsp;
+<b class="nc"><i>51</i>&nbsp;    public AbsolutePathPattern(RelativePathPattern left) {</b>
+<b class="nc"><i>52</i>&nbsp;        _left = left;</b>
+<b class="nc"><i>53</i>&nbsp;        if (left != null) {</b>
+<b class="nc"><i>54</i>&nbsp;            left.setParent(this);</b>
+<i>55</i>&nbsp;        }
+<i>56</i>&nbsp;    }
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    public void setParser(Parser parser) {
+<b class="nc"><i>59</i>&nbsp;        super.setParser(parser);</b>
+<b class="nc"><i>60</i>&nbsp;        if (_left != null)</b>
+<b class="nc"><i>61</i>&nbsp;            _left.setParser(parser);</b>
+<i>62</i>&nbsp;    }
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+<b class="nc"><i>65</i>&nbsp;        return _left == null ? Type.Root : _left.typeCheck(stable);</b>
+<i>66</i>&nbsp;    }
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    public boolean isWildcard() {
+<b class="nc"><i>69</i>&nbsp;        return false;</b>
+<i>70</i>&nbsp;    }
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;    public StepPattern getKernelPattern() {
+<b class="nc"><i>73</i>&nbsp;        return _left != null ? _left.getKernelPattern() : null;</b>
+<i>74</i>&nbsp;    }
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;    public void reduceKernelPattern() {
+<b class="nc"><i>77</i>&nbsp;        _left.reduceKernelPattern();</b>
+<i>78</i>&nbsp;    }
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+<b class="nc"><i>81</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>82</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<i>83</i>&nbsp;
+<b class="nc"><i>84</i>&nbsp;        if (_left != null) {</b>
+<b class="nc"><i>85</i>&nbsp;            if (_left instanceof StepPattern) {</b>
+<b class="nc"><i>86</i>&nbsp;                final LocalVariableGen local =</b>
+<i>87</i>&nbsp;                    // absolute path pattern temporary
+<b class="nc"><i>88</i>&nbsp;                    methodGen.addLocalVariable2(&quot;apptmp&quot;,</b>
+<b class="nc"><i>89</i>&nbsp;                                                Util.getJCRefType(NODE_SIG),</b>
+<i>90</i>&nbsp;                                                null);
+<b class="nc"><i>91</i>&nbsp;                il.append(DUP);</b>
+<b class="nc"><i>92</i>&nbsp;                local.setStart(il.append(new ISTORE(local.getIndex())));</b>
+<b class="nc"><i>93</i>&nbsp;                _left.translate(classGen, methodGen);</b>
+<b class="nc"><i>94</i>&nbsp;                il.append(methodGen.loadDOM());</b>
+<b class="nc"><i>95</i>&nbsp;                local.setEnd(il.append(new ILOAD(local.getIndex())));</b>
+<b class="nc"><i>96</i>&nbsp;                methodGen.removeLocalVariable(local);</b>
+<b class="nc"><i>97</i>&nbsp;            }</b>
+<i>98</i>&nbsp;            else {
+<b class="nc"><i>99</i>&nbsp;                _left.translate(classGen, methodGen);</b>
+<i>100</i>&nbsp;            }
+<i>101</i>&nbsp;        }
+<i>102</i>&nbsp;
+<b class="nc"><i>103</i>&nbsp;        final int getParent = cpg.addInterfaceMethodref(DOM_INTF,</b>
+<i>104</i>&nbsp;                                                        GET_PARENT,
+<i>105</i>&nbsp;                                                        GET_PARENT_SIG);
+<b class="nc"><i>106</i>&nbsp;        final int getType = cpg.addInterfaceMethodref(DOM_INTF,</b>
+<i>107</i>&nbsp;                                                      &quot;getExpandedTypeID&quot;,
+<i>108</i>&nbsp;                                                      &quot;(I)I&quot;);
+<i>109</i>&nbsp;
+<b class="nc"><i>110</i>&nbsp;        InstructionHandle begin = il.append(methodGen.loadDOM());</b>
+<b class="nc"><i>111</i>&nbsp;        il.append(SWAP);</b>
+<b class="nc"><i>112</i>&nbsp;        il.append(new INVOKEINTERFACE(getParent, 2));</b>
+<b class="nc"><i>113</i>&nbsp;        if (_left instanceof AncestorPattern) {</b>
+<b class="nc"><i>114</i>&nbsp;            il.append(methodGen.loadDOM());</b>
+<b class="nc"><i>115</i>&nbsp;            il.append(SWAP);</b>
+<i>116</i>&nbsp;        }
+<b class="nc"><i>117</i>&nbsp;        il.append(new INVOKEINTERFACE(getType, 2));</b>
+<b class="nc"><i>118</i>&nbsp;        il.append(new PUSH(cpg, DTM.DOCUMENT_NODE));</b>
+<i>119</i>&nbsp;
+<b class="nc"><i>120</i>&nbsp;        final BranchHandle skip = il.append(new IF_ICMPEQ(null));</b>
+<b class="nc"><i>121</i>&nbsp;        _falseList.add(il.append(new GOTO_W(null)));</b>
+<b class="nc"><i>122</i>&nbsp;        skip.setTarget(il.append(NOP));</b>
+<i>123</i>&nbsp;
+<b class="nc"><i>124</i>&nbsp;        if (_left != null) {</b>
+<b class="nc"><i>125</i>&nbsp;            _left.backPatchTrueList(begin);</b>
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;            /*
+<i>128</i>&nbsp;             * If _left is an ancestor pattern, backpatch this pattern&#39;s false
+<i>129</i>&nbsp;             * list to the loop that searches for more ancestors.
+<i>130</i>&nbsp;             */
+<b class="nc"><i>131</i>&nbsp;            if (_left instanceof AncestorPattern) {</b>
+<b class="nc"><i>132</i>&nbsp;                final AncestorPattern ancestor = (AncestorPattern) _left;</b>
+<b class="nc"><i>133</i>&nbsp;                _falseList.backPatch(ancestor.getLoopHandle());         // clears list</b>
+<i>134</i>&nbsp;            }
+<b class="nc"><i>135</i>&nbsp;            _falseList.append(_left._falseList);</b>
+<i>136</i>&nbsp;        }
+<i>137</i>&nbsp;    }
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;    public String toString() {
+<b class="nc"><i>140</i>&nbsp;        return &quot;absolutePathPattern(&quot; + (_left != null ? _left.toString() : &quot;)&quot;);</b>
+<i>141</i>&nbsp;    }
+<i>142</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

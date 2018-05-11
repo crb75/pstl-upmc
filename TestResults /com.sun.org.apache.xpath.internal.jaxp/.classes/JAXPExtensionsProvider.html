@@ -1,0 +1,297 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: JAXPExtensionsProvider</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xpath.internal.jaxp</a> ]
+</div>
+
+<h1>Coverage Summary for Class: JAXPExtensionsProvider (com.sun.org.apache.xpath.internal.jaxp)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JAXPExtensionsProvider</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 72)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;// $Id: JAXPExtensionsProvider.java,v 1.1.2.1 2005/08/01 01:30:17 jeffsuttor Exp $
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;package com.sun.org.apache.xpath.internal.jaxp;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import javax.xml.transform.TransformerException;
+<i>26</i>&nbsp;import javax.xml.xpath.XPathFunctionResolver;
+<i>27</i>&nbsp;import javax.xml.xpath.XPathFunction;
+<i>28</i>&nbsp;import javax.xml.xpath.XPathFunctionException;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import com.sun.org.apache.xpath.internal.ExtensionsProvider;
+<i>31</i>&nbsp;import com.sun.org.apache.xpath.internal.XPathContext;
+<i>32</i>&nbsp;import com.sun.org.apache.xpath.internal.objects.XObject;
+<i>33</i>&nbsp;import com.sun.org.apache.xpath.internal.objects.XNodeSet;
+<i>34</i>&nbsp;import com.sun.org.apache.xpath.internal.res.XPATHErrorResources;
+<i>35</i>&nbsp;import com.sun.org.apache.xalan.internal.res.XSLMessages;
+<i>36</i>&nbsp;import com.sun.org.apache.xalan.internal.utils.FeatureManager;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import com.sun.org.apache.xpath.internal.functions.FuncExtFunction;
+<i>39</i>&nbsp;import java.util.Vector;
+<i>40</i>&nbsp;import java.util.ArrayList;
+<i>41</i>&nbsp;import javax.xml.namespace.QName;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;/**
+<i>44</i>&nbsp; *
+<i>45</i>&nbsp; * @author Ramesh Mandava ( ramesh.mandava@sun.com )
+<i>46</i>&nbsp; */
+<i>47</i>&nbsp;public class JAXPExtensionsProvider implements ExtensionsProvider {
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    private final XPathFunctionResolver resolver;
+<b class="nc"><i>50</i>&nbsp;    private boolean extensionInvocationDisabled = false;</b>
+<i>51</i>&nbsp;
+<b class="nc"><i>52</i>&nbsp;    public JAXPExtensionsProvider(XPathFunctionResolver resolver) {</b>
+<b class="nc"><i>53</i>&nbsp;        this.resolver = resolver;</b>
+<b class="nc"><i>54</i>&nbsp;        this.extensionInvocationDisabled = false;</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    public JAXPExtensionsProvider(XPathFunctionResolver resolver,
+<b class="nc"><i>58</i>&nbsp;        boolean featureSecureProcessing, FeatureManager featureManager ) {</b>
+<b class="nc"><i>59</i>&nbsp;        this.resolver = resolver;</b>
+<b class="nc"><i>60</i>&nbsp;        if (featureSecureProcessing &amp;&amp;</b>
+<b class="nc"><i>61</i>&nbsp;                !featureManager.isFeatureEnabled(FeatureManager.Feature.ORACLE_ENABLE_EXTENSION_FUNCTION)) {</b>
+<b class="nc"><i>62</i>&nbsp;            this.extensionInvocationDisabled = true;</b>
+<i>63</i>&nbsp;        }
+<i>64</i>&nbsp;    }
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    /**
+<i>67</i>&nbsp;     * Is the extension function available?
+<i>68</i>&nbsp;     */
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    public boolean functionAvailable(String ns, String funcName)
+<i>71</i>&nbsp;          throws javax.xml.transform.TransformerException {
+<i>72</i>&nbsp;      try {
+<b class="nc"><i>73</i>&nbsp;        if ( funcName == null ) {</b>
+<b class="nc"><i>74</i>&nbsp;            String fmsg = XSLMessages.createXPATHMessage(</b>
+<i>75</i>&nbsp;                XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
+<i>76</i>&nbsp;                new Object[] {&quot;Function Name&quot;} );
+<b class="nc"><i>77</i>&nbsp;            throw new NullPointerException ( fmsg );</b>
+<i>78</i>&nbsp;        }
+<i>79</i>&nbsp;        //Find the XPathFunction corresponding to namespace and funcName
+<b class="nc"><i>80</i>&nbsp;        javax.xml.namespace.QName myQName = new QName( ns, funcName );</b>
+<b class="nc"><i>81</i>&nbsp;        javax.xml.xpath.XPathFunction xpathFunction =</b>
+<b class="nc"><i>82</i>&nbsp;            resolver.resolveFunction ( myQName, 0 );</b>
+<b class="nc"><i>83</i>&nbsp;        if (  xpathFunction == null ) {</b>
+<b class="nc"><i>84</i>&nbsp;            return false;</b>
+<i>85</i>&nbsp;        }
+<b class="nc"><i>86</i>&nbsp;        return true;</b>
+<b class="nc"><i>87</i>&nbsp;      } catch ( Exception e ) {</b>
+<b class="nc"><i>88</i>&nbsp;        return false;</b>
+<i>89</i>&nbsp;      }
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    /**
+<i>96</i>&nbsp;     * Is the extension element available?
+<i>97</i>&nbsp;     */
+<i>98</i>&nbsp;    public boolean elementAvailable(String ns, String elemName)
+<i>99</i>&nbsp;          throws javax.xml.transform.TransformerException {
+<b class="nc"><i>100</i>&nbsp;        return false;</b>
+<i>101</i>&nbsp;    }
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    /**
+<i>104</i>&nbsp;     * Execute the extension function.
+<i>105</i>&nbsp;     */
+<i>106</i>&nbsp;    public Object extFunction(String ns, String funcName, Vector argVec,
+<i>107</i>&nbsp;        Object methodKey) throws javax.xml.transform.TransformerException {
+<i>108</i>&nbsp;        try {
+<i>109</i>&nbsp;
+<b class="nc"><i>110</i>&nbsp;            if ( funcName == null ) {</b>
+<b class="nc"><i>111</i>&nbsp;                String fmsg = XSLMessages.createXPATHMessage(</b>
+<i>112</i>&nbsp;                    XPATHErrorResources.ER_ARG_CANNOT_BE_NULL,
+<i>113</i>&nbsp;                    new Object[] {&quot;Function Name&quot;} );
+<b class="nc"><i>114</i>&nbsp;                throw new NullPointerException ( fmsg );</b>
+<i>115</i>&nbsp;            }
+<i>116</i>&nbsp;            //Find the XPathFunction corresponding to namespace and funcName
+<b class="nc"><i>117</i>&nbsp;            javax.xml.namespace.QName myQName = new QName( ns, funcName );</b>
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;            // JAXP 1.3 spec says When XMLConstants.FEATURE_SECURE_PROCESSING
+<i>120</i>&nbsp;            // feature is set then invocation of extension functions need to
+<i>121</i>&nbsp;            // throw XPathFunctionException
+<b class="nc"><i>122</i>&nbsp;            if ( extensionInvocationDisabled ) {</b>
+<b class="nc"><i>123</i>&nbsp;                String fmsg = XSLMessages.createXPATHMessage(</b>
+<i>124</i>&nbsp;                    XPATHErrorResources.ER_EXTENSION_FUNCTION_CANNOT_BE_INVOKED,
+<b class="nc"><i>125</i>&nbsp;                    new Object[] { myQName.toString() } );</b>
+<b class="nc"><i>126</i>&nbsp;                throw new XPathFunctionException ( fmsg );</b>
+<i>127</i>&nbsp;            }
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;            // Assuming user is passing all the needed parameters ( including
+<i>130</i>&nbsp;            // default values )
+<b class="nc"><i>131</i>&nbsp;            int arity = argVec.size();</b>
+<i>132</i>&nbsp;
+<b class="nc"><i>133</i>&nbsp;            javax.xml.xpath.XPathFunction xpathFunction =</b>
+<b class="nc"><i>134</i>&nbsp;                resolver.resolveFunction ( myQName, arity );</b>
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;            // not using methodKey
+<b class="nc"><i>137</i>&nbsp;            ArrayList argList = new ArrayList( arity);</b>
+<b class="nc"><i>138</i>&nbsp;            for ( int i=0; i&lt;arity; i++ ) {</b>
+<b class="nc"><i>139</i>&nbsp;                Object argument = argVec.elementAt( i );</b>
+<i>140</i>&nbsp;                // XNodeSet object() returns NodeVector and not NodeList
+<i>141</i>&nbsp;                // Explicitly getting NodeList by using nodelist()
+<b class="nc"><i>142</i>&nbsp;                if ( argument instanceof XNodeSet ) {</b>
+<b class="nc"><i>143</i>&nbsp;                    argList.add ( i, ((XNodeSet)argument).nodelist() );</b>
+<b class="nc"><i>144</i>&nbsp;                } else if ( argument instanceof XObject ) {</b>
+<b class="nc"><i>145</i>&nbsp;                    Object passedArgument = ((XObject)argument).object();</b>
+<b class="nc"><i>146</i>&nbsp;                    argList.add ( i, passedArgument );</b>
+<b class="nc"><i>147</i>&nbsp;                } else {</b>
+<b class="nc"><i>148</i>&nbsp;                    argList.add ( i, argument );</b>
+<i>149</i>&nbsp;                }
+<i>150</i>&nbsp;            }
+<i>151</i>&nbsp;
+<b class="nc"><i>152</i>&nbsp;            return ( xpathFunction.evaluate ( argList ));</b>
+<b class="nc"><i>153</i>&nbsp;        } catch ( XPathFunctionException xfe ) {</b>
+<i>154</i>&nbsp;            // If we get XPathFunctionException then we want to terminate
+<i>155</i>&nbsp;            // further execution by throwing WrappedRuntimeException
+<b class="nc"><i>156</i>&nbsp;            throw new com.sun.org.apache.xml.internal.utils.WrappedRuntimeException ( xfe );</b>
+<b class="nc"><i>157</i>&nbsp;        } catch ( Exception e ) {</b>
+<b class="nc"><i>158</i>&nbsp;            throw new javax.xml.transform.TransformerException ( e );</b>
+<i>159</i>&nbsp;        }
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;    }
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;    /**
+<i>164</i>&nbsp;     * Execute the extension function.
+<i>165</i>&nbsp;     */
+<i>166</i>&nbsp;    public Object extFunction(FuncExtFunction extFunction,
+<i>167</i>&nbsp;                              Vector argVec)
+<i>168</i>&nbsp;        throws javax.xml.transform.TransformerException {
+<i>169</i>&nbsp;        try {
+<b class="nc"><i>170</i>&nbsp;            String namespace = extFunction.getNamespace();</b>
+<b class="nc"><i>171</i>&nbsp;            String functionName = extFunction.getFunctionName();</b>
+<b class="nc"><i>172</i>&nbsp;            int arity = extFunction.getArgCount();</b>
+<b class="nc"><i>173</i>&nbsp;            javax.xml.namespace.QName myQName =</b>
+<i>174</i>&nbsp;                new javax.xml.namespace.QName( namespace, functionName );
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;            // JAXP 1.3 spec says  When XMLConstants.FEATURE_SECURE_PROCESSING
+<i>177</i>&nbsp;            // feature is set then invocation of extension functions need to
+<i>178</i>&nbsp;            // throw XPathFunctionException
+<b class="nc"><i>179</i>&nbsp;            if ( extensionInvocationDisabled ) {</b>
+<b class="nc"><i>180</i>&nbsp;                String fmsg = XSLMessages.createXPATHMessage(</b>
+<b class="nc"><i>181</i>&nbsp;                    XPATHErrorResources.ER_EXTENSION_FUNCTION_CANNOT_BE_INVOKED,                    new Object[] { myQName.toString() } );</b>
+<b class="nc"><i>182</i>&nbsp;                throw new XPathFunctionException ( fmsg );</b>
+<i>183</i>&nbsp;            }
+<i>184</i>&nbsp;
+<b class="nc"><i>185</i>&nbsp;            XPathFunction xpathFunction =</b>
+<b class="nc"><i>186</i>&nbsp;                resolver.resolveFunction( myQName, arity );</b>
+<i>187</i>&nbsp;
+<b class="nc"><i>188</i>&nbsp;            ArrayList argList = new ArrayList( arity);</b>
+<b class="nc"><i>189</i>&nbsp;            for ( int i=0; i&lt;arity; i++ ) {</b>
+<b class="nc"><i>190</i>&nbsp;                Object argument = argVec.elementAt( i );</b>
+<i>191</i>&nbsp;                // XNodeSet object() returns NodeVector and not NodeList
+<i>192</i>&nbsp;                // Explicitly getting NodeList by using nodelist()
+<b class="nc"><i>193</i>&nbsp;                if ( argument instanceof XNodeSet ) {</b>
+<b class="nc"><i>194</i>&nbsp;                    argList.add ( i, ((XNodeSet)argument).nodelist() );</b>
+<b class="nc"><i>195</i>&nbsp;                } else if ( argument instanceof XObject ) {</b>
+<b class="nc"><i>196</i>&nbsp;                    Object passedArgument = ((XObject)argument).object();</b>
+<b class="nc"><i>197</i>&nbsp;                    argList.add ( i, passedArgument );</b>
+<b class="nc"><i>198</i>&nbsp;                } else {</b>
+<b class="nc"><i>199</i>&nbsp;                    argList.add ( i, argument );</b>
+<i>200</i>&nbsp;                }
+<i>201</i>&nbsp;            }
+<i>202</i>&nbsp;
+<b class="nc"><i>203</i>&nbsp;            return ( xpathFunction.evaluate ( argList ));</b>
+<i>204</i>&nbsp;
+<b class="nc"><i>205</i>&nbsp;        } catch ( XPathFunctionException xfe ) {</b>
+<i>206</i>&nbsp;            // If we get XPathFunctionException then we want to terminate
+<i>207</i>&nbsp;            // further execution by throwing WrappedRuntimeException
+<b class="nc"><i>208</i>&nbsp;            throw new com.sun.org.apache.xml.internal.utils.WrappedRuntimeException ( xfe );</b>
+<b class="nc"><i>209</i>&nbsp;        } catch ( Exception e ) {</b>
+<b class="nc"><i>210</i>&nbsp;            throw new javax.xml.transform.TransformerException ( e );</b>
+<i>211</i>&nbsp;        }
+<i>212</i>&nbsp;    }
+<i>213</i>&nbsp;
+<i>214</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

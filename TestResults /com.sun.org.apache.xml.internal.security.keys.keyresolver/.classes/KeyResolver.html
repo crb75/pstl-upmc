@@ -1,0 +1,531 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: KeyResolver</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.security.keys.keyresolver</a> ]
+</div>
+
+<h1>Coverage Summary for Class: KeyResolver (com.sun.org.apache.xml.internal.security.keys.keyresolver)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">KeyResolver</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 94)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">KeyResolver$ResolverIterator</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 23)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 103)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one
+<i>7</i>&nbsp; * or more contributor license agreements. See the NOTICE file
+<i>8</i>&nbsp; * distributed with this work for additional information
+<i>9</i>&nbsp; * regarding copyright ownership. The ASF licenses this file
+<i>10</i>&nbsp; * to you under the Apache License, Version 2.0 (the
+<i>11</i>&nbsp; * &quot;License&quot;); you may not use this file except in compliance
+<i>12</i>&nbsp; * with the License. You may obtain a copy of the License at
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * http://www.apache.org/licenses/LICENSE-2.0
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; * Unless required by applicable law or agreed to in writing,
+<i>17</i>&nbsp; * software distributed under the License is distributed on an
+<i>18</i>&nbsp; * &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+<i>19</i>&nbsp; * KIND, either express or implied. See the License for the
+<i>20</i>&nbsp; * specific language governing permissions and limitations
+<i>21</i>&nbsp; * under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.security.keys.keyresolver;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.security.PublicKey;
+<i>26</i>&nbsp;import java.security.cert.X509Certificate;
+<i>27</i>&nbsp;import java.util.ArrayList;
+<i>28</i>&nbsp;import java.util.Iterator;
+<i>29</i>&nbsp;import java.util.List;
+<i>30</i>&nbsp;import java.util.concurrent.CopyOnWriteArrayList;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import javax.crypto.SecretKey;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.DEREncodedKeyValueResolver;
+<i>35</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.DSAKeyValueResolver;
+<i>36</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.KeyInfoReferenceResolver;
+<i>37</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.RSAKeyValueResolver;
+<i>38</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.RetrievalMethodResolver;
+<i>39</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.X509CertificateResolver;
+<i>40</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.X509DigestResolver;
+<i>41</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.X509IssuerSerialResolver;
+<i>42</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.X509SKIResolver;
+<i>43</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.X509SubjectNameResolver;
+<i>44</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.storage.StorageResolver;
+<i>45</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.JavaUtils;
+<i>46</i>&nbsp;import org.w3c.dom.Element;
+<i>47</i>&nbsp;import org.w3c.dom.Node;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;/**
+<i>50</i>&nbsp; * KeyResolver is factory class for subclass of KeyResolverSpi that
+<i>51</i>&nbsp; * represent child element of KeyInfo.
+<i>52</i>&nbsp; */
+<b class="nc"><i>53</i>&nbsp;public class KeyResolver {</b>
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    /** {@link org.apache.commons.logging} logging facility */
+<b class="nc"><i>56</i>&nbsp;    private static java.util.logging.Logger log =</b>
+<b class="nc"><i>57</i>&nbsp;        java.util.logging.Logger.getLogger(KeyResolver.class.getName());</b>
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    /** Field resolverVector */
+<b class="nc"><i>60</i>&nbsp;    private static List&lt;KeyResolver&gt; resolverVector = new CopyOnWriteArrayList&lt;KeyResolver&gt;();</b>
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    /** Field resolverSpi */
+<i>63</i>&nbsp;    private final KeyResolverSpi resolverSpi;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    /**
+<i>66</i>&nbsp;     * Constructor.
+<i>67</i>&nbsp;     *
+<i>68</i>&nbsp;     * @param keyResolverSpi a KeyResolverSpi instance
+<i>69</i>&nbsp;     */
+<b class="nc"><i>70</i>&nbsp;    private KeyResolver(KeyResolverSpi keyResolverSpi) {</b>
+<b class="nc"><i>71</i>&nbsp;        resolverSpi = keyResolverSpi;</b>
+<i>72</i>&nbsp;    }
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    /**
+<i>75</i>&nbsp;     * Method length
+<i>76</i>&nbsp;     *
+<i>77</i>&nbsp;     * @return the length of resolvers registered
+<i>78</i>&nbsp;     */
+<i>79</i>&nbsp;    public static int length() {
+<b class="nc"><i>80</i>&nbsp;        return resolverVector.size();</b>
+<i>81</i>&nbsp;    }
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    /**
+<i>84</i>&nbsp;     * Method getX509Certificate
+<i>85</i>&nbsp;     *
+<i>86</i>&nbsp;     * @param element
+<i>87</i>&nbsp;     * @param baseURI
+<i>88</i>&nbsp;     * @param storage
+<i>89</i>&nbsp;     * @return The certificate represented by the element.
+<i>90</i>&nbsp;     *
+<i>91</i>&nbsp;     * @throws KeyResolverException
+<i>92</i>&nbsp;     */
+<i>93</i>&nbsp;    public static final X509Certificate getX509Certificate(
+<i>94</i>&nbsp;        Element element, String baseURI, StorageResolver storage
+<i>95</i>&nbsp;    ) throws KeyResolverException {
+<b class="nc"><i>96</i>&nbsp;        for (KeyResolver resolver : resolverVector) {</b>
+<b class="nc"><i>97</i>&nbsp;            if (resolver == null) {</b>
+<b class="nc"><i>98</i>&nbsp;                Object exArgs[] = {</b>
+<i>99</i>&nbsp;                                   (((element != null)
+<b class="nc"><i>100</i>&nbsp;                                       &amp;&amp; (element.getNodeType() == Node.ELEMENT_NODE))</b>
+<b class="nc"><i>101</i>&nbsp;                                       ? element.getTagName() : &quot;null&quot;)</b>
+<i>102</i>&nbsp;                };
+<i>103</i>&nbsp;
+<b class="nc"><i>104</i>&nbsp;                throw new KeyResolverException(&quot;utils.resolver.noClass&quot;, exArgs);</b>
+<i>105</i>&nbsp;            }
+<b class="nc"><i>106</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>107</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;check resolvability by class &quot; + resolver.getClass());</b>
+<i>108</i>&nbsp;            }
+<i>109</i>&nbsp;
+<b class="nc"><i>110</i>&nbsp;            X509Certificate cert = resolver.resolveX509Certificate(element, baseURI, storage);</b>
+<b class="nc"><i>111</i>&nbsp;            if (cert != null) {</b>
+<b class="nc"><i>112</i>&nbsp;                return cert;</b>
+<i>113</i>&nbsp;            }
+<b class="nc"><i>114</i>&nbsp;        }</b>
+<i>115</i>&nbsp;
+<b class="nc"><i>116</i>&nbsp;        Object exArgs[] = {</b>
+<b class="nc"><i>117</i>&nbsp;                           (((element != null) &amp;&amp; (element.getNodeType() == Node.ELEMENT_NODE))</b>
+<b class="nc"><i>118</i>&nbsp;                           ? element.getTagName() : &quot;null&quot;)</b>
+<i>119</i>&nbsp;                          };
+<i>120</i>&nbsp;
+<b class="nc"><i>121</i>&nbsp;        throw new KeyResolverException(&quot;utils.resolver.noClass&quot;, exArgs);</b>
+<i>122</i>&nbsp;    }
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;    /**
+<i>125</i>&nbsp;     * Method getPublicKey
+<i>126</i>&nbsp;     *
+<i>127</i>&nbsp;     * @param element
+<i>128</i>&nbsp;     * @param baseURI
+<i>129</i>&nbsp;     * @param storage
+<i>130</i>&nbsp;     * @return the public key contained in the element
+<i>131</i>&nbsp;     *
+<i>132</i>&nbsp;     * @throws KeyResolverException
+<i>133</i>&nbsp;     */
+<i>134</i>&nbsp;    public static final PublicKey getPublicKey(
+<i>135</i>&nbsp;        Element element, String baseURI, StorageResolver storage
+<i>136</i>&nbsp;    ) throws KeyResolverException {
+<b class="nc"><i>137</i>&nbsp;        for (KeyResolver resolver : resolverVector) {</b>
+<b class="nc"><i>138</i>&nbsp;            if (resolver == null) {</b>
+<b class="nc"><i>139</i>&nbsp;                Object exArgs[] = {</b>
+<i>140</i>&nbsp;                                   (((element != null)
+<b class="nc"><i>141</i>&nbsp;                                       &amp;&amp; (element.getNodeType() == Node.ELEMENT_NODE))</b>
+<b class="nc"><i>142</i>&nbsp;                                       ? element.getTagName() : &quot;null&quot;)</b>
+<i>143</i>&nbsp;                };
+<i>144</i>&nbsp;
+<b class="nc"><i>145</i>&nbsp;                throw new KeyResolverException(&quot;utils.resolver.noClass&quot;, exArgs);</b>
+<i>146</i>&nbsp;            }
+<b class="nc"><i>147</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>148</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;check resolvability by class &quot; + resolver.getClass());</b>
+<i>149</i>&nbsp;            }
+<i>150</i>&nbsp;
+<b class="nc"><i>151</i>&nbsp;            PublicKey cert = resolver.resolvePublicKey(element, baseURI, storage);</b>
+<b class="nc"><i>152</i>&nbsp;            if (cert != null) {</b>
+<b class="nc"><i>153</i>&nbsp;                return cert;</b>
+<i>154</i>&nbsp;            }
+<b class="nc"><i>155</i>&nbsp;        }</b>
+<i>156</i>&nbsp;
+<b class="nc"><i>157</i>&nbsp;        Object exArgs[] = {</b>
+<b class="nc"><i>158</i>&nbsp;                           (((element != null) &amp;&amp; (element.getNodeType() == Node.ELEMENT_NODE))</b>
+<b class="nc"><i>159</i>&nbsp;                           ? element.getTagName() : &quot;null&quot;)</b>
+<i>160</i>&nbsp;                          };
+<i>161</i>&nbsp;
+<b class="nc"><i>162</i>&nbsp;        throw new KeyResolverException(&quot;utils.resolver.noClass&quot;, exArgs);</b>
+<i>163</i>&nbsp;    }
+<i>164</i>&nbsp;
+<i>165</i>&nbsp;    /**
+<i>166</i>&nbsp;     * This method is used for registering {@link KeyResolverSpi}s which are
+<i>167</i>&nbsp;     * available to &lt;I&gt;all&lt;/I&gt; {@link com.sun.org.apache.xml.internal.security.keys.KeyInfo} objects. This means that
+<i>168</i>&nbsp;     * personalized {@link KeyResolverSpi}s should only be registered directly
+<i>169</i>&nbsp;     * to the {@link com.sun.org.apache.xml.internal.security.keys.KeyInfo} using
+<i>170</i>&nbsp;     * {@link com.sun.org.apache.xml.internal.security.keys.KeyInfo#registerInternalKeyResolver}.
+<i>171</i>&nbsp;     * Please note that this method will create a new copy of the underlying array, as the
+<i>172</i>&nbsp;     * underlying collection is a CopyOnWriteArrayList.
+<i>173</i>&nbsp;     *
+<i>174</i>&nbsp;     * @param className
+<i>175</i>&nbsp;     * @param globalResolver Whether the KeyResolverSpi is a global resolver or not
+<i>176</i>&nbsp;     * @throws InstantiationException
+<i>177</i>&nbsp;     * @throws IllegalAccessException
+<i>178</i>&nbsp;     * @throws ClassNotFoundException
+<i>179</i>&nbsp;     * @throws SecurityException if a security manager is installed and the
+<i>180</i>&nbsp;     *    caller does not have permission to register the key resolver
+<i>181</i>&nbsp;     */
+<i>182</i>&nbsp;    public static void register(String className, boolean globalResolver)
+<i>183</i>&nbsp;        throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+<b class="nc"><i>184</i>&nbsp;        JavaUtils.checkRegisterPermission();</b>
+<b class="nc"><i>185</i>&nbsp;        KeyResolverSpi keyResolverSpi =</b>
+<b class="nc"><i>186</i>&nbsp;            (KeyResolverSpi) Class.forName(className).newInstance();</b>
+<b class="nc"><i>187</i>&nbsp;        keyResolverSpi.setGlobalResolver(globalResolver);</b>
+<b class="nc"><i>188</i>&nbsp;        register(keyResolverSpi, false);</b>
+<i>189</i>&nbsp;    }
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;    /**
+<i>192</i>&nbsp;     * This method is used for registering {@link KeyResolverSpi}s which are
+<i>193</i>&nbsp;     * available to &lt;I&gt;all&lt;/I&gt; {@link com.sun.org.apache.xml.internal.security.keys.KeyInfo} objects. This means that
+<i>194</i>&nbsp;     * personalized {@link KeyResolverSpi}s should only be registered directly
+<i>195</i>&nbsp;     * to the {@link com.sun.org.apache.xml.internal.security.keys.KeyInfo} using
+<i>196</i>&nbsp;     * {@link com.sun.org.apache.xml.internal.security.keys.KeyInfo#registerInternalKeyResolver}.
+<i>197</i>&nbsp;     * Please note that this method will create a new copy of the underlying array, as the
+<i>198</i>&nbsp;     * underlying collection is a CopyOnWriteArrayList.
+<i>199</i>&nbsp;     *
+<i>200</i>&nbsp;     * @param className
+<i>201</i>&nbsp;     * @param globalResolver Whether the KeyResolverSpi is a global resolver or not
+<i>202</i>&nbsp;     * @throws SecurityException if a security manager is installed and the
+<i>203</i>&nbsp;     *    caller does not have permission to register the key resolver
+<i>204</i>&nbsp;     */
+<i>205</i>&nbsp;    public static void registerAtStart(String className, boolean globalResolver) {
+<b class="nc"><i>206</i>&nbsp;        JavaUtils.checkRegisterPermission();</b>
+<b class="nc"><i>207</i>&nbsp;        KeyResolverSpi keyResolverSpi = null;</b>
+<b class="nc"><i>208</i>&nbsp;        Exception ex = null;</b>
+<i>209</i>&nbsp;        try {
+<b class="nc"><i>210</i>&nbsp;            keyResolverSpi = (KeyResolverSpi) Class.forName(className).newInstance();</b>
+<b class="nc"><i>211</i>&nbsp;        } catch (ClassNotFoundException e) {</b>
+<b class="nc"><i>212</i>&nbsp;            ex = e;</b>
+<b class="nc"><i>213</i>&nbsp;        } catch (IllegalAccessException e) {</b>
+<b class="nc"><i>214</i>&nbsp;            ex = e;</b>
+<b class="nc"><i>215</i>&nbsp;        } catch (InstantiationException e) {</b>
+<b class="nc"><i>216</i>&nbsp;            ex = e;</b>
+<b class="nc"><i>217</i>&nbsp;        }</b>
+<i>218</i>&nbsp;
+<b class="nc"><i>219</i>&nbsp;        if (ex != null) {</b>
+<b class="nc"><i>220</i>&nbsp;            throw (IllegalArgumentException) new</b>
+<b class="nc"><i>221</i>&nbsp;            IllegalArgumentException(&quot;Invalid KeyResolver class name&quot;).initCause(ex);</b>
+<i>222</i>&nbsp;        }
+<b class="nc"><i>223</i>&nbsp;        keyResolverSpi.setGlobalResolver(globalResolver);</b>
+<b class="nc"><i>224</i>&nbsp;        register(keyResolverSpi, true);</b>
+<i>225</i>&nbsp;    }
+<i>226</i>&nbsp;
+<i>227</i>&nbsp;    /**
+<i>228</i>&nbsp;     * This method is used for registering {@link KeyResolverSpi}s which are
+<i>229</i>&nbsp;     * available to &lt;I&gt;all&lt;/I&gt; {@link com.sun.org.apache.xml.internal.security.keys.KeyInfo} objects. This means that
+<i>230</i>&nbsp;     * personalized {@link KeyResolverSpi}s should only be registered directly
+<i>231</i>&nbsp;     * to the {@link com.sun.org.apache.xml.internal.security.keys.KeyInfo} using
+<i>232</i>&nbsp;     * {@link com.sun.org.apache.xml.internal.security.keys.KeyInfo#registerInternalKeyResolver}.
+<i>233</i>&nbsp;     * Please note that this method will create a new copy of the underlying array, as the
+<i>234</i>&nbsp;     * underlying collection is a CopyOnWriteArrayList.
+<i>235</i>&nbsp;     *
+<i>236</i>&nbsp;     * @param keyResolverSpi a KeyResolverSpi instance to register
+<i>237</i>&nbsp;     * @param start whether to register the KeyResolverSpi at the start of the list or not
+<i>238</i>&nbsp;     * @throws SecurityException if a security manager is installed and the
+<i>239</i>&nbsp;     *    caller does not have permission to register the key resolver
+<i>240</i>&nbsp;     */
+<i>241</i>&nbsp;    public static void register(
+<i>242</i>&nbsp;        KeyResolverSpi keyResolverSpi,
+<i>243</i>&nbsp;        boolean start
+<i>244</i>&nbsp;    ) {
+<b class="nc"><i>245</i>&nbsp;        JavaUtils.checkRegisterPermission();</b>
+<b class="nc"><i>246</i>&nbsp;        KeyResolver resolver = new KeyResolver(keyResolverSpi);</b>
+<b class="nc"><i>247</i>&nbsp;        if (start) {</b>
+<b class="nc"><i>248</i>&nbsp;            resolverVector.add(0, resolver);</b>
+<i>249</i>&nbsp;        } else {
+<b class="nc"><i>250</i>&nbsp;            resolverVector.add(resolver);</b>
+<i>251</i>&nbsp;        }
+<i>252</i>&nbsp;    }
+<i>253</i>&nbsp;
+<i>254</i>&nbsp;    /**
+<i>255</i>&nbsp;     * This method is used for registering {@link KeyResolverSpi}s which are
+<i>256</i>&nbsp;     * available to &lt;I&gt;all&lt;/I&gt; {@link com.sun.org.apache.xml.internal.security.keys.KeyInfo} objects. This means that
+<i>257</i>&nbsp;     * personalized {@link KeyResolverSpi}s should only be registered directly
+<i>258</i>&nbsp;     * to the {@link com.sun.org.apache.xml.internal.security.keys.KeyInfo} using
+<i>259</i>&nbsp;     * {@link com.sun.org.apache.xml.internal.security.keys.KeyInfo#registerInternalKeyResolver}.
+<i>260</i>&nbsp;     * The KeyResolverSpi instances are not registered as a global resolver.
+<i>261</i>&nbsp;     *
+<i>262</i>&nbsp;     *
+<i>263</i>&nbsp;     * @param classNames
+<i>264</i>&nbsp;     * @throws InstantiationException
+<i>265</i>&nbsp;     * @throws IllegalAccessException
+<i>266</i>&nbsp;     * @throws ClassNotFoundException
+<i>267</i>&nbsp;     * @throws SecurityException if a security manager is installed and the
+<i>268</i>&nbsp;     *    caller does not have permission to register the key resolver
+<i>269</i>&nbsp;     */
+<i>270</i>&nbsp;    public static void registerClassNames(List&lt;String&gt; classNames)
+<i>271</i>&nbsp;        throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+<b class="nc"><i>272</i>&nbsp;        JavaUtils.checkRegisterPermission();</b>
+<b class="nc"><i>273</i>&nbsp;        List&lt;KeyResolver&gt; keyResolverList = new ArrayList&lt;KeyResolver&gt;(classNames.size());</b>
+<b class="nc"><i>274</i>&nbsp;        for (String className : classNames) {</b>
+<b class="nc"><i>275</i>&nbsp;            KeyResolverSpi keyResolverSpi =</b>
+<b class="nc"><i>276</i>&nbsp;                (KeyResolverSpi) Class.forName(className).newInstance();</b>
+<b class="nc"><i>277</i>&nbsp;            keyResolverSpi.setGlobalResolver(false);</b>
+<b class="nc"><i>278</i>&nbsp;            keyResolverList.add(new KeyResolver(keyResolverSpi));</b>
+<b class="nc"><i>279</i>&nbsp;        }</b>
+<b class="nc"><i>280</i>&nbsp;        resolverVector.addAll(keyResolverList);</b>
+<i>281</i>&nbsp;    }
+<i>282</i>&nbsp;
+<i>283</i>&nbsp;    /**
+<i>284</i>&nbsp;     * This method registers the default resolvers.
+<i>285</i>&nbsp;     */
+<i>286</i>&nbsp;    public static void registerDefaultResolvers() {
+<i>287</i>&nbsp;
+<b class="nc"><i>288</i>&nbsp;        List&lt;KeyResolver&gt; keyResolverList = new ArrayList&lt;KeyResolver&gt;();</b>
+<b class="nc"><i>289</i>&nbsp;        keyResolverList.add(new KeyResolver(new RSAKeyValueResolver()));</b>
+<b class="nc"><i>290</i>&nbsp;        keyResolverList.add(new KeyResolver(new DSAKeyValueResolver()));</b>
+<b class="nc"><i>291</i>&nbsp;        keyResolverList.add(new KeyResolver(new X509CertificateResolver()));</b>
+<b class="nc"><i>292</i>&nbsp;        keyResolverList.add(new KeyResolver(new X509SKIResolver()));</b>
+<b class="nc"><i>293</i>&nbsp;        keyResolverList.add(new KeyResolver(new RetrievalMethodResolver()));</b>
+<b class="nc"><i>294</i>&nbsp;        keyResolverList.add(new KeyResolver(new X509SubjectNameResolver()));</b>
+<b class="nc"><i>295</i>&nbsp;        keyResolverList.add(new KeyResolver(new X509IssuerSerialResolver()));</b>
+<b class="nc"><i>296</i>&nbsp;        keyResolverList.add(new KeyResolver(new DEREncodedKeyValueResolver()));</b>
+<b class="nc"><i>297</i>&nbsp;        keyResolverList.add(new KeyResolver(new KeyInfoReferenceResolver()));</b>
+<b class="nc"><i>298</i>&nbsp;        keyResolverList.add(new KeyResolver(new X509DigestResolver()));</b>
+<i>299</i>&nbsp;
+<b class="nc"><i>300</i>&nbsp;        resolverVector.addAll(keyResolverList);</b>
+<i>301</i>&nbsp;    }
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;    /**
+<i>304</i>&nbsp;     * Method resolvePublicKey
+<i>305</i>&nbsp;     *
+<i>306</i>&nbsp;     * @param element
+<i>307</i>&nbsp;     * @param baseURI
+<i>308</i>&nbsp;     * @param storage
+<i>309</i>&nbsp;     * @return resolved public key from the registered from the elements
+<i>310</i>&nbsp;     *
+<i>311</i>&nbsp;     * @throws KeyResolverException
+<i>312</i>&nbsp;     */
+<i>313</i>&nbsp;    public PublicKey resolvePublicKey(
+<i>314</i>&nbsp;        Element element, String baseURI, StorageResolver storage
+<i>315</i>&nbsp;    ) throws KeyResolverException {
+<b class="nc"><i>316</i>&nbsp;        return resolverSpi.engineLookupAndResolvePublicKey(element, baseURI, storage);</b>
+<i>317</i>&nbsp;    }
+<i>318</i>&nbsp;
+<i>319</i>&nbsp;    /**
+<i>320</i>&nbsp;     * Method resolveX509Certificate
+<i>321</i>&nbsp;     *
+<i>322</i>&nbsp;     * @param element
+<i>323</i>&nbsp;     * @param baseURI
+<i>324</i>&nbsp;     * @param storage
+<i>325</i>&nbsp;     * @return resolved X509certificate key from the registered from the elements
+<i>326</i>&nbsp;     *
+<i>327</i>&nbsp;     * @throws KeyResolverException
+<i>328</i>&nbsp;     */
+<i>329</i>&nbsp;    public X509Certificate resolveX509Certificate(
+<i>330</i>&nbsp;        Element element, String baseURI, StorageResolver storage
+<i>331</i>&nbsp;    ) throws KeyResolverException {
+<b class="nc"><i>332</i>&nbsp;        return resolverSpi.engineLookupResolveX509Certificate(element, baseURI, storage);</b>
+<i>333</i>&nbsp;    }
+<i>334</i>&nbsp;
+<i>335</i>&nbsp;    /**
+<i>336</i>&nbsp;     * @param element
+<i>337</i>&nbsp;     * @param baseURI
+<i>338</i>&nbsp;     * @param storage
+<i>339</i>&nbsp;     * @return resolved SecretKey key from the registered from the elements
+<i>340</i>&nbsp;     * @throws KeyResolverException
+<i>341</i>&nbsp;     */
+<i>342</i>&nbsp;    public SecretKey resolveSecretKey(
+<i>343</i>&nbsp;        Element element, String baseURI, StorageResolver storage
+<i>344</i>&nbsp;    ) throws KeyResolverException {
+<b class="nc"><i>345</i>&nbsp;        return resolverSpi.engineLookupAndResolveSecretKey(element, baseURI, storage);</b>
+<i>346</i>&nbsp;    }
+<i>347</i>&nbsp;
+<i>348</i>&nbsp;    /**
+<i>349</i>&nbsp;     * Method setProperty
+<i>350</i>&nbsp;     *
+<i>351</i>&nbsp;     * @param key
+<i>352</i>&nbsp;     * @param value
+<i>353</i>&nbsp;     */
+<i>354</i>&nbsp;    public void setProperty(String key, String value) {
+<b class="nc"><i>355</i>&nbsp;        resolverSpi.engineSetProperty(key, value);</b>
+<i>356</i>&nbsp;    }
+<i>357</i>&nbsp;
+<i>358</i>&nbsp;    /**
+<i>359</i>&nbsp;     * Method getProperty
+<i>360</i>&nbsp;     *
+<i>361</i>&nbsp;     * @param key
+<i>362</i>&nbsp;     * @return the property set for this resolver
+<i>363</i>&nbsp;     */
+<i>364</i>&nbsp;    public String getProperty(String key) {
+<b class="nc"><i>365</i>&nbsp;        return resolverSpi.engineGetProperty(key);</b>
+<i>366</i>&nbsp;    }
+<i>367</i>&nbsp;
+<i>368</i>&nbsp;
+<i>369</i>&nbsp;    /**
+<i>370</i>&nbsp;     * Method understandsProperty
+<i>371</i>&nbsp;     *
+<i>372</i>&nbsp;     * @param propertyToTest
+<i>373</i>&nbsp;     * @return true if the resolver understands property propertyToTest
+<i>374</i>&nbsp;     */
+<i>375</i>&nbsp;    public boolean understandsProperty(String propertyToTest) {
+<b class="nc"><i>376</i>&nbsp;        return resolverSpi.understandsProperty(propertyToTest);</b>
+<i>377</i>&nbsp;    }
+<i>378</i>&nbsp;
+<i>379</i>&nbsp;
+<i>380</i>&nbsp;    /**
+<i>381</i>&nbsp;     * Method resolverClassName
+<i>382</i>&nbsp;     *
+<i>383</i>&nbsp;     * @return the name of the resolver.
+<i>384</i>&nbsp;     */
+<i>385</i>&nbsp;    public String resolverClassName() {
+<b class="nc"><i>386</i>&nbsp;        return resolverSpi.getClass().getName();</b>
+<i>387</i>&nbsp;    }
+<i>388</i>&nbsp;
+<i>389</i>&nbsp;    /**
+<i>390</i>&nbsp;     * Iterate over the KeyResolverSpi instances
+<i>391</i>&nbsp;     */
+<i>392</i>&nbsp;    static class ResolverIterator implements Iterator&lt;KeyResolverSpi&gt; {
+<i>393</i>&nbsp;        List&lt;KeyResolver&gt; res;
+<i>394</i>&nbsp;        Iterator&lt;KeyResolver&gt; it;
+<i>395</i>&nbsp;
+<b class="nc"><i>396</i>&nbsp;        public ResolverIterator(List&lt;KeyResolver&gt; list) {</b>
+<b class="nc"><i>397</i>&nbsp;            res = list;</b>
+<b class="nc"><i>398</i>&nbsp;            it = res.iterator();</b>
+<i>399</i>&nbsp;        }
+<i>400</i>&nbsp;
+<i>401</i>&nbsp;        public boolean hasNext() {
+<b class="nc"><i>402</i>&nbsp;            return it.hasNext();</b>
+<i>403</i>&nbsp;        }
+<i>404</i>&nbsp;
+<i>405</i>&nbsp;        public KeyResolverSpi next() {
+<b class="nc"><i>406</i>&nbsp;            KeyResolver resolver = it.next();</b>
+<b class="nc"><i>407</i>&nbsp;            if (resolver == null) {</b>
+<b class="nc"><i>408</i>&nbsp;                throw new RuntimeException(&quot;utils.resolver.noClass&quot;);</b>
+<i>409</i>&nbsp;            }
+<i>410</i>&nbsp;
+<b class="nc"><i>411</i>&nbsp;            return resolver.resolverSpi;</b>
+<i>412</i>&nbsp;        }
+<i>413</i>&nbsp;
+<i>414</i>&nbsp;        public void remove() {
+<b class="nc"><i>415</i>&nbsp;            throw new UnsupportedOperationException(&quot;Can&#39;t remove resolvers using the iterator&quot;);</b>
+<i>416</i>&nbsp;        }
+<i>417</i>&nbsp;    };
+<i>418</i>&nbsp;
+<i>419</i>&nbsp;    public static Iterator&lt;KeyResolverSpi&gt; iterator() {
+<b class="nc"><i>420</i>&nbsp;        return new ResolverIterator(resolverVector);</b>
+<i>421</i>&nbsp;    }
+<i>422</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

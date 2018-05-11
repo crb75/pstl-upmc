@@ -1,0 +1,1334 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: lr_parser</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.java_cup.internal.runtime</a> ]
+</div>
+
+<h1>Coverage Summary for Class: lr_parser (com.sun.java_cup.internal.runtime)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">lr_parser</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 30)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 272)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2003, 2005, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;package com.sun.java_cup.internal.runtime;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import java.util.Stack;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;/** This class implements a skeleton table driven LR parser.  In general,
+<i>32</i>&nbsp; *  LR parsers are a form of bottom up shift-reduce parsers.  Shift-reduce
+<i>33</i>&nbsp; *  parsers act by shifting input onto a parse stack until the Symbols
+<i>34</i>&nbsp; *  matching the right hand side of a production appear on the top of the
+<i>35</i>&nbsp; *  stack.  Once this occurs, a reduce is performed.  This involves removing
+<i>36</i>&nbsp; *  the Symbols corresponding to the right hand side of the production
+<i>37</i>&nbsp; *  (the so called &quot;handle&quot;) and replacing them with the non-terminal from
+<i>38</i>&nbsp; *  the left hand side of the production.  &lt;p&gt;
+<i>39</i>&nbsp; *
+<i>40</i>&nbsp; *  To control the decision of whether to shift or reduce at any given point,
+<i>41</i>&nbsp; *  the parser uses a state machine (the &quot;viable prefix recognition machine&quot;
+<i>42</i>&nbsp; *  built by the parser generator).  The current state of the machine is placed
+<i>43</i>&nbsp; *  on top of the parse stack (stored as part of a Symbol object representing
+<i>44</i>&nbsp; *  a terminal or non terminal).  The parse action table is consulted
+<i>45</i>&nbsp; *  (using the current state and the current lookahead Symbol as indexes) to
+<i>46</i>&nbsp; *  determine whether to shift or to reduce.  When the parser shifts, it
+<i>47</i>&nbsp; *  changes to a new state by pushing a new Symbol (containing a new state)
+<i>48</i>&nbsp; *  onto the stack.  When the parser reduces, it pops the handle (right hand
+<i>49</i>&nbsp; *  side of a production) off the stack.  This leaves the parser in the state
+<i>50</i>&nbsp; *  it was in before any of those Symbols were matched.  Next the reduce-goto
+<i>51</i>&nbsp; *  table is consulted (using the new state and current lookahead Symbol as
+<i>52</i>&nbsp; *  indexes) to determine a new state to go to.  The parser then shifts to
+<i>53</i>&nbsp; *  this goto state by pushing the left hand side Symbol of the production
+<i>54</i>&nbsp; *  (also containing the new state) onto the stack.&lt;p&gt;
+<i>55</i>&nbsp; *
+<i>56</i>&nbsp; *  This class actually provides four LR parsers.  The methods parse() and
+<i>57</i>&nbsp; *  debug_parse() provide two versions of the main parser (the only difference
+<i>58</i>&nbsp; *  being that debug_parse() emits debugging trace messages as it parses).
+<i>59</i>&nbsp; *  In addition to these main parsers, the error recovery mechanism uses two
+<i>60</i>&nbsp; *  more.  One of these is used to simulate &quot;parsing ahead&quot; in the input
+<i>61</i>&nbsp; *  without carrying out actions (to verify that a potential error recovery
+<i>62</i>&nbsp; *  has worked), and the other is used to parse through buffered &quot;parse ahead&quot;
+<i>63</i>&nbsp; *  input in order to execute all actions and re-synchronize the actual parser
+<i>64</i>&nbsp; *  configuration.&lt;p&gt;
+<i>65</i>&nbsp; *
+<i>66</i>&nbsp; *  This is an abstract class which is normally filled out by a subclass
+<i>67</i>&nbsp; *  generated by the JavaCup parser generator.  In addition to supplying
+<i>68</i>&nbsp; *  the actual parse tables, generated code also supplies methods which
+<i>69</i>&nbsp; *  invoke various pieces of user supplied code, provide access to certain
+<i>70</i>&nbsp; *  special Symbols (e.g., EOF and error), etc.  Specifically, the following
+<i>71</i>&nbsp; *  abstract methods are normally supplied by generated code:
+<i>72</i>&nbsp; *  &lt;dl compact&gt;
+<i>73</i>&nbsp; *  &lt;dt&gt; short[][] production_table()
+<i>74</i>&nbsp; *  &lt;dd&gt; Provides a reference to the production table (indicating the index of
+<i>75</i>&nbsp; *       the left hand side non terminal and the length of the right hand side
+<i>76</i>&nbsp; *       for each production in the grammar).
+<i>77</i>&nbsp; *  &lt;dt&gt; short[][] action_table()
+<i>78</i>&nbsp; *  &lt;dd&gt; Provides a reference to the parse action table.
+<i>79</i>&nbsp; *  &lt;dt&gt; short[][] reduce_table()
+<i>80</i>&nbsp; *  &lt;dd&gt; Provides a reference to the reduce-goto table.
+<i>81</i>&nbsp; *  &lt;dt&gt; int start_state()
+<i>82</i>&nbsp; *  &lt;dd&gt; Indicates the index of the start state.
+<i>83</i>&nbsp; *  &lt;dt&gt; int start_production()
+<i>84</i>&nbsp; *  &lt;dd&gt; Indicates the index of the starting production.
+<i>85</i>&nbsp; *  &lt;dt&gt; int EOF_sym()
+<i>86</i>&nbsp; *  &lt;dd&gt; Indicates the index of the EOF Symbol.
+<i>87</i>&nbsp; *  &lt;dt&gt; int error_sym()
+<i>88</i>&nbsp; *  &lt;dd&gt; Indicates the index of the error Symbol.
+<i>89</i>&nbsp; *  &lt;dt&gt; Symbol do_action()
+<i>90</i>&nbsp; *  &lt;dd&gt; Executes a piece of user supplied action code.  This always comes at
+<i>91</i>&nbsp; *       the point of a reduce in the parse, so this code also allocates and
+<i>92</i>&nbsp; *       fills in the left hand side non terminal Symbol object that is to be
+<i>93</i>&nbsp; *       pushed onto the stack for the reduce.
+<i>94</i>&nbsp; *  &lt;dt&gt; void init_actions()
+<i>95</i>&nbsp; *  &lt;dd&gt; Code to initialize a special object that encapsulates user supplied
+<i>96</i>&nbsp; *       actions (this object is used by do_action() to actually carry out the
+<i>97</i>&nbsp; *       actions).
+<i>98</i>&nbsp; *  &lt;/dl&gt;
+<i>99</i>&nbsp; *
+<i>100</i>&nbsp; *  In addition to these routines that &lt;i&gt;must&lt;/i&gt; be supplied by the
+<i>101</i>&nbsp; *  generated subclass there are also a series of routines that &lt;i&gt;may&lt;/i&gt;
+<i>102</i>&nbsp; *  be supplied.  These include:
+<i>103</i>&nbsp; *  &lt;dl&gt;
+<i>104</i>&nbsp; *  &lt;dt&gt; Symbol scan()
+<i>105</i>&nbsp; *  &lt;dd&gt; Used to get the next input Symbol from the scanner.
+<i>106</i>&nbsp; *  &lt;dt&gt; Scanner getScanner()
+<i>107</i>&nbsp; *  &lt;dd&gt; Used to provide a scanner for the default implementation of
+<i>108</i>&nbsp; *       scan().
+<i>109</i>&nbsp; *  &lt;dt&gt; int error_sync_size()
+<i>110</i>&nbsp; *  &lt;dd&gt; This determines how many Symbols past the point of an error
+<i>111</i>&nbsp; *       must be parsed without error in order to consider a recovery to
+<i>112</i>&nbsp; *       be valid.  This defaults to 3.  Values less than 2 are not
+<i>113</i>&nbsp; *       recommended.
+<i>114</i>&nbsp; *  &lt;dt&gt; void report_error(String message, Object info)
+<i>115</i>&nbsp; *  &lt;dd&gt; This method is called to report an error.  The default implementation
+<i>116</i>&nbsp; *       simply prints a message to System.err and where the error occurred.
+<i>117</i>&nbsp; *       This method is often replaced in order to provide a more sophisticated
+<i>118</i>&nbsp; *       error reporting mechanism.
+<i>119</i>&nbsp; *  &lt;dt&gt; void report_fatal_error(String message, Object info)
+<i>120</i>&nbsp; *  &lt;dd&gt; This method is called when a fatal error that cannot be recovered from
+<i>121</i>&nbsp; *       is encountered.  In the default implementation, it calls
+<i>122</i>&nbsp; *       report_error() to emit a message, then throws an exception.
+<i>123</i>&nbsp; *  &lt;dt&gt; void syntax_error(Symbol cur_token)
+<i>124</i>&nbsp; *  &lt;dd&gt; This method is called as soon as syntax error is detected (but
+<i>125</i>&nbsp; *       before recovery is attempted).  In the default implementation it
+<i>126</i>&nbsp; *       invokes: report_error(&quot;Syntax error&quot;, null);
+<i>127</i>&nbsp; *  &lt;dt&gt; void unrecovered_syntax_error(Symbol cur_token)
+<i>128</i>&nbsp; *  &lt;dd&gt; This method is called if syntax error recovery fails.  In the default
+<i>129</i>&nbsp; *       implementation it invokes:&lt;br&gt;
+<i>130</i>&nbsp; *         report_fatal_error(&quot;Couldn&#39;t repair and continue parse&quot;, null);
+<i>131</i>&nbsp; *  &lt;/dl&gt;
+<i>132</i>&nbsp; *
+<i>133</i>&nbsp; * @see     com.sun.java_cup.internal.runtime.Symbol
+<i>134</i>&nbsp; * @see     com.sun.java_cup.internal.runtime.Symbol
+<i>135</i>&nbsp; * @see     com.sun.java_cup.internal.runtime.virtual_parse_stack
+<i>136</i>&nbsp; * @author  Frank Flannery
+<i>137</i>&nbsp; */
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;public abstract class lr_parser {
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;  /*-----------------------------------------------------------*/
+<i>142</i>&nbsp;  /*--- Constructor(s) ----------------------------------------*/
+<i>143</i>&nbsp;  /*-----------------------------------------------------------*/
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;  /** Simple constructor. */
+<i>146</i>&nbsp;  public lr_parser()
+<b class="nc"><i>147</i>&nbsp;    {</b>
+<i>148</i>&nbsp;      /* nothing to do here */
+<i>149</i>&nbsp;    }
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;  /** Constructor that sets the default scanner. [CSA/davidm] */
+<i>152</i>&nbsp;  public lr_parser(Scanner s) {
+<b class="nc"><i>153</i>&nbsp;    this(); /* in case default constructor someday does something */</b>
+<b class="nc"><i>154</i>&nbsp;    setScanner(s);</b>
+<i>155</i>&nbsp;  }
+<i>156</i>&nbsp;
+<i>157</i>&nbsp;  /*-----------------------------------------------------------*/
+<i>158</i>&nbsp;  /*--- (Access to) Static (Class) Variables ------------------*/
+<i>159</i>&nbsp;  /*-----------------------------------------------------------*/
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;  /** The default number of Symbols after an error we much match to consider
+<i>162</i>&nbsp;   *  it recovered from.
+<i>163</i>&nbsp;   */
+<i>164</i>&nbsp;  protected final static int _error_sync_size = 3;
+<i>165</i>&nbsp;
+<i>166</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;  /** The number of Symbols after an error we much match to consider it
+<i>169</i>&nbsp;   *  recovered from.
+<i>170</i>&nbsp;   */
+<b class="nc"><i>171</i>&nbsp;  protected int error_sync_size() {return _error_sync_size; }</b>
+<i>172</i>&nbsp;
+<i>173</i>&nbsp;  /*-----------------------------------------------------------*/
+<i>174</i>&nbsp;  /*--- (Access to) Instance Variables ------------------------*/
+<i>175</i>&nbsp;  /*-----------------------------------------------------------*/
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;  /** Table of production information (supplied by generated subclass).
+<i>178</i>&nbsp;   *  This table contains one entry per production and is indexed by
+<i>179</i>&nbsp;   *  the negative-encoded values (reduce actions) in the action_table.
+<i>180</i>&nbsp;   *  Each entry has two parts, the index of the non-terminal on the
+<i>181</i>&nbsp;   *  left hand side of the production, and the number of Symbols
+<i>182</i>&nbsp;   *  on the right hand side.
+<i>183</i>&nbsp;   */
+<i>184</i>&nbsp;  public abstract short[][] production_table();
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;  /** The action table (supplied by generated subclass).  This table is
+<i>189</i>&nbsp;   *  indexed by state and terminal number indicating what action is to
+<i>190</i>&nbsp;   *  be taken when the parser is in the given state (i.e., the given state
+<i>191</i>&nbsp;   *  is on top of the stack) and the given terminal is next on the input.
+<i>192</i>&nbsp;   *  States are indexed using the first dimension, however, the entries for
+<i>193</i>&nbsp;   *  a given state are compacted and stored in adjacent index, value pairs
+<i>194</i>&nbsp;   *  which are searched for rather than accessed directly (see get_action()).
+<i>195</i>&nbsp;   *  The actions stored in the table will be either shifts, reduces, or
+<i>196</i>&nbsp;   *  errors.  Shifts are encoded as positive values (one greater than the
+<i>197</i>&nbsp;   *  state shifted to).  Reduces are encoded as negative values (one less
+<i>198</i>&nbsp;   *  than the production reduced by).  Error entries are denoted by zero.
+<i>199</i>&nbsp;   *
+<i>200</i>&nbsp;   * @see com.sun.java_cup.internal.runtime.lr_parser#get_action
+<i>201</i>&nbsp;   */
+<i>202</i>&nbsp;  public abstract short[][] action_table();
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;  /** The reduce-goto table (supplied by generated subclass).  This
+<i>207</i>&nbsp;   *  table is indexed by state and non-terminal number and contains
+<i>208</i>&nbsp;   *  state numbers.  States are indexed using the first dimension, however,
+<i>209</i>&nbsp;   *  the entries for a given state are compacted and stored in adjacent
+<i>210</i>&nbsp;   *  index, value pairs which are searched for rather than accessed
+<i>211</i>&nbsp;   *  directly (see get_reduce()).  When a reduce occurs, the handle
+<i>212</i>&nbsp;   *  (corresponding to the RHS of the matched production) is popped off
+<i>213</i>&nbsp;   *  the stack.  The new top of stack indicates a state.  This table is
+<i>214</i>&nbsp;   *  then indexed by that state and the LHS of the reducing production to
+<i>215</i>&nbsp;   *  indicate where to &quot;shift&quot; to.
+<i>216</i>&nbsp;   *
+<i>217</i>&nbsp;   * @see com.sun.java_cup.internal.runtime.lr_parser#get_reduce
+<i>218</i>&nbsp;   */
+<i>219</i>&nbsp;  public abstract short[][] reduce_table();
+<i>220</i>&nbsp;
+<i>221</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;  /** The index of the start state (supplied by generated subclass). */
+<i>224</i>&nbsp;  public abstract int start_state();
+<i>225</i>&nbsp;
+<i>226</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;  /** The index of the start production (supplied by generated subclass). */
+<i>229</i>&nbsp;  public abstract int start_production();
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;  /** The index of the end of file terminal Symbol (supplied by generated
+<i>234</i>&nbsp;   *  subclass).
+<i>235</i>&nbsp;   */
+<i>236</i>&nbsp;  public abstract int EOF_sym();
+<i>237</i>&nbsp;
+<i>238</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;  /** The index of the special error Symbol (supplied by generated subclass). */
+<i>241</i>&nbsp;  public abstract int error_sym();
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;  /** Internal flag to indicate when parser should quit. */
+<b class="nc"><i>246</i>&nbsp;  protected boolean _done_parsing = false;</b>
+<i>247</i>&nbsp;
+<i>248</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;  /** This method is called to indicate that the parser should quit.  This is
+<i>251</i>&nbsp;   *  normally called by an accept action, but can be used to cancel parsing
+<i>252</i>&nbsp;   *  early in other circumstances if desired.
+<i>253</i>&nbsp;   */
+<i>254</i>&nbsp;  public void done_parsing()
+<i>255</i>&nbsp;    {
+<b class="nc"><i>256</i>&nbsp;      _done_parsing = true;</b>
+<i>257</i>&nbsp;    }
+<i>258</i>&nbsp;
+<i>259</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>260</i>&nbsp;  /* Global parse state shared by parse(), error recovery, and
+<i>261</i>&nbsp;   * debugging routines */
+<i>262</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;  /** Indication of the index for top of stack (for use by actions). */
+<i>265</i>&nbsp;  protected int tos;
+<i>266</i>&nbsp;
+<i>267</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>268</i>&nbsp;
+<i>269</i>&nbsp;  /** The current lookahead Symbol. */
+<i>270</i>&nbsp;  protected Symbol cur_token;
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>273</i>&nbsp;
+<i>274</i>&nbsp;  /** The parse stack itself. */
+<b class="nc"><i>275</i>&nbsp;  protected Stack stack = new Stack();</b>
+<i>276</i>&nbsp;
+<i>277</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>278</i>&nbsp;
+<i>279</i>&nbsp;  /** Direct reference to the production table. */
+<i>280</i>&nbsp;  protected short[][] production_tab;
+<i>281</i>&nbsp;
+<i>282</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;  /** Direct reference to the action table. */
+<i>285</i>&nbsp;  protected short[][] action_tab;
+<i>286</i>&nbsp;
+<i>287</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>288</i>&nbsp;
+<i>289</i>&nbsp;  /** Direct reference to the reduce-goto table. */
+<i>290</i>&nbsp;  protected short[][] reduce_tab;
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>293</i>&nbsp;
+<i>294</i>&nbsp;  /** This is the scanner object used by the default implementation
+<i>295</i>&nbsp;   *  of scan() to get Symbols.  To avoid name conflicts with existing
+<i>296</i>&nbsp;   *  code, this field is private. [CSA/davidm] */
+<i>297</i>&nbsp;  private Scanner _scanner;
+<i>298</i>&nbsp;
+<i>299</i>&nbsp;  /**
+<i>300</i>&nbsp;   * Simple accessor method to set the default scanner.
+<i>301</i>&nbsp;   */
+<b class="nc"><i>302</i>&nbsp;  public void setScanner(Scanner s) { _scanner = s; }</b>
+<i>303</i>&nbsp;
+<i>304</i>&nbsp;  /**
+<i>305</i>&nbsp;   * Simple accessor method to get the default scanner.
+<i>306</i>&nbsp;   */
+<b class="nc"><i>307</i>&nbsp;  public Scanner getScanner() { return _scanner; }</b>
+<i>308</i>&nbsp;
+<i>309</i>&nbsp;  /*-----------------------------------------------------------*/
+<i>310</i>&nbsp;  /*--- General Methods ---------------------------------------*/
+<i>311</i>&nbsp;  /*-----------------------------------------------------------*/
+<i>312</i>&nbsp;
+<i>313</i>&nbsp;  /** Perform a bit of user supplied action code (supplied by generated
+<i>314</i>&nbsp;   *  subclass).  Actions are indexed by an internal action number assigned
+<i>315</i>&nbsp;   *  at parser generation time.
+<i>316</i>&nbsp;   *
+<i>317</i>&nbsp;   * @param act_num   the internal index of the action to be performed.
+<i>318</i>&nbsp;   * @param parser    the parser object we are acting for.
+<i>319</i>&nbsp;   * @param stack     the parse stack of that object.
+<i>320</i>&nbsp;   * @param top       the index of the top element of the parse stack.
+<i>321</i>&nbsp;   */
+<i>322</i>&nbsp;  public abstract Symbol do_action(
+<i>323</i>&nbsp;    int       act_num,
+<i>324</i>&nbsp;    lr_parser parser,
+<i>325</i>&nbsp;    Stack     stack,
+<i>326</i>&nbsp;    int       top)
+<i>327</i>&nbsp;    throws java.lang.Exception;
+<i>328</i>&nbsp;
+<i>329</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>330</i>&nbsp;
+<i>331</i>&nbsp;  /** User code for initialization inside the parser.  Typically this
+<i>332</i>&nbsp;   *  initializes the scanner.  This is called before the parser requests
+<i>333</i>&nbsp;   *  the first Symbol.  Here this is just a placeholder for subclasses that
+<i>334</i>&nbsp;   *  might need this and we perform no action.   This method is normally
+<i>335</i>&nbsp;   *  overridden by the generated code using this contents of the &quot;init with&quot;
+<i>336</i>&nbsp;   *  clause as its body.
+<i>337</i>&nbsp;   */
+<i>338</i>&nbsp;  public void user_init() throws java.lang.Exception { }
+<i>339</i>&nbsp;
+<i>340</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>341</i>&nbsp;
+<i>342</i>&nbsp;  /** Initialize the action object.  This is called before the parser does
+<i>343</i>&nbsp;   *  any parse actions. This is filled in by generated code to create
+<i>344</i>&nbsp;   *  an object that encapsulates all action code.
+<i>345</i>&nbsp;   */
+<i>346</i>&nbsp;  protected abstract void init_actions() throws java.lang.Exception;
+<i>347</i>&nbsp;
+<i>348</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>349</i>&nbsp;
+<i>350</i>&nbsp;  /** Get the next Symbol from the input (supplied by generated subclass).
+<i>351</i>&nbsp;   *  Once end of file has been reached, all subsequent calls to scan
+<i>352</i>&nbsp;   *  should return an EOF Symbol (which is Symbol number 0).  By default
+<i>353</i>&nbsp;   *  this method returns getScanner().next_token(); this implementation
+<i>354</i>&nbsp;   *  can be overriden by the generated parser using the code declared in
+<i>355</i>&nbsp;   *  the &quot;scan with&quot; clause.  Do not recycle objects; every call to
+<i>356</i>&nbsp;   *  scan() should return a fresh object.
+<i>357</i>&nbsp;   */
+<i>358</i>&nbsp;  public Symbol scan() throws java.lang.Exception {
+<b class="nc"><i>359</i>&nbsp;    return getScanner().next_token();</b>
+<i>360</i>&nbsp;  }
+<i>361</i>&nbsp;
+<i>362</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>363</i>&nbsp;
+<i>364</i>&nbsp;  /** Report a fatal error.  This method takes a  message string and an
+<i>365</i>&nbsp;   *  additional object (to be used by specializations implemented in
+<i>366</i>&nbsp;   *  subclasses).  Here in the base class a very simple implementation
+<i>367</i>&nbsp;   *  is provided which reports the error then throws an exception.
+<i>368</i>&nbsp;   *
+<i>369</i>&nbsp;   * @param message an error message.
+<i>370</i>&nbsp;   * @param info    an extra object reserved for use by specialized subclasses.
+<i>371</i>&nbsp;   */
+<i>372</i>&nbsp;  public void report_fatal_error(
+<i>373</i>&nbsp;    String   message,
+<i>374</i>&nbsp;    Object   info)
+<i>375</i>&nbsp;    throws java.lang.Exception
+<i>376</i>&nbsp;    {
+<i>377</i>&nbsp;      /* stop parsing (not really necessary since we throw an exception, but) */
+<b class="nc"><i>378</i>&nbsp;      done_parsing();</b>
+<i>379</i>&nbsp;
+<i>380</i>&nbsp;      /* use the normal error message reporting to put out the message */
+<b class="nc"><i>381</i>&nbsp;      report_error(message, info);</b>
+<i>382</i>&nbsp;
+<i>383</i>&nbsp;      /* throw an exception */
+<b class="nc"><i>384</i>&nbsp;      throw new Exception(&quot;Can&#39;t recover from previous error(s)&quot;);</b>
+<i>385</i>&nbsp;    }
+<i>386</i>&nbsp;
+<i>387</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>388</i>&nbsp;
+<i>389</i>&nbsp;  /** Report a non fatal error (or warning).  This method takes a message
+<i>390</i>&nbsp;   *  string and an additional object (to be used by specializations
+<i>391</i>&nbsp;   *  implemented in subclasses).  Here in the base class a very simple
+<i>392</i>&nbsp;   *  implementation is provided which simply prints the message to
+<i>393</i>&nbsp;   *  System.err.
+<i>394</i>&nbsp;   *
+<i>395</i>&nbsp;   * @param message an error message.
+<i>396</i>&nbsp;   * @param info    an extra object reserved for use by specialized subclasses.
+<i>397</i>&nbsp;   */
+<i>398</i>&nbsp;  public void report_error(String message, Object info)
+<i>399</i>&nbsp;    {
+<b class="nc"><i>400</i>&nbsp;      System.err.print(message);</b>
+<b class="nc"><i>401</i>&nbsp;      if (info instanceof Symbol)</b>
+<b class="nc"><i>402</i>&nbsp;        if (((Symbol)info).left != -1)</b>
+<b class="nc"><i>403</i>&nbsp;        System.err.println(&quot; at character &quot; + ((Symbol)info).left +</b>
+<i>404</i>&nbsp;                           &quot; of input&quot;);
+<b class="nc"><i>405</i>&nbsp;        else System.err.println(&quot;&quot;);</b>
+<b class="nc"><i>406</i>&nbsp;      else System.err.println(&quot;&quot;);</b>
+<i>407</i>&nbsp;    }
+<i>408</i>&nbsp;
+<i>409</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>410</i>&nbsp;
+<i>411</i>&nbsp;  /** This method is called when a syntax error has been detected and recovery
+<i>412</i>&nbsp;   *  is about to be invoked.  Here in the base class we just emit a
+<i>413</i>&nbsp;   *  &quot;Syntax error&quot; error message.
+<i>414</i>&nbsp;   *
+<i>415</i>&nbsp;   * @param cur_token the current lookahead Symbol.
+<i>416</i>&nbsp;   */
+<i>417</i>&nbsp;  public void syntax_error(Symbol cur_token)
+<i>418</i>&nbsp;    {
+<b class="nc"><i>419</i>&nbsp;      report_error(&quot;Syntax error&quot;, cur_token);</b>
+<i>420</i>&nbsp;    }
+<i>421</i>&nbsp;
+<i>422</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>423</i>&nbsp;
+<i>424</i>&nbsp;  /** This method is called if it is determined that syntax error recovery
+<i>425</i>&nbsp;   *  has been unsuccessful.  Here in the base class we report a fatal error.
+<i>426</i>&nbsp;   *
+<i>427</i>&nbsp;   * @param cur_token the current lookahead Symbol.
+<i>428</i>&nbsp;   */
+<i>429</i>&nbsp;  public void unrecovered_syntax_error(Symbol cur_token)
+<i>430</i>&nbsp;    throws java.lang.Exception
+<i>431</i>&nbsp;    {
+<b class="nc"><i>432</i>&nbsp;      report_fatal_error(&quot;Couldn&#39;t repair and continue parse&quot;, cur_token);</b>
+<i>433</i>&nbsp;    }
+<i>434</i>&nbsp;
+<i>435</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>436</i>&nbsp;
+<i>437</i>&nbsp;  /** Fetch an action from the action table.  The table is broken up into
+<i>438</i>&nbsp;   *  rows, one per state (rows are indexed directly by state number).
+<i>439</i>&nbsp;   *  Within each row, a list of index, value pairs are given (as sequential
+<i>440</i>&nbsp;   *  entries in the table), and the list is terminated by a default entry
+<i>441</i>&nbsp;   *  (denoted with a Symbol index of -1).  To find the proper entry in a row
+<i>442</i>&nbsp;   *  we do a linear or binary search (depending on the size of the row).
+<i>443</i>&nbsp;   *
+<i>444</i>&nbsp;   * @param state the state index of the action being accessed.
+<i>445</i>&nbsp;   * @param sym   the Symbol index of the action being accessed.
+<i>446</i>&nbsp;   */
+<i>447</i>&nbsp;  protected final short get_action(int state, int sym)
+<i>448</i>&nbsp;    {
+<i>449</i>&nbsp;      short tag;
+<i>450</i>&nbsp;      int first, last, probe;
+<b class="nc"><i>451</i>&nbsp;      short[] row = action_tab[state];</b>
+<i>452</i>&nbsp;
+<i>453</i>&nbsp;      /* linear search if we are &lt; 10 entries */
+<b class="nc"><i>454</i>&nbsp;      if (row.length &lt; 20)</b>
+<b class="nc"><i>455</i>&nbsp;        for (probe = 0; probe &lt; row.length; probe++)</b>
+<i>456</i>&nbsp;          {
+<i>457</i>&nbsp;            /* is this entry labeled with our Symbol or the default? */
+<b class="nc"><i>458</i>&nbsp;            tag = row[probe++];</b>
+<b class="nc"><i>459</i>&nbsp;            if (tag == sym || tag == -1)</b>
+<i>460</i>&nbsp;              {
+<i>461</i>&nbsp;                /* return the next entry */
+<b class="nc"><i>462</i>&nbsp;                return row[probe];</b>
+<i>463</i>&nbsp;              }
+<i>464</i>&nbsp;          }
+<i>465</i>&nbsp;      /* otherwise binary search */
+<i>466</i>&nbsp;      else
+<i>467</i>&nbsp;        {
+<b class="nc"><i>468</i>&nbsp;          first = 0;</b>
+<b class="nc"><i>469</i>&nbsp;          last = (row.length-1)/2 - 1;  /* leave out trailing default entry */</b>
+<b class="nc"><i>470</i>&nbsp;          while (first &lt;= last)</b>
+<i>471</i>&nbsp;            {
+<b class="nc"><i>472</i>&nbsp;              probe = (first+last)/2;</b>
+<b class="nc"><i>473</i>&nbsp;              if (sym == row[probe*2])</b>
+<b class="nc"><i>474</i>&nbsp;                return row[probe*2+1];</b>
+<b class="nc"><i>475</i>&nbsp;              else if (sym &gt; row[probe*2])</b>
+<b class="nc"><i>476</i>&nbsp;                first = probe+1;</b>
+<i>477</i>&nbsp;              else
+<b class="nc"><i>478</i>&nbsp;                last = probe-1;</b>
+<i>479</i>&nbsp;            }
+<i>480</i>&nbsp;
+<i>481</i>&nbsp;          /* not found, use the default at the end */
+<b class="nc"><i>482</i>&nbsp;          return row[row.length-1];</b>
+<i>483</i>&nbsp;        }
+<i>484</i>&nbsp;
+<i>485</i>&nbsp;      /* shouldn&#39;t happened, but if we run off the end we return the
+<i>486</i>&nbsp;         default (error == 0) */
+<b class="nc"><i>487</i>&nbsp;      return 0;</b>
+<i>488</i>&nbsp;    }
+<i>489</i>&nbsp;
+<i>490</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>491</i>&nbsp;
+<i>492</i>&nbsp;  /** Fetch a state from the reduce-goto table.  The table is broken up into
+<i>493</i>&nbsp;   *  rows, one per state (rows are indexed directly by state number).
+<i>494</i>&nbsp;   *  Within each row, a list of index, value pairs are given (as sequential
+<i>495</i>&nbsp;   *  entries in the table), and the list is terminated by a default entry
+<i>496</i>&nbsp;   *  (denoted with a Symbol index of -1).  To find the proper entry in a row
+<i>497</i>&nbsp;   *  we do a linear search.
+<i>498</i>&nbsp;   *
+<i>499</i>&nbsp;   * @param state the state index of the entry being accessed.
+<i>500</i>&nbsp;   * @param sym   the Symbol index of the entry being accessed.
+<i>501</i>&nbsp;   */
+<i>502</i>&nbsp;  protected final short get_reduce(int state, int sym)
+<i>503</i>&nbsp;    {
+<i>504</i>&nbsp;      short tag;
+<b class="nc"><i>505</i>&nbsp;      short[] row = reduce_tab[state];</b>
+<i>506</i>&nbsp;
+<i>507</i>&nbsp;      /* if we have a null row we go with the default */
+<b class="nc"><i>508</i>&nbsp;      if (row == null)</b>
+<b class="nc"><i>509</i>&nbsp;        return -1;</b>
+<i>510</i>&nbsp;
+<b class="nc"><i>511</i>&nbsp;      for (int probe = 0; probe &lt; row.length; probe++)</b>
+<i>512</i>&nbsp;        {
+<i>513</i>&nbsp;          /* is this entry labeled with our Symbol or the default? */
+<b class="nc"><i>514</i>&nbsp;          tag = row[probe++];</b>
+<b class="nc"><i>515</i>&nbsp;          if (tag == sym || tag == -1)</b>
+<i>516</i>&nbsp;            {
+<i>517</i>&nbsp;              /* return the next entry */
+<b class="nc"><i>518</i>&nbsp;              return row[probe];</b>
+<i>519</i>&nbsp;            }
+<i>520</i>&nbsp;        }
+<i>521</i>&nbsp;      /* if we run off the end we return the default (error == -1) */
+<b class="nc"><i>522</i>&nbsp;      return -1;</b>
+<i>523</i>&nbsp;    }
+<i>524</i>&nbsp;
+<i>525</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>526</i>&nbsp;
+<i>527</i>&nbsp;  /** This method provides the main parsing routine.  It returns only when
+<i>528</i>&nbsp;   *  done_parsing() has been called (typically because the parser has
+<i>529</i>&nbsp;   *  accepted, or a fatal error has been reported).  See the header
+<i>530</i>&nbsp;   *  documentation for the class regarding how shift/reduce parsers operate
+<i>531</i>&nbsp;   *  and how the various tables are used.
+<i>532</i>&nbsp;   */
+<i>533</i>&nbsp;  public Symbol parse() throws java.lang.Exception
+<i>534</i>&nbsp;    {
+<i>535</i>&nbsp;      /* the current action code */
+<i>536</i>&nbsp;      int act;
+<i>537</i>&nbsp;
+<i>538</i>&nbsp;      /* the Symbol/stack element returned by a reduce */
+<b class="nc"><i>539</i>&nbsp;      Symbol lhs_sym = null;</b>
+<i>540</i>&nbsp;
+<i>541</i>&nbsp;      /* information about production being reduced with */
+<i>542</i>&nbsp;      short handle_size, lhs_sym_num;
+<i>543</i>&nbsp;
+<i>544</i>&nbsp;      /* set up direct reference to tables to drive the parser */
+<i>545</i>&nbsp;
+<b class="nc"><i>546</i>&nbsp;      production_tab = production_table();</b>
+<b class="nc"><i>547</i>&nbsp;      action_tab     = action_table();</b>
+<b class="nc"><i>548</i>&nbsp;      reduce_tab     = reduce_table();</b>
+<i>549</i>&nbsp;
+<i>550</i>&nbsp;      /* initialize the action encapsulation object */
+<b class="nc"><i>551</i>&nbsp;      init_actions();</b>
+<i>552</i>&nbsp;
+<i>553</i>&nbsp;      /* do user initialization */
+<b class="nc"><i>554</i>&nbsp;      user_init();</b>
+<i>555</i>&nbsp;
+<i>556</i>&nbsp;      /* get the first token */
+<b class="nc"><i>557</i>&nbsp;      cur_token = scan();</b>
+<i>558</i>&nbsp;
+<i>559</i>&nbsp;      /* push dummy Symbol with start state to get us underway */
+<b class="nc"><i>560</i>&nbsp;      stack.removeAllElements();</b>
+<b class="nc"><i>561</i>&nbsp;      stack.push(new Symbol(0, start_state()));</b>
+<b class="nc"><i>562</i>&nbsp;      tos = 0;</b>
+<i>563</i>&nbsp;
+<i>564</i>&nbsp;      /* continue until we are told to stop */
+<b class="nc"><i>565</i>&nbsp;      for (_done_parsing = false; !_done_parsing; )</b>
+<i>566</i>&nbsp;        {
+<i>567</i>&nbsp;          /* Check current token for freshness. */
+<b class="nc"><i>568</i>&nbsp;          if (cur_token.used_by_parser)</b>
+<b class="nc"><i>569</i>&nbsp;            throw new Error(&quot;Symbol recycling detected (fix your scanner).&quot;);</b>
+<i>570</i>&nbsp;
+<i>571</i>&nbsp;          /* current state is always on the top of the stack */
+<i>572</i>&nbsp;
+<i>573</i>&nbsp;          /* look up action out of the current state with the current input */
+<b class="nc"><i>574</i>&nbsp;          act = get_action(((Symbol)stack.peek()).parse_state, cur_token.sym);</b>
+<i>575</i>&nbsp;
+<i>576</i>&nbsp;          /* decode the action -- &gt; 0 encodes shift */
+<b class="nc"><i>577</i>&nbsp;          if (act &gt; 0)</b>
+<i>578</i>&nbsp;            {
+<i>579</i>&nbsp;              /* shift to the encoded state by pushing it on the stack */
+<b class="nc"><i>580</i>&nbsp;              cur_token.parse_state = act-1;</b>
+<b class="nc"><i>581</i>&nbsp;              cur_token.used_by_parser = true;</b>
+<b class="nc"><i>582</i>&nbsp;              stack.push(cur_token);</b>
+<b class="nc"><i>583</i>&nbsp;              tos++;</b>
+<i>584</i>&nbsp;
+<i>585</i>&nbsp;              /* advance to the next Symbol */
+<b class="nc"><i>586</i>&nbsp;              cur_token = scan();</b>
+<i>587</i>&nbsp;            }
+<i>588</i>&nbsp;          /* if its less than zero, then it encodes a reduce action */
+<b class="nc"><i>589</i>&nbsp;          else if (act &lt; 0)</b>
+<i>590</i>&nbsp;            {
+<i>591</i>&nbsp;              /* perform the action for the reduce */
+<b class="nc"><i>592</i>&nbsp;              lhs_sym = do_action((-act)-1, this, stack, tos);</b>
+<i>593</i>&nbsp;
+<i>594</i>&nbsp;              /* look up information about the production */
+<b class="nc"><i>595</i>&nbsp;              lhs_sym_num = production_tab[(-act)-1][0];</b>
+<b class="nc"><i>596</i>&nbsp;              handle_size = production_tab[(-act)-1][1];</b>
+<i>597</i>&nbsp;
+<i>598</i>&nbsp;              /* pop the handle off the stack */
+<b class="nc"><i>599</i>&nbsp;              for (int i = 0; i &lt; handle_size; i++)</b>
+<i>600</i>&nbsp;                {
+<b class="nc"><i>601</i>&nbsp;                  stack.pop();</b>
+<b class="nc"><i>602</i>&nbsp;                  tos--;</b>
+<i>603</i>&nbsp;                }
+<i>604</i>&nbsp;
+<i>605</i>&nbsp;              /* look up the state to go to from the one popped back to */
+<b class="nc"><i>606</i>&nbsp;              act = get_reduce(((Symbol)stack.peek()).parse_state, lhs_sym_num);</b>
+<i>607</i>&nbsp;
+<i>608</i>&nbsp;              /* shift to that state */
+<b class="nc"><i>609</i>&nbsp;              lhs_sym.parse_state = act;</b>
+<b class="nc"><i>610</i>&nbsp;              lhs_sym.used_by_parser = true;</b>
+<b class="nc"><i>611</i>&nbsp;              stack.push(lhs_sym);</b>
+<b class="nc"><i>612</i>&nbsp;              tos++;</b>
+<i>613</i>&nbsp;            }
+<i>614</i>&nbsp;          /* finally if the entry is zero, we have an error */
+<b class="nc"><i>615</i>&nbsp;          else if (act == 0)</b>
+<i>616</i>&nbsp;            {
+<i>617</i>&nbsp;              /* call user syntax error reporting routine */
+<b class="nc"><i>618</i>&nbsp;              syntax_error(cur_token);</b>
+<i>619</i>&nbsp;
+<i>620</i>&nbsp;              /* try to error recover */
+<b class="nc"><i>621</i>&nbsp;              if (!error_recovery(false))</b>
+<i>622</i>&nbsp;                {
+<i>623</i>&nbsp;                  /* if that fails give up with a fatal syntax error */
+<b class="nc"><i>624</i>&nbsp;                  unrecovered_syntax_error(cur_token);</b>
+<i>625</i>&nbsp;
+<i>626</i>&nbsp;                  /* just in case that wasn&#39;t fatal enough, end parse */
+<b class="nc"><i>627</i>&nbsp;                  done_parsing();</b>
+<i>628</i>&nbsp;                } else {
+<b class="nc"><i>629</i>&nbsp;                  lhs_sym = (Symbol)stack.peek();</b>
+<i>630</i>&nbsp;                }
+<i>631</i>&nbsp;            }
+<i>632</i>&nbsp;        }
+<b class="nc"><i>633</i>&nbsp;      return lhs_sym;</b>
+<i>634</i>&nbsp;    }
+<i>635</i>&nbsp;
+<i>636</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>637</i>&nbsp;
+<i>638</i>&nbsp;  /** Write a debugging message to System.err for the debugging version
+<i>639</i>&nbsp;   *  of the parser.
+<i>640</i>&nbsp;   *
+<i>641</i>&nbsp;   * @param mess the text of the debugging message.
+<i>642</i>&nbsp;   */
+<i>643</i>&nbsp;  public void debug_message(String mess)
+<i>644</i>&nbsp;    {
+<b class="nc"><i>645</i>&nbsp;      System.err.println(mess);</b>
+<i>646</i>&nbsp;    }
+<i>647</i>&nbsp;
+<i>648</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>649</i>&nbsp;
+<i>650</i>&nbsp;  /** Dump the parse stack for debugging purposes. */
+<i>651</i>&nbsp;  public void dump_stack()
+<i>652</i>&nbsp;    {
+<b class="nc"><i>653</i>&nbsp;      if (stack == null)</b>
+<i>654</i>&nbsp;        {
+<b class="nc"><i>655</i>&nbsp;          debug_message(&quot;# Stack dump requested, but stack is null&quot;);</b>
+<i>656</i>&nbsp;          return;
+<i>657</i>&nbsp;        }
+<i>658</i>&nbsp;
+<b class="nc"><i>659</i>&nbsp;      debug_message(&quot;============ Parse Stack Dump ============&quot;);</b>
+<i>660</i>&nbsp;
+<i>661</i>&nbsp;      /* dump the stack */
+<b class="nc"><i>662</i>&nbsp;      for (int i=0; i&lt;stack.size(); i++)</b>
+<i>663</i>&nbsp;        {
+<b class="nc"><i>664</i>&nbsp;          debug_message(&quot;Symbol: &quot; + ((Symbol)stack.elementAt(i)).sym +</b>
+<b class="nc"><i>665</i>&nbsp;                        &quot; State: &quot; + ((Symbol)stack.elementAt(i)).parse_state);</b>
+<i>666</i>&nbsp;        }
+<b class="nc"><i>667</i>&nbsp;      debug_message(&quot;==========================================&quot;);</b>
+<i>668</i>&nbsp;    }
+<i>669</i>&nbsp;
+<i>670</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>671</i>&nbsp;
+<i>672</i>&nbsp;  /** Do debug output for a reduce.
+<i>673</i>&nbsp;   *
+<i>674</i>&nbsp;   * @param prod_num  the production we are reducing with.
+<i>675</i>&nbsp;   * @param nt_num    the index of the LHS non terminal.
+<i>676</i>&nbsp;   * @param rhs_size  the size of the RHS.
+<i>677</i>&nbsp;   */
+<i>678</i>&nbsp;  public void debug_reduce(int prod_num, int nt_num, int rhs_size)
+<i>679</i>&nbsp;    {
+<b class="nc"><i>680</i>&nbsp;      debug_message(&quot;# Reduce with prod #&quot; + prod_num + &quot; [NT=&quot; + nt_num +</b>
+<i>681</i>&nbsp;                    &quot;, &quot; + &quot;SZ=&quot; + rhs_size + &quot;]&quot;);
+<i>682</i>&nbsp;    }
+<i>683</i>&nbsp;
+<i>684</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>685</i>&nbsp;
+<i>686</i>&nbsp;  /** Do debug output for shift.
+<i>687</i>&nbsp;   *
+<i>688</i>&nbsp;   * @param shift_tkn the Symbol being shifted onto the stack.
+<i>689</i>&nbsp;   */
+<i>690</i>&nbsp;  public void debug_shift(Symbol shift_tkn)
+<i>691</i>&nbsp;    {
+<b class="nc"><i>692</i>&nbsp;      debug_message(&quot;# Shift under term #&quot; + shift_tkn.sym +</b>
+<i>693</i>&nbsp;                    &quot; to state #&quot; + shift_tkn.parse_state);
+<i>694</i>&nbsp;    }
+<i>695</i>&nbsp;
+<i>696</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>697</i>&nbsp;
+<i>698</i>&nbsp;  /** Do debug output for stack state. [CSA]
+<i>699</i>&nbsp;   */
+<i>700</i>&nbsp;  public void debug_stack() {
+<b class="nc"><i>701</i>&nbsp;      StringBuffer sb=new StringBuffer(&quot;## STACK:&quot;);</b>
+<b class="nc"><i>702</i>&nbsp;      for (int i=0; i&lt;stack.size(); i++) {</b>
+<b class="nc"><i>703</i>&nbsp;          Symbol s = (Symbol) stack.elementAt(i);</b>
+<b class="nc"><i>704</i>&nbsp;          sb.append(&quot; &lt;state &quot;+s.parse_state+&quot;, sym &quot;+s.sym+&quot;&gt;&quot;);</b>
+<b class="nc"><i>705</i>&nbsp;          if ((i%3)==2 || (i==(stack.size()-1))) {</b>
+<b class="nc"><i>706</i>&nbsp;              debug_message(sb.toString());</b>
+<b class="nc"><i>707</i>&nbsp;              sb = new StringBuffer(&quot;         &quot;);</b>
+<i>708</i>&nbsp;          }
+<i>709</i>&nbsp;      }
+<i>710</i>&nbsp;  }
+<i>711</i>&nbsp;
+<i>712</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>713</i>&nbsp;
+<i>714</i>&nbsp;  /** Perform a parse with debugging output.  This does exactly the
+<i>715</i>&nbsp;   *  same things as parse(), except that it calls debug_shift() and
+<i>716</i>&nbsp;   *  debug_reduce() when shift and reduce moves are taken by the parser
+<i>717</i>&nbsp;   *  and produces various other debugging messages.
+<i>718</i>&nbsp;   */
+<i>719</i>&nbsp;  public Symbol debug_parse()
+<i>720</i>&nbsp;    throws java.lang.Exception
+<i>721</i>&nbsp;    {
+<i>722</i>&nbsp;      /* the current action code */
+<i>723</i>&nbsp;      int act;
+<i>724</i>&nbsp;
+<i>725</i>&nbsp;      /* the Symbol/stack element returned by a reduce */
+<b class="nc"><i>726</i>&nbsp;      Symbol lhs_sym = null;</b>
+<i>727</i>&nbsp;
+<i>728</i>&nbsp;      /* information about production being reduced with */
+<i>729</i>&nbsp;      short handle_size, lhs_sym_num;
+<i>730</i>&nbsp;
+<i>731</i>&nbsp;      /* set up direct reference to tables to drive the parser */
+<b class="nc"><i>732</i>&nbsp;      production_tab = production_table();</b>
+<b class="nc"><i>733</i>&nbsp;      action_tab     = action_table();</b>
+<b class="nc"><i>734</i>&nbsp;      reduce_tab     = reduce_table();</b>
+<i>735</i>&nbsp;
+<b class="nc"><i>736</i>&nbsp;      debug_message(&quot;# Initializing parser&quot;);</b>
+<i>737</i>&nbsp;
+<i>738</i>&nbsp;      /* initialize the action encapsulation object */
+<b class="nc"><i>739</i>&nbsp;      init_actions();</b>
+<i>740</i>&nbsp;
+<i>741</i>&nbsp;      /* do user initialization */
+<b class="nc"><i>742</i>&nbsp;      user_init();</b>
+<i>743</i>&nbsp;
+<i>744</i>&nbsp;      /* the current Symbol */
+<b class="nc"><i>745</i>&nbsp;      cur_token = scan();</b>
+<i>746</i>&nbsp;
+<b class="nc"><i>747</i>&nbsp;      debug_message(&quot;# Current Symbol is #&quot; + cur_token.sym);</b>
+<i>748</i>&nbsp;
+<i>749</i>&nbsp;      /* push dummy Symbol with start state to get us underway */
+<b class="nc"><i>750</i>&nbsp;      stack.removeAllElements();</b>
+<b class="nc"><i>751</i>&nbsp;      stack.push(new Symbol(0, start_state()));</b>
+<b class="nc"><i>752</i>&nbsp;      tos = 0;</b>
+<i>753</i>&nbsp;
+<i>754</i>&nbsp;      /* continue until we are told to stop */
+<b class="nc"><i>755</i>&nbsp;      for (_done_parsing = false; !_done_parsing; )</b>
+<i>756</i>&nbsp;        {
+<i>757</i>&nbsp;          /* Check current token for freshness. */
+<b class="nc"><i>758</i>&nbsp;          if (cur_token.used_by_parser)</b>
+<b class="nc"><i>759</i>&nbsp;            throw new Error(&quot;Symbol recycling detected (fix your scanner).&quot;);</b>
+<i>760</i>&nbsp;
+<i>761</i>&nbsp;          /* current state is always on the top of the stack */
+<i>762</i>&nbsp;          //debug_stack();
+<i>763</i>&nbsp;
+<i>764</i>&nbsp;          /* look up action out of the current state with the current input */
+<b class="nc"><i>765</i>&nbsp;          act = get_action(((Symbol)stack.peek()).parse_state, cur_token.sym);</b>
+<i>766</i>&nbsp;
+<i>767</i>&nbsp;          /* decode the action -- &gt; 0 encodes shift */
+<b class="nc"><i>768</i>&nbsp;          if (act &gt; 0)</b>
+<i>769</i>&nbsp;            {
+<i>770</i>&nbsp;              /* shift to the encoded state by pushing it on the stack */
+<b class="nc"><i>771</i>&nbsp;              cur_token.parse_state = act-1;</b>
+<b class="nc"><i>772</i>&nbsp;              cur_token.used_by_parser = true;</b>
+<b class="nc"><i>773</i>&nbsp;              debug_shift(cur_token);</b>
+<b class="nc"><i>774</i>&nbsp;              stack.push(cur_token);</b>
+<b class="nc"><i>775</i>&nbsp;              tos++;</b>
+<i>776</i>&nbsp;
+<i>777</i>&nbsp;              /* advance to the next Symbol */
+<b class="nc"><i>778</i>&nbsp;              cur_token = scan();</b>
+<b class="nc"><i>779</i>&nbsp;              debug_message(&quot;# Current token is &quot; + cur_token);</b>
+<i>780</i>&nbsp;            }
+<i>781</i>&nbsp;          /* if its less than zero, then it encodes a reduce action */
+<b class="nc"><i>782</i>&nbsp;          else if (act &lt; 0)</b>
+<i>783</i>&nbsp;            {
+<i>784</i>&nbsp;              /* perform the action for the reduce */
+<b class="nc"><i>785</i>&nbsp;              lhs_sym = do_action((-act)-1, this, stack, tos);</b>
+<i>786</i>&nbsp;
+<i>787</i>&nbsp;              /* look up information about the production */
+<b class="nc"><i>788</i>&nbsp;              lhs_sym_num = production_tab[(-act)-1][0];</b>
+<b class="nc"><i>789</i>&nbsp;              handle_size = production_tab[(-act)-1][1];</b>
+<i>790</i>&nbsp;
+<b class="nc"><i>791</i>&nbsp;              debug_reduce((-act)-1, lhs_sym_num, handle_size);</b>
+<i>792</i>&nbsp;
+<i>793</i>&nbsp;              /* pop the handle off the stack */
+<b class="nc"><i>794</i>&nbsp;              for (int i = 0; i &lt; handle_size; i++)</b>
+<i>795</i>&nbsp;                {
+<b class="nc"><i>796</i>&nbsp;                  stack.pop();</b>
+<b class="nc"><i>797</i>&nbsp;                  tos--;</b>
+<i>798</i>&nbsp;                }
+<i>799</i>&nbsp;
+<i>800</i>&nbsp;              /* look up the state to go to from the one popped back to */
+<b class="nc"><i>801</i>&nbsp;              act = get_reduce(((Symbol)stack.peek()).parse_state, lhs_sym_num);</b>
+<b class="nc"><i>802</i>&nbsp;              debug_message(&quot;# Reduce rule: top state &quot; +</b>
+<b class="nc"><i>803</i>&nbsp;                             ((Symbol)stack.peek()).parse_state +</b>
+<i>804</i>&nbsp;                             &quot;, lhs sym &quot; + lhs_sym_num + &quot; -&gt; state &quot; + act);
+<i>805</i>&nbsp;
+<i>806</i>&nbsp;              /* shift to that state */
+<b class="nc"><i>807</i>&nbsp;              lhs_sym.parse_state = act;</b>
+<b class="nc"><i>808</i>&nbsp;              lhs_sym.used_by_parser = true;</b>
+<b class="nc"><i>809</i>&nbsp;              stack.push(lhs_sym);</b>
+<b class="nc"><i>810</i>&nbsp;              tos++;</b>
+<i>811</i>&nbsp;
+<b class="nc"><i>812</i>&nbsp;              debug_message(&quot;# Goto state #&quot; + act);</b>
+<i>813</i>&nbsp;            }
+<i>814</i>&nbsp;          /* finally if the entry is zero, we have an error */
+<b class="nc"><i>815</i>&nbsp;          else if (act == 0)</b>
+<i>816</i>&nbsp;            {
+<i>817</i>&nbsp;              /* call user syntax error reporting routine */
+<b class="nc"><i>818</i>&nbsp;              syntax_error(cur_token);</b>
+<i>819</i>&nbsp;
+<i>820</i>&nbsp;              /* try to error recover */
+<b class="nc"><i>821</i>&nbsp;              if (!error_recovery(true))</b>
+<i>822</i>&nbsp;                {
+<i>823</i>&nbsp;                  /* if that fails give up with a fatal syntax error */
+<b class="nc"><i>824</i>&nbsp;                  unrecovered_syntax_error(cur_token);</b>
+<i>825</i>&nbsp;
+<i>826</i>&nbsp;                  /* just in case that wasn&#39;t fatal enough, end parse */
+<b class="nc"><i>827</i>&nbsp;                  done_parsing();</b>
+<i>828</i>&nbsp;                } else {
+<b class="nc"><i>829</i>&nbsp;                  lhs_sym = (Symbol)stack.peek();</b>
+<i>830</i>&nbsp;                }
+<i>831</i>&nbsp;            }
+<i>832</i>&nbsp;        }
+<b class="nc"><i>833</i>&nbsp;      return lhs_sym;</b>
+<i>834</i>&nbsp;    }
+<i>835</i>&nbsp;
+<i>836</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>837</i>&nbsp;  /* Error recovery code */
+<i>838</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>839</i>&nbsp;
+<i>840</i>&nbsp;  /** Attempt to recover from a syntax error.  This returns false if recovery
+<i>841</i>&nbsp;   *  fails, true if it succeeds.  Recovery happens in 4 steps.  First we
+<i>842</i>&nbsp;   *  pop the parse stack down to a point at which we have a shift out
+<i>843</i>&nbsp;   *  of the top-most state on the error Symbol.  This represents the
+<i>844</i>&nbsp;   *  initial error recovery configuration.  If no such configuration is
+<i>845</i>&nbsp;   *  found, then we fail.  Next a small number of &quot;lookahead&quot; or &quot;parse
+<i>846</i>&nbsp;   *  ahead&quot; Symbols are read into a buffer.  The size of this buffer is
+<i>847</i>&nbsp;   *  determined by error_sync_size() and determines how many Symbols beyond
+<i>848</i>&nbsp;   *  the error must be matched to consider the recovery a success.  Next,
+<i>849</i>&nbsp;   *  we begin to discard Symbols in attempt to get past the point of error
+<i>850</i>&nbsp;   *  to a point where we can continue parsing.  After each Symbol, we attempt
+<i>851</i>&nbsp;   *  to &quot;parse ahead&quot; though the buffered lookahead Symbols.  The &quot;parse ahead&quot;
+<i>852</i>&nbsp;   *  process simulates that actual parse, but does not modify the real
+<i>853</i>&nbsp;   *  parser&#39;s configuration, nor execute any actions. If we can  parse all
+<i>854</i>&nbsp;   *  the stored Symbols without error, then the recovery is considered a
+<i>855</i>&nbsp;   *  success.  Once a successful recovery point is determined, we do an
+<i>856</i>&nbsp;   *  actual parse over the stored input -- modifying the real parse
+<i>857</i>&nbsp;   *  configuration and executing all actions.  Finally, we return the the
+<i>858</i>&nbsp;   *  normal parser to continue with the overall parse.
+<i>859</i>&nbsp;   *
+<i>860</i>&nbsp;   * @param debug should we produce debugging messages as we parse.
+<i>861</i>&nbsp;   */
+<i>862</i>&nbsp;  protected boolean error_recovery(boolean debug)
+<i>863</i>&nbsp;    throws java.lang.Exception
+<i>864</i>&nbsp;    {
+<b class="nc"><i>865</i>&nbsp;      if (debug) debug_message(&quot;# Attempting error recovery&quot;);</b>
+<i>866</i>&nbsp;
+<i>867</i>&nbsp;      /* first pop the stack back into a state that can shift on error and
+<i>868</i>&nbsp;         do that shift (if that fails, we fail) */
+<b class="nc"><i>869</i>&nbsp;      if (!find_recovery_config(debug))</b>
+<i>870</i>&nbsp;        {
+<b class="nc"><i>871</i>&nbsp;          if (debug) debug_message(&quot;# Error recovery fails&quot;);</b>
+<b class="nc"><i>872</i>&nbsp;          return false;</b>
+<i>873</i>&nbsp;        }
+<i>874</i>&nbsp;
+<i>875</i>&nbsp;      /* read ahead to create lookahead we can parse multiple times */
+<b class="nc"><i>876</i>&nbsp;      read_lookahead();</b>
+<i>877</i>&nbsp;
+<i>878</i>&nbsp;      /* repeatedly try to parse forward until we make it the required dist */
+<i>879</i>&nbsp;      for (;;)
+<i>880</i>&nbsp;        {
+<i>881</i>&nbsp;          /* try to parse forward, if it makes it, bail out of loop */
+<b class="nc"><i>882</i>&nbsp;          if (debug) debug_message(&quot;# Trying to parse ahead&quot;);</b>
+<b class="nc"><i>883</i>&nbsp;          if (try_parse_ahead(debug))</b>
+<i>884</i>&nbsp;            {
+<b class="nc"><i>885</i>&nbsp;              break;</b>
+<i>886</i>&nbsp;            }
+<i>887</i>&nbsp;
+<i>888</i>&nbsp;          /* if we are now at EOF, we have failed */
+<b class="nc"><i>889</i>&nbsp;          if (lookahead[0].sym == EOF_sym())</b>
+<i>890</i>&nbsp;            {
+<b class="nc"><i>891</i>&nbsp;              if (debug) debug_message(&quot;# Error recovery fails at EOF&quot;);</b>
+<b class="nc"><i>892</i>&nbsp;              return false;</b>
+<i>893</i>&nbsp;            }
+<i>894</i>&nbsp;
+<i>895</i>&nbsp;          /* otherwise, we consume another Symbol and try again */
+<b class="nc"><i>896</i>&nbsp;          if (debug)</b>
+<b class="nc"><i>897</i>&nbsp;          debug_message(&quot;# Consuming Symbol #&quot; + cur_err_token().sym);</b>
+<b class="nc"><i>898</i>&nbsp;          restart_lookahead();</b>
+<i>899</i>&nbsp;        }
+<i>900</i>&nbsp;
+<i>901</i>&nbsp;      /* we have consumed to a point where we can parse forward */
+<b class="nc"><i>902</i>&nbsp;      if (debug) debug_message(&quot;# Parse-ahead ok, going back to normal parse&quot;);</b>
+<i>903</i>&nbsp;
+<i>904</i>&nbsp;      /* do the real parse (including actions) across the lookahead */
+<b class="nc"><i>905</i>&nbsp;      parse_lookahead(debug);</b>
+<i>906</i>&nbsp;
+<i>907</i>&nbsp;      /* we have success */
+<b class="nc"><i>908</i>&nbsp;      return true;</b>
+<i>909</i>&nbsp;    }
+<i>910</i>&nbsp;
+<i>911</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>912</i>&nbsp;
+<i>913</i>&nbsp;  /** Determine if we can shift under the special error Symbol out of the
+<i>914</i>&nbsp;   *  state currently on the top of the (real) parse stack.
+<i>915</i>&nbsp;   */
+<i>916</i>&nbsp;  protected boolean shift_under_error()
+<i>917</i>&nbsp;    {
+<i>918</i>&nbsp;      /* is there a shift under error Symbol */
+<b class="nc"><i>919</i>&nbsp;      return get_action(((Symbol)stack.peek()).parse_state, error_sym()) &gt; 0;</b>
+<i>920</i>&nbsp;    }
+<i>921</i>&nbsp;
+<i>922</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>923</i>&nbsp;
+<i>924</i>&nbsp;  /** Put the (real) parse stack into error recovery configuration by
+<i>925</i>&nbsp;   *  popping the stack down to a state that can shift on the special
+<i>926</i>&nbsp;   *  error Symbol, then doing the shift.  If no suitable state exists on
+<i>927</i>&nbsp;   *  the stack we return false
+<i>928</i>&nbsp;   *
+<i>929</i>&nbsp;   * @param debug should we produce debugging messages as we parse.
+<i>930</i>&nbsp;   */
+<i>931</i>&nbsp;  protected boolean find_recovery_config(boolean debug)
+<i>932</i>&nbsp;    {
+<i>933</i>&nbsp;      Symbol error_token;
+<i>934</i>&nbsp;      int act;
+<i>935</i>&nbsp;
+<b class="nc"><i>936</i>&nbsp;      if (debug) debug_message(&quot;# Finding recovery state on stack&quot;);</b>
+<i>937</i>&nbsp;
+<i>938</i>&nbsp;      /* Remember the right-position of the top symbol on the stack */
+<b class="nc"><i>939</i>&nbsp;      int right_pos = ((Symbol)stack.peek()).right;</b>
+<b class="nc"><i>940</i>&nbsp;      int left_pos  = ((Symbol)stack.peek()).left;</b>
+<i>941</i>&nbsp;
+<i>942</i>&nbsp;      /* pop down until we can shift under error Symbol */
+<b class="nc"><i>943</i>&nbsp;      while (!shift_under_error())</b>
+<i>944</i>&nbsp;        {
+<i>945</i>&nbsp;          /* pop the stack */
+<b class="nc"><i>946</i>&nbsp;          if (debug)</b>
+<b class="nc"><i>947</i>&nbsp;            debug_message(&quot;# Pop stack by one, state was # &quot; +</b>
+<b class="nc"><i>948</i>&nbsp;                          ((Symbol)stack.peek()).parse_state);</b>
+<b class="nc"><i>949</i>&nbsp;          left_pos = ((Symbol)stack.pop()).left;</b>
+<b class="nc"><i>950</i>&nbsp;          tos--;</b>
+<i>951</i>&nbsp;
+<i>952</i>&nbsp;          /* if we have hit bottom, we fail */
+<b class="nc"><i>953</i>&nbsp;          if (stack.empty())</b>
+<i>954</i>&nbsp;            {
+<b class="nc"><i>955</i>&nbsp;              if (debug) debug_message(&quot;# No recovery state found on stack&quot;);</b>
+<b class="nc"><i>956</i>&nbsp;              return false;</b>
+<i>957</i>&nbsp;            }
+<i>958</i>&nbsp;        }
+<i>959</i>&nbsp;
+<i>960</i>&nbsp;      /* state on top of the stack can shift under error, find the shift */
+<b class="nc"><i>961</i>&nbsp;      act = get_action(((Symbol)stack.peek()).parse_state, error_sym());</b>
+<b class="nc"><i>962</i>&nbsp;      if (debug)</b>
+<i>963</i>&nbsp;        {
+<b class="nc"><i>964</i>&nbsp;          debug_message(&quot;# Recover state found (#&quot; +</b>
+<b class="nc"><i>965</i>&nbsp;                        ((Symbol)stack.peek()).parse_state + &quot;)&quot;);</b>
+<b class="nc"><i>966</i>&nbsp;          debug_message(&quot;# Shifting on error to state #&quot; + (act-1));</b>
+<i>967</i>&nbsp;        }
+<i>968</i>&nbsp;
+<i>969</i>&nbsp;      /* build and shift a special error Symbol */
+<b class="nc"><i>970</i>&nbsp;      error_token = new Symbol(error_sym(), left_pos, right_pos);</b>
+<b class="nc"><i>971</i>&nbsp;      error_token.parse_state = act-1;</b>
+<b class="nc"><i>972</i>&nbsp;      error_token.used_by_parser = true;</b>
+<b class="nc"><i>973</i>&nbsp;      stack.push(error_token);</b>
+<b class="nc"><i>974</i>&nbsp;      tos++;</b>
+<i>975</i>&nbsp;
+<b class="nc"><i>976</i>&nbsp;      return true;</b>
+<i>977</i>&nbsp;    }
+<i>978</i>&nbsp;
+<i>979</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>980</i>&nbsp;
+<i>981</i>&nbsp;  /** Lookahead Symbols used for attempting error recovery &quot;parse aheads&quot;. */
+<i>982</i>&nbsp;  protected Symbol lookahead[];
+<i>983</i>&nbsp;
+<i>984</i>&nbsp;  /** Position in lookahead input buffer used for &quot;parse ahead&quot;. */
+<i>985</i>&nbsp;  protected int lookahead_pos;
+<i>986</i>&nbsp;
+<i>987</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>988</i>&nbsp;
+<i>989</i>&nbsp;  /** Read from input to establish our buffer of &quot;parse ahead&quot; lookahead
+<i>990</i>&nbsp;   *  Symbols.
+<i>991</i>&nbsp;   */
+<i>992</i>&nbsp;  protected void read_lookahead() throws java.lang.Exception
+<i>993</i>&nbsp;    {
+<i>994</i>&nbsp;      /* create the lookahead array */
+<b class="nc"><i>995</i>&nbsp;      lookahead = new Symbol[error_sync_size()];</b>
+<i>996</i>&nbsp;
+<i>997</i>&nbsp;      /* fill in the array */
+<b class="nc"><i>998</i>&nbsp;      for (int i = 0; i &lt; error_sync_size(); i++)</b>
+<i>999</i>&nbsp;        {
+<b class="nc"><i>1000</i>&nbsp;          lookahead[i] = cur_token;</b>
+<b class="nc"><i>1001</i>&nbsp;          cur_token = scan();</b>
+<i>1002</i>&nbsp;        }
+<i>1003</i>&nbsp;
+<i>1004</i>&nbsp;      /* start at the beginning */
+<b class="nc"><i>1005</i>&nbsp;      lookahead_pos = 0;</b>
+<i>1006</i>&nbsp;    }
+<i>1007</i>&nbsp;
+<i>1008</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>1009</i>&nbsp;
+<i>1010</i>&nbsp;  /** Return the current lookahead in our error &quot;parse ahead&quot; buffer. */
+<b class="nc"><i>1011</i>&nbsp;  protected Symbol cur_err_token() { return lookahead[lookahead_pos]; }</b>
+<i>1012</i>&nbsp;
+<i>1013</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>1014</i>&nbsp;
+<i>1015</i>&nbsp;  /** Advance to next &quot;parse ahead&quot; input Symbol. Return true if we have
+<i>1016</i>&nbsp;   *  input to advance to, false otherwise.
+<i>1017</i>&nbsp;   */
+<i>1018</i>&nbsp;  protected boolean advance_lookahead()
+<i>1019</i>&nbsp;    {
+<i>1020</i>&nbsp;      /* advance the input location */
+<b class="nc"><i>1021</i>&nbsp;      lookahead_pos++;</b>
+<i>1022</i>&nbsp;
+<i>1023</i>&nbsp;      /* return true if we didn&#39;t go off the end */
+<b class="nc"><i>1024</i>&nbsp;      return lookahead_pos &lt; error_sync_size();</b>
+<i>1025</i>&nbsp;    }
+<i>1026</i>&nbsp;
+<i>1027</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>1028</i>&nbsp;
+<i>1029</i>&nbsp;  /** Reset the parse ahead input to one Symbol past where we started error
+<i>1030</i>&nbsp;   *  recovery (this consumes one new Symbol from the real input).
+<i>1031</i>&nbsp;   */
+<i>1032</i>&nbsp;  protected void restart_lookahead() throws java.lang.Exception
+<i>1033</i>&nbsp;    {
+<i>1034</i>&nbsp;      /* move all the existing input over */
+<b class="nc"><i>1035</i>&nbsp;      for (int i = 1; i &lt; error_sync_size(); i++)</b>
+<b class="nc"><i>1036</i>&nbsp;        lookahead[i-1] = lookahead[i];</b>
+<i>1037</i>&nbsp;
+<i>1038</i>&nbsp;      /* read a new Symbol into the last spot */
+<b class="nc"><i>1039</i>&nbsp;      cur_token = scan();</b>
+<b class="nc"><i>1040</i>&nbsp;      lookahead[error_sync_size()-1] = cur_token;</b>
+<i>1041</i>&nbsp;
+<i>1042</i>&nbsp;      /* reset our internal position marker */
+<b class="nc"><i>1043</i>&nbsp;      lookahead_pos = 0;</b>
+<i>1044</i>&nbsp;    }
+<i>1045</i>&nbsp;
+<i>1046</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>1047</i>&nbsp;
+<i>1048</i>&nbsp;  /** Do a simulated parse forward (a &quot;parse ahead&quot;) from the current
+<i>1049</i>&nbsp;   *  stack configuration using stored lookahead input and a virtual parse
+<i>1050</i>&nbsp;   *  stack.  Return true if we make it all the way through the stored
+<i>1051</i>&nbsp;   *  lookahead input without error. This basically simulates the action of
+<i>1052</i>&nbsp;   *  parse() using only our saved &quot;parse ahead&quot; input, and not executing any
+<i>1053</i>&nbsp;   *  actions.
+<i>1054</i>&nbsp;   *
+<i>1055</i>&nbsp;   * @param debug should we produce debugging messages as we parse.
+<i>1056</i>&nbsp;   */
+<i>1057</i>&nbsp;  protected boolean try_parse_ahead(boolean debug)
+<i>1058</i>&nbsp;    throws java.lang.Exception
+<i>1059</i>&nbsp;    {
+<i>1060</i>&nbsp;      int act;
+<i>1061</i>&nbsp;      short lhs, rhs_size;
+<i>1062</i>&nbsp;
+<i>1063</i>&nbsp;      /* create a virtual stack from the real parse stack */
+<b class="nc"><i>1064</i>&nbsp;      virtual_parse_stack vstack = new virtual_parse_stack(stack);</b>
+<i>1065</i>&nbsp;
+<i>1066</i>&nbsp;      /* parse until we fail or get past the lookahead input */
+<i>1067</i>&nbsp;      for (;;)
+<i>1068</i>&nbsp;        {
+<i>1069</i>&nbsp;          /* look up the action from the current state (on top of stack) */
+<b class="nc"><i>1070</i>&nbsp;          act = get_action(vstack.top(), cur_err_token().sym);</b>
+<i>1071</i>&nbsp;
+<i>1072</i>&nbsp;          /* if its an error, we fail */
+<b class="nc"><i>1073</i>&nbsp;          if (act == 0) return false;</b>
+<i>1074</i>&nbsp;
+<i>1075</i>&nbsp;          /* &gt; 0 encodes a shift */
+<b class="nc"><i>1076</i>&nbsp;          if (act &gt; 0)</b>
+<i>1077</i>&nbsp;            {
+<i>1078</i>&nbsp;              /* push the new state on the stack */
+<b class="nc"><i>1079</i>&nbsp;              vstack.push(act-1);</b>
+<i>1080</i>&nbsp;
+<b class="nc"><i>1081</i>&nbsp;              if (debug) debug_message(&quot;# Parse-ahead shifts Symbol #&quot; +</b>
+<b class="nc"><i>1082</i>&nbsp;                       cur_err_token().sym + &quot; into state #&quot; + (act-1));</b>
+<i>1083</i>&nbsp;
+<i>1084</i>&nbsp;              /* advance simulated input, if we run off the end, we are done */
+<b class="nc"><i>1085</i>&nbsp;              if (!advance_lookahead()) return true;</b>
+<i>1086</i>&nbsp;            }
+<i>1087</i>&nbsp;          /* &lt; 0 encodes a reduce */
+<i>1088</i>&nbsp;          else
+<i>1089</i>&nbsp;            {
+<i>1090</i>&nbsp;              /* if this is a reduce with the start production we are done */
+<b class="nc"><i>1091</i>&nbsp;              if ((-act)-1 == start_production())</b>
+<i>1092</i>&nbsp;                {
+<b class="nc"><i>1093</i>&nbsp;                  if (debug) debug_message(&quot;# Parse-ahead accepts&quot;);</b>
+<b class="nc"><i>1094</i>&nbsp;                  return true;</b>
+<i>1095</i>&nbsp;                }
+<i>1096</i>&nbsp;
+<i>1097</i>&nbsp;              /* get the lhs Symbol and the rhs size */
+<b class="nc"><i>1098</i>&nbsp;              lhs = production_tab[(-act)-1][0];</b>
+<b class="nc"><i>1099</i>&nbsp;              rhs_size = production_tab[(-act)-1][1];</b>
+<i>1100</i>&nbsp;
+<i>1101</i>&nbsp;              /* pop handle off the stack */
+<b class="nc"><i>1102</i>&nbsp;              for (int i = 0; i &lt; rhs_size; i++)</b>
+<b class="nc"><i>1103</i>&nbsp;                vstack.pop();</b>
+<i>1104</i>&nbsp;
+<b class="nc"><i>1105</i>&nbsp;              if (debug)</b>
+<b class="nc"><i>1106</i>&nbsp;                debug_message(&quot;# Parse-ahead reduces: handle size = &quot; +</b>
+<b class="nc"><i>1107</i>&nbsp;                  rhs_size + &quot; lhs = #&quot; + lhs + &quot; from state #&quot; + vstack.top());</b>
+<i>1108</i>&nbsp;
+<i>1109</i>&nbsp;              /* look up goto and push it onto the stack */
+<b class="nc"><i>1110</i>&nbsp;              vstack.push(get_reduce(vstack.top(), lhs));</b>
+<b class="nc"><i>1111</i>&nbsp;              if (debug)</b>
+<b class="nc"><i>1112</i>&nbsp;                debug_message(&quot;# Goto state #&quot; + vstack.top());</b>
+<i>1113</i>&nbsp;            }
+<i>1114</i>&nbsp;        }
+<i>1115</i>&nbsp;    }
+<i>1116</i>&nbsp;
+<i>1117</i>&nbsp;  /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
+<i>1118</i>&nbsp;
+<i>1119</i>&nbsp;  /** Parse forward using stored lookahead Symbols.  In this case we have
+<i>1120</i>&nbsp;   *  already verified that parsing will make it through the stored lookahead
+<i>1121</i>&nbsp;   *  Symbols and we are now getting back to the point at which we can hand
+<i>1122</i>&nbsp;   *  control back to the normal parser.  Consequently, this version of the
+<i>1123</i>&nbsp;   *  parser performs all actions and modifies the real parse configuration.
+<i>1124</i>&nbsp;   *  This returns once we have consumed all the stored input or we accept.
+<i>1125</i>&nbsp;   *
+<i>1126</i>&nbsp;   * @param debug should we produce debugging messages as we parse.
+<i>1127</i>&nbsp;   */
+<i>1128</i>&nbsp;  protected void parse_lookahead(boolean debug)
+<i>1129</i>&nbsp;    throws java.lang.Exception
+<i>1130</i>&nbsp;    {
+<i>1131</i>&nbsp;      /* the current action code */
+<i>1132</i>&nbsp;      int act;
+<i>1133</i>&nbsp;
+<i>1134</i>&nbsp;      /* the Symbol/stack element returned by a reduce */
+<b class="nc"><i>1135</i>&nbsp;      Symbol lhs_sym = null;</b>
+<i>1136</i>&nbsp;
+<i>1137</i>&nbsp;      /* information about production being reduced with */
+<i>1138</i>&nbsp;      short handle_size, lhs_sym_num;
+<i>1139</i>&nbsp;
+<i>1140</i>&nbsp;      /* restart the saved input at the beginning */
+<b class="nc"><i>1141</i>&nbsp;      lookahead_pos = 0;</b>
+<i>1142</i>&nbsp;
+<b class="nc"><i>1143</i>&nbsp;      if (debug)</b>
+<i>1144</i>&nbsp;        {
+<b class="nc"><i>1145</i>&nbsp;          debug_message(&quot;# Reparsing saved input with actions&quot;);</b>
+<b class="nc"><i>1146</i>&nbsp;          debug_message(&quot;# Current Symbol is #&quot; + cur_err_token().sym);</b>
+<b class="nc"><i>1147</i>&nbsp;          debug_message(&quot;# Current state is #&quot; +</b>
+<b class="nc"><i>1148</i>&nbsp;                        ((Symbol)stack.peek()).parse_state);</b>
+<i>1149</i>&nbsp;        }
+<i>1150</i>&nbsp;
+<i>1151</i>&nbsp;      /* continue until we accept or have read all lookahead input */
+<b class="nc"><i>1152</i>&nbsp;      while(!_done_parsing)</b>
+<i>1153</i>&nbsp;        {
+<i>1154</i>&nbsp;          /* current state is always on the top of the stack */
+<i>1155</i>&nbsp;
+<i>1156</i>&nbsp;          /* look up action out of the current state with the current input */
+<b class="nc"><i>1157</i>&nbsp;          act =</b>
+<b class="nc"><i>1158</i>&nbsp;            get_action(((Symbol)stack.peek()).parse_state, cur_err_token().sym);</b>
+<i>1159</i>&nbsp;
+<i>1160</i>&nbsp;          /* decode the action -- &gt; 0 encodes shift */
+<b class="nc"><i>1161</i>&nbsp;          if (act &gt; 0)</b>
+<i>1162</i>&nbsp;            {
+<i>1163</i>&nbsp;              /* shift to the encoded state by pushing it on the stack */
+<b class="nc"><i>1164</i>&nbsp;              cur_err_token().parse_state = act-1;</b>
+<b class="nc"><i>1165</i>&nbsp;              cur_err_token().used_by_parser = true;</b>
+<b class="nc"><i>1166</i>&nbsp;              if (debug) debug_shift(cur_err_token());</b>
+<b class="nc"><i>1167</i>&nbsp;              stack.push(cur_err_token());</b>
+<b class="nc"><i>1168</i>&nbsp;              tos++;</b>
+<i>1169</i>&nbsp;
+<i>1170</i>&nbsp;              /* advance to the next Symbol, if there is none, we are done */
+<b class="nc"><i>1171</i>&nbsp;              if (!advance_lookahead())</b>
+<i>1172</i>&nbsp;                {
+<b class="nc"><i>1173</i>&nbsp;                  if (debug) debug_message(&quot;# Completed reparse&quot;);</b>
+<i>1174</i>&nbsp;
+<i>1175</i>&nbsp;                  /* scan next Symbol so we can continue parse */
+<i>1176</i>&nbsp;                  // BUGFIX by Chris Harris &lt;ckharris@ucsd.edu&gt;:
+<i>1177</i>&nbsp;                  //   correct a one-off error by commenting out
+<i>1178</i>&nbsp;                  //   this next line.
+<i>1179</i>&nbsp;                  /*cur_token = scan();*/
+<i>1180</i>&nbsp;
+<i>1181</i>&nbsp;                  /* go back to normal parser */
+<i>1182</i>&nbsp;                  return;
+<i>1183</i>&nbsp;                }
+<i>1184</i>&nbsp;
+<b class="nc"><i>1185</i>&nbsp;              if (debug)</b>
+<b class="nc"><i>1186</i>&nbsp;                debug_message(&quot;# Current Symbol is #&quot; + cur_err_token().sym);</b>
+<i>1187</i>&nbsp;            }
+<i>1188</i>&nbsp;          /* if its less than zero, then it encodes a reduce action */
+<b class="nc"><i>1189</i>&nbsp;          else if (act &lt; 0)</b>
+<i>1190</i>&nbsp;            {
+<i>1191</i>&nbsp;              /* perform the action for the reduce */
+<b class="nc"><i>1192</i>&nbsp;              lhs_sym = do_action((-act)-1, this, stack, tos);</b>
+<i>1193</i>&nbsp;
+<i>1194</i>&nbsp;              /* look up information about the production */
+<b class="nc"><i>1195</i>&nbsp;              lhs_sym_num = production_tab[(-act)-1][0];</b>
+<b class="nc"><i>1196</i>&nbsp;              handle_size = production_tab[(-act)-1][1];</b>
+<i>1197</i>&nbsp;
+<b class="nc"><i>1198</i>&nbsp;              if (debug) debug_reduce((-act)-1, lhs_sym_num, handle_size);</b>
+<i>1199</i>&nbsp;
+<i>1200</i>&nbsp;              /* pop the handle off the stack */
+<b class="nc"><i>1201</i>&nbsp;              for (int i = 0; i &lt; handle_size; i++)</b>
+<i>1202</i>&nbsp;                {
+<b class="nc"><i>1203</i>&nbsp;                  stack.pop();</b>
+<b class="nc"><i>1204</i>&nbsp;                  tos--;</b>
+<i>1205</i>&nbsp;                }
+<i>1206</i>&nbsp;
+<i>1207</i>&nbsp;              /* look up the state to go to from the one popped back to */
+<b class="nc"><i>1208</i>&nbsp;              act = get_reduce(((Symbol)stack.peek()).parse_state, lhs_sym_num);</b>
+<i>1209</i>&nbsp;
+<i>1210</i>&nbsp;              /* shift to that state */
+<b class="nc"><i>1211</i>&nbsp;              lhs_sym.parse_state = act;</b>
+<b class="nc"><i>1212</i>&nbsp;              lhs_sym.used_by_parser = true;</b>
+<b class="nc"><i>1213</i>&nbsp;              stack.push(lhs_sym);</b>
+<b class="nc"><i>1214</i>&nbsp;              tos++;</b>
+<i>1215</i>&nbsp;
+<b class="nc"><i>1216</i>&nbsp;              if (debug) debug_message(&quot;# Goto state #&quot; + act);</b>
+<i>1217</i>&nbsp;
+<i>1218</i>&nbsp;            }
+<i>1219</i>&nbsp;          /* finally if the entry is zero, we have an error
+<i>1220</i>&nbsp;             (shouldn&#39;t happen here, but...)*/
+<b class="nc"><i>1221</i>&nbsp;          else if (act == 0)</b>
+<i>1222</i>&nbsp;            {
+<b class="nc"><i>1223</i>&nbsp;              report_fatal_error(&quot;Syntax error&quot;, lhs_sym);</b>
+<i>1224</i>&nbsp;              return;
+<i>1225</i>&nbsp;            }
+<i>1226</i>&nbsp;        }
+<i>1227</i>&nbsp;
+<i>1228</i>&nbsp;
+<i>1229</i>&nbsp;    }
+<i>1230</i>&nbsp;
+<i>1231</i>&nbsp;  /*-----------------------------------------------------------*/
+<i>1232</i>&nbsp;
+<i>1233</i>&nbsp;  /** Utility function: unpacks parse tables from strings */
+<i>1234</i>&nbsp;  protected static short[][] unpackFromStrings(String[] sa)
+<i>1235</i>&nbsp;    {
+<i>1236</i>&nbsp;      // Concatanate initialization strings.
+<b class="nc"><i>1237</i>&nbsp;      StringBuffer sb = new StringBuffer(sa[0]);</b>
+<b class="nc"><i>1238</i>&nbsp;      for (int i=1; i&lt;sa.length; i++)</b>
+<b class="nc"><i>1239</i>&nbsp;        sb.append(sa[i]);</b>
+<b class="nc"><i>1240</i>&nbsp;      int n=0; // location in initialization string</b>
+<b class="nc"><i>1241</i>&nbsp;      int size1 = (((int)sb.charAt(n))&lt;&lt;16) | ((int)sb.charAt(n+1)); n+=2;</b>
+<b class="nc"><i>1242</i>&nbsp;      short[][] result = new short[size1][];</b>
+<b class="nc"><i>1243</i>&nbsp;      for (int i=0; i&lt;size1; i++) {</b>
+<b class="nc"><i>1244</i>&nbsp;        int size2 = (((int)sb.charAt(n))&lt;&lt;16) | ((int)sb.charAt(n+1)); n+=2;</b>
+<b class="nc"><i>1245</i>&nbsp;        result[i] = new short[size2];</b>
+<b class="nc"><i>1246</i>&nbsp;        for (int j=0; j&lt;size2; j++)</b>
+<b class="nc"><i>1247</i>&nbsp;          result[i][j] = (short) (sb.charAt(n++)-2);</b>
+<i>1248</i>&nbsp;      }
+<b class="nc"><i>1249</i>&nbsp;      return result;</b>
+<i>1250</i>&nbsp;    }
+<i>1251</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

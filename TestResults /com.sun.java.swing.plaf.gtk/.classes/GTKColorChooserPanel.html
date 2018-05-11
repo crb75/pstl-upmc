@@ -1,0 +1,1450 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: GTKColorChooserPanel</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.java.swing.plaf.gtk</a> ]
+</div>
+
+<h1>Coverage Summary for Class: GTKColorChooserPanel (com.sun.java.swing.plaf.gtk)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GTKColorChooserPanel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 27)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 191)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">GTKColorChooserPanel$ColorAction</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 29)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">GTKColorChooserPanel$ColorTriangle</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 31)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 304)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">GTKColorChooserPanel$OpaqueLabel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 62)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 526)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2002, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;package com.sun.java.swing.plaf.gtk;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import java.awt.*;
+<i>28</i>&nbsp;import java.awt.event.*;
+<i>29</i>&nbsp;import java.awt.image.*;
+<i>30</i>&nbsp;import javax.swing.*;
+<i>31</i>&nbsp;import javax.swing.colorchooser.*;
+<i>32</i>&nbsp;import javax.swing.event.*;
+<i>33</i>&nbsp;import javax.swing.plaf.*;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;/**
+<i>36</i>&nbsp; * A color chooser panel mimicking that of GTK&#39;s: a color wheel showing
+<i>37</i>&nbsp; * hue and a triangle that varies saturation and brightness.
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; * @author Scott Violet
+<i>40</i>&nbsp; */
+<b class="nc"><i>41</i>&nbsp;class GTKColorChooserPanel extends AbstractColorChooserPanel implements</b>
+<i>42</i>&nbsp;              ChangeListener {
+<i>43</i>&nbsp;    private static final float PI_3 = (float)(Math.PI / 3);
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    private ColorTriangle triangle;
+<i>46</i>&nbsp;    private JLabel lastLabel;
+<i>47</i>&nbsp;    private JLabel label;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    private JSpinner hueSpinner;
+<i>50</i>&nbsp;    private JSpinner saturationSpinner;
+<i>51</i>&nbsp;    private JSpinner valueSpinner;
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    private JSpinner redSpinner;
+<i>54</i>&nbsp;    private JSpinner greenSpinner;
+<i>55</i>&nbsp;    private JSpinner blueSpinner;
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    private JTextField colorNameTF;
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    private boolean settingColor;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    // The colors are mirrored to avoid creep in adjusting an individual
+<i>62</i>&nbsp;    // value.
+<i>63</i>&nbsp;    private float hue;
+<i>64</i>&nbsp;    private float saturation;
+<i>65</i>&nbsp;    private float brightness;
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    /**
+<i>70</i>&nbsp;     * Convenience method to transfer focus to the next child of component.
+<i>71</i>&nbsp;     */
+<i>72</i>&nbsp;    // PENDING: remove this when a variant of this is added to awt.
+<i>73</i>&nbsp;    static void compositeRequestFocus(Component component, boolean direction) {
+<b class="nc"><i>74</i>&nbsp;        if (component instanceof Container) {</b>
+<b class="nc"><i>75</i>&nbsp;            Container container = (Container)component;</b>
+<b class="nc"><i>76</i>&nbsp;            if (container.isFocusCycleRoot()) {</b>
+<b class="nc"><i>77</i>&nbsp;                FocusTraversalPolicy policy = container.</b>
+<b class="nc"><i>78</i>&nbsp;                                              getFocusTraversalPolicy();</b>
+<b class="nc"><i>79</i>&nbsp;                Component comp = policy.getDefaultComponent(container);</b>
+<b class="nc"><i>80</i>&nbsp;                if (comp!=null) {</b>
+<b class="nc"><i>81</i>&nbsp;                    comp.requestFocus();</b>
+<i>82</i>&nbsp;                    return;
+<i>83</i>&nbsp;                }
+<i>84</i>&nbsp;            }
+<b class="nc"><i>85</i>&nbsp;            Container rootAncestor = container.getFocusCycleRootAncestor();</b>
+<b class="nc"><i>86</i>&nbsp;            if (rootAncestor!=null) {</b>
+<b class="nc"><i>87</i>&nbsp;                FocusTraversalPolicy policy = rootAncestor.</b>
+<b class="nc"><i>88</i>&nbsp;                                                  getFocusTraversalPolicy();</b>
+<i>89</i>&nbsp;                Component comp;
+<i>90</i>&nbsp;
+<b class="nc"><i>91</i>&nbsp;                if (direction) {</b>
+<b class="nc"><i>92</i>&nbsp;                    comp = policy.getComponentAfter(rootAncestor, container);</b>
+<i>93</i>&nbsp;                }
+<i>94</i>&nbsp;                else {
+<b class="nc"><i>95</i>&nbsp;                    comp = policy.getComponentBefore(rootAncestor, container);</b>
+<i>96</i>&nbsp;                }
+<b class="nc"><i>97</i>&nbsp;                if (comp != null) {</b>
+<b class="nc"><i>98</i>&nbsp;                    comp.requestFocus();</b>
+<i>99</i>&nbsp;                    return;
+<i>100</i>&nbsp;                }
+<i>101</i>&nbsp;            }
+<i>102</i>&nbsp;        }
+<b class="nc"><i>103</i>&nbsp;        component.requestFocus();</b>
+<i>104</i>&nbsp;    }
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    /**
+<i>108</i>&nbsp;     * Returns a user presentable description of this GTKColorChooserPane.
+<i>109</i>&nbsp;     */
+<i>110</i>&nbsp;    public String getDisplayName() {
+<b class="nc"><i>111</i>&nbsp;        return (String)UIManager.get(&quot;GTKColorChooserPanel.nameText&quot;);</b>
+<i>112</i>&nbsp;    }
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;    /**
+<i>115</i>&nbsp;     * Returns the mnemonic to use with &lt;code&gt;getDisplayName&lt;/code&gt;.
+<i>116</i>&nbsp;     */
+<i>117</i>&nbsp;    public int getMnemonic() {
+<b class="nc"><i>118</i>&nbsp;        String m = (String)UIManager.get(&quot;GTKColorChooserPanel.mnemonic&quot;);</b>
+<i>119</i>&nbsp;
+<b class="nc"><i>120</i>&nbsp;        if (m != null) {</b>
+<i>121</i>&nbsp;            try {
+<b class="nc"><i>122</i>&nbsp;                int value = Integer.parseInt(m);</b>
+<i>123</i>&nbsp;
+<b class="nc"><i>124</i>&nbsp;                return value;</b>
+<b class="nc"><i>125</i>&nbsp;            } catch (NumberFormatException nfe) {}</b>
+<i>126</i>&nbsp;        }
+<b class="nc"><i>127</i>&nbsp;        return -1;</b>
+<i>128</i>&nbsp;    }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    /**
+<i>131</i>&nbsp;     * Character to underline that represents the mnemonic.
+<i>132</i>&nbsp;     */
+<i>133</i>&nbsp;    public int getDisplayedMnemonicIndex() {
+<b class="nc"><i>134</i>&nbsp;        String m = (String)UIManager.get(</b>
+<i>135</i>&nbsp;                           &quot;GTKColorChooserPanel.displayedMnemonicIndex&quot;);
+<i>136</i>&nbsp;
+<b class="nc"><i>137</i>&nbsp;        if (m != null) {</b>
+<i>138</i>&nbsp;            try {
+<b class="nc"><i>139</i>&nbsp;                int value = Integer.parseInt(m);</b>
+<i>140</i>&nbsp;
+<b class="nc"><i>141</i>&nbsp;                return value;</b>
+<b class="nc"><i>142</i>&nbsp;            } catch (NumberFormatException nfe) {}</b>
+<i>143</i>&nbsp;        }
+<b class="nc"><i>144</i>&nbsp;        return -1;</b>
+<i>145</i>&nbsp;    }
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;    public Icon getSmallDisplayIcon() {
+<b class="nc"><i>148</i>&nbsp;        return null;</b>
+<i>149</i>&nbsp;    }
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;    public Icon getLargeDisplayIcon() {
+<b class="nc"><i>152</i>&nbsp;        return null;</b>
+<i>153</i>&nbsp;    }
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;    public void uninstallChooserPanel(JColorChooser enclosingChooser) {
+<b class="nc"><i>156</i>&nbsp;        super.uninstallChooserPanel(enclosingChooser);</b>
+<b class="nc"><i>157</i>&nbsp;        removeAll();</b>
+<i>158</i>&nbsp;    }
+<i>159</i>&nbsp;
+<i>160</i>&nbsp;    /**
+<i>161</i>&nbsp;     * Builds and configures the widgets for the GTKColorChooserPanel.
+<i>162</i>&nbsp;     */
+<i>163</i>&nbsp;    protected void buildChooser() {
+<b class="nc"><i>164</i>&nbsp;        triangle = new ColorTriangle();</b>
+<b class="nc"><i>165</i>&nbsp;        triangle.setName(&quot;GTKColorChooserPanel.triangle&quot;);</b>
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;        // PENDING: when we straighten out user setting opacity, this should
+<i>168</i>&nbsp;        // be changed.
+<b class="nc"><i>169</i>&nbsp;        label = new OpaqueLabel();</b>
+<b class="nc"><i>170</i>&nbsp;        label.setName(&quot;GTKColorChooserPanel.colorWell&quot;);</b>
+<b class="nc"><i>171</i>&nbsp;        label.setOpaque(true);</b>
+<b class="nc"><i>172</i>&nbsp;        label.setMinimumSize(new Dimension(67, 32));</b>
+<b class="nc"><i>173</i>&nbsp;        label.setPreferredSize(new Dimension(67, 32));</b>
+<b class="nc"><i>174</i>&nbsp;        label.setMaximumSize(new Dimension(67, 32));</b>
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;        // PENDING: when we straighten out user setting opacity, this should
+<i>177</i>&nbsp;        // be changed.
+<b class="nc"><i>178</i>&nbsp;        lastLabel = new OpaqueLabel();</b>
+<b class="nc"><i>179</i>&nbsp;        lastLabel.setName(&quot;GTKColorChooserPanel.lastColorWell&quot;);</b>
+<b class="nc"><i>180</i>&nbsp;        lastLabel.setOpaque(true);</b>
+<b class="nc"><i>181</i>&nbsp;        lastLabel.setMinimumSize(new Dimension(67, 32));</b>
+<b class="nc"><i>182</i>&nbsp;        lastLabel.setPreferredSize(new Dimension(67, 32));</b>
+<b class="nc"><i>183</i>&nbsp;        lastLabel.setMaximumSize(new Dimension(67, 32));</b>
+<i>184</i>&nbsp;
+<b class="nc"><i>185</i>&nbsp;        hueSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 360, 1));</b>
+<b class="nc"><i>186</i>&nbsp;        configureSpinner(hueSpinner, &quot;GTKColorChooserPanel.hueSpinner&quot;);</b>
+<b class="nc"><i>187</i>&nbsp;        saturationSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));</b>
+<b class="nc"><i>188</i>&nbsp;        configureSpinner(saturationSpinner,</b>
+<i>189</i>&nbsp;                         &quot;GTKColorChooserPanel.saturationSpinner&quot;);
+<b class="nc"><i>190</i>&nbsp;        valueSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));</b>
+<b class="nc"><i>191</i>&nbsp;        configureSpinner(valueSpinner, &quot;GTKColorChooserPanel.valueSpinner&quot;);</b>
+<b class="nc"><i>192</i>&nbsp;        redSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));</b>
+<b class="nc"><i>193</i>&nbsp;        configureSpinner(redSpinner, &quot;GTKColorChooserPanel.redSpinner&quot;);</b>
+<b class="nc"><i>194</i>&nbsp;        greenSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));</b>
+<b class="nc"><i>195</i>&nbsp;        configureSpinner(greenSpinner, &quot;GTKColorChooserPanel.greenSpinner&quot;);</b>
+<b class="nc"><i>196</i>&nbsp;        blueSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));</b>
+<b class="nc"><i>197</i>&nbsp;        configureSpinner(blueSpinner, &quot;GTKColorChooserPanel.blueSpinner&quot;);</b>
+<i>198</i>&nbsp;
+<b class="nc"><i>199</i>&nbsp;        colorNameTF = new JTextField(8);</b>
+<i>200</i>&nbsp;
+<b class="nc"><i>201</i>&nbsp;        setLayout(new GridBagLayout());</b>
+<i>202</i>&nbsp;
+<b class="nc"><i>203</i>&nbsp;        add(this, &quot;GTKColorChooserPanel.hue&quot;, hueSpinner, -1, -1);</b>
+<b class="nc"><i>204</i>&nbsp;        add(this, &quot;GTKColorChooserPanel.red&quot;, redSpinner, -1, -1);</b>
+<b class="nc"><i>205</i>&nbsp;        add(this, &quot;GTKColorChooserPanel.saturation&quot;, saturationSpinner, -1,-1);</b>
+<b class="nc"><i>206</i>&nbsp;        add(this, &quot;GTKColorChooserPanel.green&quot;, greenSpinner, -1, -1);</b>
+<b class="nc"><i>207</i>&nbsp;        add(this, &quot;GTKColorChooserPanel.value&quot;, valueSpinner, -1, -1);</b>
+<b class="nc"><i>208</i>&nbsp;        add(this, &quot;GTKColorChooserPanel.blue&quot;, blueSpinner, -1, -1);</b>
+<i>209</i>&nbsp;
+<b class="nc"><i>210</i>&nbsp;        add(new JSeparator(SwingConstants.HORIZONTAL), new</b>
+<i>211</i>&nbsp;                  GridBagConstraints(1, 3, 4, 1, 1, 0,
+<i>212</i>&nbsp;                  GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+<i>213</i>&nbsp;                  new Insets(14, 0, 0, 0), 0, 0));
+<i>214</i>&nbsp;
+<b class="nc"><i>215</i>&nbsp;        add(this, &quot;GTKColorChooserPanel.colorName&quot;, colorNameTF, 0, 4);</b>
+<i>216</i>&nbsp;
+<b class="nc"><i>217</i>&nbsp;        add(triangle, new GridBagConstraints(0, 0, 1, 5, 0, 0,</b>
+<i>218</i>&nbsp;                      GridBagConstraints.LINE_START, GridBagConstraints.NONE,
+<i>219</i>&nbsp;                      new Insets(14, 20, 2, 9), 0, 0));
+<i>220</i>&nbsp;
+<b class="nc"><i>221</i>&nbsp;        Box hBox = Box.createHorizontalBox();</b>
+<b class="nc"><i>222</i>&nbsp;        hBox.add(lastLabel);</b>
+<b class="nc"><i>223</i>&nbsp;        hBox.add(label);</b>
+<b class="nc"><i>224</i>&nbsp;        add(hBox, new GridBagConstraints(0, 5, 1, 1, 0, 0,</b>
+<i>225</i>&nbsp;                      GridBagConstraints.CENTER, GridBagConstraints.NONE,
+<i>226</i>&nbsp;                      new Insets(0, 0, 0, 0), 0, 0));
+<i>227</i>&nbsp;
+<b class="nc"><i>228</i>&nbsp;        add(new JSeparator(SwingConstants.HORIZONTAL), new</b>
+<i>229</i>&nbsp;                  GridBagConstraints(0, 6, 5, 1, 1, 0,
+<i>230</i>&nbsp;                  GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL,
+<i>231</i>&nbsp;                  new Insets(12, 0, 0, 0), 0, 0));
+<i>232</i>&nbsp;    }
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;    /**
+<i>235</i>&nbsp;     * Configures the spinner.
+<i>236</i>&nbsp;     */
+<i>237</i>&nbsp;    private void configureSpinner(JSpinner spinner, String name) {
+<b class="nc"><i>238</i>&nbsp;        spinner.addChangeListener(this);</b>
+<b class="nc"><i>239</i>&nbsp;        spinner.setName(name);</b>
+<b class="nc"><i>240</i>&nbsp;        JComponent editor = spinner.getEditor();</b>
+<b class="nc"><i>241</i>&nbsp;        if (editor instanceof JSpinner.DefaultEditor) {</b>
+<b class="nc"><i>242</i>&nbsp;            JFormattedTextField ftf = ((JSpinner.DefaultEditor)editor).</b>
+<b class="nc"><i>243</i>&nbsp;                                                 getTextField();</b>
+<i>244</i>&nbsp;
+<b class="nc"><i>245</i>&nbsp;            ftf.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);</b>
+<i>246</i>&nbsp;        }
+<i>247</i>&nbsp;    }
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;    /**
+<i>250</i>&nbsp;     * Adds the widget creating a JLabel with the specified name.
+<i>251</i>&nbsp;     */
+<i>252</i>&nbsp;    private void add(Container parent, String key, JComponent widget,
+<i>253</i>&nbsp;                     int x, int y) {
+<b class="nc"><i>254</i>&nbsp;        JLabel label = new JLabel(UIManager.getString(key + &quot;Text&quot;,</b>
+<b class="nc"><i>255</i>&nbsp;                                                      getLocale()));</b>
+<b class="nc"><i>256</i>&nbsp;        String mnemonic = (String)UIManager.get(key + &quot;Mnemonic&quot;, getLocale());</b>
+<i>257</i>&nbsp;
+<b class="nc"><i>258</i>&nbsp;        if (mnemonic != null) {</b>
+<i>259</i>&nbsp;            try {
+<b class="nc"><i>260</i>&nbsp;                label.setDisplayedMnemonic(Integer.parseInt(mnemonic));</b>
+<b class="nc"><i>261</i>&nbsp;            } catch (NumberFormatException nfe) {</b>
+<b class="nc"><i>262</i>&nbsp;            }</b>
+<b class="nc"><i>263</i>&nbsp;            String mnemonicIndex = (String)UIManager.get(key + &quot;MnemonicIndex&quot;,</b>
+<b class="nc"><i>264</i>&nbsp;                                                    getLocale());</b>
+<i>265</i>&nbsp;
+<b class="nc"><i>266</i>&nbsp;            if (mnemonicIndex != null) {</b>
+<i>267</i>&nbsp;                try {
+<b class="nc"><i>268</i>&nbsp;                    label.setDisplayedMnemonicIndex(Integer.parseInt(</b>
+<i>269</i>&nbsp;                                                        mnemonicIndex));
+<b class="nc"><i>270</i>&nbsp;                } catch (NumberFormatException nfe) {</b>
+<b class="nc"><i>271</i>&nbsp;                }</b>
+<i>272</i>&nbsp;            }
+<i>273</i>&nbsp;        }
+<b class="nc"><i>274</i>&nbsp;        label.setLabelFor(widget);</b>
+<b class="nc"><i>275</i>&nbsp;        if (x &lt; 0) {</b>
+<b class="nc"><i>276</i>&nbsp;            x = parent.getComponentCount() % 4;</b>
+<i>277</i>&nbsp;        }
+<b class="nc"><i>278</i>&nbsp;        if (y &lt; 0) {</b>
+<b class="nc"><i>279</i>&nbsp;            y = parent.getComponentCount() / 4;</b>
+<i>280</i>&nbsp;        }
+<b class="nc"><i>281</i>&nbsp;        GridBagConstraints con = new GridBagConstraints(x + 1, y, 1, 1, 0, 0,</b>
+<i>282</i>&nbsp;                   GridBagConstraints.FIRST_LINE_END, GridBagConstraints.NONE,
+<i>283</i>&nbsp;                   new Insets(4, 0, 0, 4), 0, 0);
+<b class="nc"><i>284</i>&nbsp;        if (y == 0) {</b>
+<b class="nc"><i>285</i>&nbsp;            con.insets.top = 14;</b>
+<i>286</i>&nbsp;        }
+<b class="nc"><i>287</i>&nbsp;        parent.add(label, con);</b>
+<b class="nc"><i>288</i>&nbsp;        con.gridx++;</b>
+<b class="nc"><i>289</i>&nbsp;        parent.add(widget, con);</b>
+<i>290</i>&nbsp;    }
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;    /**
+<i>293</i>&nbsp;     * Refreshes the display from the model.
+<i>294</i>&nbsp;     */
+<i>295</i>&nbsp;    public void updateChooser() {
+<b class="nc"><i>296</i>&nbsp;        if (!settingColor) {</b>
+<b class="nc"><i>297</i>&nbsp;            lastLabel.setBackground(getColorFromModel());</b>
+<b class="nc"><i>298</i>&nbsp;            setColor(getColorFromModel(), true, true, false);</b>
+<i>299</i>&nbsp;        }
+<i>300</i>&nbsp;    }
+<i>301</i>&nbsp;
+<i>302</i>&nbsp;    /**
+<i>303</i>&nbsp;     * Resets the red component of the selected color.
+<i>304</i>&nbsp;     */
+<i>305</i>&nbsp;    private void setRed(int red) {
+<b class="nc"><i>306</i>&nbsp;        setRGB(red &lt;&lt; 16 | getColor().getGreen() &lt;&lt; 8 | getColor().getBlue());</b>
+<i>307</i>&nbsp;    }
+<i>308</i>&nbsp;
+<i>309</i>&nbsp;    /**
+<i>310</i>&nbsp;     * Resets the green component of the selected color.
+<i>311</i>&nbsp;     */
+<i>312</i>&nbsp;    private void setGreen(int green) {
+<b class="nc"><i>313</i>&nbsp;        setRGB(getColor().getRed() &lt;&lt; 16 | green &lt;&lt; 8 | getColor().getBlue());</b>
+<i>314</i>&nbsp;    }
+<i>315</i>&nbsp;
+<i>316</i>&nbsp;    /**
+<i>317</i>&nbsp;     * Resets the blue component of the selected color.
+<i>318</i>&nbsp;     */
+<i>319</i>&nbsp;    private void setBlue(int blue) {
+<b class="nc"><i>320</i>&nbsp;        setRGB(getColor().getRed() &lt;&lt; 16 | getColor().getGreen() &lt;&lt; 8 | blue);</b>
+<i>321</i>&nbsp;    }
+<i>322</i>&nbsp;
+<i>323</i>&nbsp;    /**
+<i>324</i>&nbsp;     * Sets the hue of the selected color and updates the display if
+<i>325</i>&nbsp;     * necessary.
+<i>326</i>&nbsp;     */
+<i>327</i>&nbsp;    private void setHue(float hue, boolean update) {
+<b class="nc"><i>328</i>&nbsp;        setHSB(hue, saturation, brightness);</b>
+<b class="nc"><i>329</i>&nbsp;        if (update) {</b>
+<b class="nc"><i>330</i>&nbsp;            settingColor = true;</b>
+<b class="nc"><i>331</i>&nbsp;            hueSpinner.setValue(Integer.valueOf((int)(hue * 360)));</b>
+<b class="nc"><i>332</i>&nbsp;            settingColor = false;</b>
+<i>333</i>&nbsp;        }
+<i>334</i>&nbsp;    }
+<i>335</i>&nbsp;
+<i>336</i>&nbsp;    /**
+<i>337</i>&nbsp;     * Returns the current amount of hue.
+<i>338</i>&nbsp;     */
+<i>339</i>&nbsp;    private float getHue() {
+<b class="nc"><i>340</i>&nbsp;        return hue;</b>
+<i>341</i>&nbsp;    }
+<i>342</i>&nbsp;
+<i>343</i>&nbsp;    /**
+<i>344</i>&nbsp;     * Resets the saturation.
+<i>345</i>&nbsp;     */
+<i>346</i>&nbsp;    private void setSaturation(float saturation) {
+<b class="nc"><i>347</i>&nbsp;        setHSB(hue, saturation, brightness);</b>
+<i>348</i>&nbsp;    }
+<i>349</i>&nbsp;
+<i>350</i>&nbsp;    /**
+<i>351</i>&nbsp;     * Returns the saturation.
+<i>352</i>&nbsp;     */
+<i>353</i>&nbsp;    private float getSaturation() {
+<b class="nc"><i>354</i>&nbsp;        return saturation;</b>
+<i>355</i>&nbsp;    }
+<i>356</i>&nbsp;
+<i>357</i>&nbsp;    /**
+<i>358</i>&nbsp;     * Sets the brightness.
+<i>359</i>&nbsp;     */
+<i>360</i>&nbsp;    private void setBrightness(float brightness) {
+<b class="nc"><i>361</i>&nbsp;        setHSB(hue, saturation, brightness);</b>
+<i>362</i>&nbsp;    }
+<i>363</i>&nbsp;
+<i>364</i>&nbsp;    /**
+<i>365</i>&nbsp;     * Returns the brightness.
+<i>366</i>&nbsp;     */
+<i>367</i>&nbsp;    private float getBrightness() {
+<b class="nc"><i>368</i>&nbsp;        return brightness;</b>
+<i>369</i>&nbsp;    }
+<i>370</i>&nbsp;
+<i>371</i>&nbsp;    /**
+<i>372</i>&nbsp;     * Sets the saturation and brightness and updates the display if
+<i>373</i>&nbsp;     * necessary.
+<i>374</i>&nbsp;     */
+<i>375</i>&nbsp;    private void setSaturationAndBrightness(float s, float b, boolean update) {
+<b class="nc"><i>376</i>&nbsp;        setHSB(hue, s, b);</b>
+<b class="nc"><i>377</i>&nbsp;        if (update) {</b>
+<b class="nc"><i>378</i>&nbsp;            settingColor = true;</b>
+<b class="nc"><i>379</i>&nbsp;            saturationSpinner.setValue(Integer.valueOf((int)(s * 255)));</b>
+<b class="nc"><i>380</i>&nbsp;            valueSpinner.setValue(Integer.valueOf((int)(b * 255)));</b>
+<b class="nc"><i>381</i>&nbsp;            settingColor = false;</b>
+<i>382</i>&nbsp;        }
+<i>383</i>&nbsp;    }
+<i>384</i>&nbsp;
+<i>385</i>&nbsp;    /**
+<i>386</i>&nbsp;     * Resets the rgb values.
+<i>387</i>&nbsp;     */
+<i>388</i>&nbsp;    private void setRGB(int rgb) {
+<b class="nc"><i>389</i>&nbsp;        Color color = new Color(rgb);</b>
+<i>390</i>&nbsp;
+<b class="nc"><i>391</i>&nbsp;        setColor(color, false, true, true);</b>
+<i>392</i>&nbsp;
+<b class="nc"><i>393</i>&nbsp;        settingColor = true;</b>
+<b class="nc"><i>394</i>&nbsp;        hueSpinner.setValue(Integer.valueOf((int)(hue * 360)));</b>
+<b class="nc"><i>395</i>&nbsp;        saturationSpinner.setValue(Integer.valueOf((int)(saturation * 255)));</b>
+<b class="nc"><i>396</i>&nbsp;        valueSpinner.setValue(Integer.valueOf((int)(brightness * 255)));</b>
+<b class="nc"><i>397</i>&nbsp;        settingColor = false;</b>
+<i>398</i>&nbsp;    }
+<i>399</i>&nbsp;
+<i>400</i>&nbsp;    /**
+<i>401</i>&nbsp;     * Resets the hsb values.
+<i>402</i>&nbsp;     */
+<i>403</i>&nbsp;    private void setHSB(float h, float s, float b) {
+<b class="nc"><i>404</i>&nbsp;        Color color = Color.getHSBColor(h, s, b);</b>
+<i>405</i>&nbsp;
+<b class="nc"><i>406</i>&nbsp;        this.hue = h;</b>
+<b class="nc"><i>407</i>&nbsp;        this.saturation = s;</b>
+<b class="nc"><i>408</i>&nbsp;        this.brightness = b;</b>
+<b class="nc"><i>409</i>&nbsp;        setColor(color, false, false, true);</b>
+<i>410</i>&nbsp;
+<b class="nc"><i>411</i>&nbsp;        settingColor = true;</b>
+<b class="nc"><i>412</i>&nbsp;        redSpinner.setValue(Integer.valueOf(color.getRed()));</b>
+<b class="nc"><i>413</i>&nbsp;        greenSpinner.setValue(Integer.valueOf(color.getGreen()));</b>
+<b class="nc"><i>414</i>&nbsp;        blueSpinner.setValue(Integer.valueOf(color.getBlue()));</b>
+<b class="nc"><i>415</i>&nbsp;        settingColor = false;</b>
+<i>416</i>&nbsp;    }
+<i>417</i>&nbsp;
+<i>418</i>&nbsp;
+<i>419</i>&nbsp;    /**
+<i>420</i>&nbsp;     * Rests the color.
+<i>421</i>&nbsp;     *
+<i>422</i>&nbsp;     * @param color new Color
+<i>423</i>&nbsp;     * @param updateSpinners whether or not to update the spinners.
+<i>424</i>&nbsp;     * @param updateHSB if true, the hsb fields are updated based on the
+<i>425</i>&nbsp;     *                  new color
+<i>426</i>&nbsp;     * @param updateModel if true, the model is set.
+<i>427</i>&nbsp;     */
+<i>428</i>&nbsp;    private void setColor(Color color, boolean updateSpinners,
+<i>429</i>&nbsp;                          boolean updateHSB, boolean updateModel) {
+<b class="nc"><i>430</i>&nbsp;        if (color == null) {</b>
+<b class="nc"><i>431</i>&nbsp;            color = Color.BLACK;</b>
+<i>432</i>&nbsp;        }
+<i>433</i>&nbsp;
+<b class="nc"><i>434</i>&nbsp;        settingColor = true;</b>
+<i>435</i>&nbsp;
+<b class="nc"><i>436</i>&nbsp;        if (updateHSB) {</b>
+<b class="nc"><i>437</i>&nbsp;            float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(),</b>
+<b class="nc"><i>438</i>&nbsp;                                         color.getBlue(), null);</b>
+<b class="nc"><i>439</i>&nbsp;            hue = hsb[0];</b>
+<b class="nc"><i>440</i>&nbsp;            saturation = hsb[1];</b>
+<b class="nc"><i>441</i>&nbsp;            brightness = hsb[2];</b>
+<i>442</i>&nbsp;        }
+<i>443</i>&nbsp;
+<b class="nc"><i>444</i>&nbsp;        if (updateModel) {</b>
+<b class="nc"><i>445</i>&nbsp;            ColorSelectionModel model = getColorSelectionModel();</b>
+<b class="nc"><i>446</i>&nbsp;            if (model != null) {</b>
+<b class="nc"><i>447</i>&nbsp;                model.setSelectedColor(color);</b>
+<i>448</i>&nbsp;            }
+<i>449</i>&nbsp;        }
+<i>450</i>&nbsp;
+<b class="nc"><i>451</i>&nbsp;        triangle.setColor(hue, saturation, brightness);</b>
+<b class="nc"><i>452</i>&nbsp;        label.setBackground(color);</b>
+<i>453</i>&nbsp;        // Force Integer to pad the string with 0&#39;s by adding 0x1000000 and
+<i>454</i>&nbsp;        // then removing the first character.
+<b class="nc"><i>455</i>&nbsp;        String hexString = Integer.toHexString(</b>
+<b class="nc"><i>456</i>&nbsp;                  (color.getRGB() &amp; 0xFFFFFF) | 0x1000000);</b>
+<b class="nc"><i>457</i>&nbsp;        colorNameTF.setText(&quot;#&quot; + hexString.substring(1));</b>
+<i>458</i>&nbsp;
+<b class="nc"><i>459</i>&nbsp;        if (updateSpinners) {</b>
+<b class="nc"><i>460</i>&nbsp;            redSpinner.setValue(Integer.valueOf(color.getRed()));</b>
+<b class="nc"><i>461</i>&nbsp;            greenSpinner.setValue(Integer.valueOf(color.getGreen()));</b>
+<b class="nc"><i>462</i>&nbsp;            blueSpinner.setValue(Integer.valueOf(color.getBlue()));</b>
+<i>463</i>&nbsp;
+<b class="nc"><i>464</i>&nbsp;            hueSpinner.setValue(Integer.valueOf((int)(hue * 360)));</b>
+<b class="nc"><i>465</i>&nbsp;            saturationSpinner.setValue(Integer.valueOf((int)(saturation * 255)));</b>
+<b class="nc"><i>466</i>&nbsp;            valueSpinner.setValue(Integer.valueOf((int)(brightness * 255)));</b>
+<i>467</i>&nbsp;        }
+<b class="nc"><i>468</i>&nbsp;        settingColor = false;</b>
+<i>469</i>&nbsp;    }
+<i>470</i>&nbsp;
+<i>471</i>&nbsp;    public Color getColor() {
+<b class="nc"><i>472</i>&nbsp;        return label.getBackground();</b>
+<i>473</i>&nbsp;    }
+<i>474</i>&nbsp;
+<i>475</i>&nbsp;    /**
+<i>476</i>&nbsp;     * ChangeListener method, updates the necessary display widgets.
+<i>477</i>&nbsp;     */
+<i>478</i>&nbsp;    public void stateChanged(ChangeEvent e) {
+<b class="nc"><i>479</i>&nbsp;        if (settingColor) {</b>
+<i>480</i>&nbsp;            return;
+<i>481</i>&nbsp;        }
+<b class="nc"><i>482</i>&nbsp;        Color color = getColor();</b>
+<i>483</i>&nbsp;
+<b class="nc"><i>484</i>&nbsp;        if (e.getSource() == hueSpinner) {</b>
+<b class="nc"><i>485</i>&nbsp;            setHue(((Number)hueSpinner.getValue()).floatValue() / 360, false);</b>
+<i>486</i>&nbsp;        }
+<b class="nc"><i>487</i>&nbsp;        else if (e.getSource() == saturationSpinner) {</b>
+<b class="nc"><i>488</i>&nbsp;            setSaturation(((Number)saturationSpinner.getValue()).</b>
+<b class="nc"><i>489</i>&nbsp;                          floatValue() / 255);</b>
+<i>490</i>&nbsp;        }
+<b class="nc"><i>491</i>&nbsp;        else if (e.getSource() == valueSpinner) {</b>
+<b class="nc"><i>492</i>&nbsp;            setBrightness(((Number)valueSpinner.getValue()).</b>
+<b class="nc"><i>493</i>&nbsp;                          floatValue() / 255);</b>
+<i>494</i>&nbsp;        }
+<b class="nc"><i>495</i>&nbsp;        else if (e.getSource() == redSpinner) {</b>
+<b class="nc"><i>496</i>&nbsp;            setRed(((Number)redSpinner.getValue()).intValue());</b>
+<i>497</i>&nbsp;        }
+<b class="nc"><i>498</i>&nbsp;        else if (e.getSource() == greenSpinner) {</b>
+<b class="nc"><i>499</i>&nbsp;            setGreen(((Number)greenSpinner.getValue()).intValue());</b>
+<i>500</i>&nbsp;        }
+<b class="nc"><i>501</i>&nbsp;        else if (e.getSource() == blueSpinner) {</b>
+<b class="nc"><i>502</i>&nbsp;            setBlue(((Number)blueSpinner.getValue()).intValue());</b>
+<i>503</i>&nbsp;        }
+<i>504</i>&nbsp;    }
+<i>505</i>&nbsp;
+<i>506</i>&nbsp;
+<i>507</i>&nbsp;
+<i>508</i>&nbsp;    /**
+<i>509</i>&nbsp;     * Flag indicating the angle, or hue, has changed and the triangle
+<i>510</i>&nbsp;     * needs to be recreated.
+<i>511</i>&nbsp;     */
+<i>512</i>&nbsp;    private static final int FLAGS_CHANGED_ANGLE = 1 &lt;&lt; 0;
+<i>513</i>&nbsp;    /**
+<i>514</i>&nbsp;     * Indicates the wheel is being dragged.
+<i>515</i>&nbsp;     */
+<i>516</i>&nbsp;    private static final int FLAGS_DRAGGING = 1 &lt;&lt; 1;
+<i>517</i>&nbsp;    /**
+<i>518</i>&nbsp;     * Indicates the triangle is being dragged.
+<i>519</i>&nbsp;     */
+<i>520</i>&nbsp;    private static final int FLAGS_DRAGGING_TRIANGLE = 1 &lt;&lt; 2;
+<i>521</i>&nbsp;    /**
+<i>522</i>&nbsp;     * Indicates a color is being set and we should ignore setColor
+<i>523</i>&nbsp;     */
+<i>524</i>&nbsp;    private static final int FLAGS_SETTING_COLOR = 1 &lt;&lt; 3;
+<i>525</i>&nbsp;    /**
+<i>526</i>&nbsp;     * Indicates the wheel has focus.
+<i>527</i>&nbsp;     */
+<i>528</i>&nbsp;    private static final int FLAGS_FOCUSED_WHEEL = 1 &lt;&lt; 4;
+<i>529</i>&nbsp;    /**
+<i>530</i>&nbsp;     * Indicates the triangle has focus.
+<i>531</i>&nbsp;     */
+<i>532</i>&nbsp;    private static final int FLAGS_FOCUSED_TRIANGLE = 1 &lt;&lt; 5;
+<i>533</i>&nbsp;
+<i>534</i>&nbsp;
+<i>535</i>&nbsp;    /**
+<i>536</i>&nbsp;     * Class responsible for rendering a color wheel and color triangle.
+<i>537</i>&nbsp;     */
+<i>538</i>&nbsp;    private class ColorTriangle extends JPanel {
+<i>539</i>&nbsp;        /**
+<i>540</i>&nbsp;         * Cached image of the wheel.
+<i>541</i>&nbsp;         */
+<i>542</i>&nbsp;        private Image wheelImage;
+<i>543</i>&nbsp;
+<i>544</i>&nbsp;        /**
+<i>545</i>&nbsp;         * Cached image of the triangle.
+<i>546</i>&nbsp;         */
+<i>547</i>&nbsp;        private Image triangleImage;
+<i>548</i>&nbsp;
+<i>549</i>&nbsp;        /**
+<i>550</i>&nbsp;         * Angle triangle is rotated by.
+<i>551</i>&nbsp;         */
+<i>552</i>&nbsp;        private double angle;
+<i>553</i>&nbsp;
+<i>554</i>&nbsp;        /**
+<i>555</i>&nbsp;         * Boolean bitmask.
+<i>556</i>&nbsp;         */
+<i>557</i>&nbsp;        private int flags;
+<i>558</i>&nbsp;
+<i>559</i>&nbsp;        /**
+<i>560</i>&nbsp;         * X location of selected color indicator.
+<i>561</i>&nbsp;         */
+<i>562</i>&nbsp;        private int circleX;
+<i>563</i>&nbsp;        /**
+<i>564</i>&nbsp;         * Y location of selected color indicator.
+<i>565</i>&nbsp;         */
+<i>566</i>&nbsp;        private int circleY;
+<i>567</i>&nbsp;
+<i>568</i>&nbsp;
+<b class="nc"><i>569</i>&nbsp;        public ColorTriangle() {</b>
+<b class="nc"><i>570</i>&nbsp;            enableEvents(AWTEvent.FOCUS_EVENT_MASK);</b>
+<b class="nc"><i>571</i>&nbsp;            enableEvents(AWTEvent.MOUSE_EVENT_MASK);</b>
+<b class="nc"><i>572</i>&nbsp;            enableEvents(AWTEvent.MOUSE_MOTION_EVENT_MASK);</b>
+<i>573</i>&nbsp;
+<b class="nc"><i>574</i>&nbsp;            setMinimumSize(new Dimension(getWheelRadius() * 2 + 2,</b>
+<b class="nc"><i>575</i>&nbsp;                                         getWheelRadius() * 2 + 2));</b>
+<b class="nc"><i>576</i>&nbsp;            setPreferredSize(new Dimension(getWheelRadius() * 2 + 2,</b>
+<b class="nc"><i>577</i>&nbsp;                                           getWheelRadius() * 2 + 2));</b>
+<i>578</i>&nbsp;
+<i>579</i>&nbsp;            // We want to handle tab ourself.
+<b class="nc"><i>580</i>&nbsp;            setFocusTraversalKeysEnabled(false);</b>
+<i>581</i>&nbsp;
+<i>582</i>&nbsp;            // PENDING: this should come from the style.
+<b class="nc"><i>583</i>&nbsp;            getInputMap().put(KeyStroke.getKeyStroke(&quot;UP&quot;), &quot;up&quot;);</b>
+<b class="nc"><i>584</i>&nbsp;            getInputMap().put(KeyStroke.getKeyStroke(&quot;DOWN&quot;), &quot;down&quot;);</b>
+<b class="nc"><i>585</i>&nbsp;            getInputMap().put(KeyStroke.getKeyStroke(&quot;LEFT&quot;), &quot;left&quot;);</b>
+<b class="nc"><i>586</i>&nbsp;            getInputMap().put(KeyStroke.getKeyStroke(&quot;RIGHT&quot;), &quot;right&quot;);</b>
+<i>587</i>&nbsp;
+<b class="nc"><i>588</i>&nbsp;            getInputMap().put(KeyStroke.getKeyStroke(&quot;KP_UP&quot;), &quot;up&quot;);</b>
+<b class="nc"><i>589</i>&nbsp;            getInputMap().put(KeyStroke.getKeyStroke(&quot;KP_DOWN&quot;), &quot;down&quot;);</b>
+<b class="nc"><i>590</i>&nbsp;            getInputMap().put(KeyStroke.getKeyStroke(&quot;KP_LEFT&quot;), &quot;left&quot;);</b>
+<b class="nc"><i>591</i>&nbsp;            getInputMap().put(KeyStroke.getKeyStroke(&quot;KP_RIGHT&quot;), &quot;right&quot;);</b>
+<i>592</i>&nbsp;
+<b class="nc"><i>593</i>&nbsp;            getInputMap().put(KeyStroke.getKeyStroke(&quot;TAB&quot;), &quot;focusNext&quot;);</b>
+<b class="nc"><i>594</i>&nbsp;            getInputMap().put(KeyStroke.getKeyStroke(&quot;shift TAB&quot;),&quot;focusLast&quot;);</b>
+<i>595</i>&nbsp;
+<b class="nc"><i>596</i>&nbsp;            ActionMap map = (ActionMap)UIManager.get(</b>
+<i>597</i>&nbsp;                                       &quot;GTKColorChooserPanel.actionMap&quot;);
+<i>598</i>&nbsp;
+<b class="nc"><i>599</i>&nbsp;            if (map == null) {</b>
+<b class="nc"><i>600</i>&nbsp;                map = new ActionMapUIResource();</b>
+<b class="nc"><i>601</i>&nbsp;                map.put(&quot;left&quot;, new ColorAction(&quot;left&quot;, 2));</b>
+<b class="nc"><i>602</i>&nbsp;                map.put(&quot;right&quot;, new ColorAction(&quot;right&quot;, 3));</b>
+<b class="nc"><i>603</i>&nbsp;                map.put(&quot;up&quot;, new ColorAction(&quot;up&quot;, 0));</b>
+<b class="nc"><i>604</i>&nbsp;                map.put(&quot;down&quot;, new ColorAction(&quot;down&quot;, 1));</b>
+<b class="nc"><i>605</i>&nbsp;                map.put(&quot;focusNext&quot;, new ColorAction(&quot;focusNext&quot;, 4));</b>
+<b class="nc"><i>606</i>&nbsp;                map.put(&quot;focusLast&quot;, new ColorAction(&quot;focusLast&quot;, 5));</b>
+<b class="nc"><i>607</i>&nbsp;                UIManager.getLookAndFeelDefaults().put(</b>
+<i>608</i>&nbsp;                             &quot;GTKColorChooserPanel.actionMap&quot;, map);
+<i>609</i>&nbsp;            }
+<b class="nc"><i>610</i>&nbsp;            SwingUtilities.replaceUIActionMap(this, map);</b>
+<i>611</i>&nbsp;        }
+<i>612</i>&nbsp;
+<i>613</i>&nbsp;        /**
+<i>614</i>&nbsp;         * Returns the GTKColorChooserPanel.
+<i>615</i>&nbsp;         */
+<i>616</i>&nbsp;        GTKColorChooserPanel getGTKColorChooserPanel() {
+<b class="nc"><i>617</i>&nbsp;            return GTKColorChooserPanel.this;</b>
+<i>618</i>&nbsp;        }
+<i>619</i>&nbsp;
+<i>620</i>&nbsp;        /**
+<i>621</i>&nbsp;         * Gives focus to the wheel.
+<i>622</i>&nbsp;         */
+<i>623</i>&nbsp;        void focusWheel() {
+<b class="nc"><i>624</i>&nbsp;            setFocusType(1);</b>
+<i>625</i>&nbsp;        }
+<i>626</i>&nbsp;
+<i>627</i>&nbsp;        /**
+<i>628</i>&nbsp;         * Gives focus to the triangle.
+<i>629</i>&nbsp;         */
+<i>630</i>&nbsp;        void focusTriangle() {
+<b class="nc"><i>631</i>&nbsp;            setFocusType(2);</b>
+<i>632</i>&nbsp;        }
+<i>633</i>&nbsp;
+<i>634</i>&nbsp;        /**
+<i>635</i>&nbsp;         * Returns true if the wheel currently has focus.
+<i>636</i>&nbsp;         */
+<i>637</i>&nbsp;        boolean isWheelFocused() {
+<b class="nc"><i>638</i>&nbsp;            return isSet(FLAGS_FOCUSED_WHEEL);</b>
+<i>639</i>&nbsp;        }
+<i>640</i>&nbsp;
+<i>641</i>&nbsp;        /**
+<i>642</i>&nbsp;         * Resets the selected color.
+<i>643</i>&nbsp;         */
+<i>644</i>&nbsp;        public void setColor(float h, float s, float b) {
+<b class="nc"><i>645</i>&nbsp;            if (isSet(FLAGS_SETTING_COLOR)) {</b>
+<i>646</i>&nbsp;                return;
+<i>647</i>&nbsp;            }
+<i>648</i>&nbsp;
+<b class="nc"><i>649</i>&nbsp;            setAngleFromHue(h);</b>
+<b class="nc"><i>650</i>&nbsp;            setSaturationAndBrightness(s, b);</b>
+<i>651</i>&nbsp;        }
+<i>652</i>&nbsp;
+<i>653</i>&nbsp;        /**
+<i>654</i>&nbsp;         * Returns the selected color.
+<i>655</i>&nbsp;         */
+<i>656</i>&nbsp;        public Color getColor() {
+<b class="nc"><i>657</i>&nbsp;            return GTKColorChooserPanel.this.getColor();</b>
+<i>658</i>&nbsp;        }
+<i>659</i>&nbsp;
+<i>660</i>&nbsp;        /**
+<i>661</i>&nbsp;         * Returns the x location of the selected color indicator.
+<i>662</i>&nbsp;         */
+<i>663</i>&nbsp;        int getColorX() {
+<b class="nc"><i>664</i>&nbsp;            return circleX + getIndicatorSize() / 2 - getWheelXOrigin();</b>
+<i>665</i>&nbsp;        }
+<i>666</i>&nbsp;
+<i>667</i>&nbsp;        /**
+<i>668</i>&nbsp;         * Returns the y location of the selected color indicator.
+<i>669</i>&nbsp;         */
+<i>670</i>&nbsp;        int getColorY() {
+<b class="nc"><i>671</i>&nbsp;            return circleY + getIndicatorSize() / 2 - getWheelYOrigin();</b>
+<i>672</i>&nbsp;        }
+<i>673</i>&nbsp;
+<i>674</i>&nbsp;        protected void processEvent(AWTEvent e) {
+<b class="nc"><i>675</i>&nbsp;            if (e.getID() == MouseEvent.MOUSE_PRESSED ||</b>
+<b class="nc"><i>676</i>&nbsp;                   ((isSet(FLAGS_DRAGGING) ||isSet(FLAGS_DRAGGING_TRIANGLE)) &amp;&amp;</b>
+<b class="nc"><i>677</i>&nbsp;                   e.getID() == MouseEvent.MOUSE_DRAGGED)) {</b>
+<i>678</i>&nbsp;                // Assign focus to either the wheel or triangle and attempt
+<i>679</i>&nbsp;                // to drag either the wheel or triangle.
+<b class="nc"><i>680</i>&nbsp;                int size = getWheelRadius();</b>
+<b class="nc"><i>681</i>&nbsp;                int x = ((MouseEvent)e).getX() - size;</b>
+<b class="nc"><i>682</i>&nbsp;                int y = ((MouseEvent)e).getY() - size;</b>
+<i>683</i>&nbsp;
+<b class="nc"><i>684</i>&nbsp;                if (!hasFocus()) {</b>
+<b class="nc"><i>685</i>&nbsp;                    requestFocus();</b>
+<i>686</i>&nbsp;                }
+<b class="nc"><i>687</i>&nbsp;                if (!isSet(FLAGS_DRAGGING_TRIANGLE) &amp;&amp;</b>
+<b class="nc"><i>688</i>&nbsp;                      adjustHue(x, y, e.getID() == MouseEvent.MOUSE_PRESSED)) {</b>
+<b class="nc"><i>689</i>&nbsp;                    setFlag(FLAGS_DRAGGING, true);</b>
+<b class="nc"><i>690</i>&nbsp;                    setFocusType(1);</b>
+<i>691</i>&nbsp;                }
+<b class="nc"><i>692</i>&nbsp;                else if (adjustSB(x, y, e.getID() ==</b>
+<i>693</i>&nbsp;                                        MouseEvent.MOUSE_PRESSED)) {
+<b class="nc"><i>694</i>&nbsp;                    setFlag(FLAGS_DRAGGING_TRIANGLE, true);</b>
+<b class="nc"><i>695</i>&nbsp;                    setFocusType(2);</b>
+<i>696</i>&nbsp;                }
+<i>697</i>&nbsp;                else {
+<b class="nc"><i>698</i>&nbsp;                    setFocusType(2);</b>
+<i>699</i>&nbsp;                }
+<b class="nc"><i>700</i>&nbsp;            }</b>
+<b class="nc"><i>701</i>&nbsp;            else if (e.getID() == MouseEvent.MOUSE_RELEASED) {</b>
+<i>702</i>&nbsp;                // Stopped dragging
+<b class="nc"><i>703</i>&nbsp;                setFlag(FLAGS_DRAGGING_TRIANGLE, false);</b>
+<b class="nc"><i>704</i>&nbsp;                setFlag(FLAGS_DRAGGING, false);</b>
+<i>705</i>&nbsp;            }
+<b class="nc"><i>706</i>&nbsp;            else if (e.getID() == FocusEvent.FOCUS_LOST) {</b>
+<i>707</i>&nbsp;                // Reset the flags to indicate no one has focus
+<b class="nc"><i>708</i>&nbsp;                setFocusType(0);</b>
+<i>709</i>&nbsp;            }
+<b class="nc"><i>710</i>&nbsp;            else if (e.getID() == FocusEvent.FOCUS_GAINED) {</b>
+<i>711</i>&nbsp;                // Gained focus, reassign focus to the wheel if no one
+<i>712</i>&nbsp;                // currently has focus.
+<b class="nc"><i>713</i>&nbsp;                if (!isSet(FLAGS_FOCUSED_TRIANGLE) &amp;&amp;</b>
+<b class="nc"><i>714</i>&nbsp;                          !isSet(FLAGS_FOCUSED_WHEEL)) {</b>
+<b class="nc"><i>715</i>&nbsp;                    setFlag(FLAGS_FOCUSED_WHEEL, true);</b>
+<b class="nc"><i>716</i>&nbsp;                    setFocusType(1);</b>
+<i>717</i>&nbsp;                }
+<b class="nc"><i>718</i>&nbsp;                repaint();</b>
+<i>719</i>&nbsp;            }
+<b class="nc"><i>720</i>&nbsp;            super.processEvent(e);</b>
+<i>721</i>&nbsp;        }
+<i>722</i>&nbsp;
+<i>723</i>&nbsp;        public void paintComponent(Graphics g) {
+<b class="nc"><i>724</i>&nbsp;            super.paintComponent(g);</b>
+<i>725</i>&nbsp;
+<i>726</i>&nbsp;            // Draw the wheel and triangle
+<b class="nc"><i>727</i>&nbsp;            int size = getWheelRadius();</b>
+<b class="nc"><i>728</i>&nbsp;            int width = getWheelWidth();</b>
+<b class="nc"><i>729</i>&nbsp;            Image image = getImage(size);</b>
+<b class="nc"><i>730</i>&nbsp;            g.drawImage(image, getWheelXOrigin() - size,</b>
+<b class="nc"><i>731</i>&nbsp;                        getWheelYOrigin() - size, null);</b>
+<i>732</i>&nbsp;
+<i>733</i>&nbsp;            // Draw the focus indicator for the wheel
+<b class="nc"><i>734</i>&nbsp;            if (hasFocus() &amp;&amp; isSet(FLAGS_FOCUSED_WHEEL)) {</b>
+<b class="nc"><i>735</i>&nbsp;                g.setColor(Color.BLACK);</b>
+<b class="nc"><i>736</i>&nbsp;                g.drawOval(getWheelXOrigin() - size, getWheelYOrigin() - size,</b>
+<i>737</i>&nbsp;                           2 * size, 2 * size);
+<b class="nc"><i>738</i>&nbsp;                g.drawOval(getWheelXOrigin() - size + width, getWheelYOrigin()-</b>
+<i>739</i>&nbsp;                           size + width, 2 * (size - width), 2 *
+<i>740</i>&nbsp;                           (size - width));
+<i>741</i>&nbsp;            }
+<i>742</i>&nbsp;
+<i>743</i>&nbsp;            // Draw a line on the wheel indicating the selected hue.
+<b class="nc"><i>744</i>&nbsp;            if (Math.toDegrees(Math.PI * 2 - angle) &lt;= 20 ||</b>
+<b class="nc"><i>745</i>&nbsp;                     Math.toDegrees(Math.PI * 2 - angle) &gt;= 201) {</b>
+<b class="nc"><i>746</i>&nbsp;                g.setColor(Color.WHITE);</b>
+<i>747</i>&nbsp;            }
+<i>748</i>&nbsp;            else {
+<b class="nc"><i>749</i>&nbsp;                g.setColor(Color.BLACK);</b>
+<i>750</i>&nbsp;            }
+<b class="nc"><i>751</i>&nbsp;            int lineX0 = (int)(Math.cos(angle) * size);</b>
+<b class="nc"><i>752</i>&nbsp;            int lineY0 = (int)(Math.sin(angle) * size);</b>
+<b class="nc"><i>753</i>&nbsp;            int lineX1 = (int)(Math.cos(angle) * (size - width));</b>
+<b class="nc"><i>754</i>&nbsp;            int lineY1 = (int)(Math.sin(angle) * (size - width));</b>
+<b class="nc"><i>755</i>&nbsp;            g.drawLine(lineX0 + size, lineY0 + size, lineX1 + size,</b>
+<i>756</i>&nbsp;                       lineY1 + size);
+<i>757</i>&nbsp;
+<i>758</i>&nbsp;            // Draw the focus indicator on the triangle
+<b class="nc"><i>759</i>&nbsp;            if (hasFocus() &amp;&amp; isSet(FLAGS_FOCUSED_TRIANGLE)) {</b>
+<b class="nc"><i>760</i>&nbsp;                Graphics g2 = g.create();</b>
+<b class="nc"><i>761</i>&nbsp;                int innerR = getTriangleCircumscribedRadius();</b>
+<b class="nc"><i>762</i>&nbsp;                int a = (int)(3 * innerR / Math.sqrt(3));</b>
+<b class="nc"><i>763</i>&nbsp;                g2.translate(getWheelXOrigin(), getWheelYOrigin());</b>
+<b class="nc"><i>764</i>&nbsp;                ((Graphics2D)g2).rotate(angle + Math.PI / 2);</b>
+<b class="nc"><i>765</i>&nbsp;                g2.setColor(Color.BLACK);</b>
+<b class="nc"><i>766</i>&nbsp;                g2.drawLine(0, -innerR, a / 2, innerR / 2);</b>
+<b class="nc"><i>767</i>&nbsp;                g2.drawLine(a / 2, innerR / 2, -a / 2, innerR / 2);</b>
+<b class="nc"><i>768</i>&nbsp;                g2.drawLine(-a / 2, innerR / 2, 0, -innerR);</b>
+<b class="nc"><i>769</i>&nbsp;                g2.dispose();</b>
+<i>770</i>&nbsp;            }
+<i>771</i>&nbsp;
+<i>772</i>&nbsp;            // Draw the selected color indicator.
+<b class="nc"><i>773</i>&nbsp;            g.setColor(Color.BLACK);</b>
+<b class="nc"><i>774</i>&nbsp;            g.drawOval(circleX, circleY, getIndicatorSize() - 1,</b>
+<b class="nc"><i>775</i>&nbsp;                       getIndicatorSize() - 1);</b>
+<b class="nc"><i>776</i>&nbsp;            g.setColor(Color.WHITE);</b>
+<b class="nc"><i>777</i>&nbsp;            g.drawOval(circleX + 1, circleY + 1, getIndicatorSize() - 3,</b>
+<b class="nc"><i>778</i>&nbsp;                       getIndicatorSize() - 3);</b>
+<i>779</i>&nbsp;        }
+<i>780</i>&nbsp;
+<i>781</i>&nbsp;        /**
+<i>782</i>&nbsp;         * Returns an image representing the triangle and wheel.
+<i>783</i>&nbsp;         */
+<i>784</i>&nbsp;        private Image getImage(int size) {
+<b class="nc"><i>785</i>&nbsp;            if (!isSet(FLAGS_CHANGED_ANGLE) &amp;&amp; wheelImage != null &amp;&amp;</b>
+<b class="nc"><i>786</i>&nbsp;                        wheelImage.getWidth(null) == size * 2) {</b>
+<b class="nc"><i>787</i>&nbsp;                return wheelImage;</b>
+<i>788</i>&nbsp;            }
+<b class="nc"><i>789</i>&nbsp;            if (wheelImage == null || wheelImage.getWidth(null) != size) {</b>
+<b class="nc"><i>790</i>&nbsp;                wheelImage = getWheelImage(size);</b>
+<i>791</i>&nbsp;            }
+<b class="nc"><i>792</i>&nbsp;            int innerR = getTriangleCircumscribedRadius();</b>
+<b class="nc"><i>793</i>&nbsp;            int triangleSize = (int)(innerR * 3.0 / 2.0);</b>
+<b class="nc"><i>794</i>&nbsp;            int a = (int)(2 * triangleSize / Math.sqrt(3));</b>
+<b class="nc"><i>795</i>&nbsp;            if (triangleImage == null || triangleImage.getWidth(null) != a) {</b>
+<b class="nc"><i>796</i>&nbsp;                triangleImage = new BufferedImage(a, a,</b>
+<i>797</i>&nbsp;                                                  BufferedImage.TYPE_INT_ARGB);
+<i>798</i>&nbsp;            }
+<b class="nc"><i>799</i>&nbsp;            Graphics g = triangleImage.getGraphics();</b>
+<b class="nc"><i>800</i>&nbsp;            g.setColor(new Color(0, 0, 0, 0));</b>
+<b class="nc"><i>801</i>&nbsp;            g.fillRect(0, 0, a, a);</b>
+<b class="nc"><i>802</i>&nbsp;            g.translate(a / 2, 0);</b>
+<b class="nc"><i>803</i>&nbsp;            paintTriangle(g, triangleSize, getColor());</b>
+<b class="nc"><i>804</i>&nbsp;            g.translate(-a / 2, 0);</b>
+<b class="nc"><i>805</i>&nbsp;            g.dispose();</b>
+<i>806</i>&nbsp;
+<b class="nc"><i>807</i>&nbsp;            g = wheelImage.getGraphics();</b>
+<b class="nc"><i>808</i>&nbsp;            g.setColor(new Color(0, 0, 0, 0));</b>
+<b class="nc"><i>809</i>&nbsp;            g.fillOval(getWheelWidth(), getWheelWidth(),</b>
+<b class="nc"><i>810</i>&nbsp;                       2 * (size - getWheelWidth()),</b>
+<b class="nc"><i>811</i>&nbsp;                       2 * (size - getWheelWidth()));</b>
+<i>812</i>&nbsp;
+<b class="nc"><i>813</i>&nbsp;            double rotate = Math.toRadians(-30.0) + angle;</b>
+<b class="nc"><i>814</i>&nbsp;            g.translate(size, size);</b>
+<b class="nc"><i>815</i>&nbsp;            ((Graphics2D)g).rotate(rotate);</b>
+<b class="nc"><i>816</i>&nbsp;            g.drawImage(triangleImage, -a / 2,</b>
+<b class="nc"><i>817</i>&nbsp;                        getWheelWidth() - size, null);</b>
+<b class="nc"><i>818</i>&nbsp;            ((Graphics2D)g).rotate(-rotate);</b>
+<b class="nc"><i>819</i>&nbsp;            g.translate(a / 2, size - getWheelWidth());</b>
+<i>820</i>&nbsp;
+<b class="nc"><i>821</i>&nbsp;            setFlag(FLAGS_CHANGED_ANGLE, false);</b>
+<i>822</i>&nbsp;
+<b class="nc"><i>823</i>&nbsp;            return wheelImage;</b>
+<i>824</i>&nbsp;        }
+<i>825</i>&nbsp;
+<i>826</i>&nbsp;        private void paintTriangle(Graphics g, int size, Color color) {
+<b class="nc"><i>827</i>&nbsp;            float[] colors = Color.RGBtoHSB(color.getRed(),</b>
+<b class="nc"><i>828</i>&nbsp;                                            color.getGreen(),</b>
+<b class="nc"><i>829</i>&nbsp;                                            color.getBlue(), null);</b>
+<b class="nc"><i>830</i>&nbsp;            float hue = colors[0];</b>
+<b class="nc"><i>831</i>&nbsp;            double dSize = (double)size;</b>
+<b class="nc"><i>832</i>&nbsp;            for (int y = 0; y &lt; size; y++) {</b>
+<b class="nc"><i>833</i>&nbsp;                int maxX = (int)(y * Math.tan(Math.toRadians(30.0)));</b>
+<b class="nc"><i>834</i>&nbsp;                float factor = maxX * 2;</b>
+<b class="nc"><i>835</i>&nbsp;                if (maxX &gt; 0) {</b>
+<b class="nc"><i>836</i>&nbsp;                    float value = (float)(y / dSize);</b>
+<b class="nc"><i>837</i>&nbsp;                    for (int x = -maxX; x &lt;= maxX; x++) {</b>
+<b class="nc"><i>838</i>&nbsp;                        float saturation = (float)x / factor + .5f;</b>
+<b class="nc"><i>839</i>&nbsp;                        g.setColor(Color.getHSBColor(hue, saturation, value));</b>
+<b class="nc"><i>840</i>&nbsp;                        g.fillRect(x, y, 1, 1);</b>
+<i>841</i>&nbsp;                    }
+<b class="nc"><i>842</i>&nbsp;                }</b>
+<i>843</i>&nbsp;                else {
+<b class="nc"><i>844</i>&nbsp;                    g.setColor(color);</b>
+<b class="nc"><i>845</i>&nbsp;                    g.fillRect(0, y, 1, 1);</b>
+<i>846</i>&nbsp;                }
+<i>847</i>&nbsp;            }
+<i>848</i>&nbsp;        }
+<i>849</i>&nbsp;
+<i>850</i>&nbsp;        /**
+<i>851</i>&nbsp;         * Returns a color wheel image for the specified size.
+<i>852</i>&nbsp;         *
+<i>853</i>&nbsp;         * @param size Integer giving size of color wheel.
+<i>854</i>&nbsp;         * @return Color wheel image
+<i>855</i>&nbsp;         */
+<i>856</i>&nbsp;        private Image getWheelImage(int size) {
+<b class="nc"><i>857</i>&nbsp;            int minSize = size - getWheelWidth();</b>
+<b class="nc"><i>858</i>&nbsp;            int doubleSize = size * 2;</b>
+<b class="nc"><i>859</i>&nbsp;            BufferedImage image = new BufferedImage(doubleSize, doubleSize,</b>
+<i>860</i>&nbsp;                                              BufferedImage.TYPE_INT_ARGB);
+<i>861</i>&nbsp;
+<b class="nc"><i>862</i>&nbsp;            for (int y = -size; y &lt; size; y++) {</b>
+<b class="nc"><i>863</i>&nbsp;                int ySquared = y * y;</b>
+<b class="nc"><i>864</i>&nbsp;                for (int x = -size; x &lt; size; x++) {</b>
+<b class="nc"><i>865</i>&nbsp;                    double rad = Math.sqrt(ySquared + x * x);</b>
+<i>866</i>&nbsp;
+<b class="nc"><i>867</i>&nbsp;                    if (rad &lt; size &amp;&amp; rad &gt; minSize) {</b>
+<b class="nc"><i>868</i>&nbsp;                        int rgb = colorWheelLocationToRGB(x, y, rad) |</b>
+<i>869</i>&nbsp;                              0xFF000000;
+<b class="nc"><i>870</i>&nbsp;                        image.setRGB(x + size, y + size, rgb);</b>
+<i>871</i>&nbsp;                    }
+<i>872</i>&nbsp;                }
+<i>873</i>&nbsp;            }
+<b class="nc"><i>874</i>&nbsp;            wheelImage = image;</b>
+<b class="nc"><i>875</i>&nbsp;            return wheelImage;</b>
+<i>876</i>&nbsp;        }
+<i>877</i>&nbsp;
+<i>878</i>&nbsp;        /**
+<i>879</i>&nbsp;         * Adjusts the saturation and brightness. &lt;code&gt;x&lt;/code&gt; and
+<i>880</i>&nbsp;         * &lt;code&gt;y&lt;/code&gt; give the location to adjust to and are relative
+<i>881</i>&nbsp;         * to the origin of the wheel/triangle.
+<i>882</i>&nbsp;         *
+<i>883</i>&nbsp;         * @param x X coordinate on the triangle to adjust to
+<i>884</i>&nbsp;         * @param y Y coordinate on the triangle to adjust to
+<i>885</i>&nbsp;         * @param checkLoc if true the location is checked to make sure
+<i>886</i>&nbsp;         *        it is contained in the triangle, if false the location is
+<i>887</i>&nbsp;         *        constrained to fit in the triangle.
+<i>888</i>&nbsp;         * @return true if the location is valid
+<i>889</i>&nbsp;         */
+<i>890</i>&nbsp;        boolean adjustSB(int x, int y, boolean checkLoc) {
+<b class="nc"><i>891</i>&nbsp;            int innerR = getWheelRadius() - getWheelWidth();</b>
+<b class="nc"><i>892</i>&nbsp;            boolean resetXY = false;</b>
+<i>893</i>&nbsp;            // Invert the axis.
+<b class="nc"><i>894</i>&nbsp;            y = -y;</b>
+<b class="nc"><i>895</i>&nbsp;            if (checkLoc &amp;&amp; (x &lt; -innerR || x &gt; innerR || y &lt; -innerR ||</b>
+<i>896</i>&nbsp;                             y &gt; innerR)) {
+<b class="nc"><i>897</i>&nbsp;                return false;</b>
+<i>898</i>&nbsp;            }
+<i>899</i>&nbsp;            // Rotate to origin and and verify x is valid.
+<b class="nc"><i>900</i>&nbsp;            int triangleSize = innerR * 3 / 2;</b>
+<b class="nc"><i>901</i>&nbsp;            double x1 = Math.cos(angle) * x - Math.sin(angle) * y;</b>
+<b class="nc"><i>902</i>&nbsp;            double y1 = Math.sin(angle) * x + Math.cos(angle) * y;</b>
+<b class="nc"><i>903</i>&nbsp;            if (x1 &lt; -(innerR / 2)) {</b>
+<b class="nc"><i>904</i>&nbsp;                if (checkLoc) {</b>
+<b class="nc"><i>905</i>&nbsp;                    return false;</b>
+<i>906</i>&nbsp;                }
+<b class="nc"><i>907</i>&nbsp;                x1 = -innerR / 2;</b>
+<b class="nc"><i>908</i>&nbsp;                resetXY = true;</b>
+<i>909</i>&nbsp;            }
+<b class="nc"><i>910</i>&nbsp;            else if ((int)x1 &gt; innerR) {</b>
+<b class="nc"><i>911</i>&nbsp;                if (checkLoc) {</b>
+<b class="nc"><i>912</i>&nbsp;                    return false;</b>
+<i>913</i>&nbsp;                }
+<b class="nc"><i>914</i>&nbsp;                x1 = innerR;</b>
+<b class="nc"><i>915</i>&nbsp;                resetXY = true;</b>
+<i>916</i>&nbsp;            }
+<i>917</i>&nbsp;            // Verify y location is valid.
+<b class="nc"><i>918</i>&nbsp;            int maxY = (int)((triangleSize - x1 - innerR / 2.0) *</b>
+<b class="nc"><i>919</i>&nbsp;                             Math.tan(Math.toRadians(30.0)));</b>
+<b class="nc"><i>920</i>&nbsp;            if (y1 &lt;= -maxY) {</b>
+<b class="nc"><i>921</i>&nbsp;                if (checkLoc) {</b>
+<b class="nc"><i>922</i>&nbsp;                    return false;</b>
+<i>923</i>&nbsp;                }
+<b class="nc"><i>924</i>&nbsp;                y1 = -maxY;</b>
+<b class="nc"><i>925</i>&nbsp;                resetXY = true;</b>
+<i>926</i>&nbsp;            }
+<b class="nc"><i>927</i>&nbsp;            else if (y1 &gt; maxY) {</b>
+<b class="nc"><i>928</i>&nbsp;                if (checkLoc) {</b>
+<b class="nc"><i>929</i>&nbsp;                    return false;</b>
+<i>930</i>&nbsp;                }
+<b class="nc"><i>931</i>&nbsp;                y1 = maxY;</b>
+<b class="nc"><i>932</i>&nbsp;                resetXY = true;</b>
+<i>933</i>&nbsp;            }
+<i>934</i>&nbsp;            // Rotate again to determine value and scale
+<b class="nc"><i>935</i>&nbsp;            double x2 = Math.cos(Math.toRadians(-30.0)) * x1 -</b>
+<b class="nc"><i>936</i>&nbsp;                 Math.sin(Math.toRadians(-30.0)) * y1;</b>
+<b class="nc"><i>937</i>&nbsp;            double y2 = Math.sin(Math.toRadians(-30.0)) * x1 +</b>
+<b class="nc"><i>938</i>&nbsp;                 Math.cos(Math.toRadians(-30.0)) * y1;</b>
+<b class="nc"><i>939</i>&nbsp;            float value = Math.min(1.0f, (float)((innerR - y2) /</b>
+<i>940</i>&nbsp;                                                (double)triangleSize));
+<b class="nc"><i>941</i>&nbsp;            float maxX = (float)(Math.tan(Math.toRadians(30)) * (innerR - y2));</b>
+<b class="nc"><i>942</i>&nbsp;            float saturation = Math.min(1.0f, (float)(x2 / maxX / 2 + .5));</b>
+<i>943</i>&nbsp;
+<b class="nc"><i>944</i>&nbsp;            setFlag(FLAGS_SETTING_COLOR, true);</b>
+<b class="nc"><i>945</i>&nbsp;            if (resetXY) {</b>
+<b class="nc"><i>946</i>&nbsp;                setSaturationAndBrightness(saturation, value);</b>
+<i>947</i>&nbsp;            }
+<i>948</i>&nbsp;            else {
+<b class="nc"><i>949</i>&nbsp;                setSaturationAndBrightness(saturation, value, x +</b>
+<b class="nc"><i>950</i>&nbsp;                                      getWheelXOrigin(),getWheelYOrigin() - y);</b>
+<i>951</i>&nbsp;            }
+<b class="nc"><i>952</i>&nbsp;            GTKColorChooserPanel.this.setSaturationAndBrightness(saturation,</b>
+<i>953</i>&nbsp;                                                                 value, true);
+<b class="nc"><i>954</i>&nbsp;            setFlag(FLAGS_SETTING_COLOR, false);</b>
+<b class="nc"><i>955</i>&nbsp;            return true;</b>
+<i>956</i>&nbsp;        }
+<i>957</i>&nbsp;
+<i>958</i>&nbsp;        /**
+<i>959</i>&nbsp;         * Sets the saturation and brightness.
+<i>960</i>&nbsp;         */
+<i>961</i>&nbsp;        private void setSaturationAndBrightness(float s, float b) {
+<b class="nc"><i>962</i>&nbsp;            int innerR = getTriangleCircumscribedRadius();</b>
+<b class="nc"><i>963</i>&nbsp;            int triangleSize = innerR * 3 / 2;</b>
+<b class="nc"><i>964</i>&nbsp;            double x = b * triangleSize;</b>
+<b class="nc"><i>965</i>&nbsp;            double maxY = x * Math.tan(Math.toRadians(30.0));</b>
+<b class="nc"><i>966</i>&nbsp;            double y = 2 * maxY * s - maxY;</b>
+<b class="nc"><i>967</i>&nbsp;            x = x - innerR;</b>
+<b class="nc"><i>968</i>&nbsp;            double x1 = Math.cos(Math.toRadians(-60.0) - angle) *</b>
+<b class="nc"><i>969</i>&nbsp;                        x - Math.sin(Math.toRadians(-60.0) - angle) * y;</b>
+<b class="nc"><i>970</i>&nbsp;            double y1 = Math.sin(Math.toRadians(-60.0) - angle) * x +</b>
+<b class="nc"><i>971</i>&nbsp;                        Math.cos(Math.toRadians(-60.0) - angle) * y;</b>
+<b class="nc"><i>972</i>&nbsp;            int newCircleX = (int)x1 + getWheelXOrigin();</b>
+<b class="nc"><i>973</i>&nbsp;            int newCircleY = getWheelYOrigin() - (int)y1;</b>
+<i>974</i>&nbsp;
+<b class="nc"><i>975</i>&nbsp;            setSaturationAndBrightness(s, b, newCircleX, newCircleY);</b>
+<i>976</i>&nbsp;        }
+<i>977</i>&nbsp;
+<i>978</i>&nbsp;
+<i>979</i>&nbsp;        /**
+<i>980</i>&nbsp;         * Sets the saturation and brightness.
+<i>981</i>&nbsp;         */
+<i>982</i>&nbsp;        private void setSaturationAndBrightness(float s, float b,
+<i>983</i>&nbsp;                                             int newCircleX, int newCircleY) {
+<b class="nc"><i>984</i>&nbsp;            newCircleX -= getIndicatorSize() / 2;</b>
+<b class="nc"><i>985</i>&nbsp;            newCircleY -= getIndicatorSize() / 2;</b>
+<i>986</i>&nbsp;
+<b class="nc"><i>987</i>&nbsp;            int minX = Math.min(newCircleX, circleX);</b>
+<b class="nc"><i>988</i>&nbsp;            int minY = Math.min(newCircleY, circleY);</b>
+<i>989</i>&nbsp;
+<b class="nc"><i>990</i>&nbsp;            repaint(minX, minY, Math.max(circleX, newCircleX) - minX +</b>
+<b class="nc"><i>991</i>&nbsp;                    getIndicatorSize() + 1, Math.max(circleY, newCircleY) -</b>
+<b class="nc"><i>992</i>&nbsp;                    minY + getIndicatorSize() + 1);</b>
+<b class="nc"><i>993</i>&nbsp;            circleX = newCircleX;</b>
+<b class="nc"><i>994</i>&nbsp;            circleY = newCircleY;</b>
+<i>995</i>&nbsp;        }
+<i>996</i>&nbsp;
+<i>997</i>&nbsp;        /**
+<i>998</i>&nbsp;         * Adjusts the hue based on the passed in location.
+<i>999</i>&nbsp;         *
+<i>1000</i>&nbsp;         * @param x X location to adjust to, relative to the origin of the
+<i>1001</i>&nbsp;         *        wheel
+<i>1002</i>&nbsp;         * @param y Y location to adjust to, relative to the origin of the
+<i>1003</i>&nbsp;         *        wheel
+<i>1004</i>&nbsp;         * @param check if true the location is checked to make sure
+<i>1005</i>&nbsp;         *        it is contained in the wheel, if false the location is
+<i>1006</i>&nbsp;         *        constrained to fit in the wheel
+<i>1007</i>&nbsp;         * @return true if the location is valid.
+<i>1008</i>&nbsp;         */
+<i>1009</i>&nbsp;        private boolean adjustHue(int x, int y, boolean check) {
+<b class="nc"><i>1010</i>&nbsp;            double rad = Math.sqrt(x * x + y * y);</b>
+<b class="nc"><i>1011</i>&nbsp;            int size = getWheelRadius();</b>
+<i>1012</i>&nbsp;
+<b class="nc"><i>1013</i>&nbsp;            if (!check || (rad &gt;= size - getWheelWidth() &amp;&amp; rad &lt; size)) {</b>
+<i>1014</i>&nbsp;                // Map the location to an angle and reset hue
+<i>1015</i>&nbsp;                double angle;
+<b class="nc"><i>1016</i>&nbsp;                if (x == 0) {</b>
+<b class="nc"><i>1017</i>&nbsp;                    if (y &gt; 0) {</b>
+<b class="nc"><i>1018</i>&nbsp;                        angle = Math.PI / 2.0;</b>
+<i>1019</i>&nbsp;                    }
+<i>1020</i>&nbsp;                    else {
+<b class="nc"><i>1021</i>&nbsp;                        angle = Math.PI + Math.PI / 2.0;</b>
+<i>1022</i>&nbsp;                    }
+<i>1023</i>&nbsp;                }
+<i>1024</i>&nbsp;                else {
+<b class="nc"><i>1025</i>&nbsp;                    angle = Math.atan((double)y / (double)x);</b>
+<b class="nc"><i>1026</i>&nbsp;                    if (x &lt; 0) {</b>
+<b class="nc"><i>1027</i>&nbsp;                        angle += Math.PI;</b>
+<i>1028</i>&nbsp;                    }
+<b class="nc"><i>1029</i>&nbsp;                    else if (angle &lt; 0) {</b>
+<b class="nc"><i>1030</i>&nbsp;                        angle += 2 * Math.PI;</b>
+<i>1031</i>&nbsp;                    }
+<i>1032</i>&nbsp;                }
+<b class="nc"><i>1033</i>&nbsp;                setFlag(FLAGS_SETTING_COLOR, true);</b>
+<b class="nc"><i>1034</i>&nbsp;                setHue((float)(1.0 - angle / Math.PI / 2), true);</b>
+<b class="nc"><i>1035</i>&nbsp;                setFlag(FLAGS_SETTING_COLOR, false);</b>
+<b class="nc"><i>1036</i>&nbsp;                setHueAngle(angle);</b>
+<b class="nc"><i>1037</i>&nbsp;                setSaturationAndBrightness(getSaturation(), getBrightness());</b>
+<b class="nc"><i>1038</i>&nbsp;                return true;</b>
+<i>1039</i>&nbsp;            }
+<b class="nc"><i>1040</i>&nbsp;            return false;</b>
+<i>1041</i>&nbsp;        }
+<i>1042</i>&nbsp;
+<i>1043</i>&nbsp;        /**
+<i>1044</i>&nbsp;         * Rotates the triangle to accommodate the passed in hue.
+<i>1045</i>&nbsp;         */
+<i>1046</i>&nbsp;        private void setAngleFromHue(float hue) {
+<b class="nc"><i>1047</i>&nbsp;            setHueAngle((1.0 - hue) * Math.PI * 2);</b>
+<i>1048</i>&nbsp;        }
+<i>1049</i>&nbsp;
+<i>1050</i>&nbsp;        /**
+<i>1051</i>&nbsp;         * Sets the angle representing the hue.
+<i>1052</i>&nbsp;         */
+<i>1053</i>&nbsp;        private void setHueAngle(double angle) {
+<b class="nc"><i>1054</i>&nbsp;            double oldAngle = this.angle;</b>
+<i>1055</i>&nbsp;
+<b class="nc"><i>1056</i>&nbsp;            this.angle = angle;</b>
+<b class="nc"><i>1057</i>&nbsp;            if (angle != oldAngle) {</b>
+<b class="nc"><i>1058</i>&nbsp;                setFlag(FLAGS_CHANGED_ANGLE, true);</b>
+<b class="nc"><i>1059</i>&nbsp;                repaint();</b>
+<i>1060</i>&nbsp;            }
+<i>1061</i>&nbsp;        }
+<i>1062</i>&nbsp;
+<i>1063</i>&nbsp;        /**
+<i>1064</i>&nbsp;         * Returns the size of the color indicator.
+<i>1065</i>&nbsp;         */
+<i>1066</i>&nbsp;        private int getIndicatorSize() {
+<b class="nc"><i>1067</i>&nbsp;            return 8;</b>
+<i>1068</i>&nbsp;        }
+<i>1069</i>&nbsp;
+<i>1070</i>&nbsp;        /**
+<i>1071</i>&nbsp;         * Returns the circumscribed radius of the triangle.
+<i>1072</i>&nbsp;         */
+<i>1073</i>&nbsp;        private int getTriangleCircumscribedRadius() {
+<b class="nc"><i>1074</i>&nbsp;            return 72;</b>
+<i>1075</i>&nbsp;        }
+<i>1076</i>&nbsp;
+<i>1077</i>&nbsp;        /**
+<i>1078</i>&nbsp;         * Returns the x origin of the wheel and triangle.
+<i>1079</i>&nbsp;         */
+<i>1080</i>&nbsp;        private int getWheelXOrigin() {
+<b class="nc"><i>1081</i>&nbsp;            return 85;</b>
+<i>1082</i>&nbsp;        }
+<i>1083</i>&nbsp;
+<i>1084</i>&nbsp;        /**
+<i>1085</i>&nbsp;         * Returns y origin of the wheel and triangle.
+<i>1086</i>&nbsp;         */
+<i>1087</i>&nbsp;        private int getWheelYOrigin() {
+<b class="nc"><i>1088</i>&nbsp;            return 85;</b>
+<i>1089</i>&nbsp;        }
+<i>1090</i>&nbsp;
+<i>1091</i>&nbsp;        /**
+<i>1092</i>&nbsp;         * Returns the width of the wheel.
+<i>1093</i>&nbsp;         */
+<i>1094</i>&nbsp;        private int getWheelWidth() {
+<b class="nc"><i>1095</i>&nbsp;            return 13;</b>
+<i>1096</i>&nbsp;        }
+<i>1097</i>&nbsp;
+<i>1098</i>&nbsp;        /**
+<i>1099</i>&nbsp;         * Sets the focus to one of: 0 no one, 1 the wheel or 2 the triangle.
+<i>1100</i>&nbsp;         */
+<i>1101</i>&nbsp;        private void setFocusType(int type) {
+<b class="nc"><i>1102</i>&nbsp;            if (type == 0) {</b>
+<b class="nc"><i>1103</i>&nbsp;                setFlag(FLAGS_FOCUSED_WHEEL, false);</b>
+<b class="nc"><i>1104</i>&nbsp;                setFlag(FLAGS_FOCUSED_TRIANGLE, false);</b>
+<b class="nc"><i>1105</i>&nbsp;                repaint();</b>
+<i>1106</i>&nbsp;            }
+<i>1107</i>&nbsp;            else {
+<b class="nc"><i>1108</i>&nbsp;                int toSet = FLAGS_FOCUSED_WHEEL;</b>
+<b class="nc"><i>1109</i>&nbsp;                int toUnset = FLAGS_FOCUSED_TRIANGLE;</b>
+<i>1110</i>&nbsp;
+<b class="nc"><i>1111</i>&nbsp;                if (type == 2) {</b>
+<b class="nc"><i>1112</i>&nbsp;                    toSet = FLAGS_FOCUSED_TRIANGLE;</b>
+<b class="nc"><i>1113</i>&nbsp;                    toUnset = FLAGS_FOCUSED_WHEEL;</b>
+<i>1114</i>&nbsp;                }
+<b class="nc"><i>1115</i>&nbsp;                if (!isSet(toSet)) {</b>
+<b class="nc"><i>1116</i>&nbsp;                    setFlag(toSet, true);</b>
+<b class="nc"><i>1117</i>&nbsp;                    repaint();</b>
+<b class="nc"><i>1118</i>&nbsp;                    setFlag(toUnset, false);</b>
+<i>1119</i>&nbsp;                }
+<i>1120</i>&nbsp;            }
+<i>1121</i>&nbsp;        }
+<i>1122</i>&nbsp;
+<i>1123</i>&nbsp;        /**
+<i>1124</i>&nbsp;         * Returns the radius of the wheel.
+<i>1125</i>&nbsp;         */
+<i>1126</i>&nbsp;        private int getWheelRadius() {
+<i>1127</i>&nbsp;            // As far as I can tell, GTK doesn&#39;t allow stretching this
+<i>1128</i>&nbsp;            // widget
+<b class="nc"><i>1129</i>&nbsp;            return 85;</b>
+<i>1130</i>&nbsp;        }
+<i>1131</i>&nbsp;
+<i>1132</i>&nbsp;        /**
+<i>1133</i>&nbsp;         * Updates the flags bitmask.
+<i>1134</i>&nbsp;         */
+<i>1135</i>&nbsp;        private void setFlag(int flag, boolean value) {
+<b class="nc"><i>1136</i>&nbsp;            if (value) {</b>
+<b class="nc"><i>1137</i>&nbsp;                flags |= flag;</b>
+<i>1138</i>&nbsp;            }
+<i>1139</i>&nbsp;            else {
+<b class="nc"><i>1140</i>&nbsp;                flags &amp;= ~flag;</b>
+<i>1141</i>&nbsp;            }
+<i>1142</i>&nbsp;        }
+<i>1143</i>&nbsp;
+<i>1144</i>&nbsp;        /**
+<i>1145</i>&nbsp;         * Returns true if a particular flag has been set.
+<i>1146</i>&nbsp;         */
+<i>1147</i>&nbsp;        private boolean isSet(int flag) {
+<b class="nc"><i>1148</i>&nbsp;            return ((flags &amp; flag) == flag);</b>
+<i>1149</i>&nbsp;        }
+<i>1150</i>&nbsp;
+<i>1151</i>&nbsp;        /**
+<i>1152</i>&nbsp;         * Returns the RGB color to use for the specified location. The
+<i>1153</i>&nbsp;         * passed in point must be on the color wheel and be relative to the
+<i>1154</i>&nbsp;         * origin of the color wheel.
+<i>1155</i>&nbsp;         *
+<i>1156</i>&nbsp;         * @param x X location to get color for
+<i>1157</i>&nbsp;         * @param y Y location to get color for
+<i>1158</i>&nbsp;         * @param rad Radius from center of color wheel
+<i>1159</i>&nbsp;         * @return integer with red, green and blue components
+<i>1160</i>&nbsp;         */
+<i>1161</i>&nbsp;        private int colorWheelLocationToRGB(int x, int y, double rad) {
+<b class="nc"><i>1162</i>&nbsp;            double angle = Math.acos((double)x / rad);</b>
+<i>1163</i>&nbsp;            int rgb;
+<i>1164</i>&nbsp;
+<b class="nc"><i>1165</i>&nbsp;            if (angle &lt; PI_3) {</b>
+<b class="nc"><i>1166</i>&nbsp;                if (y &lt; 0) {</b>
+<i>1167</i>&nbsp;                    // FFFF00 - FF0000
+<b class="nc"><i>1168</i>&nbsp;                    rgb = 0xFF0000 | Math.min(255,</b>
+<i>1169</i>&nbsp;                                           (int)(255 * angle / PI_3)) &lt;&lt; 8;
+<i>1170</i>&nbsp;                }
+<i>1171</i>&nbsp;                else {
+<i>1172</i>&nbsp;                    // FF0000 - FF00FF
+<b class="nc"><i>1173</i>&nbsp;                    rgb = 0xFF0000 | Math.min(255,</b>
+<i>1174</i>&nbsp;                                           (int)(255 * angle / PI_3));
+<i>1175</i>&nbsp;                }
+<i>1176</i>&nbsp;            }
+<b class="nc"><i>1177</i>&nbsp;            else if (angle &lt; 2 * PI_3) {</b>
+<b class="nc"><i>1178</i>&nbsp;                angle -= PI_3;</b>
+<b class="nc"><i>1179</i>&nbsp;                if (y &lt; 0) {</b>
+<i>1180</i>&nbsp;                    // 00FF00 - FFFF00
+<b class="nc"><i>1181</i>&nbsp;                    rgb = 0x00FF00 | Math.max(0, 255 -</b>
+<i>1182</i>&nbsp;                                           (int)(255 * angle / PI_3)) &lt;&lt; 16;
+<i>1183</i>&nbsp;                }
+<i>1184</i>&nbsp;                else {
+<i>1185</i>&nbsp;                    // FF00FF - 0000FF
+<b class="nc"><i>1186</i>&nbsp;                    rgb = 0x0000FF | Math.max(0, 255 -</b>
+<i>1187</i>&nbsp;                                           (int)(255 * angle / PI_3)) &lt;&lt; 16;
+<i>1188</i>&nbsp;                }
+<i>1189</i>&nbsp;            }
+<i>1190</i>&nbsp;            else {
+<b class="nc"><i>1191</i>&nbsp;                angle -= 2 * PI_3;</b>
+<b class="nc"><i>1192</i>&nbsp;                if (y &lt; 0) {</b>
+<i>1193</i>&nbsp;                    // 00FFFF - 00FF00
+<b class="nc"><i>1194</i>&nbsp;                    rgb = 0x00FF00 | Math.min(255,</b>
+<i>1195</i>&nbsp;                                           (int)(255 * angle / PI_3));
+<i>1196</i>&nbsp;                }
+<i>1197</i>&nbsp;                else {
+<i>1198</i>&nbsp;                    // 0000FF - 00FFFF
+<b class="nc"><i>1199</i>&nbsp;                    rgb = 0x0000FF | Math.min(255,</b>
+<i>1200</i>&nbsp;                                           (int)(255 * angle / PI_3)) &lt;&lt; 8;
+<i>1201</i>&nbsp;                }
+<i>1202</i>&nbsp;            }
+<b class="nc"><i>1203</i>&nbsp;            return rgb;</b>
+<i>1204</i>&nbsp;        }
+<i>1205</i>&nbsp;
+<i>1206</i>&nbsp;        /**
+<i>1207</i>&nbsp;         * Increments the hue.
+<i>1208</i>&nbsp;         */
+<i>1209</i>&nbsp;        void incrementHue(boolean positive) {
+<b class="nc"><i>1210</i>&nbsp;            float hue = triangle.getGTKColorChooserPanel().getHue();</b>
+<i>1211</i>&nbsp;
+<b class="nc"><i>1212</i>&nbsp;            if (positive) {</b>
+<b class="nc"><i>1213</i>&nbsp;                hue += 1.0f / 360.0f;</b>
+<i>1214</i>&nbsp;            }
+<i>1215</i>&nbsp;            else {
+<b class="nc"><i>1216</i>&nbsp;                hue -= 1.0f / 360.0f;</b>
+<i>1217</i>&nbsp;            }
+<b class="nc"><i>1218</i>&nbsp;            if (hue &gt; 1) {</b>
+<b class="nc"><i>1219</i>&nbsp;                hue -= 1;</b>
+<i>1220</i>&nbsp;            }
+<b class="nc"><i>1221</i>&nbsp;            else if (hue &lt; 0) {</b>
+<b class="nc"><i>1222</i>&nbsp;                hue += 1;</b>
+<i>1223</i>&nbsp;            }
+<b class="nc"><i>1224</i>&nbsp;            getGTKColorChooserPanel().setHue(hue, true);</b>
+<i>1225</i>&nbsp;        }
+<i>1226</i>&nbsp;    }
+<i>1227</i>&nbsp;
+<i>1228</i>&nbsp;
+<i>1229</i>&nbsp;    /**
+<i>1230</i>&nbsp;     * Action class used for colors.
+<i>1231</i>&nbsp;     */
+<i>1232</i>&nbsp;    private static class ColorAction extends AbstractAction {
+<i>1233</i>&nbsp;        private int type;
+<i>1234</i>&nbsp;
+<i>1235</i>&nbsp;        ColorAction(String name, int type) {
+<b class="nc"><i>1236</i>&nbsp;            super(name);</b>
+<b class="nc"><i>1237</i>&nbsp;            this.type = type;</b>
+<i>1238</i>&nbsp;        }
+<i>1239</i>&nbsp;
+<i>1240</i>&nbsp;        public void actionPerformed(ActionEvent e) {
+<b class="nc"><i>1241</i>&nbsp;            ColorTriangle triangle = (ColorTriangle)e.getSource();</b>
+<i>1242</i>&nbsp;
+<b class="nc"><i>1243</i>&nbsp;            if (triangle.isWheelFocused()) {</b>
+<b class="nc"><i>1244</i>&nbsp;                float hue = triangle.getGTKColorChooserPanel().getHue();</b>
+<i>1245</i>&nbsp;
+<b class="nc"><i>1246</i>&nbsp;                switch (type) {</b>
+<i>1247</i>&nbsp;                case 0:
+<i>1248</i>&nbsp;                case 2:
+<b class="nc"><i>1249</i>&nbsp;                    triangle.incrementHue(true);</b>
+<b class="nc"><i>1250</i>&nbsp;                    break;</b>
+<i>1251</i>&nbsp;                case 1:
+<i>1252</i>&nbsp;                case 3:
+<b class="nc"><i>1253</i>&nbsp;                    triangle.incrementHue(false);</b>
+<b class="nc"><i>1254</i>&nbsp;                    break;</b>
+<i>1255</i>&nbsp;                case 4:
+<b class="nc"><i>1256</i>&nbsp;                    triangle.focusTriangle();</b>
+<b class="nc"><i>1257</i>&nbsp;                    break;</b>
+<i>1258</i>&nbsp;                case 5:
+<b class="nc"><i>1259</i>&nbsp;                    compositeRequestFocus(triangle, false);</b>
+<i>1260</i>&nbsp;                    break;
+<i>1261</i>&nbsp;                }
+<b class="nc"><i>1262</i>&nbsp;            }</b>
+<i>1263</i>&nbsp;            else {
+<b class="nc"><i>1264</i>&nbsp;                int xDelta = 0;</b>
+<b class="nc"><i>1265</i>&nbsp;                int yDelta = 0;</b>
+<i>1266</i>&nbsp;
+<b class="nc"><i>1267</i>&nbsp;                switch (type) {</b>
+<i>1268</i>&nbsp;                case 0:
+<i>1269</i>&nbsp;                    // up
+<b class="nc"><i>1270</i>&nbsp;                    yDelta--;</b>
+<b class="nc"><i>1271</i>&nbsp;                    break;</b>
+<i>1272</i>&nbsp;                case 1:
+<i>1273</i>&nbsp;                    // down
+<b class="nc"><i>1274</i>&nbsp;                    yDelta++;</b>
+<b class="nc"><i>1275</i>&nbsp;                    break;</b>
+<i>1276</i>&nbsp;                case 2:
+<i>1277</i>&nbsp;                    // left
+<b class="nc"><i>1278</i>&nbsp;                    xDelta--;</b>
+<b class="nc"><i>1279</i>&nbsp;                    break;</b>
+<i>1280</i>&nbsp;                case 3:
+<i>1281</i>&nbsp;                    // right
+<b class="nc"><i>1282</i>&nbsp;                    xDelta++;</b>
+<b class="nc"><i>1283</i>&nbsp;                    break;</b>
+<i>1284</i>&nbsp;                case 4:
+<b class="nc"><i>1285</i>&nbsp;                    compositeRequestFocus(triangle, true);</b>
+<i>1286</i>&nbsp;                    return;
+<i>1287</i>&nbsp;                case 5:
+<b class="nc"><i>1288</i>&nbsp;                    triangle.focusWheel();</b>
+<i>1289</i>&nbsp;                    return;
+<i>1290</i>&nbsp;                }
+<b class="nc"><i>1291</i>&nbsp;                triangle.adjustSB(triangle.getColorX() + xDelta,</b>
+<b class="nc"><i>1292</i>&nbsp;                                  triangle.getColorY() + yDelta, true);</b>
+<i>1293</i>&nbsp;            }
+<i>1294</i>&nbsp;        }
+<i>1295</i>&nbsp;    }
+<i>1296</i>&nbsp;
+<i>1297</i>&nbsp;
+<b class="nc"><i>1298</i>&nbsp;    private class OpaqueLabel extends JLabel {</b>
+<i>1299</i>&nbsp;        public boolean isOpaque() {
+<b class="nc"><i>1300</i>&nbsp;            return true;</b>
+<i>1301</i>&nbsp;        }
+<i>1302</i>&nbsp;    }
+<i>1303</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

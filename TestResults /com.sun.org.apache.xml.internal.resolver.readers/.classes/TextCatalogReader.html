@@ -1,0 +1,386 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TextCatalogReader</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.resolver.readers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TextCatalogReader (com.sun.org.apache.xml.internal.resolver.readers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TextCatalogReader</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 109)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;// TextCatalogReader.java - Read text/plain Catalog files
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;/*
+<i>8</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation or its licensors,
+<i>9</i>&nbsp; * as applicable.
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>12</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>13</i>&nbsp; * You may obtain a copy of the License at
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>18</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>19</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>20</i>&nbsp; * See the License for the specific language governing permissions and
+<i>21</i>&nbsp; * limitations under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xml.internal.resolver.readers;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.InputStream;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.io.FileNotFoundException;
+<i>29</i>&nbsp;import java.net.URL;
+<i>30</i>&nbsp;import java.net.URLConnection;
+<i>31</i>&nbsp;import java.net.MalformedURLException;
+<i>32</i>&nbsp;import java.util.Vector;
+<i>33</i>&nbsp;import java.util.Stack;
+<i>34</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.Catalog;
+<i>35</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.CatalogEntry;
+<i>36</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.CatalogException;
+<i>37</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.readers.CatalogReader;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**
+<i>40</i>&nbsp; * Parses plain text Catalog files.
+<i>41</i>&nbsp; *
+<i>42</i>&nbsp; * &lt;p&gt;This class reads plain text Open Catalog files.&lt;/p&gt;
+<i>43</i>&nbsp; *
+<i>44</i>&nbsp; * @see Catalog
+<i>45</i>&nbsp; *
+<i>46</i>&nbsp; * @author Norman Walsh
+<i>47</i>&nbsp; * &lt;a href=&quot;mailto:Norman.Walsh@Sun.COM&quot;&gt;Norman.Walsh@Sun.COM&lt;/a&gt;
+<i>48</i>&nbsp; *
+<i>49</i>&nbsp; */
+<i>50</i>&nbsp;public class TextCatalogReader implements CatalogReader {
+<i>51</i>&nbsp;  /** The input stream used to read the catalog */
+<b class="nc"><i>52</i>&nbsp;  protected InputStream catfile = null;</b>
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;  /**
+<i>55</i>&nbsp;   * Character lookahead stack. Reading a catalog sometimes requires
+<i>56</i>&nbsp;   * up to two characters of lookahead.
+<i>57</i>&nbsp;   */
+<b class="nc"><i>58</i>&nbsp;  protected int[] stack = new int[3];</b>
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;  /**
+<i>61</i>&nbsp;   * Token stack. Recognizing an unexpected catalog entry requires
+<i>62</i>&nbsp;   * the ability to &quot;push back&quot; a token.
+<i>63</i>&nbsp;   */
+<b class="nc"><i>64</i>&nbsp;  protected Stack tokenStack = new Stack();</b>
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;  /** The current position on the lookahead stack */
+<b class="nc"><i>67</i>&nbsp;  protected int top = -1;</b>
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;  /** Are keywords in the catalog case sensitive? */
+<b class="nc"><i>70</i>&nbsp;  protected boolean caseSensitive = false;</b>
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;  /**
+<i>73</i>&nbsp;   * Construct a CatalogReader object.
+<i>74</i>&nbsp;   */
+<i>75</i>&nbsp;  public TextCatalogReader() { }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;  public void setCaseSensitive(boolean isCaseSensitive) {
+<b class="nc"><i>78</i>&nbsp;    caseSensitive = isCaseSensitive;</b>
+<i>79</i>&nbsp;  }
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;  public boolean getCaseSensitive() {
+<b class="nc"><i>82</i>&nbsp;    return caseSensitive;</b>
+<i>83</i>&nbsp;  }
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;  /**
+<i>86</i>&nbsp;   * Start parsing a text catalog file. The file is
+<i>87</i>&nbsp;   * actually read and parsed
+<i>88</i>&nbsp;   * as needed by &lt;code&gt;nextEntry&lt;/code&gt;.&lt;/p&gt;
+<i>89</i>&nbsp;   *
+<i>90</i>&nbsp;   * @param fileUrl  The URL or filename of the catalog file to process
+<i>91</i>&nbsp;   *
+<i>92</i>&nbsp;   * @throws MalformedURLException Improper fileUrl
+<i>93</i>&nbsp;   * @throws IOException Error reading catalog file
+<i>94</i>&nbsp;   */
+<i>95</i>&nbsp;  public void readCatalog(Catalog catalog, String fileUrl)
+<i>96</i>&nbsp;    throws MalformedURLException, IOException {
+<b class="nc"><i>97</i>&nbsp;    URL catURL = null;</b>
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    try {
+<b class="nc"><i>100</i>&nbsp;      catURL = new URL(fileUrl);</b>
+<b class="nc"><i>101</i>&nbsp;    } catch (MalformedURLException e) {</b>
+<b class="nc"><i>102</i>&nbsp;      catURL = new URL(&quot;file:///&quot; + fileUrl);</b>
+<b class="nc"><i>103</i>&nbsp;    }</b>
+<i>104</i>&nbsp;
+<b class="nc"><i>105</i>&nbsp;    URLConnection urlCon = catURL.openConnection();</b>
+<i>106</i>&nbsp;    try {
+<b class="nc"><i>107</i>&nbsp;      readCatalog(catalog, urlCon.getInputStream());</b>
+<b class="nc"><i>108</i>&nbsp;    } catch (FileNotFoundException e) {</b>
+<b class="nc"><i>109</i>&nbsp;      catalog.getCatalogManager().debug.message(1, &quot;Failed to load catalog, file not found&quot;,</b>
+<b class="nc"><i>110</i>&nbsp;                                                catURL.toString());</b>
+<b class="nc"><i>111</i>&nbsp;    }</b>
+<i>112</i>&nbsp;  }
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;  public void readCatalog(Catalog catalog, InputStream is)
+<i>115</i>&nbsp;    throws MalformedURLException, IOException {
+<i>116</i>&nbsp;
+<b class="nc"><i>117</i>&nbsp;    catfile = is;</b>
+<i>118</i>&nbsp;
+<b class="nc"><i>119</i>&nbsp;    if (catfile == null) {</b>
+<i>120</i>&nbsp;      return;
+<i>121</i>&nbsp;    }
+<i>122</i>&nbsp;
+<b class="nc"><i>123</i>&nbsp;    Vector unknownEntry = null;</b>
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    try {
+<i>126</i>&nbsp;      while (true) {
+<b class="nc"><i>127</i>&nbsp;        String token = nextToken();</b>
+<i>128</i>&nbsp;
+<b class="nc"><i>129</i>&nbsp;        if (token == null) {</b>
+<b class="nc"><i>130</i>&nbsp;          if (unknownEntry != null) {</b>
+<b class="nc"><i>131</i>&nbsp;            catalog.unknownEntry(unknownEntry);</b>
+<b class="nc"><i>132</i>&nbsp;            unknownEntry = null;</b>
+<i>133</i>&nbsp;          }
+<b class="nc"><i>134</i>&nbsp;          catfile.close();</b>
+<b class="nc"><i>135</i>&nbsp;          catfile = null;</b>
+<i>136</i>&nbsp;          return;
+<i>137</i>&nbsp;        }
+<i>138</i>&nbsp;
+<b class="nc"><i>139</i>&nbsp;        String entryToken = null;</b>
+<b class="nc"><i>140</i>&nbsp;        if (caseSensitive) {</b>
+<b class="nc"><i>141</i>&nbsp;          entryToken = token;</b>
+<i>142</i>&nbsp;        } else {
+<b class="nc"><i>143</i>&nbsp;          entryToken = token.toUpperCase();</b>
+<i>144</i>&nbsp;        }
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;        try {
+<b class="nc"><i>147</i>&nbsp;          int type = CatalogEntry.getEntryType(entryToken);</b>
+<b class="nc"><i>148</i>&nbsp;          int numArgs = CatalogEntry.getEntryArgCount(type);</b>
+<b class="nc"><i>149</i>&nbsp;          Vector args = new Vector();</b>
+<i>150</i>&nbsp;
+<b class="nc"><i>151</i>&nbsp;          if (unknownEntry != null) {</b>
+<b class="nc"><i>152</i>&nbsp;            catalog.unknownEntry(unknownEntry);</b>
+<b class="nc"><i>153</i>&nbsp;            unknownEntry = null;</b>
+<i>154</i>&nbsp;          }
+<i>155</i>&nbsp;
+<b class="nc"><i>156</i>&nbsp;          for (int count = 0; count &lt; numArgs; count++) {</b>
+<b class="nc"><i>157</i>&nbsp;            args.addElement(nextToken());</b>
+<i>158</i>&nbsp;          }
+<i>159</i>&nbsp;
+<b class="nc"><i>160</i>&nbsp;          catalog.addEntry(new CatalogEntry(entryToken, args));</b>
+<b class="nc"><i>161</i>&nbsp;        } catch (CatalogException cex) {</b>
+<b class="nc"><i>162</i>&nbsp;          if (cex.getExceptionType() == CatalogException.INVALID_ENTRY_TYPE) {</b>
+<b class="nc"><i>163</i>&nbsp;            if (unknownEntry == null) {</b>
+<b class="nc"><i>164</i>&nbsp;              unknownEntry = new Vector();</b>
+<i>165</i>&nbsp;            }
+<b class="nc"><i>166</i>&nbsp;            unknownEntry.addElement(token);</b>
+<b class="nc"><i>167</i>&nbsp;          } else if (cex.getExceptionType() == CatalogException.INVALID_ENTRY) {</b>
+<b class="nc"><i>168</i>&nbsp;            catalog.getCatalogManager().debug.message(1, &quot;Invalid catalog entry&quot;, token);</b>
+<b class="nc"><i>169</i>&nbsp;            unknownEntry = null;</b>
+<b class="nc"><i>170</i>&nbsp;          } else if (cex.getExceptionType() == CatalogException.UNENDED_COMMENT) {</b>
+<b class="nc"><i>171</i>&nbsp;            catalog.getCatalogManager().debug.message(1, cex.getMessage());</b>
+<i>172</i>&nbsp;          }
+<b class="nc"><i>173</i>&nbsp;        }</b>
+<b class="nc"><i>174</i>&nbsp;      }</b>
+<b class="nc"><i>175</i>&nbsp;    } catch (CatalogException cex2) {</b>
+<b class="nc"><i>176</i>&nbsp;      if (cex2.getExceptionType() == CatalogException.UNENDED_COMMENT) {</b>
+<b class="nc"><i>177</i>&nbsp;        catalog.getCatalogManager().debug.message(1, cex2.getMessage());</b>
+<i>178</i>&nbsp;      }
+<i>179</i>&nbsp;    }
+<i>180</i>&nbsp;  }
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;  /**
+<i>183</i>&nbsp;     * The destructor.
+<i>184</i>&nbsp;     *
+<i>185</i>&nbsp;     * &lt;p&gt;Makes sure the catalog file is closed.&lt;/p&gt;
+<i>186</i>&nbsp;     */
+<i>187</i>&nbsp;  protected void finalize() {
+<b class="nc"><i>188</i>&nbsp;    if (catfile != null) {</b>
+<i>189</i>&nbsp;      try {
+<b class="nc"><i>190</i>&nbsp;        catfile.close();</b>
+<b class="nc"><i>191</i>&nbsp;      } catch (IOException e) {</b>
+<i>192</i>&nbsp;        // whatever...
+<b class="nc"><i>193</i>&nbsp;      }</b>
+<i>194</i>&nbsp;    }
+<b class="nc"><i>195</i>&nbsp;    catfile = null;</b>
+<i>196</i>&nbsp;  }
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;  // -----------------------------------------------------------------
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;    /**
+<i>201</i>&nbsp;     * Return the next token in the catalog file.
+<i>202</i>&nbsp;     *
+<i>203</i>&nbsp;     * &lt;p&gt;FYI: This code does not throw any sort of exception for
+<i>204</i>&nbsp;     * a file that contains an n
+<i>205</i>&nbsp;     *
+<i>206</i>&nbsp;     * @return The Catalog file token from the input stream.
+<i>207</i>&nbsp;     * @throws IOException If an error occurs reading from the stream.
+<i>208</i>&nbsp;     */
+<i>209</i>&nbsp;  protected String nextToken() throws IOException, CatalogException {
+<b class="nc"><i>210</i>&nbsp;    String token = &quot;&quot;;</b>
+<i>211</i>&nbsp;    int ch, nextch;
+<i>212</i>&nbsp;
+<b class="nc"><i>213</i>&nbsp;    if (!tokenStack.empty()) {</b>
+<b class="nc"><i>214</i>&nbsp;      return (String) tokenStack.pop();</b>
+<i>215</i>&nbsp;    }
+<i>216</i>&nbsp;
+<i>217</i>&nbsp;    // Skip over leading whitespace and comments
+<i>218</i>&nbsp;    while (true) {
+<i>219</i>&nbsp;      // skip leading whitespace
+<b class="nc"><i>220</i>&nbsp;      ch = catfile.read();</b>
+<b class="nc"><i>221</i>&nbsp;      while (ch &lt;= &#39; &#39;) {      // all ctrls are whitespace</b>
+<b class="nc"><i>222</i>&nbsp;        ch = catfile.read();</b>
+<b class="nc"><i>223</i>&nbsp;        if (ch &lt; 0) {</b>
+<b class="nc"><i>224</i>&nbsp;          return null;</b>
+<i>225</i>&nbsp;        }
+<i>226</i>&nbsp;      }
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;      // now &#39;ch&#39; is the current char from the file
+<b class="nc"><i>229</i>&nbsp;      nextch = catfile.read();</b>
+<b class="nc"><i>230</i>&nbsp;      if (nextch &lt; 0) {</b>
+<b class="nc"><i>231</i>&nbsp;        return null;</b>
+<i>232</i>&nbsp;      }
+<i>233</i>&nbsp;
+<b class="nc"><i>234</i>&nbsp;      if (ch == &#39;-&#39; &amp;&amp; nextch == &#39;-&#39;) {</b>
+<i>235</i>&nbsp;        // we&#39;ve found a comment, skip it...
+<b class="nc"><i>236</i>&nbsp;        ch = &#39; &#39;;</b>
+<b class="nc"><i>237</i>&nbsp;        nextch = nextChar();</b>
+<b class="nc"><i>238</i>&nbsp;        while ((ch != &#39;-&#39; || nextch != &#39;-&#39;) &amp;&amp; nextch &gt; 0) {</b>
+<b class="nc"><i>239</i>&nbsp;          ch = nextch;</b>
+<b class="nc"><i>240</i>&nbsp;          nextch = nextChar();</b>
+<i>241</i>&nbsp;        }
+<i>242</i>&nbsp;
+<b class="nc"><i>243</i>&nbsp;        if (nextch &lt; 0) {</b>
+<b class="nc"><i>244</i>&nbsp;          throw new CatalogException(CatalogException.UNENDED_COMMENT,</b>
+<i>245</i>&nbsp;                                     &quot;Unterminated comment in catalog file; EOF treated as end-of-comment.&quot;);
+<i>246</i>&nbsp;        }
+<i>247</i>&nbsp;
+<i>248</i>&nbsp;        // Ok, we&#39;ve found the end of the comment,
+<i>249</i>&nbsp;        // loop back to the top and start again...
+<i>250</i>&nbsp;      } else {
+<b class="nc"><i>251</i>&nbsp;        stack[++top] = nextch;</b>
+<b class="nc"><i>252</i>&nbsp;        stack[++top] = ch;</b>
+<b class="nc"><i>253</i>&nbsp;        break;</b>
+<i>254</i>&nbsp;      }
+<i>255</i>&nbsp;    }
+<i>256</i>&nbsp;
+<b class="nc"><i>257</i>&nbsp;    ch = nextChar();</b>
+<b class="nc"><i>258</i>&nbsp;    if (ch == &#39;&quot;&#39; || ch == &#39;\&#39;&#39;) {</b>
+<b class="nc"><i>259</i>&nbsp;      int quote = ch;</b>
+<b class="nc"><i>260</i>&nbsp;      while ((ch = nextChar()) != quote) {</b>
+<b class="nc"><i>261</i>&nbsp;        char[] chararr = new char[1];</b>
+<b class="nc"><i>262</i>&nbsp;        chararr[0] = (char) ch;</b>
+<b class="nc"><i>263</i>&nbsp;        String s = new String(chararr);</b>
+<b class="nc"><i>264</i>&nbsp;        token = token.concat(s);</b>
+<b class="nc"><i>265</i>&nbsp;      }</b>
+<b class="nc"><i>266</i>&nbsp;      return token;</b>
+<i>267</i>&nbsp;    } else {
+<i>268</i>&nbsp;      // return the next whitespace or comment delimited
+<i>269</i>&nbsp;      // string
+<b class="nc"><i>270</i>&nbsp;      while (ch &gt; &#39; &#39;) {</b>
+<b class="nc"><i>271</i>&nbsp;        nextch = nextChar();</b>
+<b class="nc"><i>272</i>&nbsp;        if (ch == &#39;-&#39; &amp;&amp; nextch == &#39;-&#39;) {</b>
+<b class="nc"><i>273</i>&nbsp;          stack[++top] = ch;</b>
+<b class="nc"><i>274</i>&nbsp;          stack[++top] = nextch;</b>
+<b class="nc"><i>275</i>&nbsp;          return token;</b>
+<i>276</i>&nbsp;        } else {
+<b class="nc"><i>277</i>&nbsp;          char[] chararr = new char[1];</b>
+<b class="nc"><i>278</i>&nbsp;          chararr[0] = (char) ch;</b>
+<b class="nc"><i>279</i>&nbsp;          String s = new String(chararr);</b>
+<b class="nc"><i>280</i>&nbsp;          token = token.concat(s);</b>
+<b class="nc"><i>281</i>&nbsp;          ch = nextch;</b>
+<b class="nc"><i>282</i>&nbsp;        }</b>
+<i>283</i>&nbsp;      }
+<b class="nc"><i>284</i>&nbsp;      return token;</b>
+<i>285</i>&nbsp;    }
+<i>286</i>&nbsp;  }
+<i>287</i>&nbsp;
+<i>288</i>&nbsp;  /**
+<i>289</i>&nbsp;     * Return the next logical character from the input stream.
+<i>290</i>&nbsp;     *
+<i>291</i>&nbsp;     * @return The next (logical) character from the input stream. The
+<i>292</i>&nbsp;     * character may be buffered from a previous lookahead.
+<i>293</i>&nbsp;     *
+<i>294</i>&nbsp;     * @throws IOException If an error occurs reading from the stream.
+<i>295</i>&nbsp;     */
+<i>296</i>&nbsp;  protected int nextChar() throws IOException {
+<b class="nc"><i>297</i>&nbsp;    if (top &lt; 0) {</b>
+<b class="nc"><i>298</i>&nbsp;      return catfile.read();</b>
+<i>299</i>&nbsp;    } else {
+<b class="nc"><i>300</i>&nbsp;      return stack[top--];</b>
+<i>301</i>&nbsp;    }
+<i>302</i>&nbsp;  }
+<i>303</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

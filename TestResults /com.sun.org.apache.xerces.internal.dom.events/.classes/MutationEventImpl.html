@@ -1,0 +1,195 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MutationEventImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.dom.events</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MutationEventImpl (com.sun.org.apache.xerces.internal.dom.events)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MutationEventImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2002,2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.dom.events;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import org.w3c.dom.Node;
+<i>24</i>&nbsp;import org.w3c.dom.events.MutationEvent;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;/**
+<i>27</i>&nbsp; * @xerces.internal
+<i>28</i>&nbsp; *
+<i>29</i>&nbsp; */
+<i>30</i>&nbsp;
+<b class="nc"><i>31</i>&nbsp;public class MutationEventImpl</b>
+<i>32</i>&nbsp;extends com.sun.org.apache.xerces.internal.dom.events.EventImpl
+<i>33</i>&nbsp;implements MutationEvent
+<i>34</i>&nbsp;{
+<b class="nc"><i>35</i>&nbsp;    Node relatedNode=null;</b>
+<b class="nc"><i>36</i>&nbsp;    String prevValue=null,newValue=null,attrName=null;</b>
+<i>37</i>&nbsp;    // REVISIT: The DOM Level 2 PR has a bug: the init method should let this
+<i>38</i>&nbsp;    // attribute be specified. Since it doesn&#39;t we have to give write access.
+<i>39</i>&nbsp;    public short attrChange;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    // NON-DOM CONSTANTS: Storage efficiency, avoid risk of typos.
+<i>42</i>&nbsp;    public static final String DOM_SUBTREE_MODIFIED = &quot;DOMSubtreeModified&quot;;
+<i>43</i>&nbsp;    public static final String DOM_NODE_INSERTED = &quot;DOMNodeInserted&quot;;
+<i>44</i>&nbsp;    public static final String DOM_NODE_REMOVED = &quot;DOMNodeRemoved&quot;;
+<i>45</i>&nbsp;    public static final String DOM_NODE_REMOVED_FROM_DOCUMENT = &quot;DOMNodeRemovedFromDocument&quot;;
+<i>46</i>&nbsp;    public static final String DOM_NODE_INSERTED_INTO_DOCUMENT = &quot;DOMNodeInsertedIntoDocument&quot;;
+<i>47</i>&nbsp;    public static final String DOM_ATTR_MODIFIED = &quot;DOMAttrModified&quot;;
+<i>48</i>&nbsp;    public static final String DOM_CHARACTER_DATA_MODIFIED = &quot;DOMCharacterDataModified&quot;;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    /** @return the name of the Attr which
+<i>51</i>&nbsp;        changed, for DOMAttrModified events.
+<i>52</i>&nbsp;        Undefined for others.
+<i>53</i>&nbsp;        */
+<i>54</i>&nbsp;    public String getAttrName()
+<i>55</i>&nbsp;    {
+<b class="nc"><i>56</i>&nbsp;        return attrName;</b>
+<i>57</i>&nbsp;    }
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    /**
+<i>60</i>&nbsp;     *  &lt;code&gt;attrChange&lt;/code&gt; indicates the type of change which triggered
+<i>61</i>&nbsp;     * the DOMAttrModified event. The values can be &lt;code&gt;MODIFICATION&lt;/code&gt;
+<i>62</i>&nbsp;     * , &lt;code&gt;ADDITION&lt;/code&gt;, or &lt;code&gt;REMOVAL&lt;/code&gt;.
+<i>63</i>&nbsp;     */
+<i>64</i>&nbsp;    public short getAttrChange()
+<i>65</i>&nbsp;    {
+<b class="nc"><i>66</i>&nbsp;        return attrChange;</b>
+<i>67</i>&nbsp;    }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    /** @return the new string value of the Attr for DOMAttrModified events, or
+<i>70</i>&nbsp;        of the CharacterData node for DOMCharDataModifed events.
+<i>71</i>&nbsp;        Undefined for others.
+<i>72</i>&nbsp;        */
+<i>73</i>&nbsp;    public String getNewValue()
+<i>74</i>&nbsp;    {
+<b class="nc"><i>75</i>&nbsp;        return newValue;</b>
+<i>76</i>&nbsp;    }
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    /** @return the previous string value of the Attr for DOMAttrModified events, or
+<i>79</i>&nbsp;        of the CharacterData node for DOMCharDataModifed events.
+<i>80</i>&nbsp;        Undefined for others.
+<i>81</i>&nbsp;        */
+<i>82</i>&nbsp;    public String getPrevValue()
+<i>83</i>&nbsp;    {
+<b class="nc"><i>84</i>&nbsp;        return prevValue;</b>
+<i>85</i>&nbsp;    }
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    /** @return a Node related to this event, other than the target that the
+<i>88</i>&nbsp;        node was dispatched to. For DOMNodeRemoved, it is the node which
+<i>89</i>&nbsp;        was removed.
+<i>90</i>&nbsp;        No other uses are currently defined.
+<i>91</i>&nbsp;        */
+<i>92</i>&nbsp;    public Node getRelatedNode()
+<i>93</i>&nbsp;    {
+<b class="nc"><i>94</i>&nbsp;        return relatedNode;</b>
+<i>95</i>&nbsp;    }
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    /** Initialize a mutation event, or overwrite the event&#39;s current
+<i>98</i>&nbsp;        settings with new values of the parameters.
+<i>99</i>&nbsp;        */
+<i>100</i>&nbsp;    public void initMutationEvent(String typeArg, boolean canBubbleArg,
+<i>101</i>&nbsp;        boolean cancelableArg, Node relatedNodeArg, String prevValueArg,
+<i>102</i>&nbsp;        String newValueArg, String attrNameArg, short attrChangeArg)
+<i>103</i>&nbsp;    {
+<b class="nc"><i>104</i>&nbsp;        relatedNode=relatedNodeArg;</b>
+<b class="nc"><i>105</i>&nbsp;        prevValue=prevValueArg;</b>
+<b class="nc"><i>106</i>&nbsp;        newValue=newValueArg;</b>
+<b class="nc"><i>107</i>&nbsp;        attrName=attrNameArg;</b>
+<b class="nc"><i>108</i>&nbsp;        attrChange=attrChangeArg;</b>
+<b class="nc"><i>109</i>&nbsp;        super.initEvent(typeArg,canBubbleArg,cancelableArg);</b>
+<i>110</i>&nbsp;    }
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

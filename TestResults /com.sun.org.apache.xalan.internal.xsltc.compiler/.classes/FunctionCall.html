@@ -1,0 +1,1257 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: FunctionCall</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler</a> ]
+</div>
+
+<h1>Coverage Summary for Class: FunctionCall (com.sun.org.apache.xalan.internal.xsltc.compiler)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FunctionCall</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 512)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">FunctionCall$JavaType</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 31)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 521)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: FunctionCall.java,v 1.2.4.1 2005/09/12 10:31:32 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+<i>27</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.IFEQ;
+<i>28</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKEINTERFACE;
+<i>29</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKESPECIAL;
+<i>30</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKESTATIC;
+<i>31</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL;
+<i>32</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionConstants;
+<i>33</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>34</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InvokeInstruction;
+<i>35</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.LocalVariableGen;
+<i>36</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.NEW;
+<i>37</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.PUSH;
+<i>38</i>&nbsp;import com.sun.org.apache.xalan.internal.utils.FeatureManager;
+<i>39</i>&nbsp;import com.sun.org.apache.xalan.internal.utils.ObjectFactory;
+<i>40</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.BooleanType;
+<i>41</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
+<i>42</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg;
+<i>43</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.IntType;
+<i>44</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+<i>45</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodType;
+<i>46</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MultiHashtable;
+<i>47</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ObjectType;
+<i>48</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ReferenceType;
+<i>49</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
+<i>50</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+<i>51</i>&nbsp;import java.lang.reflect.Constructor;
+<i>52</i>&nbsp;import java.lang.reflect.Method;
+<i>53</i>&nbsp;import java.lang.reflect.Modifier;
+<i>54</i>&nbsp;import java.util.Collections;
+<i>55</i>&nbsp;import java.util.Enumeration;
+<i>56</i>&nbsp;import java.util.HashMap;
+<i>57</i>&nbsp;import java.util.Map;
+<i>58</i>&nbsp;import java.util.Objects;
+<i>59</i>&nbsp;import java.util.Vector;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;/**
+<i>62</i>&nbsp; * @author Jacek Ambroziak
+<i>63</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>64</i>&nbsp; * @author Morten Jorgensen
+<i>65</i>&nbsp; * @author Erwin Bolwidt &lt;ejb@klomp.org&gt;
+<i>66</i>&nbsp; * @author Todd Miller
+<i>67</i>&nbsp; */
+<i>68</i>&nbsp;class FunctionCall extends Expression {
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    // Name of this function call
+<i>71</i>&nbsp;    private QName  _fname;
+<i>72</i>&nbsp;    // Arguments to this function call (might not be any)
+<i>73</i>&nbsp;    private final Vector _arguments;
+<i>74</i>&nbsp;    // Empty argument list, used for certain functions
+<b class="nc"><i>75</i>&nbsp;    private final static Vector EMPTY_ARG_LIST = new Vector(0);</b>
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    // Valid namespaces for Java function-call extension
+<i>78</i>&nbsp;    protected final static String EXT_XSLTC =
+<i>79</i>&nbsp;        TRANSLET_URI;
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    protected final static String JAVA_EXT_XSLTC =
+<i>82</i>&nbsp;        EXT_XSLTC + &quot;/java&quot;;
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    protected final static String EXT_XALAN =
+<i>85</i>&nbsp;        &quot;http://xml.apache.org/xalan&quot;;
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    protected final static String JAVA_EXT_XALAN =
+<i>88</i>&nbsp;        &quot;http://xml.apache.org/xalan/java&quot;;
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    protected final static String JAVA_EXT_XALAN_OLD =
+<i>91</i>&nbsp;        &quot;http://xml.apache.org/xslt/java&quot;;
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    protected final static String EXSLT_COMMON =
+<i>94</i>&nbsp;        &quot;http://exslt.org/common&quot;;
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    protected final static String EXSLT_MATH =
+<i>97</i>&nbsp;        &quot;http://exslt.org/math&quot;;
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    protected final static String EXSLT_SETS =
+<i>100</i>&nbsp;        &quot;http://exslt.org/sets&quot;;
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;    protected final static String EXSLT_DATETIME =
+<i>103</i>&nbsp;        &quot;http://exslt.org/dates-and-times&quot;;
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;    protected final static String EXSLT_STRINGS =
+<i>106</i>&nbsp;        &quot;http://exslt.org/strings&quot;;
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;    protected final static String XALAN_CLASSPACKAGE_NAMESPACE =
+<i>109</i>&nbsp;        &quot;xalan://&quot;;
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;    // Namespace format constants
+<i>112</i>&nbsp;    protected final static int NAMESPACE_FORMAT_JAVA = 0;
+<i>113</i>&nbsp;    protected final static int NAMESPACE_FORMAT_CLASS = 1;
+<i>114</i>&nbsp;    protected final static int NAMESPACE_FORMAT_PACKAGE = 2;
+<i>115</i>&nbsp;    protected final static int NAMESPACE_FORMAT_CLASS_OR_PACKAGE = 3;
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    // Namespace format
+<b class="nc"><i>118</i>&nbsp;    private int _namespace_format = NAMESPACE_FORMAT_JAVA;</b>
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    /**
+<i>121</i>&nbsp;     * Stores reference to object for non-static Java calls
+<i>122</i>&nbsp;     */
+<b class="nc"><i>123</i>&nbsp;    Expression _thisArgument = null;</b>
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    // External Java function&#39;s class/method/signature
+<i>126</i>&nbsp;    private String      _className;
+<i>127</i>&nbsp;    private Class       _clazz;
+<i>128</i>&nbsp;    private Method      _chosenMethod;
+<i>129</i>&nbsp;    private Constructor _chosenConstructor;
+<i>130</i>&nbsp;    private MethodType  _chosenMethodType;
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;    // Encapsulates all unsupported external function calls
+<i>133</i>&nbsp;    private boolean    unresolvedExternal;
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;    // If FunctionCall is a external java constructor
+<b class="nc"><i>136</i>&nbsp;    private boolean     _isExtConstructor = false;</b>
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;    // If the java method is static
+<b class="nc"><i>139</i>&nbsp;    private boolean       _isStatic = false;</b>
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;    // Legal conversions between internal and Java types.
+<b class="nc"><i>142</i>&nbsp;    private static final MultiHashtable&lt;Type, JavaType&gt; _internal2Java = new MultiHashtable&lt;&gt;();</b>
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;    // Legal conversions between Java and internal types.
+<i>145</i>&nbsp;    private static final Map&lt;Class&lt;?&gt;, Type&gt; JAVA2INTERNAL;
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;    // The mappings between EXSLT extension namespaces and implementation classes
+<i>148</i>&nbsp;    private static final Map&lt;String, String&gt; EXTENSIONNAMESPACE;
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;    // Extension functions that are implemented in BasisLibrary
+<i>151</i>&nbsp;    private static final Map&lt;String, String&gt; EXTENSIONFUNCTION;
+<i>152</i>&nbsp;    /**
+<i>153</i>&nbsp;     * inner class to used in internal2Java mappings, contains
+<i>154</i>&nbsp;     * the Java type and the distance between the internal type and
+<i>155</i>&nbsp;     * the Java type.
+<i>156</i>&nbsp;     */
+<i>157</i>&nbsp;    static class JavaType {
+<i>158</i>&nbsp;        public Class&lt;?&gt;  type;
+<i>159</i>&nbsp;        public int distance;
+<i>160</i>&nbsp;
+<b class="nc"><i>161</i>&nbsp;        public JavaType(Class type, int distance){</b>
+<b class="nc"><i>162</i>&nbsp;            this.type = type;</b>
+<b class="nc"><i>163</i>&nbsp;            this.distance = distance;</b>
+<i>164</i>&nbsp;        }
+<i>165</i>&nbsp;
+<i>166</i>&nbsp;        @Override
+<i>167</i>&nbsp;        public int hashCode() {
+<b class="nc"><i>168</i>&nbsp;            return Objects.hashCode(this.type);</b>
+<i>169</i>&nbsp;        }
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;        @Override
+<i>172</i>&nbsp;        public boolean equals(Object query) {
+<b class="nc"><i>173</i>&nbsp;            if (query == null) {</b>
+<b class="nc"><i>174</i>&nbsp;                return false;</b>
+<i>175</i>&nbsp;            }
+<b class="nc"><i>176</i>&nbsp;            if (query.getClass().isAssignableFrom(JavaType.class)) {</b>
+<b class="nc"><i>177</i>&nbsp;                return ((JavaType)query).type.equals(type);</b>
+<i>178</i>&nbsp;            } else {
+<b class="nc"><i>179</i>&nbsp;                return query.equals(type);</b>
+<i>180</i>&nbsp;            }
+<i>181</i>&nbsp;        }
+<i>182</i>&nbsp;    }
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;    /**
+<i>185</i>&nbsp;     * Defines 2 conversion tables:
+<i>186</i>&nbsp;     * 1. From internal types to Java types and
+<i>187</i>&nbsp;     * 2. From Java types to internal types.
+<i>188</i>&nbsp;     * These two tables are used when calling external (Java) functions.
+<i>189</i>&nbsp;     */
+<i>190</i>&nbsp;    static {
+<i>191</i>&nbsp;        final Class&lt;?&gt; nodeClass, nodeListClass;
+<i>192</i>&nbsp;        try {
+<b class="nc"><i>193</i>&nbsp;            nodeClass     = Class.forName(&quot;org.w3c.dom.Node&quot;);</b>
+<b class="nc"><i>194</i>&nbsp;            nodeListClass = Class.forName(&quot;org.w3c.dom.NodeList&quot;);</b>
+<i>195</i>&nbsp;        }
+<b class="nc"><i>196</i>&nbsp;        catch (ClassNotFoundException e) {</b>
+<b class="nc"><i>197</i>&nbsp;            ErrorMsg err = new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR,&quot;org.w3c.dom.Node or NodeList&quot;);</b>
+<b class="nc"><i>198</i>&nbsp;            throw new ExceptionInInitializerError(err.toString());</b>
+<b class="nc"><i>199</i>&nbsp;        }</b>
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;        // -- Internal to Java --------------------------------------------
+<i>202</i>&nbsp;
+<i>203</i>&nbsp;        // Type.Boolean -&gt; { boolean(0), Boolean(1), Object(2) }
+<b class="nc"><i>204</i>&nbsp;        _internal2Java.put(Type.Boolean, new JavaType(Boolean.TYPE, 0));</b>
+<b class="nc"><i>205</i>&nbsp;        _internal2Java.put(Type.Boolean, new JavaType(Boolean.class, 1));</b>
+<b class="nc"><i>206</i>&nbsp;        _internal2Java.put(Type.Boolean, new JavaType(Object.class, 2));</b>
+<i>207</i>&nbsp;
+<i>208</i>&nbsp;        // Type.Real -&gt; { double(0), Double(1), float(2), long(3), int(4),
+<i>209</i>&nbsp;        //                short(5), byte(6), char(7), Object(8) }
+<b class="nc"><i>210</i>&nbsp;        _internal2Java.put(Type.Real, new JavaType(Double.TYPE, 0));</b>
+<b class="nc"><i>211</i>&nbsp;        _internal2Java.put(Type.Real, new JavaType(Double.class, 1));</b>
+<b class="nc"><i>212</i>&nbsp;        _internal2Java.put(Type.Real, new JavaType(Float.TYPE, 2));</b>
+<b class="nc"><i>213</i>&nbsp;        _internal2Java.put(Type.Real, new JavaType(Long.TYPE, 3));</b>
+<b class="nc"><i>214</i>&nbsp;        _internal2Java.put(Type.Real, new JavaType(Integer.TYPE, 4));</b>
+<b class="nc"><i>215</i>&nbsp;        _internal2Java.put(Type.Real, new JavaType(Short.TYPE, 5));</b>
+<b class="nc"><i>216</i>&nbsp;        _internal2Java.put(Type.Real, new JavaType(Byte.TYPE, 6));</b>
+<b class="nc"><i>217</i>&nbsp;        _internal2Java.put(Type.Real, new JavaType(Character.TYPE, 7));</b>
+<b class="nc"><i>218</i>&nbsp;        _internal2Java.put(Type.Real, new JavaType(Object.class, 8));</b>
+<i>219</i>&nbsp;
+<i>220</i>&nbsp;        // Type.Int must be the same as Type.Real
+<b class="nc"><i>221</i>&nbsp;        _internal2Java.put(Type.Int, new JavaType(Double.TYPE, 0));</b>
+<b class="nc"><i>222</i>&nbsp;        _internal2Java.put(Type.Int, new JavaType(Double.class, 1));</b>
+<b class="nc"><i>223</i>&nbsp;        _internal2Java.put(Type.Int, new JavaType(Float.TYPE, 2));</b>
+<b class="nc"><i>224</i>&nbsp;        _internal2Java.put(Type.Int, new JavaType(Long.TYPE, 3));</b>
+<b class="nc"><i>225</i>&nbsp;        _internal2Java.put(Type.Int, new JavaType(Integer.TYPE, 4));</b>
+<b class="nc"><i>226</i>&nbsp;        _internal2Java.put(Type.Int, new JavaType(Short.TYPE, 5));</b>
+<b class="nc"><i>227</i>&nbsp;        _internal2Java.put(Type.Int, new JavaType(Byte.TYPE, 6));</b>
+<b class="nc"><i>228</i>&nbsp;        _internal2Java.put(Type.Int, new JavaType(Character.TYPE, 7));</b>
+<b class="nc"><i>229</i>&nbsp;        _internal2Java.put(Type.Int, new JavaType(Object.class, 8));</b>
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;        // Type.String -&gt; { String(0), Object(1) }
+<b class="nc"><i>232</i>&nbsp;        _internal2Java.put(Type.String, new JavaType(String.class, 0));</b>
+<b class="nc"><i>233</i>&nbsp;        _internal2Java.put(Type.String, new JavaType(Object.class, 1));</b>
+<i>234</i>&nbsp;
+<i>235</i>&nbsp;        // Type.NodeSet -&gt; { NodeList(0), Node(1), Object(2), String(3) }
+<b class="nc"><i>236</i>&nbsp;        _internal2Java.put(Type.NodeSet, new JavaType(nodeListClass, 0));</b>
+<b class="nc"><i>237</i>&nbsp;        _internal2Java.put(Type.NodeSet, new JavaType(nodeClass, 1));</b>
+<b class="nc"><i>238</i>&nbsp;        _internal2Java.put(Type.NodeSet, new JavaType(Object.class, 2));</b>
+<b class="nc"><i>239</i>&nbsp;        _internal2Java.put(Type.NodeSet, new JavaType(String.class, 3));</b>
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;        // Type.Node -&gt; { Node(0), NodeList(1), Object(2), String(3) }
+<b class="nc"><i>242</i>&nbsp;        _internal2Java.put(Type.Node, new JavaType(nodeListClass, 0));</b>
+<b class="nc"><i>243</i>&nbsp;        _internal2Java.put(Type.Node, new JavaType(nodeClass, 1));</b>
+<b class="nc"><i>244</i>&nbsp;        _internal2Java.put(Type.Node, new JavaType(Object.class, 2));</b>
+<b class="nc"><i>245</i>&nbsp;        _internal2Java.put(Type.Node, new JavaType(String.class, 3));</b>
+<i>246</i>&nbsp;
+<i>247</i>&nbsp;        // Type.ResultTree -&gt; { NodeList(0), Node(1), Object(2), String(3) }
+<b class="nc"><i>248</i>&nbsp;        _internal2Java.put(Type.ResultTree, new JavaType(nodeListClass, 0));</b>
+<b class="nc"><i>249</i>&nbsp;        _internal2Java.put(Type.ResultTree, new JavaType(nodeClass, 1));</b>
+<b class="nc"><i>250</i>&nbsp;        _internal2Java.put(Type.ResultTree, new JavaType(Object.class, 2));</b>
+<b class="nc"><i>251</i>&nbsp;        _internal2Java.put(Type.ResultTree, new JavaType(String.class, 3));</b>
+<i>252</i>&nbsp;
+<b class="nc"><i>253</i>&nbsp;        _internal2Java.put(Type.Reference, new JavaType(Object.class, 0));</b>
+<i>254</i>&nbsp;
+<b class="nc"><i>255</i>&nbsp;        _internal2Java.makeUnmodifiable();</b>
+<i>256</i>&nbsp;
+<b class="nc"><i>257</i>&nbsp;        Map&lt;Class&lt;?&gt;, Type&gt; java2Internal = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>258</i>&nbsp;        Map&lt;String, String&gt; extensionNamespaceTable = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>259</i>&nbsp;        Map&lt;String, String&gt; extensionFunctionTable = new HashMap&lt;&gt;();</b>
+<i>260</i>&nbsp;
+<i>261</i>&nbsp;        // Possible conversions between Java and internal types
+<b class="nc"><i>262</i>&nbsp;        java2Internal.put(Boolean.TYPE, Type.Boolean);</b>
+<b class="nc"><i>263</i>&nbsp;        java2Internal.put(Void.TYPE, Type.Void);</b>
+<b class="nc"><i>264</i>&nbsp;        java2Internal.put(Character.TYPE, Type.Real);</b>
+<b class="nc"><i>265</i>&nbsp;        java2Internal.put(Byte.TYPE, Type.Real);</b>
+<b class="nc"><i>266</i>&nbsp;        java2Internal.put(Short.TYPE, Type.Real);</b>
+<b class="nc"><i>267</i>&nbsp;        java2Internal.put(Integer.TYPE, Type.Real);</b>
+<b class="nc"><i>268</i>&nbsp;        java2Internal.put(Long.TYPE, Type.Real);</b>
+<b class="nc"><i>269</i>&nbsp;        java2Internal.put(Float.TYPE, Type.Real);</b>
+<b class="nc"><i>270</i>&nbsp;        java2Internal.put(Double.TYPE, Type.Real);</b>
+<i>271</i>&nbsp;
+<b class="nc"><i>272</i>&nbsp;        java2Internal.put(String.class, Type.String);</b>
+<i>273</i>&nbsp;
+<b class="nc"><i>274</i>&nbsp;        java2Internal.put(Object.class, Type.Reference);</b>
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;        // Conversions from org.w3c.dom.Node/NodeList to internal NodeSet
+<b class="nc"><i>277</i>&nbsp;        java2Internal.put(nodeListClass, Type.NodeSet);</b>
+<b class="nc"><i>278</i>&nbsp;        java2Internal.put(nodeClass, Type.NodeSet);</b>
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;        // Initialize the extension namespace table
+<b class="nc"><i>281</i>&nbsp;        extensionNamespaceTable.put(EXT_XALAN, &quot;com.sun.org.apache.xalan.internal.lib.Extensions&quot;);</b>
+<b class="nc"><i>282</i>&nbsp;        extensionNamespaceTable.put(EXSLT_COMMON, &quot;com.sun.org.apache.xalan.internal.lib.ExsltCommon&quot;);</b>
+<b class="nc"><i>283</i>&nbsp;        extensionNamespaceTable.put(EXSLT_MATH, &quot;com.sun.org.apache.xalan.internal.lib.ExsltMath&quot;);</b>
+<b class="nc"><i>284</i>&nbsp;        extensionNamespaceTable.put(EXSLT_SETS, &quot;com.sun.org.apache.xalan.internal.lib.ExsltSets&quot;);</b>
+<b class="nc"><i>285</i>&nbsp;        extensionNamespaceTable.put(EXSLT_DATETIME, &quot;com.sun.org.apache.xalan.internal.lib.ExsltDatetime&quot;);</b>
+<b class="nc"><i>286</i>&nbsp;        extensionNamespaceTable.put(EXSLT_STRINGS, &quot;com.sun.org.apache.xalan.internal.lib.ExsltStrings&quot;);</b>
+<i>287</i>&nbsp;
+<i>288</i>&nbsp;        // Initialize the extension function table
+<b class="nc"><i>289</i>&nbsp;        extensionFunctionTable.put(EXSLT_COMMON + &quot;:nodeSet&quot;, &quot;nodeset&quot;);</b>
+<b class="nc"><i>290</i>&nbsp;        extensionFunctionTable.put(EXSLT_COMMON + &quot;:objectType&quot;, &quot;objectType&quot;);</b>
+<b class="nc"><i>291</i>&nbsp;        extensionFunctionTable.put(EXT_XALAN + &quot;:nodeset&quot;, &quot;nodeset&quot;);</b>
+<i>292</i>&nbsp;
+<b class="nc"><i>293</i>&nbsp;        JAVA2INTERNAL = Collections.unmodifiableMap(java2Internal);</b>
+<b class="nc"><i>294</i>&nbsp;        EXTENSIONNAMESPACE = Collections.unmodifiableMap(extensionNamespaceTable);</b>
+<b class="nc"><i>295</i>&nbsp;        EXTENSIONFUNCTION = Collections.unmodifiableMap(extensionFunctionTable);</b>
+<i>296</i>&nbsp;
+<i>297</i>&nbsp;    }
+<i>298</i>&nbsp;
+<b class="nc"><i>299</i>&nbsp;    public FunctionCall(QName fname, Vector arguments) {</b>
+<b class="nc"><i>300</i>&nbsp;        _fname = fname;</b>
+<b class="nc"><i>301</i>&nbsp;        _arguments = arguments;</b>
+<b class="nc"><i>302</i>&nbsp;        _type = null;</b>
+<i>303</i>&nbsp;    }
+<i>304</i>&nbsp;
+<i>305</i>&nbsp;    public FunctionCall(QName fname) {
+<b class="nc"><i>306</i>&nbsp;        this(fname, EMPTY_ARG_LIST);</b>
+<i>307</i>&nbsp;    }
+<i>308</i>&nbsp;
+<i>309</i>&nbsp;    public String getName() {
+<b class="nc"><i>310</i>&nbsp;        return(_fname.toString());</b>
+<i>311</i>&nbsp;    }
+<i>312</i>&nbsp;
+<i>313</i>&nbsp;    @Override
+<i>314</i>&nbsp;    public void setParser(Parser parser) {
+<b class="nc"><i>315</i>&nbsp;        super.setParser(parser);</b>
+<b class="nc"><i>316</i>&nbsp;        if (_arguments != null) {</b>
+<b class="nc"><i>317</i>&nbsp;            final int n = _arguments.size();</b>
+<b class="nc"><i>318</i>&nbsp;            for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>319</i>&nbsp;                final Expression exp = (Expression)_arguments.elementAt(i);</b>
+<b class="nc"><i>320</i>&nbsp;                exp.setParser(parser);</b>
+<b class="nc"><i>321</i>&nbsp;                exp.setParent(this);</b>
+<i>322</i>&nbsp;            }
+<i>323</i>&nbsp;        }
+<i>324</i>&nbsp;    }
+<i>325</i>&nbsp;
+<i>326</i>&nbsp;    public String getClassNameFromUri(String uri)
+<i>327</i>&nbsp;    {
+<b class="nc"><i>328</i>&nbsp;        String className = EXTENSIONNAMESPACE.get(uri);</b>
+<i>329</i>&nbsp;
+<b class="nc"><i>330</i>&nbsp;        if (className != null)</b>
+<b class="nc"><i>331</i>&nbsp;            return className;</b>
+<i>332</i>&nbsp;        else {
+<b class="nc"><i>333</i>&nbsp;            if (uri.startsWith(JAVA_EXT_XSLTC)) {</b>
+<b class="nc"><i>334</i>&nbsp;                int length = JAVA_EXT_XSLTC.length() + 1;</b>
+<b class="nc"><i>335</i>&nbsp;                return (uri.length() &gt; length) ? uri.substring(length) : EMPTYSTRING;</b>
+<i>336</i>&nbsp;            }
+<b class="nc"><i>337</i>&nbsp;            else if (uri.startsWith(JAVA_EXT_XALAN)) {</b>
+<b class="nc"><i>338</i>&nbsp;                int length = JAVA_EXT_XALAN.length() + 1;</b>
+<b class="nc"><i>339</i>&nbsp;                return (uri.length() &gt; length) ? uri.substring(length) : EMPTYSTRING;</b>
+<i>340</i>&nbsp;            }
+<b class="nc"><i>341</i>&nbsp;            else if (uri.startsWith(JAVA_EXT_XALAN_OLD)) {</b>
+<b class="nc"><i>342</i>&nbsp;                int length = JAVA_EXT_XALAN_OLD.length() + 1;</b>
+<b class="nc"><i>343</i>&nbsp;                return (uri.length() &gt; length) ? uri.substring(length) : EMPTYSTRING;</b>
+<i>344</i>&nbsp;            }
+<i>345</i>&nbsp;            else {
+<b class="nc"><i>346</i>&nbsp;                int index = uri.lastIndexOf(&#39;/&#39;);</b>
+<b class="nc"><i>347</i>&nbsp;                return (index &gt; 0) ? uri.substring(index+1) : uri;</b>
+<i>348</i>&nbsp;            }
+<i>349</i>&nbsp;        }
+<i>350</i>&nbsp;    }
+<i>351</i>&nbsp;
+<i>352</i>&nbsp;    /**
+<i>353</i>&nbsp;     * Type check a function call. Since different type conversions apply,
+<i>354</i>&nbsp;     * type checking is different for standard and external (Java) functions.
+<i>355</i>&nbsp;     */
+<i>356</i>&nbsp;    @Override
+<i>357</i>&nbsp;    public Type typeCheck(SymbolTable stable)
+<i>358</i>&nbsp;        throws TypeCheckError
+<i>359</i>&nbsp;    {
+<b class="nc"><i>360</i>&nbsp;        if (_type != null) return _type;</b>
+<i>361</i>&nbsp;
+<b class="nc"><i>362</i>&nbsp;        final String namespace = _fname.getNamespace();</b>
+<b class="nc"><i>363</i>&nbsp;        String local = _fname.getLocalPart();</b>
+<i>364</i>&nbsp;
+<b class="nc"><i>365</i>&nbsp;        if (isExtension()) {</b>
+<b class="nc"><i>366</i>&nbsp;            _fname = new QName(null, null, local);</b>
+<b class="nc"><i>367</i>&nbsp;            return typeCheckStandard(stable);</b>
+<i>368</i>&nbsp;        }
+<b class="nc"><i>369</i>&nbsp;        else if (isStandard()) {</b>
+<b class="nc"><i>370</i>&nbsp;            return typeCheckStandard(stable);</b>
+<i>371</i>&nbsp;        }
+<i>372</i>&nbsp;        // Handle extension functions (they all have a namespace)
+<i>373</i>&nbsp;        else {
+<i>374</i>&nbsp;            try {
+<b class="nc"><i>375</i>&nbsp;                _className = getClassNameFromUri(namespace);</b>
+<i>376</i>&nbsp;
+<b class="nc"><i>377</i>&nbsp;                final int pos = local.lastIndexOf(&#39;.&#39;);</b>
+<b class="nc"><i>378</i>&nbsp;                if (pos &gt; 0) {</b>
+<b class="nc"><i>379</i>&nbsp;                    _isStatic = true;</b>
+<b class="nc"><i>380</i>&nbsp;                    if (_className != null &amp;&amp; _className.length() &gt; 0) {</b>
+<b class="nc"><i>381</i>&nbsp;                        _namespace_format = NAMESPACE_FORMAT_PACKAGE;</b>
+<b class="nc"><i>382</i>&nbsp;                        _className = _className + &quot;.&quot; + local.substring(0, pos);</b>
+<i>383</i>&nbsp;                    }
+<i>384</i>&nbsp;                    else {
+<b class="nc"><i>385</i>&nbsp;                        _namespace_format = NAMESPACE_FORMAT_JAVA;</b>
+<b class="nc"><i>386</i>&nbsp;                        _className = local.substring(0, pos);</b>
+<i>387</i>&nbsp;                    }
+<i>388</i>&nbsp;
+<b class="nc"><i>389</i>&nbsp;                    _fname = new QName(namespace, null, local.substring(pos + 1));</b>
+<i>390</i>&nbsp;                }
+<i>391</i>&nbsp;                else {
+<b class="nc"><i>392</i>&nbsp;                    if (_className != null &amp;&amp; _className.length() &gt; 0) {</b>
+<i>393</i>&nbsp;                        try {
+<b class="nc"><i>394</i>&nbsp;                            _clazz = ObjectFactory.findProviderClass(_className, true);</b>
+<b class="nc"><i>395</i>&nbsp;                            _namespace_format = NAMESPACE_FORMAT_CLASS;</b>
+<i>396</i>&nbsp;                        }
+<b class="nc"><i>397</i>&nbsp;                        catch (ClassNotFoundException e) {</b>
+<b class="nc"><i>398</i>&nbsp;                            _namespace_format = NAMESPACE_FORMAT_PACKAGE;</b>
+<b class="nc"><i>399</i>&nbsp;                        }</b>
+<i>400</i>&nbsp;                    }
+<i>401</i>&nbsp;                    else
+<b class="nc"><i>402</i>&nbsp;                        _namespace_format = NAMESPACE_FORMAT_JAVA;</b>
+<i>403</i>&nbsp;
+<b class="nc"><i>404</i>&nbsp;                    if (local.indexOf(&#39;-&#39;) &gt; 0) {</b>
+<b class="nc"><i>405</i>&nbsp;                        local = replaceDash(local);</b>
+<i>406</i>&nbsp;                    }
+<i>407</i>&nbsp;
+<b class="nc"><i>408</i>&nbsp;                    String extFunction = EXTENSIONFUNCTION.get(namespace + &quot;:&quot; + local);</b>
+<b class="nc"><i>409</i>&nbsp;                    if (extFunction != null) {</b>
+<b class="nc"><i>410</i>&nbsp;                        _fname = new QName(null, null, extFunction);</b>
+<b class="nc"><i>411</i>&nbsp;                        return typeCheckStandard(stable);</b>
+<i>412</i>&nbsp;                    }
+<i>413</i>&nbsp;                    else
+<b class="nc"><i>414</i>&nbsp;                        _fname = new QName(namespace, null, local);</b>
+<i>415</i>&nbsp;                }
+<i>416</i>&nbsp;
+<b class="nc"><i>417</i>&nbsp;                return typeCheckExternal(stable);</b>
+<i>418</i>&nbsp;            }
+<b class="nc"><i>419</i>&nbsp;            catch (TypeCheckError e) {</b>
+<b class="nc"><i>420</i>&nbsp;                ErrorMsg errorMsg = e.getErrorMsg();</b>
+<b class="nc"><i>421</i>&nbsp;                if (errorMsg == null) {</b>
+<b class="nc"><i>422</i>&nbsp;                    final String name = _fname.getLocalPart();</b>
+<b class="nc"><i>423</i>&nbsp;                    errorMsg = new ErrorMsg(ErrorMsg.METHOD_NOT_FOUND_ERR, name);</b>
+<i>424</i>&nbsp;                }
+<b class="nc"><i>425</i>&nbsp;                getParser().reportError(ERROR, errorMsg);</b>
+<b class="nc"><i>426</i>&nbsp;                return _type = Type.Void;</b>
+<i>427</i>&nbsp;            }
+<i>428</i>&nbsp;          }
+<i>429</i>&nbsp;    }
+<i>430</i>&nbsp;
+<i>431</i>&nbsp;    /**
+<i>432</i>&nbsp;     * Type check a call to a standard function. Insert CastExprs when needed.
+<i>433</i>&nbsp;     * If as a result of the insertion of a CastExpr a type check error is
+<i>434</i>&nbsp;     * thrown, then catch it and re-throw it with a new &quot;this&quot;.
+<i>435</i>&nbsp;     */
+<i>436</i>&nbsp;    public Type typeCheckStandard(SymbolTable stable) throws TypeCheckError {
+<b class="nc"><i>437</i>&nbsp;        _fname.clearNamespace();        // HACK!!!</b>
+<i>438</i>&nbsp;
+<b class="nc"><i>439</i>&nbsp;        final int n = _arguments.size();</b>
+<b class="nc"><i>440</i>&nbsp;        final Vector argsType = typeCheckArgs(stable);</b>
+<b class="nc"><i>441</i>&nbsp;        final MethodType args = new MethodType(Type.Void, argsType);</b>
+<b class="nc"><i>442</i>&nbsp;        final MethodType ptype =</b>
+<b class="nc"><i>443</i>&nbsp;            lookupPrimop(stable, _fname.getLocalPart(), args);</b>
+<i>444</i>&nbsp;
+<b class="nc"><i>445</i>&nbsp;        if (ptype != null) {</b>
+<b class="nc"><i>446</i>&nbsp;            for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>447</i>&nbsp;                final Type argType = (Type) ptype.argsType().elementAt(i);</b>
+<b class="nc"><i>448</i>&nbsp;                final Expression exp = (Expression)_arguments.elementAt(i);</b>
+<b class="nc"><i>449</i>&nbsp;                if (!argType.identicalTo(exp.getType())) {</b>
+<i>450</i>&nbsp;                    try {
+<b class="nc"><i>451</i>&nbsp;                        _arguments.setElementAt(new CastExpr(exp, argType), i);</b>
+<i>452</i>&nbsp;                    }
+<b class="nc"><i>453</i>&nbsp;                    catch (TypeCheckError e) {</b>
+<b class="nc"><i>454</i>&nbsp;                        throw new TypeCheckError(this); // invalid conversion</b>
+<b class="nc"><i>455</i>&nbsp;                    }</b>
+<i>456</i>&nbsp;                }
+<i>457</i>&nbsp;            }
+<b class="nc"><i>458</i>&nbsp;            _chosenMethodType = ptype;</b>
+<b class="nc"><i>459</i>&nbsp;            return _type = ptype.resultType();</b>
+<i>460</i>&nbsp;        }
+<b class="nc"><i>461</i>&nbsp;        throw new TypeCheckError(this);</b>
+<i>462</i>&nbsp;    }
+<i>463</i>&nbsp;
+<i>464</i>&nbsp;
+<i>465</i>&nbsp;
+<i>466</i>&nbsp;    public Type typeCheckConstructor(SymbolTable stable) throws TypeCheckError{
+<b class="nc"><i>467</i>&nbsp;        final Vector constructors = findConstructors();</b>
+<b class="nc"><i>468</i>&nbsp;        if (constructors == null) {</b>
+<i>469</i>&nbsp;            // Constructor not found in this class
+<b class="nc"><i>470</i>&nbsp;            throw new TypeCheckError(ErrorMsg.CONSTRUCTOR_NOT_FOUND,</b>
+<i>471</i>&nbsp;                _className);
+<i>472</i>&nbsp;
+<i>473</i>&nbsp;        }
+<i>474</i>&nbsp;
+<b class="nc"><i>475</i>&nbsp;        final int nConstructors = constructors.size();</b>
+<b class="nc"><i>476</i>&nbsp;        final int nArgs = _arguments.size();</b>
+<b class="nc"><i>477</i>&nbsp;        final Vector argsType = typeCheckArgs(stable);</b>
+<i>478</i>&nbsp;
+<i>479</i>&nbsp;        // Try all constructors
+<b class="nc"><i>480</i>&nbsp;        int bestConstrDistance = Integer.MAX_VALUE;</b>
+<b class="nc"><i>481</i>&nbsp;        _type = null;                   // reset</b>
+<b class="nc"><i>482</i>&nbsp;        for (int j, i = 0; i &lt; nConstructors; i++) {</b>
+<i>483</i>&nbsp;            // Check if all parameters to this constructor can be converted
+<b class="nc"><i>484</i>&nbsp;            final Constructor constructor =</b>
+<b class="nc"><i>485</i>&nbsp;                (Constructor)constructors.elementAt(i);</b>
+<b class="nc"><i>486</i>&nbsp;            final Class[] paramTypes = constructor.getParameterTypes();</b>
+<i>487</i>&nbsp;
+<i>488</i>&nbsp;            Class&lt;?&gt; extType;
+<b class="nc"><i>489</i>&nbsp;            int currConstrDistance = 0;</b>
+<b class="nc"><i>490</i>&nbsp;            for (j = 0; j &lt; nArgs; j++) {</b>
+<i>491</i>&nbsp;                // Convert from internal (translet) type to external (Java) type
+<b class="nc"><i>492</i>&nbsp;                extType = paramTypes[j];</b>
+<b class="nc"><i>493</i>&nbsp;                final Type intType = (Type)argsType.elementAt(j);</b>
+<b class="nc"><i>494</i>&nbsp;                JavaType match = _internal2Java.maps(intType, new JavaType(extType, 0));</b>
+<b class="nc"><i>495</i>&nbsp;                if (match != null) {</b>
+<b class="nc"><i>496</i>&nbsp;                    currConstrDistance += match.distance;</b>
+<i>497</i>&nbsp;                }
+<b class="nc"><i>498</i>&nbsp;                else if (intType instanceof ObjectType) {</b>
+<b class="nc"><i>499</i>&nbsp;                    ObjectType objectType = (ObjectType)intType;</b>
+<b class="nc"><i>500</i>&nbsp;                    if (objectType.getJavaClass() == extType)</b>
+<b class="nc"><i>501</i>&nbsp;                        continue;</b>
+<b class="nc"><i>502</i>&nbsp;                    else if (extType.isAssignableFrom(objectType.getJavaClass()))</b>
+<b class="nc"><i>503</i>&nbsp;                        currConstrDistance += 1;</b>
+<i>504</i>&nbsp;                    else {
+<b class="nc"><i>505</i>&nbsp;                        currConstrDistance = Integer.MAX_VALUE;</b>
+<b class="nc"><i>506</i>&nbsp;                        break;</b>
+<i>507</i>&nbsp;                    }
+<b class="nc"><i>508</i>&nbsp;                }</b>
+<i>509</i>&nbsp;                else {
+<i>510</i>&nbsp;                    // no mapping available
+<b class="nc"><i>511</i>&nbsp;                    currConstrDistance = Integer.MAX_VALUE;</b>
+<b class="nc"><i>512</i>&nbsp;                    break;</b>
+<i>513</i>&nbsp;                }
+<i>514</i>&nbsp;            }
+<i>515</i>&nbsp;
+<b class="nc"><i>516</i>&nbsp;            if (j == nArgs &amp;&amp; currConstrDistance &lt; bestConstrDistance ) {</b>
+<b class="nc"><i>517</i>&nbsp;                _chosenConstructor = constructor;</b>
+<b class="nc"><i>518</i>&nbsp;                _isExtConstructor = true;</b>
+<b class="nc"><i>519</i>&nbsp;                bestConstrDistance = currConstrDistance;</b>
+<i>520</i>&nbsp;
+<b class="nc"><i>521</i>&nbsp;                _type = (_clazz != null) ? Type.newObjectType(_clazz)</b>
+<b class="nc"><i>522</i>&nbsp;                    : Type.newObjectType(_className);</b>
+<i>523</i>&nbsp;            }
+<i>524</i>&nbsp;        }
+<i>525</i>&nbsp;
+<b class="nc"><i>526</i>&nbsp;        if (_type != null) {</b>
+<b class="nc"><i>527</i>&nbsp;            return _type;</b>
+<i>528</i>&nbsp;        }
+<i>529</i>&nbsp;
+<b class="nc"><i>530</i>&nbsp;        throw new TypeCheckError(ErrorMsg.ARGUMENT_CONVERSION_ERR, getMethodSignature(argsType));</b>
+<i>531</i>&nbsp;    }
+<i>532</i>&nbsp;
+<i>533</i>&nbsp;
+<i>534</i>&nbsp;    /**
+<i>535</i>&nbsp;     * Type check a call to an external (Java) method.
+<i>536</i>&nbsp;     * The method must be static an public, and a legal type conversion
+<i>537</i>&nbsp;     * must exist for all its arguments and its return type.
+<i>538</i>&nbsp;     * Every method of name &lt;code&gt;_fname&lt;/code&gt; is inspected
+<i>539</i>&nbsp;     * as a possible candidate.
+<i>540</i>&nbsp;     */
+<i>541</i>&nbsp;    public Type typeCheckExternal(SymbolTable stable) throws TypeCheckError {
+<b class="nc"><i>542</i>&nbsp;        int nArgs = _arguments.size();</b>
+<b class="nc"><i>543</i>&nbsp;        final String name = _fname.getLocalPart();</b>
+<i>544</i>&nbsp;
+<i>545</i>&nbsp;        // check if function is a contructor &#39;new&#39;
+<b class="nc"><i>546</i>&nbsp;        if (_fname.getLocalPart().equals(&quot;new&quot;)) {</b>
+<b class="nc"><i>547</i>&nbsp;            return typeCheckConstructor(stable);</b>
+<i>548</i>&nbsp;        }
+<i>549</i>&nbsp;        // check if we are calling an instance method
+<i>550</i>&nbsp;        else {
+<b class="nc"><i>551</i>&nbsp;            boolean hasThisArgument = false;</b>
+<i>552</i>&nbsp;
+<b class="nc"><i>553</i>&nbsp;            if (nArgs == 0)</b>
+<b class="nc"><i>554</i>&nbsp;                _isStatic = true;</b>
+<i>555</i>&nbsp;
+<b class="nc"><i>556</i>&nbsp;            if (!_isStatic) {</b>
+<b class="nc"><i>557</i>&nbsp;                if (_namespace_format == NAMESPACE_FORMAT_JAVA</b>
+<i>558</i>&nbsp;                    || _namespace_format == NAMESPACE_FORMAT_PACKAGE)
+<b class="nc"><i>559</i>&nbsp;                    hasThisArgument = true;</b>
+<i>560</i>&nbsp;
+<b class="nc"><i>561</i>&nbsp;                Expression firstArg = (Expression)_arguments.elementAt(0);</b>
+<b class="nc"><i>562</i>&nbsp;                Type firstArgType = (Type)firstArg.typeCheck(stable);</b>
+<i>563</i>&nbsp;
+<b class="nc"><i>564</i>&nbsp;                if (_namespace_format == NAMESPACE_FORMAT_CLASS</b>
+<i>565</i>&nbsp;                    &amp;&amp; firstArgType instanceof ObjectType
+<i>566</i>&nbsp;                    &amp;&amp; _clazz != null
+<b class="nc"><i>567</i>&nbsp;                    &amp;&amp; _clazz.isAssignableFrom(((ObjectType)firstArgType).getJavaClass()))</b>
+<b class="nc"><i>568</i>&nbsp;                    hasThisArgument = true;</b>
+<i>569</i>&nbsp;
+<b class="nc"><i>570</i>&nbsp;                if (hasThisArgument) {</b>
+<b class="nc"><i>571</i>&nbsp;                    _thisArgument = (Expression) _arguments.elementAt(0);</b>
+<b class="nc"><i>572</i>&nbsp;                    _arguments.remove(0); nArgs--;</b>
+<b class="nc"><i>573</i>&nbsp;                    if (firstArgType instanceof ObjectType) {</b>
+<b class="nc"><i>574</i>&nbsp;                        _className = ((ObjectType) firstArgType).getJavaClassName();</b>
+<i>575</i>&nbsp;                    }
+<i>576</i>&nbsp;                    else
+<b class="nc"><i>577</i>&nbsp;                        throw new TypeCheckError(ErrorMsg.NO_JAVA_FUNCT_THIS_REF, name);</b>
+<i>578</i>&nbsp;                }
+<b class="nc"><i>579</i>&nbsp;            }</b>
+<b class="nc"><i>580</i>&nbsp;            else if (_className.length() == 0) {</b>
+<i>581</i>&nbsp;                /*
+<i>582</i>&nbsp;                 * Warn user if external function could not be resolved.
+<i>583</i>&nbsp;                 * Warning will _NOT_ be issued is the call is properly
+<i>584</i>&nbsp;                 * wrapped in an &lt;xsl:if&gt; or &lt;xsl:when&gt; element. For details
+<i>585</i>&nbsp;                 * see If.parserContents() and When.parserContents()
+<i>586</i>&nbsp;                 */
+<b class="nc"><i>587</i>&nbsp;                final Parser parser = getParser();</b>
+<b class="nc"><i>588</i>&nbsp;                if (parser != null) {</b>
+<b class="nc"><i>589</i>&nbsp;                    reportWarning(this, parser, ErrorMsg.FUNCTION_RESOLVE_ERR,</b>
+<b class="nc"><i>590</i>&nbsp;                                  _fname.toString());</b>
+<i>591</i>&nbsp;                }
+<b class="nc"><i>592</i>&nbsp;                unresolvedExternal = true;</b>
+<b class="nc"><i>593</i>&nbsp;                return _type = Type.Int;        // use &quot;Int&quot; as &quot;unknown&quot;</b>
+<i>594</i>&nbsp;            }
+<i>595</i>&nbsp;        }
+<i>596</i>&nbsp;
+<b class="nc"><i>597</i>&nbsp;        final Vector methods = findMethods();</b>
+<i>598</i>&nbsp;
+<b class="nc"><i>599</i>&nbsp;        if (methods == null) {</b>
+<i>600</i>&nbsp;            // Method not found in this class
+<b class="nc"><i>601</i>&nbsp;            throw new TypeCheckError(ErrorMsg.METHOD_NOT_FOUND_ERR, _className + &quot;.&quot; + name);</b>
+<i>602</i>&nbsp;        }
+<i>603</i>&nbsp;
+<b class="nc"><i>604</i>&nbsp;        Class extType = null;</b>
+<b class="nc"><i>605</i>&nbsp;        final int nMethods = methods.size();</b>
+<b class="nc"><i>606</i>&nbsp;        final Vector argsType = typeCheckArgs(stable);</b>
+<i>607</i>&nbsp;
+<i>608</i>&nbsp;        // Try all methods to identify the best fit
+<b class="nc"><i>609</i>&nbsp;        int bestMethodDistance  = Integer.MAX_VALUE;</b>
+<b class="nc"><i>610</i>&nbsp;        _type = null;                       // reset internal type</b>
+<b class="nc"><i>611</i>&nbsp;        for (int j, i = 0; i &lt; nMethods; i++) {</b>
+<i>612</i>&nbsp;            // Check if all paramteters to this method can be converted
+<b class="nc"><i>613</i>&nbsp;            final Method method = (Method)methods.elementAt(i);</b>
+<b class="nc"><i>614</i>&nbsp;            final Class[] paramTypes = method.getParameterTypes();</b>
+<i>615</i>&nbsp;
+<b class="nc"><i>616</i>&nbsp;            int currMethodDistance = 0;</b>
+<b class="nc"><i>617</i>&nbsp;            for (j = 0; j &lt; nArgs; j++) {</b>
+<i>618</i>&nbsp;                // Convert from internal (translet) type to external (Java) type
+<b class="nc"><i>619</i>&nbsp;                extType = paramTypes[j];</b>
+<b class="nc"><i>620</i>&nbsp;                final Type intType = (Type)argsType.elementAt(j);</b>
+<b class="nc"><i>621</i>&nbsp;                JavaType match = _internal2Java.maps(intType, new JavaType(extType, 0));</b>
+<b class="nc"><i>622</i>&nbsp;                if (match != null) {</b>
+<b class="nc"><i>623</i>&nbsp;                    currMethodDistance += match.distance;</b>
+<i>624</i>&nbsp;                }
+<i>625</i>&nbsp;                else {
+<i>626</i>&nbsp;                    // no mapping available
+<i>627</i>&nbsp;                    //
+<i>628</i>&nbsp;                    // Allow a Reference type to match any external (Java) type at
+<i>629</i>&nbsp;                    // the moment. The real type checking is performed at runtime.
+<b class="nc"><i>630</i>&nbsp;                    if (intType instanceof ReferenceType) {</b>
+<b class="nc"><i>631</i>&nbsp;                       currMethodDistance += 1;</b>
+<i>632</i>&nbsp;                    }
+<b class="nc"><i>633</i>&nbsp;                    else if (intType instanceof ObjectType) {</b>
+<b class="nc"><i>634</i>&nbsp;                        ObjectType object = (ObjectType)intType;</b>
+<b class="nc"><i>635</i>&nbsp;                        if (extType.getName().equals(object.getJavaClassName()))</b>
+<b class="nc"><i>636</i>&nbsp;                            currMethodDistance += 0;</b>
+<b class="nc"><i>637</i>&nbsp;                        else if (extType.isAssignableFrom(object.getJavaClass()))</b>
+<b class="nc"><i>638</i>&nbsp;                            currMethodDistance += 1;</b>
+<i>639</i>&nbsp;                        else {
+<b class="nc"><i>640</i>&nbsp;                            currMethodDistance = Integer.MAX_VALUE;</b>
+<b class="nc"><i>641</i>&nbsp;                            break;</b>
+<i>642</i>&nbsp;                        }
+<b class="nc"><i>643</i>&nbsp;                    }</b>
+<i>644</i>&nbsp;                    else {
+<b class="nc"><i>645</i>&nbsp;                        currMethodDistance = Integer.MAX_VALUE;</b>
+<b class="nc"><i>646</i>&nbsp;                        break;</b>
+<i>647</i>&nbsp;                    }
+<i>648</i>&nbsp;                }
+<i>649</i>&nbsp;            }
+<i>650</i>&nbsp;
+<b class="nc"><i>651</i>&nbsp;            if (j == nArgs) {</b>
+<i>652</i>&nbsp;                  // Check if the return type can be converted
+<b class="nc"><i>653</i>&nbsp;                  extType = method.getReturnType();</b>
+<i>654</i>&nbsp;
+<b class="nc"><i>655</i>&nbsp;                  _type = JAVA2INTERNAL.get(extType);</b>
+<b class="nc"><i>656</i>&nbsp;                  if (_type == null) {</b>
+<b class="nc"><i>657</i>&nbsp;                      _type = Type.newObjectType(extType);</b>
+<i>658</i>&nbsp;                  }
+<i>659</i>&nbsp;
+<i>660</i>&nbsp;                  // Use this method if all parameters &amp; return type match
+<b class="nc"><i>661</i>&nbsp;                  if (_type != null &amp;&amp; currMethodDistance &lt; bestMethodDistance) {</b>
+<b class="nc"><i>662</i>&nbsp;                      _chosenMethod = method;</b>
+<b class="nc"><i>663</i>&nbsp;                      bestMethodDistance = currMethodDistance;</b>
+<i>664</i>&nbsp;                  }
+<i>665</i>&nbsp;            }
+<i>666</i>&nbsp;        }
+<i>667</i>&nbsp;
+<i>668</i>&nbsp;        // It is an error if the chosen method is an instance menthod but we don&#39;t
+<i>669</i>&nbsp;        // have a this argument.
+<b class="nc"><i>670</i>&nbsp;        if (_chosenMethod != null &amp;&amp; _thisArgument == null &amp;&amp;</b>
+<b class="nc"><i>671</i>&nbsp;            !Modifier.isStatic(_chosenMethod.getModifiers())) {</b>
+<b class="nc"><i>672</i>&nbsp;            throw new TypeCheckError(ErrorMsg.NO_JAVA_FUNCT_THIS_REF, getMethodSignature(argsType));</b>
+<i>673</i>&nbsp;        }
+<i>674</i>&nbsp;
+<b class="nc"><i>675</i>&nbsp;        if (_type != null) {</b>
+<b class="nc"><i>676</i>&nbsp;            if (_type == Type.NodeSet) {</b>
+<b class="nc"><i>677</i>&nbsp;                getXSLTC().setMultiDocument(true);</b>
+<i>678</i>&nbsp;            }
+<b class="nc"><i>679</i>&nbsp;            return _type;</b>
+<i>680</i>&nbsp;        }
+<i>681</i>&nbsp;
+<b class="nc"><i>682</i>&nbsp;        throw new TypeCheckError(ErrorMsg.ARGUMENT_CONVERSION_ERR, getMethodSignature(argsType));</b>
+<i>683</i>&nbsp;    }
+<i>684</i>&nbsp;
+<i>685</i>&nbsp;    /**
+<i>686</i>&nbsp;     * Type check the actual arguments of this function call.
+<i>687</i>&nbsp;     */
+<i>688</i>&nbsp;    public Vector typeCheckArgs(SymbolTable stable) throws TypeCheckError {
+<b class="nc"><i>689</i>&nbsp;        final Vector result = new Vector();</b>
+<b class="nc"><i>690</i>&nbsp;        final Enumeration e = _arguments.elements();</b>
+<b class="nc"><i>691</i>&nbsp;        while (e.hasMoreElements()) {</b>
+<b class="nc"><i>692</i>&nbsp;            final Expression exp = (Expression)e.nextElement();</b>
+<b class="nc"><i>693</i>&nbsp;            result.addElement(exp.typeCheck(stable));</b>
+<b class="nc"><i>694</i>&nbsp;        }</b>
+<b class="nc"><i>695</i>&nbsp;        return result;</b>
+<i>696</i>&nbsp;    }
+<i>697</i>&nbsp;
+<i>698</i>&nbsp;    protected final Expression argument(int i) {
+<b class="nc"><i>699</i>&nbsp;        return (Expression)_arguments.elementAt(i);</b>
+<i>700</i>&nbsp;    }
+<i>701</i>&nbsp;
+<i>702</i>&nbsp;    protected final Expression argument() {
+<b class="nc"><i>703</i>&nbsp;        return argument(0);</b>
+<i>704</i>&nbsp;    }
+<i>705</i>&nbsp;
+<i>706</i>&nbsp;    protected final int argumentCount() {
+<b class="nc"><i>707</i>&nbsp;        return _arguments.size();</b>
+<i>708</i>&nbsp;    }
+<i>709</i>&nbsp;
+<i>710</i>&nbsp;    protected final void setArgument(int i, Expression exp) {
+<b class="nc"><i>711</i>&nbsp;        _arguments.setElementAt(exp, i);</b>
+<i>712</i>&nbsp;    }
+<i>713</i>&nbsp;
+<i>714</i>&nbsp;    /**
+<i>715</i>&nbsp;     * Compile the function call and treat as an expression
+<i>716</i>&nbsp;     * Update true/false-lists.
+<i>717</i>&nbsp;     */
+<i>718</i>&nbsp;    @Override
+<i>719</i>&nbsp;    public void translateDesynthesized(ClassGenerator classGen,
+<i>720</i>&nbsp;                                       MethodGenerator methodGen)
+<i>721</i>&nbsp;    {
+<b class="nc"><i>722</i>&nbsp;        Type type = Type.Boolean;</b>
+<b class="nc"><i>723</i>&nbsp;        if (_chosenMethodType != null)</b>
+<b class="nc"><i>724</i>&nbsp;            type = _chosenMethodType.resultType();</b>
+<i>725</i>&nbsp;
+<b class="nc"><i>726</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<b class="nc"><i>727</i>&nbsp;        translate(classGen, methodGen);</b>
+<i>728</i>&nbsp;
+<b class="nc"><i>729</i>&nbsp;        if ((type instanceof BooleanType) || (type instanceof IntType)) {</b>
+<b class="nc"><i>730</i>&nbsp;            _falseList.add(il.append(new IFEQ(null)));</b>
+<i>731</i>&nbsp;        }
+<i>732</i>&nbsp;    }
+<i>733</i>&nbsp;
+<i>734</i>&nbsp;
+<i>735</i>&nbsp;    /**
+<i>736</i>&nbsp;     * Translate a function call. The compiled code will leave the function&#39;s
+<i>737</i>&nbsp;     * return value on the JVM&#39;s stack.
+<i>738</i>&nbsp;     */
+<i>739</i>&nbsp;    @Override
+<i>740</i>&nbsp;    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+<b class="nc"><i>741</i>&nbsp;        final int n = argumentCount();</b>
+<b class="nc"><i>742</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>743</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<b class="nc"><i>744</i>&nbsp;        final boolean isSecureProcessing = classGen.getParser().getXSLTC().isSecureProcessing();</b>
+<b class="nc"><i>745</i>&nbsp;        final boolean isExtensionFunctionEnabled = classGen.getParser().getXSLTC()</b>
+<b class="nc"><i>746</i>&nbsp;                .getFeature(FeatureManager.Feature.ORACLE_ENABLE_EXTENSION_FUNCTION);</b>
+<i>747</i>&nbsp;        int index;
+<i>748</i>&nbsp;
+<i>749</i>&nbsp;        // Translate calls to methods in the BasisLibrary
+<b class="nc"><i>750</i>&nbsp;        if (isStandard() || isExtension()) {</b>
+<b class="nc"><i>751</i>&nbsp;            for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>752</i>&nbsp;                final Expression exp = argument(i);</b>
+<b class="nc"><i>753</i>&nbsp;                exp.translate(classGen, methodGen);</b>
+<b class="nc"><i>754</i>&nbsp;                exp.startIterator(classGen, methodGen);</b>
+<i>755</i>&nbsp;            }
+<i>756</i>&nbsp;
+<i>757</i>&nbsp;            // append &quot;F&quot; to the function&#39;s name
+<b class="nc"><i>758</i>&nbsp;            final String name = _fname.toString().replace(&#39;-&#39;, &#39;_&#39;) + &quot;F&quot;;</b>
+<b class="nc"><i>759</i>&nbsp;            String args = Constants.EMPTYSTRING;</b>
+<i>760</i>&nbsp;
+<i>761</i>&nbsp;            // Special precautions for some method calls
+<b class="nc"><i>762</i>&nbsp;            if (name.equals(&quot;sumF&quot;)) {</b>
+<b class="nc"><i>763</i>&nbsp;                args = DOM_INTF_SIG;</b>
+<b class="nc"><i>764</i>&nbsp;                il.append(methodGen.loadDOM());</b>
+<i>765</i>&nbsp;            }
+<b class="nc"><i>766</i>&nbsp;            else if (name.equals(&quot;normalize_spaceF&quot;)) {</b>
+<b class="nc"><i>767</i>&nbsp;                if (_chosenMethodType.toSignature(args).</b>
+<b class="nc"><i>768</i>&nbsp;                    equals(&quot;()Ljava/lang/String;&quot;)) {</b>
+<b class="nc"><i>769</i>&nbsp;                    args = &quot;I&quot;+DOM_INTF_SIG;</b>
+<b class="nc"><i>770</i>&nbsp;                    il.append(methodGen.loadContextNode());</b>
+<b class="nc"><i>771</i>&nbsp;                    il.append(methodGen.loadDOM());</b>
+<i>772</i>&nbsp;                }
+<i>773</i>&nbsp;            }
+<i>774</i>&nbsp;
+<i>775</i>&nbsp;            // Invoke the method in the basis library
+<b class="nc"><i>776</i>&nbsp;            index = cpg.addMethodref(BASIS_LIBRARY_CLASS, name,</b>
+<b class="nc"><i>777</i>&nbsp;                                     _chosenMethodType.toSignature(args));</b>
+<b class="nc"><i>778</i>&nbsp;            il.append(new INVOKESTATIC(index));</b>
+<b class="nc"><i>779</i>&nbsp;        }</b>
+<i>780</i>&nbsp;        // Add call to BasisLibrary.unresolved_externalF() to generate
+<i>781</i>&nbsp;        // run-time error message for unsupported external functions
+<b class="nc"><i>782</i>&nbsp;        else if (unresolvedExternal) {</b>
+<b class="nc"><i>783</i>&nbsp;            index = cpg.addMethodref(BASIS_LIBRARY_CLASS,</b>
+<i>784</i>&nbsp;                                     &quot;unresolved_externalF&quot;,
+<i>785</i>&nbsp;                                     &quot;(Ljava/lang/String;)V&quot;);
+<b class="nc"><i>786</i>&nbsp;            il.append(new PUSH(cpg, _fname.toString()));</b>
+<b class="nc"><i>787</i>&nbsp;            il.append(new INVOKESTATIC(index));</b>
+<i>788</i>&nbsp;        }
+<b class="nc"><i>789</i>&nbsp;        else if (_isExtConstructor) {</b>
+<b class="nc"><i>790</i>&nbsp;            if (isSecureProcessing &amp;&amp; !isExtensionFunctionEnabled)</b>
+<b class="nc"><i>791</i>&nbsp;                translateUnallowedExtension(cpg, il);</b>
+<i>792</i>&nbsp;
+<b class="nc"><i>793</i>&nbsp;            final String clazz =</b>
+<b class="nc"><i>794</i>&nbsp;                _chosenConstructor.getDeclaringClass().getName();</b>
+<b class="nc"><i>795</i>&nbsp;            Class[] paramTypes = _chosenConstructor.getParameterTypes();</b>
+<b class="nc"><i>796</i>&nbsp;            LocalVariableGen[] paramTemp = new LocalVariableGen[n];</b>
+<i>797</i>&nbsp;
+<i>798</i>&nbsp;            // Backwards branches are prohibited if an uninitialized object is
+<i>799</i>&nbsp;            // on the stack by section 4.9.4 of the JVM Specification, 2nd Ed.
+<i>800</i>&nbsp;            // We don&#39;t know whether this code might contain backwards branches
+<i>801</i>&nbsp;            // so we mustn&#39;t create the new object until after we&#39;ve created
+<i>802</i>&nbsp;            // the suspect arguments to its constructor.  Instead we calculate
+<i>803</i>&nbsp;            // the values of the arguments to the constructor first, store them
+<i>804</i>&nbsp;            // in temporary variables, create the object and reload the
+<i>805</i>&nbsp;            // arguments from the temporaries to avoid the problem.
+<i>806</i>&nbsp;
+<b class="nc"><i>807</i>&nbsp;            for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>808</i>&nbsp;                final Expression exp = argument(i);</b>
+<b class="nc"><i>809</i>&nbsp;                Type expType = exp.getType();</b>
+<b class="nc"><i>810</i>&nbsp;                exp.translate(classGen, methodGen);</b>
+<i>811</i>&nbsp;                // Convert the argument to its Java type
+<b class="nc"><i>812</i>&nbsp;                exp.startIterator(classGen, methodGen);</b>
+<b class="nc"><i>813</i>&nbsp;                expType.translateTo(classGen, methodGen, paramTypes[i]);</b>
+<b class="nc"><i>814</i>&nbsp;                paramTemp[i] =</b>
+<b class="nc"><i>815</i>&nbsp;                    methodGen.addLocalVariable(&quot;function_call_tmp&quot;+i,</b>
+<b class="nc"><i>816</i>&nbsp;                                               expType.toJCType(),</b>
+<i>817</i>&nbsp;                                               null, null);
+<b class="nc"><i>818</i>&nbsp;                paramTemp[i].setStart(</b>
+<b class="nc"><i>819</i>&nbsp;                        il.append(expType.STORE(paramTemp[i].getIndex())));</b>
+<i>820</i>&nbsp;
+<i>821</i>&nbsp;            }
+<i>822</i>&nbsp;
+<b class="nc"><i>823</i>&nbsp;            il.append(new NEW(cpg.addClass(_className)));</b>
+<b class="nc"><i>824</i>&nbsp;            il.append(InstructionConstants.DUP);</b>
+<i>825</i>&nbsp;
+<b class="nc"><i>826</i>&nbsp;            for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>827</i>&nbsp;                final Expression arg = argument(i);</b>
+<b class="nc"><i>828</i>&nbsp;                paramTemp[i].setEnd(</b>
+<b class="nc"><i>829</i>&nbsp;                        il.append(arg.getType().LOAD(paramTemp[i].getIndex())));</b>
+<i>830</i>&nbsp;            }
+<i>831</i>&nbsp;
+<b class="nc"><i>832</i>&nbsp;            final StringBuffer buffer = new StringBuffer();</b>
+<b class="nc"><i>833</i>&nbsp;            buffer.append(&#39;(&#39;);</b>
+<b class="nc"><i>834</i>&nbsp;            for (int i = 0; i &lt; paramTypes.length; i++) {</b>
+<b class="nc"><i>835</i>&nbsp;                buffer.append(getSignature(paramTypes[i]));</b>
+<i>836</i>&nbsp;            }
+<b class="nc"><i>837</i>&nbsp;            buffer.append(&#39;)&#39;);</b>
+<b class="nc"><i>838</i>&nbsp;            buffer.append(&quot;V&quot;);</b>
+<i>839</i>&nbsp;
+<b class="nc"><i>840</i>&nbsp;            index = cpg.addMethodref(clazz,</b>
+<i>841</i>&nbsp;                                     &quot;&lt;init&gt;&quot;,
+<b class="nc"><i>842</i>&nbsp;                                     buffer.toString());</b>
+<b class="nc"><i>843</i>&nbsp;            il.append(new INVOKESPECIAL(index));</b>
+<i>844</i>&nbsp;
+<i>845</i>&nbsp;            // Convert the return type back to our internal type
+<b class="nc"><i>846</i>&nbsp;            (Type.Object).translateFrom(classGen, methodGen,</b>
+<b class="nc"><i>847</i>&nbsp;                                _chosenConstructor.getDeclaringClass());</b>
+<i>848</i>&nbsp;
+<b class="nc"><i>849</i>&nbsp;        }</b>
+<i>850</i>&nbsp;        // Invoke function calls that are handled in separate classes
+<i>851</i>&nbsp;        else {
+<b class="nc"><i>852</i>&nbsp;            if (isSecureProcessing &amp;&amp; !isExtensionFunctionEnabled)</b>
+<b class="nc"><i>853</i>&nbsp;                translateUnallowedExtension(cpg, il);</b>
+<i>854</i>&nbsp;
+<b class="nc"><i>855</i>&nbsp;            final String clazz = _chosenMethod.getDeclaringClass().getName();</b>
+<b class="nc"><i>856</i>&nbsp;            Class[] paramTypes = _chosenMethod.getParameterTypes();</b>
+<i>857</i>&nbsp;
+<i>858</i>&nbsp;            // Push &quot;this&quot; if it is an instance method
+<b class="nc"><i>859</i>&nbsp;            if (_thisArgument != null) {</b>
+<b class="nc"><i>860</i>&nbsp;                _thisArgument.translate(classGen, methodGen);</b>
+<i>861</i>&nbsp;            }
+<i>862</i>&nbsp;
+<b class="nc"><i>863</i>&nbsp;            for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>864</i>&nbsp;                final Expression exp = argument(i);</b>
+<b class="nc"><i>865</i>&nbsp;                exp.translate(classGen, methodGen);</b>
+<i>866</i>&nbsp;                // Convert the argument to its Java type
+<b class="nc"><i>867</i>&nbsp;                exp.startIterator(classGen, methodGen);</b>
+<b class="nc"><i>868</i>&nbsp;                exp.getType().translateTo(classGen, methodGen, paramTypes[i]);</b>
+<i>869</i>&nbsp;            }
+<i>870</i>&nbsp;
+<b class="nc"><i>871</i>&nbsp;            final StringBuffer buffer = new StringBuffer();</b>
+<b class="nc"><i>872</i>&nbsp;            buffer.append(&#39;(&#39;);</b>
+<b class="nc"><i>873</i>&nbsp;            for (int i = 0; i &lt; paramTypes.length; i++) {</b>
+<b class="nc"><i>874</i>&nbsp;                buffer.append(getSignature(paramTypes[i]));</b>
+<i>875</i>&nbsp;            }
+<b class="nc"><i>876</i>&nbsp;            buffer.append(&#39;)&#39;);</b>
+<b class="nc"><i>877</i>&nbsp;            buffer.append(getSignature(_chosenMethod.getReturnType()));</b>
+<i>878</i>&nbsp;
+<b class="nc"><i>879</i>&nbsp;            if (_thisArgument != null &amp;&amp; _clazz.isInterface()) {</b>
+<b class="nc"><i>880</i>&nbsp;                index = cpg.addInterfaceMethodref(clazz,</b>
+<b class="nc"><i>881</i>&nbsp;                                     _fname.getLocalPart(),</b>
+<b class="nc"><i>882</i>&nbsp;                                     buffer.toString());</b>
+<b class="nc"><i>883</i>&nbsp;                il.append(new INVOKEINTERFACE(index, n+1));</b>
+<i>884</i>&nbsp;            }
+<i>885</i>&nbsp;            else {
+<b class="nc"><i>886</i>&nbsp;                index = cpg.addMethodref(clazz,</b>
+<b class="nc"><i>887</i>&nbsp;                                     _fname.getLocalPart(),</b>
+<b class="nc"><i>888</i>&nbsp;                                     buffer.toString());</b>
+<b class="nc"><i>889</i>&nbsp;                il.append(_thisArgument != null ? (InvokeInstruction) new INVOKEVIRTUAL(index) :</b>
+<i>890</i>&nbsp;                          (InvokeInstruction) new INVOKESTATIC(index));
+<i>891</i>&nbsp;            }
+<i>892</i>&nbsp;
+<i>893</i>&nbsp;            // Convert the return type back to our internal type
+<b class="nc"><i>894</i>&nbsp;            _type.translateFrom(classGen, methodGen,</b>
+<b class="nc"><i>895</i>&nbsp;                                _chosenMethod.getReturnType());</b>
+<i>896</i>&nbsp;        }
+<i>897</i>&nbsp;    }
+<i>898</i>&nbsp;
+<i>899</i>&nbsp;    @Override
+<i>900</i>&nbsp;    public String toString() {
+<b class="nc"><i>901</i>&nbsp;        return &quot;funcall(&quot; + _fname + &quot;, &quot; + _arguments + &#39;)&#39;;</b>
+<i>902</i>&nbsp;    }
+<i>903</i>&nbsp;
+<i>904</i>&nbsp;    public boolean isStandard() {
+<b class="nc"><i>905</i>&nbsp;        final String namespace = _fname.getNamespace();</b>
+<b class="nc"><i>906</i>&nbsp;        return (namespace == null) || (namespace.equals(Constants.EMPTYSTRING));</b>
+<i>907</i>&nbsp;    }
+<i>908</i>&nbsp;
+<i>909</i>&nbsp;    public boolean isExtension() {
+<b class="nc"><i>910</i>&nbsp;        final String namespace = _fname.getNamespace();</b>
+<b class="nc"><i>911</i>&nbsp;        return (namespace != null) &amp;&amp; (namespace.equals(EXT_XSLTC));</b>
+<i>912</i>&nbsp;    }
+<i>913</i>&nbsp;
+<i>914</i>&nbsp;    /**
+<i>915</i>&nbsp;     * Returns a vector with all methods named &lt;code&gt;_fname&lt;/code&gt;
+<i>916</i>&nbsp;     * after stripping its namespace or &lt;code&gt;null&lt;/code&gt;
+<i>917</i>&nbsp;     * if no such methods exist.
+<i>918</i>&nbsp;     */
+<i>919</i>&nbsp;    private Vector findMethods() {
+<i>920</i>&nbsp;
+<b class="nc"><i>921</i>&nbsp;          Vector result = null;</b>
+<b class="nc"><i>922</i>&nbsp;          final String namespace = _fname.getNamespace();</b>
+<i>923</i>&nbsp;
+<b class="nc"><i>924</i>&nbsp;          if (_className != null &amp;&amp; _className.length() &gt; 0) {</b>
+<b class="nc"><i>925</i>&nbsp;            final int nArgs = _arguments.size();</b>
+<i>926</i>&nbsp;            try {
+<b class="nc"><i>927</i>&nbsp;                if (_clazz == null) {</b>
+<b class="nc"><i>928</i>&nbsp;                    final boolean isSecureProcessing = getXSLTC().isSecureProcessing();</b>
+<b class="nc"><i>929</i>&nbsp;                    final boolean isExtensionFunctionEnabled = getXSLTC()</b>
+<b class="nc"><i>930</i>&nbsp;                            .getFeature(FeatureManager.Feature.ORACLE_ENABLE_EXTENSION_FUNCTION);</b>
+<i>931</i>&nbsp;
+<i>932</i>&nbsp;                    //Check if FSP and SM - only then proceed with loading
+<b class="nc"><i>933</i>&nbsp;                    if (namespace != null &amp;&amp; isSecureProcessing</b>
+<i>934</i>&nbsp;                            &amp;&amp; isExtensionFunctionEnabled
+<b class="nc"><i>935</i>&nbsp;                            &amp;&amp; (namespace.startsWith(JAVA_EXT_XALAN)</b>
+<b class="nc"><i>936</i>&nbsp;                            || namespace.startsWith(JAVA_EXT_XSLTC)</b>
+<b class="nc"><i>937</i>&nbsp;                            || namespace.startsWith(JAVA_EXT_XALAN_OLD)</b>
+<b class="nc"><i>938</i>&nbsp;                            || namespace.startsWith(XALAN_CLASSPACKAGE_NAMESPACE))) {</b>
+<b class="nc"><i>939</i>&nbsp;                        _clazz = getXSLTC().loadExternalFunction(_className);</b>
+<i>940</i>&nbsp;                    } else {
+<b class="nc"><i>941</i>&nbsp;                        _clazz = ObjectFactory.findProviderClass(_className, true);</b>
+<i>942</i>&nbsp;                    }
+<i>943</i>&nbsp;
+<b class="nc"><i>944</i>&nbsp;                if (_clazz == null) {</b>
+<b class="nc"><i>945</i>&nbsp;                  final ErrorMsg msg =</b>
+<i>946</i>&nbsp;                        new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR, _className);
+<b class="nc"><i>947</i>&nbsp;                  getParser().reportError(Constants.ERROR, msg);</b>
+<i>948</i>&nbsp;                }
+<i>949</i>&nbsp;              }
+<i>950</i>&nbsp;
+<b class="nc"><i>951</i>&nbsp;              final String methodName = _fname.getLocalPart();</b>
+<b class="nc"><i>952</i>&nbsp;              final Method[] methods = _clazz.getMethods();</b>
+<i>953</i>&nbsp;
+<b class="nc"><i>954</i>&nbsp;              for (int i = 0; i &lt; methods.length; i++) {</b>
+<b class="nc"><i>955</i>&nbsp;                final int mods = methods[i].getModifiers();</b>
+<i>956</i>&nbsp;                // Is it public and same number of args ?
+<b class="nc"><i>957</i>&nbsp;                if (Modifier.isPublic(mods)</b>
+<b class="nc"><i>958</i>&nbsp;                    &amp;&amp; methods[i].getName().equals(methodName)</b>
+<b class="nc"><i>959</i>&nbsp;                    &amp;&amp; methods[i].getParameterTypes().length == nArgs)</b>
+<i>960</i>&nbsp;                {
+<b class="nc"><i>961</i>&nbsp;                  if (result == null) {</b>
+<b class="nc"><i>962</i>&nbsp;                    result = new Vector();</b>
+<i>963</i>&nbsp;                  }
+<b class="nc"><i>964</i>&nbsp;                  result.addElement(methods[i]);</b>
+<i>965</i>&nbsp;                }
+<i>966</i>&nbsp;              }
+<i>967</i>&nbsp;            }
+<b class="nc"><i>968</i>&nbsp;            catch (ClassNotFoundException e) {</b>
+<b class="nc"><i>969</i>&nbsp;                  final ErrorMsg msg = new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR, _className);</b>
+<b class="nc"><i>970</i>&nbsp;                  getParser().reportError(Constants.ERROR, msg);</b>
+<b class="nc"><i>971</i>&nbsp;            }</b>
+<i>972</i>&nbsp;          }
+<b class="nc"><i>973</i>&nbsp;          return result;</b>
+<i>974</i>&nbsp;    }
+<i>975</i>&nbsp;
+<i>976</i>&nbsp;    /**
+<i>977</i>&nbsp;     * Returns a vector with all constructors named &lt;code&gt;_fname&lt;/code&gt;
+<i>978</i>&nbsp;     * after stripping its namespace or &lt;code&gt;null&lt;/code&gt;
+<i>979</i>&nbsp;     * if no such methods exist.
+<i>980</i>&nbsp;     */
+<i>981</i>&nbsp;    private Vector findConstructors() {
+<b class="nc"><i>982</i>&nbsp;        Vector result = null;</b>
+<b class="nc"><i>983</i>&nbsp;        final String namespace = _fname.getNamespace();</b>
+<i>984</i>&nbsp;
+<b class="nc"><i>985</i>&nbsp;        final int nArgs = _arguments.size();</b>
+<i>986</i>&nbsp;        try {
+<b class="nc"><i>987</i>&nbsp;          if (_clazz == null) {</b>
+<b class="nc"><i>988</i>&nbsp;            _clazz = ObjectFactory.findProviderClass(_className, true);</b>
+<i>989</i>&nbsp;
+<b class="nc"><i>990</i>&nbsp;            if (_clazz == null) {</b>
+<b class="nc"><i>991</i>&nbsp;              final ErrorMsg msg = new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR, _className);</b>
+<b class="nc"><i>992</i>&nbsp;              getParser().reportError(Constants.ERROR, msg);</b>
+<i>993</i>&nbsp;            }
+<i>994</i>&nbsp;          }
+<i>995</i>&nbsp;
+<b class="nc"><i>996</i>&nbsp;          final Constructor[] constructors = _clazz.getConstructors();</b>
+<i>997</i>&nbsp;
+<b class="nc"><i>998</i>&nbsp;          for (int i = 0; i &lt; constructors.length; i++) {</b>
+<b class="nc"><i>999</i>&nbsp;              final int mods = constructors[i].getModifiers();</b>
+<i>1000</i>&nbsp;              // Is it public, static and same number of args ?
+<b class="nc"><i>1001</i>&nbsp;              if (Modifier.isPublic(mods) &amp;&amp;</b>
+<b class="nc"><i>1002</i>&nbsp;                  constructors[i].getParameterTypes().length == nArgs)</b>
+<i>1003</i>&nbsp;              {
+<b class="nc"><i>1004</i>&nbsp;                if (result == null) {</b>
+<b class="nc"><i>1005</i>&nbsp;                  result = new Vector();</b>
+<i>1006</i>&nbsp;                }
+<b class="nc"><i>1007</i>&nbsp;                result.addElement(constructors[i]);</b>
+<i>1008</i>&nbsp;              }
+<i>1009</i>&nbsp;          }
+<i>1010</i>&nbsp;        }
+<b class="nc"><i>1011</i>&nbsp;        catch (ClassNotFoundException e) {</b>
+<b class="nc"><i>1012</i>&nbsp;          final ErrorMsg msg = new ErrorMsg(ErrorMsg.CLASS_NOT_FOUND_ERR, _className);</b>
+<b class="nc"><i>1013</i>&nbsp;          getParser().reportError(Constants.ERROR, msg);</b>
+<b class="nc"><i>1014</i>&nbsp;        }</b>
+<i>1015</i>&nbsp;
+<b class="nc"><i>1016</i>&nbsp;        return result;</b>
+<i>1017</i>&nbsp;    }
+<i>1018</i>&nbsp;
+<i>1019</i>&nbsp;
+<i>1020</i>&nbsp;    /**
+<i>1021</i>&nbsp;     * Compute the JVM signature for the class.
+<i>1022</i>&nbsp;     */
+<i>1023</i>&nbsp;    static final String getSignature(Class clazz) {
+<b class="nc"><i>1024</i>&nbsp;        if (clazz.isArray()) {</b>
+<b class="nc"><i>1025</i>&nbsp;            final StringBuffer sb = new StringBuffer();</b>
+<b class="nc"><i>1026</i>&nbsp;            Class cl = clazz;</b>
+<b class="nc"><i>1027</i>&nbsp;            while (cl.isArray()) {</b>
+<b class="nc"><i>1028</i>&nbsp;                sb.append(&quot;[&quot;);</b>
+<b class="nc"><i>1029</i>&nbsp;                cl = cl.getComponentType();</b>
+<i>1030</i>&nbsp;            }
+<b class="nc"><i>1031</i>&nbsp;            sb.append(getSignature(cl));</b>
+<b class="nc"><i>1032</i>&nbsp;            return sb.toString();</b>
+<i>1033</i>&nbsp;        }
+<b class="nc"><i>1034</i>&nbsp;        else if (clazz.isPrimitive()) {</b>
+<b class="nc"><i>1035</i>&nbsp;            if (clazz == Integer.TYPE) {</b>
+<b class="nc"><i>1036</i>&nbsp;                return &quot;I&quot;;</b>
+<i>1037</i>&nbsp;            }
+<b class="nc"><i>1038</i>&nbsp;            else if (clazz == Byte.TYPE) {</b>
+<b class="nc"><i>1039</i>&nbsp;                return &quot;B&quot;;</b>
+<i>1040</i>&nbsp;            }
+<b class="nc"><i>1041</i>&nbsp;            else if (clazz == Long.TYPE) {</b>
+<b class="nc"><i>1042</i>&nbsp;                return &quot;J&quot;;</b>
+<i>1043</i>&nbsp;            }
+<b class="nc"><i>1044</i>&nbsp;            else if (clazz == Float.TYPE) {</b>
+<b class="nc"><i>1045</i>&nbsp;                return &quot;F&quot;;</b>
+<i>1046</i>&nbsp;            }
+<b class="nc"><i>1047</i>&nbsp;            else if (clazz == Double.TYPE) {</b>
+<b class="nc"><i>1048</i>&nbsp;                return &quot;D&quot;;</b>
+<i>1049</i>&nbsp;            }
+<b class="nc"><i>1050</i>&nbsp;            else if (clazz == Short.TYPE) {</b>
+<b class="nc"><i>1051</i>&nbsp;                return &quot;S&quot;;</b>
+<i>1052</i>&nbsp;            }
+<b class="nc"><i>1053</i>&nbsp;            else if (clazz == Character.TYPE) {</b>
+<b class="nc"><i>1054</i>&nbsp;                return &quot;C&quot;;</b>
+<i>1055</i>&nbsp;            }
+<b class="nc"><i>1056</i>&nbsp;            else if (clazz == Boolean.TYPE) {</b>
+<b class="nc"><i>1057</i>&nbsp;                return &quot;Z&quot;;</b>
+<i>1058</i>&nbsp;            }
+<b class="nc"><i>1059</i>&nbsp;            else if (clazz == Void.TYPE) {</b>
+<b class="nc"><i>1060</i>&nbsp;                return &quot;V&quot;;</b>
+<i>1061</i>&nbsp;            }
+<i>1062</i>&nbsp;            else {
+<b class="nc"><i>1063</i>&nbsp;                final String name = clazz.toString();</b>
+<b class="nc"><i>1064</i>&nbsp;                ErrorMsg err = new ErrorMsg(ErrorMsg.UNKNOWN_SIG_TYPE_ERR,name);</b>
+<b class="nc"><i>1065</i>&nbsp;                throw new Error(err.toString());</b>
+<i>1066</i>&nbsp;            }
+<i>1067</i>&nbsp;        }
+<i>1068</i>&nbsp;        else {
+<b class="nc"><i>1069</i>&nbsp;            return &quot;L&quot; + clazz.getName().replace(&#39;.&#39;, &#39;/&#39;) + &#39;;&#39;;</b>
+<i>1070</i>&nbsp;        }
+<i>1071</i>&nbsp;    }
+<i>1072</i>&nbsp;
+<i>1073</i>&nbsp;    /**
+<i>1074</i>&nbsp;     * Compute the JVM method descriptor for the method.
+<i>1075</i>&nbsp;     */
+<i>1076</i>&nbsp;    static final String getSignature(Method meth) {
+<b class="nc"><i>1077</i>&nbsp;        final StringBuffer sb = new StringBuffer();</b>
+<b class="nc"><i>1078</i>&nbsp;        sb.append(&#39;(&#39;);</b>
+<b class="nc"><i>1079</i>&nbsp;        final Class[] params = meth.getParameterTypes(); // avoid clone</b>
+<b class="nc"><i>1080</i>&nbsp;        for (int j = 0; j &lt; params.length; j++) {</b>
+<b class="nc"><i>1081</i>&nbsp;            sb.append(getSignature(params[j]));</b>
+<i>1082</i>&nbsp;        }
+<b class="nc"><i>1083</i>&nbsp;        return sb.append(&#39;)&#39;).append(getSignature(meth.getReturnType()))</b>
+<b class="nc"><i>1084</i>&nbsp;            .toString();</b>
+<i>1085</i>&nbsp;    }
+<i>1086</i>&nbsp;
+<i>1087</i>&nbsp;    /**
+<i>1088</i>&nbsp;     * Compute the JVM constructor descriptor for the constructor.
+<i>1089</i>&nbsp;     */
+<i>1090</i>&nbsp;    static final String getSignature(Constructor cons) {
+<b class="nc"><i>1091</i>&nbsp;        final StringBuffer sb = new StringBuffer();</b>
+<b class="nc"><i>1092</i>&nbsp;        sb.append(&#39;(&#39;);</b>
+<b class="nc"><i>1093</i>&nbsp;        final Class[] params = cons.getParameterTypes(); // avoid clone</b>
+<b class="nc"><i>1094</i>&nbsp;        for (int j = 0; j &lt; params.length; j++) {</b>
+<b class="nc"><i>1095</i>&nbsp;            sb.append(getSignature(params[j]));</b>
+<i>1096</i>&nbsp;        }
+<b class="nc"><i>1097</i>&nbsp;        return sb.append(&quot;)V&quot;).toString();</b>
+<i>1098</i>&nbsp;    }
+<i>1099</i>&nbsp;
+<i>1100</i>&nbsp;    /**
+<i>1101</i>&nbsp;     * Return the signature of the current method
+<i>1102</i>&nbsp;     */
+<i>1103</i>&nbsp;    private String getMethodSignature(Vector argsType) {
+<b class="nc"><i>1104</i>&nbsp;        final StringBuffer buf = new StringBuffer(_className);</b>
+<b class="nc"><i>1105</i>&nbsp;        buf.append(&#39;.&#39;).append(_fname.getLocalPart()).append(&#39;(&#39;);</b>
+<i>1106</i>&nbsp;
+<b class="nc"><i>1107</i>&nbsp;        int nArgs = argsType.size();</b>
+<b class="nc"><i>1108</i>&nbsp;        for (int i = 0; i &lt; nArgs; i++) {</b>
+<b class="nc"><i>1109</i>&nbsp;            final Type intType = (Type)argsType.elementAt(i);</b>
+<b class="nc"><i>1110</i>&nbsp;            buf.append(intType.toString());</b>
+<b class="nc"><i>1111</i>&nbsp;            if (i &lt; nArgs - 1) buf.append(&quot;, &quot;);</b>
+<i>1112</i>&nbsp;        }
+<i>1113</i>&nbsp;
+<b class="nc"><i>1114</i>&nbsp;        buf.append(&#39;)&#39;);</b>
+<b class="nc"><i>1115</i>&nbsp;        return buf.toString();</b>
+<i>1116</i>&nbsp;    }
+<i>1117</i>&nbsp;
+<i>1118</i>&nbsp;    /**
+<i>1119</i>&nbsp;     * To support EXSLT extensions, convert names with dash to allowable Java names:
+<i>1120</i>&nbsp;     * e.g., convert abc-xyz to abcXyz.
+<i>1121</i>&nbsp;     * Note: dashes only appear in middle of an EXSLT function or element name.
+<i>1122</i>&nbsp;     */
+<i>1123</i>&nbsp;    protected static String replaceDash(String name)
+<i>1124</i>&nbsp;    {
+<b class="nc"><i>1125</i>&nbsp;        char dash = &#39;-&#39;;</b>
+<b class="nc"><i>1126</i>&nbsp;        final StringBuilder buff = new StringBuilder(&quot;&quot;);</b>
+<b class="nc"><i>1127</i>&nbsp;        for (int i = 0; i &lt; name.length(); i++) {</b>
+<b class="nc"><i>1128</i>&nbsp;        if (i &gt; 0 &amp;&amp; name.charAt(i-1) == dash)</b>
+<b class="nc"><i>1129</i>&nbsp;            buff.append(Character.toUpperCase(name.charAt(i)));</b>
+<b class="nc"><i>1130</i>&nbsp;        else if (name.charAt(i) != dash)</b>
+<b class="nc"><i>1131</i>&nbsp;            buff.append(name.charAt(i));</b>
+<i>1132</i>&nbsp;        }
+<b class="nc"><i>1133</i>&nbsp;        return buff.toString();</b>
+<i>1134</i>&nbsp;    }
+<i>1135</i>&nbsp;
+<i>1136</i>&nbsp;    /**
+<i>1137</i>&nbsp;     * Translate code to call the BasisLibrary.unallowed_extensionF(String)
+<i>1138</i>&nbsp;     * method.
+<i>1139</i>&nbsp;     */
+<i>1140</i>&nbsp;    private void translateUnallowedExtension(ConstantPoolGen cpg,
+<i>1141</i>&nbsp;                                             InstructionList il) {
+<b class="nc"><i>1142</i>&nbsp;        int index = cpg.addMethodref(BASIS_LIBRARY_CLASS,</b>
+<i>1143</i>&nbsp;                                     &quot;unallowed_extension_functionF&quot;,
+<i>1144</i>&nbsp;                                     &quot;(Ljava/lang/String;)V&quot;);
+<b class="nc"><i>1145</i>&nbsp;        il.append(new PUSH(cpg, _fname.toString()));</b>
+<b class="nc"><i>1146</i>&nbsp;        il.append(new INVOKESTATIC(index));</b>
+<i>1147</i>&nbsp;    }
+<i>1148</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

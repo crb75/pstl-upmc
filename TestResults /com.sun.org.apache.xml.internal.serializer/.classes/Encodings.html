@@ -1,0 +1,675 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Encodings</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.serializer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Encodings (com.sun.org.apache.xml.internal.serializer)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Encodings</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 62)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Encodings$EncodingInfos</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 79)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 25)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 141)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: Encodings.java,v 1.3 2005/09/28 13:49:04 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.serializer;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.io.InputStream;
+<i>26</i>&nbsp;import java.io.OutputStream;
+<i>27</i>&nbsp;import java.io.OutputStreamWriter;
+<i>28</i>&nbsp;import java.io.UnsupportedEncodingException;
+<i>29</i>&nbsp;import java.io.Writer;
+<i>30</i>&nbsp;import java.io.BufferedWriter;
+<i>31</i>&nbsp;import java.net.URL;
+<i>32</i>&nbsp;import java.util.Enumeration;
+<i>33</i>&nbsp;import java.util.HashMap;
+<i>34</i>&nbsp;import java.util.Properties;
+<i>35</i>&nbsp;import java.util.StringTokenizer;
+<i>36</i>&nbsp;import java.io.IOException;
+<i>37</i>&nbsp;import java.net.MalformedURLException;
+<i>38</i>&nbsp;import java.nio.charset.Charset;
+<i>39</i>&nbsp;import java.nio.charset.IllegalCharsetNameException;
+<i>40</i>&nbsp;import java.nio.charset.UnsupportedCharsetException;
+<i>41</i>&nbsp;import java.util.Collections;
+<i>42</i>&nbsp;import java.util.Map;
+<i>43</i>&nbsp;import java.util.Map.Entry;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;import com.sun.org.apache.xalan.internal.utils.SecuritySupport;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;/**
+<i>48</i>&nbsp; * Provides information about encodings. Depends on the Java runtime
+<i>49</i>&nbsp; * to provides writers for the different encodings, but can be used
+<i>50</i>&nbsp; * to override encoding names and provide the last printable character
+<i>51</i>&nbsp; * for each encoding.
+<i>52</i>&nbsp; *
+<i>53</i>&nbsp; * @version $Revision: 1.11 $ $Date: 2010-11-01 04:34:44 $
+<i>54</i>&nbsp; * @author &lt;a href=&quot;mailto:arkin@intalio.com&quot;&gt;Assaf Arkin&lt;/a&gt;
+<i>55</i>&nbsp; */
+<i>56</i>&nbsp;
+<b class="nc"><i>57</i>&nbsp;public final class Encodings extends Object</b>
+<i>58</i>&nbsp;{
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    /**
+<i>61</i>&nbsp;     * The last printable character for unknown encodings.
+<i>62</i>&nbsp;     */
+<i>63</i>&nbsp;    private static final int m_defaultLastPrintable = 0x7F;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    /**
+<i>66</i>&nbsp;     * Standard filename for properties file with encodings data.
+<i>67</i>&nbsp;     */
+<i>68</i>&nbsp;    private static final String ENCODINGS_FILE = &quot;com/sun/org/apache/xml/internal/serializer/Encodings.properties&quot;;
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    /**
+<i>71</i>&nbsp;     * Standard filename for properties file with encodings data.
+<i>72</i>&nbsp;     */
+<i>73</i>&nbsp;    private static final String ENCODINGS_PROP = &quot;com.sun.org.apache.xalan.internal.serialize.encodings&quot;;
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;    /**
+<i>77</i>&nbsp;     * Returns a writer for the specified encoding based on
+<i>78</i>&nbsp;     * an output stream.
+<i>79</i>&nbsp;     *
+<i>80</i>&nbsp;     * @param output The output stream
+<i>81</i>&nbsp;     * @param encoding The encoding
+<i>82</i>&nbsp;     * @return A suitable writer
+<i>83</i>&nbsp;     * @throws UnsupportedEncodingException There is no convertor
+<i>84</i>&nbsp;     *  to support this encoding
+<i>85</i>&nbsp;     */
+<i>86</i>&nbsp;    static Writer getWriter(OutputStream output, String encoding)
+<i>87</i>&nbsp;        throws UnsupportedEncodingException
+<i>88</i>&nbsp;    {
+<i>89</i>&nbsp;
+<b class="nc"><i>90</i>&nbsp;        final EncodingInfo ei = _encodingInfos.findEncoding(toUpperCaseFast(encoding));</b>
+<b class="nc"><i>91</i>&nbsp;        if (ei != null) {</b>
+<i>92</i>&nbsp;            try {
+<b class="nc"><i>93</i>&nbsp;                return new BufferedWriter(new OutputStreamWriter(</b>
+<i>94</i>&nbsp;                        output, ei.javaName));
+<b class="nc"><i>95</i>&nbsp;            } catch (UnsupportedEncodingException usee) {</b>
+<i>96</i>&nbsp;                // keep trying
+<i>97</i>&nbsp;            }
+<i>98</i>&nbsp;        }
+<i>99</i>&nbsp;
+<b class="nc"><i>100</i>&nbsp;        return new BufferedWriter(new OutputStreamWriter(output, encoding));</b>
+<i>101</i>&nbsp;    }
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    /**
+<i>105</i>&nbsp;     * Returns the last printable character for an unspecified
+<i>106</i>&nbsp;     * encoding.
+<i>107</i>&nbsp;     *
+<i>108</i>&nbsp;     * @return the default size
+<i>109</i>&nbsp;     */
+<i>110</i>&nbsp;    public static int getLastPrintable()
+<i>111</i>&nbsp;    {
+<b class="nc"><i>112</i>&nbsp;        return m_defaultLastPrintable;</b>
+<i>113</i>&nbsp;    }
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    /**
+<i>118</i>&nbsp;     * Returns the EncodingInfo object for the specified
+<i>119</i>&nbsp;     * encoding.
+<i>120</i>&nbsp;     * &lt;p&gt;
+<i>121</i>&nbsp;     * This is not a public API.
+<i>122</i>&nbsp;     *
+<i>123</i>&nbsp;     * @param encoding The encoding
+<i>124</i>&nbsp;     * @return The object that is used to determine if
+<i>125</i>&nbsp;     * characters are in the given encoding.
+<i>126</i>&nbsp;     * @xsl.usage internal
+<i>127</i>&nbsp;     */
+<i>128</i>&nbsp;    static EncodingInfo getEncodingInfo(String encoding)
+<i>129</i>&nbsp;    {
+<i>130</i>&nbsp;        EncodingInfo ei;
+<i>131</i>&nbsp;
+<b class="nc"><i>132</i>&nbsp;        String normalizedEncoding = toUpperCaseFast(encoding);</b>
+<b class="nc"><i>133</i>&nbsp;        ei = _encodingInfos.findEncoding(normalizedEncoding);</b>
+<b class="nc"><i>134</i>&nbsp;        if (ei == null) {</b>
+<i>135</i>&nbsp;            // We shouldn&#39;t have to do this, but just in case.
+<i>136</i>&nbsp;            try {
+<i>137</i>&nbsp;                // This may happen if the caller tries to use
+<i>138</i>&nbsp;                // an encoding that wasn&#39;t registered in the
+<i>139</i>&nbsp;                // (java name)-&gt;(preferred mime name) mapping file.
+<i>140</i>&nbsp;                // In that case we attempt to load the charset for the
+<i>141</i>&nbsp;                // given encoding, and if that succeeds - we create a new
+<i>142</i>&nbsp;                // EncodingInfo instance - assuming the canonical name
+<i>143</i>&nbsp;                // of the charset can be used as the mime name.
+<b class="nc"><i>144</i>&nbsp;                final Charset c = Charset.forName(encoding);</b>
+<b class="nc"><i>145</i>&nbsp;                final String name = c.name();</b>
+<b class="nc"><i>146</i>&nbsp;                ei = new EncodingInfo(name, name);</b>
+<b class="nc"><i>147</i>&nbsp;                _encodingInfos.putEncoding(normalizedEncoding, ei);</b>
+<b class="nc"><i>148</i>&nbsp;            } catch (IllegalCharsetNameException | UnsupportedCharsetException x) {</b>
+<b class="nc"><i>149</i>&nbsp;                ei = new EncodingInfo(null,null);</b>
+<b class="nc"><i>150</i>&nbsp;            }</b>
+<i>151</i>&nbsp;        }
+<i>152</i>&nbsp;
+<b class="nc"><i>153</i>&nbsp;        return ei;</b>
+<i>154</i>&nbsp;    }
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;    /**
+<i>157</i>&nbsp;     * A fast and cheap way to uppercase a String that is
+<i>158</i>&nbsp;     * only made of printable ASCII characters.
+<i>159</i>&nbsp;     * &lt;p&gt;
+<i>160</i>&nbsp;     * This is not a public API.
+<i>161</i>&nbsp;     * @param s a String of ASCII characters
+<i>162</i>&nbsp;     * @return an uppercased version of the input String,
+<i>163</i>&nbsp;     * possibly the same String.
+<i>164</i>&nbsp;     * @xsl.usage internal
+<i>165</i>&nbsp;     */
+<i>166</i>&nbsp;    static private String toUpperCaseFast(final String s) {
+<i>167</i>&nbsp;
+<b class="nc"><i>168</i>&nbsp;        boolean different = false;</b>
+<b class="nc"><i>169</i>&nbsp;        final int mx = s.length();</b>
+<b class="nc"><i>170</i>&nbsp;                char[] chars = new char[mx];</b>
+<b class="nc"><i>171</i>&nbsp;        for (int i=0; i &lt; mx; i++) {</b>
+<b class="nc"><i>172</i>&nbsp;                char ch = s.charAt(i);</b>
+<i>173</i>&nbsp;            // is the character a lower case ASCII one?
+<b class="nc"><i>174</i>&nbsp;                if (&#39;a&#39; &lt;= ch &amp;&amp; ch &lt;= &#39;z&#39;) {</b>
+<i>175</i>&nbsp;                // a cheap and fast way to uppercase that is good enough
+<b class="nc"><i>176</i>&nbsp;                        ch = (char) (ch + (&#39;A&#39; - &#39;a&#39;));</b>
+<b class="nc"><i>177</i>&nbsp;                        different = true; // the uppercased String is different</b>
+<i>178</i>&nbsp;                }
+<b class="nc"><i>179</i>&nbsp;                chars[i] = ch;</b>
+<i>180</i>&nbsp;        }
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;        // A little optimization, don&#39;t call String.valueOf() if
+<i>183</i>&nbsp;        // the uppercased string is the same as the input string.
+<i>184</i>&nbsp;        final String upper;
+<b class="nc"><i>185</i>&nbsp;        if (different)</b>
+<b class="nc"><i>186</i>&nbsp;                upper = String.valueOf(chars);</b>
+<i>187</i>&nbsp;        else
+<b class="nc"><i>188</i>&nbsp;                upper = s;</b>
+<i>189</i>&nbsp;
+<b class="nc"><i>190</i>&nbsp;        return upper;</b>
+<i>191</i>&nbsp;    }
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;    /** The default encoding, ISO style, ISO style.   */
+<i>194</i>&nbsp;    static final String DEFAULT_MIME_ENCODING = &quot;UTF-8&quot;;
+<i>195</i>&nbsp;
+<i>196</i>&nbsp;    /**
+<i>197</i>&nbsp;     * Get the proper mime encoding.  From the XSLT recommendation: &quot;The encoding
+<i>198</i>&nbsp;     * attribute specifies the preferred encoding to use for outputting the result
+<i>199</i>&nbsp;     * tree. XSLT processors are required to respect values of UTF-8 and UTF-16.
+<i>200</i>&nbsp;     * For other values, if the XSLT processor does not support the specified
+<i>201</i>&nbsp;     * encoding it may signal an error; if it does not signal an error it should
+<i>202</i>&nbsp;     * use UTF-8 or UTF-16 instead. The XSLT processor must not use an encoding
+<i>203</i>&nbsp;     * whose name does not match the EncName production of the XML Recommendation
+<i>204</i>&nbsp;     * [XML]. If no encoding attribute is specified, then the XSLT processor should
+<i>205</i>&nbsp;     * use either UTF-8 or UTF-16.&quot;
+<i>206</i>&nbsp;     *
+<i>207</i>&nbsp;     * @param encoding Reference to java-style encoding string, which may be null,
+<i>208</i>&nbsp;     * in which case a default will be found.
+<i>209</i>&nbsp;     *
+<i>210</i>&nbsp;     * @return The ISO-style encoding string, or null if failure.
+<i>211</i>&nbsp;     */
+<i>212</i>&nbsp;    static String getMimeEncoding(String encoding)
+<i>213</i>&nbsp;    {
+<i>214</i>&nbsp;
+<b class="nc"><i>215</i>&nbsp;        if (null == encoding)</b>
+<i>216</i>&nbsp;        {
+<i>217</i>&nbsp;            try
+<i>218</i>&nbsp;            {
+<i>219</i>&nbsp;
+<i>220</i>&nbsp;                // Get the default system character encoding.  This may be
+<i>221</i>&nbsp;                // incorrect if they passed in a writer, but right now there
+<i>222</i>&nbsp;                // seems to be no way to get the encoding from a writer.
+<b class="nc"><i>223</i>&nbsp;                encoding = SecuritySupport.getSystemProperty(&quot;file.encoding&quot;, &quot;UTF8&quot;);</b>
+<i>224</i>&nbsp;
+<b class="nc"><i>225</i>&nbsp;                if (null != encoding)</b>
+<i>226</i>&nbsp;                {
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;                    /*
+<i>229</i>&nbsp;                    * See if the mime type is equal to UTF8.  If you don&#39;t
+<i>230</i>&nbsp;                    * do that, then  convertJava2MimeEncoding will convert
+<i>231</i>&nbsp;                    * 8859_1 to &quot;ISO-8859-1&quot;, which is not what we want,
+<i>232</i>&nbsp;                    * I think, and I don&#39;t think I want to alter the tables
+<i>233</i>&nbsp;                    * to convert everything to UTF-8.
+<i>234</i>&nbsp;                    */
+<b class="nc"><i>235</i>&nbsp;                    String jencoding =</b>
+<b class="nc"><i>236</i>&nbsp;                        (encoding.equalsIgnoreCase(&quot;Cp1252&quot;)</b>
+<b class="nc"><i>237</i>&nbsp;                            || encoding.equalsIgnoreCase(&quot;ISO8859_1&quot;)</b>
+<b class="nc"><i>238</i>&nbsp;                            || encoding.equalsIgnoreCase(&quot;8859_1&quot;)</b>
+<b class="nc"><i>239</i>&nbsp;                            || encoding.equalsIgnoreCase(&quot;UTF8&quot;))</b>
+<i>240</i>&nbsp;                            ? DEFAULT_MIME_ENCODING
+<b class="nc"><i>241</i>&nbsp;                            : convertJava2MimeEncoding(encoding);</b>
+<i>242</i>&nbsp;
+<b class="nc"><i>243</i>&nbsp;                    encoding =</b>
+<i>244</i>&nbsp;                        (null != jencoding) ? jencoding : DEFAULT_MIME_ENCODING;
+<b class="nc"><i>245</i>&nbsp;                }</b>
+<i>246</i>&nbsp;                else
+<i>247</i>&nbsp;                {
+<b class="nc"><i>248</i>&nbsp;                    encoding = DEFAULT_MIME_ENCODING;</b>
+<i>249</i>&nbsp;                }
+<i>250</i>&nbsp;            }
+<b class="nc"><i>251</i>&nbsp;            catch (SecurityException se)</b>
+<i>252</i>&nbsp;            {
+<b class="nc"><i>253</i>&nbsp;                encoding = DEFAULT_MIME_ENCODING;</b>
+<b class="nc"><i>254</i>&nbsp;            }</b>
+<i>255</i>&nbsp;        }
+<i>256</i>&nbsp;        else
+<i>257</i>&nbsp;        {
+<b class="nc"><i>258</i>&nbsp;            encoding = convertJava2MimeEncoding(encoding);</b>
+<i>259</i>&nbsp;        }
+<i>260</i>&nbsp;
+<b class="nc"><i>261</i>&nbsp;        return encoding;</b>
+<i>262</i>&nbsp;    }
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;    /**
+<i>265</i>&nbsp;     * Try the best we can to convert a Java encoding to a XML-style encoding.
+<i>266</i>&nbsp;     *
+<i>267</i>&nbsp;     * @param encoding non-null reference to encoding string, java style.
+<i>268</i>&nbsp;     *
+<i>269</i>&nbsp;     * @return ISO-style encoding string.
+<i>270</i>&nbsp;     */
+<i>271</i>&nbsp;    private static String convertJava2MimeEncoding(String encoding)
+<i>272</i>&nbsp;    {
+<b class="nc"><i>273</i>&nbsp;        final EncodingInfo enc =</b>
+<b class="nc"><i>274</i>&nbsp;             _encodingInfos.getEncodingFromJavaKey(toUpperCaseFast(encoding));</b>
+<b class="nc"><i>275</i>&nbsp;        if (null != enc)</b>
+<b class="nc"><i>276</i>&nbsp;            return enc.name;</b>
+<b class="nc"><i>277</i>&nbsp;        return encoding;</b>
+<i>278</i>&nbsp;    }
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;    /**
+<i>281</i>&nbsp;     * Try the best we can to convert a Java encoding to a XML-style encoding.
+<i>282</i>&nbsp;     *
+<i>283</i>&nbsp;     * @param encoding non-null reference to encoding string, java style.
+<i>284</i>&nbsp;     *
+<i>285</i>&nbsp;     * @return ISO-style encoding string.
+<i>286</i>&nbsp;     */
+<i>287</i>&nbsp;    public static String convertMime2JavaEncoding(String encoding)
+<i>288</i>&nbsp;    {
+<b class="nc"><i>289</i>&nbsp;        final EncodingInfo info = _encodingInfos.findEncoding(toUpperCaseFast(encoding));</b>
+<b class="nc"><i>290</i>&nbsp;        return info != null ? info.javaName : encoding;</b>
+<i>291</i>&nbsp;    }
+<i>292</i>&nbsp;
+<i>293</i>&nbsp;    // Using an inner static class here prevent initialization races
+<i>294</i>&nbsp;    // where the hash maps could be used before they were populated.
+<i>295</i>&nbsp;    //
+<b class="nc"><i>296</i>&nbsp;    private final static class EncodingInfos {</b>
+<i>297</i>&nbsp;        // These maps are final and not modified after initialization.
+<b class="nc"><i>298</i>&nbsp;        private final Map&lt;String, EncodingInfo&gt; _encodingTableKeyJava = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>299</i>&nbsp;        private final Map&lt;String, EncodingInfo&gt; _encodingTableKeyMime = new HashMap&lt;&gt;();</b>
+<i>300</i>&nbsp;        // This map will be added to after initialization: make sure it&#39;s
+<i>301</i>&nbsp;        // thread-safe. This map should not be used frequently - only in cases
+<i>302</i>&nbsp;        // where the mapping requested was not declared in the Encodings.properties
+<i>303</i>&nbsp;        // file.
+<b class="nc"><i>304</i>&nbsp;        private final Map&lt;String, EncodingInfo&gt; _encodingDynamicTable =</b>
+<b class="nc"><i>305</i>&nbsp;                Collections.synchronizedMap(new HashMap&lt;String, EncodingInfo&gt;());</b>
+<i>306</i>&nbsp;
+<b class="nc"><i>307</i>&nbsp;        private EncodingInfos() {</b>
+<b class="nc"><i>308</i>&nbsp;            loadEncodingInfo();</b>
+<i>309</i>&nbsp;        }
+<i>310</i>&nbsp;
+<i>311</i>&nbsp;        // Opens the file/resource containing java charset name -&gt; preferred mime
+<i>312</i>&nbsp;        // name mapping and returns it as an InputStream.
+<i>313</i>&nbsp;        private InputStream openEncodingsFileStream() throws MalformedURLException, IOException {
+<b class="nc"><i>314</i>&nbsp;            String urlString = null;</b>
+<b class="nc"><i>315</i>&nbsp;            InputStream is = null;</b>
+<i>316</i>&nbsp;
+<i>317</i>&nbsp;            try {
+<b class="nc"><i>318</i>&nbsp;                urlString = SecuritySupport.getSystemProperty(ENCODINGS_PROP, &quot;&quot;);</b>
+<b class="nc"><i>319</i>&nbsp;            } catch (SecurityException e) {</b>
+<b class="nc"><i>320</i>&nbsp;            }</b>
+<i>321</i>&nbsp;
+<b class="nc"><i>322</i>&nbsp;            if (urlString != null &amp;&amp; urlString.length() &gt; 0) {</b>
+<b class="nc"><i>323</i>&nbsp;                URL url = new URL(urlString);</b>
+<b class="nc"><i>324</i>&nbsp;                is = url.openStream();</b>
+<i>325</i>&nbsp;            }
+<i>326</i>&nbsp;
+<b class="nc"><i>327</i>&nbsp;            if (is == null) {</b>
+<b class="nc"><i>328</i>&nbsp;                is = SecuritySupport.getResourceAsStream(ENCODINGS_FILE);</b>
+<i>329</i>&nbsp;            }
+<b class="nc"><i>330</i>&nbsp;            return is;</b>
+<i>331</i>&nbsp;        }
+<i>332</i>&nbsp;
+<i>333</i>&nbsp;        // Loads the Properties resource containing the mapping:
+<i>334</i>&nbsp;        //    java charset name -&gt; preferred mime name
+<i>335</i>&nbsp;        // and returns it.
+<i>336</i>&nbsp;        private Properties loadProperties() throws MalformedURLException, IOException {
+<b class="nc"><i>337</i>&nbsp;            Properties props = new Properties();</b>
+<b class="nc"><i>338</i>&nbsp;            try (InputStream is = openEncodingsFileStream()) {</b>
+<b class="nc"><i>339</i>&nbsp;                if (is != null) {</b>
+<b class="nc"><i>340</i>&nbsp;                    props.load(is);</b>
+<i>341</i>&nbsp;                } else {
+<i>342</i>&nbsp;                    // Seems to be no real need to force failure here, let the
+<i>343</i>&nbsp;                    // system do its best... The issue is not really very critical,
+<i>344</i>&nbsp;                    // and the output will be in any case _correct_ though maybe not
+<i>345</i>&nbsp;                    // always human-friendly... :)
+<i>346</i>&nbsp;                    // But maybe report/log the resource problem?
+<i>347</i>&nbsp;                    // Any standard ways to report/log errors (in static context)?
+<i>348</i>&nbsp;                }
+<b class="nc"><i>349</i>&nbsp;            }</b>
+<b class="nc"><i>350</i>&nbsp;            return props;</b>
+<i>351</i>&nbsp;        }
+<i>352</i>&nbsp;
+<i>353</i>&nbsp;        // Parses the mime list associated to a java charset name.
+<i>354</i>&nbsp;        // The first mime name in the list is supposed to be the preferred
+<i>355</i>&nbsp;        // mime name.
+<i>356</i>&nbsp;        private String[] parseMimeTypes(String val) {
+<b class="nc"><i>357</i>&nbsp;            int pos = val.indexOf(&#39; &#39;);</b>
+<i>358</i>&nbsp;            //int lastPrintable;
+<b class="nc"><i>359</i>&nbsp;            if (pos &lt; 0) {</b>
+<i>360</i>&nbsp;                // Maybe report/log this problem?
+<i>361</i>&nbsp;                //  &quot;Last printable character not defined for encoding &quot; +
+<i>362</i>&nbsp;                //  mimeName + &quot; (&quot; + val + &quot;)&quot; ...
+<b class="nc"><i>363</i>&nbsp;                return new String[] { val };</b>
+<i>364</i>&nbsp;                //lastPrintable = 0x00FF;
+<i>365</i>&nbsp;            }
+<i>366</i>&nbsp;            //lastPrintable =
+<i>367</i>&nbsp;            //    Integer.decode(val.substring(pos).trim()).intValue();
+<b class="nc"><i>368</i>&nbsp;            StringTokenizer st =</b>
+<b class="nc"><i>369</i>&nbsp;                    new StringTokenizer(val.substring(0, pos), &quot;,&quot;);</b>
+<b class="nc"><i>370</i>&nbsp;            String[] values = new String[st.countTokens()];</b>
+<b class="nc"><i>371</i>&nbsp;            for (int i=0; st.hasMoreTokens(); i++) {</b>
+<b class="nc"><i>372</i>&nbsp;                values[i] = st.nextToken();</b>
+<i>373</i>&nbsp;            }
+<b class="nc"><i>374</i>&nbsp;            return values;</b>
+<i>375</i>&nbsp;        }
+<i>376</i>&nbsp;
+<i>377</i>&nbsp;        // This method here attempts to find the canonical charset name for the
+<i>378</i>&nbsp;        // the given name - which is supposed to be either a java name or a mime
+<i>379</i>&nbsp;        // name.
+<i>380</i>&nbsp;        // For that, it attempts to load the charset using the given name, and
+<i>381</i>&nbsp;        // then returns the charset&#39;s canonical name.
+<i>382</i>&nbsp;        // If the charset could not be loaded from the given name,
+<i>383</i>&nbsp;        // the method returns null.
+<i>384</i>&nbsp;        private String findCharsetNameFor(String name) {
+<i>385</i>&nbsp;            try {
+<b class="nc"><i>386</i>&nbsp;                return Charset.forName(name).name();</b>
+<b class="nc"><i>387</i>&nbsp;            } catch (Exception x) {</b>
+<b class="nc"><i>388</i>&nbsp;                return null;</b>
+<i>389</i>&nbsp;            }
+<i>390</i>&nbsp;        }
+<i>391</i>&nbsp;
+<i>392</i>&nbsp;        // This method here attempts to find the canonical charset name for the
+<i>393</i>&nbsp;        // the set javaName+mimeNames - which are supposed to all refer to the
+<i>394</i>&nbsp;        // same charset.
+<i>395</i>&nbsp;        // For that it attempts to load the charset using the javaName, and if
+<i>396</i>&nbsp;        // not found, attempts again using each of the mime names in turn.
+<i>397</i>&nbsp;        // If the charset could be loaded from the javaName, then the javaName
+<i>398</i>&nbsp;        // itself is returned as charset name. Otherwise, each of the mime names
+<i>399</i>&nbsp;        // is tried in turn, until a charset can be loaded from one of the names,
+<i>400</i>&nbsp;        // and the loaded charset&#39;s canonical name is returned.
+<i>401</i>&nbsp;        // If no charset can be loaded from either the javaName or one of the
+<i>402</i>&nbsp;        // mime names, then null is returned.
+<i>403</i>&nbsp;        //
+<i>404</i>&nbsp;        // Note that the returned name is the &#39;java&#39; name that will be used in
+<i>405</i>&nbsp;        // instances of EncodingInfo.
+<i>406</i>&nbsp;        // This is important because EncodingInfo uses that &#39;java name&#39; later on
+<i>407</i>&nbsp;        // in calls to String.getBytes(javaName).
+<i>408</i>&nbsp;        // As it happens, sometimes only one element of the set mime names/javaName
+<i>409</i>&nbsp;        // is known by Charset: sometimes only one of the mime names is known,
+<i>410</i>&nbsp;        // sometime only the javaName is known, sometimes all are known.
+<i>411</i>&nbsp;        //
+<i>412</i>&nbsp;        // By using this method here, we fix the problem where one of the mime
+<i>413</i>&nbsp;        // names is known but the javaName is unknown, by associating the charset
+<i>414</i>&nbsp;        // loaded from one of the mime names with the unrecognized javaName.
+<i>415</i>&nbsp;        //
+<i>416</i>&nbsp;        // When none of the mime names or javaName are known - there&#39;s not much we can
+<i>417</i>&nbsp;        // do... It can mean that this encoding is not supported for this
+<i>418</i>&nbsp;        // OS. If such a charset is ever use it will result in having all characters
+<i>419</i>&nbsp;        // escaped.
+<i>420</i>&nbsp;        //
+<i>421</i>&nbsp;        private String findCharsetNameFor(String javaName, String[] mimes) {
+<b class="nc"><i>422</i>&nbsp;            String cs = findCharsetNameFor(javaName);</b>
+<b class="nc"><i>423</i>&nbsp;            if (cs != null) return javaName;</b>
+<b class="nc"><i>424</i>&nbsp;            for (String m : mimes) {</b>
+<b class="nc"><i>425</i>&nbsp;                cs = findCharsetNameFor(m);</b>
+<b class="nc"><i>426</i>&nbsp;                if (cs != null) break;</b>
+<i>427</i>&nbsp;            }
+<b class="nc"><i>428</i>&nbsp;            return cs;</b>
+<i>429</i>&nbsp;        }
+<i>430</i>&nbsp;
+<i>431</i>&nbsp;        /**
+<i>432</i>&nbsp;         * Loads a list of all the supported encodings.
+<i>433</i>&nbsp;         *
+<i>434</i>&nbsp;         * System property &quot;encodings&quot; formatted using URL syntax may define an
+<i>435</i>&nbsp;         * external encodings list. Thanks to Sergey Ushakov for the code
+<i>436</i>&nbsp;         * contribution!
+<i>437</i>&nbsp;         */
+<i>438</i>&nbsp;        private void loadEncodingInfo() {
+<i>439</i>&nbsp;            try {
+<i>440</i>&nbsp;                // load (java name)-&gt;(preferred mime name) mapping.
+<b class="nc"><i>441</i>&nbsp;                final Properties props = loadProperties();</b>
+<i>442</i>&nbsp;
+<i>443</i>&nbsp;                // create instances of EncodingInfo from the loaded mapping
+<b class="nc"><i>444</i>&nbsp;                Enumeration keys = props.keys();</b>
+<b class="nc"><i>445</i>&nbsp;                Map&lt;String, EncodingInfo&gt; canonicals = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>446</i>&nbsp;                while (keys.hasMoreElements()) {</b>
+<b class="nc"><i>447</i>&nbsp;                    final String javaName = (String) keys.nextElement();</b>
+<b class="nc"><i>448</i>&nbsp;                    final String[] mimes = parseMimeTypes(props.getProperty(javaName));</b>
+<i>449</i>&nbsp;
+<b class="nc"><i>450</i>&nbsp;                    final String charsetName = findCharsetNameFor(javaName, mimes);</b>
+<b class="nc"><i>451</i>&nbsp;                    if (charsetName != null) {</b>
+<b class="nc"><i>452</i>&nbsp;                        final String kj = toUpperCaseFast(javaName);</b>
+<b class="nc"><i>453</i>&nbsp;                        final String kc = toUpperCaseFast(charsetName);</b>
+<b class="nc"><i>454</i>&nbsp;                        for (int i = 0; i &lt; mimes.length; ++i) {</b>
+<b class="nc"><i>455</i>&nbsp;                            final String mimeName = mimes[i];</b>
+<b class="nc"><i>456</i>&nbsp;                            final String km = toUpperCaseFast(mimeName);</b>
+<b class="nc"><i>457</i>&nbsp;                            EncodingInfo info = new EncodingInfo(mimeName, charsetName);</b>
+<b class="nc"><i>458</i>&nbsp;                            _encodingTableKeyMime.put(km, info);</b>
+<b class="nc"><i>459</i>&nbsp;                            if (!canonicals.containsKey(kc)) {</b>
+<i>460</i>&nbsp;                                // canonicals will map the charset name to
+<i>461</i>&nbsp;                                //   the info containing the prefered mime name
+<i>462</i>&nbsp;                                //   (the preferred mime name is the first mime
+<i>463</i>&nbsp;                                //   name in the list).
+<b class="nc"><i>464</i>&nbsp;                                canonicals.put(kc, info);</b>
+<b class="nc"><i>465</i>&nbsp;                                _encodingTableKeyJava.put(kc, info);</b>
+<i>466</i>&nbsp;                            }
+<b class="nc"><i>467</i>&nbsp;                            _encodingTableKeyJava.put(kj, info);</b>
+<i>468</i>&nbsp;                        }
+<i>469</i>&nbsp;                    } else {
+<i>470</i>&nbsp;                        // None of the java or mime names on the line were
+<i>471</i>&nbsp;                        // recognized =&gt; this charset is not supported?
+<i>472</i>&nbsp;                    }
+<b class="nc"><i>473</i>&nbsp;                }</b>
+<i>474</i>&nbsp;
+<i>475</i>&nbsp;                // Fix up the _encodingTableKeyJava so that the info mapped to
+<i>476</i>&nbsp;                // the java name contains the preferred mime name.
+<i>477</i>&nbsp;                // (a given java name can correspond to several mime name,
+<i>478</i>&nbsp;                //  but we want the _encodingTableKeyJava to point to the
+<i>479</i>&nbsp;                //  preferred mime name).
+<b class="nc"><i>480</i>&nbsp;                for (Entry&lt;String, EncodingInfo&gt; e : _encodingTableKeyJava.entrySet()) {</b>
+<b class="nc"><i>481</i>&nbsp;                    e.setValue(canonicals.get(toUpperCaseFast(e.getValue().javaName)));</b>
+<b class="nc"><i>482</i>&nbsp;                }</b>
+<i>483</i>&nbsp;
+<b class="nc"><i>484</i>&nbsp;            } catch (java.net.MalformedURLException mue) {</b>
+<b class="nc"><i>485</i>&nbsp;                throw new com.sun.org.apache.xml.internal.serializer.utils.WrappedRuntimeException(mue);</b>
+<b class="nc"><i>486</i>&nbsp;            } catch (java.io.IOException ioe) {</b>
+<b class="nc"><i>487</i>&nbsp;                throw new com.sun.org.apache.xml.internal.serializer.utils.WrappedRuntimeException(ioe);</b>
+<b class="nc"><i>488</i>&nbsp;            }</b>
+<i>489</i>&nbsp;        }
+<i>490</i>&nbsp;
+<i>491</i>&nbsp;        EncodingInfo findEncoding(String normalizedEncoding) {
+<b class="nc"><i>492</i>&nbsp;            EncodingInfo info = _encodingTableKeyJava.get(normalizedEncoding);</b>
+<b class="nc"><i>493</i>&nbsp;            if (info == null) {</b>
+<b class="nc"><i>494</i>&nbsp;                info = _encodingTableKeyMime.get(normalizedEncoding);</b>
+<i>495</i>&nbsp;            }
+<b class="nc"><i>496</i>&nbsp;            if (info == null) {</b>
+<b class="nc"><i>497</i>&nbsp;                info = _encodingDynamicTable.get(normalizedEncoding);</b>
+<i>498</i>&nbsp;            }
+<b class="nc"><i>499</i>&nbsp;            return info;</b>
+<i>500</i>&nbsp;        }
+<i>501</i>&nbsp;
+<i>502</i>&nbsp;        EncodingInfo getEncodingFromMimeKey(String normalizedMimeName) {
+<b class="nc"><i>503</i>&nbsp;            return _encodingTableKeyMime.get(normalizedMimeName);</b>
+<i>504</i>&nbsp;        }
+<i>505</i>&nbsp;
+<i>506</i>&nbsp;        EncodingInfo getEncodingFromJavaKey(String normalizedJavaName) {
+<b class="nc"><i>507</i>&nbsp;            return _encodingTableKeyJava.get(normalizedJavaName);</b>
+<i>508</i>&nbsp;        }
+<i>509</i>&nbsp;
+<i>510</i>&nbsp;        void putEncoding(String key, EncodingInfo info) {
+<b class="nc"><i>511</i>&nbsp;            _encodingDynamicTable.put(key, info);</b>
+<i>512</i>&nbsp;        }
+<i>513</i>&nbsp;    }
+<i>514</i>&nbsp;
+<i>515</i>&nbsp;    /**
+<i>516</i>&nbsp;     * Return true if the character is the high member of a surrogate pair.
+<i>517</i>&nbsp;     * &lt;p&gt;
+<i>518</i>&nbsp;     * This is not a public API.
+<i>519</i>&nbsp;     * @param ch the character to test
+<i>520</i>&nbsp;     * @xsl.usage internal
+<i>521</i>&nbsp;     */
+<i>522</i>&nbsp;    static boolean isHighUTF16Surrogate(char ch) {
+<b class="nc"><i>523</i>&nbsp;        return (&#39;\uD800&#39; &lt;= ch &amp;&amp; ch &lt;= &#39;\uDBFF&#39;);</b>
+<i>524</i>&nbsp;    }
+<i>525</i>&nbsp;    /**
+<i>526</i>&nbsp;     * Return true if the character is the low member of a surrogate pair.
+<i>527</i>&nbsp;     * &lt;p&gt;
+<i>528</i>&nbsp;     * This is not a public API.
+<i>529</i>&nbsp;     * @param ch the character to test
+<i>530</i>&nbsp;     * @xsl.usage internal
+<i>531</i>&nbsp;     */
+<i>532</i>&nbsp;    static boolean isLowUTF16Surrogate(char ch) {
+<b class="nc"><i>533</i>&nbsp;        return (&#39;\uDC00&#39; &lt;= ch &amp;&amp; ch &lt;= &#39;\uDFFF&#39;);</b>
+<i>534</i>&nbsp;    }
+<i>535</i>&nbsp;    /**
+<i>536</i>&nbsp;     * Return the unicode code point represented by the high/low surrogate pair.
+<i>537</i>&nbsp;     * &lt;p&gt;
+<i>538</i>&nbsp;     * This is not a public API.
+<i>539</i>&nbsp;     * @param highSurrogate the high char of the high/low pair
+<i>540</i>&nbsp;     * @param lowSurrogate the low char of the high/low pair
+<i>541</i>&nbsp;     * @xsl.usage internal
+<i>542</i>&nbsp;     */
+<i>543</i>&nbsp;    static int toCodePoint(char highSurrogate, char lowSurrogate) {
+<b class="nc"><i>544</i>&nbsp;        int codePoint =</b>
+<i>545</i>&nbsp;            ((highSurrogate - 0xd800) &lt;&lt; 10)
+<i>546</i>&nbsp;                + (lowSurrogate - 0xdc00)
+<i>547</i>&nbsp;                + 0x10000;
+<b class="nc"><i>548</i>&nbsp;        return codePoint;</b>
+<i>549</i>&nbsp;    }
+<i>550</i>&nbsp;    /**
+<i>551</i>&nbsp;     * Return the unicode code point represented by the char.
+<i>552</i>&nbsp;     * A bit of a dummy method, since all it does is return the char,
+<i>553</i>&nbsp;     * but as an int value.
+<i>554</i>&nbsp;     * &lt;p&gt;
+<i>555</i>&nbsp;     * This is not a public API.
+<i>556</i>&nbsp;     * @param ch the char.
+<i>557</i>&nbsp;     * @xsl.usage internal
+<i>558</i>&nbsp;     */
+<i>559</i>&nbsp;    static int toCodePoint(char ch) {
+<b class="nc"><i>560</i>&nbsp;        int codePoint = ch;</b>
+<b class="nc"><i>561</i>&nbsp;        return codePoint;</b>
+<i>562</i>&nbsp;    }
+<i>563</i>&nbsp;
+<b class="nc"><i>564</i>&nbsp;    private final static EncodingInfos _encodingInfos = new EncodingInfos();</b>
+<i>565</i>&nbsp;
+<i>566</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

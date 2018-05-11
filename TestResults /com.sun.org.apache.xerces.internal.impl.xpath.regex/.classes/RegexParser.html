@@ -1,0 +1,1350 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: RegexParser</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.xpath.regex</a> ]
+</div>
+
+<h1>Coverage Summary for Class: RegexParser (com.sun.org.apache.xerces.internal.impl.xpath.regex)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RegexParser</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 51)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 704)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">RegexParser$ReferencePosition</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 52)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 707)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.xpath.regex;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import com.sun.org.apache.xerces.internal.utils.SecuritySupport;
+<i>24</i>&nbsp;import java.util.Locale;
+<i>25</i>&nbsp;import java.util.MissingResourceException;
+<i>26</i>&nbsp;import java.util.ResourceBundle;
+<i>27</i>&nbsp;import java.util.Vector;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;/**
+<i>30</i>&nbsp; * A Regular Expression Parser.
+<i>31</i>&nbsp; *
+<i>32</i>&nbsp; * @xerces.internal
+<i>33</i>&nbsp; *
+<i>34</i>&nbsp; * @version $Id: RegexParser.java,v 1.8 2010-11-01 04:39:54 joehw Exp $
+<i>35</i>&nbsp; */
+<i>36</i>&nbsp;class RegexParser {
+<i>37</i>&nbsp;    static final int T_CHAR = 0;
+<i>38</i>&nbsp;    static final int T_EOF = 1;
+<i>39</i>&nbsp;    static final int T_OR = 2;                  // &#39;|&#39;
+<i>40</i>&nbsp;    static final int T_STAR = 3;                // &#39;*&#39;
+<i>41</i>&nbsp;    static final int T_PLUS = 4;                // &#39;+&#39;
+<i>42</i>&nbsp;    static final int T_QUESTION = 5;            // &#39;?&#39;
+<i>43</i>&nbsp;    static final int T_LPAREN = 6;              // &#39;(&#39;
+<i>44</i>&nbsp;    static final int T_RPAREN = 7;              // &#39;)&#39;
+<i>45</i>&nbsp;    static final int T_DOT = 8;                 // &#39;.&#39;
+<i>46</i>&nbsp;    static final int T_LBRACKET = 9;            // &#39;[&#39;
+<i>47</i>&nbsp;    static final int T_BACKSOLIDUS = 10;        // &#39;\&#39;
+<i>48</i>&nbsp;    static final int T_CARET = 11;              // &#39;^&#39;
+<i>49</i>&nbsp;    static final int T_DOLLAR = 12;             // &#39;$&#39;
+<i>50</i>&nbsp;    static final int T_LPAREN2 = 13;            // &#39;(?:&#39;
+<i>51</i>&nbsp;    static final int T_LOOKAHEAD = 14;          // &#39;(?=&#39;
+<i>52</i>&nbsp;    static final int T_NEGATIVELOOKAHEAD = 15;  // &#39;(?!&#39;
+<i>53</i>&nbsp;    static final int T_LOOKBEHIND = 16;         // &#39;(?&lt;=&#39;
+<i>54</i>&nbsp;    static final int T_NEGATIVELOOKBEHIND = 17; // &#39;(?&lt;!&#39;
+<i>55</i>&nbsp;    static final int T_INDEPENDENT = 18;        // &#39;(?&gt;&#39;
+<i>56</i>&nbsp;    static final int T_SET_OPERATIONS = 19;     // &#39;(?[&#39;
+<i>57</i>&nbsp;    static final int T_POSIX_CHARCLASS_START = 20; // &#39;[:&#39; in a character class
+<i>58</i>&nbsp;    static final int T_COMMENT = 21;            // &#39;(?#&#39;
+<i>59</i>&nbsp;    static final int T_MODIFIERS = 22;          // &#39;(?&#39; [\-,a-z,A-Z]
+<i>60</i>&nbsp;    static final int T_CONDITION = 23;          // &#39;(?(&#39;
+<i>61</i>&nbsp;    static final int T_XMLSCHEMA_CC_SUBTRACTION = 24; // &#39;-[&#39; in a character class
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    static class ReferencePosition {
+<i>64</i>&nbsp;        int refNumber;
+<i>65</i>&nbsp;        int position;
+<b class="nc"><i>66</i>&nbsp;        ReferencePosition(int n, int pos) {</b>
+<b class="nc"><i>67</i>&nbsp;            this.refNumber = n;</b>
+<b class="nc"><i>68</i>&nbsp;            this.position = pos;</b>
+<i>69</i>&nbsp;        }
+<i>70</i>&nbsp;    }
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;    int offset;
+<i>73</i>&nbsp;    String regex;
+<i>74</i>&nbsp;    int regexlen;
+<i>75</i>&nbsp;    int options;
+<i>76</i>&nbsp;    ResourceBundle resources;
+<i>77</i>&nbsp;    int chardata;
+<i>78</i>&nbsp;    int nexttoken;
+<i>79</i>&nbsp;    static protected final int S_NORMAL = 0;
+<i>80</i>&nbsp;    static protected final int S_INBRACKETS = 1;
+<i>81</i>&nbsp;    static protected final int S_INXBRACKETS = 2;
+<b class="nc"><i>82</i>&nbsp;    int context = S_NORMAL;</b>
+<b class="nc"><i>83</i>&nbsp;    int parenOpened = 1;</b>
+<b class="nc"><i>84</i>&nbsp;    int parennumber = 1;</b>
+<i>85</i>&nbsp;    boolean hasBackReferences;
+<b class="nc"><i>86</i>&nbsp;    Vector references = null;</b>
+<b class="nc"><i>87</i>&nbsp;    int parenCount = 0;</b>
+<i>88</i>&nbsp;
+<b class="nc"><i>89</i>&nbsp;    public RegexParser() {</b>
+<b class="nc"><i>90</i>&nbsp;        this.setLocale(Locale.getDefault());</b>
+<i>91</i>&nbsp;    }
+<b class="nc"><i>92</i>&nbsp;    public RegexParser(Locale locale) {</b>
+<b class="nc"><i>93</i>&nbsp;        this.setLocale(locale);</b>
+<i>94</i>&nbsp;    }
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    public void setLocale(Locale locale) {
+<i>97</i>&nbsp;        try {
+<b class="nc"><i>98</i>&nbsp;            if (locale != null) {</b>
+<b class="nc"><i>99</i>&nbsp;                this.resources = SecuritySupport.getResourceBundle(&quot;com.sun.org.apache.xerces.internal.impl.xpath.regex.message&quot;, locale);</b>
+<i>100</i>&nbsp;            }
+<i>101</i>&nbsp;            else {
+<b class="nc"><i>102</i>&nbsp;                this.resources = SecuritySupport.getResourceBundle(&quot;com.sun.org.apache.xerces.internal.impl.xpath.regex.message&quot;);</b>
+<i>103</i>&nbsp;            }
+<i>104</i>&nbsp;        }
+<b class="nc"><i>105</i>&nbsp;        catch (MissingResourceException mre) {</b>
+<b class="nc"><i>106</i>&nbsp;            throw new RuntimeException(&quot;Installation Problem???  Couldn&#39;t load messages: &quot;</b>
+<b class="nc"><i>107</i>&nbsp;                                       + mre.getMessage());</b>
+<b class="nc"><i>108</i>&nbsp;        }</b>
+<i>109</i>&nbsp;    }
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;    final ParseException ex(String key, int loc) {
+<b class="nc"><i>112</i>&nbsp;        return new ParseException(this.resources.getString(key), loc);</b>
+<i>113</i>&nbsp;    }
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;    protected final boolean isSet(int flag) {
+<b class="nc"><i>116</i>&nbsp;        return (this.options &amp; flag) == flag;</b>
+<i>117</i>&nbsp;    }
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;    synchronized Token parse(String regex, int options) throws ParseException {
+<b class="nc"><i>120</i>&nbsp;        this.options = options;</b>
+<b class="nc"><i>121</i>&nbsp;        this.offset = 0;</b>
+<b class="nc"><i>122</i>&nbsp;        this.setContext(S_NORMAL);</b>
+<b class="nc"><i>123</i>&nbsp;        this.parennumber = 1;</b>
+<b class="nc"><i>124</i>&nbsp;        this.parenOpened = 1;</b>
+<b class="nc"><i>125</i>&nbsp;        this.hasBackReferences = false;</b>
+<b class="nc"><i>126</i>&nbsp;        this.regex = regex;</b>
+<b class="nc"><i>127</i>&nbsp;        if (this.isSet(RegularExpression.EXTENDED_COMMENT))</b>
+<b class="nc"><i>128</i>&nbsp;            this.regex = REUtil.stripExtendedComment(this.regex);</b>
+<b class="nc"><i>129</i>&nbsp;        this.regexlen = this.regex.length();</b>
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;
+<b class="nc"><i>132</i>&nbsp;        this.next();</b>
+<b class="nc"><i>133</i>&nbsp;        Token ret = this.parseRegex();</b>
+<b class="nc"><i>134</i>&nbsp;        if (this.offset != this.regexlen)</b>
+<b class="nc"><i>135</i>&nbsp;            throw ex(&quot;parser.parse.1&quot;, this.offset);</b>
+<b class="nc"><i>136</i>&nbsp;        if (parenCount &lt; 0)</b>
+<b class="nc"><i>137</i>&nbsp;            throw ex(&quot;parser.factor.0&quot;, this.offset);</b>
+<b class="nc"><i>138</i>&nbsp;        if (this.references != null) {</b>
+<b class="nc"><i>139</i>&nbsp;            for (int i = 0;  i &lt; this.references.size();  i ++) {</b>
+<b class="nc"><i>140</i>&nbsp;                ReferencePosition position = (ReferencePosition)this.references.elementAt(i);</b>
+<b class="nc"><i>141</i>&nbsp;                if (this.parennumber &lt;= position.refNumber)</b>
+<b class="nc"><i>142</i>&nbsp;                    throw ex(&quot;parser.parse.2&quot;, position.position);</b>
+<i>143</i>&nbsp;            }
+<b class="nc"><i>144</i>&nbsp;            this.references.removeAllElements();</b>
+<i>145</i>&nbsp;        }
+<b class="nc"><i>146</i>&nbsp;        return ret;</b>
+<i>147</i>&nbsp;    }
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    /*
+<i>150</i>&nbsp;    public RegularExpression createRegex(String regex, int options) throws ParseException {
+<i>151</i>&nbsp;        Token tok = this.parse(regex, options);
+<i>152</i>&nbsp;        return new RegularExpression(regex, tok, this.parennumber, this.hasBackReferences, options);
+<i>153</i>&nbsp;    }
+<i>154</i>&nbsp;    */
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;    protected final void setContext(int con) {
+<b class="nc"><i>157</i>&nbsp;        this.context = con;</b>
+<i>158</i>&nbsp;    }
+<i>159</i>&nbsp;
+<i>160</i>&nbsp;    final int read() {
+<b class="nc"><i>161</i>&nbsp;        return this.nexttoken;</b>
+<i>162</i>&nbsp;    }
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;    final void next() {
+<b class="nc"><i>165</i>&nbsp;        if (this.offset &gt;= this.regexlen) {</b>
+<b class="nc"><i>166</i>&nbsp;            this.chardata = -1;</b>
+<b class="nc"><i>167</i>&nbsp;            this.nexttoken = T_EOF;</b>
+<i>168</i>&nbsp;            return;
+<i>169</i>&nbsp;        }
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;        int ret;
+<b class="nc"><i>172</i>&nbsp;        int ch = this.regex.charAt(this.offset++);</b>
+<b class="nc"><i>173</i>&nbsp;        this.chardata = ch;</b>
+<i>174</i>&nbsp;
+<b class="nc"><i>175</i>&nbsp;        if (this.context == S_INBRACKETS) {</b>
+<i>176</i>&nbsp;            // In a character class, this.chardata has one character, that is to say,
+<i>177</i>&nbsp;            // a pair of surrogates is composed and stored to this.chardata.
+<b class="nc"><i>178</i>&nbsp;            switch (ch) {</b>
+<i>179</i>&nbsp;              case &#39;\\&#39;:
+<b class="nc"><i>180</i>&nbsp;                ret = T_BACKSOLIDUS;</b>
+<b class="nc"><i>181</i>&nbsp;                if (this.offset &gt;= this.regexlen)</b>
+<b class="nc"><i>182</i>&nbsp;                    throw ex(&quot;parser.next.1&quot;, this.offset-1);</b>
+<b class="nc"><i>183</i>&nbsp;                this.chardata = this.regex.charAt(this.offset++);</b>
+<b class="nc"><i>184</i>&nbsp;                break;</b>
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;              case &#39;-&#39;:
+<i>187</i>&nbsp;                // Allow character class subtraction (regardless of whether we are in
+<i>188</i>&nbsp;                // XML Schema mode or not)
+<b class="nc"><i>189</i>&nbsp;                if (this.offset &lt; this.regexlen &amp;&amp; this.regex.charAt(this.offset) == &#39;[&#39;) {</b>
+<b class="nc"><i>190</i>&nbsp;                    this.offset++;</b>
+<b class="nc"><i>191</i>&nbsp;                    ret = T_XMLSCHEMA_CC_SUBTRACTION;</b>
+<i>192</i>&nbsp;                } else
+<b class="nc"><i>193</i>&nbsp;                    ret = T_CHAR;</b>
+<b class="nc"><i>194</i>&nbsp;                break;</b>
+<i>195</i>&nbsp;
+<i>196</i>&nbsp;              case &#39;[&#39;:
+<b class="nc"><i>197</i>&nbsp;                if (!this.isSet(RegularExpression.XMLSCHEMA_MODE)</b>
+<b class="nc"><i>198</i>&nbsp;                    &amp;&amp; this.offset &lt; this.regexlen &amp;&amp; this.regex.charAt(this.offset) == &#39;:&#39;) {</b>
+<b class="nc"><i>199</i>&nbsp;                    this.offset++;</b>
+<b class="nc"><i>200</i>&nbsp;                    ret = T_POSIX_CHARCLASS_START;</b>
+<b class="nc"><i>201</i>&nbsp;                    break;</b>
+<i>202</i>&nbsp;                } // Through down
+<i>203</i>&nbsp;              default:
+<b class="nc"><i>204</i>&nbsp;                if (REUtil.isHighSurrogate(ch) &amp;&amp; this.offset &lt; this.regexlen) {</b>
+<b class="nc"><i>205</i>&nbsp;                    int low = this.regex.charAt(this.offset);</b>
+<b class="nc"><i>206</i>&nbsp;                    if (REUtil.isLowSurrogate(low)) {</b>
+<b class="nc"><i>207</i>&nbsp;                        this.chardata = REUtil.composeFromSurrogates(ch, low);</b>
+<b class="nc"><i>208</i>&nbsp;                        this.offset ++;</b>
+<i>209</i>&nbsp;                    }
+<i>210</i>&nbsp;                }
+<b class="nc"><i>211</i>&nbsp;                ret = T_CHAR;</b>
+<i>212</i>&nbsp;            }
+<b class="nc"><i>213</i>&nbsp;            this.nexttoken = ret;</b>
+<i>214</i>&nbsp;            return;
+<i>215</i>&nbsp;        }
+<i>216</i>&nbsp;
+<b class="nc"><i>217</i>&nbsp;        switch (ch) {</b>
+<b class="nc"><i>218</i>&nbsp;          case &#39;|&#39;: ret = T_OR;             break;</b>
+<b class="nc"><i>219</i>&nbsp;          case &#39;*&#39;: ret = T_STAR;           break;</b>
+<b class="nc"><i>220</i>&nbsp;          case &#39;+&#39;: ret = T_PLUS;           break;</b>
+<b class="nc"><i>221</i>&nbsp;          case &#39;?&#39;: ret = T_QUESTION;       break;</b>
+<b class="nc"><i>222</i>&nbsp;          case &#39;)&#39;: ret = T_RPAREN;         break;</b>
+<b class="nc"><i>223</i>&nbsp;          case &#39;.&#39;: ret = T_DOT;            break;</b>
+<b class="nc"><i>224</i>&nbsp;          case &#39;[&#39;: ret = T_LBRACKET;       break;</b>
+<i>225</i>&nbsp;          case &#39;^&#39;:
+<b class="nc"><i>226</i>&nbsp;              if (this.isSet(RegularExpression.XMLSCHEMA_MODE)) {</b>
+<b class="nc"><i>227</i>&nbsp;                  ret = T_CHAR;</b>
+<i>228</i>&nbsp;              }
+<i>229</i>&nbsp;              else {
+<b class="nc"><i>230</i>&nbsp;                  ret = T_CARET;</b>
+<i>231</i>&nbsp;              }
+<b class="nc"><i>232</i>&nbsp;              break;</b>
+<i>233</i>&nbsp;          case &#39;$&#39;:
+<b class="nc"><i>234</i>&nbsp;              if (this.isSet(RegularExpression.XMLSCHEMA_MODE)) {</b>
+<b class="nc"><i>235</i>&nbsp;                  ret = T_CHAR;</b>
+<i>236</i>&nbsp;              }
+<i>237</i>&nbsp;              else {
+<b class="nc"><i>238</i>&nbsp;                  ret = T_DOLLAR;</b>
+<i>239</i>&nbsp;              }
+<b class="nc"><i>240</i>&nbsp;              break;</b>
+<i>241</i>&nbsp;          case &#39;(&#39;:
+<b class="nc"><i>242</i>&nbsp;            ret = T_LPAREN;</b>
+<b class="nc"><i>243</i>&nbsp;            parenCount++;</b>
+<b class="nc"><i>244</i>&nbsp;            if (this.offset &gt;= this.regexlen)</b>
+<b class="nc"><i>245</i>&nbsp;                break;</b>
+<b class="nc"><i>246</i>&nbsp;            if (this.regex.charAt(this.offset) != &#39;?&#39;)</b>
+<b class="nc"><i>247</i>&nbsp;                break;</b>
+<b class="nc"><i>248</i>&nbsp;            if (++this.offset &gt;= this.regexlen)</b>
+<b class="nc"><i>249</i>&nbsp;                throw ex(&quot;parser.next.2&quot;, this.offset-1);</b>
+<b class="nc"><i>250</i>&nbsp;            ch = this.regex.charAt(this.offset++);</b>
+<b class="nc"><i>251</i>&nbsp;            switch (ch) {</b>
+<b class="nc"><i>252</i>&nbsp;              case &#39;:&#39;:  ret = T_LPAREN2;            break;</b>
+<b class="nc"><i>253</i>&nbsp;              case &#39;=&#39;:  ret = T_LOOKAHEAD;          break;</b>
+<b class="nc"><i>254</i>&nbsp;              case &#39;!&#39;:  ret = T_NEGATIVELOOKAHEAD;  break;</b>
+<b class="nc"><i>255</i>&nbsp;              case &#39;[&#39;:  ret = T_SET_OPERATIONS;     break;</b>
+<b class="nc"><i>256</i>&nbsp;              case &#39;&gt;&#39;:  ret = T_INDEPENDENT;        break;</b>
+<i>257</i>&nbsp;              case &#39;&lt;&#39;:
+<b class="nc"><i>258</i>&nbsp;                if (this.offset &gt;= this.regexlen)</b>
+<b class="nc"><i>259</i>&nbsp;                    throw ex(&quot;parser.next.2&quot;, this.offset-3);</b>
+<b class="nc"><i>260</i>&nbsp;                ch = this.regex.charAt(this.offset++);</b>
+<b class="nc"><i>261</i>&nbsp;                if (ch == &#39;=&#39;) {</b>
+<b class="nc"><i>262</i>&nbsp;                    ret = T_LOOKBEHIND;</b>
+<b class="nc"><i>263</i>&nbsp;                } else if (ch == &#39;!&#39;) {</b>
+<b class="nc"><i>264</i>&nbsp;                    ret = T_NEGATIVELOOKBEHIND;</b>
+<i>265</i>&nbsp;                } else
+<b class="nc"><i>266</i>&nbsp;                    throw ex(&quot;parser.next.3&quot;, this.offset-3);</b>
+<i>267</i>&nbsp;                break;
+<i>268</i>&nbsp;              case &#39;#&#39;:
+<b class="nc"><i>269</i>&nbsp;                while (this.offset &lt; this.regexlen) {</b>
+<b class="nc"><i>270</i>&nbsp;                    ch = this.regex.charAt(this.offset++);</b>
+<b class="nc"><i>271</i>&nbsp;                    if (ch == &#39;)&#39;)  break;</b>
+<i>272</i>&nbsp;                }
+<b class="nc"><i>273</i>&nbsp;                if (ch != &#39;)&#39;)</b>
+<b class="nc"><i>274</i>&nbsp;                    throw ex(&quot;parser.next.4&quot;, this.offset-1);</b>
+<b class="nc"><i>275</i>&nbsp;                ret = T_COMMENT;</b>
+<b class="nc"><i>276</i>&nbsp;                break;</b>
+<i>277</i>&nbsp;              default:
+<b class="nc"><i>278</i>&nbsp;                if (ch == &#39;-&#39; || &#39;a&#39; &lt;= ch &amp;&amp; ch &lt;= &#39;z&#39; || &#39;A&#39; &lt;= ch &amp;&amp; ch &lt;= &#39;Z&#39;) {// Options</b>
+<b class="nc"><i>279</i>&nbsp;                    this.offset --;</b>
+<b class="nc"><i>280</i>&nbsp;                    ret = T_MODIFIERS;</b>
+<b class="nc"><i>281</i>&nbsp;                    break;</b>
+<b class="nc"><i>282</i>&nbsp;                } else if (ch == &#39;(&#39;) {         // conditional</b>
+<b class="nc"><i>283</i>&nbsp;                    ret = T_CONDITION;          // this.offsets points the next of &#39;(&#39;.</b>
+<b class="nc"><i>284</i>&nbsp;                    break;</b>
+<i>285</i>&nbsp;                }
+<b class="nc"><i>286</i>&nbsp;                throw ex(&quot;parser.next.2&quot;, this.offset-2);</b>
+<i>287</i>&nbsp;            }
+<i>288</i>&nbsp;            break;
+<i>289</i>&nbsp;
+<i>290</i>&nbsp;          case &#39;\\&#39;:
+<b class="nc"><i>291</i>&nbsp;            ret = T_BACKSOLIDUS;</b>
+<b class="nc"><i>292</i>&nbsp;            if (this.offset &gt;= this.regexlen)</b>
+<b class="nc"><i>293</i>&nbsp;                throw ex(&quot;parser.next.1&quot;, this.offset-1);</b>
+<b class="nc"><i>294</i>&nbsp;            this.chardata = this.regex.charAt(this.offset++);</b>
+<b class="nc"><i>295</i>&nbsp;            break;</b>
+<i>296</i>&nbsp;
+<i>297</i>&nbsp;          default:
+<b class="nc"><i>298</i>&nbsp;            ret = T_CHAR;</b>
+<i>299</i>&nbsp;        }
+<b class="nc"><i>300</i>&nbsp;        this.nexttoken = ret;</b>
+<i>301</i>&nbsp;    }
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;    /**
+<i>304</i>&nbsp;     * regex ::= term (`|` term)*
+<i>305</i>&nbsp;     * term ::= factor+
+<i>306</i>&nbsp;     * factor ::= (&#39;^&#39; | &#39;$&#39; | &#39;\A&#39; | &#39;\Z&#39; | &#39;\z&#39; | &#39;\b&#39; | &#39;\B&#39; | &#39;\&lt;&#39; | &#39;\&gt;&#39;
+<i>307</i>&nbsp;     *            | atom ((&#39;*&#39; | &#39;+&#39; | &#39;?&#39; | minmax ) &#39;?&#39;? )?)
+<i>308</i>&nbsp;     *            | &#39;(?=&#39; regex &#39;)&#39;  | &#39;(?!&#39; regex &#39;)&#39;  | &#39;(?&amp;lt;=&#39; regex &#39;)&#39;  | &#39;(?&amp;lt;!&#39; regex &#39;)&#39;
+<i>309</i>&nbsp;     * atom ::= char | &#39;.&#39; | range | &#39;(&#39; regex &#39;)&#39; | &#39;(?:&#39; regex &#39;)&#39; | &#39;\&#39; [0-9]
+<i>310</i>&nbsp;     *          | &#39;\w&#39; | &#39;\W&#39; | &#39;\d&#39; | &#39;\D&#39; | &#39;\s&#39; | &#39;\S&#39; | category-block
+<i>311</i>&nbsp;     */
+<i>312</i>&nbsp;    Token parseRegex() throws ParseException {
+<b class="nc"><i>313</i>&nbsp;        Token tok = this.parseTerm();</b>
+<b class="nc"><i>314</i>&nbsp;        Token parent = null;</b>
+<b class="nc"><i>315</i>&nbsp;        while (this.read() == T_OR) {</b>
+<b class="nc"><i>316</i>&nbsp;            this.next();                    // &#39;|&#39;</b>
+<b class="nc"><i>317</i>&nbsp;            if (parent == null) {</b>
+<b class="nc"><i>318</i>&nbsp;                parent = Token.createUnion();</b>
+<b class="nc"><i>319</i>&nbsp;                parent.addChild(tok);</b>
+<b class="nc"><i>320</i>&nbsp;                tok = parent;</b>
+<i>321</i>&nbsp;            }
+<b class="nc"><i>322</i>&nbsp;            tok.addChild(this.parseTerm());</b>
+<i>323</i>&nbsp;        }
+<b class="nc"><i>324</i>&nbsp;        return tok;</b>
+<i>325</i>&nbsp;    }
+<i>326</i>&nbsp;
+<i>327</i>&nbsp;    /**
+<i>328</i>&nbsp;     * term ::= factor+
+<i>329</i>&nbsp;     */
+<i>330</i>&nbsp;    Token parseTerm() throws ParseException {
+<b class="nc"><i>331</i>&nbsp;        int ch = this.read();</b>
+<b class="nc"><i>332</i>&nbsp;        Token tok = null;</b>
+<b class="nc"><i>333</i>&nbsp;        if (ch == T_OR || ch == T_RPAREN || ch == T_EOF) {</b>
+<b class="nc"><i>334</i>&nbsp;            tok = Token.createEmpty();</b>
+<i>335</i>&nbsp;        } else {
+<b class="nc"><i>336</i>&nbsp;            tok = this.parseFactor();</b>
+<b class="nc"><i>337</i>&nbsp;            Token concat = null;</b>
+<b class="nc"><i>338</i>&nbsp;            while ((ch = this.read()) != T_OR &amp;&amp; ch != T_RPAREN &amp;&amp; ch != T_EOF) {</b>
+<b class="nc"><i>339</i>&nbsp;                if (concat == null) {</b>
+<b class="nc"><i>340</i>&nbsp;                    concat = Token.createConcat();</b>
+<b class="nc"><i>341</i>&nbsp;                    concat.addChild(tok);</b>
+<b class="nc"><i>342</i>&nbsp;                    tok = concat;</b>
+<i>343</i>&nbsp;                }
+<b class="nc"><i>344</i>&nbsp;                concat.addChild(this.parseFactor());</b>
+<i>345</i>&nbsp;                //tok = Token.createConcat(tok, this.parseFactor());
+<i>346</i>&nbsp;            }
+<i>347</i>&nbsp;        }
+<b class="nc"><i>348</i>&nbsp;        if (ch == T_RPAREN) {</b>
+<b class="nc"><i>349</i>&nbsp;            parenCount--;</b>
+<i>350</i>&nbsp;        }
+<b class="nc"><i>351</i>&nbsp;        return tok;</b>
+<i>352</i>&nbsp;    }
+<i>353</i>&nbsp;
+<i>354</i>&nbsp;    // ----------------------------------------------------------------
+<i>355</i>&nbsp;
+<i>356</i>&nbsp;    Token processCaret() throws ParseException {
+<b class="nc"><i>357</i>&nbsp;        this.next();</b>
+<b class="nc"><i>358</i>&nbsp;        return Token.token_linebeginning;</b>
+<i>359</i>&nbsp;    }
+<i>360</i>&nbsp;    Token processDollar() throws ParseException {
+<b class="nc"><i>361</i>&nbsp;        this.next();</b>
+<b class="nc"><i>362</i>&nbsp;        return Token.token_lineend;</b>
+<i>363</i>&nbsp;    }
+<i>364</i>&nbsp;    Token processLookahead() throws ParseException {
+<b class="nc"><i>365</i>&nbsp;        this.next();</b>
+<b class="nc"><i>366</i>&nbsp;        Token tok = Token.createLook(Token.LOOKAHEAD, this.parseRegex());</b>
+<b class="nc"><i>367</i>&nbsp;        if (this.read() != T_RPAREN)  throw ex(&quot;parser.factor.1&quot;, this.offset-1);</b>
+<b class="nc"><i>368</i>&nbsp;        this.next();                            // &#39;)&#39;</b>
+<b class="nc"><i>369</i>&nbsp;        return tok;</b>
+<i>370</i>&nbsp;    }
+<i>371</i>&nbsp;    Token processNegativelookahead() throws ParseException {
+<b class="nc"><i>372</i>&nbsp;        this.next();</b>
+<b class="nc"><i>373</i>&nbsp;        Token tok = Token.createLook(Token.NEGATIVELOOKAHEAD, this.parseRegex());</b>
+<b class="nc"><i>374</i>&nbsp;        if (this.read() != T_RPAREN)  throw ex(&quot;parser.factor.1&quot;, this.offset-1);</b>
+<b class="nc"><i>375</i>&nbsp;        this.next();                            // &#39;)&#39;</b>
+<b class="nc"><i>376</i>&nbsp;        return tok;</b>
+<i>377</i>&nbsp;    }
+<i>378</i>&nbsp;    Token processLookbehind() throws ParseException {
+<b class="nc"><i>379</i>&nbsp;        this.next();</b>
+<b class="nc"><i>380</i>&nbsp;        Token tok = Token.createLook(Token.LOOKBEHIND, this.parseRegex());</b>
+<b class="nc"><i>381</i>&nbsp;        if (this.read() != T_RPAREN)  throw ex(&quot;parser.factor.1&quot;, this.offset-1);</b>
+<b class="nc"><i>382</i>&nbsp;        this.next();                            // &#39;)&#39;</b>
+<b class="nc"><i>383</i>&nbsp;        return tok;</b>
+<i>384</i>&nbsp;    }
+<i>385</i>&nbsp;    Token processNegativelookbehind() throws ParseException {
+<b class="nc"><i>386</i>&nbsp;        this.next();</b>
+<b class="nc"><i>387</i>&nbsp;        Token tok = Token.createLook(Token.NEGATIVELOOKBEHIND, this.parseRegex());</b>
+<b class="nc"><i>388</i>&nbsp;        if (this.read() != T_RPAREN)  throw ex(&quot;parser.factor.1&quot;, this.offset-1);</b>
+<b class="nc"><i>389</i>&nbsp;        this.next();                    // &#39;)&#39;</b>
+<b class="nc"><i>390</i>&nbsp;        return tok;</b>
+<i>391</i>&nbsp;    }
+<i>392</i>&nbsp;    Token processBacksolidus_A() throws ParseException {
+<b class="nc"><i>393</i>&nbsp;        this.next();</b>
+<b class="nc"><i>394</i>&nbsp;        return Token.token_stringbeginning;</b>
+<i>395</i>&nbsp;    }
+<i>396</i>&nbsp;    Token processBacksolidus_Z() throws ParseException {
+<b class="nc"><i>397</i>&nbsp;        this.next();</b>
+<b class="nc"><i>398</i>&nbsp;        return Token.token_stringend2;</b>
+<i>399</i>&nbsp;    }
+<i>400</i>&nbsp;    Token processBacksolidus_z() throws ParseException {
+<b class="nc"><i>401</i>&nbsp;        this.next();</b>
+<b class="nc"><i>402</i>&nbsp;        return Token.token_stringend;</b>
+<i>403</i>&nbsp;    }
+<i>404</i>&nbsp;    Token processBacksolidus_b() throws ParseException {
+<b class="nc"><i>405</i>&nbsp;        this.next();</b>
+<b class="nc"><i>406</i>&nbsp;        return Token.token_wordedge;</b>
+<i>407</i>&nbsp;    }
+<i>408</i>&nbsp;    Token processBacksolidus_B() throws ParseException {
+<b class="nc"><i>409</i>&nbsp;        this.next();</b>
+<b class="nc"><i>410</i>&nbsp;        return Token.token_not_wordedge;</b>
+<i>411</i>&nbsp;    }
+<i>412</i>&nbsp;    Token processBacksolidus_lt() throws ParseException {
+<b class="nc"><i>413</i>&nbsp;        this.next();</b>
+<b class="nc"><i>414</i>&nbsp;        return Token.token_wordbeginning;</b>
+<i>415</i>&nbsp;    }
+<i>416</i>&nbsp;    Token processBacksolidus_gt() throws ParseException {
+<b class="nc"><i>417</i>&nbsp;        this.next();</b>
+<b class="nc"><i>418</i>&nbsp;        return Token.token_wordend;</b>
+<i>419</i>&nbsp;    }
+<i>420</i>&nbsp;    Token processStar(Token tok) throws ParseException {
+<b class="nc"><i>421</i>&nbsp;        this.next();</b>
+<b class="nc"><i>422</i>&nbsp;        if (this.read() == T_QUESTION) {</b>
+<b class="nc"><i>423</i>&nbsp;            this.next();</b>
+<b class="nc"><i>424</i>&nbsp;            return Token.createNGClosure(tok);</b>
+<i>425</i>&nbsp;        } else
+<b class="nc"><i>426</i>&nbsp;            return Token.createClosure(tok);</b>
+<i>427</i>&nbsp;    }
+<i>428</i>&nbsp;    Token processPlus(Token tok) throws ParseException {
+<i>429</i>&nbsp;        // X+ -&gt; XX*
+<b class="nc"><i>430</i>&nbsp;        this.next();</b>
+<b class="nc"><i>431</i>&nbsp;        if (this.read() == T_QUESTION) {</b>
+<b class="nc"><i>432</i>&nbsp;            this.next();</b>
+<b class="nc"><i>433</i>&nbsp;            return Token.createConcat(tok, Token.createNGClosure(tok));</b>
+<i>434</i>&nbsp;        } else
+<b class="nc"><i>435</i>&nbsp;            return Token.createConcat(tok, Token.createClosure(tok));</b>
+<i>436</i>&nbsp;    }
+<i>437</i>&nbsp;    Token processQuestion(Token tok) throws ParseException {
+<i>438</i>&nbsp;        // X? -&gt; X|
+<b class="nc"><i>439</i>&nbsp;        this.next();</b>
+<b class="nc"><i>440</i>&nbsp;        Token par = Token.createUnion();</b>
+<b class="nc"><i>441</i>&nbsp;        if (this.read() == T_QUESTION) {</b>
+<b class="nc"><i>442</i>&nbsp;            this.next();</b>
+<b class="nc"><i>443</i>&nbsp;            par.addChild(Token.createEmpty());</b>
+<b class="nc"><i>444</i>&nbsp;            par.addChild(tok);</b>
+<i>445</i>&nbsp;        } else {
+<b class="nc"><i>446</i>&nbsp;            par.addChild(tok);</b>
+<b class="nc"><i>447</i>&nbsp;            par.addChild(Token.createEmpty());</b>
+<i>448</i>&nbsp;        }
+<b class="nc"><i>449</i>&nbsp;        return par;</b>
+<i>450</i>&nbsp;    }
+<i>451</i>&nbsp;    boolean checkQuestion(int off) {
+<b class="nc"><i>452</i>&nbsp;        return off &lt; this.regexlen &amp;&amp; this.regex.charAt(off) == &#39;?&#39;;</b>
+<i>453</i>&nbsp;    }
+<i>454</i>&nbsp;    Token processParen() throws ParseException {
+<b class="nc"><i>455</i>&nbsp;        this.next();</b>
+<b class="nc"><i>456</i>&nbsp;        int p = this.parenOpened++;</b>
+<b class="nc"><i>457</i>&nbsp;        Token tok = Token.createParen(this.parseRegex(), p);</b>
+<b class="nc"><i>458</i>&nbsp;        if (this.read() != T_RPAREN)  throw ex(&quot;parser.factor.1&quot;, this.offset-1);</b>
+<b class="nc"><i>459</i>&nbsp;        this.parennumber++;</b>
+<b class="nc"><i>460</i>&nbsp;        this.next();                            // Skips &#39;)&#39;</b>
+<b class="nc"><i>461</i>&nbsp;        return tok;</b>
+<i>462</i>&nbsp;    }
+<i>463</i>&nbsp;    Token processParen2() throws ParseException {
+<b class="nc"><i>464</i>&nbsp;        this.next();</b>
+<b class="nc"><i>465</i>&nbsp;        Token tok = Token.createParen(this.parseRegex(), 0);</b>
+<b class="nc"><i>466</i>&nbsp;        if (this.read() != T_RPAREN)  throw ex(&quot;parser.factor.1&quot;, this.offset-1);</b>
+<b class="nc"><i>467</i>&nbsp;        this.next();                            // Skips &#39;)&#39;</b>
+<b class="nc"><i>468</i>&nbsp;        return tok;</b>
+<i>469</i>&nbsp;    }
+<i>470</i>&nbsp;    Token processCondition() throws ParseException {
+<i>471</i>&nbsp;                                                // this.offset points the next of &#39;(&#39;
+<b class="nc"><i>472</i>&nbsp;        if (this.offset+1 &gt;= this.regexlen)  throw ex(&quot;parser.factor.4&quot;, this.offset);</b>
+<i>473</i>&nbsp;                                                // Parses a condition.
+<b class="nc"><i>474</i>&nbsp;        int refno = -1;</b>
+<b class="nc"><i>475</i>&nbsp;        Token condition = null;</b>
+<b class="nc"><i>476</i>&nbsp;        int ch = this.regex.charAt(this.offset);</b>
+<b class="nc"><i>477</i>&nbsp;        if (&#39;1&#39; &lt;= ch &amp;&amp; ch &lt;= &#39;9&#39;) {</b>
+<b class="nc"><i>478</i>&nbsp;            refno = ch-&#39;0&#39;;</b>
+<b class="nc"><i>479</i>&nbsp;            int finalRefno = refno;</b>
+<i>480</i>&nbsp;
+<b class="nc"><i>481</i>&nbsp;            if (this.parennumber &lt;= refno)</b>
+<b class="nc"><i>482</i>&nbsp;                throw ex(&quot;parser.parse.2&quot;, this.offset);</b>
+<i>483</i>&nbsp;
+<b class="nc"><i>484</i>&nbsp;            while (this.offset + 1 &lt; this.regexlen) {</b>
+<b class="nc"><i>485</i>&nbsp;                ch = this.regex.charAt(this.offset + 1);</b>
+<b class="nc"><i>486</i>&nbsp;                if (&#39;1&#39; &lt;= ch &amp;&amp; ch &lt;= &#39;9&#39;) {</b>
+<b class="nc"><i>487</i>&nbsp;                    refno = (refno * 10) + (ch - &#39;0&#39;);</b>
+<b class="nc"><i>488</i>&nbsp;                    if (refno &lt; this.parennumber) {</b>
+<b class="nc"><i>489</i>&nbsp;                        finalRefno= refno;</b>
+<b class="nc"><i>490</i>&nbsp;                        ++this.offset;</b>
+<i>491</i>&nbsp;                    }
+<i>492</i>&nbsp;                    else {
+<i>493</i>&nbsp;                        break;
+<i>494</i>&nbsp;                    }
+<i>495</i>&nbsp;                }
+<i>496</i>&nbsp;                else {
+<i>497</i>&nbsp;                    break;
+<i>498</i>&nbsp;                }
+<i>499</i>&nbsp;            }
+<i>500</i>&nbsp;
+<b class="nc"><i>501</i>&nbsp;            this.hasBackReferences = true;</b>
+<b class="nc"><i>502</i>&nbsp;            if (this.references == null)  this.references = new Vector();</b>
+<b class="nc"><i>503</i>&nbsp;            this.references.addElement(new ReferencePosition(finalRefno, this.offset));</b>
+<b class="nc"><i>504</i>&nbsp;            this.offset ++;</b>
+<b class="nc"><i>505</i>&nbsp;            if (this.regex.charAt(this.offset) != &#39;)&#39;)  throw ex(&quot;parser.factor.1&quot;, this.offset);</b>
+<b class="nc"><i>506</i>&nbsp;            this.offset ++;</b>
+<b class="nc"><i>507</i>&nbsp;        } else {</b>
+<b class="nc"><i>508</i>&nbsp;            if (ch == &#39;?&#39;)  this.offset --; // Points &#39;(&#39;.</b>
+<b class="nc"><i>509</i>&nbsp;            this.next();</b>
+<b class="nc"><i>510</i>&nbsp;            condition = this.parseFactor();</b>
+<b class="nc"><i>511</i>&nbsp;            switch (condition.type) {</b>
+<i>512</i>&nbsp;              case Token.LOOKAHEAD:
+<i>513</i>&nbsp;              case Token.NEGATIVELOOKAHEAD:
+<i>514</i>&nbsp;              case Token.LOOKBEHIND:
+<i>515</i>&nbsp;              case Token.NEGATIVELOOKBEHIND:
+<b class="nc"><i>516</i>&nbsp;                break;</b>
+<i>517</i>&nbsp;              case Token.ANCHOR:
+<b class="nc"><i>518</i>&nbsp;                if (this.read() != T_RPAREN)  throw ex(&quot;parser.factor.1&quot;, this.offset-1);</b>
+<i>519</i>&nbsp;                break;
+<i>520</i>&nbsp;              default:
+<b class="nc"><i>521</i>&nbsp;                throw ex(&quot;parser.factor.5&quot;, this.offset);</b>
+<i>522</i>&nbsp;            }
+<i>523</i>&nbsp;        }
+<i>524</i>&nbsp;                                                // Parses yes/no-patterns.
+<b class="nc"><i>525</i>&nbsp;        this.next();</b>
+<b class="nc"><i>526</i>&nbsp;        Token yesPattern = this.parseRegex();</b>
+<b class="nc"><i>527</i>&nbsp;        Token noPattern = null;</b>
+<b class="nc"><i>528</i>&nbsp;        if (yesPattern.type == Token.UNION) {</b>
+<b class="nc"><i>529</i>&nbsp;            if (yesPattern.size() != 2)  throw ex(&quot;parser.factor.6&quot;, this.offset);</b>
+<b class="nc"><i>530</i>&nbsp;            noPattern = yesPattern.getChild(1);</b>
+<b class="nc"><i>531</i>&nbsp;            yesPattern = yesPattern.getChild(0);</b>
+<i>532</i>&nbsp;        }
+<b class="nc"><i>533</i>&nbsp;        if (this.read() != T_RPAREN)  throw ex(&quot;parser.factor.1&quot;, this.offset-1);</b>
+<b class="nc"><i>534</i>&nbsp;        this.next();</b>
+<b class="nc"><i>535</i>&nbsp;        return Token.createCondition(refno, condition, yesPattern, noPattern);</b>
+<i>536</i>&nbsp;    }
+<i>537</i>&nbsp;    Token processModifiers() throws ParseException {
+<i>538</i>&nbsp;                                                // this.offset points the next of &#39;?&#39;.
+<i>539</i>&nbsp;                                                // modifiers ::= [imsw]* (&#39;-&#39; [imsw]*)? &#39;:&#39;
+<b class="nc"><i>540</i>&nbsp;        int add = 0, mask = 0, ch = -1;</b>
+<b class="nc"><i>541</i>&nbsp;        while (this.offset &lt; this.regexlen) {</b>
+<b class="nc"><i>542</i>&nbsp;            ch = this.regex.charAt(this.offset);</b>
+<b class="nc"><i>543</i>&nbsp;            int v = REUtil.getOptionValue(ch);</b>
+<b class="nc"><i>544</i>&nbsp;            if (v == 0)  break;                 // &#39;-&#39; or &#39;:&#39;?</b>
+<b class="nc"><i>545</i>&nbsp;            add |= v;</b>
+<b class="nc"><i>546</i>&nbsp;            this.offset ++;</b>
+<b class="nc"><i>547</i>&nbsp;        }</b>
+<b class="nc"><i>548</i>&nbsp;        if (this.offset &gt;= this.regexlen)  throw ex(&quot;parser.factor.2&quot;, this.offset-1);</b>
+<b class="nc"><i>549</i>&nbsp;        if (ch == &#39;-&#39;) {</b>
+<b class="nc"><i>550</i>&nbsp;            this.offset ++;</b>
+<b class="nc"><i>551</i>&nbsp;            while (this.offset &lt; this.regexlen) {</b>
+<b class="nc"><i>552</i>&nbsp;                ch = this.regex.charAt(this.offset);</b>
+<b class="nc"><i>553</i>&nbsp;                int v = REUtil.getOptionValue(ch);</b>
+<b class="nc"><i>554</i>&nbsp;                if (v == 0)  break;             // &#39;:&#39;?</b>
+<b class="nc"><i>555</i>&nbsp;                mask |= v;</b>
+<b class="nc"><i>556</i>&nbsp;                this.offset ++;</b>
+<b class="nc"><i>557</i>&nbsp;            }</b>
+<b class="nc"><i>558</i>&nbsp;            if (this.offset &gt;= this.regexlen)  throw ex(&quot;parser.factor.2&quot;, this.offset-1);</b>
+<i>559</i>&nbsp;        }
+<i>560</i>&nbsp;        Token tok;
+<b class="nc"><i>561</i>&nbsp;        if (ch == &#39;:&#39;) {</b>
+<b class="nc"><i>562</i>&nbsp;            this.offset ++;</b>
+<b class="nc"><i>563</i>&nbsp;            this.next();</b>
+<b class="nc"><i>564</i>&nbsp;            tok = Token.createModifierGroup(this.parseRegex(), add, mask);</b>
+<b class="nc"><i>565</i>&nbsp;            if (this.read() != T_RPAREN)  throw ex(&quot;parser.factor.1&quot;, this.offset-1);</b>
+<b class="nc"><i>566</i>&nbsp;            this.next();</b>
+<b class="nc"><i>567</i>&nbsp;        } else if (ch == &#39;)&#39;) {                 // such as (?-i)</b>
+<b class="nc"><i>568</i>&nbsp;            this.offset ++;</b>
+<b class="nc"><i>569</i>&nbsp;            this.next();</b>
+<b class="nc"><i>570</i>&nbsp;            tok = Token.createModifierGroup(this.parseRegex(), add, mask);</b>
+<i>571</i>&nbsp;        } else
+<b class="nc"><i>572</i>&nbsp;            throw ex(&quot;parser.factor.3&quot;, this.offset);</b>
+<i>573</i>&nbsp;
+<b class="nc"><i>574</i>&nbsp;        return tok;</b>
+<i>575</i>&nbsp;    }
+<i>576</i>&nbsp;    Token processIndependent() throws ParseException {
+<b class="nc"><i>577</i>&nbsp;        this.next();</b>
+<b class="nc"><i>578</i>&nbsp;        Token tok = Token.createLook(Token.INDEPENDENT, this.parseRegex());</b>
+<b class="nc"><i>579</i>&nbsp;        if (this.read() != T_RPAREN)  throw ex(&quot;parser.factor.1&quot;, this.offset-1);</b>
+<b class="nc"><i>580</i>&nbsp;        this.next();                            // Skips &#39;)&#39;</b>
+<b class="nc"><i>581</i>&nbsp;        return tok;</b>
+<i>582</i>&nbsp;    }
+<i>583</i>&nbsp;    Token processBacksolidus_c() throws ParseException {
+<i>584</i>&nbsp;        int ch2;                                // Must be in 0x0040-0x005f
+<b class="nc"><i>585</i>&nbsp;        if (this.offset &gt;= this.regexlen</b>
+<b class="nc"><i>586</i>&nbsp;            || ((ch2 = this.regex.charAt(this.offset++)) &amp; 0xffe0) != 0x0040)</b>
+<b class="nc"><i>587</i>&nbsp;            throw ex(&quot;parser.atom.1&quot;, this.offset-1);</b>
+<b class="nc"><i>588</i>&nbsp;        this.next();</b>
+<b class="nc"><i>589</i>&nbsp;        return Token.createChar(ch2-0x40);</b>
+<i>590</i>&nbsp;    }
+<i>591</i>&nbsp;    Token processBacksolidus_C() throws ParseException {
+<b class="nc"><i>592</i>&nbsp;        throw ex(&quot;parser.process.1&quot;, this.offset);</b>
+<i>593</i>&nbsp;    }
+<i>594</i>&nbsp;    Token processBacksolidus_i() throws ParseException {
+<b class="nc"><i>595</i>&nbsp;        Token tok = Token.createChar(&#39;i&#39;);</b>
+<b class="nc"><i>596</i>&nbsp;        this.next();</b>
+<b class="nc"><i>597</i>&nbsp;        return tok;</b>
+<i>598</i>&nbsp;    }
+<i>599</i>&nbsp;    Token processBacksolidus_I() throws ParseException {
+<b class="nc"><i>600</i>&nbsp;        throw ex(&quot;parser.process.1&quot;, this.offset);</b>
+<i>601</i>&nbsp;    }
+<i>602</i>&nbsp;    Token processBacksolidus_g() throws ParseException {
+<b class="nc"><i>603</i>&nbsp;        this.next();</b>
+<b class="nc"><i>604</i>&nbsp;        return Token.getGraphemePattern();</b>
+<i>605</i>&nbsp;    }
+<i>606</i>&nbsp;    Token processBacksolidus_X() throws ParseException {
+<b class="nc"><i>607</i>&nbsp;        this.next();</b>
+<b class="nc"><i>608</i>&nbsp;        return Token.getCombiningCharacterSequence();</b>
+<i>609</i>&nbsp;    }
+<i>610</i>&nbsp;    Token processBackreference() throws ParseException {
+<b class="nc"><i>611</i>&nbsp;        int refnum = this.chardata-&#39;0&#39;;</b>
+<b class="nc"><i>612</i>&nbsp;        int finalRefnum = refnum;</b>
+<i>613</i>&nbsp;
+<b class="nc"><i>614</i>&nbsp;        if (this.parennumber &lt;= refnum)</b>
+<b class="nc"><i>615</i>&nbsp;            throw ex(&quot;parser.parse.2&quot;, this.offset-2);</b>
+<i>616</i>&nbsp;
+<b class="nc"><i>617</i>&nbsp;        while  (this.offset &lt; this.regexlen) {</b>
+<b class="nc"><i>618</i>&nbsp;            final int ch = this.regex.charAt(this.offset);</b>
+<b class="nc"><i>619</i>&nbsp;            if (&#39;1&#39; &lt;= ch &amp;&amp; ch &lt;= &#39;9&#39;) {</b>
+<b class="nc"><i>620</i>&nbsp;                refnum = (refnum * 10) + (ch - &#39;0&#39;);</b>
+<b class="nc"><i>621</i>&nbsp;                if (refnum &lt; this.parennumber) {</b>
+<b class="nc"><i>622</i>&nbsp;                    ++this.offset;</b>
+<b class="nc"><i>623</i>&nbsp;                    finalRefnum = refnum;</b>
+<b class="nc"><i>624</i>&nbsp;                    this.chardata = ch;</b>
+<i>625</i>&nbsp;                }
+<i>626</i>&nbsp;                else {
+<i>627</i>&nbsp;                    break;
+<i>628</i>&nbsp;                }
+<i>629</i>&nbsp;            }
+<i>630</i>&nbsp;            else {
+<i>631</i>&nbsp;                break;
+<i>632</i>&nbsp;            }
+<b class="nc"><i>633</i>&nbsp;        }</b>
+<i>634</i>&nbsp;
+<b class="nc"><i>635</i>&nbsp;        Token tok = Token.createBackReference(finalRefnum);</b>
+<b class="nc"><i>636</i>&nbsp;        this.hasBackReferences = true;</b>
+<b class="nc"><i>637</i>&nbsp;        if (this.references == null)  this.references = new Vector();</b>
+<b class="nc"><i>638</i>&nbsp;        this.references.addElement(new ReferencePosition(finalRefnum, this.offset-2));</b>
+<b class="nc"><i>639</i>&nbsp;        this.next();</b>
+<b class="nc"><i>640</i>&nbsp;        return tok;</b>
+<i>641</i>&nbsp;    }
+<i>642</i>&nbsp;
+<i>643</i>&nbsp;    // ----------------------------------------------------------------
+<i>644</i>&nbsp;
+<i>645</i>&nbsp;    /**
+<i>646</i>&nbsp;     * factor ::= (&#39;^&#39; | &#39;$&#39; | &#39;\A&#39; | &#39;\Z&#39; | &#39;\z&#39; | &#39;\b&#39; | &#39;\B&#39; | &#39;\&lt;&#39; | &#39;\&gt;&#39;
+<i>647</i>&nbsp;     *            | atom ((&#39;*&#39; | &#39;+&#39; | &#39;?&#39; | minmax ) &#39;?&#39;? )?)
+<i>648</i>&nbsp;     *            | &#39;(?=&#39; regex &#39;)&#39;  | &#39;(?!&#39; regex &#39;)&#39;  | &#39;(?&amp;lt;=&#39; regex &#39;)&#39;  | &#39;(?&amp;lt;!&#39; regex &#39;)&#39;
+<i>649</i>&nbsp;     *            | &#39;(?#&#39; [^)]* &#39;)&#39;
+<i>650</i>&nbsp;     * minmax ::= &#39;{&#39; min (&#39;,&#39; max?)? &#39;}&#39;
+<i>651</i>&nbsp;     * min ::= [0-9]+
+<i>652</i>&nbsp;     * max ::= [0-9]+
+<i>653</i>&nbsp;     */
+<i>654</i>&nbsp;    Token parseFactor() throws ParseException {
+<b class="nc"><i>655</i>&nbsp;        int ch = this.read();</b>
+<i>656</i>&nbsp;        Token tok;
+<b class="nc"><i>657</i>&nbsp;        switch (ch) {</b>
+<b class="nc"><i>658</i>&nbsp;          case T_CARET:         return this.processCaret();</b>
+<b class="nc"><i>659</i>&nbsp;          case T_DOLLAR:        return this.processDollar();</b>
+<b class="nc"><i>660</i>&nbsp;          case T_LOOKAHEAD:     return this.processLookahead();</b>
+<b class="nc"><i>661</i>&nbsp;          case T_NEGATIVELOOKAHEAD: return this.processNegativelookahead();</b>
+<b class="nc"><i>662</i>&nbsp;          case T_LOOKBEHIND:    return this.processLookbehind();</b>
+<b class="nc"><i>663</i>&nbsp;          case T_NEGATIVELOOKBEHIND: return this.processNegativelookbehind();</b>
+<i>664</i>&nbsp;
+<i>665</i>&nbsp;          case T_COMMENT:
+<b class="nc"><i>666</i>&nbsp;            this.next();</b>
+<b class="nc"><i>667</i>&nbsp;            return Token.createEmpty();</b>
+<i>668</i>&nbsp;
+<i>669</i>&nbsp;          case T_BACKSOLIDUS:
+<b class="nc"><i>670</i>&nbsp;            switch (this.chardata) {</b>
+<b class="nc"><i>671</i>&nbsp;              case &#39;A&#39;: return this.processBacksolidus_A();</b>
+<b class="nc"><i>672</i>&nbsp;              case &#39;Z&#39;: return this.processBacksolidus_Z();</b>
+<b class="nc"><i>673</i>&nbsp;              case &#39;z&#39;: return this.processBacksolidus_z();</b>
+<b class="nc"><i>674</i>&nbsp;              case &#39;b&#39;: return this.processBacksolidus_b();</b>
+<b class="nc"><i>675</i>&nbsp;              case &#39;B&#39;: return this.processBacksolidus_B();</b>
+<b class="nc"><i>676</i>&nbsp;              case &#39;&lt;&#39;: return this.processBacksolidus_lt();</b>
+<b class="nc"><i>677</i>&nbsp;              case &#39;&gt;&#39;: return this.processBacksolidus_gt();</b>
+<i>678</i>&nbsp;            }
+<i>679</i>&nbsp;                                                // through down
+<i>680</i>&nbsp;        }
+<b class="nc"><i>681</i>&nbsp;        tok = this.parseAtom();</b>
+<b class="nc"><i>682</i>&nbsp;        ch = this.read();</b>
+<b class="nc"><i>683</i>&nbsp;        switch (ch) {</b>
+<b class="nc"><i>684</i>&nbsp;          case T_STAR:  return this.processStar(tok);</b>
+<b class="nc"><i>685</i>&nbsp;          case T_PLUS:  return this.processPlus(tok);</b>
+<b class="nc"><i>686</i>&nbsp;          case T_QUESTION: return this.processQuestion(tok);</b>
+<i>687</i>&nbsp;          case T_CHAR:
+<b class="nc"><i>688</i>&nbsp;            if (this.chardata == &#39;{&#39; &amp;&amp; this.offset &lt; this.regexlen) {</b>
+<i>689</i>&nbsp;
+<b class="nc"><i>690</i>&nbsp;                int off = this.offset;          // this.offset -&gt; next of &#39;{&#39;</b>
+<b class="nc"><i>691</i>&nbsp;                int min = 0, max = -1;</b>
+<i>692</i>&nbsp;
+<b class="nc"><i>693</i>&nbsp;                if ((ch = this.regex.charAt(off++)) &gt;= &#39;0&#39; &amp;&amp; ch &lt;= &#39;9&#39;) {</b>
+<i>694</i>&nbsp;
+<b class="nc"><i>695</i>&nbsp;                    min = ch -&#39;0&#39;;</b>
+<b class="nc"><i>696</i>&nbsp;                    while (off &lt; this.regexlen</b>
+<b class="nc"><i>697</i>&nbsp;                           &amp;&amp; (ch = this.regex.charAt(off++)) &gt;= &#39;0&#39; &amp;&amp; ch &lt;= &#39;9&#39;) {</b>
+<b class="nc"><i>698</i>&nbsp;                        min = min*10 +ch-&#39;0&#39;;</b>
+<b class="nc"><i>699</i>&nbsp;                        if (min &lt; 0)</b>
+<b class="nc"><i>700</i>&nbsp;                            throw ex(&quot;parser.quantifier.5&quot;, this.offset);</b>
+<i>701</i>&nbsp;                    }
+<i>702</i>&nbsp;                }
+<i>703</i>&nbsp;                else {
+<b class="nc"><i>704</i>&nbsp;                    throw ex(&quot;parser.quantifier.1&quot;, this.offset);</b>
+<i>705</i>&nbsp;                }
+<i>706</i>&nbsp;
+<b class="nc"><i>707</i>&nbsp;                max = min;</b>
+<b class="nc"><i>708</i>&nbsp;                if (ch == &#39;,&#39;) {</b>
+<i>709</i>&nbsp;
+<b class="nc"><i>710</i>&nbsp;                   if (off &gt;= this.regexlen) {</b>
+<b class="nc"><i>711</i>&nbsp;                       throw ex(&quot;parser.quantifier.3&quot;, this.offset);</b>
+<i>712</i>&nbsp;                   }
+<b class="nc"><i>713</i>&nbsp;                   else if ((ch = this.regex.charAt(off++)) &gt;= &#39;0&#39; &amp;&amp; ch &lt;= &#39;9&#39;) {</b>
+<i>714</i>&nbsp;
+<b class="nc"><i>715</i>&nbsp;                        max = ch -&#39;0&#39;;       // {min,max}</b>
+<b class="nc"><i>716</i>&nbsp;                        while (off &lt; this.regexlen</b>
+<b class="nc"><i>717</i>&nbsp;                               &amp;&amp; (ch = this.regex.charAt(off++)) &gt;= &#39;0&#39;</b>
+<i>718</i>&nbsp;                               &amp;&amp; ch &lt;= &#39;9&#39;) {
+<b class="nc"><i>719</i>&nbsp;                            max = max*10 +ch-&#39;0&#39;;</b>
+<b class="nc"><i>720</i>&nbsp;                            if (max &lt; 0)</b>
+<b class="nc"><i>721</i>&nbsp;                                throw ex(&quot;parser.quantifier.5&quot;, this.offset);</b>
+<i>722</i>&nbsp;                        }
+<i>723</i>&nbsp;
+<b class="nc"><i>724</i>&nbsp;                        if (min &gt; max)</b>
+<b class="nc"><i>725</i>&nbsp;                            throw ex(&quot;parser.quantifier.4&quot;, this.offset);</b>
+<i>726</i>&nbsp;                   }
+<i>727</i>&nbsp;                   else { // assume {min,}
+<b class="nc"><i>728</i>&nbsp;                        max = -1;</b>
+<i>729</i>&nbsp;                    }
+<i>730</i>&nbsp;                }
+<i>731</i>&nbsp;
+<b class="nc"><i>732</i>&nbsp;               if (ch != &#39;}&#39;)</b>
+<b class="nc"><i>733</i>&nbsp;                   throw ex(&quot;parser.quantifier.2&quot;, this.offset);</b>
+<i>734</i>&nbsp;
+<b class="nc"><i>735</i>&nbsp;               if (this.checkQuestion(off)) {  // off -&gt; next of &#39;}&#39;</b>
+<b class="nc"><i>736</i>&nbsp;                    tok = Token.createNGClosure(tok);</b>
+<b class="nc"><i>737</i>&nbsp;                    this.offset = off+1;</b>
+<i>738</i>&nbsp;                } else {
+<b class="nc"><i>739</i>&nbsp;                    tok = Token.createClosure(tok);</b>
+<b class="nc"><i>740</i>&nbsp;                    this.offset = off;</b>
+<i>741</i>&nbsp;                }
+<i>742</i>&nbsp;
+<b class="nc"><i>743</i>&nbsp;                tok.setMin(min);</b>
+<b class="nc"><i>744</i>&nbsp;                tok.setMax(max);</b>
+<i>745</i>&nbsp;                //System.err.println(&quot;CLOSURE: &quot;+min+&quot;, &quot;+max);
+<b class="nc"><i>746</i>&nbsp;                this.next();</b>
+<i>747</i>&nbsp;            }
+<i>748</i>&nbsp;        }
+<b class="nc"><i>749</i>&nbsp;        return tok;</b>
+<i>750</i>&nbsp;    }
+<i>751</i>&nbsp;
+<i>752</i>&nbsp;    /**
+<i>753</i>&nbsp;     * atom ::= char | &#39;.&#39; | char-class | &#39;(&#39; regex &#39;)&#39; | &#39;(?:&#39; regex &#39;)&#39; | &#39;\&#39; [0-9]
+<i>754</i>&nbsp;     *          | &#39;\w&#39; | &#39;\W&#39; | &#39;\d&#39; | &#39;\D&#39; | &#39;\s&#39; | &#39;\S&#39; | category-block
+<i>755</i>&nbsp;     *          | &#39;(?&gt;&#39; regex &#39;)&#39;
+<i>756</i>&nbsp;     * char ::= &#39;\\&#39; | &#39;\&#39; [efnrt] | bmp-code | character-1
+<i>757</i>&nbsp;     */
+<i>758</i>&nbsp;    Token parseAtom() throws ParseException {
+<b class="nc"><i>759</i>&nbsp;        int ch = this.read();</b>
+<b class="nc"><i>760</i>&nbsp;        Token tok = null;</b>
+<b class="nc"><i>761</i>&nbsp;        switch (ch) {</b>
+<b class="nc"><i>762</i>&nbsp;          case T_LPAREN:        return this.processParen();</b>
+<b class="nc"><i>763</i>&nbsp;          case T_LPAREN2:       return this.processParen2(); // &#39;(?:&#39;</b>
+<b class="nc"><i>764</i>&nbsp;          case T_CONDITION:     return this.processCondition(); // &#39;(?(&#39;</b>
+<b class="nc"><i>765</i>&nbsp;          case T_MODIFIERS:     return this.processModifiers(); // (?modifiers ... )</b>
+<b class="nc"><i>766</i>&nbsp;          case T_INDEPENDENT:   return this.processIndependent();</b>
+<i>767</i>&nbsp;          case T_DOT:
+<b class="nc"><i>768</i>&nbsp;            this.next();                    // Skips &#39;.&#39;</b>
+<b class="nc"><i>769</i>&nbsp;            tok = Token.token_dot;</b>
+<b class="nc"><i>770</i>&nbsp;            break;</b>
+<i>771</i>&nbsp;
+<i>772</i>&nbsp;            /**
+<i>773</i>&nbsp;             * char-class ::= &#39;[&#39; ( &#39;^&#39;? range &#39;,&#39;?)+ &#39;]&#39;
+<i>774</i>&nbsp;             * range ::= &#39;\d&#39; | &#39;\w&#39; | &#39;\s&#39; | category-block | range-char
+<i>775</i>&nbsp;             *           | range-char &#39;-&#39; range-char
+<i>776</i>&nbsp;             * range-char ::= &#39;\[&#39; | &#39;\]&#39; | &#39;\\&#39; | &#39;\&#39; [,-efnrtv] | bmp-code | character-2
+<i>777</i>&nbsp;             * bmp-char ::= &#39;\&#39; &#39;u&#39; [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]
+<i>778</i>&nbsp;             */
+<b class="nc"><i>779</i>&nbsp;          case T_LBRACKET:      return this.parseCharacterClass(true);</b>
+<b class="nc"><i>780</i>&nbsp;          case T_SET_OPERATIONS: return this.parseSetOperations();</b>
+<i>781</i>&nbsp;
+<i>782</i>&nbsp;          case T_BACKSOLIDUS:
+<b class="nc"><i>783</i>&nbsp;            switch (this.chardata) {</b>
+<i>784</i>&nbsp;              case &#39;d&#39;:  case &#39;D&#39;:
+<i>785</i>&nbsp;              case &#39;w&#39;:  case &#39;W&#39;:
+<i>786</i>&nbsp;              case &#39;s&#39;:  case &#39;S&#39;:
+<b class="nc"><i>787</i>&nbsp;                tok = this.getTokenForShorthand(this.chardata);</b>
+<b class="nc"><i>788</i>&nbsp;                this.next();</b>
+<b class="nc"><i>789</i>&nbsp;                return tok;</b>
+<i>790</i>&nbsp;
+<i>791</i>&nbsp;              case &#39;e&#39;:  case &#39;f&#39;:  case &#39;n&#39;:  case &#39;r&#39;:
+<i>792</i>&nbsp;              case &#39;t&#39;:  case &#39;u&#39;:  case &#39;v&#39;:  case &#39;x&#39;:
+<i>793</i>&nbsp;                {
+<b class="nc"><i>794</i>&nbsp;                    int ch2 = this.decodeEscaped();</b>
+<b class="nc"><i>795</i>&nbsp;                    if (ch2 &lt; 0x10000) {</b>
+<b class="nc"><i>796</i>&nbsp;                        tok = Token.createChar(ch2);</b>
+<i>797</i>&nbsp;                    } else {
+<b class="nc"><i>798</i>&nbsp;                        tok = Token.createString(REUtil.decomposeToSurrogates(ch2));</b>
+<i>799</i>&nbsp;                    }
+<i>800</i>&nbsp;                }
+<b class="nc"><i>801</i>&nbsp;                break;</b>
+<i>802</i>&nbsp;
+<b class="nc"><i>803</i>&nbsp;              case &#39;c&#39;: return this.processBacksolidus_c();</b>
+<b class="nc"><i>804</i>&nbsp;              case &#39;C&#39;: return this.processBacksolidus_C();</b>
+<b class="nc"><i>805</i>&nbsp;              case &#39;i&#39;: return this.processBacksolidus_i();</b>
+<b class="nc"><i>806</i>&nbsp;              case &#39;I&#39;: return this.processBacksolidus_I();</b>
+<b class="nc"><i>807</i>&nbsp;              case &#39;g&#39;: return this.processBacksolidus_g();</b>
+<b class="nc"><i>808</i>&nbsp;              case &#39;X&#39;: return this.processBacksolidus_X();</b>
+<i>809</i>&nbsp;              case &#39;1&#39;:  case &#39;2&#39;:  case &#39;3&#39;:  case &#39;4&#39;:
+<i>810</i>&nbsp;              case &#39;5&#39;:  case &#39;6&#39;:  case &#39;7&#39;:  case &#39;8&#39;:  case &#39;9&#39;:
+<b class="nc"><i>811</i>&nbsp;                return this.processBackreference();</b>
+<i>812</i>&nbsp;
+<i>813</i>&nbsp;              case &#39;P&#39;:
+<i>814</i>&nbsp;              case &#39;p&#39;:
+<b class="nc"><i>815</i>&nbsp;                int pstart = this.offset;</b>
+<b class="nc"><i>816</i>&nbsp;                tok = processBacksolidus_pP(this.chardata);</b>
+<b class="nc"><i>817</i>&nbsp;                if (tok == null)  throw this.ex(&quot;parser.atom.5&quot;, pstart);</b>
+<i>818</i>&nbsp;                break;
+<i>819</i>&nbsp;
+<i>820</i>&nbsp;              default:
+<b class="nc"><i>821</i>&nbsp;                tok = Token.createChar(this.chardata);</b>
+<i>822</i>&nbsp;            }
+<b class="nc"><i>823</i>&nbsp;            this.next();</b>
+<b class="nc"><i>824</i>&nbsp;            break;</b>
+<i>825</i>&nbsp;
+<i>826</i>&nbsp;          case T_CHAR:
+<b class="nc"><i>827</i>&nbsp;            if (this.chardata == &#39;]&#39; || this.chardata == &#39;{&#39; || this.chardata == &#39;}&#39;)</b>
+<b class="nc"><i>828</i>&nbsp;                throw this.ex(&quot;parser.atom.4&quot;, this.offset-1);</b>
+<b class="nc"><i>829</i>&nbsp;            tok = Token.createChar(this.chardata);</b>
+<b class="nc"><i>830</i>&nbsp;            int high = this.chardata;</b>
+<b class="nc"><i>831</i>&nbsp;            this.next();</b>
+<b class="nc"><i>832</i>&nbsp;            if (REUtil.isHighSurrogate(high)</b>
+<b class="nc"><i>833</i>&nbsp;                &amp;&amp; this.read() == T_CHAR &amp;&amp; REUtil.isLowSurrogate(this.chardata)) {</b>
+<b class="nc"><i>834</i>&nbsp;                char[] sur = new char[2];</b>
+<b class="nc"><i>835</i>&nbsp;                sur[0] = (char)high;</b>
+<b class="nc"><i>836</i>&nbsp;                sur[1] = (char)this.chardata;</b>
+<b class="nc"><i>837</i>&nbsp;                tok = Token.createParen(Token.createString(new String(sur)), 0);</b>
+<b class="nc"><i>838</i>&nbsp;                this.next();</b>
+<b class="nc"><i>839</i>&nbsp;            }</b>
+<i>840</i>&nbsp;            break;
+<i>841</i>&nbsp;
+<i>842</i>&nbsp;          default:
+<b class="nc"><i>843</i>&nbsp;            throw this.ex(&quot;parser.atom.4&quot;, this.offset-1);</b>
+<i>844</i>&nbsp;        }
+<b class="nc"><i>845</i>&nbsp;        return tok;</b>
+<i>846</i>&nbsp;    }
+<i>847</i>&nbsp;
+<i>848</i>&nbsp;    protected RangeToken processBacksolidus_pP(int c) throws ParseException {
+<i>849</i>&nbsp;
+<b class="nc"><i>850</i>&nbsp;        this.next();</b>
+<b class="nc"><i>851</i>&nbsp;        if (this.read() != T_CHAR || this.chardata != &#39;{&#39;)</b>
+<b class="nc"><i>852</i>&nbsp;            throw this.ex(&quot;parser.atom.2&quot;, this.offset-1);</b>
+<i>853</i>&nbsp;
+<i>854</i>&nbsp;        // handle category escape
+<b class="nc"><i>855</i>&nbsp;        boolean positive = c == &#39;p&#39;;</b>
+<b class="nc"><i>856</i>&nbsp;        int namestart = this.offset;</b>
+<b class="nc"><i>857</i>&nbsp;        int nameend = this.regex.indexOf(&#39;}&#39;, namestart);</b>
+<i>858</i>&nbsp;
+<b class="nc"><i>859</i>&nbsp;        if (nameend &lt; 0)</b>
+<b class="nc"><i>860</i>&nbsp;            throw this.ex(&quot;parser.atom.3&quot;, this.offset);</b>
+<i>861</i>&nbsp;
+<b class="nc"><i>862</i>&nbsp;        String pname = this.regex.substring(namestart, nameend);</b>
+<b class="nc"><i>863</i>&nbsp;        this.offset = nameend+1;</b>
+<i>864</i>&nbsp;
+<b class="nc"><i>865</i>&nbsp;        return Token.getRange(pname, positive, this.isSet(RegularExpression.XMLSCHEMA_MODE));</b>
+<i>866</i>&nbsp;    }
+<i>867</i>&nbsp;
+<i>868</i>&nbsp;    int processCIinCharacterClass(RangeToken tok, int c) {
+<b class="nc"><i>869</i>&nbsp;        return this.decodeEscaped();</b>
+<i>870</i>&nbsp;    }
+<i>871</i>&nbsp;
+<i>872</i>&nbsp;    /**
+<i>873</i>&nbsp;     * char-class ::= &#39;[&#39; ( &#39;^&#39;? range &#39;,&#39;?)+ &#39;]&#39;
+<i>874</i>&nbsp;     * range ::= &#39;\d&#39; | &#39;\w&#39; | &#39;\s&#39; | category-block | range-char
+<i>875</i>&nbsp;     *           | range-char &#39;-&#39; range-char
+<i>876</i>&nbsp;     * range-char ::= &#39;\[&#39; | &#39;\]&#39; | &#39;\\&#39; | &#39;\&#39; [,-efnrtv] | bmp-code | character-2
+<i>877</i>&nbsp;     * bmp-code ::= &#39;\&#39; &#39;u&#39; [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]
+<i>878</i>&nbsp;     */
+<i>879</i>&nbsp;    protected RangeToken parseCharacterClass(boolean useNrange) throws ParseException {
+<b class="nc"><i>880</i>&nbsp;        this.setContext(S_INBRACKETS);</b>
+<b class="nc"><i>881</i>&nbsp;        this.next();                            // &#39;[&#39;</b>
+<b class="nc"><i>882</i>&nbsp;        boolean nrange = false;</b>
+<b class="nc"><i>883</i>&nbsp;        RangeToken base = null;</b>
+<i>884</i>&nbsp;        RangeToken tok;
+<b class="nc"><i>885</i>&nbsp;        if (this.read() == T_CHAR &amp;&amp; this.chardata == &#39;^&#39;) {</b>
+<b class="nc"><i>886</i>&nbsp;            nrange = true;</b>
+<b class="nc"><i>887</i>&nbsp;            this.next();                        // &#39;^&#39;</b>
+<b class="nc"><i>888</i>&nbsp;            if (useNrange) {</b>
+<b class="nc"><i>889</i>&nbsp;                tok = Token.createNRange();</b>
+<i>890</i>&nbsp;            } else {
+<b class="nc"><i>891</i>&nbsp;                base = Token.createRange();</b>
+<b class="nc"><i>892</i>&nbsp;                base.addRange(0, Token.UTF16_MAX);</b>
+<b class="nc"><i>893</i>&nbsp;                tok = Token.createRange();</b>
+<i>894</i>&nbsp;            }
+<i>895</i>&nbsp;        } else {
+<b class="nc"><i>896</i>&nbsp;            tok = Token.createRange();</b>
+<i>897</i>&nbsp;        }
+<i>898</i>&nbsp;        int type;
+<b class="nc"><i>899</i>&nbsp;        boolean firstloop = true;</b>
+<b class="nc"><i>900</i>&nbsp;        while ((type = this.read()) != T_EOF) {</b>
+<b class="nc"><i>901</i>&nbsp;            if (type == T_CHAR &amp;&amp; this.chardata == &#39;]&#39; &amp;&amp; !firstloop)</b>
+<b class="nc"><i>902</i>&nbsp;                break;</b>
+<b class="nc"><i>903</i>&nbsp;            int c = this.chardata;</b>
+<b class="nc"><i>904</i>&nbsp;            boolean end = false;</b>
+<b class="nc"><i>905</i>&nbsp;            if (type == T_BACKSOLIDUS) {</b>
+<b class="nc"><i>906</i>&nbsp;                switch (c) {</b>
+<i>907</i>&nbsp;                  case &#39;d&#39;:  case &#39;D&#39;:
+<i>908</i>&nbsp;                  case &#39;w&#39;:  case &#39;W&#39;:
+<i>909</i>&nbsp;                  case &#39;s&#39;:  case &#39;S&#39;:
+<b class="nc"><i>910</i>&nbsp;                    tok.mergeRanges(this.getTokenForShorthand(c));</b>
+<b class="nc"><i>911</i>&nbsp;                    end = true;</b>
+<b class="nc"><i>912</i>&nbsp;                    break;</b>
+<i>913</i>&nbsp;
+<i>914</i>&nbsp;                  case &#39;i&#39;:  case &#39;I&#39;:
+<i>915</i>&nbsp;                  case &#39;c&#39;:  case &#39;C&#39;:
+<b class="nc"><i>916</i>&nbsp;                    c = this.processCIinCharacterClass(tok, c);</b>
+<b class="nc"><i>917</i>&nbsp;                    if (c &lt; 0)  end = true;</b>
+<i>918</i>&nbsp;                    break;
+<i>919</i>&nbsp;
+<i>920</i>&nbsp;                  case &#39;p&#39;:
+<i>921</i>&nbsp;                  case &#39;P&#39;:
+<b class="nc"><i>922</i>&nbsp;                    int pstart = this.offset;</b>
+<b class="nc"><i>923</i>&nbsp;                    RangeToken tok2 = this.processBacksolidus_pP(c);</b>
+<b class="nc"><i>924</i>&nbsp;                    if (tok2 == null)  throw this.ex(&quot;parser.atom.5&quot;, pstart);</b>
+<b class="nc"><i>925</i>&nbsp;                    tok.mergeRanges(tok2);</b>
+<b class="nc"><i>926</i>&nbsp;                    end = true;</b>
+<b class="nc"><i>927</i>&nbsp;                    break;</b>
+<i>928</i>&nbsp;
+<i>929</i>&nbsp;                  default:
+<b class="nc"><i>930</i>&nbsp;                    c = this.decodeEscaped();</b>
+<i>931</i>&nbsp;                } // \ + c
+<i>932</i>&nbsp;            } // backsolidus
+<i>933</i>&nbsp;                                                // POSIX Character class such as [:alnum:]
+<b class="nc"><i>934</i>&nbsp;            else if (type == T_POSIX_CHARCLASS_START) {</b>
+<b class="nc"><i>935</i>&nbsp;                int nameend = this.regex.indexOf(&#39;:&#39;, this.offset);</b>
+<b class="nc"><i>936</i>&nbsp;                if (nameend &lt; 0) throw this.ex(&quot;parser.cc.1&quot;, this.offset);</b>
+<b class="nc"><i>937</i>&nbsp;                boolean positive = true;</b>
+<b class="nc"><i>938</i>&nbsp;                if (this.regex.charAt(this.offset) == &#39;^&#39;) {</b>
+<b class="nc"><i>939</i>&nbsp;                    this.offset ++;</b>
+<b class="nc"><i>940</i>&nbsp;                    positive = false;</b>
+<i>941</i>&nbsp;                }
+<b class="nc"><i>942</i>&nbsp;                String name = this.regex.substring(this.offset, nameend);</b>
+<b class="nc"><i>943</i>&nbsp;                RangeToken range = Token.getRange(name, positive,</b>
+<b class="nc"><i>944</i>&nbsp;                                                  this.isSet(RegularExpression.XMLSCHEMA_MODE));</b>
+<b class="nc"><i>945</i>&nbsp;                if (range == null)  throw this.ex(&quot;parser.cc.3&quot;, this.offset);</b>
+<b class="nc"><i>946</i>&nbsp;                tok.mergeRanges(range);</b>
+<b class="nc"><i>947</i>&nbsp;                end = true;</b>
+<b class="nc"><i>948</i>&nbsp;                if (nameend+1 &gt;= this.regexlen || this.regex.charAt(nameend+1) != &#39;]&#39;)</b>
+<b class="nc"><i>949</i>&nbsp;                    throw this.ex(&quot;parser.cc.1&quot;, nameend);</b>
+<b class="nc"><i>950</i>&nbsp;                this.offset = nameend+2;</b>
+<b class="nc"><i>951</i>&nbsp;            }</b>
+<b class="nc"><i>952</i>&nbsp;            else if (type == T_XMLSCHEMA_CC_SUBTRACTION &amp;&amp; !firstloop) {</b>
+<b class="nc"><i>953</i>&nbsp;                if (nrange) {</b>
+<b class="nc"><i>954</i>&nbsp;                    nrange = false;</b>
+<b class="nc"><i>955</i>&nbsp;                    if (useNrange) {</b>
+<b class="nc"><i>956</i>&nbsp;                        tok = (RangeToken) Token.complementRanges(tok);</b>
+<i>957</i>&nbsp;                    }
+<i>958</i>&nbsp;                    else {
+<b class="nc"><i>959</i>&nbsp;                        base.subtractRanges(tok);</b>
+<b class="nc"><i>960</i>&nbsp;                        tok = base;</b>
+<i>961</i>&nbsp;                    }
+<i>962</i>&nbsp;                }
+<b class="nc"><i>963</i>&nbsp;                RangeToken range2 = this.parseCharacterClass(false);</b>
+<b class="nc"><i>964</i>&nbsp;                tok.subtractRanges(range2);</b>
+<b class="nc"><i>965</i>&nbsp;                if (this.read() != T_CHAR || this.chardata != &#39;]&#39;) {</b>
+<b class="nc"><i>966</i>&nbsp;                    throw this.ex(&quot;parser.cc.5&quot;, this.offset);</b>
+<i>967</i>&nbsp;                }
+<i>968</i>&nbsp;                break;                          // Exit this loop
+<i>969</i>&nbsp;            }
+<b class="nc"><i>970</i>&nbsp;            this.next();</b>
+<b class="nc"><i>971</i>&nbsp;            if (!end) {                         // if not shorthands...</b>
+<b class="nc"><i>972</i>&nbsp;                if (this.read() != T_CHAR || this.chardata != &#39;-&#39;) { // Here is no &#39;-&#39;.</b>
+<b class="nc"><i>973</i>&nbsp;                    if (!this.isSet(RegularExpression.IGNORE_CASE) || c &gt; 0xffff) {</b>
+<b class="nc"><i>974</i>&nbsp;                        tok.addRange(c, c);</b>
+<i>975</i>&nbsp;                    }
+<i>976</i>&nbsp;                    else {
+<b class="nc"><i>977</i>&nbsp;                        addCaseInsensitiveChar(tok, c);</b>
+<i>978</i>&nbsp;                    }
+<i>979</i>&nbsp;                }
+<b class="nc"><i>980</i>&nbsp;                else if (type == T_XMLSCHEMA_CC_SUBTRACTION) {</b>
+<b class="nc"><i>981</i>&nbsp;                    throw this.ex(&quot;parser.cc.8&quot;, this.offset-1);</b>
+<i>982</i>&nbsp;                }
+<i>983</i>&nbsp;                else {
+<b class="nc"><i>984</i>&nbsp;                    this.next(); // Skips &#39;-&#39;</b>
+<b class="nc"><i>985</i>&nbsp;                    if ((type = this.read()) == T_EOF)  throw this.ex(&quot;parser.cc.2&quot;, this.offset);</b>
+<b class="nc"><i>986</i>&nbsp;                    if (type == T_CHAR &amp;&amp; this.chardata == &#39;]&#39;) {</b>
+<b class="nc"><i>987</i>&nbsp;                        if (!this.isSet(RegularExpression.IGNORE_CASE) || c &gt; 0xffff) {</b>
+<b class="nc"><i>988</i>&nbsp;                            tok.addRange(c, c);</b>
+<i>989</i>&nbsp;                        }
+<i>990</i>&nbsp;                        else {
+<b class="nc"><i>991</i>&nbsp;                            addCaseInsensitiveChar(tok, c);</b>
+<i>992</i>&nbsp;                        }
+<b class="nc"><i>993</i>&nbsp;                        tok.addRange(&#39;-&#39;, &#39;-&#39;);</b>
+<i>994</i>&nbsp;                    } else {
+<b class="nc"><i>995</i>&nbsp;                        int rangeend = this.chardata;</b>
+<b class="nc"><i>996</i>&nbsp;                        if (type == T_BACKSOLIDUS) {</b>
+<b class="nc"><i>997</i>&nbsp;                            rangeend = this.decodeEscaped();</b>
+<i>998</i>&nbsp;                        }
+<b class="nc"><i>999</i>&nbsp;                        this.next();</b>
+<b class="nc"><i>1000</i>&nbsp;                        if (c &gt; rangeend) {</b>
+<b class="nc"><i>1001</i>&nbsp;                            throw this.ex(&quot;parser.ope.3&quot;, this.offset-1);</b>
+<i>1002</i>&nbsp;                        }
+<b class="nc"><i>1003</i>&nbsp;                        if (!this.isSet(RegularExpression.IGNORE_CASE) ||</b>
+<i>1004</i>&nbsp;                                (c &gt; 0xffff &amp;&amp; rangeend &gt; 0xffff)) {
+<b class="nc"><i>1005</i>&nbsp;                            tok.addRange(c, rangeend);</b>
+<i>1006</i>&nbsp;                        }
+<i>1007</i>&nbsp;                        else {
+<b class="nc"><i>1008</i>&nbsp;                            addCaseInsensitiveCharRange(tok, c, rangeend);</b>
+<i>1009</i>&nbsp;                        }
+<i>1010</i>&nbsp;                    }
+<i>1011</i>&nbsp;                }
+<i>1012</i>&nbsp;            }
+<b class="nc"><i>1013</i>&nbsp;            if (this.isSet(RegularExpression.SPECIAL_COMMA)</b>
+<b class="nc"><i>1014</i>&nbsp;                &amp;&amp; this.read() == T_CHAR &amp;&amp; this.chardata == &#39;,&#39;) {</b>
+<b class="nc"><i>1015</i>&nbsp;                this.next();</b>
+<i>1016</i>&nbsp;            }
+<b class="nc"><i>1017</i>&nbsp;            firstloop = false;</b>
+<b class="nc"><i>1018</i>&nbsp;        }</b>
+<b class="nc"><i>1019</i>&nbsp;        if (this.read() == T_EOF) {</b>
+<b class="nc"><i>1020</i>&nbsp;            throw this.ex(&quot;parser.cc.2&quot;, this.offset);</b>
+<i>1021</i>&nbsp;        }
+<i>1022</i>&nbsp;
+<b class="nc"><i>1023</i>&nbsp;        if (!useNrange &amp;&amp; nrange) {</b>
+<b class="nc"><i>1024</i>&nbsp;            base.subtractRanges(tok);</b>
+<b class="nc"><i>1025</i>&nbsp;            tok = base;</b>
+<i>1026</i>&nbsp;        }
+<b class="nc"><i>1027</i>&nbsp;        tok.sortRanges();</b>
+<b class="nc"><i>1028</i>&nbsp;        tok.compactRanges();</b>
+<b class="nc"><i>1029</i>&nbsp;        this.setContext(S_NORMAL);</b>
+<b class="nc"><i>1030</i>&nbsp;        this.next();                    // Skips &#39;]&#39;</b>
+<i>1031</i>&nbsp;
+<b class="nc"><i>1032</i>&nbsp;        return tok;</b>
+<i>1033</i>&nbsp;    }
+<i>1034</i>&nbsp;
+<i>1035</i>&nbsp;    /**
+<i>1036</i>&nbsp;     * &#39;(?[&#39; ... &#39;]&#39; ((&#39;-&#39; | &#39;+&#39; | &#39;&amp;&#39;) &#39;[&#39; ... &#39;]&#39;)? &#39;)&#39;
+<i>1037</i>&nbsp;     */
+<i>1038</i>&nbsp;    protected RangeToken parseSetOperations() throws ParseException {
+<b class="nc"><i>1039</i>&nbsp;        RangeToken tok = this.parseCharacterClass(false);</b>
+<i>1040</i>&nbsp;        int type;
+<b class="nc"><i>1041</i>&nbsp;        while ((type = this.read()) != T_RPAREN) {</b>
+<b class="nc"><i>1042</i>&nbsp;            int ch = this.chardata;</b>
+<b class="nc"><i>1043</i>&nbsp;            if (type == T_CHAR &amp;&amp; (ch == &#39;-&#39; || ch == &#39;&amp;&#39;)</b>
+<i>1044</i>&nbsp;                || type == T_PLUS) {
+<b class="nc"><i>1045</i>&nbsp;                this.next();</b>
+<b class="nc"><i>1046</i>&nbsp;                if (this.read() != T_LBRACKET) throw ex(&quot;parser.ope.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1047</i>&nbsp;                RangeToken t2 = this.parseCharacterClass(false);</b>
+<b class="nc"><i>1048</i>&nbsp;                if (type == T_PLUS)</b>
+<b class="nc"><i>1049</i>&nbsp;                    tok.mergeRanges(t2);</b>
+<b class="nc"><i>1050</i>&nbsp;                else if (ch == &#39;-&#39;)</b>
+<b class="nc"><i>1051</i>&nbsp;                    tok.subtractRanges(t2);</b>
+<b class="nc"><i>1052</i>&nbsp;                else if (ch == &#39;&amp;&#39;)</b>
+<b class="nc"><i>1053</i>&nbsp;                    tok.intersectRanges(t2);</b>
+<i>1054</i>&nbsp;                else
+<b class="nc"><i>1055</i>&nbsp;                    throw new RuntimeException(&quot;ASSERT&quot;);</b>
+<b class="nc"><i>1056</i>&nbsp;            } else {</b>
+<b class="nc"><i>1057</i>&nbsp;                throw ex(&quot;parser.ope.2&quot;, this.offset-1);</b>
+<i>1058</i>&nbsp;            }
+<b class="nc"><i>1059</i>&nbsp;        }</b>
+<b class="nc"><i>1060</i>&nbsp;        this.next();</b>
+<b class="nc"><i>1061</i>&nbsp;        return tok;</b>
+<i>1062</i>&nbsp;    }
+<i>1063</i>&nbsp;
+<i>1064</i>&nbsp;    Token getTokenForShorthand(int ch) {
+<i>1065</i>&nbsp;        Token tok;
+<b class="nc"><i>1066</i>&nbsp;        switch (ch) {</b>
+<i>1067</i>&nbsp;          case &#39;d&#39;:
+<b class="nc"><i>1068</i>&nbsp;            tok = this.isSet(RegularExpression.USE_UNICODE_CATEGORY)</b>
+<b class="nc"><i>1069</i>&nbsp;                ? Token.getRange(&quot;Nd&quot;, true) : Token.token_0to9;</b>
+<b class="nc"><i>1070</i>&nbsp;            break;</b>
+<i>1071</i>&nbsp;          case &#39;D&#39;:
+<b class="nc"><i>1072</i>&nbsp;            tok = this.isSet(RegularExpression.USE_UNICODE_CATEGORY)</b>
+<b class="nc"><i>1073</i>&nbsp;                ? Token.getRange(&quot;Nd&quot;, false) : Token.token_not_0to9;</b>
+<b class="nc"><i>1074</i>&nbsp;            break;</b>
+<i>1075</i>&nbsp;          case &#39;w&#39;:
+<b class="nc"><i>1076</i>&nbsp;            tok = this.isSet(RegularExpression.USE_UNICODE_CATEGORY)</b>
+<b class="nc"><i>1077</i>&nbsp;                ? Token.getRange(&quot;IsWord&quot;, true) : Token.token_wordchars;</b>
+<b class="nc"><i>1078</i>&nbsp;            break;</b>
+<i>1079</i>&nbsp;          case &#39;W&#39;:
+<b class="nc"><i>1080</i>&nbsp;            tok = this.isSet(RegularExpression.USE_UNICODE_CATEGORY)</b>
+<b class="nc"><i>1081</i>&nbsp;                ? Token.getRange(&quot;IsWord&quot;, false) : Token.token_not_wordchars;</b>
+<b class="nc"><i>1082</i>&nbsp;            break;</b>
+<i>1083</i>&nbsp;          case &#39;s&#39;:
+<b class="nc"><i>1084</i>&nbsp;            tok = this.isSet(RegularExpression.USE_UNICODE_CATEGORY)</b>
+<b class="nc"><i>1085</i>&nbsp;                ? Token.getRange(&quot;IsSpace&quot;, true) : Token.token_spaces;</b>
+<b class="nc"><i>1086</i>&nbsp;            break;</b>
+<i>1087</i>&nbsp;          case &#39;S&#39;:
+<b class="nc"><i>1088</i>&nbsp;            tok = this.isSet(RegularExpression.USE_UNICODE_CATEGORY)</b>
+<b class="nc"><i>1089</i>&nbsp;                ? Token.getRange(&quot;IsSpace&quot;, false) : Token.token_not_spaces;</b>
+<b class="nc"><i>1090</i>&nbsp;            break;</b>
+<i>1091</i>&nbsp;
+<i>1092</i>&nbsp;          default:
+<b class="nc"><i>1093</i>&nbsp;            throw new RuntimeException(&quot;Internal Error: shorthands: \\u&quot;+Integer.toString(ch, 16));</b>
+<i>1094</i>&nbsp;        }
+<b class="nc"><i>1095</i>&nbsp;        return tok;</b>
+<i>1096</i>&nbsp;    }
+<i>1097</i>&nbsp;
+<i>1098</i>&nbsp;    /**
+<i>1099</i>&nbsp;     */
+<i>1100</i>&nbsp;    int decodeEscaped() throws ParseException {
+<b class="nc"><i>1101</i>&nbsp;        if (this.read() != T_BACKSOLIDUS)  throw ex(&quot;parser.next.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1102</i>&nbsp;        int c = this.chardata;</b>
+<b class="nc"><i>1103</i>&nbsp;        switch (c) {</b>
+<b class="nc"><i>1104</i>&nbsp;          case &#39;e&#39;:  c = 0x1b;  break; // ESCAPE U+001B</b>
+<b class="nc"><i>1105</i>&nbsp;          case &#39;f&#39;:  c = &#39;\f&#39;;  break; // FORM FEED U+000C</b>
+<b class="nc"><i>1106</i>&nbsp;          case &#39;n&#39;:  c = &#39;\n&#39;;  break; // LINE FEED U+000A</b>
+<b class="nc"><i>1107</i>&nbsp;          case &#39;r&#39;:  c = &#39;\r&#39;;  break; // CRRIAGE RETURN U+000D</b>
+<b class="nc"><i>1108</i>&nbsp;          case &#39;t&#39;:  c = &#39;\t&#39;;  break; // HORIZONTAL TABULATION U+0009</b>
+<i>1109</i>&nbsp;          //case &#39;v&#39;:  c = 0x0b;  break; // VERTICAL TABULATION U+000B
+<i>1110</i>&nbsp;          case &#39;x&#39;:
+<b class="nc"><i>1111</i>&nbsp;            this.next();</b>
+<b class="nc"><i>1112</i>&nbsp;            if (this.read() != T_CHAR)  throw ex(&quot;parser.descape.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1113</i>&nbsp;            if (this.chardata == &#39;{&#39;) {</b>
+<b class="nc"><i>1114</i>&nbsp;                int v1 = 0;</b>
+<b class="nc"><i>1115</i>&nbsp;                int uv = 0;</b>
+<i>1116</i>&nbsp;                do {
+<b class="nc"><i>1117</i>&nbsp;                    this.next();</b>
+<b class="nc"><i>1118</i>&nbsp;                    if (this.read() != T_CHAR)  throw ex(&quot;parser.descape.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1119</i>&nbsp;                    if ((v1 = hexChar(this.chardata)) &lt; 0)</b>
+<b class="nc"><i>1120</i>&nbsp;                        break;</b>
+<b class="nc"><i>1121</i>&nbsp;                    if (uv &gt; uv*16) throw ex(&quot;parser.descape.2&quot;, this.offset-1);</b>
+<b class="nc"><i>1122</i>&nbsp;                    uv = uv*16+v1;</b>
+<b class="nc"><i>1123</i>&nbsp;                } while (true);</b>
+<b class="nc"><i>1124</i>&nbsp;                if (this.chardata != &#39;}&#39;)  throw ex(&quot;parser.descape.3&quot;, this.offset-1);</b>
+<b class="nc"><i>1125</i>&nbsp;                if (uv &gt; Token.UTF16_MAX)  throw ex(&quot;parser.descape.4&quot;, this.offset-1);</b>
+<b class="nc"><i>1126</i>&nbsp;                c = uv;</b>
+<b class="nc"><i>1127</i>&nbsp;            } else {</b>
+<b class="nc"><i>1128</i>&nbsp;                int v1 = 0;</b>
+<b class="nc"><i>1129</i>&nbsp;                if (this.read() != T_CHAR || (v1 = hexChar(this.chardata)) &lt; 0)</b>
+<b class="nc"><i>1130</i>&nbsp;                    throw ex(&quot;parser.descape.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1131</i>&nbsp;                int uv = v1;</b>
+<b class="nc"><i>1132</i>&nbsp;                this.next();</b>
+<b class="nc"><i>1133</i>&nbsp;                if (this.read() != T_CHAR || (v1 = hexChar(this.chardata)) &lt; 0)</b>
+<b class="nc"><i>1134</i>&nbsp;                    throw ex(&quot;parser.descape.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1135</i>&nbsp;                uv = uv*16+v1;</b>
+<b class="nc"><i>1136</i>&nbsp;                c = uv;</b>
+<i>1137</i>&nbsp;            }
+<b class="nc"><i>1138</i>&nbsp;            break;</b>
+<i>1139</i>&nbsp;
+<i>1140</i>&nbsp;          case &#39;u&#39;:
+<b class="nc"><i>1141</i>&nbsp;            int v1 = 0;</b>
+<b class="nc"><i>1142</i>&nbsp;            this.next();</b>
+<b class="nc"><i>1143</i>&nbsp;            if (this.read() != T_CHAR || (v1 = hexChar(this.chardata)) &lt; 0)</b>
+<b class="nc"><i>1144</i>&nbsp;                throw ex(&quot;parser.descape.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1145</i>&nbsp;            int uv = v1;</b>
+<b class="nc"><i>1146</i>&nbsp;            this.next();</b>
+<b class="nc"><i>1147</i>&nbsp;            if (this.read() != T_CHAR || (v1 = hexChar(this.chardata)) &lt; 0)</b>
+<b class="nc"><i>1148</i>&nbsp;                throw ex(&quot;parser.descape.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1149</i>&nbsp;            uv = uv*16+v1;</b>
+<b class="nc"><i>1150</i>&nbsp;            this.next();</b>
+<b class="nc"><i>1151</i>&nbsp;            if (this.read() != T_CHAR || (v1 = hexChar(this.chardata)) &lt; 0)</b>
+<b class="nc"><i>1152</i>&nbsp;                throw ex(&quot;parser.descape.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1153</i>&nbsp;            uv = uv*16+v1;</b>
+<b class="nc"><i>1154</i>&nbsp;            this.next();</b>
+<b class="nc"><i>1155</i>&nbsp;            if (this.read() != T_CHAR || (v1 = hexChar(this.chardata)) &lt; 0)</b>
+<b class="nc"><i>1156</i>&nbsp;                throw ex(&quot;parser.descape.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1157</i>&nbsp;            uv = uv*16+v1;</b>
+<b class="nc"><i>1158</i>&nbsp;            c = uv;</b>
+<b class="nc"><i>1159</i>&nbsp;            break;</b>
+<i>1160</i>&nbsp;
+<i>1161</i>&nbsp;          case &#39;v&#39;:
+<b class="nc"><i>1162</i>&nbsp;            this.next();</b>
+<b class="nc"><i>1163</i>&nbsp;            if (this.read() != T_CHAR || (v1 = hexChar(this.chardata)) &lt; 0)</b>
+<b class="nc"><i>1164</i>&nbsp;                throw ex(&quot;parser.descape.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1165</i>&nbsp;            uv = v1;</b>
+<b class="nc"><i>1166</i>&nbsp;            this.next();</b>
+<b class="nc"><i>1167</i>&nbsp;            if (this.read() != T_CHAR || (v1 = hexChar(this.chardata)) &lt; 0)</b>
+<b class="nc"><i>1168</i>&nbsp;                throw ex(&quot;parser.descape.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1169</i>&nbsp;            uv = uv*16+v1;</b>
+<b class="nc"><i>1170</i>&nbsp;            this.next();</b>
+<b class="nc"><i>1171</i>&nbsp;            if (this.read() != T_CHAR || (v1 = hexChar(this.chardata)) &lt; 0)</b>
+<b class="nc"><i>1172</i>&nbsp;                throw ex(&quot;parser.descape.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1173</i>&nbsp;            uv = uv*16+v1;</b>
+<b class="nc"><i>1174</i>&nbsp;            this.next();</b>
+<b class="nc"><i>1175</i>&nbsp;            if (this.read() != T_CHAR || (v1 = hexChar(this.chardata)) &lt; 0)</b>
+<b class="nc"><i>1176</i>&nbsp;                throw ex(&quot;parser.descape.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1177</i>&nbsp;            uv = uv*16+v1;</b>
+<b class="nc"><i>1178</i>&nbsp;            this.next();</b>
+<b class="nc"><i>1179</i>&nbsp;            if (this.read() != T_CHAR || (v1 = hexChar(this.chardata)) &lt; 0)</b>
+<b class="nc"><i>1180</i>&nbsp;                throw ex(&quot;parser.descape.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1181</i>&nbsp;            uv = uv*16+v1;</b>
+<b class="nc"><i>1182</i>&nbsp;            this.next();</b>
+<b class="nc"><i>1183</i>&nbsp;            if (this.read() != T_CHAR || (v1 = hexChar(this.chardata)) &lt; 0)</b>
+<b class="nc"><i>1184</i>&nbsp;                throw ex(&quot;parser.descape.1&quot;, this.offset-1);</b>
+<b class="nc"><i>1185</i>&nbsp;            uv = uv*16+v1;</b>
+<b class="nc"><i>1186</i>&nbsp;            if (uv &gt; Token.UTF16_MAX)  throw ex(&quot;parser.descappe.4&quot;, this.offset-1);</b>
+<b class="nc"><i>1187</i>&nbsp;            c = uv;</b>
+<b class="nc"><i>1188</i>&nbsp;            break;</b>
+<i>1189</i>&nbsp;          case &#39;A&#39;:
+<i>1190</i>&nbsp;          case &#39;Z&#39;:
+<i>1191</i>&nbsp;          case &#39;z&#39;:
+<b class="nc"><i>1192</i>&nbsp;            throw ex(&quot;parser.descape.5&quot;, this.offset-2);</b>
+<i>1193</i>&nbsp;          default:
+<i>1194</i>&nbsp;        }
+<b class="nc"><i>1195</i>&nbsp;        return c;</b>
+<i>1196</i>&nbsp;    }
+<i>1197</i>&nbsp;
+<i>1198</i>&nbsp;    static private final int hexChar(int ch) {
+<b class="nc"><i>1199</i>&nbsp;        if (ch &lt; &#39;0&#39;)  return -1;</b>
+<b class="nc"><i>1200</i>&nbsp;        if (ch &gt; &#39;f&#39;)  return -1;</b>
+<b class="nc"><i>1201</i>&nbsp;        if (ch &lt;= &#39;9&#39;)  return ch-&#39;0&#39;;</b>
+<b class="nc"><i>1202</i>&nbsp;        if (ch &lt; &#39;A&#39;)  return -1;</b>
+<b class="nc"><i>1203</i>&nbsp;        if (ch &lt;= &#39;F&#39;)  return ch-&#39;A&#39;+10;</b>
+<b class="nc"><i>1204</i>&nbsp;        if (ch &lt; &#39;a&#39;)  return -1;</b>
+<b class="nc"><i>1205</i>&nbsp;        return ch-&#39;a&#39;+10;</b>
+<i>1206</i>&nbsp;    }
+<i>1207</i>&nbsp;
+<i>1208</i>&nbsp;    static protected final void addCaseInsensitiveChar(RangeToken tok, int c) {
+<b class="nc"><i>1209</i>&nbsp;        final int[] caseMap = CaseInsensitiveMap.get(c);</b>
+<b class="nc"><i>1210</i>&nbsp;        tok.addRange(c, c);</b>
+<i>1211</i>&nbsp;
+<b class="nc"><i>1212</i>&nbsp;        if (caseMap != null) {</b>
+<b class="nc"><i>1213</i>&nbsp;            for (int i=0; i&lt;caseMap.length; i+=2) {</b>
+<b class="nc"><i>1214</i>&nbsp;                tok.addRange(caseMap[i], caseMap[i]);</b>
+<i>1215</i>&nbsp;            }
+<i>1216</i>&nbsp;        }
+<i>1217</i>&nbsp;
+<i>1218</i>&nbsp;    }
+<i>1219</i>&nbsp;
+<i>1220</i>&nbsp;    static protected final void addCaseInsensitiveCharRange(RangeToken tok, int start, int end) {
+<i>1221</i>&nbsp;        int[] caseMap;
+<i>1222</i>&nbsp;        int r1, r2;
+<b class="nc"><i>1223</i>&nbsp;        if (start &lt;= end) {</b>
+<b class="nc"><i>1224</i>&nbsp;            r1 = start;</b>
+<b class="nc"><i>1225</i>&nbsp;            r2 = end;</b>
+<i>1226</i>&nbsp;        } else {
+<b class="nc"><i>1227</i>&nbsp;            r1 = end;</b>
+<b class="nc"><i>1228</i>&nbsp;            r2 = start;</b>
+<i>1229</i>&nbsp;        }
+<i>1230</i>&nbsp;
+<b class="nc"><i>1231</i>&nbsp;        tok.addRange(r1, r2);</b>
+<b class="nc"><i>1232</i>&nbsp;        for (int ch = r1;  ch &lt;= r2;  ch++) {</b>
+<b class="nc"><i>1233</i>&nbsp;            caseMap = CaseInsensitiveMap.get(ch);</b>
+<b class="nc"><i>1234</i>&nbsp;            if (caseMap != null) {</b>
+<b class="nc"><i>1235</i>&nbsp;                for (int i=0; i&lt;caseMap.length; i+=2) {</b>
+<b class="nc"><i>1236</i>&nbsp;                    tok.addRange(caseMap[i], caseMap[i]);</b>
+<i>1237</i>&nbsp;                }
+<i>1238</i>&nbsp;            }
+<i>1239</i>&nbsp;        }
+<i>1240</i>&nbsp;    }
+<i>1241</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:55</div>
+</div>
+</body>
+</html>

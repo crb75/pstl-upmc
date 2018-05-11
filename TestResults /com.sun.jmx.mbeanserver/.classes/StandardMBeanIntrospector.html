@@ -1,0 +1,276 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: StandardMBeanIntrospector</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.jmx.mbeanserver</a> ]
+</div>
+
+<h1>Coverage Summary for Class: StandardMBeanIntrospector (com.sun.jmx.mbeanserver)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StandardMBeanIntrospector</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 44)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.jmx.mbeanserver;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.lang.reflect.InvocationTargetException;
+<i>29</i>&nbsp;import java.lang.reflect.Method;
+<i>30</i>&nbsp;import java.lang.reflect.Type;
+<i>31</i>&nbsp;import java.util.WeakHashMap;
+<i>32</i>&nbsp;import javax.management.Descriptor;
+<i>33</i>&nbsp;import javax.management.ImmutableDescriptor;
+<i>34</i>&nbsp;import javax.management.IntrospectionException;
+<i>35</i>&nbsp;import javax.management.MBeanAttributeInfo;
+<i>36</i>&nbsp;import javax.management.MBeanException;
+<i>37</i>&nbsp;import javax.management.MBeanOperationInfo;
+<i>38</i>&nbsp;import javax.management.NotCompliantMBeanException;
+<i>39</i>&nbsp;import javax.management.NotificationBroadcaster;
+<i>40</i>&nbsp;import javax.management.NotificationBroadcasterSupport;
+<i>41</i>&nbsp;import sun.reflect.misc.MethodUtil;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;/**
+<i>44</i>&nbsp; * @since 1.6
+<i>45</i>&nbsp; */
+<b class="nc"><i>46</i>&nbsp;class StandardMBeanIntrospector extends MBeanIntrospector&lt;Method&gt; {</b>
+<b class="nc"><i>47</i>&nbsp;    private static final StandardMBeanIntrospector instance =</b>
+<i>48</i>&nbsp;        new StandardMBeanIntrospector();
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    static StandardMBeanIntrospector getInstance() {
+<b class="nc"><i>51</i>&nbsp;        return instance;</b>
+<i>52</i>&nbsp;    }
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    @Override
+<i>55</i>&nbsp;    PerInterfaceMap&lt;Method&gt; getPerInterfaceMap() {
+<b class="nc"><i>56</i>&nbsp;        return perInterfaceMap;</b>
+<i>57</i>&nbsp;    }
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    @Override
+<i>60</i>&nbsp;    MBeanInfoMap getMBeanInfoMap() {
+<b class="nc"><i>61</i>&nbsp;        return mbeanInfoMap;</b>
+<i>62</i>&nbsp;    }
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    @Override
+<i>65</i>&nbsp;    MBeanAnalyzer&lt;Method&gt; getAnalyzer(Class&lt;?&gt; mbeanInterface)
+<i>66</i>&nbsp;            throws NotCompliantMBeanException {
+<b class="nc"><i>67</i>&nbsp;        return MBeanAnalyzer.analyzer(mbeanInterface, this);</b>
+<i>68</i>&nbsp;    }
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    @Override
+<i>71</i>&nbsp;    boolean isMXBean() {
+<b class="nc"><i>72</i>&nbsp;        return false;</b>
+<i>73</i>&nbsp;    }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    @Override
+<i>76</i>&nbsp;    Method mFrom(Method m) {
+<b class="nc"><i>77</i>&nbsp;        return m;</b>
+<i>78</i>&nbsp;    }
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    @Override
+<i>81</i>&nbsp;    String getName(Method m) {
+<b class="nc"><i>82</i>&nbsp;        return m.getName();</b>
+<i>83</i>&nbsp;    }
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    @Override
+<i>86</i>&nbsp;    Type getGenericReturnType(Method m) {
+<b class="nc"><i>87</i>&nbsp;        return m.getGenericReturnType();</b>
+<i>88</i>&nbsp;    }
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    @Override
+<i>91</i>&nbsp;    Type[] getGenericParameterTypes(Method m) {
+<b class="nc"><i>92</i>&nbsp;        return m.getGenericParameterTypes();</b>
+<i>93</i>&nbsp;    }
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    @Override
+<i>96</i>&nbsp;    String[] getSignature(Method m) {
+<b class="nc"><i>97</i>&nbsp;        Class&lt;?&gt;[] params = m.getParameterTypes();</b>
+<b class="nc"><i>98</i>&nbsp;        String[] sig = new String[params.length];</b>
+<b class="nc"><i>99</i>&nbsp;        for (int i = 0; i &lt; params.length; i++)</b>
+<b class="nc"><i>100</i>&nbsp;            sig[i] = params[i].getName();</b>
+<b class="nc"><i>101</i>&nbsp;        return sig;</b>
+<i>102</i>&nbsp;    }
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    @Override
+<i>105</i>&nbsp;    void checkMethod(Method m) {
+<i>106</i>&nbsp;    }
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;    @Override
+<i>109</i>&nbsp;    Object invokeM2(Method m, Object target, Object[] args, Object cookie)
+<i>110</i>&nbsp;            throws InvocationTargetException, IllegalAccessException,
+<i>111</i>&nbsp;                   MBeanException {
+<b class="nc"><i>112</i>&nbsp;        return MethodUtil.invoke(m, target, args);</b>
+<i>113</i>&nbsp;    }
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;    @Override
+<i>116</i>&nbsp;    boolean validParameter(Method m, Object value, int paramNo, Object cookie) {
+<b class="nc"><i>117</i>&nbsp;        return isValidParameter(m, value, paramNo);</b>
+<i>118</i>&nbsp;    }
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    @Override
+<i>121</i>&nbsp;    MBeanAttributeInfo getMBeanAttributeInfo(String attributeName,
+<i>122</i>&nbsp;            Method getter, Method setter) {
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;        final String description = &quot;Attribute exposed for management&quot;;
+<i>125</i>&nbsp;        try {
+<b class="nc"><i>126</i>&nbsp;            return new MBeanAttributeInfo(attributeName, description,</b>
+<i>127</i>&nbsp;                                          getter, setter);
+<b class="nc"><i>128</i>&nbsp;        } catch (IntrospectionException e) {</b>
+<b class="nc"><i>129</i>&nbsp;            throw new RuntimeException(e); // should not happen</b>
+<i>130</i>&nbsp;        }
+<i>131</i>&nbsp;    }
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;    @Override
+<i>134</i>&nbsp;    MBeanOperationInfo getMBeanOperationInfo(String operationName,
+<i>135</i>&nbsp;            Method operation) {
+<i>136</i>&nbsp;        final String description = &quot;Operation exposed for management&quot;;
+<b class="nc"><i>137</i>&nbsp;        return new MBeanOperationInfo(description, operation);</b>
+<i>138</i>&nbsp;    }
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;    @Override
+<i>141</i>&nbsp;    Descriptor getBasicMBeanDescriptor() {
+<i>142</i>&nbsp;        /* We don&#39;t bother saying mxbean=false, and we can&#39;t know whether
+<i>143</i>&nbsp;           the info is immutable until we know whether the MBean class
+<i>144</i>&nbsp;           (not interface) is a NotificationBroadcaster. */
+<b class="nc"><i>145</i>&nbsp;        return ImmutableDescriptor.EMPTY_DESCRIPTOR;</b>
+<i>146</i>&nbsp;    }
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;    @Override
+<i>149</i>&nbsp;    Descriptor getMBeanDescriptor(Class&lt;?&gt; resourceClass) {
+<b class="nc"><i>150</i>&nbsp;        boolean immutable = isDefinitelyImmutableInfo(resourceClass);</b>
+<b class="nc"><i>151</i>&nbsp;        return new ImmutableDescriptor(&quot;mxbean=false&quot;,</b>
+<i>152</i>&nbsp;                                       &quot;immutableInfo=&quot; + immutable);
+<i>153</i>&nbsp;    }
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;    /* Return true if and only if we can be sure that the given MBean implementation
+<i>156</i>&nbsp;     * class has immutable MBeanInfo.  A Standard MBean that is a
+<i>157</i>&nbsp;     * NotificationBroadcaster is allowed to return different values at
+<i>158</i>&nbsp;     * different times from its getNotificationInfo() method, which is when
+<i>159</i>&nbsp;     * we might not know if it is immutable.  But if it is a subclass of
+<i>160</i>&nbsp;     * NotificationBroadcasterSupport and does not override
+<i>161</i>&nbsp;     * getNotificationInfo(), then we know it won&#39;t change.
+<i>162</i>&nbsp;     */
+<i>163</i>&nbsp;    static boolean isDefinitelyImmutableInfo(Class&lt;?&gt; implClass) {
+<b class="nc"><i>164</i>&nbsp;        if (!NotificationBroadcaster.class.isAssignableFrom(implClass))</b>
+<b class="nc"><i>165</i>&nbsp;            return true;</b>
+<b class="nc"><i>166</i>&nbsp;        synchronized (definitelyImmutable) {</b>
+<b class="nc"><i>167</i>&nbsp;            Boolean immutable = definitelyImmutable.get(implClass);</b>
+<b class="nc"><i>168</i>&nbsp;            if (immutable == null) {</b>
+<b class="nc"><i>169</i>&nbsp;                final Class&lt;NotificationBroadcasterSupport&gt; nbs =</b>
+<i>170</i>&nbsp;                        NotificationBroadcasterSupport.class;
+<b class="nc"><i>171</i>&nbsp;                if (nbs.isAssignableFrom(implClass)) {</b>
+<i>172</i>&nbsp;                    try {
+<b class="nc"><i>173</i>&nbsp;                        Method m = implClass.getMethod(&quot;getNotificationInfo&quot;);</b>
+<b class="nc"><i>174</i>&nbsp;                        immutable = (m.getDeclaringClass() == nbs);</b>
+<b class="nc"><i>175</i>&nbsp;                    } catch (Exception e) {</b>
+<i>176</i>&nbsp;                        // Too bad, we&#39;ll say no for now.
+<b class="nc"><i>177</i>&nbsp;                        return false;</b>
+<b class="nc"><i>178</i>&nbsp;                    }</b>
+<i>179</i>&nbsp;                } else
+<b class="nc"><i>180</i>&nbsp;                    immutable = false;</b>
+<b class="nc"><i>181</i>&nbsp;                definitelyImmutable.put(implClass, immutable);</b>
+<i>182</i>&nbsp;            }
+<b class="nc"><i>183</i>&nbsp;            return immutable;</b>
+<b class="nc"><i>184</i>&nbsp;        }</b>
+<i>185</i>&nbsp;    }
+<b class="nc"><i>186</i>&nbsp;    private static final WeakHashMap&lt;Class&lt;?&gt;, Boolean&gt; definitelyImmutable =</b>
+<i>187</i>&nbsp;            new WeakHashMap&lt;Class&lt;?&gt;, Boolean&gt;();
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;    private static final PerInterfaceMap&lt;Method&gt;
+<b class="nc"><i>190</i>&nbsp;        perInterfaceMap = new PerInterfaceMap&lt;Method&gt;();</b>
+<i>191</i>&nbsp;
+<b class="nc"><i>192</i>&nbsp;    private static final MBeanInfoMap mbeanInfoMap = new MBeanInfoMap();</b>
+<i>193</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

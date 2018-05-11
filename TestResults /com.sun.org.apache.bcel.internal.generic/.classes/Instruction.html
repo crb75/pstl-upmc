@@ -1,0 +1,391 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Instruction</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.bcel.internal.generic</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Instruction (com.sun.org.apache.bcel.internal.generic)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Instruction</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 58)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;package com.sun.org.apache.bcel.internal.generic;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;/* ====================================================================
+<i>8</i>&nbsp; * The Apache Software License, Version 1.1
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; * Copyright (c) 2001 The Apache Software Foundation.  All rights
+<i>11</i>&nbsp; * reserved.
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; * Redistribution and use in source and binary forms, with or without
+<i>14</i>&nbsp; * modification, are permitted provided that the following conditions
+<i>15</i>&nbsp; * are met:
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; * 1. Redistributions of source code must retain the above copyright
+<i>18</i>&nbsp; *    notice, this list of conditions and the following disclaimer.
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; * 2. Redistributions in binary form must reproduce the above copyright
+<i>21</i>&nbsp; *    notice, this list of conditions and the following disclaimer in
+<i>22</i>&nbsp; *    the documentation and/or other materials provided with the
+<i>23</i>&nbsp; *    distribution.
+<i>24</i>&nbsp; *
+<i>25</i>&nbsp; * 3. The end-user documentation included with the redistribution,
+<i>26</i>&nbsp; *    if any, must include the following acknowledgment:
+<i>27</i>&nbsp; *       &quot;This product includes software developed by the
+<i>28</i>&nbsp; *        Apache Software Foundation (http://www.apache.org/).&quot;
+<i>29</i>&nbsp; *    Alternately, this acknowledgment may appear in the software itself,
+<i>30</i>&nbsp; *    if and wherever such third-party acknowledgments normally appear.
+<i>31</i>&nbsp; *
+<i>32</i>&nbsp; * 4. The names &quot;Apache&quot; and &quot;Apache Software Foundation&quot; and
+<i>33</i>&nbsp; *    &quot;Apache BCEL&quot; must not be used to endorse or promote products
+<i>34</i>&nbsp; *    derived from this software without prior written permission. For
+<i>35</i>&nbsp; *    written permission, please contact apache@apache.org.
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; * 5. Products derived from this software may not be called &quot;Apache&quot;,
+<i>38</i>&nbsp; *    &quot;Apache BCEL&quot;, nor may &quot;Apache&quot; appear in their name, without
+<i>39</i>&nbsp; *    prior written permission of the Apache Software Foundation.
+<i>40</i>&nbsp; *
+<i>41</i>&nbsp; * THIS SOFTWARE IS PROVIDED ``AS IS&#39;&#39; AND ANY EXPRESSED OR IMPLIED
+<i>42</i>&nbsp; * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+<i>43</i>&nbsp; * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+<i>44</i>&nbsp; * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+<i>45</i>&nbsp; * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+<i>46</i>&nbsp; * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+<i>47</i>&nbsp; * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+<i>48</i>&nbsp; * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+<i>49</i>&nbsp; * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+<i>50</i>&nbsp; * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+<i>51</i>&nbsp; * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+<i>52</i>&nbsp; * SUCH DAMAGE.
+<i>53</i>&nbsp; * ====================================================================
+<i>54</i>&nbsp; *
+<i>55</i>&nbsp; * This software consists of voluntary contributions made by many
+<i>56</i>&nbsp; * individuals on behalf of the Apache Software Foundation.  For more
+<i>57</i>&nbsp; * information on the Apache Software Foundation, please see
+<i>58</i>&nbsp; * &lt;http://www.apache.org/&gt;.
+<i>59</i>&nbsp; */
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;import com.sun.org.apache.bcel.internal.Constants;
+<i>62</i>&nbsp;import com.sun.org.apache.bcel.internal.classfile.Utility;
+<i>63</i>&nbsp;import com.sun.org.apache.bcel.internal.classfile.ConstantPool;
+<i>64</i>&nbsp;import java.io.*;
+<i>65</i>&nbsp;import com.sun.org.apache.bcel.internal.util.ByteSequence;
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;/**
+<i>68</i>&nbsp; * Abstract super class for all Java byte codes.
+<i>69</i>&nbsp; *
+<i>70</i>&nbsp; * @author  &lt;A HREF=&quot;mailto:markus.dahm@berlin.de&quot;&gt;M. Dahm&lt;/A&gt;
+<i>71</i>&nbsp; */
+<i>72</i>&nbsp;public abstract class Instruction implements Cloneable, Serializable {
+<b class="nc"><i>73</i>&nbsp;  protected short length = 1;  // Length of instruction in bytes</b>
+<b class="nc"><i>74</i>&nbsp;  protected short opcode = -1; // Opcode number</b>
+<i>75</i>&nbsp;
+<b class="nc"><i>76</i>&nbsp;  private static InstructionComparator cmp = InstructionComparator.DEFAULT;</b>
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;  /**
+<i>79</i>&nbsp;   * Empty constructor needed for the Class.newInstance() statement in
+<i>80</i>&nbsp;   * Instruction.readInstruction(). Not to be used otherwise.
+<i>81</i>&nbsp;   */
+<i>82</i>&nbsp;  Instruction() {}
+<i>83</i>&nbsp;
+<b class="nc"><i>84</i>&nbsp;  public Instruction(short opcode, short length) {</b>
+<b class="nc"><i>85</i>&nbsp;    this.length = length;</b>
+<b class="nc"><i>86</i>&nbsp;    this.opcode = opcode;</b>
+<i>87</i>&nbsp;  }
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;  /**
+<i>90</i>&nbsp;   * Dump instruction as byte code to stream out.
+<i>91</i>&nbsp;   * @param out Output stream
+<i>92</i>&nbsp;   */
+<i>93</i>&nbsp;  public void dump(DataOutputStream out) throws IOException {
+<b class="nc"><i>94</i>&nbsp;    out.writeByte(opcode); // Common for all instructions</b>
+<i>95</i>&nbsp;  }
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;  /** @return name of instruction, i.e., opcode name
+<i>98</i>&nbsp;   */
+<i>99</i>&nbsp;  public String getName() {
+<b class="nc"><i>100</i>&nbsp;    return Constants.OPCODE_NAMES[opcode];</b>
+<i>101</i>&nbsp;  }
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;  /**
+<i>104</i>&nbsp;   * Long output format:
+<i>105</i>&nbsp;   *
+<i>106</i>&nbsp;   * &amp;lt;name of opcode&amp;gt; &quot;[&quot;&amp;lt;opcode number&amp;gt;&quot;]&quot;
+<i>107</i>&nbsp;   * &quot;(&quot;&amp;lt;length of instruction&amp;gt;&quot;)&quot;
+<i>108</i>&nbsp;   *
+<i>109</i>&nbsp;   * @param verbose long/short format switch
+<i>110</i>&nbsp;   * @return mnemonic for instruction
+<i>111</i>&nbsp;   */
+<i>112</i>&nbsp;  public String toString(boolean verbose) {
+<b class="nc"><i>113</i>&nbsp;    if(verbose)</b>
+<b class="nc"><i>114</i>&nbsp;      return getName() + &quot;[&quot; + opcode + &quot;](&quot; + length + &quot;)&quot;;</b>
+<i>115</i>&nbsp;    else
+<b class="nc"><i>116</i>&nbsp;      return getName();</b>
+<i>117</i>&nbsp;  }
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;  /**
+<i>120</i>&nbsp;   * @return mnemonic for instruction in verbose format
+<i>121</i>&nbsp;   */
+<i>122</i>&nbsp;  public String toString() {
+<b class="nc"><i>123</i>&nbsp;    return toString(true);</b>
+<i>124</i>&nbsp;  }
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;  /**
+<i>127</i>&nbsp;   * @return mnemonic for instruction with sumbolic references resolved
+<i>128</i>&nbsp;   */
+<i>129</i>&nbsp;  public String toString(ConstantPool cp) {
+<b class="nc"><i>130</i>&nbsp;    return toString(false);</b>
+<i>131</i>&nbsp;  }
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;  /**
+<i>134</i>&nbsp;   * Use with caution, since `BranchInstruction&#39;s have a `target&#39; reference which
+<i>135</i>&nbsp;   * is not copied correctly (only basic types are). This also applies for
+<i>136</i>&nbsp;   * `Select&#39; instructions with their multiple branch targets.
+<i>137</i>&nbsp;   *
+<i>138</i>&nbsp;   * @see BranchInstruction
+<i>139</i>&nbsp;   * @return (shallow) copy of an instruction
+<i>140</i>&nbsp;   */
+<i>141</i>&nbsp;  public Instruction copy() {
+<b class="nc"><i>142</i>&nbsp;    Instruction i = null;</b>
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;    // &quot;Constant&quot; instruction, no need to duplicate
+<b class="nc"><i>145</i>&nbsp;    if(InstructionConstants.INSTRUCTIONS[this.getOpcode()] != null)</b>
+<b class="nc"><i>146</i>&nbsp;      i = this;</b>
+<i>147</i>&nbsp;    else {
+<i>148</i>&nbsp;      try {
+<b class="nc"><i>149</i>&nbsp;        i = (Instruction)clone();</b>
+<b class="nc"><i>150</i>&nbsp;      } catch(CloneNotSupportedException e) {</b>
+<b class="nc"><i>151</i>&nbsp;        System.err.println(e);</b>
+<b class="nc"><i>152</i>&nbsp;      }</b>
+<i>153</i>&nbsp;    }
+<i>154</i>&nbsp;
+<b class="nc"><i>155</i>&nbsp;    return i;</b>
+<i>156</i>&nbsp;  }
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;  /**
+<i>159</i>&nbsp;   * Read needed data (e.g. index) from file.
+<i>160</i>&nbsp;   *
+<i>161</i>&nbsp;   * @param bytes byte sequence to read from
+<i>162</i>&nbsp;   * @param wide &quot;wide&quot; instruction flag
+<i>163</i>&nbsp;   */
+<i>164</i>&nbsp;  protected void initFromFile(ByteSequence bytes, boolean wide)
+<i>165</i>&nbsp;    throws IOException
+<i>166</i>&nbsp;  {}
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;  /**
+<i>169</i>&nbsp;   * Read an instruction from (byte code) input stream and return the
+<i>170</i>&nbsp;   * appropiate object.
+<i>171</i>&nbsp;   *
+<i>172</i>&nbsp;   * @param file file to read from
+<i>173</i>&nbsp;   * @return instruction object being read
+<i>174</i>&nbsp;   */
+<i>175</i>&nbsp;  public static final Instruction readInstruction(ByteSequence bytes)
+<i>176</i>&nbsp;    throws IOException
+<i>177</i>&nbsp;  {
+<b class="nc"><i>178</i>&nbsp;    boolean     wide   = false;</b>
+<b class="nc"><i>179</i>&nbsp;    short       opcode = (short)bytes.readUnsignedByte();</b>
+<b class="nc"><i>180</i>&nbsp;    Instruction obj    = null;</b>
+<i>181</i>&nbsp;
+<b class="nc"><i>182</i>&nbsp;    if(opcode == Constants.WIDE) { // Read next opcode after wide byte</b>
+<b class="nc"><i>183</i>&nbsp;      wide = true;</b>
+<b class="nc"><i>184</i>&nbsp;      opcode  = (short)bytes.readUnsignedByte();</b>
+<i>185</i>&nbsp;    }
+<i>186</i>&nbsp;
+<b class="nc"><i>187</i>&nbsp;    if(InstructionConstants.INSTRUCTIONS[opcode] != null)</b>
+<b class="nc"><i>188</i>&nbsp;      return InstructionConstants.INSTRUCTIONS[opcode]; // Used predefined immutable object, if available</b>
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;    /* Find appropiate class, instantiate an (empty) instruction object
+<i>191</i>&nbsp;     * and initialize it by hand.
+<i>192</i>&nbsp;     */
+<i>193</i>&nbsp;    Class clazz;
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;    try {
+<b class="nc"><i>196</i>&nbsp;      clazz = Class.forName(className(opcode));</b>
+<b class="nc"><i>197</i>&nbsp;    } catch (ClassNotFoundException cnfe){</b>
+<i>198</i>&nbsp;      // If a class by that name does not exist, the opcode is illegal.
+<i>199</i>&nbsp;      // Note that IMPDEP1, IMPDEP2, BREAKPOINT are also illegal in a sense.
+<b class="nc"><i>200</i>&nbsp;      throw new ClassGenException(&quot;Illegal opcode detected.&quot;);</b>
+<b class="nc"><i>201</i>&nbsp;    }</b>
+<i>202</i>&nbsp;
+<i>203</i>&nbsp;    try {
+<b class="nc"><i>204</i>&nbsp;      obj = (Instruction)clazz.newInstance();</b>
+<i>205</i>&nbsp;
+<b class="nc"><i>206</i>&nbsp;      if(wide &amp;&amp; !((obj instanceof LocalVariableInstruction) ||</b>
+<i>207</i>&nbsp;                   (obj instanceof IINC) ||
+<i>208</i>&nbsp;                   (obj instanceof RET)))
+<b class="nc"><i>209</i>&nbsp;        throw new Exception(&quot;Illegal opcode after wide: &quot; + opcode);</b>
+<i>210</i>&nbsp;
+<b class="nc"><i>211</i>&nbsp;      obj.setOpcode(opcode);</b>
+<b class="nc"><i>212</i>&nbsp;      obj.initFromFile(bytes, wide); // Do further initializations, if any</b>
+<i>213</i>&nbsp;      // Byte code offset set in InstructionList
+<b class="nc"><i>214</i>&nbsp;    } catch(Exception e) { throw new ClassGenException(e.toString()); }</b>
+<i>215</i>&nbsp;
+<b class="nc"><i>216</i>&nbsp;    return obj;</b>
+<i>217</i>&nbsp;  }
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;  private static final String className(short opcode) {
+<b class="nc"><i>220</i>&nbsp;    String name = Constants.OPCODE_NAMES[opcode].toUpperCase();</b>
+<i>221</i>&nbsp;
+<i>222</i>&nbsp;    /* ICONST_0, etc. will be shortened to ICONST, etc., since ICONST_0 and the like
+<i>223</i>&nbsp;     * are not implemented (directly).
+<i>224</i>&nbsp;     */
+<i>225</i>&nbsp;    try {
+<b class="nc"><i>226</i>&nbsp;      int  len = name.length();</b>
+<b class="nc"><i>227</i>&nbsp;      char ch1 = name.charAt(len - 2), ch2 = name.charAt(len - 1);</b>
+<i>228</i>&nbsp;
+<b class="nc"><i>229</i>&nbsp;      if((ch1 == &#39;_&#39;) &amp;&amp; (ch2 &gt;= &#39;0&#39;)  &amp;&amp; (ch2 &lt;= &#39;5&#39;))</b>
+<b class="nc"><i>230</i>&nbsp;        name = name.substring(0, len - 2);</b>
+<i>231</i>&nbsp;
+<b class="nc"><i>232</i>&nbsp;      if(name.equals(&quot;ICONST_M1&quot;)) // Special case</b>
+<b class="nc"><i>233</i>&nbsp;        name = &quot;ICONST&quot;;</b>
+<b class="nc"><i>234</i>&nbsp;    } catch(StringIndexOutOfBoundsException e) { System.err.println(e); }</b>
+<i>235</i>&nbsp;
+<b class="nc"><i>236</i>&nbsp;    return &quot;com.sun.org.apache.bcel.internal.generic.&quot; + name;</b>
+<i>237</i>&nbsp;  }
+<i>238</i>&nbsp;
+<i>239</i>&nbsp;  /**
+<i>240</i>&nbsp;   * This method also gives right results for instructions whose
+<i>241</i>&nbsp;   * effect on the stack depends on the constant pool entry they
+<i>242</i>&nbsp;   * reference.
+<i>243</i>&nbsp;   *  @return Number of words consumed from stack by this instruction,
+<i>244</i>&nbsp;   * or Constants.UNPREDICTABLE, if this can not be computed statically
+<i>245</i>&nbsp;   */
+<i>246</i>&nbsp;  public int consumeStack(ConstantPoolGen cpg) {
+<b class="nc"><i>247</i>&nbsp;    return Constants.CONSUME_STACK[opcode];</b>
+<i>248</i>&nbsp;  }
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;  /**
+<i>251</i>&nbsp;   * This method also gives right results for instructions whose
+<i>252</i>&nbsp;   * effect on the stack depends on the constant pool entry they
+<i>253</i>&nbsp;   * reference.
+<i>254</i>&nbsp;   * @return Number of words produced onto stack by this instruction,
+<i>255</i>&nbsp;   * or Constants.UNPREDICTABLE, if this can not be computed statically
+<i>256</i>&nbsp;   */
+<i>257</i>&nbsp;  public int produceStack(ConstantPoolGen cpg) {
+<b class="nc"><i>258</i>&nbsp;    return Constants.PRODUCE_STACK[opcode];</b>
+<i>259</i>&nbsp;  }
+<i>260</i>&nbsp;
+<i>261</i>&nbsp;  /**
+<i>262</i>&nbsp;   * @return this instructions opcode
+<i>263</i>&nbsp;   */
+<b class="nc"><i>264</i>&nbsp;  public short getOpcode()    { return opcode; }</b>
+<i>265</i>&nbsp;
+<i>266</i>&nbsp;  /**
+<i>267</i>&nbsp;   * @return length (in bytes) of instruction
+<i>268</i>&nbsp;   */
+<b class="nc"><i>269</i>&nbsp;  public int getLength()   { return length; }</b>
+<i>270</i>&nbsp;
+<i>271</i>&nbsp;  /**
+<i>272</i>&nbsp;   * Needed in readInstruction.
+<i>273</i>&nbsp;   */
+<b class="nc"><i>274</i>&nbsp;  private void setOpcode(short opcode) { this.opcode = opcode; }</b>
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;  /** Some instructions may be reused, so don&#39;t do anything by default.
+<i>277</i>&nbsp;   */
+<i>278</i>&nbsp;  void dispose() {}
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;  /**
+<i>281</i>&nbsp;   * Call corresponding visitor method(s). The order is:
+<i>282</i>&nbsp;   * Call visitor methods of implemented interfaces first, then
+<i>283</i>&nbsp;   * call methods according to the class hierarchy in descending order,
+<i>284</i>&nbsp;   * i.e., the most specific visitXXX() call comes last.
+<i>285</i>&nbsp;   *
+<i>286</i>&nbsp;   * @param v Visitor object
+<i>287</i>&nbsp;   */
+<i>288</i>&nbsp;  public abstract void accept(Visitor v);
+<i>289</i>&nbsp;
+<i>290</i>&nbsp;  /** Get Comparator object used in the equals() method to determine
+<i>291</i>&nbsp;   * equality of instructions.
+<i>292</i>&nbsp;   *
+<i>293</i>&nbsp;   * @return currently used comparator for equals()
+<i>294</i>&nbsp;   */
+<b class="nc"><i>295</i>&nbsp;  public static InstructionComparator getComparator() { return cmp; }</b>
+<i>296</i>&nbsp;
+<i>297</i>&nbsp;  /** Set comparator to be used for equals().
+<i>298</i>&nbsp;   */
+<b class="nc"><i>299</i>&nbsp;  public static void setComparator(InstructionComparator c) { cmp = c; }</b>
+<i>300</i>&nbsp;
+<i>301</i>&nbsp;  /** Check for equality, delegated to comparator
+<i>302</i>&nbsp;   * @return true if that is an Instruction and has the same opcode
+<i>303</i>&nbsp;   */
+<i>304</i>&nbsp;  public boolean equals(Object that) {
+<b class="nc"><i>305</i>&nbsp;    return (that instanceof Instruction)?</b>
+<b class="nc"><i>306</i>&nbsp;      cmp.equals(this, (Instruction)that) : false;</b>
+<i>307</i>&nbsp;  }
+<i>308</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

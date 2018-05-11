@@ -1,0 +1,196 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ORBVersionFactory</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.spi.orb</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ORBVersionFactory (com.sun.corba.se.spi.orb)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ORBVersionFactory</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.spi.orb ;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import com.sun.corba.se.spi.orb.ORBVersion ;
+<i>29</i>&nbsp;import com.sun.corba.se.impl.orb.ORBVersionImpl ;
+<i>30</i>&nbsp;import org.omg.CORBA.portable.InputStream ;
+<i>31</i>&nbsp;import org.omg.CORBA.INTERNAL ;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;public class ORBVersionFactory {
+<b class="nc"><i>34</i>&nbsp;    private ORBVersionFactory() {} ;</b>
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    public static ORBVersion getFOREIGN()
+<i>37</i>&nbsp;    {
+<b class="nc"><i>38</i>&nbsp;        return ORBVersionImpl.FOREIGN ;</b>
+<i>39</i>&nbsp;    }
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    public static ORBVersion getOLD()
+<i>42</i>&nbsp;    {
+<b class="nc"><i>43</i>&nbsp;        return ORBVersionImpl.OLD ;</b>
+<i>44</i>&nbsp;    }
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    public static ORBVersion getNEW()
+<i>47</i>&nbsp;    {
+<b class="nc"><i>48</i>&nbsp;        return ORBVersionImpl.NEW ;</b>
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    public static ORBVersion getJDK1_3_1_01()
+<i>52</i>&nbsp;    {
+<b class="nc"><i>53</i>&nbsp;        return ORBVersionImpl.JDK1_3_1_01 ;</b>
+<i>54</i>&nbsp;    }
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    public static ORBVersion getNEWER()
+<i>57</i>&nbsp;    {
+<b class="nc"><i>58</i>&nbsp;        return ORBVersionImpl.NEWER ;</b>
+<i>59</i>&nbsp;    }
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    public static ORBVersion getPEORB()
+<i>62</i>&nbsp;    {
+<b class="nc"><i>63</i>&nbsp;        return ORBVersionImpl.PEORB ;</b>
+<i>64</i>&nbsp;    }
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    /** Return the current version of this ORB
+<i>67</i>&nbsp;     */
+<i>68</i>&nbsp;    public static ORBVersion getORBVersion()
+<i>69</i>&nbsp;    {
+<b class="nc"><i>70</i>&nbsp;        return ORBVersionImpl.PEORB ;</b>
+<i>71</i>&nbsp;    }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    public static ORBVersion create( InputStream is )
+<i>74</i>&nbsp;    {
+<b class="nc"><i>75</i>&nbsp;        byte value = is.read_octet() ;</b>
+<b class="nc"><i>76</i>&nbsp;        return byteToVersion( value ) ;</b>
+<i>77</i>&nbsp;    }
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    private static ORBVersion byteToVersion( byte value )
+<i>80</i>&nbsp;    {
+<i>81</i>&nbsp;        /* Throwing an exception here would cause this version to be
+<i>82</i>&nbsp;        * incompatible with future versions of the ORB, to the point
+<i>83</i>&nbsp;        * that this version could
+<i>84</i>&nbsp;        * not even unmarshal objrefs from a newer version that uses
+<i>85</i>&nbsp;        * extended versioning.  Therefore, we will simply treat all
+<i>86</i>&nbsp;        * unknown versions as the latest version.
+<i>87</i>&nbsp;        if (value &lt; 0)
+<i>88</i>&nbsp;            throw new INTERNAL() ;
+<i>89</i>&nbsp;        */
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;        /**
+<i>92</i>&nbsp;         * Update: If we treat all unknown versions as the latest version
+<i>93</i>&nbsp;         * then when we send an IOR with a PEORB version to an ORB that
+<i>94</i>&nbsp;         * doesn&#39;t know the PEORB version it will treat it as whatever
+<i>95</i>&nbsp;         * its idea of the latest version is.  Then, if that IOR is
+<i>96</i>&nbsp;         * sent back to the server and compared with the original
+<i>97</i>&nbsp;         * the equality check will fail because the versions will be
+<i>98</i>&nbsp;         * different.
+<i>99</i>&nbsp;         *
+<i>100</i>&nbsp;         * Instead, just capture the version bytes.
+<i>101</i>&nbsp;         */
+<i>102</i>&nbsp;
+<b class="nc"><i>103</i>&nbsp;        switch (value) {</b>
+<b class="nc"><i>104</i>&nbsp;            case ORBVersion.FOREIGN : return ORBVersionImpl.FOREIGN ;</b>
+<b class="nc"><i>105</i>&nbsp;            case ORBVersion.OLD : return ORBVersionImpl.OLD ;</b>
+<b class="nc"><i>106</i>&nbsp;            case ORBVersion.NEW : return ORBVersionImpl.NEW ;</b>
+<b class="nc"><i>107</i>&nbsp;            case ORBVersion.JDK1_3_1_01: return ORBVersionImpl.JDK1_3_1_01 ;</b>
+<b class="nc"><i>108</i>&nbsp;            case ORBVersion.NEWER : return ORBVersionImpl.NEWER ;</b>
+<b class="nc"><i>109</i>&nbsp;            case ORBVersion.PEORB : return ORBVersionImpl.PEORB ;</b>
+<b class="nc"><i>110</i>&nbsp;            default : return new ORBVersionImpl(value);</b>
+<i>111</i>&nbsp;        }
+<i>112</i>&nbsp;    }
+<i>113</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

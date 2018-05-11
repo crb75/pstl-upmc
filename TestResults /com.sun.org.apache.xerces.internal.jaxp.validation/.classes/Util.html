@@ -1,0 +1,160 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Util</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.jaxp.validation</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Util (com.sun.org.apache.xerces.internal.jaxp.validation)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Util</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 22)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.jaxp.validation;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import javax.xml.transform.stream.StreamSource;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XNIException;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLParseException;
+<i>28</i>&nbsp;import org.xml.sax.SAXException;
+<i>29</i>&nbsp;import org.xml.sax.SAXParseException;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;/**
+<i>32</i>&nbsp; * &lt;p&gt;Static utility methods for the Validation API implementation.&lt;/p&gt;
+<i>33</i>&nbsp; *
+<i>34</i>&nbsp; * @author Kohsuke Kawaguchi (kohsuke.kawaguchi@sun.com)
+<i>35</i>&nbsp; */
+<b class="nc"><i>36</i>&nbsp;final class Util {</b>
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;    /**
+<i>39</i>&nbsp;     * Creates a proper {@link XMLInputSource} from a {@link StreamSource}.
+<i>40</i>&nbsp;     *
+<i>41</i>&nbsp;     * @return always return non-null valid object.
+<i>42</i>&nbsp;     */
+<i>43</i>&nbsp;    public static final XMLInputSource toXMLInputSource( StreamSource in ) {
+<b class="nc"><i>44</i>&nbsp;        if( in.getReader()!=null )</b>
+<b class="nc"><i>45</i>&nbsp;            return new XMLInputSource(</b>
+<b class="nc"><i>46</i>&nbsp;            in.getPublicId(), in.getSystemId(), in.getSystemId(),</b>
+<b class="nc"><i>47</i>&nbsp;            in.getReader(), null );</b>
+<b class="nc"><i>48</i>&nbsp;        if( in.getInputStream()!=null )</b>
+<b class="nc"><i>49</i>&nbsp;            return new XMLInputSource(</b>
+<b class="nc"><i>50</i>&nbsp;            in.getPublicId(), in.getSystemId(), in.getSystemId(),</b>
+<b class="nc"><i>51</i>&nbsp;            in.getInputStream(), null );</b>
+<i>52</i>&nbsp;
+<b class="nc"><i>53</i>&nbsp;        return new XMLInputSource(</b>
+<b class="nc"><i>54</i>&nbsp;        in.getPublicId(), in.getSystemId(), in.getSystemId() );</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    /**
+<i>58</i>&nbsp;     * Reconstructs {@link SAXException} from XNIException.
+<i>59</i>&nbsp;     */
+<i>60</i>&nbsp;    public static SAXException toSAXException(XNIException e) {
+<b class="nc"><i>61</i>&nbsp;        if(e instanceof XMLParseException)</b>
+<b class="nc"><i>62</i>&nbsp;            return toSAXParseException((XMLParseException)e);</b>
+<b class="nc"><i>63</i>&nbsp;        if( e.getException() instanceof SAXException )</b>
+<b class="nc"><i>64</i>&nbsp;            return (SAXException)e.getException();</b>
+<b class="nc"><i>65</i>&nbsp;        return new SAXException(e.getMessage(),e.getException());</b>
+<i>66</i>&nbsp;    }
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    public static SAXParseException toSAXParseException( XMLParseException e ) {
+<b class="nc"><i>69</i>&nbsp;        if( e.getException() instanceof SAXParseException )</b>
+<b class="nc"><i>70</i>&nbsp;            return (SAXParseException)e.getException();</b>
+<b class="nc"><i>71</i>&nbsp;        return new SAXParseException( e.getMessage(),</b>
+<b class="nc"><i>72</i>&nbsp;        e.getPublicId(), e.getExpandedSystemId(),</b>
+<b class="nc"><i>73</i>&nbsp;        e.getLineNumber(), e.getColumnNumber(),</b>
+<b class="nc"><i>74</i>&nbsp;        e.getException() );</b>
+<i>75</i>&nbsp;    }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;} // Util
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:55</div>
+</div>
+</body>
+</html>

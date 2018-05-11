@@ -1,0 +1,246 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ListDV</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.dv.xs</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ListDV (com.sun.org.apache.xerces.internal.impl.dv.xs)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ListDV</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ListDV$ListData</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 38)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 42)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001,2002,2004,2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.dv.xs;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import java.util.AbstractList;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dv.InvalidDatatypeValueException;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dv.ValidationContext;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.datatypes.ObjectList;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;/**
+<i>30</i>&nbsp; * Represent the schema list types
+<i>31</i>&nbsp; *
+<i>32</i>&nbsp; * @xerces.internal
+<i>33</i>&nbsp; *
+<i>34</i>&nbsp; * @author Neeraj Bajaj, Sun Microsystems, inc.
+<i>35</i>&nbsp; * @author Sandy Gao, IBM
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; * @version $Id: ListDV.java,v 1.7 2010-11-01 04:39:47 joehw Exp $
+<i>38</i>&nbsp; */
+<b class="nc"><i>39</i>&nbsp;public class ListDV extends TypeValidator{</b>
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    public short getAllowedFacets(){
+<b class="nc"><i>42</i>&nbsp;          return (XSSimpleTypeDecl.FACET_LENGTH | XSSimpleTypeDecl.FACET_MINLENGTH | XSSimpleTypeDecl.FACET_MAXLENGTH | XSSimpleTypeDecl.FACET_PATTERN | XSSimpleTypeDecl.FACET_ENUMERATION | XSSimpleTypeDecl.FACET_WHITESPACE );</b>
+<i>43</i>&nbsp;    }
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    // this method should never be called: XSSimpleTypeDecl is responsible for
+<i>46</i>&nbsp;    // calling the item type for the convertion
+<i>47</i>&nbsp;    public Object getActualValue(String content, ValidationContext context) throws InvalidDatatypeValueException{
+<b class="nc"><i>48</i>&nbsp;        return content;</b>
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    // length of a list type is the number of items in the list
+<i>52</i>&nbsp;    public int getDataLength(Object value) {
+<b class="nc"><i>53</i>&nbsp;        return ((ListData)value).getLength();</b>
+<i>54</i>&nbsp;    }
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    final static class ListData extends AbstractList implements ObjectList {
+<i>57</i>&nbsp;        final Object[] data;
+<i>58</i>&nbsp;        private String canonical;
+<b class="nc"><i>59</i>&nbsp;        public ListData(Object[] data) {</b>
+<b class="nc"><i>60</i>&nbsp;            this.data = data;</b>
+<i>61</i>&nbsp;        }
+<i>62</i>&nbsp;        public synchronized String toString() {
+<b class="nc"><i>63</i>&nbsp;            if (canonical == null) {</b>
+<b class="nc"><i>64</i>&nbsp;                int len = data.length;</b>
+<b class="nc"><i>65</i>&nbsp;                StringBuffer buf = new StringBuffer();</b>
+<b class="nc"><i>66</i>&nbsp;                if (len &gt; 0) {</b>
+<b class="nc"><i>67</i>&nbsp;                    buf.append(data[0].toString());</b>
+<i>68</i>&nbsp;                }
+<b class="nc"><i>69</i>&nbsp;                for (int i = 1; i &lt; len; i++) {</b>
+<b class="nc"><i>70</i>&nbsp;                    buf.append(&#39; &#39;);</b>
+<b class="nc"><i>71</i>&nbsp;                    buf.append(data[i].toString());</b>
+<i>72</i>&nbsp;                }
+<b class="nc"><i>73</i>&nbsp;                canonical = buf.toString();</b>
+<i>74</i>&nbsp;            }
+<b class="nc"><i>75</i>&nbsp;            return canonical;</b>
+<i>76</i>&nbsp;        }
+<i>77</i>&nbsp;        public int getLength() {
+<b class="nc"><i>78</i>&nbsp;            return data.length;</b>
+<i>79</i>&nbsp;        }
+<i>80</i>&nbsp;        public boolean equals(Object obj) {
+<b class="nc"><i>81</i>&nbsp;            if (!(obj instanceof ListData))</b>
+<b class="nc"><i>82</i>&nbsp;                return false;</b>
+<b class="nc"><i>83</i>&nbsp;            Object[] odata = ((ListData)obj).data;</b>
+<i>84</i>&nbsp;
+<b class="nc"><i>85</i>&nbsp;            int count = data.length;</b>
+<b class="nc"><i>86</i>&nbsp;            if (count != odata.length)</b>
+<b class="nc"><i>87</i>&nbsp;                return false;</b>
+<i>88</i>&nbsp;
+<b class="nc"><i>89</i>&nbsp;            for (int i = 0 ; i &lt; count ; i++) {</b>
+<b class="nc"><i>90</i>&nbsp;                if (!data[i].equals(odata[i]))</b>
+<b class="nc"><i>91</i>&nbsp;                    return false;</b>
+<i>92</i>&nbsp;            }//end of loop
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;            //everything went fine.
+<b class="nc"><i>95</i>&nbsp;            return true;</b>
+<i>96</i>&nbsp;        }
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;        public int hashCode() {
+<b class="nc"><i>99</i>&nbsp;            int hash = 0;</b>
+<b class="nc"><i>100</i>&nbsp;            for (int i = 0; i &lt; data.length; ++i) {</b>
+<b class="nc"><i>101</i>&nbsp;                hash ^= data[i].hashCode();</b>
+<i>102</i>&nbsp;            }
+<b class="nc"><i>103</i>&nbsp;            return hash;</b>
+<i>104</i>&nbsp;        }
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;        public boolean contains(Object item) {
+<b class="nc"><i>107</i>&nbsp;            for (int i = 0;i &lt; data.length; i++) {</b>
+<b class="nc"><i>108</i>&nbsp;                if (item == data[i]) {</b>
+<b class="nc"><i>109</i>&nbsp;                    return true;</b>
+<i>110</i>&nbsp;                }
+<i>111</i>&nbsp;            }
+<b class="nc"><i>112</i>&nbsp;            return false;</b>
+<i>113</i>&nbsp;        }
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;        public Object item(int index) {
+<b class="nc"><i>116</i>&nbsp;            if (index &lt; 0 || index &gt;= data.length) {</b>
+<b class="nc"><i>117</i>&nbsp;                return null;</b>
+<i>118</i>&nbsp;            }
+<b class="nc"><i>119</i>&nbsp;            return data[index];</b>
+<i>120</i>&nbsp;        }
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;        /*
+<i>123</i>&nbsp;         * List methods
+<i>124</i>&nbsp;         */
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;        public Object get(int index) {
+<b class="nc"><i>127</i>&nbsp;            if (index &gt;= 0 &amp;&amp; index &lt; data.length) {</b>
+<b class="nc"><i>128</i>&nbsp;                return data[index];</b>
+<i>129</i>&nbsp;            }
+<b class="nc"><i>130</i>&nbsp;            throw new IndexOutOfBoundsException(&quot;Index: &quot; + index);</b>
+<i>131</i>&nbsp;        }
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;        public int size() {
+<b class="nc"><i>134</i>&nbsp;            return getLength();</b>
+<i>135</i>&nbsp;        }
+<i>136</i>&nbsp;    }
+<i>137</i>&nbsp;} // class ListDV
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

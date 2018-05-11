@@ -1,0 +1,162 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XML11DTDDVFactoryImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.dv.dtd</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XML11DTDDVFactoryImpl (com.sun.org.apache.xerces.internal.impl.dv.dtd)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XML11DTDDVFactoryImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.dv.dtd;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dv.DatatypeValidator;
+<i>24</i>&nbsp;import java.util.Collections;
+<i>25</i>&nbsp;import java.util.HashMap;
+<i>26</i>&nbsp;import java.util.Map;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;/**
+<i>29</i>&nbsp; * the factory to create/return built-in XML 1.1 DVs and create user-defined DVs
+<i>30</i>&nbsp; *
+<i>31</i>&nbsp; * @xerces.internal
+<i>32</i>&nbsp; *
+<i>33</i>&nbsp; * @author Neil Graham, IBM
+<i>34</i>&nbsp; *
+<i>35</i>&nbsp; */
+<b class="nc"><i>36</i>&nbsp;public class XML11DTDDVFactoryImpl extends DTDDVFactoryImpl {</b>
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;    static Map&lt;String, DatatypeValidator&gt; XML11BUILTINTYPES;
+<i>39</i>&nbsp;    static {
+<b class="nc"><i>40</i>&nbsp;        Map&lt;String, DatatypeValidator&gt; xml11BuiltInTypes = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>41</i>&nbsp;        xml11BuiltInTypes.put(&quot;XML11ID&quot;, new XML11IDDatatypeValidator());</b>
+<b class="nc"><i>42</i>&nbsp;        DatatypeValidator dvTemp = new XML11IDREFDatatypeValidator();</b>
+<b class="nc"><i>43</i>&nbsp;        xml11BuiltInTypes.put(&quot;XML11IDREF&quot;, dvTemp);</b>
+<b class="nc"><i>44</i>&nbsp;        xml11BuiltInTypes.put(&quot;XML11IDREFS&quot;, new ListDatatypeValidator(dvTemp));</b>
+<b class="nc"><i>45</i>&nbsp;        dvTemp = new XML11NMTOKENDatatypeValidator();</b>
+<b class="nc"><i>46</i>&nbsp;        xml11BuiltInTypes.put(&quot;XML11NMTOKEN&quot;, dvTemp);</b>
+<b class="nc"><i>47</i>&nbsp;        xml11BuiltInTypes.put(&quot;XML11NMTOKENS&quot;, new ListDatatypeValidator(dvTemp));</b>
+<b class="nc"><i>48</i>&nbsp;        XML11BUILTINTYPES = Collections.unmodifiableMap(xml11BuiltInTypes);</b>
+<i>49</i>&nbsp;    } // &lt;clinit&gt;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    /**
+<i>52</i>&nbsp;     * return a dtd type of the given name
+<i>53</i>&nbsp;     * This will call the super class if and only if it does not
+<i>54</i>&nbsp;     * recognize the passed-in name.
+<i>55</i>&nbsp;     *
+<i>56</i>&nbsp;     * @param name  the name of the datatype
+<i>57</i>&nbsp;     * @return      the datatype validator of the given name
+<i>58</i>&nbsp;     */
+<i>59</i>&nbsp;    @Override
+<i>60</i>&nbsp;    public DatatypeValidator getBuiltInDV(String name) {
+<b class="nc"><i>61</i>&nbsp;        if(XML11BUILTINTYPES.get(name) != null) {</b>
+<b class="nc"><i>62</i>&nbsp;            return XML11BUILTINTYPES.get(name);</b>
+<i>63</i>&nbsp;        }
+<b class="nc"><i>64</i>&nbsp;        return fBuiltInTypes.get(name);</b>
+<i>65</i>&nbsp;    }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    /**
+<i>68</i>&nbsp;     * get all built-in DVs, which are stored in a Map keyed by the name
+<i>69</i>&nbsp;     * New XML 1.1 datatypes are inserted.
+<i>70</i>&nbsp;     *
+<i>71</i>&nbsp;     * @return      a Map which contains all datatypes
+<i>72</i>&nbsp;     */
+<i>73</i>&nbsp;    @Override
+<i>74</i>&nbsp;    public Map&lt;String, DatatypeValidator&gt; getBuiltInTypes() {
+<b class="nc"><i>75</i>&nbsp;        final HashMap&lt;String, DatatypeValidator&gt; toReturn = new HashMap&lt;&gt;(fBuiltInTypes);</b>
+<b class="nc"><i>76</i>&nbsp;        toReturn.putAll(XML11BUILTINTYPES);</b>
+<b class="nc"><i>77</i>&nbsp;        return toReturn;</b>
+<i>78</i>&nbsp;    }
+<i>79</i>&nbsp;}//XML11DTDDVFactoryImpl
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

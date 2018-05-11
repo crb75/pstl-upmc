@@ -1,0 +1,411 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XPathFactoryImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xpath.internal.jaxp</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XPathFactoryImpl (com.sun.org.apache.xpath.internal.jaxp)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XPathFactoryImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 64)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;// $Id: XPathFactoryImpl.java,v 1.2 2005/08/16 22:41:13 jeffsuttor Exp $
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package com.sun.org.apache.xpath.internal.jaxp;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import com.sun.org.apache.xalan.internal.XalanConstants;
+<i>25</i>&nbsp;import com.sun.org.apache.xpath.internal.res.XPATHErrorResources;
+<i>26</i>&nbsp;import com.sun.org.apache.xalan.internal.res.XSLMessages;
+<i>27</i>&nbsp;import com.sun.org.apache.xalan.internal.utils.FeatureManager;
+<i>28</i>&nbsp;import com.sun.org.apache.xalan.internal.utils.FeaturePropertyBase;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import javax.xml.XMLConstants;
+<i>31</i>&nbsp;import javax.xml.xpath.XPathFactory;
+<i>32</i>&nbsp;import javax.xml.xpath.XPathFactoryConfigurationException;
+<i>33</i>&nbsp;import javax.xml.xpath.XPathFunctionResolver;
+<i>34</i>&nbsp;import javax.xml.xpath.XPathVariableResolver;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; * The XPathFactory builds XPaths.
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; * @version $Revision: 1.11 $
+<i>40</i>&nbsp; * @author  Ramesh Mandava
+<i>41</i>&nbsp; */
+<i>42</i>&nbsp;public  class XPathFactoryImpl extends XPathFactory {
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;        /**
+<i>45</i>&nbsp;         * &lt;p&gt;Name of class as a constant to use for debugging.&lt;/p&gt;
+<i>46</i>&nbsp;         */
+<i>47</i>&nbsp;        private static final String CLASS_NAME = &quot;XPathFactoryImpl&quot;;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;        /**
+<i>50</i>&nbsp;         *&lt;p&gt;XPathFunctionResolver for this XPathFactory and created XPaths.&lt;/p&gt;
+<i>51</i>&nbsp;         */
+<b class="nc"><i>52</i>&nbsp;        private XPathFunctionResolver xPathFunctionResolver = null;</b>
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;        /**
+<i>55</i>&nbsp;         * &lt;p&gt;XPathVariableResolver for this XPathFactory and created XPaths&lt;/p&gt;
+<i>56</i>&nbsp;         */
+<b class="nc"><i>57</i>&nbsp;        private XPathVariableResolver xPathVariableResolver = null;</b>
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;        /**
+<i>60</i>&nbsp;         * &lt;p&gt;State of secure processing feature.&lt;/p&gt;
+<i>61</i>&nbsp;         */
+<b class="nc"><i>62</i>&nbsp;        private boolean _isNotSecureProcessing = true;</b>
+<i>63</i>&nbsp;        /**
+<i>64</i>&nbsp;         * &lt;p&gt;State of secure mode.&lt;/p&gt;
+<i>65</i>&nbsp;         */
+<b class="nc"><i>66</i>&nbsp;        private boolean _isSecureMode = false;</b>
+<i>67</i>&nbsp;        /**
+<i>68</i>&nbsp;         * javax.xml.xpath.XPathFactory implementation.
+<i>69</i>&nbsp;         */
+<i>70</i>&nbsp;
+<b class="nc"><i>71</i>&nbsp;        private boolean _useServicesMechanism = true;</b>
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;        private final FeatureManager _featureManager;
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;        public XPathFactoryImpl() {
+<b class="nc"><i>76</i>&nbsp;            this(true);</b>
+<i>77</i>&nbsp;        }
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;        public static XPathFactory newXPathFactoryNoServiceLoader() {
+<b class="nc"><i>80</i>&nbsp;            return new XPathFactoryImpl(false);</b>
+<i>81</i>&nbsp;        }
+<i>82</i>&nbsp;
+<b class="nc"><i>83</i>&nbsp;        public XPathFactoryImpl(boolean useServicesMechanism) {</b>
+<b class="nc"><i>84</i>&nbsp;            _featureManager = new FeatureManager();</b>
+<b class="nc"><i>85</i>&nbsp;            if (System.getSecurityManager() != null) {</b>
+<b class="nc"><i>86</i>&nbsp;                _isSecureMode = true;</b>
+<b class="nc"><i>87</i>&nbsp;                _isNotSecureProcessing = false;</b>
+<b class="nc"><i>88</i>&nbsp;                _featureManager.setValue(FeatureManager.Feature.ORACLE_ENABLE_EXTENSION_FUNCTION,</b>
+<i>89</i>&nbsp;                        FeaturePropertyBase.State.FSP, XalanConstants.FEATURE_FALSE);
+<i>90</i>&nbsp;            }
+<b class="nc"><i>91</i>&nbsp;            this._useServicesMechanism = useServicesMechanism;</b>
+<i>92</i>&nbsp;        }
+<i>93</i>&nbsp;        /**
+<i>94</i>&nbsp;         * &lt;p&gt;Is specified object model supported by this
+<i>95</i>&nbsp;         * &lt;code&gt;XPathFactory&lt;/code&gt;?&lt;/p&gt;
+<i>96</i>&nbsp;         *
+<i>97</i>&nbsp;         * @param objectModel Specifies the object model which the returned
+<i>98</i>&nbsp;         * &lt;code&gt;XPathFactory&lt;/code&gt; will understand.
+<i>99</i>&nbsp;         *
+<i>100</i>&nbsp;         * @return &lt;code&gt;true&lt;/code&gt; if &lt;code&gt;XPathFactory&lt;/code&gt; supports
+<i>101</i>&nbsp;         * &lt;code&gt;objectModel&lt;/code&gt;, else &lt;code&gt;false&lt;/code&gt;.
+<i>102</i>&nbsp;         *
+<i>103</i>&nbsp;         * @throws NullPointerException If &lt;code&gt;objectModel&lt;/code&gt; is &lt;code&gt;null&lt;/code&gt;.
+<i>104</i>&nbsp;         * @throws IllegalArgumentException If &lt;code&gt;objectModel.length() == 0&lt;/code&gt;.
+<i>105</i>&nbsp;         */
+<i>106</i>&nbsp;        public boolean isObjectModelSupported(String objectModel) {
+<i>107</i>&nbsp;
+<b class="nc"><i>108</i>&nbsp;            if (objectModel == null) {</b>
+<b class="nc"><i>109</i>&nbsp;                String fmsg = XSLMessages.createXPATHMessage(</b>
+<i>110</i>&nbsp;                        XPATHErrorResources.ER_OBJECT_MODEL_NULL,
+<b class="nc"><i>111</i>&nbsp;                        new Object[] { this.getClass().getName() } );</b>
+<i>112</i>&nbsp;
+<b class="nc"><i>113</i>&nbsp;                throw new NullPointerException( fmsg );</b>
+<i>114</i>&nbsp;            }
+<i>115</i>&nbsp;
+<b class="nc"><i>116</i>&nbsp;            if (objectModel.length() == 0) {</b>
+<b class="nc"><i>117</i>&nbsp;                String fmsg = XSLMessages.createXPATHMessage(</b>
+<i>118</i>&nbsp;                        XPATHErrorResources.ER_OBJECT_MODEL_EMPTY,
+<b class="nc"><i>119</i>&nbsp;                        new Object[] { this.getClass().getName() } );</b>
+<b class="nc"><i>120</i>&nbsp;                throw new IllegalArgumentException( fmsg );</b>
+<i>121</i>&nbsp;            }
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;            // know how to support default object model, W3C DOM
+<b class="nc"><i>124</i>&nbsp;            if (objectModel.equals(XPathFactory.DEFAULT_OBJECT_MODEL_URI)) {</b>
+<b class="nc"><i>125</i>&nbsp;                return true;</b>
+<i>126</i>&nbsp;            }
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;            // don&#39;t know how to support anything else
+<b class="nc"><i>129</i>&nbsp;            return false;</b>
+<i>130</i>&nbsp;        }
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;        /**
+<i>133</i>&nbsp;         * &lt;p&gt;Returns a new &lt;code&gt;XPath&lt;/code&gt; object using the underlying
+<i>134</i>&nbsp;         * object model determined when the factory was instantiated.&lt;/p&gt;
+<i>135</i>&nbsp;         *
+<i>136</i>&nbsp;         * @return New &lt;code&gt;XPath&lt;/code&gt;
+<i>137</i>&nbsp;         */
+<i>138</i>&nbsp;        public javax.xml.xpath.XPath newXPath() {
+<b class="nc"><i>139</i>&nbsp;            return new com.sun.org.apache.xpath.internal.jaxp.XPathImpl(</b>
+<i>140</i>&nbsp;                    xPathVariableResolver, xPathFunctionResolver,
+<i>141</i>&nbsp;                    !_isNotSecureProcessing, _useServicesMechanism,
+<i>142</i>&nbsp;                    _featureManager );
+<i>143</i>&nbsp;        }
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;        /**
+<i>146</i>&nbsp;         * &lt;p&gt;Set a feature for this &lt;code&gt;XPathFactory&lt;/code&gt; and
+<i>147</i>&nbsp;         * &lt;code&gt;XPath&lt;/code&gt;s created by this factory.&lt;/p&gt;
+<i>148</i>&nbsp;         *
+<i>149</i>&nbsp;         * &lt;p&gt;
+<i>150</i>&nbsp;         * Feature names are fully qualified {@link java.net.URI}s.
+<i>151</i>&nbsp;         * Implementations may define their own features.
+<i>152</i>&nbsp;         * An {@link XPathFactoryConfigurationException} is thrown if this
+<i>153</i>&nbsp;         * &lt;code&gt;XPathFactory&lt;/code&gt; or the &lt;code&gt;XPath&lt;/code&gt;s
+<i>154</i>&nbsp;         *  it creates cannot support the feature.
+<i>155</i>&nbsp;         * It is possible for an &lt;code&gt;XPathFactory&lt;/code&gt; to expose a feature
+<i>156</i>&nbsp;         * value but be unable to change its state.
+<i>157</i>&nbsp;         * &lt;/p&gt;
+<i>158</i>&nbsp;         *
+<i>159</i>&nbsp;         * &lt;p&gt;See {@link javax.xml.xpath.XPathFactory} for full documentation
+<i>160</i>&nbsp;         * of specific features.&lt;/p&gt;
+<i>161</i>&nbsp;         *
+<i>162</i>&nbsp;         * @param name Feature name.
+<i>163</i>&nbsp;         * @param value Is feature state &lt;code&gt;true&lt;/code&gt; or &lt;code&gt;false&lt;/code&gt;.
+<i>164</i>&nbsp;         *
+<i>165</i>&nbsp;         * @throws XPathFactoryConfigurationException if this
+<i>166</i>&nbsp;         * &lt;code&gt;XPathFactory&lt;/code&gt; or the &lt;code&gt;XPath&lt;/code&gt;s
+<i>167</i>&nbsp;         *   it creates cannot support this feature.
+<i>168</i>&nbsp;         * @throws NullPointerException if &lt;code&gt;name&lt;/code&gt; is
+<i>169</i>&nbsp;         * &lt;code&gt;null&lt;/code&gt;.
+<i>170</i>&nbsp;         */
+<i>171</i>&nbsp;        public void setFeature(String name, boolean value)
+<i>172</i>&nbsp;                throws XPathFactoryConfigurationException {
+<i>173</i>&nbsp;
+<i>174</i>&nbsp;            // feature name cannot be null
+<b class="nc"><i>175</i>&nbsp;            if (name == null) {</b>
+<b class="nc"><i>176</i>&nbsp;                String fmsg = XSLMessages.createXPATHMessage(</b>
+<i>177</i>&nbsp;                        XPATHErrorResources.ER_FEATURE_NAME_NULL,
+<i>178</i>&nbsp;                        new Object[] { CLASS_NAME, new Boolean( value) } );
+<b class="nc"><i>179</i>&nbsp;                throw new NullPointerException( fmsg );</b>
+<i>180</i>&nbsp;             }
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;            // secure processing?
+<b class="nc"><i>183</i>&nbsp;            if (name.equals(XMLConstants.FEATURE_SECURE_PROCESSING)) {</b>
+<b class="nc"><i>184</i>&nbsp;                if ((_isSecureMode) &amp;&amp; (!value)) {</b>
+<b class="nc"><i>185</i>&nbsp;                    String fmsg = XSLMessages.createXPATHMessage(</b>
+<i>186</i>&nbsp;                            XPATHErrorResources.ER_SECUREPROCESSING_FEATURE,
+<i>187</i>&nbsp;                            new Object[] { name, CLASS_NAME, new Boolean(value) } );
+<b class="nc"><i>188</i>&nbsp;                    throw new XPathFactoryConfigurationException( fmsg );</b>
+<i>189</i>&nbsp;                }
+<i>190</i>&nbsp;
+<b class="nc"><i>191</i>&nbsp;                _isNotSecureProcessing = !value;</b>
+<b class="nc"><i>192</i>&nbsp;                if (value &amp;&amp; _featureManager != null) {</b>
+<b class="nc"><i>193</i>&nbsp;                    _featureManager.setValue(FeatureManager.Feature.ORACLE_ENABLE_EXTENSION_FUNCTION,</b>
+<i>194</i>&nbsp;                            FeaturePropertyBase.State.FSP, XalanConstants.FEATURE_FALSE);
+<i>195</i>&nbsp;                }
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;                // all done processing feature
+<i>198</i>&nbsp;                return;
+<i>199</i>&nbsp;            }
+<b class="nc"><i>200</i>&nbsp;            if (name.equals(XalanConstants.ORACLE_FEATURE_SERVICE_MECHANISM)) {</b>
+<i>201</i>&nbsp;                //in secure mode, let _useServicesMechanism be determined by the constructor
+<b class="nc"><i>202</i>&nbsp;                if (!_isSecureMode)</b>
+<b class="nc"><i>203</i>&nbsp;                    _useServicesMechanism = value;</b>
+<i>204</i>&nbsp;                return;
+<i>205</i>&nbsp;            }
+<i>206</i>&nbsp;
+<b class="nc"><i>207</i>&nbsp;            if (_featureManager != null &amp;&amp;</b>
+<b class="nc"><i>208</i>&nbsp;                    _featureManager.setValue(name, FeaturePropertyBase.State.APIPROPERTY, value)) {</b>
+<i>209</i>&nbsp;                return;
+<i>210</i>&nbsp;            }
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;            // unknown feature
+<b class="nc"><i>213</i>&nbsp;            String fmsg = XSLMessages.createXPATHMessage(</b>
+<i>214</i>&nbsp;                    XPATHErrorResources.ER_FEATURE_UNKNOWN,
+<i>215</i>&nbsp;                    new Object[] { name, CLASS_NAME, new Boolean(value) } );
+<b class="nc"><i>216</i>&nbsp;            throw new XPathFactoryConfigurationException( fmsg );</b>
+<i>217</i>&nbsp;        }
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;        /**
+<i>220</i>&nbsp;         * &lt;p&gt;Get the state of the named feature.&lt;/p&gt;
+<i>221</i>&nbsp;         *
+<i>222</i>&nbsp;         * &lt;p&gt;
+<i>223</i>&nbsp;         * Feature names are fully qualified {@link java.net.URI}s.
+<i>224</i>&nbsp;         * Implementations may define their own features.
+<i>225</i>&nbsp;         * An {@link XPathFactoryConfigurationException} is thrown if this
+<i>226</i>&nbsp;         * &lt;code&gt;XPathFactory&lt;/code&gt; or the &lt;code&gt;XPath&lt;/code&gt;s
+<i>227</i>&nbsp;         * it creates cannot support the feature.
+<i>228</i>&nbsp;         * It is possible for an &lt;code&gt;XPathFactory&lt;/code&gt; to expose a feature
+<i>229</i>&nbsp;         * value but be unable to change its state.
+<i>230</i>&nbsp;         * &lt;/p&gt;
+<i>231</i>&nbsp;         *
+<i>232</i>&nbsp;         * @param name Feature name.
+<i>233</i>&nbsp;         *
+<i>234</i>&nbsp;         * @return State of the named feature.
+<i>235</i>&nbsp;         *
+<i>236</i>&nbsp;         * @throws XPathFactoryConfigurationException if this
+<i>237</i>&nbsp;         * &lt;code&gt;XPathFactory&lt;/code&gt; or the &lt;code&gt;XPath&lt;/code&gt;s
+<i>238</i>&nbsp;         *   it creates cannot support this feature.
+<i>239</i>&nbsp;         * @throws NullPointerException if &lt;code&gt;name&lt;/code&gt; is
+<i>240</i>&nbsp;         * &lt;code&gt;null&lt;/code&gt;.
+<i>241</i>&nbsp;         */
+<i>242</i>&nbsp;        public boolean getFeature(String name)
+<i>243</i>&nbsp;                throws XPathFactoryConfigurationException {
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;            // feature name cannot be null
+<b class="nc"><i>246</i>&nbsp;            if (name == null) {</b>
+<b class="nc"><i>247</i>&nbsp;                String fmsg = XSLMessages.createXPATHMessage(</b>
+<i>248</i>&nbsp;                        XPATHErrorResources.ER_GETTING_NULL_FEATURE,
+<i>249</i>&nbsp;                        new Object[] { CLASS_NAME } );
+<b class="nc"><i>250</i>&nbsp;                throw new NullPointerException( fmsg );</b>
+<i>251</i>&nbsp;            }
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;            // secure processing?
+<b class="nc"><i>254</i>&nbsp;            if (name.equals(XMLConstants.FEATURE_SECURE_PROCESSING)) {</b>
+<b class="nc"><i>255</i>&nbsp;                return !_isNotSecureProcessing;</b>
+<i>256</i>&nbsp;            }
+<b class="nc"><i>257</i>&nbsp;            if (name.equals(XalanConstants.ORACLE_FEATURE_SERVICE_MECHANISM)) {</b>
+<b class="nc"><i>258</i>&nbsp;                return _useServicesMechanism;</b>
+<i>259</i>&nbsp;            }
+<i>260</i>&nbsp;
+<i>261</i>&nbsp;            /** Check to see if the property is managed by the security manager **/
+<b class="nc"><i>262</i>&nbsp;            String propertyValue = (_featureManager != null) ?</b>
+<b class="nc"><i>263</i>&nbsp;                    _featureManager.getValueAsString(name) : null;</b>
+<b class="nc"><i>264</i>&nbsp;            if (propertyValue != null) {</b>
+<b class="nc"><i>265</i>&nbsp;                return _featureManager.isFeatureEnabled(name);</b>
+<i>266</i>&nbsp;            }
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;            // unknown feature
+<b class="nc"><i>269</i>&nbsp;            String fmsg = XSLMessages.createXPATHMessage(</b>
+<i>270</i>&nbsp;                    XPATHErrorResources.ER_GETTING_UNKNOWN_FEATURE,
+<i>271</i>&nbsp;                    new Object[] { name, CLASS_NAME } );
+<i>272</i>&nbsp;
+<b class="nc"><i>273</i>&nbsp;            throw new XPathFactoryConfigurationException( fmsg );</b>
+<i>274</i>&nbsp;        }
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;        /**
+<i>277</i>&nbsp;         * &lt;p&gt;Establish a default function resolver.&lt;/p&gt;
+<i>278</i>&nbsp;         *
+<i>279</i>&nbsp;         * &lt;p&gt;Any &lt;code&gt;XPath&lt;/code&gt; objects constructed from this factory will use
+<i>280</i>&nbsp;         * the specified resolver by default.&lt;/p&gt;
+<i>281</i>&nbsp;         *
+<i>282</i>&nbsp;         * &lt;p&gt;A &lt;code&gt;NullPointerException&lt;/code&gt; is thrown if
+<i>283</i>&nbsp;         * &lt;code&gt;resolver&lt;/code&gt; is &lt;code&gt;null&lt;/code&gt;.&lt;/p&gt;
+<i>284</i>&nbsp;         *
+<i>285</i>&nbsp;         * @param resolver XPath function resolver.
+<i>286</i>&nbsp;         *
+<i>287</i>&nbsp;         * @throws NullPointerException If &lt;code&gt;resolver&lt;/code&gt; is
+<i>288</i>&nbsp;         * &lt;code&gt;null&lt;/code&gt;.
+<i>289</i>&nbsp;         */
+<i>290</i>&nbsp;        public void setXPathFunctionResolver(XPathFunctionResolver resolver) {
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;            // resolver cannot be null
+<b class="nc"><i>293</i>&nbsp;            if (resolver == null) {</b>
+<b class="nc"><i>294</i>&nbsp;                String fmsg = XSLMessages.createXPATHMessage(</b>
+<i>295</i>&nbsp;                        XPATHErrorResources.ER_NULL_XPATH_FUNCTION_RESOLVER,
+<i>296</i>&nbsp;                        new Object[] {  CLASS_NAME } );
+<b class="nc"><i>297</i>&nbsp;                throw new NullPointerException( fmsg );</b>
+<i>298</i>&nbsp;            }
+<i>299</i>&nbsp;
+<b class="nc"><i>300</i>&nbsp;            xPathFunctionResolver = resolver;</b>
+<i>301</i>&nbsp;        }
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;        /**
+<i>304</i>&nbsp;         * &lt;p&gt;Establish a default variable resolver.&lt;/p&gt;
+<i>305</i>&nbsp;         *
+<i>306</i>&nbsp;         * &lt;p&gt;Any &lt;code&gt;XPath&lt;/code&gt; objects constructed from this factory will use
+<i>307</i>&nbsp;         * the specified resolver by default.&lt;/p&gt;
+<i>308</i>&nbsp;         *
+<i>309</i>&nbsp;         * &lt;p&gt;A &lt;code&gt;NullPointerException&lt;/code&gt; is thrown if &lt;code&gt;resolver&lt;/code&gt; is &lt;code&gt;null&lt;/code&gt;.&lt;/p&gt;
+<i>310</i>&nbsp;         *
+<i>311</i>&nbsp;         * @param resolver Variable resolver.
+<i>312</i>&nbsp;         *
+<i>313</i>&nbsp;         *  @throws NullPointerException If &lt;code&gt;resolver&lt;/code&gt; is
+<i>314</i>&nbsp;         * &lt;code&gt;null&lt;/code&gt;.
+<i>315</i>&nbsp;         */
+<i>316</i>&nbsp;        public void setXPathVariableResolver(XPathVariableResolver resolver) {
+<i>317</i>&nbsp;
+<i>318</i>&nbsp;                // resolver cannot be null
+<b class="nc"><i>319</i>&nbsp;                if (resolver == null) {</b>
+<b class="nc"><i>320</i>&nbsp;                    String fmsg = XSLMessages.createXPATHMessage(</b>
+<i>321</i>&nbsp;                            XPATHErrorResources.ER_NULL_XPATH_VARIABLE_RESOLVER,
+<i>322</i>&nbsp;                            new Object[] {  CLASS_NAME } );
+<b class="nc"><i>323</i>&nbsp;                    throw new NullPointerException( fmsg );</b>
+<i>324</i>&nbsp;                }
+<i>325</i>&nbsp;
+<b class="nc"><i>326</i>&nbsp;                xPathVariableResolver = resolver;</b>
+<i>327</i>&nbsp;        }
+<i>328</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

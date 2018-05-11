@@ -1,0 +1,321 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: KeyCall</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler</a> ]
+</div>
+
+<h1>Coverage Summary for Class: KeyCall (com.sun.org.apache.xalan.internal.xsltc.compiler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">KeyCall</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 54)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2006 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: KeyCall.java,v 1.7 2006/06/19 19:49:04 spericas Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.Vector;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ALOAD;
+<i>29</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ASTORE;
+<i>30</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.BranchHandle;
+<i>31</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+<i>32</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.GOTO;
+<i>33</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.IFGT;
+<i>34</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKEINTERFACE;
+<i>35</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKESPECIAL;
+<i>36</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL;
+<i>37</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+<i>38</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>39</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.LocalVariableGen;
+<i>40</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.NEW;
+<i>41</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.PUSH;
+<i>42</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
+<i>43</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+<i>44</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.StringType;
+<i>45</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
+<i>46</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+<i>47</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;/**
+<i>50</i>&nbsp; * @author Morten Jorgensen
+<i>51</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>52</i>&nbsp; */
+<i>53</i>&nbsp;final class KeyCall extends FunctionCall {
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    /**
+<i>56</i>&nbsp;     * The name of the key.
+<i>57</i>&nbsp;     */
+<i>58</i>&nbsp;    private Expression _name;
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    /**
+<i>61</i>&nbsp;     * The value to look up in the key/index.
+<i>62</i>&nbsp;     */
+<i>63</i>&nbsp;    private Expression _value;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    /**
+<i>66</i>&nbsp;     * The value&#39;s data type.
+<i>67</i>&nbsp;     */
+<i>68</i>&nbsp;    private Type _valueType; // The value&#39;s data type
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    /**
+<i>71</i>&nbsp;     * Expanded qname when name is literal.
+<i>72</i>&nbsp;     */
+<b class="nc"><i>73</i>&nbsp;    private QName _resolvedQName = null;</b>
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    /**
+<i>76</i>&nbsp;     * Get the parameters passed to function:
+<i>77</i>&nbsp;     *   key(String name, String value)
+<i>78</i>&nbsp;     *   key(String name, NodeSet value)
+<i>79</i>&nbsp;     * The &#39;arguments&#39; vector should contain two parameters for key() calls,
+<i>80</i>&nbsp;     * one holding the key name and one holding the value(s) to look up. The
+<i>81</i>&nbsp;     * vector has only one parameter for id() calls (the key name is always
+<i>82</i>&nbsp;     * &quot;##id&quot; for id() calls).
+<i>83</i>&nbsp;     *
+<i>84</i>&nbsp;     * @param fname The function name (should be &#39;key&#39; or &#39;id&#39;)
+<i>85</i>&nbsp;     * @param arguments A vector containing the arguments the the function
+<i>86</i>&nbsp;     */
+<i>87</i>&nbsp;    public KeyCall(QName fname, Vector arguments) {
+<b class="nc"><i>88</i>&nbsp;        super(fname, arguments);</b>
+<b class="nc"><i>89</i>&nbsp;        switch(argumentCount()) {</b>
+<i>90</i>&nbsp;        case 1:
+<b class="nc"><i>91</i>&nbsp;            _name = null;</b>
+<b class="nc"><i>92</i>&nbsp;            _value = argument(0);</b>
+<b class="nc"><i>93</i>&nbsp;            break;</b>
+<i>94</i>&nbsp;        case 2:
+<b class="nc"><i>95</i>&nbsp;            _name = argument(0);</b>
+<b class="nc"><i>96</i>&nbsp;            _value = argument(1);</b>
+<b class="nc"><i>97</i>&nbsp;            break;</b>
+<i>98</i>&nbsp;        default:
+<b class="nc"><i>99</i>&nbsp;            _name = _value = null;</b>
+<i>100</i>&nbsp;            break;
+<i>101</i>&nbsp;        }
+<i>102</i>&nbsp;    }
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;     /**
+<i>105</i>&nbsp;     * If this call to key() is in a top-level element like  another variable
+<i>106</i>&nbsp;     * or param, add a dependency between that top-level element and the
+<i>107</i>&nbsp;     * referenced key. For example,
+<i>108</i>&nbsp;     *
+<i>109</i>&nbsp;     *   &lt;xsl:key name=&quot;x&quot; .../&gt;
+<i>110</i>&nbsp;     *   &lt;xsl:variable name=&quot;y&quot; select=&quot;key(&#39;x&#39;, 1)&quot;/&gt;
+<i>111</i>&nbsp;     *
+<i>112</i>&nbsp;     * and assuming this class represents &quot;key(&#39;x&#39;, 1)&quot;, add a reference
+<i>113</i>&nbsp;     * between variable y and key x. Note that if &#39;x&#39; is unknown statically
+<i>114</i>&nbsp;     * in key(&#39;x&#39;, 1), there&#39;s nothing we can do at this point.
+<i>115</i>&nbsp;     */
+<i>116</i>&nbsp;    public void addParentDependency() {
+<i>117</i>&nbsp;        // If name unknown statically, there&#39;s nothing we can do
+<b class="nc"><i>118</i>&nbsp;        if (_resolvedQName == null) return;</b>
+<i>119</i>&nbsp;
+<b class="nc"><i>120</i>&nbsp;        SyntaxTreeNode node = this;</b>
+<b class="nc"><i>121</i>&nbsp;        while (node != null &amp;&amp; node instanceof TopLevelElement == false) {</b>
+<b class="nc"><i>122</i>&nbsp;            node = node.getParent();</b>
+<i>123</i>&nbsp;        }
+<i>124</i>&nbsp;
+<b class="nc"><i>125</i>&nbsp;        TopLevelElement parent = (TopLevelElement) node;</b>
+<b class="nc"><i>126</i>&nbsp;        if (parent != null) {</b>
+<b class="nc"><i>127</i>&nbsp;            parent.addDependency(getSymbolTable().getKey(_resolvedQName));</b>
+<i>128</i>&nbsp;        }
+<i>129</i>&nbsp;    }
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;   /**
+<i>132</i>&nbsp;     * Type check the parameters for the id() or key() function.
+<i>133</i>&nbsp;     * The index name (for key() call only) must be a string or convertable
+<i>134</i>&nbsp;     * to a string, and the lookup-value must be a string or a node-set.
+<i>135</i>&nbsp;     * @param stable The parser&#39;s symbol table
+<i>136</i>&nbsp;     * @throws TypeCheckError When the parameters have illegal type
+<i>137</i>&nbsp;     */
+<i>138</i>&nbsp;    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+<b class="nc"><i>139</i>&nbsp;        final Type returnType = super.typeCheck(stable);</b>
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;        // Run type check on the key name (first argument) - must be a string,
+<i>142</i>&nbsp;        // and if it is not it must be converted to one using string() rules.
+<b class="nc"><i>143</i>&nbsp;        if (_name != null) {</b>
+<b class="nc"><i>144</i>&nbsp;            final Type nameType = _name.typeCheck(stable);</b>
+<i>145</i>&nbsp;
+<b class="nc"><i>146</i>&nbsp;            if (_name instanceof LiteralExpr) {</b>
+<b class="nc"><i>147</i>&nbsp;                final LiteralExpr literal = (LiteralExpr) _name;</b>
+<b class="nc"><i>148</i>&nbsp;                _resolvedQName =</b>
+<b class="nc"><i>149</i>&nbsp;                    getParser().getQNameIgnoreDefaultNs(literal.getValue());</b>
+<b class="nc"><i>150</i>&nbsp;            }</b>
+<b class="nc"><i>151</i>&nbsp;            else if (nameType instanceof StringType == false) {</b>
+<b class="nc"><i>152</i>&nbsp;                _name = new CastExpr(_name, Type.String);</b>
+<i>153</i>&nbsp;            }
+<i>154</i>&nbsp;        }
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;        // Run type check on the value for this key. This value can be of
+<i>157</i>&nbsp;        // any data type, so this should never cause any type-check errors.
+<i>158</i>&nbsp;        // If the value is a reference, then we have to defer the decision
+<i>159</i>&nbsp;        // of how to process it until run-time.
+<i>160</i>&nbsp;        // If the value is known not to be a node-set, then it should be
+<i>161</i>&nbsp;        // converted to a string before the lookup is done. If the value is
+<i>162</i>&nbsp;        // known to be a node-set then this process (convert to string, then
+<i>163</i>&nbsp;        // do lookup) should be applied to every node in the set, and the
+<i>164</i>&nbsp;        // result from all lookups should be added to the resulting node-set.
+<b class="nc"><i>165</i>&nbsp;        _valueType = _value.typeCheck(stable);</b>
+<i>166</i>&nbsp;
+<b class="nc"><i>167</i>&nbsp;        if (_valueType != Type.NodeSet</b>
+<i>168</i>&nbsp;                &amp;&amp; _valueType != Type.Reference
+<i>169</i>&nbsp;                &amp;&amp; _valueType != Type.String) {
+<b class="nc"><i>170</i>&nbsp;            _value = new CastExpr(_value, Type.String);</b>
+<b class="nc"><i>171</i>&nbsp;            _valueType = _value.typeCheck(stable);</b>
+<i>172</i>&nbsp;        }
+<i>173</i>&nbsp;
+<i>174</i>&nbsp;        // If in a top-level element, create dependency to the referenced key
+<b class="nc"><i>175</i>&nbsp;        addParentDependency();</b>
+<i>176</i>&nbsp;
+<b class="nc"><i>177</i>&nbsp;        return returnType;</b>
+<i>178</i>&nbsp;    }
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;    /**
+<i>181</i>&nbsp;     * This method is called when the constructor is compiled in
+<i>182</i>&nbsp;     * Stylesheet.compileConstructor() and not as the syntax tree is traversed.
+<i>183</i>&nbsp;     * &lt;p&gt;This method will generate byte code that produces an iterator
+<i>184</i>&nbsp;     * for the nodes in the node set for the key or id function call.
+<i>185</i>&nbsp;     * @param classGen The Java class generator
+<i>186</i>&nbsp;     * @param methodGen The method generator
+<i>187</i>&nbsp;     */
+<i>188</i>&nbsp;    public void translate(ClassGenerator classGen,
+<i>189</i>&nbsp;                          MethodGenerator methodGen) {
+<b class="nc"><i>190</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>191</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;        // Returns the KeyIndex object of a given name
+<b class="nc"><i>194</i>&nbsp;        final int getKeyIndex = cpg.addMethodref(TRANSLET_CLASS,</b>
+<i>195</i>&nbsp;                                                 &quot;getKeyIndex&quot;,
+<i>196</i>&nbsp;                                                 &quot;(Ljava/lang/String;)&quot;+
+<i>197</i>&nbsp;                                                 KEY_INDEX_SIG);
+<i>198</i>&nbsp;
+<i>199</i>&nbsp;        // KeyIndex.setDom(Dom, node) =&gt; void
+<b class="nc"><i>200</i>&nbsp;        final int keyDom = cpg.addMethodref(KEY_INDEX_CLASS,</b>
+<i>201</i>&nbsp;                                            &quot;setDom&quot;,
+<i>202</i>&nbsp;                                            &quot;(&quot; + DOM_INTF_SIG + &quot;I)V&quot;);
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;        // Initialises a KeyIndex to return nodes with specific values
+<b class="nc"><i>205</i>&nbsp;        final int getKeyIterator =</b>
+<b class="nc"><i>206</i>&nbsp;                        cpg.addMethodref(KEY_INDEX_CLASS,</b>
+<i>207</i>&nbsp;                                         &quot;getKeyIndexIterator&quot;,
+<b class="nc"><i>208</i>&nbsp;                                         &quot;(&quot; + _valueType.toSignature() + &quot;Z)&quot;</b>
+<i>209</i>&nbsp;                                             + KEY_INDEX_ITERATOR_SIG);
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;        // Initialise the index specified in the first parameter of key()
+<b class="nc"><i>212</i>&nbsp;        il.append(classGen.loadTranslet());</b>
+<b class="nc"><i>213</i>&nbsp;        if (_name == null) {</b>
+<b class="nc"><i>214</i>&nbsp;            il.append(new PUSH(cpg,&quot;##id&quot;));</b>
+<b class="nc"><i>215</i>&nbsp;        } else if (_resolvedQName != null) {</b>
+<b class="nc"><i>216</i>&nbsp;            il.append(new PUSH(cpg, _resolvedQName.toString()));</b>
+<i>217</i>&nbsp;        } else {
+<b class="nc"><i>218</i>&nbsp;            _name.translate(classGen, methodGen);</b>
+<i>219</i>&nbsp;        }
+<i>220</i>&nbsp;
+<i>221</i>&nbsp;        // Generate following byte code:
+<i>222</i>&nbsp;        //
+<i>223</i>&nbsp;        //   KeyIndex ki = translet.getKeyIndex(_name)
+<i>224</i>&nbsp;        //   ki.setDom(translet.dom);
+<i>225</i>&nbsp;        //   ki.getKeyIndexIterator(_value, true)  - for key()
+<i>226</i>&nbsp;        //        OR
+<i>227</i>&nbsp;        //   ki.getKeyIndexIterator(_value, false)  - for id()
+<b class="nc"><i>228</i>&nbsp;        il.append(new INVOKEVIRTUAL(getKeyIndex));</b>
+<b class="nc"><i>229</i>&nbsp;        il.append(DUP);</b>
+<b class="nc"><i>230</i>&nbsp;        il.append(methodGen.loadDOM());</b>
+<b class="nc"><i>231</i>&nbsp;        il.append(methodGen.loadCurrentNode());</b>
+<b class="nc"><i>232</i>&nbsp;        il.append(new INVOKEVIRTUAL(keyDom));</b>
+<i>233</i>&nbsp;
+<b class="nc"><i>234</i>&nbsp;        _value.translate(classGen, methodGen);</b>
+<b class="nc"><i>235</i>&nbsp;        il.append((_name != null) ? ICONST_1: ICONST_0);</b>
+<b class="nc"><i>236</i>&nbsp;        il.append(new INVOKEVIRTUAL(getKeyIterator));</b>
+<i>237</i>&nbsp;    }
+<i>238</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

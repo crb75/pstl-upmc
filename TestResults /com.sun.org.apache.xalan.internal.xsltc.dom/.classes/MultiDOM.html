@@ -1,0 +1,848 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MultiDOM</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.dom</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MultiDOM (com.sun.org.apache.xalan.internal.xsltc.dom)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MultiDOM</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 57)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 184)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MultiDOM$AxisIterator</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 40)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MultiDOM$NodeValueIterator</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 34)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 77)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 258)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.dom;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.DOM;
+<i>24</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.StripFilter;
+<i>25</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.TransletException;
+<i>26</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.runtime.BasisLibrary;
+<i>27</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.Axis;
+<i>28</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTM;
+<i>29</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;
+<i>30</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTMManager;
+<i>31</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.ref.DTMAxisIteratorBase;
+<i>32</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.ref.DTMAxisIterNodeList;
+<i>33</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.ref.DTMDefaultBase;
+<i>34</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.SerializationHandler;
+<i>35</i>&nbsp;import com.sun.org.apache.xml.internal.utils.SuballocatedIntVector;
+<i>36</i>&nbsp;import java.util.HashMap;
+<i>37</i>&nbsp;import java.util.Map;
+<i>38</i>&nbsp;import org.w3c.dom.Node;
+<i>39</i>&nbsp;import org.w3c.dom.NodeList;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;/**
+<i>42</i>&nbsp; * @author Jacek Ambroziak
+<i>43</i>&nbsp; * @author Morten Jorgensen
+<i>44</i>&nbsp; * @author Erwin Bolwidt &lt;ejb@klomp.org&gt;
+<i>45</i>&nbsp; */
+<b class="nc"><i>46</i>&nbsp;public final class MultiDOM implements DOM {</b>
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    private static final int NO_TYPE = DOM.FIRST_TYPE - 2;
+<i>49</i>&nbsp;    private static final int INITIAL_SIZE = 4;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    private DOM[] _adapters;
+<i>52</i>&nbsp;    private DOMAdapter _main;
+<i>53</i>&nbsp;    private DTMManager _dtmManager;
+<i>54</i>&nbsp;    private int _free;
+<i>55</i>&nbsp;    private int _size;
+<i>56</i>&nbsp;
+<b class="nc"><i>57</i>&nbsp;    private Map&lt;String, Integer&gt; _documents = new HashMap&lt;&gt;();</b>
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    private final class AxisIterator extends DTMAxisIteratorBase {
+<i>60</i>&nbsp;        // constitutive data
+<i>61</i>&nbsp;        private final int _axis;
+<i>62</i>&nbsp;        private final int _type;
+<i>63</i>&nbsp;        // implementation mechanism
+<i>64</i>&nbsp;        private DTMAxisIterator _source;
+<b class="nc"><i>65</i>&nbsp;        private int _dtmId = -1;</b>
+<i>66</i>&nbsp;
+<b class="nc"><i>67</i>&nbsp;        public AxisIterator(final int axis, final int type) {</b>
+<b class="nc"><i>68</i>&nbsp;            _axis = axis;</b>
+<b class="nc"><i>69</i>&nbsp;            _type = type;</b>
+<i>70</i>&nbsp;        }
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;        public int next() {
+<b class="nc"><i>73</i>&nbsp;            if (_source == null) {</b>
+<b class="nc"><i>74</i>&nbsp;                return(END);</b>
+<i>75</i>&nbsp;            }
+<b class="nc"><i>76</i>&nbsp;            return _source.next();</b>
+<i>77</i>&nbsp;        }
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;        public void setRestartable(boolean flag) {
+<b class="nc"><i>81</i>&nbsp;            if (_source != null) {</b>
+<b class="nc"><i>82</i>&nbsp;                _source.setRestartable(flag);</b>
+<i>83</i>&nbsp;            }
+<i>84</i>&nbsp;        }
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;        public DTMAxisIterator setStartNode(final int node) {
+<b class="nc"><i>87</i>&nbsp;            if (node == DTM.NULL) {</b>
+<b class="nc"><i>88</i>&nbsp;                return this;</b>
+<i>89</i>&nbsp;            }
+<i>90</i>&nbsp;
+<b class="nc"><i>91</i>&nbsp;            int dom = node &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS;</b>
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;            // Get a new source first time and when mask changes
+<b class="nc"><i>94</i>&nbsp;            if (_source == null || _dtmId != dom) {</b>
+<b class="nc"><i>95</i>&nbsp;                if (_type == NO_TYPE) {</b>
+<b class="nc"><i>96</i>&nbsp;                    _source = _adapters[dom].getAxisIterator(_axis);</b>
+<b class="nc"><i>97</i>&nbsp;                } else if (_axis == Axis.CHILD) {</b>
+<b class="nc"><i>98</i>&nbsp;                    _source = _adapters[dom].getTypedChildren(_type);</b>
+<i>99</i>&nbsp;                } else {
+<b class="nc"><i>100</i>&nbsp;                    _source = _adapters[dom].getTypedAxisIterator(_axis, _type);</b>
+<i>101</i>&nbsp;                }
+<i>102</i>&nbsp;            }
+<i>103</i>&nbsp;
+<b class="nc"><i>104</i>&nbsp;            _dtmId = dom;</b>
+<b class="nc"><i>105</i>&nbsp;            _source.setStartNode(node);</b>
+<b class="nc"><i>106</i>&nbsp;            return this;</b>
+<i>107</i>&nbsp;        }
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;        public DTMAxisIterator reset() {
+<b class="nc"><i>110</i>&nbsp;            if (_source != null) {</b>
+<b class="nc"><i>111</i>&nbsp;                _source.reset();</b>
+<i>112</i>&nbsp;            }
+<b class="nc"><i>113</i>&nbsp;            return this;</b>
+<i>114</i>&nbsp;        }
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;        public int getLast() {
+<b class="nc"><i>117</i>&nbsp;            if (_source != null) {</b>
+<b class="nc"><i>118</i>&nbsp;                return _source.getLast();</b>
+<i>119</i>&nbsp;            }
+<i>120</i>&nbsp;            else {
+<b class="nc"><i>121</i>&nbsp;                return END;</b>
+<i>122</i>&nbsp;            }
+<i>123</i>&nbsp;        }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;        public int getPosition() {
+<b class="nc"><i>126</i>&nbsp;            if (_source != null) {</b>
+<b class="nc"><i>127</i>&nbsp;                return _source.getPosition();</b>
+<i>128</i>&nbsp;            }
+<i>129</i>&nbsp;            else {
+<b class="nc"><i>130</i>&nbsp;                return END;</b>
+<i>131</i>&nbsp;            }
+<i>132</i>&nbsp;        }
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;        public boolean isReverse() {
+<b class="nc"><i>135</i>&nbsp;            return Axis.isReverse(_axis);</b>
+<i>136</i>&nbsp;        }
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;        public void setMark() {
+<b class="nc"><i>139</i>&nbsp;            if (_source != null) {</b>
+<b class="nc"><i>140</i>&nbsp;                _source.setMark();</b>
+<i>141</i>&nbsp;            }
+<i>142</i>&nbsp;        }
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;        public void gotoMark() {
+<b class="nc"><i>145</i>&nbsp;            if (_source != null) {</b>
+<b class="nc"><i>146</i>&nbsp;                _source.gotoMark();</b>
+<i>147</i>&nbsp;            }
+<i>148</i>&nbsp;        }
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;        public DTMAxisIterator cloneIterator() {
+<b class="nc"><i>151</i>&nbsp;            final AxisIterator clone = new AxisIterator(_axis, _type);</b>
+<b class="nc"><i>152</i>&nbsp;            if (_source != null) {</b>
+<b class="nc"><i>153</i>&nbsp;                clone._source = _source.cloneIterator();</b>
+<i>154</i>&nbsp;            }
+<b class="nc"><i>155</i>&nbsp;            clone._dtmId = _dtmId;</b>
+<b class="nc"><i>156</i>&nbsp;            return clone;</b>
+<i>157</i>&nbsp;        }
+<i>158</i>&nbsp;    } // end of AxisIterator
+<i>159</i>&nbsp;
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;    /**************************************************************
+<i>162</i>&nbsp;     * This is a specialised iterator for predicates comparing node or
+<i>163</i>&nbsp;     * attribute values to variable or parameter values.
+<i>164</i>&nbsp;     */
+<i>165</i>&nbsp;    private final class NodeValueIterator extends DTMAxisIteratorBase {
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;        private DTMAxisIterator _source;
+<i>168</i>&nbsp;        private String _value;
+<i>169</i>&nbsp;        private boolean _op;
+<i>170</i>&nbsp;        private final boolean _isReverse;
+<b class="nc"><i>171</i>&nbsp;        private int _returnType = RETURN_PARENT;</b>
+<i>172</i>&nbsp;
+<i>173</i>&nbsp;        public NodeValueIterator(DTMAxisIterator source, int returnType,
+<b class="nc"><i>174</i>&nbsp;                                 String value, boolean op) {</b>
+<b class="nc"><i>175</i>&nbsp;            _source = source;</b>
+<b class="nc"><i>176</i>&nbsp;            _returnType = returnType;</b>
+<b class="nc"><i>177</i>&nbsp;            _value = value;</b>
+<b class="nc"><i>178</i>&nbsp;            _op = op;</b>
+<b class="nc"><i>179</i>&nbsp;            _isReverse = source.isReverse();</b>
+<i>180</i>&nbsp;        }
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;        public boolean isReverse() {
+<b class="nc"><i>183</i>&nbsp;            return _isReverse;</b>
+<i>184</i>&nbsp;        }
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;        public DTMAxisIterator cloneIterator() {
+<i>187</i>&nbsp;            try {
+<b class="nc"><i>188</i>&nbsp;                NodeValueIterator clone = (NodeValueIterator)super.clone();</b>
+<b class="nc"><i>189</i>&nbsp;                clone._source = _source.cloneIterator();</b>
+<b class="nc"><i>190</i>&nbsp;                clone.setRestartable(false);</b>
+<b class="nc"><i>191</i>&nbsp;                return clone.reset();</b>
+<i>192</i>&nbsp;            }
+<b class="nc"><i>193</i>&nbsp;            catch (CloneNotSupportedException e) {</b>
+<b class="nc"><i>194</i>&nbsp;                BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR,</b>
+<b class="nc"><i>195</i>&nbsp;                                          e.toString());</b>
+<b class="nc"><i>196</i>&nbsp;                return null;</b>
+<i>197</i>&nbsp;            }
+<i>198</i>&nbsp;        }
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;        public void setRestartable(boolean isRestartable) {
+<b class="nc"><i>202</i>&nbsp;            _isRestartable = isRestartable;</b>
+<b class="nc"><i>203</i>&nbsp;            _source.setRestartable(isRestartable);</b>
+<i>204</i>&nbsp;        }
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;        public DTMAxisIterator reset() {
+<b class="nc"><i>207</i>&nbsp;            _source.reset();</b>
+<b class="nc"><i>208</i>&nbsp;            return resetPosition();</b>
+<i>209</i>&nbsp;        }
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;        public int next() {
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;            int node;
+<b class="nc"><i>214</i>&nbsp;            while ((node = _source.next()) != END) {</b>
+<b class="nc"><i>215</i>&nbsp;                String val = getStringValueX(node);</b>
+<b class="nc"><i>216</i>&nbsp;                if (_value.equals(val) == _op) {</b>
+<b class="nc"><i>217</i>&nbsp;                    if (_returnType == RETURN_CURRENT)</b>
+<b class="nc"><i>218</i>&nbsp;                        return returnNode(node);</b>
+<i>219</i>&nbsp;                    else
+<b class="nc"><i>220</i>&nbsp;                        return returnNode(getParent(node));</b>
+<i>221</i>&nbsp;                }
+<b class="nc"><i>222</i>&nbsp;            }</b>
+<b class="nc"><i>223</i>&nbsp;            return END;</b>
+<i>224</i>&nbsp;        }
+<i>225</i>&nbsp;
+<i>226</i>&nbsp;        public DTMAxisIterator setStartNode(int node) {
+<b class="nc"><i>227</i>&nbsp;            if (_isRestartable) {</b>
+<b class="nc"><i>228</i>&nbsp;                _source.setStartNode(_startNode = node);</b>
+<b class="nc"><i>229</i>&nbsp;                return resetPosition();</b>
+<i>230</i>&nbsp;            }
+<b class="nc"><i>231</i>&nbsp;            return this;</b>
+<i>232</i>&nbsp;        }
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;        public void setMark() {
+<b class="nc"><i>235</i>&nbsp;            _source.setMark();</b>
+<i>236</i>&nbsp;        }
+<i>237</i>&nbsp;
+<i>238</i>&nbsp;        public void gotoMark() {
+<b class="nc"><i>239</i>&nbsp;            _source.gotoMark();</b>
+<i>240</i>&nbsp;        }
+<i>241</i>&nbsp;    }
+<i>242</i>&nbsp;
+<b class="nc"><i>243</i>&nbsp;    public MultiDOM(DOM main) {</b>
+<b class="nc"><i>244</i>&nbsp;        _size = INITIAL_SIZE;</b>
+<b class="nc"><i>245</i>&nbsp;        _free = 1;</b>
+<b class="nc"><i>246</i>&nbsp;        _adapters = new DOM[INITIAL_SIZE];</b>
+<b class="nc"><i>247</i>&nbsp;        DOMAdapter adapter = (DOMAdapter)main;</b>
+<b class="nc"><i>248</i>&nbsp;        _adapters[0] = adapter;</b>
+<b class="nc"><i>249</i>&nbsp;        _main = adapter;</b>
+<b class="nc"><i>250</i>&nbsp;        DOM dom = adapter.getDOMImpl();</b>
+<b class="nc"><i>251</i>&nbsp;        if (dom instanceof DTMDefaultBase) {</b>
+<b class="nc"><i>252</i>&nbsp;            _dtmManager = ((DTMDefaultBase)dom).getManager();</b>
+<i>253</i>&nbsp;        }
+<i>254</i>&nbsp;
+<i>255</i>&nbsp;        // %HZ% %REVISIT% Is this the right thing to do here?  In the old
+<i>256</i>&nbsp;        // %HZ% %REVISIT% version, the main document did not get added through
+<i>257</i>&nbsp;        // %HZ% %REVISIT% a call to addDOMAdapter, which meant it couldn&#39;t be
+<i>258</i>&nbsp;        // %HZ% %REVISIT% found by a call to getDocumentMask.  The problem is
+<i>259</i>&nbsp;        // %HZ% %REVISIT% TransformerHandler is typically constructed with a
+<i>260</i>&nbsp;        // %HZ% %REVISIT% system ID equal to the stylesheet&#39;s URI; with SAX
+<i>261</i>&nbsp;        // %HZ% %REVISIT% input, it ends up giving that URI to the document.
+<i>262</i>&nbsp;        // %HZ% %REVISIT% Then, any references to document(&#39;&#39;) are resolved
+<i>263</i>&nbsp;        // %HZ% %REVISIT% using the stylesheet&#39;s URI.
+<i>264</i>&nbsp;        // %HZ% %REVISIT% MultiDOM.getDocumentMask is called to verify that
+<i>265</i>&nbsp;        // %HZ% %REVISIT% a document associated with that URI has not been
+<i>266</i>&nbsp;        // %HZ% %REVISIT% encountered, and that method ends up returning the
+<i>267</i>&nbsp;        // %HZ% %REVISIT% mask of the main document, when what we really what
+<i>268</i>&nbsp;        // %HZ% %REVISIT% is to read the stylesheet itself!
+<b class="nc"><i>269</i>&nbsp;        addDOMAdapter(adapter, false);</b>
+<i>270</i>&nbsp;    }
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;    public int nextMask() {
+<b class="nc"><i>273</i>&nbsp;        return _free;</b>
+<i>274</i>&nbsp;    }
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;    public void setupMapping(String[] names, String[] uris, int[] types, String[] namespaces) {
+<i>277</i>&nbsp;        // This method only has a function in DOM adapters
+<i>278</i>&nbsp;    }
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;    public int addDOMAdapter(DOMAdapter adapter) {
+<b class="nc"><i>281</i>&nbsp;        return addDOMAdapter(adapter, true);</b>
+<i>282</i>&nbsp;    }
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;    private int addDOMAdapter(DOMAdapter adapter, boolean indexByURI) {
+<i>285</i>&nbsp;        // Add the DOM adapter to the array of DOMs
+<b class="nc"><i>286</i>&nbsp;        DOM dom = adapter.getDOMImpl();</b>
+<i>287</i>&nbsp;
+<b class="nc"><i>288</i>&nbsp;        int domNo = 1;</b>
+<b class="nc"><i>289</i>&nbsp;        int dtmSize = 1;</b>
+<b class="nc"><i>290</i>&nbsp;        SuballocatedIntVector dtmIds = null;</b>
+<b class="nc"><i>291</i>&nbsp;        if (dom instanceof DTMDefaultBase) {</b>
+<b class="nc"><i>292</i>&nbsp;            DTMDefaultBase dtmdb = (DTMDefaultBase)dom;</b>
+<b class="nc"><i>293</i>&nbsp;            dtmIds = dtmdb.getDTMIDs();</b>
+<b class="nc"><i>294</i>&nbsp;            dtmSize = dtmIds.size();</b>
+<b class="nc"><i>295</i>&nbsp;            domNo = dtmIds.elementAt(dtmSize-1) &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS;</b>
+<b class="nc"><i>296</i>&nbsp;        }</b>
+<b class="nc"><i>297</i>&nbsp;        else if (dom instanceof SimpleResultTreeImpl) {</b>
+<b class="nc"><i>298</i>&nbsp;            SimpleResultTreeImpl simpleRTF = (SimpleResultTreeImpl)dom;</b>
+<b class="nc"><i>299</i>&nbsp;            domNo = simpleRTF.getDocument() &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS;</b>
+<i>300</i>&nbsp;        }
+<i>301</i>&nbsp;
+<b class="nc"><i>302</i>&nbsp;        if (domNo &gt;= _size) {</b>
+<b class="nc"><i>303</i>&nbsp;            int oldSize = _size;</b>
+<i>304</i>&nbsp;            do {
+<b class="nc"><i>305</i>&nbsp;                _size *= 2;</b>
+<b class="nc"><i>306</i>&nbsp;            } while (_size &lt;= domNo);</b>
+<i>307</i>&nbsp;
+<b class="nc"><i>308</i>&nbsp;            final DOMAdapter[] newArray = new DOMAdapter[_size];</b>
+<b class="nc"><i>309</i>&nbsp;            System.arraycopy(_adapters, 0, newArray, 0, oldSize);</b>
+<b class="nc"><i>310</i>&nbsp;            _adapters = newArray;</b>
+<i>311</i>&nbsp;        }
+<i>312</i>&nbsp;
+<b class="nc"><i>313</i>&nbsp;        _free = domNo + 1;</b>
+<i>314</i>&nbsp;
+<b class="nc"><i>315</i>&nbsp;        if (dtmSize == 1) {</b>
+<b class="nc"><i>316</i>&nbsp;            _adapters[domNo] = adapter;</b>
+<i>317</i>&nbsp;        }
+<b class="nc"><i>318</i>&nbsp;        else if (dtmIds != null) {</b>
+<b class="nc"><i>319</i>&nbsp;            int domPos = 0;</b>
+<b class="nc"><i>320</i>&nbsp;            for (int i = dtmSize - 1; i &gt;= 0; i--) {</b>
+<b class="nc"><i>321</i>&nbsp;                domPos = dtmIds.elementAt(i) &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS;</b>
+<b class="nc"><i>322</i>&nbsp;                _adapters[domPos] = adapter;</b>
+<i>323</i>&nbsp;            }
+<b class="nc"><i>324</i>&nbsp;            domNo = domPos;</b>
+<i>325</i>&nbsp;        }
+<i>326</i>&nbsp;
+<i>327</i>&nbsp;        // Store reference to document (URI) in the Map
+<b class="nc"><i>328</i>&nbsp;        if (indexByURI) {</b>
+<b class="nc"><i>329</i>&nbsp;            String uri = adapter.getDocumentURI(0);</b>
+<b class="nc"><i>330</i>&nbsp;            _documents.put(uri, domNo);</b>
+<i>331</i>&nbsp;        }
+<i>332</i>&nbsp;
+<i>333</i>&nbsp;        // If the dom is an AdaptiveResultTreeImpl, we need to create a
+<i>334</i>&nbsp;        // DOMAdapter around its nested dom object (if it is non-null) and
+<i>335</i>&nbsp;        // add the DOMAdapter to the list.
+<b class="nc"><i>336</i>&nbsp;        if (dom instanceof AdaptiveResultTreeImpl) {</b>
+<b class="nc"><i>337</i>&nbsp;            AdaptiveResultTreeImpl adaptiveRTF = (AdaptiveResultTreeImpl)dom;</b>
+<b class="nc"><i>338</i>&nbsp;            DOM nestedDom = adaptiveRTF.getNestedDOM();</b>
+<b class="nc"><i>339</i>&nbsp;            if (nestedDom != null) {</b>
+<b class="nc"><i>340</i>&nbsp;                DOMAdapter newAdapter = new DOMAdapter(nestedDom,</b>
+<b class="nc"><i>341</i>&nbsp;                                                       adapter.getNamesArray(),</b>
+<b class="nc"><i>342</i>&nbsp;                                                       adapter.getUrisArray(),</b>
+<b class="nc"><i>343</i>&nbsp;                                                       adapter.getTypesArray(),</b>
+<b class="nc"><i>344</i>&nbsp;                                                       adapter.getNamespaceArray());</b>
+<b class="nc"><i>345</i>&nbsp;                addDOMAdapter(newAdapter);</b>
+<i>346</i>&nbsp;            }
+<i>347</i>&nbsp;        }
+<i>348</i>&nbsp;
+<b class="nc"><i>349</i>&nbsp;        return domNo;</b>
+<i>350</i>&nbsp;    }
+<i>351</i>&nbsp;
+<i>352</i>&nbsp;    public int getDocumentMask(String uri) {
+<b class="nc"><i>353</i>&nbsp;        Integer domIdx = _documents.get(uri);</b>
+<b class="nc"><i>354</i>&nbsp;        if (domIdx == null) {</b>
+<b class="nc"><i>355</i>&nbsp;            return(-1);</b>
+<i>356</i>&nbsp;        } else {
+<b class="nc"><i>357</i>&nbsp;            return domIdx.intValue();</b>
+<i>358</i>&nbsp;        }
+<i>359</i>&nbsp;    }
+<i>360</i>&nbsp;
+<i>361</i>&nbsp;    public DOM getDOMAdapter(String uri) {
+<b class="nc"><i>362</i>&nbsp;        Integer domIdx = _documents.get(uri);</b>
+<b class="nc"><i>363</i>&nbsp;        if (domIdx == null) {</b>
+<b class="nc"><i>364</i>&nbsp;            return(null);</b>
+<i>365</i>&nbsp;        } else {
+<b class="nc"><i>366</i>&nbsp;            return(_adapters[domIdx.intValue()]);</b>
+<i>367</i>&nbsp;        }
+<i>368</i>&nbsp;    }
+<i>369</i>&nbsp;
+<i>370</i>&nbsp;    public int getDocument()
+<i>371</i>&nbsp;    {
+<b class="nc"><i>372</i>&nbsp;        return _main.getDocument();</b>
+<i>373</i>&nbsp;    }
+<i>374</i>&nbsp;
+<i>375</i>&nbsp;    public DTMManager getDTMManager() {
+<b class="nc"><i>376</i>&nbsp;        return _dtmManager;</b>
+<i>377</i>&nbsp;    }
+<i>378</i>&nbsp;
+<i>379</i>&nbsp;    /**
+<i>380</i>&nbsp;      * Returns singleton iterator containing the document root
+<i>381</i>&nbsp;      */
+<i>382</i>&nbsp;    public DTMAxisIterator getIterator() {
+<i>383</i>&nbsp;        // main source document @ 0
+<b class="nc"><i>384</i>&nbsp;        return _main.getIterator();</b>
+<i>385</i>&nbsp;    }
+<i>386</i>&nbsp;
+<i>387</i>&nbsp;    public String getStringValue() {
+<b class="nc"><i>388</i>&nbsp;        return _main.getStringValue();</b>
+<i>389</i>&nbsp;    }
+<i>390</i>&nbsp;
+<i>391</i>&nbsp;    public DTMAxisIterator getChildren(final int node) {
+<b class="nc"><i>392</i>&nbsp;        return _adapters[getDTMId(node)].getChildren(node);</b>
+<i>393</i>&nbsp;    }
+<i>394</i>&nbsp;
+<i>395</i>&nbsp;    public DTMAxisIterator getTypedChildren(final int type) {
+<b class="nc"><i>396</i>&nbsp;        return new AxisIterator(Axis.CHILD, type);</b>
+<i>397</i>&nbsp;    }
+<i>398</i>&nbsp;
+<i>399</i>&nbsp;    public DTMAxisIterator getAxisIterator(final int axis) {
+<b class="nc"><i>400</i>&nbsp;        return new AxisIterator(axis, NO_TYPE);</b>
+<i>401</i>&nbsp;    }
+<i>402</i>&nbsp;
+<i>403</i>&nbsp;    public DTMAxisIterator getTypedAxisIterator(final int axis, final int type)
+<i>404</i>&nbsp;    {
+<b class="nc"><i>405</i>&nbsp;        return new AxisIterator(axis, type);</b>
+<i>406</i>&nbsp;    }
+<i>407</i>&nbsp;
+<i>408</i>&nbsp;    public DTMAxisIterator getNthDescendant(int node, int n,
+<i>409</i>&nbsp;                                            boolean includeself)
+<i>410</i>&nbsp;    {
+<b class="nc"><i>411</i>&nbsp;        return _adapters[getDTMId(node)].getNthDescendant(node, n, includeself);</b>
+<i>412</i>&nbsp;    }
+<i>413</i>&nbsp;
+<i>414</i>&nbsp;    public DTMAxisIterator getNodeValueIterator(DTMAxisIterator iterator,
+<i>415</i>&nbsp;                                                int type, String value,
+<i>416</i>&nbsp;                                                boolean op)
+<i>417</i>&nbsp;    {
+<b class="nc"><i>418</i>&nbsp;        return(new NodeValueIterator(iterator, type, value, op));</b>
+<i>419</i>&nbsp;    }
+<i>420</i>&nbsp;
+<i>421</i>&nbsp;    public DTMAxisIterator getNamespaceAxisIterator(final int axis,
+<i>422</i>&nbsp;                                                    final int ns)
+<i>423</i>&nbsp;    {
+<b class="nc"><i>424</i>&nbsp;        DTMAxisIterator iterator = _main.getNamespaceAxisIterator(axis, ns);</b>
+<b class="nc"><i>425</i>&nbsp;        return(iterator);</b>
+<i>426</i>&nbsp;    }
+<i>427</i>&nbsp;
+<i>428</i>&nbsp;    public DTMAxisIterator orderNodes(DTMAxisIterator source, int node) {
+<b class="nc"><i>429</i>&nbsp;        return _adapters[getDTMId(node)].orderNodes(source, node);</b>
+<i>430</i>&nbsp;    }
+<i>431</i>&nbsp;
+<i>432</i>&nbsp;    public int getExpandedTypeID(final int node) {
+<b class="nc"><i>433</i>&nbsp;        if (node != DTM.NULL) {</b>
+<b class="nc"><i>434</i>&nbsp;            return _adapters[node &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].getExpandedTypeID(node);</b>
+<i>435</i>&nbsp;        }
+<i>436</i>&nbsp;        else {
+<b class="nc"><i>437</i>&nbsp;            return DTM.NULL;</b>
+<i>438</i>&nbsp;        }
+<i>439</i>&nbsp;    }
+<i>440</i>&nbsp;
+<i>441</i>&nbsp;    public int getNamespaceType(final int node) {
+<b class="nc"><i>442</i>&nbsp;        return _adapters[getDTMId(node)].getNamespaceType(node);</b>
+<i>443</i>&nbsp;    }
+<i>444</i>&nbsp;
+<i>445</i>&nbsp;    public int getNSType(int node)
+<i>446</i>&nbsp;   {
+<b class="nc"><i>447</i>&nbsp;        return _adapters[getDTMId(node)].getNSType(node);</b>
+<i>448</i>&nbsp;   }
+<i>449</i>&nbsp;
+<i>450</i>&nbsp;    public int getParent(final int node) {
+<b class="nc"><i>451</i>&nbsp;        if (node == DTM.NULL) {</b>
+<b class="nc"><i>452</i>&nbsp;            return DTM.NULL;</b>
+<i>453</i>&nbsp;        }
+<b class="nc"><i>454</i>&nbsp;        return _adapters[node &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].getParent(node);</b>
+<i>455</i>&nbsp;    }
+<i>456</i>&nbsp;
+<i>457</i>&nbsp;    public int getAttributeNode(final int type, final int el) {
+<b class="nc"><i>458</i>&nbsp;        if (el == DTM.NULL) {</b>
+<b class="nc"><i>459</i>&nbsp;            return DTM.NULL;</b>
+<i>460</i>&nbsp;        }
+<b class="nc"><i>461</i>&nbsp;        return _adapters[el &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].getAttributeNode(type, el);</b>
+<i>462</i>&nbsp;    }
+<i>463</i>&nbsp;
+<i>464</i>&nbsp;    public String getNodeName(final int node) {
+<b class="nc"><i>465</i>&nbsp;        if (node == DTM.NULL) {</b>
+<b class="nc"><i>466</i>&nbsp;            return &quot;&quot;;</b>
+<i>467</i>&nbsp;        }
+<b class="nc"><i>468</i>&nbsp;        return _adapters[node &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].getNodeName(node);</b>
+<i>469</i>&nbsp;    }
+<i>470</i>&nbsp;
+<i>471</i>&nbsp;    public String getNodeNameX(final int node) {
+<b class="nc"><i>472</i>&nbsp;        if (node == DTM.NULL) {</b>
+<b class="nc"><i>473</i>&nbsp;            return &quot;&quot;;</b>
+<i>474</i>&nbsp;        }
+<b class="nc"><i>475</i>&nbsp;        return _adapters[node &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].getNodeNameX(node);</b>
+<i>476</i>&nbsp;    }
+<i>477</i>&nbsp;
+<i>478</i>&nbsp;    public String getNamespaceName(final int node) {
+<b class="nc"><i>479</i>&nbsp;        if (node == DTM.NULL) {</b>
+<b class="nc"><i>480</i>&nbsp;            return &quot;&quot;;</b>
+<i>481</i>&nbsp;        }
+<b class="nc"><i>482</i>&nbsp;        return _adapters[node &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].getNamespaceName(node);</b>
+<i>483</i>&nbsp;    }
+<i>484</i>&nbsp;
+<i>485</i>&nbsp;    public String getStringValueX(final int node) {
+<b class="nc"><i>486</i>&nbsp;        if (node == DTM.NULL) {</b>
+<b class="nc"><i>487</i>&nbsp;            return &quot;&quot;;</b>
+<i>488</i>&nbsp;        }
+<b class="nc"><i>489</i>&nbsp;        return _adapters[node &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].getStringValueX(node);</b>
+<i>490</i>&nbsp;    }
+<i>491</i>&nbsp;
+<i>492</i>&nbsp;    public void copy(final int node, SerializationHandler handler)
+<i>493</i>&nbsp;        throws TransletException
+<i>494</i>&nbsp;    {
+<b class="nc"><i>495</i>&nbsp;        if (node != DTM.NULL) {</b>
+<b class="nc"><i>496</i>&nbsp;            _adapters[node &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].copy(node, handler);</b>
+<i>497</i>&nbsp;        }
+<i>498</i>&nbsp;    }
+<i>499</i>&nbsp;
+<i>500</i>&nbsp;    public void copy(DTMAxisIterator nodes, SerializationHandler handler)
+<i>501</i>&nbsp;            throws TransletException
+<i>502</i>&nbsp;    {
+<i>503</i>&nbsp;        int node;
+<b class="nc"><i>504</i>&nbsp;        while ((node = nodes.next()) != DTM.NULL) {</b>
+<b class="nc"><i>505</i>&nbsp;            _adapters[node &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].copy(node, handler);</b>
+<i>506</i>&nbsp;        }
+<i>507</i>&nbsp;    }
+<i>508</i>&nbsp;
+<i>509</i>&nbsp;
+<i>510</i>&nbsp;    public String shallowCopy(final int node, SerializationHandler handler)
+<i>511</i>&nbsp;            throws TransletException
+<i>512</i>&nbsp;    {
+<b class="nc"><i>513</i>&nbsp;        if (node == DTM.NULL) {</b>
+<b class="nc"><i>514</i>&nbsp;            return &quot;&quot;;</b>
+<i>515</i>&nbsp;        }
+<b class="nc"><i>516</i>&nbsp;        return _adapters[node &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].shallowCopy(node, handler);</b>
+<i>517</i>&nbsp;    }
+<i>518</i>&nbsp;
+<i>519</i>&nbsp;    public boolean lessThan(final int node1, final int node2) {
+<b class="nc"><i>520</i>&nbsp;        if (node1 == DTM.NULL) {</b>
+<b class="nc"><i>521</i>&nbsp;            return true;</b>
+<i>522</i>&nbsp;        }
+<b class="nc"><i>523</i>&nbsp;        if (node2 == DTM.NULL) {</b>
+<b class="nc"><i>524</i>&nbsp;            return false;</b>
+<i>525</i>&nbsp;        }
+<b class="nc"><i>526</i>&nbsp;        final int dom1 = getDTMId(node1);</b>
+<b class="nc"><i>527</i>&nbsp;        final int dom2 = getDTMId(node2);</b>
+<b class="nc"><i>528</i>&nbsp;        return dom1 == dom2 ? _adapters[dom1].lessThan(node1, node2)</b>
+<i>529</i>&nbsp;                            : dom1 &lt; dom2;
+<i>530</i>&nbsp;    }
+<i>531</i>&nbsp;
+<i>532</i>&nbsp;    public void characters(final int textNode, SerializationHandler handler)
+<i>533</i>&nbsp;                 throws TransletException
+<i>534</i>&nbsp;    {
+<b class="nc"><i>535</i>&nbsp;        if (textNode != DTM.NULL) {</b>
+<b class="nc"><i>536</i>&nbsp;            _adapters[textNode &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].characters(textNode, handler);</b>
+<i>537</i>&nbsp;        }
+<i>538</i>&nbsp;    }
+<i>539</i>&nbsp;
+<i>540</i>&nbsp;    public void setFilter(StripFilter filter) {
+<b class="nc"><i>541</i>&nbsp;        for (int dom=0; dom&lt;_free; dom++) {</b>
+<b class="nc"><i>542</i>&nbsp;            if (_adapters[dom] != null) {</b>
+<b class="nc"><i>543</i>&nbsp;                _adapters[dom].setFilter(filter);</b>
+<i>544</i>&nbsp;            }
+<i>545</i>&nbsp;        }
+<i>546</i>&nbsp;    }
+<i>547</i>&nbsp;
+<i>548</i>&nbsp;    public Node makeNode(int index) {
+<b class="nc"><i>549</i>&nbsp;        if (index == DTM.NULL) {</b>
+<b class="nc"><i>550</i>&nbsp;            return null;</b>
+<i>551</i>&nbsp;        }
+<b class="nc"><i>552</i>&nbsp;        return _adapters[getDTMId(index)].makeNode(index);</b>
+<i>553</i>&nbsp;    }
+<i>554</i>&nbsp;
+<i>555</i>&nbsp;    public Node makeNode(DTMAxisIterator iter) {
+<i>556</i>&nbsp;        // TODO: gather nodes from all DOMs ?
+<b class="nc"><i>557</i>&nbsp;        return _main.makeNode(iter);</b>
+<i>558</i>&nbsp;    }
+<i>559</i>&nbsp;
+<i>560</i>&nbsp;    public NodeList makeNodeList(int index) {
+<b class="nc"><i>561</i>&nbsp;        if (index == DTM.NULL) {</b>
+<b class="nc"><i>562</i>&nbsp;            return null;</b>
+<i>563</i>&nbsp;        }
+<b class="nc"><i>564</i>&nbsp;        return _adapters[getDTMId(index)].makeNodeList(index);</b>
+<i>565</i>&nbsp;    }
+<i>566</i>&nbsp;
+<i>567</i>&nbsp;    public NodeList makeNodeList(DTMAxisIterator iter) {
+<b class="nc"><i>568</i>&nbsp;        int index = iter.next();</b>
+<b class="nc"><i>569</i>&nbsp;        if (index == DTM.NULL) {</b>
+<b class="nc"><i>570</i>&nbsp;            return new DTMAxisIterNodeList(null, null);</b>
+<i>571</i>&nbsp;        }
+<b class="nc"><i>572</i>&nbsp;        iter.reset();</b>
+<b class="nc"><i>573</i>&nbsp;        return _adapters[getDTMId(index)].makeNodeList(iter);</b>
+<i>574</i>&nbsp;    }
+<i>575</i>&nbsp;
+<i>576</i>&nbsp;    public String getLanguage(int node) {
+<b class="nc"><i>577</i>&nbsp;        return _adapters[getDTMId(node)].getLanguage(node);</b>
+<i>578</i>&nbsp;    }
+<i>579</i>&nbsp;
+<i>580</i>&nbsp;    public int getSize() {
+<b class="nc"><i>581</i>&nbsp;        int size = 0;</b>
+<b class="nc"><i>582</i>&nbsp;        for (int i=0; i&lt;_size; i++) {</b>
+<b class="nc"><i>583</i>&nbsp;            size += _adapters[i].getSize();</b>
+<i>584</i>&nbsp;        }
+<b class="nc"><i>585</i>&nbsp;        return(size);</b>
+<i>586</i>&nbsp;    }
+<i>587</i>&nbsp;
+<i>588</i>&nbsp;    public String getDocumentURI(int node) {
+<b class="nc"><i>589</i>&nbsp;        if (node == DTM.NULL) {</b>
+<b class="nc"><i>590</i>&nbsp;            node = DOM.NULL;</b>
+<i>591</i>&nbsp;        }
+<b class="nc"><i>592</i>&nbsp;        return _adapters[node &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].getDocumentURI(0);</b>
+<i>593</i>&nbsp;    }
+<i>594</i>&nbsp;
+<i>595</i>&nbsp;    public boolean isElement(final int node) {
+<b class="nc"><i>596</i>&nbsp;        if (node == DTM.NULL) {</b>
+<b class="nc"><i>597</i>&nbsp;            return false;</b>
+<i>598</i>&nbsp;        }
+<b class="nc"><i>599</i>&nbsp;        return(_adapters[node &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].isElement(node));</b>
+<i>600</i>&nbsp;    }
+<i>601</i>&nbsp;
+<i>602</i>&nbsp;    public boolean isAttribute(final int node) {
+<b class="nc"><i>603</i>&nbsp;        if (node == DTM.NULL) {</b>
+<b class="nc"><i>604</i>&nbsp;            return false;</b>
+<i>605</i>&nbsp;        }
+<b class="nc"><i>606</i>&nbsp;        return(_adapters[node &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].isAttribute(node));</b>
+<i>607</i>&nbsp;    }
+<i>608</i>&nbsp;
+<i>609</i>&nbsp;    public int getDTMId(int nodeHandle)
+<i>610</i>&nbsp;    {
+<b class="nc"><i>611</i>&nbsp;        if (nodeHandle == DTM.NULL)</b>
+<b class="nc"><i>612</i>&nbsp;            return 0;</b>
+<i>613</i>&nbsp;
+<b class="nc"><i>614</i>&nbsp;        int id = nodeHandle &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS;</b>
+<b class="nc"><i>615</i>&nbsp;        while (id &gt;= 2 &amp;&amp; _adapters[id] == _adapters[id-1]) {</b>
+<b class="nc"><i>616</i>&nbsp;            id--;</b>
+<i>617</i>&nbsp;        }
+<b class="nc"><i>618</i>&nbsp;        return id;</b>
+<i>619</i>&nbsp;    }
+<i>620</i>&nbsp;
+<i>621</i>&nbsp;    public DOM getDTM(int nodeHandle) {
+<b class="nc"><i>622</i>&nbsp;        return _adapters[getDTMId(nodeHandle)];</b>
+<i>623</i>&nbsp;    }
+<i>624</i>&nbsp;
+<i>625</i>&nbsp;    public int getNodeIdent(int nodeHandle)
+<i>626</i>&nbsp;    {
+<b class="nc"><i>627</i>&nbsp;        return _adapters[nodeHandle &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS].getNodeIdent(nodeHandle);</b>
+<i>628</i>&nbsp;    }
+<i>629</i>&nbsp;
+<i>630</i>&nbsp;    public int getNodeHandle(int nodeId)
+<i>631</i>&nbsp;    {
+<b class="nc"><i>632</i>&nbsp;        return _main.getNodeHandle(nodeId);</b>
+<i>633</i>&nbsp;    }
+<i>634</i>&nbsp;
+<i>635</i>&nbsp;    public DOM getResultTreeFrag(int initSize, int rtfType)
+<i>636</i>&nbsp;    {
+<b class="nc"><i>637</i>&nbsp;        return _main.getResultTreeFrag(initSize, rtfType);</b>
+<i>638</i>&nbsp;    }
+<i>639</i>&nbsp;
+<i>640</i>&nbsp;    public DOM getResultTreeFrag(int initSize, int rtfType, boolean addToManager)
+<i>641</i>&nbsp;    {
+<b class="nc"><i>642</i>&nbsp;        return _main.getResultTreeFrag(initSize, rtfType, addToManager);</b>
+<i>643</i>&nbsp;    }
+<i>644</i>&nbsp;
+<i>645</i>&nbsp;    public DOM getMain()
+<i>646</i>&nbsp;    {
+<b class="nc"><i>647</i>&nbsp;        return _main;</b>
+<i>648</i>&nbsp;    }
+<i>649</i>&nbsp;
+<i>650</i>&nbsp;    /**
+<i>651</i>&nbsp;     * Returns a DOMBuilder class wrapped in a SAX adapter.
+<i>652</i>&nbsp;     */
+<i>653</i>&nbsp;    public SerializationHandler getOutputDomBuilder()
+<i>654</i>&nbsp;    {
+<b class="nc"><i>655</i>&nbsp;        return _main.getOutputDomBuilder();</b>
+<i>656</i>&nbsp;    }
+<i>657</i>&nbsp;
+<i>658</i>&nbsp;    public String lookupNamespace(int node, String prefix)
+<i>659</i>&nbsp;        throws TransletException
+<i>660</i>&nbsp;    {
+<b class="nc"><i>661</i>&nbsp;        return _main.lookupNamespace(node, prefix);</b>
+<i>662</i>&nbsp;    }
+<i>663</i>&nbsp;
+<i>664</i>&nbsp;    // %HZ% Does this method make any sense here???
+<i>665</i>&nbsp;    public String getUnparsedEntityURI(String entity) {
+<b class="nc"><i>666</i>&nbsp;        return _main.getUnparsedEntityURI(entity);</b>
+<i>667</i>&nbsp;    }
+<i>668</i>&nbsp;
+<i>669</i>&nbsp;    // %HZ% Does this method make any sense here???
+<i>670</i>&nbsp;    public Map&lt;String, Integer&gt; getElementsWithIDs() {
+<b class="nc"><i>671</i>&nbsp;        return _main.getElementsWithIDs();</b>
+<i>672</i>&nbsp;    }
+<i>673</i>&nbsp;
+<i>674</i>&nbsp;    public void release() {
+<b class="nc"><i>675</i>&nbsp;        _main.release();</b>
+<i>676</i>&nbsp;    }
+<i>677</i>&nbsp;
+<i>678</i>&nbsp;    private boolean isMatchingAdapterEntry(DOM entry, DOMAdapter adapter) {
+<b class="nc"><i>679</i>&nbsp;        DOM dom = adapter.getDOMImpl();</b>
+<i>680</i>&nbsp;
+<b class="nc"><i>681</i>&nbsp;        return (entry == adapter) || (</b>
+<i>682</i>&nbsp;            /*
+<i>683</i>&nbsp;             * Method addDOMAdapter overwrites for AdaptiveResultTreeImpl
+<i>684</i>&nbsp;             * objects the usual entry with an adapter to the nested
+<i>685</i>&nbsp;             * DOM, so we must check this here. See last &#39;if&#39; statement
+<i>686</i>&nbsp;             * of addDOMAdapter.
+<i>687</i>&nbsp;             */
+<i>688</i>&nbsp;            (dom instanceof AdaptiveResultTreeImpl) &amp;&amp;
+<i>689</i>&nbsp;            (entry instanceof DOMAdapter) &amp;&amp;
+<b class="nc"><i>690</i>&nbsp;            (((AdaptiveResultTreeImpl)dom).getNestedDOM() == ((DOMAdapter)entry).getDOMImpl())</b>
+<i>691</i>&nbsp;        );
+<i>692</i>&nbsp;    }
+<i>693</i>&nbsp;
+<i>694</i>&nbsp;    public void removeDOMAdapter(DOMAdapter adapter) {
+<b class="nc"><i>695</i>&nbsp;        _documents.remove(adapter.getDocumentURI(0));</b>
+<b class="nc"><i>696</i>&nbsp;        DOM dom = adapter.getDOMImpl();</b>
+<i>697</i>&nbsp;
+<b class="nc"><i>698</i>&nbsp;        if (dom instanceof DTMDefaultBase) {</b>
+<b class="nc"><i>699</i>&nbsp;            SuballocatedIntVector ids = ((DTMDefaultBase) dom).getDTMIDs();</b>
+<b class="nc"><i>700</i>&nbsp;            int idsSize = ids.size();</b>
+<b class="nc"><i>701</i>&nbsp;            for (int i = 0; i &lt; idsSize; i++) {</b>
+<b class="nc"><i>702</i>&nbsp;                _adapters[ids.elementAt(i) &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS] = null;</b>
+<i>703</i>&nbsp;            }
+<b class="nc"><i>704</i>&nbsp;        } else {</b>
+<b class="nc"><i>705</i>&nbsp;            int id = dom.getDocument() &gt;&gt;&gt; DTMManager.IDENT_DTM_NODE_BITS;</b>
+<b class="nc"><i>706</i>&nbsp;            if ((id &gt; 0) &amp;&amp; (id &lt; _adapters.length) &amp;&amp; isMatchingAdapterEntry(_adapters[id], adapter)) {</b>
+<b class="nc"><i>707</i>&nbsp;                _adapters[id] = null;</b>
+<i>708</i>&nbsp;            } else {
+<b class="nc"><i>709</i>&nbsp;                boolean found = false;</b>
+<b class="nc"><i>710</i>&nbsp;                for (int i = 0; i &lt; _adapters.length; i++) {</b>
+<b class="nc"><i>711</i>&nbsp;                    if (isMatchingAdapterEntry(_adapters[id], adapter)) {</b>
+<b class="nc"><i>712</i>&nbsp;                        _adapters[i] = null;</b>
+<b class="nc"><i>713</i>&nbsp;                        found = true;</b>
+<b class="nc"><i>714</i>&nbsp;                        break;</b>
+<i>715</i>&nbsp;                    }
+<i>716</i>&nbsp;                }
+<i>717</i>&nbsp;            }
+<i>718</i>&nbsp;        }
+<i>719</i>&nbsp;    }
+<i>720</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

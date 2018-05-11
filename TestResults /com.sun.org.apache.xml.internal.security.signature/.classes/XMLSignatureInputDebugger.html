@@ -1,0 +1,713 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XMLSignatureInputDebugger</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.security.signature</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XMLSignatureInputDebugger (com.sun.org.apache.xml.internal.security.signature)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XMLSignatureInputDebugger</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 201)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one
+<i>7</i>&nbsp; * or more contributor license agreements. See the NOTICE file
+<i>8</i>&nbsp; * distributed with this work for additional information
+<i>9</i>&nbsp; * regarding copyright ownership. The ASF licenses this file
+<i>10</i>&nbsp; * to you under the Apache License, Version 2.0 (the
+<i>11</i>&nbsp; * &quot;License&quot;); you may not use this file except in compliance
+<i>12</i>&nbsp; * with the License. You may obtain a copy of the License at
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * http://www.apache.org/licenses/LICENSE-2.0
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; * Unless required by applicable law or agreed to in writing,
+<i>17</i>&nbsp; * software distributed under the License is distributed on an
+<i>18</i>&nbsp; * &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+<i>19</i>&nbsp; * KIND, either express or implied. See the License for the
+<i>20</i>&nbsp; * specific language governing permissions and limitations
+<i>21</i>&nbsp; * under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.security.signature;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.io.IOException;
+<i>26</i>&nbsp;import java.io.StringWriter;
+<i>27</i>&nbsp;import java.io.Writer;
+<i>28</i>&nbsp;import java.util.Arrays;
+<i>29</i>&nbsp;import java.util.Set;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import com.sun.org.apache.xml.internal.security.c14n.helper.AttrCompare;
+<i>32</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.XMLUtils;
+<i>33</i>&nbsp;import org.w3c.dom.Attr;
+<i>34</i>&nbsp;import org.w3c.dom.Comment;
+<i>35</i>&nbsp;import org.w3c.dom.Document;
+<i>36</i>&nbsp;import org.w3c.dom.Element;
+<i>37</i>&nbsp;import org.w3c.dom.NamedNodeMap;
+<i>38</i>&nbsp;import org.w3c.dom.Node;
+<i>39</i>&nbsp;import org.w3c.dom.ProcessingInstruction;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;/**
+<i>42</i>&nbsp; * Class XMLSignatureInputDebugger
+<i>43</i>&nbsp; */
+<i>44</i>&nbsp;public class XMLSignatureInputDebugger {
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    /** Field _xmlSignatureInput */
+<i>47</i>&nbsp;    private Set&lt;Node&gt; xpathNodeSet;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    private Set&lt;String&gt; inclusiveNamespaces;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    /** Field doc */
+<b class="nc"><i>52</i>&nbsp;    private Document doc = null;</b>
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /** Field writer */
+<b class="nc"><i>55</i>&nbsp;    private Writer writer = null;</b>
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    /** The HTML Prefix* */
+<i>58</i>&nbsp;    static final String HTMLPrefix =
+<i>59</i>&nbsp;        &quot;&lt;!DOCTYPE HTML PUBLIC \&quot;-//W3C//DTD HTML 4.01 Transitional//EN\&quot;&gt;\n&quot;
+<i>60</i>&nbsp;        + &quot;&lt;html&gt;\n&quot;
+<i>61</i>&nbsp;        + &quot;&lt;head&gt;\n&quot;
+<i>62</i>&nbsp;        + &quot;&lt;title&gt;Caninical XML node set&lt;/title&gt;\n&quot;
+<i>63</i>&nbsp;        + &quot;&lt;style type=\&quot;text/css\&quot;&gt;\n&quot;
+<i>64</i>&nbsp;        + &quot;&lt;!-- \n&quot;
+<i>65</i>&nbsp;        + &quot;.INCLUDED { \n&quot;
+<i>66</i>&nbsp;        + &quot;   color: #000000; \n&quot;
+<i>67</i>&nbsp;        + &quot;   background-color: \n&quot;
+<i>68</i>&nbsp;        + &quot;   #FFFFFF; \n&quot;
+<i>69</i>&nbsp;        + &quot;   font-weight: bold; } \n&quot;
+<i>70</i>&nbsp;        + &quot;.EXCLUDED { \n&quot;
+<i>71</i>&nbsp;        + &quot;   color: #666666; \n&quot;
+<i>72</i>&nbsp;        + &quot;   background-color: \n&quot;
+<i>73</i>&nbsp;        + &quot;   #999999; } \n&quot;
+<i>74</i>&nbsp;        + &quot;.INCLUDEDINCLUSIVENAMESPACE { \n&quot;
+<i>75</i>&nbsp;        + &quot;   color: #0000FF; \n&quot;
+<i>76</i>&nbsp;        + &quot;   background-color: #FFFFFF; \n&quot;
+<i>77</i>&nbsp;        + &quot;   font-weight: bold; \n&quot;
+<i>78</i>&nbsp;        + &quot;   font-style: italic; } \n&quot;
+<i>79</i>&nbsp;        + &quot;.EXCLUDEDINCLUSIVENAMESPACE { \n&quot;
+<i>80</i>&nbsp;        + &quot;   color: #0000FF; \n&quot;
+<i>81</i>&nbsp;        + &quot;   background-color: #999999; \n&quot;
+<i>82</i>&nbsp;        + &quot;   font-style: italic; } \n&quot;
+<i>83</i>&nbsp;        + &quot;--&gt; \n&quot;
+<i>84</i>&nbsp;        + &quot;&lt;/style&gt; \n&quot;
+<i>85</i>&nbsp;        + &quot;&lt;/head&gt;\n&quot;
+<i>86</i>&nbsp;        + &quot;&lt;body bgcolor=\&quot;#999999\&quot;&gt;\n&quot;
+<i>87</i>&nbsp;        + &quot;&lt;h1&gt;Explanation of the output&lt;/h1&gt;\n&quot;
+<i>88</i>&nbsp;        + &quot;&lt;p&gt;The following text contains the nodeset of the given Reference before it is canonicalized. There exist four different styles to indicate how a given node is treated.&lt;/p&gt;\n&quot;
+<i>89</i>&nbsp;        + &quot;&lt;ul&gt;\n&quot;
+<i>90</i>&nbsp;        + &quot;&lt;li class=\&quot;INCLUDED\&quot;&gt;A node which is in the node set is labeled using the INCLUDED style.&lt;/li&gt;\n&quot;
+<i>91</i>&nbsp;        + &quot;&lt;li class=\&quot;EXCLUDED\&quot;&gt;A node which is &lt;em&gt;NOT&lt;/em&gt; in the node set is labeled EXCLUDED style.&lt;/li&gt;\n&quot;
+<i>92</i>&nbsp;        + &quot;&lt;li class=\&quot;INCLUDEDINCLUSIVENAMESPACE\&quot;&gt;A namespace which is in the node set AND in the InclusiveNamespaces PrefixList is labeled using the INCLUDEDINCLUSIVENAMESPACE style.&lt;/li&gt;\n&quot;
+<i>93</i>&nbsp;        + &quot;&lt;li class=\&quot;EXCLUDEDINCLUSIVENAMESPACE\&quot;&gt;A namespace which is in NOT the node set AND in the InclusiveNamespaces PrefixList is labeled using the INCLUDEDINCLUSIVENAMESPACE style.&lt;/li&gt;\n&quot;
+<i>94</i>&nbsp;        + &quot;&lt;/ul&gt;\n&quot; + &quot;&lt;h1&gt;Output&lt;/h1&gt;\n&quot; + &quot;&lt;pre&gt;\n&quot;;
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    /** HTML Suffix * */
+<i>97</i>&nbsp;    static final String HTMLSuffix = &quot;&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;&quot;;
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    static final String HTMLExcludePrefix = &quot;&lt;span class=\&quot;EXCLUDED\&quot;&gt;&quot;;
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;    static final String HTMLIncludePrefix = &quot;&lt;span class=\&quot;INCLUDED\&quot;&gt;&quot;;
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    static final String HTMLIncludeOrExcludeSuffix = &quot;&lt;/span&gt;&quot;;
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;    static final String HTMLIncludedInclusiveNamespacePrefix = &quot;&lt;span class=\&quot;INCLUDEDINCLUSIVENAMESPACE\&quot;&gt;&quot;;
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    static final String HTMLExcludedInclusiveNamespacePrefix = &quot;&lt;span class=\&quot;EXCLUDEDINCLUSIVENAMESPACE\&quot;&gt;&quot;;
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    private static final int NODE_BEFORE_DOCUMENT_ELEMENT = -1;
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;    private static final int NODE_NOT_BEFORE_OR_AFTER_DOCUMENT_ELEMENT = 0;
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    private static final int NODE_AFTER_DOCUMENT_ELEMENT = 1;
+<i>114</i>&nbsp;
+<b class="nc"><i>115</i>&nbsp;    static final AttrCompare ATTR_COMPARE = new AttrCompare();</b>
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    /**
+<i>118</i>&nbsp;     * Constructor XMLSignatureInputDebugger
+<i>119</i>&nbsp;     *
+<i>120</i>&nbsp;     * @param xmlSignatureInput the signature to pretty print
+<i>121</i>&nbsp;     */
+<b class="nc"><i>122</i>&nbsp;    public XMLSignatureInputDebugger(XMLSignatureInput xmlSignatureInput) {</b>
+<b class="nc"><i>123</i>&nbsp;        if (!xmlSignatureInput.isNodeSet()) {</b>
+<b class="nc"><i>124</i>&nbsp;            this.xpathNodeSet = null;</b>
+<i>125</i>&nbsp;        } else {
+<b class="nc"><i>126</i>&nbsp;            this.xpathNodeSet = xmlSignatureInput.getInputNodeSet();</b>
+<i>127</i>&nbsp;        }
+<i>128</i>&nbsp;    }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    /**
+<i>131</i>&nbsp;     * Constructor XMLSignatureInputDebugger
+<i>132</i>&nbsp;     *
+<i>133</i>&nbsp;     * @param xmlSignatureInput the signatur to pretty print
+<i>134</i>&nbsp;     * @param inclusiveNamespace
+<i>135</i>&nbsp;     */
+<i>136</i>&nbsp;    public XMLSignatureInputDebugger(
+<i>137</i>&nbsp;        XMLSignatureInput xmlSignatureInput,
+<i>138</i>&nbsp;        Set&lt;String&gt; inclusiveNamespace
+<i>139</i>&nbsp;    ) {
+<b class="nc"><i>140</i>&nbsp;        this(xmlSignatureInput);</b>
+<b class="nc"><i>141</i>&nbsp;        this.inclusiveNamespaces = inclusiveNamespace;</b>
+<i>142</i>&nbsp;    }
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;    /**
+<i>145</i>&nbsp;     * Method getHTMLRepresentation
+<i>146</i>&nbsp;     *
+<i>147</i>&nbsp;     * @return The HTML Representation.
+<i>148</i>&nbsp;     * @throws XMLSignatureException
+<i>149</i>&nbsp;     */
+<i>150</i>&nbsp;    public String getHTMLRepresentation() throws XMLSignatureException {
+<b class="nc"><i>151</i>&nbsp;        if ((this.xpathNodeSet == null) || (this.xpathNodeSet.size() == 0)) {</b>
+<b class="nc"><i>152</i>&nbsp;            return HTMLPrefix + &quot;&lt;blink&gt;no node set, sorry&lt;/blink&gt;&quot; + HTMLSuffix;</b>
+<i>153</i>&nbsp;        }
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;        // get only a single node as anchor to fetch the owner document
+<b class="nc"><i>156</i>&nbsp;        Node n = this.xpathNodeSet.iterator().next();</b>
+<i>157</i>&nbsp;
+<b class="nc"><i>158</i>&nbsp;        this.doc = XMLUtils.getOwnerDocument(n);</b>
+<i>159</i>&nbsp;
+<i>160</i>&nbsp;        try {
+<b class="nc"><i>161</i>&nbsp;            this.writer = new StringWriter();</b>
+<i>162</i>&nbsp;
+<b class="nc"><i>163</i>&nbsp;            this.canonicalizeXPathNodeSet(this.doc);</b>
+<b class="nc"><i>164</i>&nbsp;            this.writer.close();</b>
+<i>165</i>&nbsp;
+<b class="nc"><i>166</i>&nbsp;            return this.writer.toString();</b>
+<b class="nc"><i>167</i>&nbsp;        } catch (IOException ex) {</b>
+<b class="nc"><i>168</i>&nbsp;            throw new XMLSignatureException(&quot;empty&quot;, ex);</b>
+<i>169</i>&nbsp;        } finally {
+<b class="nc"><i>170</i>&nbsp;            this.xpathNodeSet = null;</b>
+<b class="nc"><i>171</i>&nbsp;            this.doc = null;</b>
+<b class="nc"><i>172</i>&nbsp;            this.writer = null;</b>
+<i>173</i>&nbsp;        }
+<i>174</i>&nbsp;    }
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    /**
+<i>177</i>&nbsp;     * Method canonicalizeXPathNodeSet
+<i>178</i>&nbsp;     *
+<i>179</i>&nbsp;     * @param currentNode
+<i>180</i>&nbsp;     * @throws XMLSignatureException
+<i>181</i>&nbsp;     * @throws IOException
+<i>182</i>&nbsp;     */
+<i>183</i>&nbsp;    private void canonicalizeXPathNodeSet(Node currentNode)
+<i>184</i>&nbsp;        throws XMLSignatureException, IOException {
+<i>185</i>&nbsp;
+<b class="nc"><i>186</i>&nbsp;        int currentNodeType = currentNode.getNodeType();</b>
+<b class="nc"><i>187</i>&nbsp;        switch (currentNodeType) {</b>
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;        case Node.ENTITY_NODE:
+<i>191</i>&nbsp;        case Node.NOTATION_NODE:
+<i>192</i>&nbsp;        case Node.DOCUMENT_FRAGMENT_NODE:
+<i>193</i>&nbsp;        case Node.ATTRIBUTE_NODE:
+<b class="nc"><i>194</i>&nbsp;            throw new XMLSignatureException(&quot;empty&quot;);</b>
+<i>195</i>&nbsp;        case Node.DOCUMENT_NODE:
+<b class="nc"><i>196</i>&nbsp;            this.writer.write(HTMLPrefix);</b>
+<i>197</i>&nbsp;
+<b class="nc"><i>198</i>&nbsp;            for (Node currentChild = currentNode.getFirstChild();</b>
+<b class="nc"><i>199</i>&nbsp;                currentChild != null; currentChild = currentChild.getNextSibling()) {</b>
+<b class="nc"><i>200</i>&nbsp;                this.canonicalizeXPathNodeSet(currentChild);</b>
+<i>201</i>&nbsp;            }
+<i>202</i>&nbsp;
+<b class="nc"><i>203</i>&nbsp;            this.writer.write(HTMLSuffix);</b>
+<b class="nc"><i>204</i>&nbsp;            break;</b>
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;        case Node.COMMENT_NODE:
+<b class="nc"><i>207</i>&nbsp;            if (this.xpathNodeSet.contains(currentNode)) {</b>
+<b class="nc"><i>208</i>&nbsp;                this.writer.write(HTMLIncludePrefix);</b>
+<i>209</i>&nbsp;            } else {
+<b class="nc"><i>210</i>&nbsp;                this.writer.write(HTMLExcludePrefix);</b>
+<i>211</i>&nbsp;            }
+<i>212</i>&nbsp;
+<b class="nc"><i>213</i>&nbsp;            int position = getPositionRelativeToDocumentElement(currentNode);</b>
+<i>214</i>&nbsp;
+<b class="nc"><i>215</i>&nbsp;            if (position == NODE_AFTER_DOCUMENT_ELEMENT) {</b>
+<b class="nc"><i>216</i>&nbsp;                this.writer.write(&quot;\n&quot;);</b>
+<i>217</i>&nbsp;            }
+<i>218</i>&nbsp;
+<b class="nc"><i>219</i>&nbsp;            this.outputCommentToWriter((Comment) currentNode);</b>
+<i>220</i>&nbsp;
+<b class="nc"><i>221</i>&nbsp;            if (position == NODE_BEFORE_DOCUMENT_ELEMENT) {</b>
+<b class="nc"><i>222</i>&nbsp;                this.writer.write(&quot;\n&quot;);</b>
+<i>223</i>&nbsp;            }
+<i>224</i>&nbsp;
+<b class="nc"><i>225</i>&nbsp;            this.writer.write(HTMLIncludeOrExcludeSuffix);</b>
+<b class="nc"><i>226</i>&nbsp;            break;</b>
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;        case Node.PROCESSING_INSTRUCTION_NODE:
+<b class="nc"><i>229</i>&nbsp;            if (this.xpathNodeSet.contains(currentNode)) {</b>
+<b class="nc"><i>230</i>&nbsp;                this.writer.write(HTMLIncludePrefix);</b>
+<i>231</i>&nbsp;            } else {
+<b class="nc"><i>232</i>&nbsp;                this.writer.write(HTMLExcludePrefix);</b>
+<i>233</i>&nbsp;            }
+<i>234</i>&nbsp;
+<b class="nc"><i>235</i>&nbsp;            position = getPositionRelativeToDocumentElement(currentNode);</b>
+<i>236</i>&nbsp;
+<b class="nc"><i>237</i>&nbsp;            if (position == NODE_AFTER_DOCUMENT_ELEMENT) {</b>
+<b class="nc"><i>238</i>&nbsp;                this.writer.write(&quot;\n&quot;);</b>
+<i>239</i>&nbsp;            }
+<i>240</i>&nbsp;
+<b class="nc"><i>241</i>&nbsp;            this.outputPItoWriter((ProcessingInstruction) currentNode);</b>
+<i>242</i>&nbsp;
+<b class="nc"><i>243</i>&nbsp;            if (position == NODE_BEFORE_DOCUMENT_ELEMENT) {</b>
+<b class="nc"><i>244</i>&nbsp;                this.writer.write(&quot;\n&quot;);</b>
+<i>245</i>&nbsp;            }
+<i>246</i>&nbsp;
+<b class="nc"><i>247</i>&nbsp;            this.writer.write(HTMLIncludeOrExcludeSuffix);</b>
+<b class="nc"><i>248</i>&nbsp;            break;</b>
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;        case Node.TEXT_NODE:
+<i>251</i>&nbsp;        case Node.CDATA_SECTION_NODE:
+<b class="nc"><i>252</i>&nbsp;            if (this.xpathNodeSet.contains(currentNode)) {</b>
+<b class="nc"><i>253</i>&nbsp;                this.writer.write(HTMLIncludePrefix);</b>
+<i>254</i>&nbsp;            } else {
+<b class="nc"><i>255</i>&nbsp;                this.writer.write(HTMLExcludePrefix);</b>
+<i>256</i>&nbsp;            }
+<i>257</i>&nbsp;
+<b class="nc"><i>258</i>&nbsp;            outputTextToWriter(currentNode.getNodeValue());</b>
+<i>259</i>&nbsp;
+<b class="nc"><i>260</i>&nbsp;            for (Node nextSibling = currentNode.getNextSibling();</b>
+<i>261</i>&nbsp;                (nextSibling != null)
+<b class="nc"><i>262</i>&nbsp;                &amp;&amp; ((nextSibling.getNodeType() == Node.TEXT_NODE)</b>
+<b class="nc"><i>263</i>&nbsp;                    || (nextSibling.getNodeType() == Node.CDATA_SECTION_NODE));</b>
+<b class="nc"><i>264</i>&nbsp;                nextSibling = nextSibling.getNextSibling()) {</b>
+<i>265</i>&nbsp;                /*
+<i>266</i>&nbsp;                 * The XPath data model allows to select only the first of a
+<i>267</i>&nbsp;                 * sequence of mixed text and CDATA nodes. But we must output
+<i>268</i>&nbsp;                 * them all, so we must search:
+<i>269</i>&nbsp;                 *
+<i>270</i>&nbsp;                 * @see http://nagoya.apache.org/bugzilla/show_bug.cgi?id=6329
+<i>271</i>&nbsp;                 */
+<b class="nc"><i>272</i>&nbsp;                this.outputTextToWriter(nextSibling.getNodeValue());</b>
+<i>273</i>&nbsp;            }
+<i>274</i>&nbsp;
+<b class="nc"><i>275</i>&nbsp;            this.writer.write(HTMLIncludeOrExcludeSuffix);</b>
+<b class="nc"><i>276</i>&nbsp;            break;</b>
+<i>277</i>&nbsp;
+<i>278</i>&nbsp;        case Node.ELEMENT_NODE:
+<b class="nc"><i>279</i>&nbsp;            Element currentElement = (Element) currentNode;</b>
+<i>280</i>&nbsp;
+<b class="nc"><i>281</i>&nbsp;            if (this.xpathNodeSet.contains(currentNode)) {</b>
+<b class="nc"><i>282</i>&nbsp;                this.writer.write(HTMLIncludePrefix);</b>
+<i>283</i>&nbsp;            } else {
+<b class="nc"><i>284</i>&nbsp;                this.writer.write(HTMLExcludePrefix);</b>
+<i>285</i>&nbsp;            }
+<i>286</i>&nbsp;
+<b class="nc"><i>287</i>&nbsp;            this.writer.write(&quot;&amp;lt;&quot;);</b>
+<b class="nc"><i>288</i>&nbsp;            this.writer.write(currentElement.getTagName());</b>
+<i>289</i>&nbsp;
+<b class="nc"><i>290</i>&nbsp;            this.writer.write(HTMLIncludeOrExcludeSuffix);</b>
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;            // we output all Attrs which are available
+<b class="nc"><i>293</i>&nbsp;            NamedNodeMap attrs = currentElement.getAttributes();</b>
+<b class="nc"><i>294</i>&nbsp;            int attrsLength = attrs.getLength();</b>
+<b class="nc"><i>295</i>&nbsp;            Attr attrs2[] = new Attr[attrsLength];</b>
+<i>296</i>&nbsp;
+<b class="nc"><i>297</i>&nbsp;            for (int i = 0; i &lt; attrsLength; i++) {</b>
+<b class="nc"><i>298</i>&nbsp;                attrs2[i] = (Attr)attrs.item(i);</b>
+<i>299</i>&nbsp;            }
+<i>300</i>&nbsp;
+<b class="nc"><i>301</i>&nbsp;            Arrays.sort(attrs2, ATTR_COMPARE);</b>
+<b class="nc"><i>302</i>&nbsp;            Object attrs3[] = attrs2;</b>
+<i>303</i>&nbsp;
+<b class="nc"><i>304</i>&nbsp;            for (int i = 0; i &lt; attrsLength; i++) {</b>
+<b class="nc"><i>305</i>&nbsp;                Attr a = (Attr) attrs3[i];</b>
+<b class="nc"><i>306</i>&nbsp;                boolean included = this.xpathNodeSet.contains(a);</b>
+<b class="nc"><i>307</i>&nbsp;                boolean inclusive = this.inclusiveNamespaces.contains(a.getName());</b>
+<i>308</i>&nbsp;
+<b class="nc"><i>309</i>&nbsp;                if (included) {</b>
+<b class="nc"><i>310</i>&nbsp;                    if (inclusive) {</b>
+<i>311</i>&nbsp;                        // included and inclusive
+<b class="nc"><i>312</i>&nbsp;                        this.writer.write(HTMLIncludedInclusiveNamespacePrefix);</b>
+<i>313</i>&nbsp;                    } else {
+<i>314</i>&nbsp;                        // included and not inclusive
+<b class="nc"><i>315</i>&nbsp;                        this.writer.write(HTMLIncludePrefix);</b>
+<i>316</i>&nbsp;                    }
+<i>317</i>&nbsp;                } else {
+<b class="nc"><i>318</i>&nbsp;                    if (inclusive) {</b>
+<i>319</i>&nbsp;                        // excluded and inclusive
+<b class="nc"><i>320</i>&nbsp;                        this.writer.write(HTMLExcludedInclusiveNamespacePrefix);</b>
+<i>321</i>&nbsp;                    } else {
+<i>322</i>&nbsp;                        // excluded and not inclusive
+<b class="nc"><i>323</i>&nbsp;                        this.writer.write(HTMLExcludePrefix);</b>
+<i>324</i>&nbsp;                    }
+<i>325</i>&nbsp;                }
+<i>326</i>&nbsp;
+<b class="nc"><i>327</i>&nbsp;                this.outputAttrToWriter(a.getNodeName(), a.getNodeValue());</b>
+<b class="nc"><i>328</i>&nbsp;                this.writer.write(HTMLIncludeOrExcludeSuffix);</b>
+<i>329</i>&nbsp;            }
+<i>330</i>&nbsp;
+<b class="nc"><i>331</i>&nbsp;            if (this.xpathNodeSet.contains(currentNode)) {</b>
+<b class="nc"><i>332</i>&nbsp;                this.writer.write(HTMLIncludePrefix);</b>
+<i>333</i>&nbsp;            } else {
+<b class="nc"><i>334</i>&nbsp;                this.writer.write(HTMLExcludePrefix);</b>
+<i>335</i>&nbsp;            }
+<i>336</i>&nbsp;
+<b class="nc"><i>337</i>&nbsp;            this.writer.write(&quot;&amp;gt;&quot;);</b>
+<i>338</i>&nbsp;
+<b class="nc"><i>339</i>&nbsp;            this.writer.write(HTMLIncludeOrExcludeSuffix);</b>
+<i>340</i>&nbsp;
+<i>341</i>&nbsp;            // traversal
+<b class="nc"><i>342</i>&nbsp;            for (Node currentChild = currentNode.getFirstChild();</b>
+<b class="nc"><i>343</i>&nbsp;                currentChild != null;</b>
+<b class="nc"><i>344</i>&nbsp;                currentChild = currentChild.getNextSibling()) {</b>
+<b class="nc"><i>345</i>&nbsp;                this.canonicalizeXPathNodeSet(currentChild);</b>
+<i>346</i>&nbsp;            }
+<i>347</i>&nbsp;
+<b class="nc"><i>348</i>&nbsp;            if (this.xpathNodeSet.contains(currentNode)) {</b>
+<b class="nc"><i>349</i>&nbsp;                this.writer.write(HTMLIncludePrefix);</b>
+<i>350</i>&nbsp;            } else {
+<b class="nc"><i>351</i>&nbsp;                this.writer.write(HTMLExcludePrefix);</b>
+<i>352</i>&nbsp;            }
+<i>353</i>&nbsp;
+<b class="nc"><i>354</i>&nbsp;            this.writer.write(&quot;&amp;lt;/&quot;);</b>
+<b class="nc"><i>355</i>&nbsp;            this.writer.write(currentElement.getTagName());</b>
+<b class="nc"><i>356</i>&nbsp;            this.writer.write(&quot;&amp;gt;&quot;);</b>
+<i>357</i>&nbsp;
+<b class="nc"><i>358</i>&nbsp;            this.writer.write(HTMLIncludeOrExcludeSuffix);</b>
+<b class="nc"><i>359</i>&nbsp;            break;</b>
+<i>360</i>&nbsp;
+<i>361</i>&nbsp;        case Node.DOCUMENT_TYPE_NODE:
+<i>362</i>&nbsp;        default:
+<i>363</i>&nbsp;            break;
+<i>364</i>&nbsp;        }
+<i>365</i>&nbsp;    }
+<i>366</i>&nbsp;
+<i>367</i>&nbsp;    /**
+<i>368</i>&nbsp;     * Checks whether a Comment or ProcessingInstruction is before or after the
+<i>369</i>&nbsp;     * document element. This is needed for prepending or appending &quot;\n&quot;s.
+<i>370</i>&nbsp;     *
+<i>371</i>&nbsp;     * @param currentNode
+<i>372</i>&nbsp;     *            comment or pi to check
+<i>373</i>&nbsp;     * @return NODE_BEFORE_DOCUMENT_ELEMENT,
+<i>374</i>&nbsp;     *         NODE_NOT_BEFORE_OR_AFTER_DOCUMENT_ELEMENT or
+<i>375</i>&nbsp;     *         NODE_AFTER_DOCUMENT_ELEMENT
+<i>376</i>&nbsp;     * @see #NODE_BEFORE_DOCUMENT_ELEMENT
+<i>377</i>&nbsp;     * @see #NODE_NOT_BEFORE_OR_AFTER_DOCUMENT_ELEMENT
+<i>378</i>&nbsp;     * @see #NODE_AFTER_DOCUMENT_ELEMENT
+<i>379</i>&nbsp;     */
+<i>380</i>&nbsp;    private int getPositionRelativeToDocumentElement(Node currentNode) {
+<b class="nc"><i>381</i>&nbsp;        if (currentNode == null) {</b>
+<b class="nc"><i>382</i>&nbsp;            return NODE_NOT_BEFORE_OR_AFTER_DOCUMENT_ELEMENT;</b>
+<i>383</i>&nbsp;        }
+<i>384</i>&nbsp;
+<b class="nc"><i>385</i>&nbsp;        Document doc = currentNode.getOwnerDocument();</b>
+<i>386</i>&nbsp;
+<b class="nc"><i>387</i>&nbsp;        if (currentNode.getParentNode() != doc) {</b>
+<b class="nc"><i>388</i>&nbsp;            return NODE_NOT_BEFORE_OR_AFTER_DOCUMENT_ELEMENT;</b>
+<i>389</i>&nbsp;        }
+<i>390</i>&nbsp;
+<b class="nc"><i>391</i>&nbsp;        Element documentElement = doc.getDocumentElement();</b>
+<i>392</i>&nbsp;
+<b class="nc"><i>393</i>&nbsp;        if (documentElement == null) {</b>
+<b class="nc"><i>394</i>&nbsp;            return NODE_NOT_BEFORE_OR_AFTER_DOCUMENT_ELEMENT;</b>
+<i>395</i>&nbsp;        }
+<i>396</i>&nbsp;
+<b class="nc"><i>397</i>&nbsp;        if (documentElement == currentNode) {</b>
+<b class="nc"><i>398</i>&nbsp;            return NODE_NOT_BEFORE_OR_AFTER_DOCUMENT_ELEMENT;</b>
+<i>399</i>&nbsp;        }
+<i>400</i>&nbsp;
+<b class="nc"><i>401</i>&nbsp;        for (Node x = currentNode; x != null; x = x.getNextSibling()) {</b>
+<b class="nc"><i>402</i>&nbsp;            if (x == documentElement) {</b>
+<b class="nc"><i>403</i>&nbsp;                return NODE_BEFORE_DOCUMENT_ELEMENT;</b>
+<i>404</i>&nbsp;            }
+<i>405</i>&nbsp;        }
+<i>406</i>&nbsp;
+<b class="nc"><i>407</i>&nbsp;        return NODE_AFTER_DOCUMENT_ELEMENT;</b>
+<i>408</i>&nbsp;    }
+<i>409</i>&nbsp;
+<i>410</i>&nbsp;    /**
+<i>411</i>&nbsp;     * Normalizes an {@link Attr}ibute value
+<i>412</i>&nbsp;     *
+<i>413</i>&nbsp;     * The string value of the node is modified by replacing
+<i>414</i>&nbsp;     * &lt;UL&gt;
+<i>415</i>&nbsp;     * &lt;LI&gt;all ampersands (&amp;) with &lt;CODE&gt;&amp;amp;amp;&lt;/CODE&gt;&lt;/LI&gt;
+<i>416</i>&nbsp;     * &lt;LI&gt;all open angle brackets (&lt;) with &lt;CODE&gt;&amp;amp;lt;&lt;/CODE&gt;&lt;/LI&gt;
+<i>417</i>&nbsp;     * &lt;LI&gt;all quotation mark characters with &lt;CODE&gt;&amp;amp;quot;&lt;/CODE&gt;&lt;/LI&gt;
+<i>418</i>&nbsp;     * &lt;LI&gt;and the whitespace characters &lt;CODE&gt;#x9&lt;/CODE&gt;, #xA, and #xD,
+<i>419</i>&nbsp;     * with character references. The character references are written in
+<i>420</i>&nbsp;     * uppercase hexadecimal with no leading zeroes (for example, &lt;CODE&gt;#xD&lt;/CODE&gt;
+<i>421</i>&nbsp;     * is represented by the character reference &lt;CODE&gt;&amp;amp;#xD;&lt;/CODE&gt;)&lt;/LI&gt;
+<i>422</i>&nbsp;     * &lt;/UL&gt;
+<i>423</i>&nbsp;     *
+<i>424</i>&nbsp;     * @param name
+<i>425</i>&nbsp;     * @param value
+<i>426</i>&nbsp;     * @throws IOException
+<i>427</i>&nbsp;     */
+<i>428</i>&nbsp;    private void outputAttrToWriter(String name, String value) throws IOException {
+<b class="nc"><i>429</i>&nbsp;        this.writer.write(&quot; &quot;);</b>
+<b class="nc"><i>430</i>&nbsp;        this.writer.write(name);</b>
+<b class="nc"><i>431</i>&nbsp;        this.writer.write(&quot;=\&quot;&quot;);</b>
+<i>432</i>&nbsp;
+<b class="nc"><i>433</i>&nbsp;        int length = value.length();</b>
+<i>434</i>&nbsp;
+<b class="nc"><i>435</i>&nbsp;        for (int i = 0; i &lt; length; i++) {</b>
+<b class="nc"><i>436</i>&nbsp;            char c = value.charAt(i);</b>
+<i>437</i>&nbsp;
+<b class="nc"><i>438</i>&nbsp;            switch (c) {</b>
+<i>439</i>&nbsp;
+<i>440</i>&nbsp;            case &#39;&amp;&#39;:
+<b class="nc"><i>441</i>&nbsp;                this.writer.write(&quot;&amp;amp;amp;&quot;);</b>
+<b class="nc"><i>442</i>&nbsp;                break;</b>
+<i>443</i>&nbsp;
+<i>444</i>&nbsp;            case &#39;&lt;&#39;:
+<b class="nc"><i>445</i>&nbsp;                this.writer.write(&quot;&amp;amp;lt;&quot;);</b>
+<b class="nc"><i>446</i>&nbsp;                break;</b>
+<i>447</i>&nbsp;
+<i>448</i>&nbsp;            case &#39;&quot;&#39;:
+<b class="nc"><i>449</i>&nbsp;                this.writer.write(&quot;&amp;amp;quot;&quot;);</b>
+<b class="nc"><i>450</i>&nbsp;                break;</b>
+<i>451</i>&nbsp;
+<i>452</i>&nbsp;            case 0x09: // &#39;\t&#39;
+<b class="nc"><i>453</i>&nbsp;                this.writer.write(&quot;&amp;amp;#x9;&quot;);</b>
+<b class="nc"><i>454</i>&nbsp;                break;</b>
+<i>455</i>&nbsp;
+<i>456</i>&nbsp;            case 0x0A: // &#39;\n&#39;
+<b class="nc"><i>457</i>&nbsp;                this.writer.write(&quot;&amp;amp;#xA;&quot;);</b>
+<b class="nc"><i>458</i>&nbsp;                break;</b>
+<i>459</i>&nbsp;
+<i>460</i>&nbsp;            case 0x0D: // &#39;\r&#39;
+<b class="nc"><i>461</i>&nbsp;                this.writer.write(&quot;&amp;amp;#xD;&quot;);</b>
+<b class="nc"><i>462</i>&nbsp;                break;</b>
+<i>463</i>&nbsp;
+<i>464</i>&nbsp;            default:
+<b class="nc"><i>465</i>&nbsp;                this.writer.write(c);</b>
+<i>466</i>&nbsp;                break;
+<i>467</i>&nbsp;            }
+<i>468</i>&nbsp;        }
+<i>469</i>&nbsp;
+<b class="nc"><i>470</i>&nbsp;        this.writer.write(&quot;\&quot;&quot;);</b>
+<i>471</i>&nbsp;    }
+<i>472</i>&nbsp;
+<i>473</i>&nbsp;    /**
+<i>474</i>&nbsp;     * Normalizes a {@link org.w3c.dom.Comment} value
+<i>475</i>&nbsp;     *
+<i>476</i>&nbsp;     * @param currentPI
+<i>477</i>&nbsp;     * @throws IOException
+<i>478</i>&nbsp;     */
+<i>479</i>&nbsp;    private void outputPItoWriter(ProcessingInstruction currentPI) throws IOException {
+<i>480</i>&nbsp;
+<b class="nc"><i>481</i>&nbsp;        if (currentPI == null) {</b>
+<i>482</i>&nbsp;            return;
+<i>483</i>&nbsp;        }
+<i>484</i>&nbsp;
+<b class="nc"><i>485</i>&nbsp;        this.writer.write(&quot;&amp;lt;?&quot;);</b>
+<i>486</i>&nbsp;
+<b class="nc"><i>487</i>&nbsp;        String target = currentPI.getTarget();</b>
+<b class="nc"><i>488</i>&nbsp;        int length = target.length();</b>
+<i>489</i>&nbsp;
+<b class="nc"><i>490</i>&nbsp;        for (int i = 0; i &lt; length; i++) {</b>
+<b class="nc"><i>491</i>&nbsp;            char c = target.charAt(i);</b>
+<i>492</i>&nbsp;
+<b class="nc"><i>493</i>&nbsp;            switch (c) {</b>
+<i>494</i>&nbsp;
+<i>495</i>&nbsp;            case 0x0D:
+<b class="nc"><i>496</i>&nbsp;                this.writer.write(&quot;&amp;amp;#xD;&quot;);</b>
+<b class="nc"><i>497</i>&nbsp;                break;</b>
+<i>498</i>&nbsp;
+<i>499</i>&nbsp;            case &#39; &#39;:
+<b class="nc"><i>500</i>&nbsp;                this.writer.write(&quot;&amp;middot;&quot;);</b>
+<b class="nc"><i>501</i>&nbsp;                break;</b>
+<i>502</i>&nbsp;
+<i>503</i>&nbsp;            case &#39;\n&#39;:
+<b class="nc"><i>504</i>&nbsp;                this.writer.write(&quot;&amp;para;\n&quot;);</b>
+<b class="nc"><i>505</i>&nbsp;                break;</b>
+<i>506</i>&nbsp;
+<i>507</i>&nbsp;            default:
+<b class="nc"><i>508</i>&nbsp;                this.writer.write(c);</b>
+<i>509</i>&nbsp;                break;
+<i>510</i>&nbsp;            }
+<i>511</i>&nbsp;        }
+<i>512</i>&nbsp;
+<b class="nc"><i>513</i>&nbsp;        String data = currentPI.getData();</b>
+<i>514</i>&nbsp;
+<b class="nc"><i>515</i>&nbsp;        length = data.length();</b>
+<i>516</i>&nbsp;
+<b class="nc"><i>517</i>&nbsp;        if (length &gt; 0) {</b>
+<b class="nc"><i>518</i>&nbsp;            this.writer.write(&quot; &quot;);</b>
+<i>519</i>&nbsp;
+<b class="nc"><i>520</i>&nbsp;            for (int i = 0; i &lt; length; i++) {</b>
+<b class="nc"><i>521</i>&nbsp;                char c = data.charAt(i);</b>
+<i>522</i>&nbsp;
+<b class="nc"><i>523</i>&nbsp;                switch (c) {</b>
+<i>524</i>&nbsp;
+<i>525</i>&nbsp;                case 0x0D:
+<b class="nc"><i>526</i>&nbsp;                    this.writer.write(&quot;&amp;amp;#xD;&quot;);</b>
+<b class="nc"><i>527</i>&nbsp;                    break;</b>
+<i>528</i>&nbsp;
+<i>529</i>&nbsp;                default:
+<b class="nc"><i>530</i>&nbsp;                    this.writer.write(c);</b>
+<i>531</i>&nbsp;                    break;
+<i>532</i>&nbsp;                }
+<i>533</i>&nbsp;            }
+<i>534</i>&nbsp;        }
+<i>535</i>&nbsp;
+<b class="nc"><i>536</i>&nbsp;        this.writer.write(&quot;?&amp;gt;&quot;);</b>
+<i>537</i>&nbsp;    }
+<i>538</i>&nbsp;
+<i>539</i>&nbsp;    /**
+<i>540</i>&nbsp;     * Method outputCommentToWriter
+<i>541</i>&nbsp;     *
+<i>542</i>&nbsp;     * @param currentComment
+<i>543</i>&nbsp;     * @throws IOException
+<i>544</i>&nbsp;     */
+<i>545</i>&nbsp;    private void outputCommentToWriter(Comment currentComment) throws IOException {
+<i>546</i>&nbsp;
+<b class="nc"><i>547</i>&nbsp;        if (currentComment == null) {</b>
+<i>548</i>&nbsp;            return;
+<i>549</i>&nbsp;        }
+<i>550</i>&nbsp;
+<b class="nc"><i>551</i>&nbsp;        this.writer.write(&quot;&amp;lt;!--&quot;);</b>
+<i>552</i>&nbsp;
+<b class="nc"><i>553</i>&nbsp;        String data = currentComment.getData();</b>
+<b class="nc"><i>554</i>&nbsp;        int length = data.length();</b>
+<i>555</i>&nbsp;
+<b class="nc"><i>556</i>&nbsp;        for (int i = 0; i &lt; length; i++) {</b>
+<b class="nc"><i>557</i>&nbsp;            char c = data.charAt(i);</b>
+<i>558</i>&nbsp;
+<b class="nc"><i>559</i>&nbsp;            switch (c) {</b>
+<i>560</i>&nbsp;
+<i>561</i>&nbsp;            case 0x0D:
+<b class="nc"><i>562</i>&nbsp;                this.writer.write(&quot;&amp;amp;#xD;&quot;);</b>
+<b class="nc"><i>563</i>&nbsp;                break;</b>
+<i>564</i>&nbsp;
+<i>565</i>&nbsp;            case &#39; &#39;:
+<b class="nc"><i>566</i>&nbsp;                this.writer.write(&quot;&amp;middot;&quot;);</b>
+<b class="nc"><i>567</i>&nbsp;                break;</b>
+<i>568</i>&nbsp;
+<i>569</i>&nbsp;            case &#39;\n&#39;:
+<b class="nc"><i>570</i>&nbsp;                this.writer.write(&quot;&amp;para;\n&quot;);</b>
+<b class="nc"><i>571</i>&nbsp;                break;</b>
+<i>572</i>&nbsp;
+<i>573</i>&nbsp;            default:
+<b class="nc"><i>574</i>&nbsp;                this.writer.write(c);</b>
+<i>575</i>&nbsp;                break;
+<i>576</i>&nbsp;            }
+<i>577</i>&nbsp;        }
+<i>578</i>&nbsp;
+<b class="nc"><i>579</i>&nbsp;        this.writer.write(&quot;--&amp;gt;&quot;);</b>
+<i>580</i>&nbsp;    }
+<i>581</i>&nbsp;
+<i>582</i>&nbsp;    /**
+<i>583</i>&nbsp;     * Method outputTextToWriter
+<i>584</i>&nbsp;     *
+<i>585</i>&nbsp;     * @param text
+<i>586</i>&nbsp;     * @throws IOException
+<i>587</i>&nbsp;     */
+<i>588</i>&nbsp;    private void outputTextToWriter(String text) throws IOException {
+<b class="nc"><i>589</i>&nbsp;        if (text == null) {</b>
+<i>590</i>&nbsp;            return;
+<i>591</i>&nbsp;        }
+<i>592</i>&nbsp;
+<b class="nc"><i>593</i>&nbsp;        int length = text.length();</b>
+<i>594</i>&nbsp;
+<b class="nc"><i>595</i>&nbsp;        for (int i = 0; i &lt; length; i++) {</b>
+<b class="nc"><i>596</i>&nbsp;            char c = text.charAt(i);</b>
+<i>597</i>&nbsp;
+<b class="nc"><i>598</i>&nbsp;            switch (c) {</b>
+<i>599</i>&nbsp;
+<i>600</i>&nbsp;            case &#39;&amp;&#39;:
+<b class="nc"><i>601</i>&nbsp;                this.writer.write(&quot;&amp;amp;amp;&quot;);</b>
+<b class="nc"><i>602</i>&nbsp;                break;</b>
+<i>603</i>&nbsp;
+<i>604</i>&nbsp;            case &#39;&lt;&#39;:
+<b class="nc"><i>605</i>&nbsp;                this.writer.write(&quot;&amp;amp;lt;&quot;);</b>
+<b class="nc"><i>606</i>&nbsp;                break;</b>
+<i>607</i>&nbsp;
+<i>608</i>&nbsp;            case &#39;&gt;&#39;:
+<b class="nc"><i>609</i>&nbsp;                this.writer.write(&quot;&amp;amp;gt;&quot;);</b>
+<b class="nc"><i>610</i>&nbsp;                break;</b>
+<i>611</i>&nbsp;
+<i>612</i>&nbsp;            case 0xD:
+<b class="nc"><i>613</i>&nbsp;                this.writer.write(&quot;&amp;amp;#xD;&quot;);</b>
+<b class="nc"><i>614</i>&nbsp;                break;</b>
+<i>615</i>&nbsp;
+<i>616</i>&nbsp;            case &#39; &#39;:
+<b class="nc"><i>617</i>&nbsp;                this.writer.write(&quot;&amp;middot;&quot;);</b>
+<b class="nc"><i>618</i>&nbsp;                break;</b>
+<i>619</i>&nbsp;
+<i>620</i>&nbsp;            case &#39;\n&#39;:
+<b class="nc"><i>621</i>&nbsp;                this.writer.write(&quot;&amp;para;\n&quot;);</b>
+<b class="nc"><i>622</i>&nbsp;                break;</b>
+<i>623</i>&nbsp;
+<i>624</i>&nbsp;            default:
+<b class="nc"><i>625</i>&nbsp;                this.writer.write(c);</b>
+<i>626</i>&nbsp;                break;
+<i>627</i>&nbsp;            }
+<i>628</i>&nbsp;        }
+<i>629</i>&nbsp;    }
+<i>630</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

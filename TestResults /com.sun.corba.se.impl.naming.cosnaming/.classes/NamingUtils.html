@@ -1,0 +1,215 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: NamingUtils</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.naming.cosnaming</a> ]
+</div>
+
+<h1>Coverage Summary for Class: NamingUtils (com.sun.corba.se.impl.naming.cosnaming)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">NamingUtils</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 23)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 1997, 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.naming.cosnaming;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.io.*;
+<i>29</i>&nbsp;import org.omg.CosNaming.NameComponent;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;public class NamingUtils {
+<i>33</i>&nbsp;    // Do not instantiate this class
+<b class="nc"><i>34</i>&nbsp;    private NamingUtils() {};</b>
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    /**
+<i>37</i>&nbsp;     * Debug flag which must be true for debug streams to be created and
+<i>38</i>&nbsp;     * dprint output to be generated.
+<i>39</i>&nbsp;     */
+<b class="nc"><i>40</i>&nbsp;    public static boolean debug = false;</b>
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;    /**
+<i>43</i>&nbsp;     * Prints the message to the debug stream if debugging is enabled.
+<i>44</i>&nbsp;     * @param msg the debug message to print.
+<i>45</i>&nbsp;     */
+<i>46</i>&nbsp;    public static void dprint(String msg) {
+<b class="nc"><i>47</i>&nbsp;        if (debug &amp;&amp; debugStream != null)</b>
+<b class="nc"><i>48</i>&nbsp;            debugStream.println(msg);</b>
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    /**
+<i>52</i>&nbsp;     * Prints the message to the error stream (System.err is default).
+<i>53</i>&nbsp;     * @param msg the error message to print.
+<i>54</i>&nbsp;     */
+<i>55</i>&nbsp;    public static void errprint(String msg) {
+<b class="nc"><i>56</i>&nbsp;        if (errStream != null)</b>
+<b class="nc"><i>57</i>&nbsp;            errStream.println(msg);</b>
+<i>58</i>&nbsp;        else
+<b class="nc"><i>59</i>&nbsp;            System.err.println(msg);</b>
+<i>60</i>&nbsp;    }
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    /**
+<i>63</i>&nbsp;     * Prints the stacktrace of the supplied exception to the error stream.
+<i>64</i>&nbsp;     * @param e any Java exception.
+<i>65</i>&nbsp;     */
+<i>66</i>&nbsp;    public static void printException(java.lang.Exception e) {
+<b class="nc"><i>67</i>&nbsp;        if (errStream != null)</b>
+<b class="nc"><i>68</i>&nbsp;            e.printStackTrace(errStream);</b>
+<i>69</i>&nbsp;        else
+<b class="nc"><i>70</i>&nbsp;            e.printStackTrace();</b>
+<i>71</i>&nbsp;    }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    /**
+<i>74</i>&nbsp;     * Create a debug print stream to the supplied log file.
+<i>75</i>&nbsp;     * @param logFile the file to which debug output will go.
+<i>76</i>&nbsp;     * @exception IOException thrown if the file cannot be opened for output.
+<i>77</i>&nbsp;     */
+<i>78</i>&nbsp;    public static void makeDebugStream(File logFile)
+<i>79</i>&nbsp;        throws java.io.IOException {
+<i>80</i>&nbsp;        // Create an outputstream for debugging
+<b class="nc"><i>81</i>&nbsp;        java.io.OutputStream logOStream =</b>
+<i>82</i>&nbsp;            new java.io.FileOutputStream(logFile);
+<b class="nc"><i>83</i>&nbsp;        java.io.DataOutputStream logDStream =</b>
+<i>84</i>&nbsp;            new java.io.DataOutputStream(logOStream);
+<b class="nc"><i>85</i>&nbsp;        debugStream = new java.io.PrintStream(logDStream);</b>
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;        // Emit first message
+<b class="nc"><i>88</i>&nbsp;        debugStream.println(&quot;Debug Stream Enabled.&quot;);</b>
+<i>89</i>&nbsp;    }
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    /**
+<i>92</i>&nbsp;     * Create a error print stream to the supplied file.
+<i>93</i>&nbsp;     * @param logFile the file to which error messages will go.
+<i>94</i>&nbsp;     * @exception IOException thrown if the file cannot be opened for output.
+<i>95</i>&nbsp;     */
+<i>96</i>&nbsp;    public static void makeErrStream(File errFile)
+<i>97</i>&nbsp;        throws java.io.IOException {
+<b class="nc"><i>98</i>&nbsp;        if (debug) {</b>
+<i>99</i>&nbsp;            // Create an outputstream for errors
+<b class="nc"><i>100</i>&nbsp;            java.io.OutputStream errOStream =</b>
+<i>101</i>&nbsp;                new java.io.FileOutputStream(errFile);
+<b class="nc"><i>102</i>&nbsp;            java.io.DataOutputStream errDStream =</b>
+<i>103</i>&nbsp;                new java.io.DataOutputStream(errOStream);
+<b class="nc"><i>104</i>&nbsp;            errStream = new java.io.PrintStream(errDStream);</b>
+<b class="nc"><i>105</i>&nbsp;            dprint(&quot;Error stream setup completed.&quot;);</b>
+<i>106</i>&nbsp;        }
+<i>107</i>&nbsp;    }
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;    /**
+<i>111</i>&nbsp;     * A utility method that takes Array of NameComponent and converts
+<i>112</i>&nbsp;     * into a directory structured name in the format of /id1.kind1/id2.kind2..
+<i>113</i>&nbsp;     * This is used mainly for Logging.
+<i>114</i>&nbsp;     */
+<i>115</i>&nbsp;    static String getDirectoryStructuredName( NameComponent[] name ) {
+<b class="nc"><i>116</i>&nbsp;        StringBuffer directoryStructuredName = new StringBuffer(&quot;/&quot;);</b>
+<b class="nc"><i>117</i>&nbsp;        for( int i = 0; i &lt; name.length; i++ ) {</b>
+<b class="nc"><i>118</i>&nbsp;            directoryStructuredName.append( name[i].id + &quot;.&quot; + name[i].kind );</b>
+<i>119</i>&nbsp;        }
+<b class="nc"><i>120</i>&nbsp;        return directoryStructuredName.toString( );</b>
+<i>121</i>&nbsp;    }
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;    /**
+<i>124</i>&nbsp;     * The debug printstream.
+<i>125</i>&nbsp;     */
+<i>126</i>&nbsp;    public static java.io.PrintStream debugStream;
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;    /**
+<i>129</i>&nbsp;     * The error printstream.
+<i>130</i>&nbsp;     */
+<i>131</i>&nbsp;    public static java.io.PrintStream errStream;
+<i>132</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,475 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SourceTreeManager</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xpath.internal</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SourceTreeManager (com.sun.org.apache.xpath.internal)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SourceTreeManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 79)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: SourceTreeManager.java,v 1.2.4.1 2005/09/10 18:14:09 jeffsuttor Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xpath.internal;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.io.IOException;
+<i>26</i>&nbsp;import java.util.Vector;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import javax.xml.transform.Source;
+<i>29</i>&nbsp;import javax.xml.transform.SourceLocator;
+<i>30</i>&nbsp;import javax.xml.transform.TransformerException;
+<i>31</i>&nbsp;import javax.xml.transform.URIResolver;
+<i>32</i>&nbsp;import javax.xml.transform.sax.SAXSource;
+<i>33</i>&nbsp;import javax.xml.transform.stream.StreamSource;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTM;
+<i>36</i>&nbsp;import com.sun.org.apache.xml.internal.utils.SystemIDResolver;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import org.xml.sax.XMLReader;
+<i>39</i>&nbsp;import org.xml.sax.helpers.XMLReaderFactory;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;/**
+<i>42</i>&nbsp; * This class bottlenecks all management of source trees.  The methods
+<i>43</i>&nbsp; * in this class should allow easy garbage collection of source
+<i>44</i>&nbsp; * trees (not yet!), and should centralize parsing for those source trees.
+<i>45</i>&nbsp; */
+<b class="nc"><i>46</i>&nbsp;public class SourceTreeManager</b>
+<i>47</i>&nbsp;{
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;  /** Vector of SourceTree objects that this manager manages. */
+<b class="nc"><i>50</i>&nbsp;  private Vector m_sourceTree = new Vector();</b>
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;  /**
+<i>53</i>&nbsp;   * Reset the list of SourceTree objects that this manager manages.
+<i>54</i>&nbsp;   *
+<i>55</i>&nbsp;   */
+<i>56</i>&nbsp;  public void reset()
+<i>57</i>&nbsp;  {
+<b class="nc"><i>58</i>&nbsp;    m_sourceTree = new Vector();</b>
+<i>59</i>&nbsp;  }
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;  /** The TrAX URI resolver used to obtain source trees. */
+<i>62</i>&nbsp;  URIResolver m_uriResolver;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;  /**
+<i>65</i>&nbsp;   * Set an object that will be used to resolve URIs used in
+<i>66</i>&nbsp;   * document(), etc.
+<i>67</i>&nbsp;   * @param resolver An object that implements the URIResolver interface,
+<i>68</i>&nbsp;   * or null.
+<i>69</i>&nbsp;   */
+<i>70</i>&nbsp;  public void setURIResolver(URIResolver resolver)
+<i>71</i>&nbsp;  {
+<b class="nc"><i>72</i>&nbsp;    m_uriResolver = resolver;</b>
+<i>73</i>&nbsp;  }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;  /**
+<i>76</i>&nbsp;   * Get the object that will be used to resolve URIs used in
+<i>77</i>&nbsp;   * document(), etc.
+<i>78</i>&nbsp;   * @return An object that implements the URIResolver interface,
+<i>79</i>&nbsp;   * or null.
+<i>80</i>&nbsp;   */
+<i>81</i>&nbsp;  public URIResolver getURIResolver()
+<i>82</i>&nbsp;  {
+<b class="nc"><i>83</i>&nbsp;    return m_uriResolver;</b>
+<i>84</i>&nbsp;  }
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;  /**
+<i>87</i>&nbsp;   * Given a document, find the URL associated with that document.
+<i>88</i>&nbsp;   * @param owner Document that was previously processed by this liaison.
+<i>89</i>&nbsp;   *
+<i>90</i>&nbsp;   * @return The base URI of the owner argument.
+<i>91</i>&nbsp;   */
+<i>92</i>&nbsp;  public String findURIFromDoc(int owner)
+<i>93</i>&nbsp;  {
+<b class="nc"><i>94</i>&nbsp;    int n = m_sourceTree.size();</b>
+<i>95</i>&nbsp;
+<b class="nc"><i>96</i>&nbsp;    for (int i = 0; i &lt; n; i++)</b>
+<i>97</i>&nbsp;    {
+<b class="nc"><i>98</i>&nbsp;      SourceTree sTree = (SourceTree) m_sourceTree.elementAt(i);</b>
+<i>99</i>&nbsp;
+<b class="nc"><i>100</i>&nbsp;      if (owner == sTree.m_root)</b>
+<b class="nc"><i>101</i>&nbsp;        return sTree.m_url;</b>
+<i>102</i>&nbsp;    }
+<i>103</i>&nbsp;
+<b class="nc"><i>104</i>&nbsp;    return null;</b>
+<i>105</i>&nbsp;  }
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;  /**
+<i>108</i>&nbsp;   * This will be called by the processor when it encounters
+<i>109</i>&nbsp;   * an xsl:include, xsl:import, or document() function.
+<i>110</i>&nbsp;   *
+<i>111</i>&nbsp;   * @param base The base URI that should be used.
+<i>112</i>&nbsp;   * @param urlString Value from an xsl:import or xsl:include&#39;s href attribute,
+<i>113</i>&nbsp;   * or a URI specified in the document() function.
+<i>114</i>&nbsp;   *
+<i>115</i>&nbsp;   * @return a Source that can be used to process the resource.
+<i>116</i>&nbsp;   *
+<i>117</i>&nbsp;   * @throws IOException
+<i>118</i>&nbsp;   * @throws TransformerException
+<i>119</i>&nbsp;   */
+<i>120</i>&nbsp;  public Source resolveURI(
+<i>121</i>&nbsp;          String base, String urlString, SourceLocator locator)
+<i>122</i>&nbsp;            throws TransformerException, IOException
+<i>123</i>&nbsp;  {
+<i>124</i>&nbsp;
+<b class="nc"><i>125</i>&nbsp;    Source source = null;</b>
+<i>126</i>&nbsp;
+<b class="nc"><i>127</i>&nbsp;    if (null != m_uriResolver)</b>
+<i>128</i>&nbsp;    {
+<b class="nc"><i>129</i>&nbsp;      source = m_uriResolver.resolve(urlString, base);</b>
+<i>130</i>&nbsp;    }
+<i>131</i>&nbsp;
+<b class="nc"><i>132</i>&nbsp;    if (null == source)</b>
+<i>133</i>&nbsp;    {
+<b class="nc"><i>134</i>&nbsp;      String uri = SystemIDResolver.getAbsoluteURI(urlString, base);</b>
+<i>135</i>&nbsp;
+<b class="nc"><i>136</i>&nbsp;      source = new StreamSource(uri);</b>
+<i>137</i>&nbsp;    }
+<i>138</i>&nbsp;
+<b class="nc"><i>139</i>&nbsp;    return source;</b>
+<i>140</i>&nbsp;  }
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;  /** JJK: Support  &lt;?xalan:doc_cache_off?&gt; kluge in ElemForEach.
+<i>143</i>&nbsp;   * TODO: This function is highly dangerous. Cache management must be improved.
+<i>144</i>&nbsp;   *
+<i>145</i>&nbsp;   * @param n The node to remove.
+<i>146</i>&nbsp;   */
+<i>147</i>&nbsp;  public void removeDocumentFromCache(int n)
+<i>148</i>&nbsp;  {
+<b class="nc"><i>149</i>&nbsp;    if(DTM.NULL ==n)</b>
+<i>150</i>&nbsp;      return;
+<b class="nc"><i>151</i>&nbsp;    for(int i=m_sourceTree.size()-1;i&gt;=0;--i)</b>
+<i>152</i>&nbsp;    {
+<b class="nc"><i>153</i>&nbsp;      SourceTree st=(SourceTree)m_sourceTree.elementAt(i);</b>
+<b class="nc"><i>154</i>&nbsp;      if(st!=null &amp;&amp; st.m_root==n)</b>
+<i>155</i>&nbsp;      {
+<b class="nc"><i>156</i>&nbsp;        m_sourceTree.removeElementAt(i);</b>
+<i>157</i>&nbsp;        return;
+<i>158</i>&nbsp;      }
+<i>159</i>&nbsp;    }
+<i>160</i>&nbsp;  }
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;  /**
+<i>165</i>&nbsp;   * Put the source tree root node in the document cache.
+<i>166</i>&nbsp;   * TODO: This function needs to be a LOT more sophisticated.
+<i>167</i>&nbsp;   *
+<i>168</i>&nbsp;   * @param n The node to cache.
+<i>169</i>&nbsp;   * @param source The Source object to cache.
+<i>170</i>&nbsp;   */
+<i>171</i>&nbsp;  public void putDocumentInCache(int n, Source source)
+<i>172</i>&nbsp;  {
+<i>173</i>&nbsp;
+<b class="nc"><i>174</i>&nbsp;    int cachedNode = getNode(source);</b>
+<i>175</i>&nbsp;
+<b class="nc"><i>176</i>&nbsp;    if (DTM.NULL != cachedNode)</b>
+<i>177</i>&nbsp;    {
+<b class="nc"><i>178</i>&nbsp;      if (!(cachedNode == n))</b>
+<b class="nc"><i>179</i>&nbsp;        throw new RuntimeException(</b>
+<i>180</i>&nbsp;          &quot;Programmer&#39;s Error!  &quot;
+<i>181</i>&nbsp;          + &quot;putDocumentInCache found reparse of doc: &quot;
+<b class="nc"><i>182</i>&nbsp;          + source.getSystemId());</b>
+<i>183</i>&nbsp;      return;
+<i>184</i>&nbsp;    }
+<b class="nc"><i>185</i>&nbsp;    if (null != source.getSystemId())</b>
+<i>186</i>&nbsp;    {
+<b class="nc"><i>187</i>&nbsp;      m_sourceTree.addElement(new SourceTree(n, source.getSystemId()));</b>
+<i>188</i>&nbsp;    }
+<i>189</i>&nbsp;  }
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;  /**
+<i>192</i>&nbsp;   * Given a Source object, find the node associated with it.
+<i>193</i>&nbsp;   *
+<i>194</i>&nbsp;   * @param source The Source object to act as the key.
+<i>195</i>&nbsp;   *
+<i>196</i>&nbsp;   * @return The node that is associated with the Source, or null if not found.
+<i>197</i>&nbsp;   */
+<i>198</i>&nbsp;  public int getNode(Source source)
+<i>199</i>&nbsp;  {
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;//    if (source instanceof DOMSource)
+<i>202</i>&nbsp;//      return ((DOMSource) source).getNode();
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;    // TODO: Not sure if the BaseID is really the same thing as the ID.
+<b class="nc"><i>205</i>&nbsp;    String url = source.getSystemId();</b>
+<i>206</i>&nbsp;
+<b class="nc"><i>207</i>&nbsp;    if (null == url)</b>
+<b class="nc"><i>208</i>&nbsp;      return DTM.NULL;</b>
+<i>209</i>&nbsp;
+<b class="nc"><i>210</i>&nbsp;    int n = m_sourceTree.size();</b>
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;    // System.out.println(&quot;getNode: &quot;+n);
+<b class="nc"><i>213</i>&nbsp;    for (int i = 0; i &lt; n; i++)</b>
+<i>214</i>&nbsp;    {
+<b class="nc"><i>215</i>&nbsp;      SourceTree sTree = (SourceTree) m_sourceTree.elementAt(i);</b>
+<i>216</i>&nbsp;
+<i>217</i>&nbsp;      // System.out.println(&quot;getNode -         url: &quot;+url);
+<i>218</i>&nbsp;      // System.out.println(&quot;getNode - sTree.m_url: &quot;+sTree.m_url);
+<b class="nc"><i>219</i>&nbsp;      if (url.equals(sTree.m_url))</b>
+<b class="nc"><i>220</i>&nbsp;        return sTree.m_root;</b>
+<i>221</i>&nbsp;    }
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;    // System.out.println(&quot;getNode - returning: &quot;+node);
+<b class="nc"><i>224</i>&nbsp;    return DTM.NULL;</b>
+<i>225</i>&nbsp;  }
+<i>226</i>&nbsp;
+<i>227</i>&nbsp;  /**
+<i>228</i>&nbsp;   * Get the source tree from the a base URL and a URL string.
+<i>229</i>&nbsp;   *
+<i>230</i>&nbsp;   * @param base The base URI to use if the urlString is relative.
+<i>231</i>&nbsp;   * @param urlString An absolute or relative URL string.
+<i>232</i>&nbsp;   * @param locator The location of the caller, for diagnostic purposes.
+<i>233</i>&nbsp;   *
+<i>234</i>&nbsp;   * @return should be a non-null reference to the node identified by the
+<i>235</i>&nbsp;   * base and urlString.
+<i>236</i>&nbsp;   *
+<i>237</i>&nbsp;   * @throws TransformerException If the URL can not resolve to a node.
+<i>238</i>&nbsp;   */
+<i>239</i>&nbsp;  public int getSourceTree(
+<i>240</i>&nbsp;          String base, String urlString, SourceLocator locator, XPathContext xctxt)
+<i>241</i>&nbsp;            throws TransformerException
+<i>242</i>&nbsp;  {
+<i>243</i>&nbsp;
+<i>244</i>&nbsp;    // System.out.println(&quot;getSourceTree&quot;);
+<i>245</i>&nbsp;    try
+<i>246</i>&nbsp;    {
+<b class="nc"><i>247</i>&nbsp;      Source source = this.resolveURI(base, urlString, locator);</b>
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;      // System.out.println(&quot;getSourceTree - base: &quot;+base+&quot;, urlString: &quot;+urlString+&quot;, source: &quot;+source.getSystemId());
+<b class="nc"><i>250</i>&nbsp;      return getSourceTree(source, locator, xctxt);</b>
+<i>251</i>&nbsp;    }
+<b class="nc"><i>252</i>&nbsp;    catch (IOException ioe)</b>
+<i>253</i>&nbsp;    {
+<b class="nc"><i>254</i>&nbsp;      throw new TransformerException(ioe.getMessage(), locator, ioe);</b>
+<i>255</i>&nbsp;    }
+<i>256</i>&nbsp;
+<i>257</i>&nbsp;    /* catch (TransformerException te)
+<i>258</i>&nbsp;     {
+<i>259</i>&nbsp;       throw new TransformerException(te.getMessage(), locator, te);
+<i>260</i>&nbsp;     }*/
+<i>261</i>&nbsp;  }
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;  /**
+<i>264</i>&nbsp;   * Get the source tree from the input source.
+<i>265</i>&nbsp;   *
+<i>266</i>&nbsp;   * @param source The Source object that should identify the desired node.
+<i>267</i>&nbsp;   * @param locator The location of the caller, for diagnostic purposes.
+<i>268</i>&nbsp;   *
+<i>269</i>&nbsp;   * @return non-null reference to a node.
+<i>270</i>&nbsp;   *
+<i>271</i>&nbsp;   * @throws TransformerException if the Source argument can&#39;t be resolved to
+<i>272</i>&nbsp;   *         a node.
+<i>273</i>&nbsp;   */
+<i>274</i>&nbsp;  public int getSourceTree(Source source, SourceLocator locator, XPathContext xctxt)
+<i>275</i>&nbsp;          throws TransformerException
+<i>276</i>&nbsp;  {
+<i>277</i>&nbsp;
+<b class="nc"><i>278</i>&nbsp;    int n = getNode(source);</b>
+<i>279</i>&nbsp;
+<b class="nc"><i>280</i>&nbsp;    if (DTM.NULL != n)</b>
+<b class="nc"><i>281</i>&nbsp;      return n;</b>
+<i>282</i>&nbsp;
+<b class="nc"><i>283</i>&nbsp;    n = parseToNode(source, locator, xctxt);</b>
+<i>284</i>&nbsp;
+<b class="nc"><i>285</i>&nbsp;    if (DTM.NULL != n)</b>
+<b class="nc"><i>286</i>&nbsp;      putDocumentInCache(n, source);</b>
+<i>287</i>&nbsp;
+<b class="nc"><i>288</i>&nbsp;    return n;</b>
+<i>289</i>&nbsp;  }
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;  /**
+<i>292</i>&nbsp;   * Try to create a DOM source tree from the input source.
+<i>293</i>&nbsp;   *
+<i>294</i>&nbsp;   * @param source The Source object that identifies the source node.
+<i>295</i>&nbsp;   * @param locator The location of the caller, for diagnostic purposes.
+<i>296</i>&nbsp;   *
+<i>297</i>&nbsp;   * @return non-null reference to node identified by the source argument.
+<i>298</i>&nbsp;   *
+<i>299</i>&nbsp;   * @throws TransformerException if the source argument can not be resolved
+<i>300</i>&nbsp;   *         to a source node.
+<i>301</i>&nbsp;   */
+<i>302</i>&nbsp;  public int parseToNode(Source source, SourceLocator locator, XPathContext xctxt)
+<i>303</i>&nbsp;          throws TransformerException
+<i>304</i>&nbsp;  {
+<i>305</i>&nbsp;
+<i>306</i>&nbsp;    try
+<i>307</i>&nbsp;    {
+<b class="nc"><i>308</i>&nbsp;      Object xowner = xctxt.getOwnerObject();</b>
+<i>309</i>&nbsp;      DTM dtm;
+<b class="nc"><i>310</i>&nbsp;      if(null != xowner &amp;&amp; xowner instanceof com.sun.org.apache.xml.internal.dtm.DTMWSFilter)</b>
+<i>311</i>&nbsp;      {
+<b class="nc"><i>312</i>&nbsp;        dtm = xctxt.getDTM(source, false,</b>
+<i>313</i>&nbsp;                          (com.sun.org.apache.xml.internal.dtm.DTMWSFilter)xowner, false, true);
+<i>314</i>&nbsp;      }
+<i>315</i>&nbsp;      else
+<i>316</i>&nbsp;      {
+<b class="nc"><i>317</i>&nbsp;        dtm = xctxt.getDTM(source, false, null, false, true);</b>
+<i>318</i>&nbsp;      }
+<b class="nc"><i>319</i>&nbsp;      return dtm.getDocument();</b>
+<i>320</i>&nbsp;    }
+<b class="nc"><i>321</i>&nbsp;    catch (Exception e)</b>
+<i>322</i>&nbsp;    {
+<i>323</i>&nbsp;      //e.printStackTrace();
+<b class="nc"><i>324</i>&nbsp;      throw new TransformerException(e.getMessage(), locator, e);</b>
+<i>325</i>&nbsp;    }
+<i>326</i>&nbsp;
+<i>327</i>&nbsp;  }
+<i>328</i>&nbsp;
+<i>329</i>&nbsp;  /**
+<i>330</i>&nbsp;   * This method returns the SAX2 parser to use with the InputSource
+<i>331</i>&nbsp;   * obtained from this URI.
+<i>332</i>&nbsp;   * It may return null if any SAX2-conformant XML parser can be used,
+<i>333</i>&nbsp;   * or if getInputSource() will also return null. The parser must
+<i>334</i>&nbsp;   * be free for use (i.e.
+<i>335</i>&nbsp;   * not currently in use for another parse().
+<i>336</i>&nbsp;   *
+<i>337</i>&nbsp;   * @param inputSource The value returned from the URIResolver.
+<i>338</i>&nbsp;   * @return a SAX2 XMLReader to use to resolve the inputSource argument.
+<i>339</i>&nbsp;   * @param locator The location of the original caller, for diagnostic purposes.
+<i>340</i>&nbsp;   *
+<i>341</i>&nbsp;   * @throws TransformerException if the reader can not be created.
+<i>342</i>&nbsp;   */
+<i>343</i>&nbsp;  public static XMLReader getXMLReader(Source inputSource, SourceLocator locator)
+<i>344</i>&nbsp;          throws TransformerException
+<i>345</i>&nbsp;  {
+<i>346</i>&nbsp;
+<i>347</i>&nbsp;    try
+<i>348</i>&nbsp;    {
+<b class="nc"><i>349</i>&nbsp;      XMLReader reader = (inputSource instanceof SAXSource)</b>
+<b class="nc"><i>350</i>&nbsp;                         ? ((SAXSource) inputSource).getXMLReader() : null;</b>
+<i>351</i>&nbsp;
+<b class="nc"><i>352</i>&nbsp;      if (null == reader)</b>
+<i>353</i>&nbsp;      {
+<i>354</i>&nbsp;        try {
+<i>355</i>&nbsp;          javax.xml.parsers.SAXParserFactory factory=
+<b class="nc"><i>356</i>&nbsp;              javax.xml.parsers.SAXParserFactory.newInstance();</b>
+<b class="nc"><i>357</i>&nbsp;          factory.setNamespaceAware( true );</b>
+<b class="nc"><i>358</i>&nbsp;          javax.xml.parsers.SAXParser jaxpParser=</b>
+<b class="nc"><i>359</i>&nbsp;              factory.newSAXParser();</b>
+<b class="nc"><i>360</i>&nbsp;          reader=jaxpParser.getXMLReader();</b>
+<i>361</i>&nbsp;
+<b class="nc"><i>362</i>&nbsp;        } catch( javax.xml.parsers.ParserConfigurationException ex ) {</b>
+<b class="nc"><i>363</i>&nbsp;          throw new org.xml.sax.SAXException( ex );</b>
+<b class="nc"><i>364</i>&nbsp;        } catch( javax.xml.parsers.FactoryConfigurationError ex1 ) {</b>
+<b class="nc"><i>365</i>&nbsp;            throw new org.xml.sax.SAXException( ex1.toString() );</b>
+<b class="nc"><i>366</i>&nbsp;        } catch( NoSuchMethodError ex2 ) {</b>
+<i>367</i>&nbsp;        }
+<b class="nc"><i>368</i>&nbsp;        catch (AbstractMethodError ame){}</b>
+<b class="nc"><i>369</i>&nbsp;        if(null == reader)</b>
+<b class="nc"><i>370</i>&nbsp;          reader = XMLReaderFactory.createXMLReader();</b>
+<i>371</i>&nbsp;      }
+<i>372</i>&nbsp;
+<i>373</i>&nbsp;      try
+<i>374</i>&nbsp;      {
+<b class="nc"><i>375</i>&nbsp;        reader.setFeature(&quot;http://xml.org/sax/features/namespace-prefixes&quot;,</b>
+<i>376</i>&nbsp;                          true);
+<i>377</i>&nbsp;      }
+<b class="nc"><i>378</i>&nbsp;      catch (org.xml.sax.SAXException se)</b>
+<i>379</i>&nbsp;      {
+<i>380</i>&nbsp;
+<i>381</i>&nbsp;        // What can we do?
+<i>382</i>&nbsp;        // TODO: User diagnostics.
+<b class="nc"><i>383</i>&nbsp;      }</b>
+<i>384</i>&nbsp;
+<b class="nc"><i>385</i>&nbsp;      return reader;</b>
+<i>386</i>&nbsp;    }
+<b class="nc"><i>387</i>&nbsp;    catch (org.xml.sax.SAXException se)</b>
+<i>388</i>&nbsp;    {
+<b class="nc"><i>389</i>&nbsp;      throw new TransformerException(se.getMessage(), locator, se);</b>
+<i>390</i>&nbsp;    }
+<i>391</i>&nbsp;  }
+<i>392</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,411 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DTMNamedNodeMap</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.dtm.ref</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DTMNamedNodeMap (com.sun.org.apache.xml.internal.dtm.ref)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DTMNamedNodeMap</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 37)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">DTMNamedNodeMap$DTMException</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 41)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: DTMNamedNodeMap.java,v 1.2.4.1 2005/09/15 08:15:03 suresh_emailid Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.dtm.ref;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTM;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import org.w3c.dom.DOMException;
+<i>28</i>&nbsp;import org.w3c.dom.NamedNodeMap;
+<i>29</i>&nbsp;import org.w3c.dom.Node;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;/**
+<i>32</i>&nbsp; * DTMNamedNodeMap is a quickie (as opposed to quick) implementation of the DOM&#39;s
+<i>33</i>&nbsp; * NamedNodeMap interface, intended to support DTMProxy&#39;s getAttributes()
+<i>34</i>&nbsp; * call.
+<i>35</i>&nbsp; * &lt;p&gt;
+<i>36</i>&nbsp; * ***** Note: this does _not_ current attempt to cache any of the data;
+<i>37</i>&nbsp; * if you ask for attribute 27 and then 28, you&#39;ll have to rescan the first
+<i>38</i>&nbsp; * 27. It should probably at least keep track of the last one retrieved,
+<i>39</i>&nbsp; * and possibly buffer the whole array.
+<i>40</i>&nbsp; * &lt;p&gt;
+<i>41</i>&nbsp; * ***** Also note that there&#39;s no fastpath for the by-name query; we search
+<i>42</i>&nbsp; * linearly until we find it or fail to find it. Again, that could be
+<i>43</i>&nbsp; * optimized at some cost in object creation/storage.
+<i>44</i>&nbsp; * @xsl.usage internal
+<i>45</i>&nbsp; */
+<i>46</i>&nbsp;public class DTMNamedNodeMap implements NamedNodeMap
+<i>47</i>&nbsp;{
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;  /** The DTM for this node. */
+<i>50</i>&nbsp;  DTM dtm;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;  /** The DTM element handle. */
+<i>53</i>&nbsp;  int element;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;  /** The number of nodes in this map. */
+<b class="nc"><i>56</i>&nbsp;  short m_count = -1;</b>
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;  /**
+<i>59</i>&nbsp;   * Create a getAttributes NamedNodeMap for a given DTM element node
+<i>60</i>&nbsp;   *
+<i>61</i>&nbsp;   * @param dtm The DTM Reference, must be non-null.
+<i>62</i>&nbsp;   * @param element The DTM element handle.
+<i>63</i>&nbsp;   */
+<i>64</i>&nbsp;  public DTMNamedNodeMap(DTM dtm, int element)
+<b class="nc"><i>65</i>&nbsp;  {</b>
+<b class="nc"><i>66</i>&nbsp;    this.dtm = dtm;</b>
+<b class="nc"><i>67</i>&nbsp;    this.element = element;</b>
+<i>68</i>&nbsp;  }
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;  /**
+<i>71</i>&nbsp;   * Return the number of Attributes on this Element
+<i>72</i>&nbsp;   *
+<i>73</i>&nbsp;   * @return The number of nodes in this map.
+<i>74</i>&nbsp;   */
+<i>75</i>&nbsp;  public int getLength()
+<i>76</i>&nbsp;  {
+<i>77</i>&nbsp;
+<b class="nc"><i>78</i>&nbsp;    if (m_count == -1)</b>
+<i>79</i>&nbsp;    {
+<b class="nc"><i>80</i>&nbsp;      short count = 0;</b>
+<i>81</i>&nbsp;
+<b class="nc"><i>82</i>&nbsp;      for (int n = dtm.getFirstAttribute(element); n != -1;</b>
+<b class="nc"><i>83</i>&nbsp;              n = dtm.getNextAttribute(n))</b>
+<i>84</i>&nbsp;      {
+<b class="nc"><i>85</i>&nbsp;        ++count;</b>
+<i>86</i>&nbsp;      }
+<i>87</i>&nbsp;
+<b class="nc"><i>88</i>&nbsp;      m_count = count;</b>
+<i>89</i>&nbsp;    }
+<i>90</i>&nbsp;
+<b class="nc"><i>91</i>&nbsp;    return (int) m_count;</b>
+<i>92</i>&nbsp;  }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;  /**
+<i>95</i>&nbsp;   * Retrieves a node specified by name.
+<i>96</i>&nbsp;   * @param name The &lt;code&gt;nodeName&lt;/code&gt; of a node to retrieve.
+<i>97</i>&nbsp;   * @return A &lt;code&gt;Node&lt;/code&gt; (of any type) with the specified
+<i>98</i>&nbsp;   *   &lt;code&gt;nodeName&lt;/code&gt;, or &lt;code&gt;null&lt;/code&gt; if it does not identify
+<i>99</i>&nbsp;   *   any node in this map.
+<i>100</i>&nbsp;   */
+<i>101</i>&nbsp;  public Node getNamedItem(String name)
+<i>102</i>&nbsp;  {
+<i>103</i>&nbsp;
+<b class="nc"><i>104</i>&nbsp;    for (int n = dtm.getFirstAttribute(element); n != DTM.NULL;</b>
+<b class="nc"><i>105</i>&nbsp;            n = dtm.getNextAttribute(n))</b>
+<i>106</i>&nbsp;    {
+<b class="nc"><i>107</i>&nbsp;      if (dtm.getNodeName(n).equals(name))</b>
+<b class="nc"><i>108</i>&nbsp;        return dtm.getNode(n);</b>
+<i>109</i>&nbsp;    }
+<i>110</i>&nbsp;
+<b class="nc"><i>111</i>&nbsp;    return null;</b>
+<i>112</i>&nbsp;  }
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;  /**
+<i>115</i>&nbsp;   * Returns the &lt;code&gt;index&lt;/code&gt;th item in the map. If &lt;code&gt;index&lt;/code&gt;
+<i>116</i>&nbsp;   * is greater than or equal to the number of nodes in this map, this
+<i>117</i>&nbsp;   * returns &lt;code&gt;null&lt;/code&gt;.
+<i>118</i>&nbsp;   * @param i The index of the requested item.
+<i>119</i>&nbsp;   * @return The node at the &lt;code&gt;index&lt;/code&gt;th position in the map, or
+<i>120</i>&nbsp;   *   &lt;code&gt;null&lt;/code&gt; if that is not a valid index.
+<i>121</i>&nbsp;   */
+<i>122</i>&nbsp;  public Node item(int i)
+<i>123</i>&nbsp;  {
+<i>124</i>&nbsp;
+<b class="nc"><i>125</i>&nbsp;    int count = 0;</b>
+<i>126</i>&nbsp;
+<b class="nc"><i>127</i>&nbsp;    for (int n = dtm.getFirstAttribute(element); n != -1;</b>
+<b class="nc"><i>128</i>&nbsp;            n = dtm.getNextAttribute(n))</b>
+<i>129</i>&nbsp;    {
+<b class="nc"><i>130</i>&nbsp;      if (count == i)</b>
+<b class="nc"><i>131</i>&nbsp;        return dtm.getNode(n);</b>
+<i>132</i>&nbsp;      else
+<b class="nc"><i>133</i>&nbsp;        ++count;</b>
+<i>134</i>&nbsp;    }
+<i>135</i>&nbsp;
+<b class="nc"><i>136</i>&nbsp;    return null;</b>
+<i>137</i>&nbsp;  }
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;  /**
+<i>140</i>&nbsp;   * Adds a node using its &lt;code&gt;nodeName&lt;/code&gt; attribute. If a node with
+<i>141</i>&nbsp;   * that name is already present in this map, it is replaced by the new
+<i>142</i>&nbsp;   * one.
+<i>143</i>&nbsp;   * &lt;br&gt;As the &lt;code&gt;nodeName&lt;/code&gt; attribute is used to derive the name
+<i>144</i>&nbsp;   * which the node must be stored under, multiple nodes of certain types
+<i>145</i>&nbsp;   * (those that have a &quot;special&quot; string value) cannot be stored as the
+<i>146</i>&nbsp;   * names would clash. This is seen as preferable to allowing nodes to be
+<i>147</i>&nbsp;   * aliased.
+<i>148</i>&nbsp;   * @param newNode node to store in this map. The node will later be
+<i>149</i>&nbsp;   *   accessible using the value of its &lt;code&gt;nodeName&lt;/code&gt; attribute.
+<i>150</i>&nbsp;   *
+<i>151</i>&nbsp;   * @return If the new &lt;code&gt;Node&lt;/code&gt; replaces an existing node the
+<i>152</i>&nbsp;   *   replaced &lt;code&gt;Node&lt;/code&gt; is returned, otherwise &lt;code&gt;null&lt;/code&gt;
+<i>153</i>&nbsp;   *   is returned.
+<i>154</i>&nbsp;   * @exception DOMException
+<i>155</i>&nbsp;   *   WRONG_DOCUMENT_ERR: Raised if &lt;code&gt;arg&lt;/code&gt; was created from a
+<i>156</i>&nbsp;   *   different document than the one that created this map.
+<i>157</i>&nbsp;   *   &lt;br&gt;NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly.
+<i>158</i>&nbsp;   *   &lt;br&gt;INUSE_ATTRIBUTE_ERR: Raised if &lt;code&gt;arg&lt;/code&gt; is an
+<i>159</i>&nbsp;   *   &lt;code&gt;Attr&lt;/code&gt; that is already an attribute of another
+<i>160</i>&nbsp;   *   &lt;code&gt;Element&lt;/code&gt; object. The DOM user must explicitly clone
+<i>161</i>&nbsp;   *   &lt;code&gt;Attr&lt;/code&gt; nodes to re-use them in other elements.
+<i>162</i>&nbsp;   */
+<i>163</i>&nbsp;  public Node setNamedItem(Node newNode)
+<i>164</i>&nbsp;  {
+<b class="nc"><i>165</i>&nbsp;    throw new DTMException(DTMException.NO_MODIFICATION_ALLOWED_ERR);</b>
+<i>166</i>&nbsp;  }
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;  /**
+<i>169</i>&nbsp;   * Removes a node specified by name. When this map contains the attributes
+<i>170</i>&nbsp;   * attached to an element, if the removed attribute is known to have a
+<i>171</i>&nbsp;   * default value, an attribute immediately appears containing the
+<i>172</i>&nbsp;   * default value as well as the corresponding namespace URI, local name,
+<i>173</i>&nbsp;   * and prefix when applicable.
+<i>174</i>&nbsp;   * @param name The &lt;code&gt;nodeName&lt;/code&gt; of the node to remove.
+<i>175</i>&nbsp;   *
+<i>176</i>&nbsp;   * @return The node removed from this map if a node with such a name
+<i>177</i>&nbsp;   *   exists.
+<i>178</i>&nbsp;   * @exception DOMException
+<i>179</i>&nbsp;   *   NOT_FOUND_ERR: Raised if there is no node named &lt;code&gt;name&lt;/code&gt; in
+<i>180</i>&nbsp;   *   this map.
+<i>181</i>&nbsp;   *   &lt;br&gt;NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly.
+<i>182</i>&nbsp;   */
+<i>183</i>&nbsp;  public Node removeNamedItem(String name)
+<i>184</i>&nbsp;  {
+<b class="nc"><i>185</i>&nbsp;    throw new DTMException(DTMException.NO_MODIFICATION_ALLOWED_ERR);</b>
+<i>186</i>&nbsp;  }
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;  /**
+<i>189</i>&nbsp;   * Retrieves a node specified by local name and namespace URI. HTML-only
+<i>190</i>&nbsp;   * DOM implementations do not need to implement this method.
+<i>191</i>&nbsp;   * @param namespaceURI The namespace URI of the node to retrieve.
+<i>192</i>&nbsp;   * @param localName The local name of the node to retrieve.
+<i>193</i>&nbsp;   *
+<i>194</i>&nbsp;   * @return A &lt;code&gt;Node&lt;/code&gt; (of any type) with the specified local
+<i>195</i>&nbsp;   *   name and namespace URI, or &lt;code&gt;null&lt;/code&gt; if they do not
+<i>196</i>&nbsp;   *   identify any node in this map.
+<i>197</i>&nbsp;   * @since DOM Level 2
+<i>198</i>&nbsp;   */
+<i>199</i>&nbsp;  public Node getNamedItemNS(String namespaceURI, String localName)
+<i>200</i>&nbsp;  {
+<b class="nc"><i>201</i>&nbsp;       Node retNode = null;</b>
+<b class="nc"><i>202</i>&nbsp;       for (int n = dtm.getFirstAttribute(element); n != DTM.NULL;</b>
+<b class="nc"><i>203</i>&nbsp;                       n = dtm.getNextAttribute(n))</b>
+<i>204</i>&nbsp;       {
+<b class="nc"><i>205</i>&nbsp;         if (localName.equals(dtm.getLocalName(n)))</b>
+<i>206</i>&nbsp;         {
+<b class="nc"><i>207</i>&nbsp;           String nsURI = dtm.getNamespaceURI(n);</b>
+<b class="nc"><i>208</i>&nbsp;           if ((namespaceURI == null &amp;&amp; nsURI == null)</b>
+<b class="nc"><i>209</i>&nbsp;                  || (namespaceURI != null &amp;&amp; namespaceURI.equals(nsURI)))</b>
+<i>210</i>&nbsp;           {
+<b class="nc"><i>211</i>&nbsp;             retNode = dtm.getNode(n);</b>
+<b class="nc"><i>212</i>&nbsp;             break;</b>
+<i>213</i>&nbsp;           }
+<i>214</i>&nbsp;         }
+<i>215</i>&nbsp;       }
+<b class="nc"><i>216</i>&nbsp;       return retNode;</b>
+<i>217</i>&nbsp;  }
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;  /**
+<i>220</i>&nbsp;   * Adds a node using its &lt;code&gt;namespaceURI&lt;/code&gt; and
+<i>221</i>&nbsp;   * &lt;code&gt;localName&lt;/code&gt;. If a node with that namespace URI and that
+<i>222</i>&nbsp;   * local name is already present in this map, it is replaced by the new
+<i>223</i>&nbsp;   * one.
+<i>224</i>&nbsp;   * &lt;br&gt;HTML-only DOM implementations do not need to implement this method.
+<i>225</i>&nbsp;   * @param arg A node to store in this map. The node will later be
+<i>226</i>&nbsp;   *   accessible using the value of its &lt;code&gt;namespaceURI&lt;/code&gt; and
+<i>227</i>&nbsp;   *   &lt;code&gt;localName&lt;/code&gt; attributes.
+<i>228</i>&nbsp;   *
+<i>229</i>&nbsp;   * @return If the new &lt;code&gt;Node&lt;/code&gt; replaces an existing node the
+<i>230</i>&nbsp;   *   replaced &lt;code&gt;Node&lt;/code&gt; is returned, otherwise &lt;code&gt;null&lt;/code&gt;
+<i>231</i>&nbsp;   *   is returned.
+<i>232</i>&nbsp;   * @exception DOMException
+<i>233</i>&nbsp;   *   WRONG_DOCUMENT_ERR: Raised if &lt;code&gt;arg&lt;/code&gt; was created from a
+<i>234</i>&nbsp;   *   different document than the one that created this map.
+<i>235</i>&nbsp;   *   &lt;br&gt;NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly.
+<i>236</i>&nbsp;   *   &lt;br&gt;INUSE_ATTRIBUTE_ERR: Raised if &lt;code&gt;arg&lt;/code&gt; is an
+<i>237</i>&nbsp;   *   &lt;code&gt;Attr&lt;/code&gt; that is already an attribute of another
+<i>238</i>&nbsp;   *   &lt;code&gt;Element&lt;/code&gt; object. The DOM user must explicitly clone
+<i>239</i>&nbsp;   *   &lt;code&gt;Attr&lt;/code&gt; nodes to re-use them in other elements.
+<i>240</i>&nbsp;   * @since DOM Level 2
+<i>241</i>&nbsp;   */
+<i>242</i>&nbsp;  public Node setNamedItemNS(Node arg) throws DOMException
+<i>243</i>&nbsp;  {
+<b class="nc"><i>244</i>&nbsp;    throw new DTMException(DTMException.NO_MODIFICATION_ALLOWED_ERR);</b>
+<i>245</i>&nbsp;  }
+<i>246</i>&nbsp;
+<i>247</i>&nbsp;  /**
+<i>248</i>&nbsp;   * Removes a node specified by local name and namespace URI. A removed
+<i>249</i>&nbsp;   * attribute may be known to have a default value when this map contains
+<i>250</i>&nbsp;   * the attributes attached to an element, as returned by the attributes
+<i>251</i>&nbsp;   * attribute of the &lt;code&gt;Node&lt;/code&gt; interface. If so, an attribute
+<i>252</i>&nbsp;   * immediately appears containing the default value as well as the
+<i>253</i>&nbsp;   * corresponding namespace URI, local name, and prefix when applicable.
+<i>254</i>&nbsp;   * &lt;br&gt;HTML-only DOM implementations do not need to implement this method.
+<i>255</i>&nbsp;   *
+<i>256</i>&nbsp;   * @param namespaceURI The namespace URI of the node to remove.
+<i>257</i>&nbsp;   * @param localName The local name of the node to remove.
+<i>258</i>&nbsp;   *
+<i>259</i>&nbsp;   * @return The node removed from this map if a node with such a local
+<i>260</i>&nbsp;   *   name and namespace URI exists.
+<i>261</i>&nbsp;   * @exception DOMException
+<i>262</i>&nbsp;   *   NOT_FOUND_ERR: Raised if there is no node with the specified
+<i>263</i>&nbsp;   *   &lt;code&gt;namespaceURI&lt;/code&gt; and &lt;code&gt;localName&lt;/code&gt; in this map.
+<i>264</i>&nbsp;   *   &lt;br&gt;NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly.
+<i>265</i>&nbsp;   * @since DOM Level 2
+<i>266</i>&nbsp;   */
+<i>267</i>&nbsp;  public Node removeNamedItemNS(String namespaceURI, String localName)
+<i>268</i>&nbsp;          throws DOMException
+<i>269</i>&nbsp;  {
+<b class="nc"><i>270</i>&nbsp;    throw new DTMException(DTMException.NO_MODIFICATION_ALLOWED_ERR);</b>
+<i>271</i>&nbsp;  }
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;  /**
+<i>274</i>&nbsp;   * Simple implementation of DOMException.
+<i>275</i>&nbsp;   * @xsl.usage internal
+<i>276</i>&nbsp;   */
+<i>277</i>&nbsp;  public class DTMException extends org.w3c.dom.DOMException
+<i>278</i>&nbsp;  {
+<i>279</i>&nbsp;          static final long serialVersionUID = -8290238117162437678L;
+<i>280</i>&nbsp;    /**
+<i>281</i>&nbsp;     * Constructs a DOM/DTM exception.
+<i>282</i>&nbsp;     *
+<i>283</i>&nbsp;     * @param code
+<i>284</i>&nbsp;     * @param message
+<i>285</i>&nbsp;     */
+<i>286</i>&nbsp;    public DTMException(short code, String message)
+<b class="nc"><i>287</i>&nbsp;    {</b>
+<b class="nc"><i>288</i>&nbsp;      super(code, message);</b>
+<i>289</i>&nbsp;    }
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;    /**
+<i>292</i>&nbsp;     * Constructor DTMException
+<i>293</i>&nbsp;     *
+<i>294</i>&nbsp;     *
+<i>295</i>&nbsp;     * @param code
+<i>296</i>&nbsp;     */
+<i>297</i>&nbsp;    public DTMException(short code)
+<b class="nc"><i>298</i>&nbsp;    {</b>
+<b class="nc"><i>299</i>&nbsp;      super(code, &quot;&quot;);</b>
+<i>300</i>&nbsp;    }
+<i>301</i>&nbsp;  }
+<i>302</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1036 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: IDLNameTranslatorImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.presentation.rmi</a> ]
+</div>
+
+<h1>Coverage Summary for Class: IDLNameTranslatorImpl (com.sun.corba.se.impl.presentation.rmi)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">IDLNameTranslatorImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 32)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 291)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">IDLNameTranslatorImpl$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">IDLNameTranslatorImpl$IDLMethodInfo</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 35)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 295)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2003, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.presentation.rmi ;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.security.AccessController;
+<i>29</i>&nbsp;import java.security.PrivilegedAction;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import java.lang.reflect.Method;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import java.math.BigInteger;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import java.util.Map;
+<i>36</i>&nbsp;import java.util.Set;
+<i>37</i>&nbsp;import java.util.HashSet;
+<i>38</i>&nbsp;import java.util.Iterator;
+<i>39</i>&nbsp;import java.util.HashMap;
+<i>40</i>&nbsp;import java.util.StringTokenizer;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import com.sun.corba.se.spi.presentation.rmi.IDLNameTranslator ;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import com.sun.corba.se.impl.presentation.rmi.IDLType ;
+<i>45</i>&nbsp;import com.sun.corba.se.impl.presentation.rmi.IDLTypeException ;
+<i>46</i>&nbsp;import com.sun.corba.se.impl.presentation.rmi.IDLTypesUtil ;
+<i>47</i>&nbsp;import com.sun.corba.se.impl.orbutil.ObjectUtility ;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;/**
+<i>50</i>&nbsp; * Bidirectional translator between RMI-IIOP interface methods and
+<i>51</i>&nbsp; * and IDL Names.
+<i>52</i>&nbsp; */
+<i>53</i>&nbsp;public class IDLNameTranslatorImpl implements IDLNameTranslator {
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    // From CORBA Spec, Table 6 Keywords.
+<i>56</i>&nbsp;    // Note that since all IDL identifiers are case
+<i>57</i>&nbsp;    // insensitive, java identifier comparisons to these
+<i>58</i>&nbsp;    // will be case insensitive also.
+<b class="nc"><i>59</i>&nbsp;    private static String[] IDL_KEYWORDS = {</b>
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;        &quot;abstract&quot;, &quot;any&quot;, &quot;attribute&quot;, &quot;boolean&quot;, &quot;case&quot;, &quot;char&quot;,
+<i>62</i>&nbsp;        &quot;const&quot;, &quot;context&quot;, &quot;custom&quot;, &quot;default&quot;, &quot;double&quot;, &quot;enum&quot;,
+<i>63</i>&nbsp;        &quot;exception&quot;, &quot;factory&quot;, &quot;FALSE&quot;, &quot;fixed&quot;, &quot;float&quot;, &quot;in&quot;, &quot;inout&quot;,
+<i>64</i>&nbsp;        &quot;interface&quot;, &quot;long&quot;, &quot;module&quot;, &quot;native&quot;, &quot;Object&quot;, &quot;octet&quot;,
+<i>65</i>&nbsp;        &quot;oneway&quot;, &quot;out&quot;, &quot;private&quot;, &quot;public&quot;, &quot;raises&quot;, &quot;readonly&quot;, &quot;sequence&quot;,
+<i>66</i>&nbsp;        &quot;short&quot;, &quot;string&quot;, &quot;struct&quot;, &quot;supports&quot;, &quot;switch&quot;, &quot;TRUE&quot;, &quot;truncatable&quot;,
+<i>67</i>&nbsp;        &quot;typedef&quot;, &quot;unsigned&quot;, &quot;union&quot;, &quot;ValueBase&quot;, &quot;valuetype&quot;, &quot;void&quot;,
+<i>68</i>&nbsp;        &quot;wchar&quot;, &quot;wstring&quot;
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    };
+<i>71</i>&nbsp;
+<b class="nc"><i>72</i>&nbsp;    private static char[] HEX_DIGITS = {</b>
+<i>73</i>&nbsp;        &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;6&#39;, &#39;7&#39;, &#39;8&#39;, &#39;9&#39;,
+<i>74</i>&nbsp;        &#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;, &#39;E&#39;, &#39;F&#39;
+<i>75</i>&nbsp;    };
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    private static final String UNDERSCORE = &quot;_&quot;;
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    // used to mangle java inner class names
+<i>80</i>&nbsp;    private static final String INNER_CLASS_SEPARATOR =
+<i>81</i>&nbsp;        UNDERSCORE + UNDERSCORE;
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    // used to form IDL array type names
+<b class="nc"><i>84</i>&nbsp;    private static final String[] BASE_IDL_ARRAY_MODULE_TYPE=</b>
+<i>85</i>&nbsp;        new String[] { &quot;org&quot;, &quot;omg&quot;, &quot;boxedRMI&quot; } ;
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    private static final String BASE_IDL_ARRAY_ELEMENT_TYPE = &quot;seq&quot;;
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    // used to mangling java identifiers that have a leading underscore
+<i>90</i>&nbsp;    private static final String LEADING_UNDERSCORE_CHAR = &quot;J&quot;;
+<i>91</i>&nbsp;    private static final String ID_CONTAINER_CLASH_CHAR = UNDERSCORE;
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    // separator used between types in a mangled overloaded method name
+<i>94</i>&nbsp;    private static final String OVERLOADED_TYPE_SEPARATOR =
+<i>95</i>&nbsp;        UNDERSCORE + UNDERSCORE;
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    // string appended to attribute if it clashes with a method name
+<i>98</i>&nbsp;    private static final String ATTRIBUTE_METHOD_CLASH_MANGLE_CHARS =
+<i>99</i>&nbsp;        UNDERSCORE + UNDERSCORE;
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;    // strings prepended to the attribute names in order to form their
+<i>102</i>&nbsp;    // IDL names.
+<i>103</i>&nbsp;    private static final String GET_ATTRIBUTE_PREFIX = &quot;_get_&quot;;
+<i>104</i>&nbsp;    private static final String SET_ATTRIBUTE_PREFIX = &quot;_set_&quot;;
+<i>105</i>&nbsp;    private static final String IS_ATTRIBUTE_PREFIX  = &quot;_get_&quot;;
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    private static Set idlKeywords_;
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    static {
+<i>110</i>&nbsp;
+<b class="nc"><i>111</i>&nbsp;        idlKeywords_ = new HashSet();</b>
+<b class="nc"><i>112</i>&nbsp;        for(int i = 0; i &lt; IDL_KEYWORDS.length; i++) {</b>
+<b class="nc"><i>113</i>&nbsp;            String next = (String) IDL_KEYWORDS[i];</b>
+<i>114</i>&nbsp;            // Convert keyword to all caps to ease equality
+<i>115</i>&nbsp;            // check.
+<b class="nc"><i>116</i>&nbsp;            String keywordAllCaps = next.toUpperCase();</b>
+<b class="nc"><i>117</i>&nbsp;            idlKeywords_.add(keywordAllCaps);</b>
+<i>118</i>&nbsp;        }
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    }
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;    //
+<i>123</i>&nbsp;    // Instance state
+<i>124</i>&nbsp;    //
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;    // Remote interface for name translation.
+<i>127</i>&nbsp;    private Class[] interf_;
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;    // Maps used to hold name translations.  These do not need to be
+<i>130</i>&nbsp;    // synchronized since the translation is never modified after
+<i>131</i>&nbsp;    // initialization.
+<i>132</i>&nbsp;    private Map methodToIDLNameMap_;
+<i>133</i>&nbsp;    private Map IDLNameToMethodMap_;
+<i>134</i>&nbsp;    private Method[] methods_;
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;    /**
+<i>137</i>&nbsp;     * Return an IDLNameTranslator for the given interface.
+<i>138</i>&nbsp;     *
+<i>139</i>&nbsp;     * @throws IllegalStateException if given class is not a valid
+<i>140</i>&nbsp;     *         RMI/IIOP Remote Interface
+<i>141</i>&nbsp;     */
+<i>142</i>&nbsp;    public static IDLNameTranslator get( Class interf )
+<i>143</i>&nbsp;    {
+<i>144</i>&nbsp;
+<b class="nc"><i>145</i>&nbsp;        return new IDLNameTranslatorImpl(new Class[] { interf } );</b>
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;    }
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    /**
+<i>150</i>&nbsp;     * Return an IDLNameTranslator for the given interfacex.
+<i>151</i>&nbsp;     *
+<i>152</i>&nbsp;     * @throws IllegalStateException if given classes are not  valid
+<i>153</i>&nbsp;     *         RMI/IIOP Remote Interfaces
+<i>154</i>&nbsp;     */
+<i>155</i>&nbsp;    public static IDLNameTranslator get( Class[] interfaces )
+<i>156</i>&nbsp;    {
+<i>157</i>&nbsp;
+<b class="nc"><i>158</i>&nbsp;        return new IDLNameTranslatorImpl(interfaces );</b>
+<i>159</i>&nbsp;
+<i>160</i>&nbsp;    }
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;    public static String getExceptionId( Class cls )
+<i>163</i>&nbsp;    {
+<i>164</i>&nbsp;        // Requirements for this method:
+<i>165</i>&nbsp;        // 1. cls must be an exception but not a RemoteException.
+<i>166</i>&nbsp;        // 2. If cls has an IDL keyword name, an underscore is prepended (1.3.2.2).
+<i>167</i>&nbsp;        // 3. If cls jas a leading underscore, J is prepended (1.3.2.3).
+<i>168</i>&nbsp;        // 4. If cls has an illegal IDL ident char, it is mapped to UXXXX where
+<i>169</i>&nbsp;        //    XXXX is the unicode value in hex of the char (1.3.2.4).
+<i>170</i>&nbsp;        // 5. double underscore for inner class (1.3.2.5).
+<i>171</i>&nbsp;        // 6. The ID is &quot;IDL:&quot; + name with / separators + &quot;:1.0&quot;.
+<b class="nc"><i>172</i>&nbsp;        IDLType itype = classToIDLType( cls ) ;</b>
+<b class="nc"><i>173</i>&nbsp;        return itype.getExceptionName() ;</b>
+<i>174</i>&nbsp;    }
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    public Class[] getInterfaces()
+<i>177</i>&nbsp;    {
+<b class="nc"><i>178</i>&nbsp;        return interf_;</b>
+<i>179</i>&nbsp;    }
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;    public Method[] getMethods()
+<i>182</i>&nbsp;    {
+<b class="nc"><i>183</i>&nbsp;        return methods_ ;</b>
+<i>184</i>&nbsp;    }
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;    public Method getMethod( String idlName )
+<i>187</i>&nbsp;    {
+<b class="nc"><i>188</i>&nbsp;        return (Method) IDLNameToMethodMap_.get(idlName);</b>
+<i>189</i>&nbsp;    }
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;    public String getIDLName( Method method )
+<i>192</i>&nbsp;    {
+<b class="nc"><i>193</i>&nbsp;        return (String) methodToIDLNameMap_.get(method);</b>
+<i>194</i>&nbsp;    }
+<i>195</i>&nbsp;
+<i>196</i>&nbsp;    /**
+<i>197</i>&nbsp;     * Initialize an IDLNameTranslator for the given interface.
+<i>198</i>&nbsp;     *
+<i>199</i>&nbsp;     * @throws IllegalStateException if given class is not a valid
+<i>200</i>&nbsp;     *         RMI/IIOP Remote Interface
+<i>201</i>&nbsp;     */
+<i>202</i>&nbsp;    private IDLNameTranslatorImpl(Class[] interfaces)
+<b class="nc"><i>203</i>&nbsp;    {</b>
+<i>204</i>&nbsp;
+<b class="nc"><i>205</i>&nbsp;        SecurityManager s = System.getSecurityManager();</b>
+<b class="nc"><i>206</i>&nbsp;        if (s != null) {</b>
+<b class="nc"><i>207</i>&nbsp;            s.checkPermission(new DynamicAccessPermission(&quot;access&quot;));</b>
+<i>208</i>&nbsp;        }
+<i>209</i>&nbsp;        try {
+<b class="nc"><i>210</i>&nbsp;            IDLTypesUtil idlTypesUtil = new IDLTypesUtil();</b>
+<b class="nc"><i>211</i>&nbsp;            for (int ctr=0; ctr&lt;interfaces.length; ctr++)</b>
+<b class="nc"><i>212</i>&nbsp;                idlTypesUtil.validateRemoteInterface(interfaces[ctr]);</b>
+<b class="nc"><i>213</i>&nbsp;            interf_ = interfaces;</b>
+<b class="nc"><i>214</i>&nbsp;            buildNameTranslation();</b>
+<b class="nc"><i>215</i>&nbsp;        } catch( IDLTypeException ite) {</b>
+<b class="nc"><i>216</i>&nbsp;            String msg = ite.getMessage();</b>
+<b class="nc"><i>217</i>&nbsp;            IllegalStateException ise = new IllegalStateException(msg);</b>
+<b class="nc"><i>218</i>&nbsp;            ise.initCause(ite);</b>
+<b class="nc"><i>219</i>&nbsp;            throw ise;</b>
+<b class="nc"><i>220</i>&nbsp;        }</b>
+<i>221</i>&nbsp;    }
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;    private void buildNameTranslation()
+<i>224</i>&nbsp;    {
+<i>225</i>&nbsp;        // holds method info, keyed by method
+<b class="nc"><i>226</i>&nbsp;        Map allMethodInfo = new HashMap() ;</b>
+<i>227</i>&nbsp;
+<b class="nc"><i>228</i>&nbsp;        for (int ctr=0; ctr&lt;interf_.length; ctr++) {</b>
+<b class="nc"><i>229</i>&nbsp;            Class interf = interf_[ctr] ;</b>
+<i>230</i>&nbsp;
+<b class="nc"><i>231</i>&nbsp;            IDLTypesUtil idlTypesUtil = new IDLTypesUtil();</b>
+<b class="nc"><i>232</i>&nbsp;            final Method[] methods = interf.getMethods();</b>
+<i>233</i>&nbsp;            // Handle the case of a non-public interface!
+<b class="nc"><i>234</i>&nbsp;            AccessController.doPrivileged(new PrivilegedAction() {</b>
+<i>235</i>&nbsp;                public Object run() {
+<b class="nc"><i>236</i>&nbsp;                    Method.setAccessible( methods, true ) ;</b>
+<b class="nc"><i>237</i>&nbsp;                    return null ;</b>
+<i>238</i>&nbsp;                }
+<i>239</i>&nbsp;            } ) ;
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;            // Take an initial pass through all the methods and create some
+<i>242</i>&nbsp;            // information that will be used to track the IDL name
+<i>243</i>&nbsp;            // transformation.
+<b class="nc"><i>244</i>&nbsp;            for(int i = 0; i &lt; methods.length; i++) {</b>
+<i>245</i>&nbsp;
+<b class="nc"><i>246</i>&nbsp;                Method nextMethod = methods[i];</b>
+<i>247</i>&nbsp;
+<b class="nc"><i>248</i>&nbsp;                IDLMethodInfo methodInfo = new IDLMethodInfo();</b>
+<i>249</i>&nbsp;
+<b class="nc"><i>250</i>&nbsp;                methodInfo.method = nextMethod;</b>
+<i>251</i>&nbsp;
+<b class="nc"><i>252</i>&nbsp;                if (idlTypesUtil.isPropertyAccessorMethod(nextMethod, interf)) {</b>
+<b class="nc"><i>253</i>&nbsp;                    methodInfo.isProperty = true;</b>
+<b class="nc"><i>254</i>&nbsp;                    String attributeName = idlTypesUtil.</b>
+<b class="nc"><i>255</i>&nbsp;                        getAttributeNameForProperty(nextMethod.getName());</b>
+<b class="nc"><i>256</i>&nbsp;                    methodInfo.originalName = attributeName;</b>
+<b class="nc"><i>257</i>&nbsp;                    methodInfo.mangledName  = attributeName;</b>
+<b class="nc"><i>258</i>&nbsp;                } else {</b>
+<b class="nc"><i>259</i>&nbsp;                    methodInfo.isProperty = false;</b>
+<b class="nc"><i>260</i>&nbsp;                    methodInfo.originalName = nextMethod.getName();</b>
+<b class="nc"><i>261</i>&nbsp;                    methodInfo.mangledName  = nextMethod.getName();</b>
+<i>262</i>&nbsp;                }
+<i>263</i>&nbsp;
+<b class="nc"><i>264</i>&nbsp;                allMethodInfo.put(nextMethod, methodInfo);</b>
+<i>265</i>&nbsp;            }
+<i>266</i>&nbsp;        }
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;        //
+<i>269</i>&nbsp;        // Perform case sensitivity test first.  This applies to all
+<i>270</i>&nbsp;        // method names AND attributes.  Compare each method name and
+<i>271</i>&nbsp;        // attribute to all other method names and attributes.  If names
+<i>272</i>&nbsp;        // differ only in case, apply mangling as defined in section 1.3.2.7
+<i>273</i>&nbsp;        // of Java2IDL spec.  Note that we compare using the original names.
+<i>274</i>&nbsp;        //
+<b class="nc"><i>275</i>&nbsp;        for(Iterator outerIter=allMethodInfo.values().iterator();</b>
+<b class="nc"><i>276</i>&nbsp;            outerIter.hasNext();) {</b>
+<b class="nc"><i>277</i>&nbsp;            IDLMethodInfo outer = (IDLMethodInfo) outerIter.next();</b>
+<b class="nc"><i>278</i>&nbsp;            for(Iterator innerIter = allMethodInfo.values().iterator();</b>
+<b class="nc"><i>279</i>&nbsp;                innerIter.hasNext();) {</b>
+<b class="nc"><i>280</i>&nbsp;                IDLMethodInfo inner = (IDLMethodInfo) innerIter.next();</b>
+<i>281</i>&nbsp;
+<b class="nc"><i>282</i>&nbsp;                if( (outer != inner) &amp;&amp;</b>
+<b class="nc"><i>283</i>&nbsp;                    (!outer.originalName.equals(inner.originalName)) &amp;&amp;</b>
+<b class="nc"><i>284</i>&nbsp;                    outer.originalName.equalsIgnoreCase(inner.originalName) ) {</b>
+<b class="nc"><i>285</i>&nbsp;                    outer.mangledName =</b>
+<b class="nc"><i>286</i>&nbsp;                        mangleCaseSensitiveCollision(outer.originalName);</b>
+<b class="nc"><i>287</i>&nbsp;                    break;</b>
+<i>288</i>&nbsp;                }
+<i>289</i>&nbsp;
+<b class="nc"><i>290</i>&nbsp;            }</b>
+<b class="nc"><i>291</i>&nbsp;        }</b>
+<i>292</i>&nbsp;
+<b class="nc"><i>293</i>&nbsp;        for(Iterator iter = allMethodInfo.values().iterator();</b>
+<b class="nc"><i>294</i>&nbsp;            iter.hasNext();) {</b>
+<b class="nc"><i>295</i>&nbsp;            IDLMethodInfo next = (IDLMethodInfo) iter.next();</b>
+<b class="nc"><i>296</i>&nbsp;            next.mangledName =</b>
+<b class="nc"><i>297</i>&nbsp;                mangleIdentifier(next.mangledName, next.isProperty);</b>
+<b class="nc"><i>298</i>&nbsp;        }</b>
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;        //
+<i>301</i>&nbsp;        // Now check for overloaded method names and apply 1.3.2.6.
+<i>302</i>&nbsp;        //
+<b class="nc"><i>303</i>&nbsp;        for(Iterator outerIter=allMethodInfo.values().iterator();</b>
+<b class="nc"><i>304</i>&nbsp;            outerIter.hasNext();) {</b>
+<b class="nc"><i>305</i>&nbsp;            IDLMethodInfo outer = (IDLMethodInfo) outerIter.next();</b>
+<b class="nc"><i>306</i>&nbsp;            if( outer.isProperty ) {</b>
+<b class="nc"><i>307</i>&nbsp;                continue;</b>
+<i>308</i>&nbsp;            }
+<b class="nc"><i>309</i>&nbsp;            for(Iterator innerIter = allMethodInfo.values().iterator();</b>
+<b class="nc"><i>310</i>&nbsp;                innerIter.hasNext();) {</b>
+<b class="nc"><i>311</i>&nbsp;                IDLMethodInfo inner = (IDLMethodInfo) innerIter.next();</b>
+<i>312</i>&nbsp;
+<b class="nc"><i>313</i>&nbsp;                if( (outer != inner) &amp;&amp;</b>
+<i>314</i>&nbsp;                    !inner.isProperty &amp;&amp;
+<b class="nc"><i>315</i>&nbsp;                    outer.originalName.equals(inner.originalName) ) {</b>
+<b class="nc"><i>316</i>&nbsp;                    outer.mangledName = mangleOverloadedMethod</b>
+<b class="nc"><i>317</i>&nbsp;                        (outer.mangledName, outer.method);</b>
+<b class="nc"><i>318</i>&nbsp;                    break;</b>
+<i>319</i>&nbsp;                }
+<b class="nc"><i>320</i>&nbsp;            }</b>
+<b class="nc"><i>321</i>&nbsp;        }</b>
+<i>322</i>&nbsp;
+<i>323</i>&nbsp;        //
+<i>324</i>&nbsp;        // Now mangle any properties that clash with method names.
+<i>325</i>&nbsp;        //
+<b class="nc"><i>326</i>&nbsp;        for(Iterator outerIter=allMethodInfo.values().iterator();</b>
+<b class="nc"><i>327</i>&nbsp;            outerIter.hasNext();) {</b>
+<b class="nc"><i>328</i>&nbsp;            IDLMethodInfo outer = (IDLMethodInfo) outerIter.next();</b>
+<b class="nc"><i>329</i>&nbsp;            if( !outer.isProperty ) {</b>
+<b class="nc"><i>330</i>&nbsp;                continue;</b>
+<i>331</i>&nbsp;            }
+<b class="nc"><i>332</i>&nbsp;            for(Iterator innerIter = allMethodInfo.values().iterator();</b>
+<b class="nc"><i>333</i>&nbsp;                innerIter.hasNext();) {</b>
+<b class="nc"><i>334</i>&nbsp;                IDLMethodInfo inner = (IDLMethodInfo) innerIter.next();</b>
+<b class="nc"><i>335</i>&nbsp;                if( (outer != inner) &amp;&amp;</b>
+<i>336</i>&nbsp;                    !inner.isProperty &amp;&amp;
+<b class="nc"><i>337</i>&nbsp;                    outer.mangledName.equals(inner.mangledName) ) {</b>
+<b class="nc"><i>338</i>&nbsp;                    outer.mangledName = outer.mangledName +</b>
+<i>339</i>&nbsp;                        ATTRIBUTE_METHOD_CLASH_MANGLE_CHARS;
+<b class="nc"><i>340</i>&nbsp;                    break;</b>
+<i>341</i>&nbsp;                }
+<b class="nc"><i>342</i>&nbsp;            }</b>
+<b class="nc"><i>343</i>&nbsp;        }</b>
+<i>344</i>&nbsp;
+<i>345</i>&nbsp;        //
+<i>346</i>&nbsp;        // Ensure that no mapped method names clash with mapped name
+<i>347</i>&nbsp;        // of container(1.3.2.9).  This is a case insensitive comparison.
+<i>348</i>&nbsp;        //
+<b class="nc"><i>349</i>&nbsp;        for (int ctr=0; ctr&lt;interf_.length; ctr++ ) {</b>
+<b class="nc"><i>350</i>&nbsp;            Class interf = interf_[ctr] ;</b>
+<b class="nc"><i>351</i>&nbsp;            String mappedContainerName = getMappedContainerName(interf);</b>
+<b class="nc"><i>352</i>&nbsp;            for(Iterator iter = allMethodInfo.values().iterator();</b>
+<b class="nc"><i>353</i>&nbsp;                iter.hasNext();) {</b>
+<b class="nc"><i>354</i>&nbsp;                IDLMethodInfo next = (IDLMethodInfo) iter.next();</b>
+<b class="nc"><i>355</i>&nbsp;                if( !next.isProperty &amp;&amp;</b>
+<b class="nc"><i>356</i>&nbsp;                    identifierClashesWithContainer(mappedContainerName,</b>
+<i>357</i>&nbsp;                                                   next.mangledName)) {
+<b class="nc"><i>358</i>&nbsp;                    next.mangledName = mangleContainerClash(next.mangledName);</b>
+<i>359</i>&nbsp;                }
+<b class="nc"><i>360</i>&nbsp;            }</b>
+<i>361</i>&nbsp;        }
+<i>362</i>&nbsp;
+<i>363</i>&nbsp;        //
+<i>364</i>&nbsp;        // Populate name translation maps.
+<i>365</i>&nbsp;        //
+<b class="nc"><i>366</i>&nbsp;        methodToIDLNameMap_ = new HashMap();</b>
+<b class="nc"><i>367</i>&nbsp;        IDLNameToMethodMap_ = new HashMap();</b>
+<b class="nc"><i>368</i>&nbsp;        methods_ = (Method[])allMethodInfo.keySet().toArray(</b>
+<i>369</i>&nbsp;            new Method[0] ) ;
+<i>370</i>&nbsp;
+<b class="nc"><i>371</i>&nbsp;        for(Iterator iter = allMethodInfo.values().iterator();</b>
+<b class="nc"><i>372</i>&nbsp;            iter.hasNext();) {</b>
+<b class="nc"><i>373</i>&nbsp;            IDLMethodInfo next = (IDLMethodInfo) iter.next();</b>
+<b class="nc"><i>374</i>&nbsp;            String idlName = next.mangledName;</b>
+<b class="nc"><i>375</i>&nbsp;            if( next.isProperty ) {</b>
+<b class="nc"><i>376</i>&nbsp;                String origMethodName = next.method.getName();</b>
+<b class="nc"><i>377</i>&nbsp;                String prefix = &quot;&quot;;</b>
+<i>378</i>&nbsp;
+<b class="nc"><i>379</i>&nbsp;                if( origMethodName.startsWith(&quot;get&quot;) ) {</b>
+<b class="nc"><i>380</i>&nbsp;                    prefix = GET_ATTRIBUTE_PREFIX;</b>
+<b class="nc"><i>381</i>&nbsp;                } else if( origMethodName.startsWith(&quot;set&quot;) ) {</b>
+<b class="nc"><i>382</i>&nbsp;                    prefix = SET_ATTRIBUTE_PREFIX;</b>
+<i>383</i>&nbsp;                } else {
+<b class="nc"><i>384</i>&nbsp;                    prefix = IS_ATTRIBUTE_PREFIX;</b>
+<i>385</i>&nbsp;                }
+<i>386</i>&nbsp;
+<b class="nc"><i>387</i>&nbsp;                idlName = prefix + next.mangledName;</b>
+<i>388</i>&nbsp;            }
+<i>389</i>&nbsp;
+<b class="nc"><i>390</i>&nbsp;            methodToIDLNameMap_.put(next.method, idlName);</b>
+<i>391</i>&nbsp;
+<i>392</i>&nbsp;            // Final check to see if there are any clashes after all the
+<i>393</i>&nbsp;            // manglings have been applied.  If so, this is treated as an
+<i>394</i>&nbsp;            // invalid interface.  Currently, we do a CASE-SENSITIVE
+<i>395</i>&nbsp;            // comparison since that matches the rmic behavior.
+<i>396</i>&nbsp;            // @@@ Shouldn&#39;t this be a case-insensitive check?
+<b class="nc"><i>397</i>&nbsp;            if( IDLNameToMethodMap_.containsKey(idlName) ) {</b>
+<i>398</i>&nbsp;                // @@@ I18N
+<b class="nc"><i>399</i>&nbsp;                Method clash = (Method) IDLNameToMethodMap_.get(idlName);</b>
+<b class="nc"><i>400</i>&nbsp;                throw new IllegalStateException(&quot;Error : methods &quot; +</b>
+<i>401</i>&nbsp;                    clash + &quot; and &quot; + next.method +
+<i>402</i>&nbsp;                    &quot; both result in IDL name &#39;&quot; + idlName + &quot;&#39;&quot;);
+<i>403</i>&nbsp;            } else {
+<b class="nc"><i>404</i>&nbsp;                IDLNameToMethodMap_.put(idlName, next.method);</b>
+<i>405</i>&nbsp;            }
+<b class="nc"><i>406</i>&nbsp;        }</b>
+<i>407</i>&nbsp;
+<i>408</i>&nbsp;        return;
+<i>409</i>&nbsp;
+<i>410</i>&nbsp;    }
+<i>411</i>&nbsp;
+<i>412</i>&nbsp;
+<i>413</i>&nbsp;    /**
+<i>414</i>&nbsp;     * Perform all necessary stand-alone identifier mangling operations
+<i>415</i>&nbsp;     * on a java identifier that is being transformed into an IDL name.
+<i>416</i>&nbsp;     * That is, mangling operations that don&#39;t require looking at anything
+<i>417</i>&nbsp;     * else but the identifier itself.  This covers sections 1.3.2.2, 1.3.2.3,
+<i>418</i>&nbsp;     * and 1.3.2.4 of the Java2IDL spec.  Method overloading and
+<i>419</i>&nbsp;     * case-sensitivity checks are handled elsewhere.
+<i>420</i>&nbsp;     */
+<i>421</i>&nbsp;
+<i>422</i>&nbsp;    private static String mangleIdentifier(String identifier) {
+<b class="nc"><i>423</i>&nbsp;        return mangleIdentifier(identifier, false);</b>
+<i>424</i>&nbsp;    }
+<i>425</i>&nbsp;
+<i>426</i>&nbsp;    private static String mangleIdentifier(String identifier, boolean attribute) {
+<i>427</i>&nbsp;
+<b class="nc"><i>428</i>&nbsp;        String mangledName = identifier;</b>
+<i>429</i>&nbsp;
+<i>430</i>&nbsp;        //
+<i>431</i>&nbsp;        // Apply leading underscore test (1.3.2.3)
+<i>432</i>&nbsp;        // This should be done before IDL Keyword clash test, since clashing
+<i>433</i>&nbsp;        // IDL keywords are mangled by adding a leading underscore.
+<i>434</i>&nbsp;        //
+<b class="nc"><i>435</i>&nbsp;        if( hasLeadingUnderscore(mangledName) ) {</b>
+<b class="nc"><i>436</i>&nbsp;            mangledName = mangleLeadingUnderscore(mangledName);</b>
+<i>437</i>&nbsp;        }
+<i>438</i>&nbsp;
+<i>439</i>&nbsp;        //
+<i>440</i>&nbsp;        // Apply IDL keyword clash test (1.3.2.2).
+<i>441</i>&nbsp;        // This is not needed for attributes since when the full property
+<i>442</i>&nbsp;        // name is composed it cannot clash with an IDL keyword.
+<i>443</i>&nbsp;        // (Also, rmic doesn&#39;t do it.)
+<i>444</i>&nbsp;        //
+<i>445</i>&nbsp;
+<b class="nc"><i>446</i>&nbsp;        if( !attribute &amp;&amp; isIDLKeyword(mangledName) ) {</b>
+<b class="nc"><i>447</i>&nbsp;            mangledName = mangleIDLKeywordClash(mangledName);</b>
+<i>448</i>&nbsp;        }
+<i>449</i>&nbsp;
+<i>450</i>&nbsp;        //
+<i>451</i>&nbsp;        // Replace illegal IDL identifier characters (1.3.2.4)
+<i>452</i>&nbsp;        // for all method names and attributes.
+<i>453</i>&nbsp;        //
+<b class="nc"><i>454</i>&nbsp;        if( !isIDLIdentifier(mangledName) ) {</b>
+<b class="nc"><i>455</i>&nbsp;            mangledName = mangleUnicodeChars(mangledName);</b>
+<i>456</i>&nbsp;        }
+<i>457</i>&nbsp;
+<b class="nc"><i>458</i>&nbsp;        return mangledName;</b>
+<i>459</i>&nbsp;    }
+<i>460</i>&nbsp;
+<i>461</i>&nbsp;    // isIDLKeyword and mangleIDLKeywordClash are exposed here so that
+<i>462</i>&nbsp;    // IDLType can use them.
+<i>463</i>&nbsp;    //
+<i>464</i>&nbsp;    // XXX refactoring needed:
+<i>465</i>&nbsp;    // 1. Split off isIDLKeywork and mangleIDLKeywordClash (and possibly
+<i>466</i>&nbsp;    //    other methods) into a utility class.
+<i>467</i>&nbsp;    // 2. Move all of classToIDLType to a constructor inside IDLType.
+<i>468</i>&nbsp;    //
+<i>469</i>&nbsp;    // The problem appears to be that we need all of the code that
+<i>470</i>&nbsp;    // performs various checks for name problems and the corresponding
+<i>471</i>&nbsp;    // fixes into a utility class.  Then we need to see what other
+<i>472</i>&nbsp;    // refactorings present themselves.
+<i>473</i>&nbsp;
+<i>474</i>&nbsp;    /**
+<i>475</i>&nbsp;     * Checks whether a java identifier clashes with an
+<i>476</i>&nbsp;     * IDL keyword.  Note that this is a case-insensitive
+<i>477</i>&nbsp;     * comparison.
+<i>478</i>&nbsp;     *
+<i>479</i>&nbsp;     * Used to implement section 1.3.2.2 of Java2IDL spec.
+<i>480</i>&nbsp;     */
+<i>481</i>&nbsp;    static boolean isIDLKeyword(String identifier) {
+<i>482</i>&nbsp;
+<b class="nc"><i>483</i>&nbsp;        String identifierAllCaps = identifier.toUpperCase();</b>
+<i>484</i>&nbsp;
+<b class="nc"><i>485</i>&nbsp;        return idlKeywords_.contains(identifierAllCaps);</b>
+<i>486</i>&nbsp;    }
+<i>487</i>&nbsp;
+<i>488</i>&nbsp;    static String mangleIDLKeywordClash(String identifier) {
+<b class="nc"><i>489</i>&nbsp;        return UNDERSCORE + identifier;</b>
+<i>490</i>&nbsp;    }
+<i>491</i>&nbsp;
+<i>492</i>&nbsp;    private static String mangleLeadingUnderscore(String identifier) {
+<b class="nc"><i>493</i>&nbsp;        return LEADING_UNDERSCORE_CHAR + identifier;</b>
+<i>494</i>&nbsp;    }
+<i>495</i>&nbsp;
+<i>496</i>&nbsp;    /**
+<i>497</i>&nbsp;     * Checks whether a java identifier starts with an underscore.
+<i>498</i>&nbsp;     * Used to implement section 1.3.2.3 of Java2IDL spec.
+<i>499</i>&nbsp;     */
+<i>500</i>&nbsp;    private static boolean hasLeadingUnderscore(String identifier) {
+<b class="nc"><i>501</i>&nbsp;        return identifier.startsWith(UNDERSCORE);</b>
+<i>502</i>&nbsp;    }
+<i>503</i>&nbsp;
+<i>504</i>&nbsp;    /**
+<i>505</i>&nbsp;     * Implements Section 1.3.2.4 of Java2IDL Mapping.
+<i>506</i>&nbsp;     * All non-IDL identifier characters must be replaced
+<i>507</i>&nbsp;     * with their Unicode representation.
+<i>508</i>&nbsp;     */
+<i>509</i>&nbsp;    static String mangleUnicodeChars(String identifier) {
+<b class="nc"><i>510</i>&nbsp;        StringBuffer mangledIdentifier = new StringBuffer();</b>
+<i>511</i>&nbsp;
+<b class="nc"><i>512</i>&nbsp;        for(int i = 0; i &lt; identifier.length(); i++) {</b>
+<b class="nc"><i>513</i>&nbsp;            char nextChar = identifier.charAt(i);</b>
+<b class="nc"><i>514</i>&nbsp;            if( isIDLIdentifierChar(nextChar) ) {</b>
+<b class="nc"><i>515</i>&nbsp;                mangledIdentifier.append(nextChar);</b>
+<i>516</i>&nbsp;            } else {
+<b class="nc"><i>517</i>&nbsp;                String unicode = charToUnicodeRepresentation(nextChar);</b>
+<b class="nc"><i>518</i>&nbsp;                mangledIdentifier.append(unicode);</b>
+<i>519</i>&nbsp;            }
+<i>520</i>&nbsp;        }
+<i>521</i>&nbsp;
+<b class="nc"><i>522</i>&nbsp;        return mangledIdentifier.toString();</b>
+<i>523</i>&nbsp;    }
+<i>524</i>&nbsp;
+<i>525</i>&nbsp;    /**
+<i>526</i>&nbsp;     * Implements mangling portion of Section 1.3.2.7 of Java2IDL spec.
+<i>527</i>&nbsp;     * This method only deals with the actual mangling.  Decision about
+<i>528</i>&nbsp;     * whether case-sensitive collision mangling is required is made
+<i>529</i>&nbsp;     * elsewhere.
+<i>530</i>&nbsp;     *
+<i>531</i>&nbsp;     *
+<i>532</i>&nbsp;     * &quot;...a mangled name is generated consisting of the original name
+<i>533</i>&nbsp;     * followed by an underscore separated list of decimal indices
+<i>534</i>&nbsp;     * into the string, where the indices identify all the upper case
+<i>535</i>&nbsp;     * characters in the original string. Indices are zero based.&quot;
+<i>536</i>&nbsp;     *
+<i>537</i>&nbsp;     */
+<i>538</i>&nbsp;    String mangleCaseSensitiveCollision(String identifier) {
+<i>539</i>&nbsp;
+<b class="nc"><i>540</i>&nbsp;        StringBuffer mangledIdentifier = new StringBuffer(identifier);</b>
+<i>541</i>&nbsp;
+<i>542</i>&nbsp;        // There is always at least one trailing underscore, whether or
+<i>543</i>&nbsp;        // not the identifier has uppercase letters.
+<b class="nc"><i>544</i>&nbsp;        mangledIdentifier.append(UNDERSCORE);</b>
+<i>545</i>&nbsp;
+<b class="nc"><i>546</i>&nbsp;        boolean needUnderscore = false;</b>
+<b class="nc"><i>547</i>&nbsp;        for(int i = 0; i &lt; identifier.length(); i++) {</b>
+<b class="nc"><i>548</i>&nbsp;            char next = identifier.charAt(i);</b>
+<b class="nc"><i>549</i>&nbsp;            if( Character.isUpperCase(next) ) {</b>
+<i>550</i>&nbsp;                // This bit of logic is needed to ensure that we have
+<i>551</i>&nbsp;                // an underscore separated list of indices but no
+<i>552</i>&nbsp;                // trailing underscores.  Basically, after we have at least
+<i>553</i>&nbsp;                // one uppercase letter, we always put an undercore before
+<i>554</i>&nbsp;                // printing the next one.
+<b class="nc"><i>555</i>&nbsp;                if( needUnderscore ) {</b>
+<b class="nc"><i>556</i>&nbsp;                    mangledIdentifier.append(UNDERSCORE);</b>
+<i>557</i>&nbsp;                }
+<b class="nc"><i>558</i>&nbsp;                mangledIdentifier.append(i);</b>
+<b class="nc"><i>559</i>&nbsp;                needUnderscore = true;</b>
+<i>560</i>&nbsp;            }
+<i>561</i>&nbsp;        }
+<i>562</i>&nbsp;
+<b class="nc"><i>563</i>&nbsp;        return mangledIdentifier.toString();</b>
+<i>564</i>&nbsp;    }
+<i>565</i>&nbsp;
+<i>566</i>&nbsp;    private static String mangleContainerClash(String identifier) {
+<b class="nc"><i>567</i>&nbsp;        return identifier + ID_CONTAINER_CLASH_CHAR;</b>
+<i>568</i>&nbsp;    }
+<i>569</i>&nbsp;
+<i>570</i>&nbsp;    /**
+<i>571</i>&nbsp;     * Implements Section 1.3.2.9 of Java2IDL Mapping. Container in this
+<i>572</i>&nbsp;     * context means the name of the java Class(excluding package) in which
+<i>573</i>&nbsp;     * the identifier is defined.  Comparison is case-insensitive.
+<i>574</i>&nbsp;     */
+<i>575</i>&nbsp;    private static boolean identifierClashesWithContainer
+<i>576</i>&nbsp;        (String mappedContainerName, String identifier) {
+<i>577</i>&nbsp;
+<b class="nc"><i>578</i>&nbsp;        return identifier.equalsIgnoreCase(mappedContainerName);</b>
+<i>579</i>&nbsp;    }
+<i>580</i>&nbsp;
+<i>581</i>&nbsp;    /**
+<i>582</i>&nbsp;     * Returns Unicode mangling as defined in Section 1.3.2.4 of
+<i>583</i>&nbsp;     * Java2IDL spec.
+<i>584</i>&nbsp;     *
+<i>585</i>&nbsp;     * &quot;For Java identifiers that contain illegal OMG IDL identifier
+<i>586</i>&nbsp;     * characters such as &#39;$&#39; or Unicode characters outside of ISO Latin 1,
+<i>587</i>&nbsp;     * any such illegal characters are replaced by &quot;U&quot; followed by the
+<i>588</i>&nbsp;     * 4 hexadecimal characters(in upper case) representing the Unicode
+<i>589</i>&nbsp;     * value.  So, the Java name a$b is mapped to aU0024b and
+<i>590</i>&nbsp;     * x\u03bCy is mapped to xU03BCy.&quot;
+<i>591</i>&nbsp;     */
+<i>592</i>&nbsp;    public static String charToUnicodeRepresentation(char c) {
+<i>593</i>&nbsp;
+<b class="nc"><i>594</i>&nbsp;        int orig = (int) c;</b>
+<b class="nc"><i>595</i>&nbsp;        StringBuffer hexString = new StringBuffer();</b>
+<i>596</i>&nbsp;
+<b class="nc"><i>597</i>&nbsp;        int value = orig;</b>
+<i>598</i>&nbsp;
+<b class="nc"><i>599</i>&nbsp;        while( value &gt; 0 ) {</b>
+<b class="nc"><i>600</i>&nbsp;            int div = value / 16;</b>
+<b class="nc"><i>601</i>&nbsp;            int mod = value % 16;</b>
+<b class="nc"><i>602</i>&nbsp;            hexString.insert(0, HEX_DIGITS[mod]);</b>
+<b class="nc"><i>603</i>&nbsp;            value = div;</b>
+<b class="nc"><i>604</i>&nbsp;        }</b>
+<i>605</i>&nbsp;
+<b class="nc"><i>606</i>&nbsp;        int numZerosToAdd = 4 - hexString.length();</b>
+<b class="nc"><i>607</i>&nbsp;        for(int i = 0; i &lt; numZerosToAdd; i++) {</b>
+<b class="nc"><i>608</i>&nbsp;            hexString.insert(0, &quot;0&quot;);</b>
+<i>609</i>&nbsp;        }
+<i>610</i>&nbsp;
+<b class="nc"><i>611</i>&nbsp;        hexString.insert(0, &quot;U&quot;);</b>
+<b class="nc"><i>612</i>&nbsp;        return hexString.toString();</b>
+<i>613</i>&nbsp;    }
+<i>614</i>&nbsp;
+<i>615</i>&nbsp;    private static boolean isIDLIdentifier(String identifier) {
+<i>616</i>&nbsp;
+<b class="nc"><i>617</i>&nbsp;        boolean isIdentifier = true;</b>
+<i>618</i>&nbsp;
+<b class="nc"><i>619</i>&nbsp;        for(int i = 0; i &lt; identifier.length(); i++) {</b>
+<b class="nc"><i>620</i>&nbsp;            char nextChar = identifier.charAt(i);</b>
+<i>621</i>&nbsp;            // 1st char must be alphbetic.
+<b class="nc"><i>622</i>&nbsp;            isIdentifier  = (i == 0) ?</b>
+<b class="nc"><i>623</i>&nbsp;                isIDLAlphabeticChar(nextChar) :</b>
+<b class="nc"><i>624</i>&nbsp;                isIDLIdentifierChar(nextChar);</b>
+<b class="nc"><i>625</i>&nbsp;            if( !isIdentifier ) {</b>
+<b class="nc"><i>626</i>&nbsp;                break;</b>
+<i>627</i>&nbsp;            }
+<i>628</i>&nbsp;        }
+<i>629</i>&nbsp;
+<b class="nc"><i>630</i>&nbsp;        return isIdentifier;</b>
+<i>631</i>&nbsp;
+<i>632</i>&nbsp;    }
+<i>633</i>&nbsp;
+<i>634</i>&nbsp;    private static boolean isIDLIdentifierChar(char c) {
+<b class="nc"><i>635</i>&nbsp;        return (isIDLAlphabeticChar(c) ||</b>
+<b class="nc"><i>636</i>&nbsp;                isIDLDecimalDigit(c)   ||</b>
+<b class="nc"><i>637</i>&nbsp;                isUnderscore(c));</b>
+<i>638</i>&nbsp;    }
+<i>639</i>&nbsp;
+<i>640</i>&nbsp;    /**
+<i>641</i>&nbsp;     * True if character is one of 114 Alphabetic characters as
+<i>642</i>&nbsp;     * specified in Table 2 of Chapter 3 in CORBA spec.
+<i>643</i>&nbsp;     */
+<i>644</i>&nbsp;    private static boolean isIDLAlphabeticChar(char c) {
+<i>645</i>&nbsp;
+<i>646</i>&nbsp;        // NOTE that we can&#39;t use the java.lang.Character
+<i>647</i>&nbsp;        // isUpperCase, isLowerCase, etc. methods since they
+<i>648</i>&nbsp;        // include many characters other than the Alphabetic list in
+<i>649</i>&nbsp;        // the CORBA spec.  Instead, we test for inclusion in the
+<i>650</i>&nbsp;        // Unicode value ranges for the corresponding legal characters.
+<i>651</i>&nbsp;
+<b class="nc"><i>652</i>&nbsp;        boolean alphaChar =</b>
+<i>653</i>&nbsp;            (
+<i>654</i>&nbsp;             // A - Z
+<i>655</i>&nbsp;             ((c &gt;= 0x0041) &amp;&amp; (c &lt;= 0x005A))
+<i>656</i>&nbsp;
+<i>657</i>&nbsp;             ||
+<i>658</i>&nbsp;
+<i>659</i>&nbsp;             // a - z
+<i>660</i>&nbsp;             ((c &gt;= 0x0061) &amp;&amp; (c &lt;= 0x007A))
+<i>661</i>&nbsp;
+<i>662</i>&nbsp;             ||
+<i>663</i>&nbsp;
+<i>664</i>&nbsp;             // other letter uppercase, other letter lowercase, which is
+<i>665</i>&nbsp;             // the entire upper half of C1 Controls except X and /
+<i>666</i>&nbsp;             ((c &gt;= 0x00C0) &amp;&amp; (c &lt;= 0x00FF)
+<i>667</i>&nbsp;              &amp;&amp; (c != 0x00D7) &amp;&amp; (c != 0x00F7)));
+<i>668</i>&nbsp;
+<b class="nc"><i>669</i>&nbsp;        return alphaChar;</b>
+<i>670</i>&nbsp;    }
+<i>671</i>&nbsp;
+<i>672</i>&nbsp;    /**
+<i>673</i>&nbsp;     * True if character is one of 10 Decimal Digits
+<i>674</i>&nbsp;     * specified in Table 3 of Chapter 3 in CORBA spec.
+<i>675</i>&nbsp;     */
+<i>676</i>&nbsp;    private static boolean isIDLDecimalDigit(char c) {
+<b class="nc"><i>677</i>&nbsp;        return ( (c &gt;= 0x0030) &amp;&amp; (c &lt;= 0x0039) );</b>
+<i>678</i>&nbsp;    }
+<i>679</i>&nbsp;
+<i>680</i>&nbsp;    private static boolean isUnderscore(char c) {
+<b class="nc"><i>681</i>&nbsp;        return ( c == 0x005F );</b>
+<i>682</i>&nbsp;    }
+<i>683</i>&nbsp;
+<i>684</i>&nbsp;    /**
+<i>685</i>&nbsp;     * Mangle an overloaded method name as defined in Section 1.3.2.6 of
+<i>686</i>&nbsp;     * Java2IDL spec.  Current value of method name is passed in as argument.
+<i>687</i>&nbsp;     * We can&#39;t start from original method name since the name might have
+<i>688</i>&nbsp;     * been partially mangled as a result of the other rules.
+<i>689</i>&nbsp;     */
+<i>690</i>&nbsp;    private static String mangleOverloadedMethod(String mangledName, Method m) {
+<i>691</i>&nbsp;
+<b class="nc"><i>692</i>&nbsp;        IDLTypesUtil idlTypesUtil = new IDLTypesUtil();</b>
+<i>693</i>&nbsp;
+<i>694</i>&nbsp;        // Start by appending the separator string
+<b class="nc"><i>695</i>&nbsp;        String newMangledName = mangledName + OVERLOADED_TYPE_SEPARATOR;</b>
+<i>696</i>&nbsp;
+<b class="nc"><i>697</i>&nbsp;        Class[] parameterTypes = m.getParameterTypes();</b>
+<i>698</i>&nbsp;
+<b class="nc"><i>699</i>&nbsp;        for(int i = 0; i &lt; parameterTypes.length; i++) {</b>
+<b class="nc"><i>700</i>&nbsp;            Class nextParamType = parameterTypes[i];</b>
+<i>701</i>&nbsp;
+<b class="nc"><i>702</i>&nbsp;            if( i &gt; 0 ) {</b>
+<b class="nc"><i>703</i>&nbsp;                newMangledName = newMangledName + OVERLOADED_TYPE_SEPARATOR;</b>
+<i>704</i>&nbsp;            }
+<b class="nc"><i>705</i>&nbsp;            IDLType idlType = classToIDLType(nextParamType);</b>
+<i>706</i>&nbsp;
+<b class="nc"><i>707</i>&nbsp;            String moduleName = idlType.getModuleName();</b>
+<b class="nc"><i>708</i>&nbsp;            String memberName = idlType.getMemberName();</b>
+<i>709</i>&nbsp;
+<b class="nc"><i>710</i>&nbsp;            String typeName = (moduleName.length() &gt; 0) ?</b>
+<i>711</i>&nbsp;                moduleName + UNDERSCORE + memberName : memberName;
+<i>712</i>&nbsp;
+<b class="nc"><i>713</i>&nbsp;            if( !idlTypesUtil.isPrimitive(nextParamType) &amp;&amp;</b>
+<b class="nc"><i>714</i>&nbsp;                (idlTypesUtil.getSpecialCaseIDLTypeMapping(nextParamType)</b>
+<i>715</i>&nbsp;                 == null) &amp;&amp;
+<b class="nc"><i>716</i>&nbsp;                isIDLKeyword(typeName) ) {</b>
+<b class="nc"><i>717</i>&nbsp;                typeName = mangleIDLKeywordClash(typeName);</b>
+<i>718</i>&nbsp;            }
+<i>719</i>&nbsp;
+<b class="nc"><i>720</i>&nbsp;            typeName = mangleUnicodeChars(typeName);</b>
+<i>721</i>&nbsp;
+<b class="nc"><i>722</i>&nbsp;            newMangledName = newMangledName + typeName;</b>
+<i>723</i>&nbsp;        }
+<i>724</i>&nbsp;
+<b class="nc"><i>725</i>&nbsp;        return newMangledName;</b>
+<i>726</i>&nbsp;    }
+<i>727</i>&nbsp;
+<i>728</i>&nbsp;
+<i>729</i>&nbsp;    private static IDLType classToIDLType(Class c) {
+<i>730</i>&nbsp;
+<b class="nc"><i>731</i>&nbsp;        IDLType idlType = null;</b>
+<b class="nc"><i>732</i>&nbsp;        IDLTypesUtil idlTypesUtil = new IDLTypesUtil();</b>
+<i>733</i>&nbsp;
+<b class="nc"><i>734</i>&nbsp;        if( idlTypesUtil.isPrimitive(c) ) {</b>
+<i>735</i>&nbsp;
+<b class="nc"><i>736</i>&nbsp;            idlType = idlTypesUtil.getPrimitiveIDLTypeMapping(c);</b>
+<i>737</i>&nbsp;
+<b class="nc"><i>738</i>&nbsp;        } else if( c.isArray() ) {</b>
+<i>739</i>&nbsp;
+<i>740</i>&nbsp;            // Calculate array depth, as well as base element type.
+<b class="nc"><i>741</i>&nbsp;            Class componentType = c.getComponentType();</b>
+<b class="nc"><i>742</i>&nbsp;            int numArrayDimensions = 1;</b>
+<b class="nc"><i>743</i>&nbsp;            while(componentType.isArray()) {</b>
+<b class="nc"><i>744</i>&nbsp;                componentType = componentType.getComponentType();</b>
+<b class="nc"><i>745</i>&nbsp;                numArrayDimensions++;</b>
+<i>746</i>&nbsp;            }
+<b class="nc"><i>747</i>&nbsp;            IDLType componentIdlType = classToIDLType(componentType);</b>
+<i>748</i>&nbsp;
+<b class="nc"><i>749</i>&nbsp;            String[] modules = BASE_IDL_ARRAY_MODULE_TYPE;</b>
+<b class="nc"><i>750</i>&nbsp;            if( componentIdlType.hasModule() ) {</b>
+<b class="nc"><i>751</i>&nbsp;                modules = (String[])ObjectUtility.concatenateArrays( modules,</b>
+<b class="nc"><i>752</i>&nbsp;                    componentIdlType.getModules() ) ;</b>
+<i>753</i>&nbsp;            }
+<i>754</i>&nbsp;
+<b class="nc"><i>755</i>&nbsp;            String memberName = BASE_IDL_ARRAY_ELEMENT_TYPE +</b>
+<i>756</i>&nbsp;                numArrayDimensions + UNDERSCORE +
+<b class="nc"><i>757</i>&nbsp;                componentIdlType.getMemberName();</b>
+<i>758</i>&nbsp;
+<b class="nc"><i>759</i>&nbsp;            idlType = new IDLType(c, modules, memberName);</b>
+<i>760</i>&nbsp;
+<b class="nc"><i>761</i>&nbsp;        } else {</b>
+<b class="nc"><i>762</i>&nbsp;            idlType = idlTypesUtil.getSpecialCaseIDLTypeMapping(c);</b>
+<i>763</i>&nbsp;
+<b class="nc"><i>764</i>&nbsp;            if (idlType == null) {</b>
+<i>765</i>&nbsp;                // Section 1.3.2.5 of Java2IDL spec defines mangling rules for
+<i>766</i>&nbsp;                // inner classes.
+<b class="nc"><i>767</i>&nbsp;                String memberName = getUnmappedContainerName(c);</b>
+<i>768</i>&nbsp;
+<i>769</i>&nbsp;                // replace inner class separator with double underscore
+<b class="nc"><i>770</i>&nbsp;                memberName = memberName.replaceAll(&quot;\\$&quot;,</b>
+<i>771</i>&nbsp;                                                   INNER_CLASS_SEPARATOR);
+<i>772</i>&nbsp;
+<b class="nc"><i>773</i>&nbsp;                if( hasLeadingUnderscore(memberName) ) {</b>
+<b class="nc"><i>774</i>&nbsp;                    memberName = mangleLeadingUnderscore(memberName);</b>
+<i>775</i>&nbsp;                }
+<i>776</i>&nbsp;
+<i>777</i>&nbsp;                // Get raw package name.  If there is a package, it
+<i>778</i>&nbsp;                // will still have the &quot;.&quot; separators and none of the
+<i>779</i>&nbsp;                // mangling rules will have been applied.
+<b class="nc"><i>780</i>&nbsp;                String packageName = getPackageName(c);</b>
+<i>781</i>&nbsp;
+<b class="nc"><i>782</i>&nbsp;                if (packageName == null) {</b>
+<b class="nc"><i>783</i>&nbsp;                    idlType = new IDLType( c, memberName ) ;</b>
+<i>784</i>&nbsp;                } else {
+<i>785</i>&nbsp;                    // If this is a generated IDL Entity Type we need to
+<i>786</i>&nbsp;                    // prepend org_omg_boxedIDL per sections 1.3.5 and 1.3.9
+<b class="nc"><i>787</i>&nbsp;                    if (idlTypesUtil.isEntity(c)) {</b>
+<b class="nc"><i>788</i>&nbsp;                        packageName = &quot;org.omg.boxedIDL.&quot; + packageName ;</b>
+<i>789</i>&nbsp;                    }
+<i>790</i>&nbsp;
+<i>791</i>&nbsp;                    // Section 1.3.2.1 and 1.3.2.6 of Java2IDL spec defines
+<i>792</i>&nbsp;                    // rules for mapping java packages to IDL modules and for
+<i>793</i>&nbsp;                    // mangling module name portion of type name.  NOTE that
+<i>794</i>&nbsp;                    // of the individual identifier mangling rules,
+<i>795</i>&nbsp;                    // only the leading underscore test is done here.
+<i>796</i>&nbsp;                    // The other two(IDL Keyword, Illegal Unicode chars) are
+<i>797</i>&nbsp;                    // done in mangleOverloadedMethodName.
+<b class="nc"><i>798</i>&nbsp;                    StringTokenizer tokenizer =</b>
+<i>799</i>&nbsp;                        new StringTokenizer(packageName, &quot;.&quot;);
+<i>800</i>&nbsp;
+<b class="nc"><i>801</i>&nbsp;                    String[] modules = new String[ tokenizer.countTokens() ] ;</b>
+<b class="nc"><i>802</i>&nbsp;                    int index = 0 ;</b>
+<b class="nc"><i>803</i>&nbsp;                    while (tokenizer.hasMoreElements()) {</b>
+<b class="nc"><i>804</i>&nbsp;                        String next = tokenizer.nextToken();</b>
+<b class="nc"><i>805</i>&nbsp;                        String moreMangled = hasLeadingUnderscore( next ) ?</b>
+<b class="nc"><i>806</i>&nbsp;                            mangleLeadingUnderscore( next ) : next;</b>
+<i>807</i>&nbsp;
+<b class="nc"><i>808</i>&nbsp;                        modules[index++] = moreMangled ;</b>
+<b class="nc"><i>809</i>&nbsp;                    }</b>
+<i>810</i>&nbsp;
+<b class="nc"><i>811</i>&nbsp;                    idlType = new IDLType(c, modules, memberName);</b>
+<i>812</i>&nbsp;                }
+<i>813</i>&nbsp;            }
+<i>814</i>&nbsp;        }
+<i>815</i>&nbsp;
+<b class="nc"><i>816</i>&nbsp;        return idlType;</b>
+<i>817</i>&nbsp;    }
+<i>818</i>&nbsp;
+<i>819</i>&nbsp;    /**
+<i>820</i>&nbsp;     * Return Class&#39; package name or null if there is no package.
+<i>821</i>&nbsp;     */
+<i>822</i>&nbsp;    private static String getPackageName(Class c) {
+<b class="nc"><i>823</i>&nbsp;        Package thePackage = c.getPackage();</b>
+<b class="nc"><i>824</i>&nbsp;        String packageName = null;</b>
+<i>825</i>&nbsp;
+<i>826</i>&nbsp;        // Try to get package name by introspection.  Some classloaders might
+<i>827</i>&nbsp;        // not provide this information, so check for null.
+<b class="nc"><i>828</i>&nbsp;        if( thePackage != null ) {</b>
+<b class="nc"><i>829</i>&nbsp;            packageName = thePackage.getName();</b>
+<i>830</i>&nbsp;        } else {
+<i>831</i>&nbsp;            // brute force method
+<b class="nc"><i>832</i>&nbsp;            String fullyQualifiedClassName = c.getName();</b>
+<b class="nc"><i>833</i>&nbsp;            int lastDot = fullyQualifiedClassName.indexOf(&#39;.&#39;);</b>
+<b class="nc"><i>834</i>&nbsp;            packageName = (lastDot == -1) ? null :</b>
+<b class="nc"><i>835</i>&nbsp;                fullyQualifiedClassName.substring(0, lastDot);</b>
+<i>836</i>&nbsp;        }
+<b class="nc"><i>837</i>&nbsp;        return packageName;</b>
+<i>838</i>&nbsp;    }
+<i>839</i>&nbsp;
+<i>840</i>&nbsp;    private static String getMappedContainerName(Class c) {
+<b class="nc"><i>841</i>&nbsp;        String unmappedName = getUnmappedContainerName(c);</b>
+<i>842</i>&nbsp;
+<b class="nc"><i>843</i>&nbsp;        return mangleIdentifier(unmappedName);</b>
+<i>844</i>&nbsp;    }
+<i>845</i>&nbsp;
+<i>846</i>&nbsp;    /**
+<i>847</i>&nbsp;     * Return portion of class name excluding package name.
+<i>848</i>&nbsp;     */
+<i>849</i>&nbsp;    private static String getUnmappedContainerName(Class c) {
+<i>850</i>&nbsp;
+<b class="nc"><i>851</i>&nbsp;        String memberName  = null;</b>
+<b class="nc"><i>852</i>&nbsp;        String packageName = getPackageName(c);</b>
+<i>853</i>&nbsp;
+<b class="nc"><i>854</i>&nbsp;        String fullyQualifiedClassName = c.getName();</b>
+<i>855</i>&nbsp;
+<b class="nc"><i>856</i>&nbsp;        if( packageName != null ) {</b>
+<b class="nc"><i>857</i>&nbsp;            int packageLength = packageName.length();</b>
+<b class="nc"><i>858</i>&nbsp;            memberName = fullyQualifiedClassName.substring(packageLength + 1);</b>
+<b class="nc"><i>859</i>&nbsp;        } else {</b>
+<b class="nc"><i>860</i>&nbsp;            memberName = fullyQualifiedClassName;</b>
+<i>861</i>&nbsp;
+<i>862</i>&nbsp;        }
+<i>863</i>&nbsp;
+<b class="nc"><i>864</i>&nbsp;        return memberName;</b>
+<i>865</i>&nbsp;    }
+<i>866</i>&nbsp;
+<i>867</i>&nbsp;    /**
+<i>868</i>&nbsp;     * Internal helper class for tracking information related to each
+<i>869</i>&nbsp;     * interface method while we&#39;re building the name translation table.
+<i>870</i>&nbsp;     */
+<b class="nc"><i>871</i>&nbsp;    private static class IDLMethodInfo</b>
+<i>872</i>&nbsp;    {
+<i>873</i>&nbsp;        public Method method;
+<i>874</i>&nbsp;        public boolean isProperty;
+<i>875</i>&nbsp;
+<i>876</i>&nbsp;        // If this is a property, originalName holds the original
+<i>877</i>&nbsp;        // attribute name. Otherwise, it holds the original method name.
+<i>878</i>&nbsp;        public String originalName;
+<i>879</i>&nbsp;
+<i>880</i>&nbsp;        // If this is a property, mangledName holds the mangled attribute
+<i>881</i>&nbsp;        // name. Otherwise, it holds the mangled method name.
+<i>882</i>&nbsp;        public String mangledName;
+<i>883</i>&nbsp;
+<i>884</i>&nbsp;    }
+<i>885</i>&nbsp;
+<i>886</i>&nbsp;    public String toString() {
+<i>887</i>&nbsp;
+<b class="nc"><i>888</i>&nbsp;        StringBuffer contents = new StringBuffer();</b>
+<b class="nc"><i>889</i>&nbsp;        contents.append(&quot;IDLNameTranslator[&quot; );</b>
+<b class="nc"><i>890</i>&nbsp;        for( int ctr=0; ctr&lt;interf_.length; ctr++) {</b>
+<b class="nc"><i>891</i>&nbsp;            if (ctr != 0)</b>
+<b class="nc"><i>892</i>&nbsp;                contents.append( &quot; &quot; ) ;</b>
+<b class="nc"><i>893</i>&nbsp;            contents.append( interf_[ctr].getName() ) ;</b>
+<i>894</i>&nbsp;        }
+<b class="nc"><i>895</i>&nbsp;        contents.append(&quot;]\n&quot;);</b>
+<b class="nc"><i>896</i>&nbsp;        for(Iterator iter = methodToIDLNameMap_.keySet().iterator();</b>
+<b class="nc"><i>897</i>&nbsp;            iter.hasNext();) {</b>
+<i>898</i>&nbsp;
+<b class="nc"><i>899</i>&nbsp;            Method method  = (Method) iter.next();</b>
+<b class="nc"><i>900</i>&nbsp;            String idlName = (String) methodToIDLNameMap_.get(method);</b>
+<i>901</i>&nbsp;
+<b class="nc"><i>902</i>&nbsp;            contents.append(idlName + &quot;:&quot; + method + &quot;\n&quot;);</b>
+<i>903</i>&nbsp;
+<b class="nc"><i>904</i>&nbsp;        }</b>
+<i>905</i>&nbsp;
+<b class="nc"><i>906</i>&nbsp;        return contents.toString();</b>
+<i>907</i>&nbsp;    }
+<i>908</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,209 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DeferredElementDefinitionImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.dom</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DeferredElementDefinitionImpl (com.sun.org.apache.xerces.internal.dom)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DeferredElementDefinitionImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2002,2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.dom;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import org.w3c.dom.Node;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;/**
+<i>26</i>&nbsp; * NON-DOM CLASS: Describe one of the Elements (and its associated
+<i>27</i>&nbsp; * Attributes) defined in this Document Type.
+<i>28</i>&nbsp; * &lt;p&gt;
+<i>29</i>&nbsp; * I&#39;ve included this in Level 1 purely as an anchor point for default
+<i>30</i>&nbsp; * attributes. In Level 2 it should enable the ChildRule support.
+<i>31</i>&nbsp; *
+<i>32</i>&nbsp; * @xerces.internal
+<i>33</i>&nbsp; *
+<i>34</i>&nbsp; */
+<i>35</i>&nbsp;public class DeferredElementDefinitionImpl
+<i>36</i>&nbsp;    extends ElementDefinitionImpl
+<i>37</i>&nbsp;    implements DeferredNode {
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    //
+<i>40</i>&nbsp;    // Constants
+<i>41</i>&nbsp;    //
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    /** Serialization version. */
+<i>44</i>&nbsp;    static final long serialVersionUID = 6703238199538041591L;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    //
+<i>47</i>&nbsp;    // Data
+<i>48</i>&nbsp;    //
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    /** Node index. */
+<i>51</i>&nbsp;    protected transient int fNodeIndex;
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    //
+<i>54</i>&nbsp;    // Constructors
+<i>55</i>&nbsp;    //
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    /**
+<i>58</i>&nbsp;     * This is the deferred constructor. Only the fNodeIndex is given here.
+<i>59</i>&nbsp;     * All other data, can be requested from the ownerDocument via the index.
+<i>60</i>&nbsp;     */
+<i>61</i>&nbsp;    DeferredElementDefinitionImpl(DeferredDocumentImpl ownerDocument,
+<i>62</i>&nbsp;                                  int nodeIndex) {
+<b class="nc"><i>63</i>&nbsp;        super(ownerDocument, null);</b>
+<i>64</i>&nbsp;
+<b class="nc"><i>65</i>&nbsp;        fNodeIndex = nodeIndex;</b>
+<b class="nc"><i>66</i>&nbsp;        needsSyncData(true);</b>
+<b class="nc"><i>67</i>&nbsp;        needsSyncChildren(true);</b>
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    } // &lt;init&gt;(DeferredDocumentImpl,int)
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    //
+<i>72</i>&nbsp;    // DeferredNode methods
+<i>73</i>&nbsp;    //
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    /** Returns the node index. */
+<i>76</i>&nbsp;    public int getNodeIndex() {
+<b class="nc"><i>77</i>&nbsp;        return fNodeIndex;</b>
+<i>78</i>&nbsp;    }
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    //
+<i>81</i>&nbsp;    // Protected methods
+<i>82</i>&nbsp;    //
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    /** Synchronizes the data (name and value) for fast nodes. */
+<i>85</i>&nbsp;    protected void synchronizeData() {
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;        // no need to sync in the future
+<b class="nc"><i>88</i>&nbsp;        needsSyncData(false);</b>
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;        // fluff data
+<b class="nc"><i>91</i>&nbsp;        DeferredDocumentImpl ownerDocument =</b>
+<i>92</i>&nbsp;            (DeferredDocumentImpl)this.ownerDocument;
+<b class="nc"><i>93</i>&nbsp;        name = ownerDocument.getNodeName(fNodeIndex);</b>
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    } // synchronizeData()
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    /** Synchronizes the default attribute values. */
+<i>98</i>&nbsp;    protected void synchronizeChildren() {
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;        // we don&#39;t want to generate any event for this so turn them off
+<b class="nc"><i>101</i>&nbsp;        boolean orig = ownerDocument.getMutationEvents();</b>
+<b class="nc"><i>102</i>&nbsp;        ownerDocument.setMutationEvents(false);</b>
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;        // attributes are now synced
+<b class="nc"><i>105</i>&nbsp;        needsSyncChildren(false);</b>
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;        // create attributes node map
+<b class="nc"><i>108</i>&nbsp;        DeferredDocumentImpl ownerDocument =</b>
+<i>109</i>&nbsp;            (DeferredDocumentImpl)this.ownerDocument;
+<b class="nc"><i>110</i>&nbsp;        attributes = new NamedNodeMapImpl(ownerDocument);</b>
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;        // Default attributes dangle as children of the element
+<i>113</i>&nbsp;        // definition &quot;node&quot; in the internal fast table.
+<b class="nc"><i>114</i>&nbsp;        for (int nodeIndex = ownerDocument.getLastChild(fNodeIndex);</b>
+<b class="nc"><i>115</i>&nbsp;             nodeIndex != -1;</b>
+<b class="nc"><i>116</i>&nbsp;             nodeIndex = ownerDocument.getPrevSibling(nodeIndex)) {</b>
+<b class="nc"><i>117</i>&nbsp;            Node attr = ownerDocument.getNodeObject(nodeIndex);</b>
+<b class="nc"><i>118</i>&nbsp;            attributes.setNamedItem(attr);</b>
+<i>119</i>&nbsp;        }
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;        // set mutation events flag back to its original value
+<b class="nc"><i>122</i>&nbsp;        ownerDocument.setMutationEvents(orig);</b>
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;    } // synchronizeChildren()
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;} // class DeferredElementDefinitionImpl
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

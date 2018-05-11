@@ -1,0 +1,213 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TextImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.xs.opti</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TextImpl (com.sun.org.apache.xerces.internal.impl.xs.opti)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TextImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.xs.opti;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import org.w3c.dom.DOMException;
+<i>24</i>&nbsp;import org.w3c.dom.Node;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;/**
+<i>27</i>&nbsp; * @xerces.internal
+<i>28</i>&nbsp; *
+<i>29</i>&nbsp; * @author Neil Graham, IBM
+<i>30</i>&nbsp; */
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;public class TextImpl extends DefaultText {
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;    // Data
+<b class="nc"><i>35</i>&nbsp;    String fData = null;</b>
+<b class="nc"><i>36</i>&nbsp;    SchemaDOM fSchemaDOM = null;</b>
+<i>37</i>&nbsp;    int fRow;
+<i>38</i>&nbsp;    int fCol;
+<i>39</i>&nbsp;
+<b class="nc"><i>40</i>&nbsp;    public TextImpl(StringBuffer str, SchemaDOM sDOM, int row, int col) {</b>
+<b class="nc"><i>41</i>&nbsp;        fData = str.toString();</b>
+<b class="nc"><i>42</i>&nbsp;        fSchemaDOM = sDOM;</b>
+<b class="nc"><i>43</i>&nbsp;        fRow = row;</b>
+<b class="nc"><i>44</i>&nbsp;        fCol = col;</b>
+<b class="nc"><i>45</i>&nbsp;        rawname = prefix = localpart = uri = null;</b>
+<b class="nc"><i>46</i>&nbsp;        nodeType = Node.TEXT_NODE;</b>
+<i>47</i>&nbsp;    }
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    //
+<i>50</i>&nbsp;    // org.w3c.dom.Node methods
+<i>51</i>&nbsp;    //
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    public Node getParentNode() {
+<b class="nc"><i>54</i>&nbsp;        return fSchemaDOM.relations[fRow][0];</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    public Node getPreviousSibling() {
+<b class="nc"><i>58</i>&nbsp;        if (fCol == 1) {</b>
+<b class="nc"><i>59</i>&nbsp;            return null;</b>
+<i>60</i>&nbsp;        }
+<b class="nc"><i>61</i>&nbsp;        return fSchemaDOM.relations[fRow][fCol-1];</b>
+<i>62</i>&nbsp;    }
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    public Node getNextSibling() {
+<b class="nc"><i>66</i>&nbsp;        if (fCol == fSchemaDOM.relations[fRow].length-1) {</b>
+<b class="nc"><i>67</i>&nbsp;            return null;</b>
+<i>68</i>&nbsp;        }
+<b class="nc"><i>69</i>&nbsp;        return fSchemaDOM.relations[fRow][fCol+1];</b>
+<i>70</i>&nbsp;    }
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;    // CharacterData methods
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    /**
+<i>75</i>&nbsp;     * The character data of the node that implements this interface. The DOM
+<i>76</i>&nbsp;     * implementation may not put arbitrary limits on the amount of data
+<i>77</i>&nbsp;     * that may be stored in a &lt;code&gt;CharacterData&lt;/code&gt; node. However,
+<i>78</i>&nbsp;     * implementation limits may mean that the entirety of a node&#39;s data may
+<i>79</i>&nbsp;     * not fit into a single &lt;code&gt;DOMString&lt;/code&gt;. In such cases, the user
+<i>80</i>&nbsp;     * may call &lt;code&gt;substringData&lt;/code&gt; to retrieve the data in
+<i>81</i>&nbsp;     * appropriately sized pieces.
+<i>82</i>&nbsp;     * @exception DOMException
+<i>83</i>&nbsp;     *   NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
+<i>84</i>&nbsp;     * @exception DOMException
+<i>85</i>&nbsp;     *   DOMSTRING_SIZE_ERR: Raised when it would return more characters than
+<i>86</i>&nbsp;     *   fit in a &lt;code&gt;DOMString&lt;/code&gt; variable on the implementation
+<i>87</i>&nbsp;     *   platform.
+<i>88</i>&nbsp;     */
+<i>89</i>&nbsp;    public String getData()
+<i>90</i>&nbsp;                            throws DOMException {
+<b class="nc"><i>91</i>&nbsp;        return fData;</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    /**
+<i>95</i>&nbsp;     * The number of 16-bit units that are available through &lt;code&gt;data&lt;/code&gt;
+<i>96</i>&nbsp;     * and the &lt;code&gt;substringData&lt;/code&gt; method below. This may have the
+<i>97</i>&nbsp;     * value zero, i.e., &lt;code&gt;CharacterData&lt;/code&gt; nodes may be empty.
+<i>98</i>&nbsp;     */
+<i>99</i>&nbsp;    public int getLength() {
+<b class="nc"><i>100</i>&nbsp;        if(fData == null) return 0;</b>
+<b class="nc"><i>101</i>&nbsp;        return fData.length();</b>
+<i>102</i>&nbsp;    }
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    /**
+<i>105</i>&nbsp;     * Extracts a range of data from the node.
+<i>106</i>&nbsp;     * @param offset Start offset of substring to extract.
+<i>107</i>&nbsp;     * @param count The number of 16-bit units to extract.
+<i>108</i>&nbsp;     * @return The specified substring. If the sum of &lt;code&gt;offset&lt;/code&gt; and
+<i>109</i>&nbsp;     *   &lt;code&gt;count&lt;/code&gt; exceeds the &lt;code&gt;length&lt;/code&gt;, then all 16-bit
+<i>110</i>&nbsp;     *   units to the end of the data are returned.
+<i>111</i>&nbsp;     * @exception DOMException
+<i>112</i>&nbsp;     *   INDEX_SIZE_ERR: Raised if the specified &lt;code&gt;offset&lt;/code&gt; is
+<i>113</i>&nbsp;     *   negative or greater than the number of 16-bit units in
+<i>114</i>&nbsp;     *   &lt;code&gt;data&lt;/code&gt;, or if the specified &lt;code&gt;count&lt;/code&gt; is
+<i>115</i>&nbsp;     *   negative.
+<i>116</i>&nbsp;     *   &lt;br&gt;DOMSTRING_SIZE_ERR: Raised if the specified range of text does
+<i>117</i>&nbsp;     *   not fit into a &lt;code&gt;DOMString&lt;/code&gt;.
+<i>118</i>&nbsp;     */
+<i>119</i>&nbsp;    public String substringData(int offset,
+<i>120</i>&nbsp;                                int count)
+<i>121</i>&nbsp;                                throws DOMException {
+<b class="nc"><i>122</i>&nbsp;        if(fData == null) return null;</b>
+<b class="nc"><i>123</i>&nbsp;        if(count &lt; 0 || offset &lt; 0 || offset &gt; fData.length())</b>
+<b class="nc"><i>124</i>&nbsp;            throw new DOMException(DOMException.INDEX_SIZE_ERR, &quot;parameter error&quot;);</b>
+<b class="nc"><i>125</i>&nbsp;        if(offset+count &gt;= fData.length())</b>
+<b class="nc"><i>126</i>&nbsp;            return fData.substring(offset);</b>
+<b class="nc"><i>127</i>&nbsp;        return fData.substring(offset, offset+count);</b>
+<i>128</i>&nbsp;    }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

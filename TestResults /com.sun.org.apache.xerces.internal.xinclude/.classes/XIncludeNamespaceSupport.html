@@ -1,0 +1,178 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XIncludeNamespaceSupport</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.xinclude</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XIncludeNamespaceSupport (com.sun.org.apache.xerces.internal.xinclude)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XIncludeNamespaceSupport</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2003-2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;package com.sun.org.apache.xerces.internal.xinclude;
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.NamespaceContext;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;/**
+<i>25</i>&nbsp; * This is an implementation of NamespaceContext which is intended to be used for
+<i>26</i>&nbsp; * XInclude processing.  It enables each context to be marked as invalid, if necessary,
+<i>27</i>&nbsp; * to indicate that the namespaces recorded on those contexts won&#39;t be apparent in the
+<i>28</i>&nbsp; * resulting infoset.
+<i>29</i>&nbsp; *
+<i>30</i>&nbsp; * @author Peter McCracken, IBM
+<i>31</i>&nbsp; *
+<i>32</i>&nbsp; */
+<i>33</i>&nbsp;public class XIncludeNamespaceSupport extends MultipleScopeNamespaceSupport {
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;    /**
+<i>36</i>&nbsp;     * This stores whether or not the context at the matching depth was valid.
+<i>37</i>&nbsp;     */
+<b class="nc"><i>38</i>&nbsp;    private boolean[] fValidContext = new boolean[8];</b>
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;    /**
+<i>41</i>&nbsp;     *
+<i>42</i>&nbsp;     */
+<i>43</i>&nbsp;    public XIncludeNamespaceSupport() {
+<b class="nc"><i>44</i>&nbsp;        super();</b>
+<i>45</i>&nbsp;    }
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    /**
+<i>48</i>&nbsp;     * @param context
+<i>49</i>&nbsp;     */
+<i>50</i>&nbsp;    public XIncludeNamespaceSupport(NamespaceContext context) {
+<b class="nc"><i>51</i>&nbsp;        super(context);</b>
+<i>52</i>&nbsp;    }
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /**
+<i>55</i>&nbsp;     * Pushes a new context onto the stack.
+<i>56</i>&nbsp;     */
+<i>57</i>&nbsp;    public void pushContext() {
+<b class="nc"><i>58</i>&nbsp;        super.pushContext();</b>
+<b class="nc"><i>59</i>&nbsp;        if (fCurrentContext + 1 == fValidContext.length) {</b>
+<b class="nc"><i>60</i>&nbsp;            boolean[] contextarray = new boolean[fValidContext.length * 2];</b>
+<b class="nc"><i>61</i>&nbsp;            System.arraycopy(fValidContext, 0, contextarray, 0, fValidContext.length);</b>
+<b class="nc"><i>62</i>&nbsp;            fValidContext = contextarray;</b>
+<i>63</i>&nbsp;        }
+<i>64</i>&nbsp;
+<b class="nc"><i>65</i>&nbsp;        fValidContext[fCurrentContext] = true;</b>
+<i>66</i>&nbsp;    }
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    /**
+<i>69</i>&nbsp;     * This method is used to set a context invalid for XInclude namespace processing.
+<i>70</i>&nbsp;     * Any context defined by an &amp;lt;include&amp;gt; or &amp;lt;fallback&amp;gt; element is not
+<i>71</i>&nbsp;     * valid for processing the include parent&#39;s [in-scope namespaces]. Thus, contexts
+<i>72</i>&nbsp;     * defined by these elements are set to invalid by the XInclude processor using
+<i>73</i>&nbsp;     * this method.
+<i>74</i>&nbsp;     */
+<i>75</i>&nbsp;    public void setContextInvalid() {
+<b class="nc"><i>76</i>&nbsp;        fValidContext[fCurrentContext] = false;</b>
+<i>77</i>&nbsp;    }
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    /**
+<i>80</i>&nbsp;     * This returns the namespace URI which was associated with the given pretext, in
+<i>81</i>&nbsp;     * the context that existed at the include parent of the current element.  The
+<i>82</i>&nbsp;     * include parent is the last element, before the current one, which was not set
+<i>83</i>&nbsp;     * to an invalid context using setContextInvalid()
+<i>84</i>&nbsp;     *
+<i>85</i>&nbsp;     * @param prefix the prefix of the desired URI
+<i>86</i>&nbsp;     * @return the URI corresponding to the prefix in the context of the include parent
+<i>87</i>&nbsp;     */
+<i>88</i>&nbsp;    public String getURIFromIncludeParent(String prefix) {
+<b class="nc"><i>89</i>&nbsp;        int lastValidContext = fCurrentContext - 1;</b>
+<b class="nc"><i>90</i>&nbsp;        while (lastValidContext &gt; 0 &amp;&amp; !fValidContext[lastValidContext]) {</b>
+<b class="nc"><i>91</i>&nbsp;            lastValidContext--;</b>
+<i>92</i>&nbsp;        }
+<b class="nc"><i>93</i>&nbsp;        return getURI(prefix, lastValidContext);</b>
+<i>94</i>&nbsp;    }
+<i>95</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

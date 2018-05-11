@@ -1,0 +1,303 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: WindowsTextFieldUI</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.java.swing.plaf.windows</a> ]
+</div>
+
+<h1>Coverage Summary for Class: WindowsTextFieldUI (com.sun.java.swing.plaf.windows)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WindowsTextFieldUI</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">WindowsTextFieldUI$WindowsFieldCaret</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">WindowsTextFieldUI$WindowsFieldCaret$SafeScroller</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 23)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 31)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.java.swing.plaf.windows;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.awt.*;
+<i>29</i>&nbsp;import java.awt.event.*;
+<i>30</i>&nbsp;import java.beans.PropertyChangeEvent;
+<i>31</i>&nbsp;import javax.swing.plaf.*;
+<i>32</i>&nbsp;import javax.swing.plaf.basic.BasicTextFieldUI;
+<i>33</i>&nbsp;import javax.swing.text.*;
+<i>34</i>&nbsp;import javax.swing.*;
+<i>35</i>&nbsp;import javax.swing.plaf.UIResource;
+<i>36</i>&nbsp;import sun.swing.DefaultLookup;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;/**
+<i>41</i>&nbsp; * Provides the Windows look and feel for a text field.  This
+<i>42</i>&nbsp; * is basically the following customizations to the default
+<i>43</i>&nbsp; * look-and-feel.
+<i>44</i>&nbsp; * &lt;ul&gt;
+<i>45</i>&nbsp; * &lt;li&gt;The border is beveled (using the standard control color).
+<i>46</i>&nbsp; * &lt;li&gt;The background is white by default.
+<i>47</i>&nbsp; * &lt;li&gt;The highlight color is a dark color, blue by default.
+<i>48</i>&nbsp; * &lt;li&gt;The foreground color is high contrast in the selected
+<i>49</i>&nbsp; *  area, white by default.  The unselected foreground is black.
+<i>50</i>&nbsp; * &lt;li&gt;The cursor blinks at about 1/2 second intervals.
+<i>51</i>&nbsp; * &lt;li&gt;The entire value is selected when focus is gained.
+<i>52</i>&nbsp; * &lt;li&gt;Shift-left-arrow and shift-right-arrow extend selection
+<i>53</i>&nbsp; * &lt;li&gt;Ctrl-left-arrow and ctrl-right-arrow act like home and
+<i>54</i>&nbsp; *   end respectively.
+<i>55</i>&nbsp; * &lt;/ul&gt;
+<i>56</i>&nbsp; * &lt;p&gt;
+<i>57</i>&nbsp; * &lt;strong&gt;Warning:&lt;/strong&gt;
+<i>58</i>&nbsp; * Serialized objects of this class will not be compatible with
+<i>59</i>&nbsp; * future Swing releases.  The current serialization support is appropriate
+<i>60</i>&nbsp; * for short term storage or RMI between applications running the same
+<i>61</i>&nbsp; * version of Swing.  A future release of Swing will provide support for
+<i>62</i>&nbsp; * long term persistence.
+<i>63</i>&nbsp; *
+<i>64</i>&nbsp; * @author  Timothy Prinzing
+<i>65</i>&nbsp; */
+<b class="nc"><i>66</i>&nbsp;public class WindowsTextFieldUI extends BasicTextFieldUI</b>
+<i>67</i>&nbsp;{
+<i>68</i>&nbsp;    /**
+<i>69</i>&nbsp;     * Creates a UI for a JTextField.
+<i>70</i>&nbsp;     *
+<i>71</i>&nbsp;     * @param c the text field
+<i>72</i>&nbsp;     * @return the UI
+<i>73</i>&nbsp;     */
+<i>74</i>&nbsp;    public static ComponentUI createUI(JComponent c) {
+<b class="nc"><i>75</i>&nbsp;        return new WindowsTextFieldUI();</b>
+<i>76</i>&nbsp;    }
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    /**
+<i>79</i>&nbsp;     * Paints a background for the view.  This will only be
+<i>80</i>&nbsp;     * called if isOpaque() on the associated component is
+<i>81</i>&nbsp;     * true.  The default is to paint the background color
+<i>82</i>&nbsp;     * of the component.
+<i>83</i>&nbsp;     *
+<i>84</i>&nbsp;     * @param g the graphics context
+<i>85</i>&nbsp;     */
+<i>86</i>&nbsp;    protected void paintBackground(Graphics g) {
+<b class="nc"><i>87</i>&nbsp;        super.paintBackground(g);</b>
+<i>88</i>&nbsp;    }
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    /**
+<i>91</i>&nbsp;     * Creates the caret for a field.
+<i>92</i>&nbsp;     *
+<i>93</i>&nbsp;     * @return the caret
+<i>94</i>&nbsp;     */
+<i>95</i>&nbsp;    protected Caret createCaret() {
+<b class="nc"><i>96</i>&nbsp;        return new WindowsFieldCaret();</b>
+<i>97</i>&nbsp;    }
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    /**
+<i>100</i>&nbsp;     * WindowsFieldCaret has different scrolling behavior than
+<i>101</i>&nbsp;     * DefaultCaret.
+<i>102</i>&nbsp;     */
+<b class="nc"><i>103</i>&nbsp;    static class WindowsFieldCaret extends DefaultCaret implements UIResource {</b>
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;        public WindowsFieldCaret() {
+<b class="nc"><i>106</i>&nbsp;            super();</b>
+<i>107</i>&nbsp;        }
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;        /**
+<i>110</i>&nbsp;         * Adjusts the visibility of the caret according to
+<i>111</i>&nbsp;         * the windows feel which seems to be to move the
+<i>112</i>&nbsp;         * caret out into the field by about a quarter of
+<i>113</i>&nbsp;         * a field length if not visible.
+<i>114</i>&nbsp;         */
+<i>115</i>&nbsp;        protected void adjustVisibility(Rectangle r) {
+<b class="nc"><i>116</i>&nbsp;            SwingUtilities.invokeLater(new SafeScroller(r));</b>
+<i>117</i>&nbsp;        }
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;        /**
+<i>120</i>&nbsp;         * Gets the painter for the Highlighter.
+<i>121</i>&nbsp;         *
+<i>122</i>&nbsp;         * @return the painter
+<i>123</i>&nbsp;         */
+<i>124</i>&nbsp;        protected Highlighter.HighlightPainter getSelectionPainter() {
+<b class="nc"><i>125</i>&nbsp;            return WindowsTextUI.WindowsPainter;</b>
+<i>126</i>&nbsp;        }
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;        private class SafeScroller implements Runnable {
+<b class="nc"><i>130</i>&nbsp;            SafeScroller(Rectangle r) {</b>
+<b class="nc"><i>131</i>&nbsp;                this.r = r;</b>
+<i>132</i>&nbsp;            }
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;            public void run() {
+<b class="nc"><i>135</i>&nbsp;                JTextField field = (JTextField) getComponent();</b>
+<b class="nc"><i>136</i>&nbsp;                if (field != null) {</b>
+<b class="nc"><i>137</i>&nbsp;                    TextUI ui = field.getUI();</b>
+<b class="nc"><i>138</i>&nbsp;                    int dot = getDot();</b>
+<i>139</i>&nbsp;                    // PENDING: We need to expose the bias in DefaultCaret.
+<b class="nc"><i>140</i>&nbsp;                    Position.Bias bias = Position.Bias.Forward;</b>
+<b class="nc"><i>141</i>&nbsp;                    Rectangle startRect = null;</b>
+<i>142</i>&nbsp;                    try {
+<b class="nc"><i>143</i>&nbsp;                        startRect = ui.modelToView(field, dot, bias);</b>
+<b class="nc"><i>144</i>&nbsp;                    } catch (BadLocationException ble) {}</b>
+<i>145</i>&nbsp;
+<b class="nc"><i>146</i>&nbsp;                    Insets i = field.getInsets();</b>
+<b class="nc"><i>147</i>&nbsp;                    BoundedRangeModel vis = field.getHorizontalVisibility();</b>
+<b class="nc"><i>148</i>&nbsp;                    int x = r.x + vis.getValue() - i.left;</b>
+<b class="nc"><i>149</i>&nbsp;                    int quarterSpan = vis.getExtent() / 4;</b>
+<b class="nc"><i>150</i>&nbsp;                    if (r.x &lt; i.left) {</b>
+<b class="nc"><i>151</i>&nbsp;                        vis.setValue(x - quarterSpan);</b>
+<b class="nc"><i>152</i>&nbsp;                    } else if (r.x + r.width &gt; i.left + vis.getExtent()) {</b>
+<b class="nc"><i>153</i>&nbsp;                        vis.setValue(x - (3 * quarterSpan));</b>
+<i>154</i>&nbsp;                    }
+<i>155</i>&nbsp;                    // If we scroll, our visual location will have changed,
+<i>156</i>&nbsp;                    // but we won&#39;t have updated our internal location as
+<i>157</i>&nbsp;                    // the model hasn&#39;t changed. This checks for the change,
+<i>158</i>&nbsp;                    // and if necessary, resets the internal location.
+<b class="nc"><i>159</i>&nbsp;                    if (startRect != null) {</b>
+<i>160</i>&nbsp;                        try {
+<i>161</i>&nbsp;                            Rectangle endRect;
+<b class="nc"><i>162</i>&nbsp;                            endRect = ui.modelToView(field, dot, bias);</b>
+<b class="nc"><i>163</i>&nbsp;                            if (endRect != null &amp;&amp; !endRect.equals(startRect)){</b>
+<b class="nc"><i>164</i>&nbsp;                                damage(endRect);</b>
+<i>165</i>&nbsp;                            }
+<b class="nc"><i>166</i>&nbsp;                        } catch (BadLocationException ble) {}</b>
+<i>167</i>&nbsp;                    }
+<i>168</i>&nbsp;                }
+<i>169</i>&nbsp;            }
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;            private Rectangle r;
+<i>172</i>&nbsp;        }
+<i>173</i>&nbsp;    }
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:55</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,183 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: VoidType</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: VoidType (com.sun.org.apache.xalan.internal.xsltc.compiler.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VoidType</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 17)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: VoidType.java,v 1.2.4.1 2005/09/05 11:45:26 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler.util;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.Instruction;
+<i>27</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>28</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.PUSH;
+<i>29</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.Constants;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;/**
+<i>32</i>&nbsp; * @author Jacek Ambroziak
+<i>33</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>34</i>&nbsp; */
+<i>35</i>&nbsp;public final class VoidType extends Type {
+<b class="nc"><i>36</i>&nbsp;    protected VoidType() {}</b>
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;    public String toString() {
+<b class="nc"><i>39</i>&nbsp;        return &quot;void&quot;;</b>
+<i>40</i>&nbsp;    }
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;    public boolean identicalTo(Type other) {
+<b class="nc"><i>43</i>&nbsp;        return this == other;</b>
+<i>44</i>&nbsp;    }
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    public String toSignature() {
+<b class="nc"><i>47</i>&nbsp;        return &quot;V&quot;;</b>
+<i>48</i>&nbsp;    }
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    public com.sun.org.apache.bcel.internal.generic.Type toJCType() {
+<b class="nc"><i>51</i>&nbsp;        return null;    // should never be called</b>
+<i>52</i>&nbsp;    }
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    public Instruction POP() {
+<b class="nc"><i>55</i>&nbsp;        return NOP;</b>
+<i>56</i>&nbsp;    }
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    /**
+<i>59</i>&nbsp;     * Translates a void into an object of internal type &lt;code&gt;type&lt;/code&gt;.
+<i>60</i>&nbsp;     * This translation is needed when calling external functions
+<i>61</i>&nbsp;     * that return void.
+<i>62</i>&nbsp;     *
+<i>63</i>&nbsp;     * @see     com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type#translateTo
+<i>64</i>&nbsp;     */
+<i>65</i>&nbsp;    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
+<i>66</i>&nbsp;                            Type type) {
+<b class="nc"><i>67</i>&nbsp;        if (type == Type.String) {</b>
+<b class="nc"><i>68</i>&nbsp;            translateTo(classGen, methodGen, (StringType) type);</b>
+<i>69</i>&nbsp;        }
+<i>70</i>&nbsp;        else {
+<b class="nc"><i>71</i>&nbsp;            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,</b>
+<b class="nc"><i>72</i>&nbsp;                                        toString(), type.toString());</b>
+<b class="nc"><i>73</i>&nbsp;            classGen.getParser().reportError(Constants.FATAL, err);</b>
+<i>74</i>&nbsp;        }
+<i>75</i>&nbsp;    }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    /**
+<i>78</i>&nbsp;     * Translates a void into a string by pushing the empty string &#39;&#39;.
+<i>79</i>&nbsp;     *
+<i>80</i>&nbsp;     * @see     com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type#translateTo
+<i>81</i>&nbsp;     */
+<i>82</i>&nbsp;    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
+<i>83</i>&nbsp;                            StringType type) {
+<b class="nc"><i>84</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<b class="nc"><i>85</i>&nbsp;        il.append(new PUSH(classGen.getConstantPool(), &quot;&quot;));</b>
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    /**
+<i>89</i>&nbsp;     * Translates an external (primitive) Java type into a void.
+<i>90</i>&nbsp;     * Only an external &quot;void&quot; can be converted to this class.
+<i>91</i>&nbsp;     */
+<i>92</i>&nbsp;    public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen,
+<i>93</i>&nbsp;                              Class clazz) {
+<b class="nc"><i>94</i>&nbsp;        if (!clazz.getName().equals(&quot;void&quot;)) {</b>
+<b class="nc"><i>95</i>&nbsp;            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,</b>
+<b class="nc"><i>96</i>&nbsp;                                        toString(), clazz.getName());</b>
+<b class="nc"><i>97</i>&nbsp;            classGen.getParser().reportError(Constants.FATAL, err);</b>
+<i>98</i>&nbsp;        }
+<i>99</i>&nbsp;    }
+<i>100</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,2313 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ORBImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.orb</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ORBImpl (com.sun.corba.se.impl.orb)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ORBImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 111)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 693)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ORBImpl$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ORBImpl$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ORBImpl$3</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ORBImpl$4</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ORBImpl$ConfigParser</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 122)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 707)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2002, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.orb;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.applet.Applet;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import java.io.IOException;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import java.lang.reflect.Constructor;
+<i>33</i>&nbsp;import java.lang.reflect.Field;
+<i>34</i>&nbsp;import java.lang.reflect.Modifier;
+<i>35</i>&nbsp;import java.lang.reflect.InvocationTargetException;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import java.util.Set;
+<i>38</i>&nbsp;import java.util.HashSet;
+<i>39</i>&nbsp;import java.util.ArrayList;
+<i>40</i>&nbsp;import java.util.Iterator;
+<i>41</i>&nbsp;import java.util.Properties;
+<i>42</i>&nbsp;import java.util.Vector;
+<i>43</i>&nbsp;import java.util.Hashtable;
+<i>44</i>&nbsp;import java.util.Map;
+<i>45</i>&nbsp;import java.util.HashMap;
+<i>46</i>&nbsp;import java.util.LinkedList;
+<i>47</i>&nbsp;import java.util.Collection;
+<i>48</i>&nbsp;import java.util.Collections;
+<i>49</i>&nbsp;import java.util.StringTokenizer;
+<i>50</i>&nbsp;import java.util.Enumeration;
+<i>51</i>&nbsp;import java.util.WeakHashMap;
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;import java.net.InetAddress;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;import java.security.PrivilegedAction;
+<i>56</i>&nbsp;import java.security.AccessController;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;import javax.rmi.CORBA.Util;
+<i>59</i>&nbsp;import javax.rmi.CORBA.ValueHandler;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;import org.omg.CORBA.Context;
+<i>62</i>&nbsp;import org.omg.CORBA.ContextList;
+<i>63</i>&nbsp;import org.omg.CORBA.Environment;
+<i>64</i>&nbsp;import org.omg.CORBA.ExceptionList;
+<i>65</i>&nbsp;import org.omg.CORBA.ORBPackage.InvalidName;
+<i>66</i>&nbsp;import org.omg.CORBA.NVList;
+<i>67</i>&nbsp;import org.omg.CORBA.TCKind;
+<i>68</i>&nbsp;import org.omg.CORBA.NamedValue;
+<i>69</i>&nbsp;import org.omg.CORBA.Request;
+<i>70</i>&nbsp;import org.omg.CORBA.SystemException;
+<i>71</i>&nbsp;import org.omg.CORBA.CompletionStatus;
+<i>72</i>&nbsp;import org.omg.CORBA.TypeCode;
+<i>73</i>&nbsp;import org.omg.CORBA.Any;
+<i>74</i>&nbsp;import org.omg.CORBA.StructMember;
+<i>75</i>&nbsp;import org.omg.CORBA.UnionMember;
+<i>76</i>&nbsp;import org.omg.CORBA.ValueMember;
+<i>77</i>&nbsp;import org.omg.CORBA.BAD_PARAM;
+<i>78</i>&nbsp;import org.omg.CORBA.MARSHAL;
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;import org.omg.CORBA.portable.ValueFactory;
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;import org.omg.CORBA.ORBPackage.InvalidName;
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;import com.sun.org.omg.SendingContext.CodeBase;
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;import com.sun.corba.se.pept.broker.Broker;
+<i>87</i>&nbsp;import com.sun.corba.se.pept.protocol.ClientInvocationInfo;
+<i>88</i>&nbsp;import com.sun.corba.se.pept.transport.ContactInfo;
+<i>89</i>&nbsp;import com.sun.corba.se.pept.transport.ConnectionCache;
+<i>90</i>&nbsp;import com.sun.corba.se.pept.transport.TransportManager;
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;import com.sun.corba.se.spi.ior.IOR;
+<i>93</i>&nbsp;import com.sun.corba.se.spi.ior.IdentifiableFactoryFinder;
+<i>94</i>&nbsp;import com.sun.corba.se.spi.ior.TaggedComponentFactoryFinder;
+<i>95</i>&nbsp;import com.sun.corba.se.spi.ior.IORFactories;
+<i>96</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectKey;
+<i>97</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectKeyFactory;
+<i>98</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.IIOPFactories;
+<i>99</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.GIOPVersion;
+<i>100</i>&nbsp;import com.sun.corba.se.spi.oa.OAInvocationInfo;
+<i>101</i>&nbsp;import com.sun.corba.se.spi.oa.ObjectAdapterFactory;
+<i>102</i>&nbsp;import com.sun.corba.se.spi.orb.DataCollector;
+<i>103</i>&nbsp;import com.sun.corba.se.spi.orb.Operation;
+<i>104</i>&nbsp;import com.sun.corba.se.spi.orb.ORBData;
+<i>105</i>&nbsp;import com.sun.corba.se.spi.orb.ORBConfigurator;
+<i>106</i>&nbsp;import com.sun.corba.se.spi.orb.ParserImplBase;
+<i>107</i>&nbsp;import com.sun.corba.se.spi.orb.PropertyParser;
+<i>108</i>&nbsp;import com.sun.corba.se.spi.orb.OperationFactory;
+<i>109</i>&nbsp;import com.sun.corba.se.spi.orb.ORBVersion;
+<i>110</i>&nbsp;import com.sun.corba.se.spi.orb.ORBVersionFactory;
+<i>111</i>&nbsp;import com.sun.corba.se.spi.orbutil.closure.ClosureFactory;
+<i>112</i>&nbsp;import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
+<i>113</i>&nbsp;import com.sun.corba.se.spi.protocol.ClientDelegateFactory;
+<i>114</i>&nbsp;import com.sun.corba.se.spi.protocol.RequestDispatcherRegistry;
+<i>115</i>&nbsp;import com.sun.corba.se.spi.protocol.CorbaServerRequestDispatcher;
+<i>116</i>&nbsp;import com.sun.corba.se.spi.protocol.RequestDispatcherDefault;
+<i>117</i>&nbsp;import com.sun.corba.se.spi.protocol.PIHandler;
+<i>118</i>&nbsp;import com.sun.corba.se.spi.protocol.CorbaMessageMediator;
+<i>119</i>&nbsp;import com.sun.corba.se.spi.protocol.ForwardException;
+<i>120</i>&nbsp;import com.sun.corba.se.spi.resolver.Resolver;
+<i>121</i>&nbsp;import com.sun.corba.se.spi.resolver.LocalResolver;
+<i>122</i>&nbsp;import com.sun.corba.se.spi.orb.StringPair;
+<i>123</i>&nbsp;import com.sun.corba.se.spi.orb.StringPair;
+<i>124</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaContactInfoListFactory;
+<i>125</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaTransportManager;
+<i>126</i>&nbsp;import com.sun.corba.se.spi.legacy.connection.LegacyServerSocketManager;
+<i>127</i>&nbsp;import com.sun.corba.se.spi.copyobject.CopierManager;
+<i>128</i>&nbsp;import com.sun.corba.se.spi.presentation.rmi.PresentationDefaults;
+<i>129</i>&nbsp;import com.sun.corba.se.spi.presentation.rmi.PresentationManager;
+<i>130</i>&nbsp;import com.sun.corba.se.spi.presentation.rmi.StubAdapter;
+<i>131</i>&nbsp;import com.sun.corba.se.spi.servicecontext.ServiceContextRegistry;
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;import com.sun.corba.se.impl.corba.TypeCodeFactory;
+<i>134</i>&nbsp;import com.sun.corba.se.impl.corba.TypeCodeImpl;
+<i>135</i>&nbsp;import com.sun.corba.se.impl.corba.NVListImpl;
+<i>136</i>&nbsp;import com.sun.corba.se.impl.corba.ExceptionListImpl;
+<i>137</i>&nbsp;import com.sun.corba.se.impl.corba.ContextListImpl;
+<i>138</i>&nbsp;import com.sun.corba.se.impl.corba.NamedValueImpl;
+<i>139</i>&nbsp;import com.sun.corba.se.impl.corba.EnvironmentImpl;
+<i>140</i>&nbsp;import com.sun.corba.se.impl.corba.AsynchInvoke;
+<i>141</i>&nbsp;import com.sun.corba.se.impl.corba.AnyImpl;
+<i>142</i>&nbsp;import com.sun.corba.se.impl.corba.RequestImpl;
+<i>143</i>&nbsp;import com.sun.corba.se.impl.dynamicany.DynAnyFactoryImpl;
+<i>144</i>&nbsp;import com.sun.corba.se.impl.encoding.EncapsOutputStream;
+<i>145</i>&nbsp;import com.sun.corba.se.impl.encoding.CachedCodeBase;
+<i>146</i>&nbsp;import com.sun.corba.se.impl.interceptors.PIHandlerImpl;
+<i>147</i>&nbsp;import com.sun.corba.se.impl.interceptors.PINoOpHandlerImpl;
+<i>148</i>&nbsp;import com.sun.corba.se.impl.ior.TaggedComponentFactoryFinderImpl;
+<i>149</i>&nbsp;import com.sun.corba.se.impl.ior.TaggedProfileFactoryFinderImpl;
+<i>150</i>&nbsp;import com.sun.corba.se.impl.ior.TaggedProfileTemplateFactoryFinderImpl;
+<i>151</i>&nbsp;import com.sun.corba.se.impl.oa.toa.TOAFactory;
+<i>152</i>&nbsp;import com.sun.corba.se.impl.oa.poa.BadServerIdHandler;
+<i>153</i>&nbsp;import com.sun.corba.se.impl.oa.poa.DelegateImpl;
+<i>154</i>&nbsp;import com.sun.corba.se.impl.oa.poa.POAFactory;
+<i>155</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBConstants;
+<i>156</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBUtility;
+<i>157</i>&nbsp;import com.sun.corba.se.impl.orbutil.StackImpl;
+<i>158</i>&nbsp;import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolImpl;
+<i>159</i>&nbsp;import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
+<i>160</i>&nbsp;import com.sun.corba.se.impl.protocol.RequestDispatcherRegistryImpl;
+<i>161</i>&nbsp;import com.sun.corba.se.impl.protocol.CorbaInvocationInfo;
+<i>162</i>&nbsp;import com.sun.corba.se.impl.transport.CorbaTransportManagerImpl;
+<i>163</i>&nbsp;import com.sun.corba.se.impl.legacy.connection.LegacyServerSocketManagerImpl;
+<i>164</i>&nbsp;import com.sun.corba.se.impl.util.Utility;
+<i>165</i>&nbsp;import com.sun.corba.se.impl.logging.ORBUtilSystemException;
+<i>166</i>&nbsp;import com.sun.corba.se.impl.copyobject.CopierManagerImpl;
+<i>167</i>&nbsp;import com.sun.corba.se.impl.presentation.rmi.PresentationManagerImpl;
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;/**
+<i>170</i>&nbsp; * The JavaIDL ORB implementation.
+<i>171</i>&nbsp; */
+<i>172</i>&nbsp;public class ORBImpl extends com.sun.corba.se.spi.orb.ORB
+<i>173</i>&nbsp;{
+<i>174</i>&nbsp;    protected TransportManager transportManager;
+<i>175</i>&nbsp;    protected LegacyServerSocketManager legacyServerSocketManager;
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;    private ThreadLocal OAInvocationInfoStack ;
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;    private ThreadLocal clientInvocationInfoStack ;
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;    // pure java orb, caching the servant IOR per ORB
+<i>182</i>&nbsp;    private static IOR codeBaseIOR ;
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;    // Vector holding deferred Requests
+<i>185</i>&nbsp;    private Vector            dynamicRequests ;
+<i>186</i>&nbsp;    private SynchVariable     svResponseReceived ;
+<i>187</i>&nbsp;
+<b class="nc"><i>188</i>&nbsp;    private java.lang.Object runObj = new java.lang.Object();</b>
+<b class="nc"><i>189</i>&nbsp;    private java.lang.Object shutdownObj = new java.lang.Object();</b>
+<b class="nc"><i>190</i>&nbsp;    private java.lang.Object waitForCompletionObj = new java.lang.Object();</b>
+<i>191</i>&nbsp;    private static final byte STATUS_OPERATING = 1;
+<i>192</i>&nbsp;    private static final byte STATUS_SHUTTING_DOWN = 2;
+<i>193</i>&nbsp;    private static final byte STATUS_SHUTDOWN = 3;
+<i>194</i>&nbsp;    private static final byte STATUS_DESTROYED = 4;
+<b class="nc"><i>195</i>&nbsp;    private byte status = STATUS_OPERATING;</b>
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;    // XXX Should we move invocation tracking to the first level server dispatcher?
+<b class="nc"><i>198</i>&nbsp;    private java.lang.Object invocationObj = new java.lang.Object();</b>
+<b class="nc"><i>199</i>&nbsp;    private int numInvocations = 0;</b>
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;    // thread local variable to store a boolean to detect deadlock in
+<i>202</i>&nbsp;    // ORB.shutdown(true).
+<b class="nc"><i>203</i>&nbsp;    private ThreadLocal isProcessingInvocation = new ThreadLocal () {</b>
+<i>204</i>&nbsp;        protected java.lang.Object initialValue() {
+<b class="nc"><i>205</i>&nbsp;            return Boolean.FALSE;</b>
+<i>206</i>&nbsp;        }
+<i>207</i>&nbsp;    };
+<i>208</i>&nbsp;
+<i>209</i>&nbsp;    // This map is caching TypeCodes created for a certain class (key)
+<i>210</i>&nbsp;    // and is used in Util.writeAny()
+<i>211</i>&nbsp;    private Map typeCodeForClassMap ;
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;    // Cache to hold ValueFactories (Helper classes) keyed on repository ids
+<b class="nc"><i>214</i>&nbsp;    private Hashtable valueFactoryCache = new Hashtable();</b>
+<i>215</i>&nbsp;
+<i>216</i>&nbsp;    // thread local variable to store the current ORB version.
+<i>217</i>&nbsp;    // default ORB version is the version of ORB with correct Rep-id
+<i>218</i>&nbsp;    // changes
+<i>219</i>&nbsp;    private ThreadLocal orbVersionThreadLocal ;
+<i>220</i>&nbsp;
+<i>221</i>&nbsp;    private RequestDispatcherRegistry requestDispatcherRegistry ;
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;    private CopierManager copierManager ;
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;    private int transientServerId ;
+<i>226</i>&nbsp;
+<i>227</i>&nbsp;    private ServiceContextRegistry serviceContextRegistry ;
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;    // Needed here to implement connect/disconnect
+<i>230</i>&nbsp;    private TOAFactory toaFactory ;
+<i>231</i>&nbsp;
+<i>232</i>&nbsp;    // Needed here for set_delegate
+<i>233</i>&nbsp;    private POAFactory poaFactory ;
+<i>234</i>&nbsp;
+<i>235</i>&nbsp;    // The interceptor handler, which provides portable interceptor services for
+<i>236</i>&nbsp;    // subcontracts and object adapters.
+<i>237</i>&nbsp;    private PIHandler pihandler ;
+<i>238</i>&nbsp;
+<i>239</i>&nbsp;    private ORBData configData ;
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;    private BadServerIdHandler badServerIdHandler ;
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;    private ClientDelegateFactory clientDelegateFactory ;
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;    private CorbaContactInfoListFactory corbaContactInfoListFactory ;
+<i>246</i>&nbsp;
+<i>247</i>&nbsp;    // All access to resolver, localResolver, and urlOperation must be protected using
+<i>248</i>&nbsp;    // resolverLock.  Do not hold the ORBImpl lock while accessing
+<i>249</i>&nbsp;    // resolver, or deadlocks may occur.
+<i>250</i>&nbsp;    // Note that we now have separate locks for each resolver type.  This is due
+<i>251</i>&nbsp;    // to bug 6980681 and 6238477, which was caused by a deadlock while resolving a
+<i>252</i>&nbsp;    // corbaname: URL that contained a reference to the same ORB as the
+<i>253</i>&nbsp;    // ORB making the call to string_to_object.  This caused a deadlock between the
+<i>254</i>&nbsp;    // client thread holding the single lock for access to the urlOperation,
+<i>255</i>&nbsp;    // and the server thread handling the client is_a request waiting on the
+<i>256</i>&nbsp;    // same lock to access the localResolver.
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;
+<i>259</i>&nbsp;    // Used for resolver_initial_references and list_initial_services
+<i>260</i>&nbsp;    private Resolver resolver ;
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;    // Used for register_initial_references
+<i>263</i>&nbsp;    private LocalResolver localResolver ;
+<i>264</i>&nbsp;
+<i>265</i>&nbsp;    // Converts strings to object references for resolvers and string_to_object
+<i>266</i>&nbsp;    private Operation urlOperation ;
+<b class="nc"><i>267</i>&nbsp;    private final Object urlOperationLock = new java.lang.Object() ;</b>
+<i>268</i>&nbsp;
+<i>269</i>&nbsp;    private CorbaServerRequestDispatcher insNamingDelegate ;
+<i>270</i>&nbsp;
+<i>271</i>&nbsp;    // resolverLock must be used for all access to either resolver or
+<i>272</i>&nbsp;    // localResolver, since it is possible for the resolver to indirectly
+<i>273</i>&nbsp;    // refer to the localResolver.  Also used to protect access to
+<i>274</i>&nbsp;    // insNamingDelegate.
+<b class="nc"><i>275</i>&nbsp;    private final Object resolverLock = new Object() ;</b>
+<i>276</i>&nbsp;
+<i>277</i>&nbsp;    private TaggedComponentFactoryFinder taggedComponentFactoryFinder ;
+<i>278</i>&nbsp;
+<i>279</i>&nbsp;    private IdentifiableFactoryFinder taggedProfileFactoryFinder ;
+<i>280</i>&nbsp;
+<i>281</i>&nbsp;    private IdentifiableFactoryFinder taggedProfileTemplateFactoryFinder ;
+<i>282</i>&nbsp;
+<i>283</i>&nbsp;    private ObjectKeyFactory objectKeyFactory ;
+<i>284</i>&nbsp;
+<b class="nc"><i>285</i>&nbsp;    private boolean orbOwnsThreadPoolManager = false ;</b>
+<i>286</i>&nbsp;
+<i>287</i>&nbsp;    private ThreadPoolManager threadpoolMgr;
+<i>288</i>&nbsp;
+<i>289</i>&nbsp;    private void dprint( String msg )
+<i>290</i>&nbsp;    {
+<b class="nc"><i>291</i>&nbsp;        ORBUtility.dprint( this, msg ) ;</b>
+<i>292</i>&nbsp;    }
+<i>293</i>&nbsp;
+<i>294</i>&nbsp;    ////////////////////////////////////////////////////
+<i>295</i>&nbsp;    //
+<i>296</i>&nbsp;    // NOTE:
+<i>297</i>&nbsp;    //
+<i>298</i>&nbsp;    // Methods that are synchronized MUST stay synchronized.
+<i>299</i>&nbsp;    //
+<i>300</i>&nbsp;    // Methods that are NOT synchronized must stay that way to avoid deadlock.
+<i>301</i>&nbsp;    //
+<i>302</i>&nbsp;    //
+<i>303</i>&nbsp;    // REVISIT:
+<i>304</i>&nbsp;    //
+<i>305</i>&nbsp;    // checkShutDownState - lock on different object - and normalize usage.
+<i>306</i>&nbsp;    // starting/FinishDispatch and Shutdown
+<i>307</i>&nbsp;    //
+<i>308</i>&nbsp;
+<i>309</i>&nbsp;    public ORBData getORBData()
+<i>310</i>&nbsp;    {
+<b class="nc"><i>311</i>&nbsp;        return configData ;</b>
+<i>312</i>&nbsp;    }
+<i>313</i>&nbsp;
+<i>314</i>&nbsp;    public PIHandler getPIHandler()
+<i>315</i>&nbsp;    {
+<b class="nc"><i>316</i>&nbsp;        return pihandler ;</b>
+<i>317</i>&nbsp;    }
+<i>318</i>&nbsp;
+<i>319</i>&nbsp;    /**
+<i>320</i>&nbsp;     * Create a new ORB. Should be followed by the appropriate
+<i>321</i>&nbsp;     * set_parameters() call.
+<i>322</i>&nbsp;     */
+<i>323</i>&nbsp;    public ORBImpl()
+<b class="nc"><i>324</i>&nbsp;    {</b>
+<i>325</i>&nbsp;        // All initialization is done through set_parameters().
+<i>326</i>&nbsp;    }
+<i>327</i>&nbsp;
+<i>328</i>&nbsp;    public ORBVersion getORBVersion()
+<i>329</i>&nbsp;    {
+<b class="nc"><i>330</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>331</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>332</i>&nbsp;        }</b>
+<b class="nc"><i>333</i>&nbsp;        return (ORBVersion)(orbVersionThreadLocal.get()) ;</b>
+<i>334</i>&nbsp;    }
+<i>335</i>&nbsp;
+<i>336</i>&nbsp;    public void setORBVersion(ORBVersion verObj)
+<i>337</i>&nbsp;    {
+<b class="nc"><i>338</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>339</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>340</i>&nbsp;        }</b>
+<b class="nc"><i>341</i>&nbsp;        orbVersionThreadLocal.set(verObj);</b>
+<i>342</i>&nbsp;    }
+<i>343</i>&nbsp;
+<i>344</i>&nbsp;/****************************************************************************
+<i>345</i>&nbsp; * The following methods are ORB initialization
+<i>346</i>&nbsp; ****************************************************************************/
+<i>347</i>&nbsp;
+<i>348</i>&nbsp;    // preInit initializes all non-pluggable ORB data that is independent
+<i>349</i>&nbsp;    // of the property parsing.
+<i>350</i>&nbsp;    private void preInit( String[] params, Properties props )
+<i>351</i>&nbsp;    {
+<i>352</i>&nbsp;        // Before ORBConfiguration we need to set a PINoOpHandlerImpl,
+<i>353</i>&nbsp;        // because PersisentServer Initialization inside configurator will
+<i>354</i>&nbsp;        // invoke orb.resolve_initial_references( ) which will result in a
+<i>355</i>&nbsp;        // check on piHandler to invoke Interceptors. We do not want any
+<i>356</i>&nbsp;        // Interceptors to be invoked before the complete ORB initialization.
+<i>357</i>&nbsp;        // piHandler will be replaced by a real PIHandler implementation at the
+<i>358</i>&nbsp;        // end of this method.
+<b class="nc"><i>359</i>&nbsp;        pihandler = new PINoOpHandlerImpl( );</b>
+<i>360</i>&nbsp;
+<i>361</i>&nbsp;        // This is the unique id of this server (JVM). Multiple incarnations
+<i>362</i>&nbsp;        // of this server will get different ids.
+<i>363</i>&nbsp;        // Compute transientServerId = milliseconds since Jan 1, 1970
+<i>364</i>&nbsp;        // Note: transientServerId will wrap in about 2^32 / 86400000 = 49.7 days.
+<i>365</i>&nbsp;        // If two ORBS are started at the same time then there is a possibility
+<i>366</i>&nbsp;        // of having the same transientServerId. This may result in collision
+<i>367</i>&nbsp;        // and may be a problem in ior.isLocal() check to see if the object
+<i>368</i>&nbsp;        // belongs to the current ORB. This problem is taken care of by checking
+<i>369</i>&nbsp;        // to see if the IOR port matches ORB server port in legacyIsLocalServerPort()
+<i>370</i>&nbsp;        // method.
+<i>371</i>&nbsp;        //
+<i>372</i>&nbsp;        // XXX need to move server ID to a string for CORBA 3.0.  At that point,
+<i>373</i>&nbsp;        // make this more unique (possibly use java.rmi.server.UID).
+<b class="nc"><i>374</i>&nbsp;        transientServerId = (int)System.currentTimeMillis();</b>
+<i>375</i>&nbsp;
+<b class="nc"><i>376</i>&nbsp;        orbVersionThreadLocal  = new ThreadLocal () {</b>
+<i>377</i>&nbsp;            protected java.lang.Object initialValue() {
+<i>378</i>&nbsp;                // set default to version of the ORB with correct Rep-ids
+<b class="nc"><i>379</i>&nbsp;                return ORBVersionFactory.getORBVersion() ;</b>
+<i>380</i>&nbsp;            }
+<i>381</i>&nbsp;        };
+<i>382</i>&nbsp;
+<i>383</i>&nbsp;
+<b class="nc"><i>384</i>&nbsp;        requestDispatcherRegistry = new RequestDispatcherRegistryImpl(</b>
+<i>385</i>&nbsp;            this, ORBConstants.DEFAULT_SCID);
+<b class="nc"><i>386</i>&nbsp;        copierManager = new CopierManagerImpl( this ) ;</b>
+<i>387</i>&nbsp;
+<b class="nc"><i>388</i>&nbsp;        taggedComponentFactoryFinder =</b>
+<i>389</i>&nbsp;            new TaggedComponentFactoryFinderImpl(this) ;
+<b class="nc"><i>390</i>&nbsp;        taggedProfileFactoryFinder =</b>
+<i>391</i>&nbsp;            new TaggedProfileFactoryFinderImpl(this) ;
+<b class="nc"><i>392</i>&nbsp;        taggedProfileTemplateFactoryFinder =</b>
+<i>393</i>&nbsp;            new TaggedProfileTemplateFactoryFinderImpl(this) ;
+<i>394</i>&nbsp;
+<b class="nc"><i>395</i>&nbsp;        dynamicRequests = new Vector();</b>
+<b class="nc"><i>396</i>&nbsp;        svResponseReceived = new SynchVariable();</b>
+<i>397</i>&nbsp;
+<b class="nc"><i>398</i>&nbsp;        OAInvocationInfoStack =</b>
+<b class="nc"><i>399</i>&nbsp;            new ThreadLocal () {</b>
+<i>400</i>&nbsp;                protected java.lang.Object initialValue()
+<i>401</i>&nbsp;                {
+<b class="nc"><i>402</i>&nbsp;                    return new StackImpl();</b>
+<i>403</i>&nbsp;                }
+<i>404</i>&nbsp;            };
+<i>405</i>&nbsp;
+<b class="nc"><i>406</i>&nbsp;        clientInvocationInfoStack =</b>
+<b class="nc"><i>407</i>&nbsp;            new ThreadLocal() {</b>
+<i>408</i>&nbsp;                protected java.lang.Object initialValue() {
+<b class="nc"><i>409</i>&nbsp;                    return new StackImpl();</b>
+<i>410</i>&nbsp;                }
+<i>411</i>&nbsp;            };
+<i>412</i>&nbsp;
+<b class="nc"><i>413</i>&nbsp;        serviceContextRegistry = new ServiceContextRegistry( this ) ;</b>
+<i>414</i>&nbsp;    }
+<i>415</i>&nbsp;
+<i>416</i>&nbsp;    protected void setDebugFlags( String[] args )
+<i>417</i>&nbsp;    {
+<b class="nc"><i>418</i>&nbsp;        for (int ctr=0; ctr&lt;args.length; ctr++ ) {</b>
+<b class="nc"><i>419</i>&nbsp;            String token = args[ctr] ;</b>
+<i>420</i>&nbsp;
+<i>421</i>&nbsp;            // If there is a public boolean data member in this class
+<i>422</i>&nbsp;            // named token + &quot;DebugFlag&quot;, set it to true.
+<i>423</i>&nbsp;            try {
+<b class="nc"><i>424</i>&nbsp;                Field fld = this.getClass().getField( token + &quot;DebugFlag&quot; ) ;</b>
+<b class="nc"><i>425</i>&nbsp;                int mod = fld.getModifiers() ;</b>
+<b class="nc"><i>426</i>&nbsp;                if (Modifier.isPublic( mod ) &amp;&amp; !Modifier.isStatic( mod ))</b>
+<b class="nc"><i>427</i>&nbsp;                    if (fld.getType() == boolean.class)</b>
+<b class="nc"><i>428</i>&nbsp;                        fld.setBoolean( this, true ) ;</b>
+<b class="nc"><i>429</i>&nbsp;            } catch (Exception exc) {</b>
+<i>430</i>&nbsp;                // ignore it XXX log this as info
+<b class="nc"><i>431</i>&nbsp;            }</b>
+<i>432</i>&nbsp;        }
+<i>433</i>&nbsp;    }
+<i>434</i>&nbsp;
+<i>435</i>&nbsp;    // Class that defines a parser that gets the name of the
+<i>436</i>&nbsp;    // ORBConfigurator class.
+<b class="nc"><i>437</i>&nbsp;    private static class ConfigParser extends ParserImplBase {</b>
+<i>438</i>&nbsp;        // The default here is the ORBConfiguratorImpl that we define,
+<i>439</i>&nbsp;        // but this can be replaced.
+<b class="nc"><i>440</i>&nbsp;        public Class configurator = ORBConfiguratorImpl.class ;</b>
+<i>441</i>&nbsp;
+<i>442</i>&nbsp;        public PropertyParser makeParser()
+<i>443</i>&nbsp;        {
+<b class="nc"><i>444</i>&nbsp;            PropertyParser parser = new PropertyParser() ;</b>
+<b class="nc"><i>445</i>&nbsp;            parser.add( ORBConstants.SUN_PREFIX + &quot;ORBConfigurator&quot;,</b>
+<b class="nc"><i>446</i>&nbsp;                OperationFactory.classAction(), &quot;configurator&quot; ) ;</b>
+<b class="nc"><i>447</i>&nbsp;            return parser ;</b>
+<i>448</i>&nbsp;        }
+<i>449</i>&nbsp;    }
+<i>450</i>&nbsp;
+<i>451</i>&nbsp;    private void postInit( String[] params, DataCollector dataCollector )
+<i>452</i>&nbsp;    {
+<i>453</i>&nbsp;        // First, create the standard ORB config data.
+<i>454</i>&nbsp;        // This must be initialized before the ORBConfigurator
+<i>455</i>&nbsp;        // is executed.
+<b class="nc"><i>456</i>&nbsp;        configData = new ORBDataParserImpl( this, dataCollector) ;</b>
+<i>457</i>&nbsp;
+<i>458</i>&nbsp;        // Set the debug flags early so they can be used by other
+<i>459</i>&nbsp;        // parts of the initialization.
+<b class="nc"><i>460</i>&nbsp;        setDebugFlags( configData.getORBDebugFlags() ) ;</b>
+<i>461</i>&nbsp;
+<i>462</i>&nbsp;        // REVISIT: this should go away after more transport init cleanup
+<i>463</i>&nbsp;        // and going to ORT based ORBD.
+<b class="nc"><i>464</i>&nbsp;        getTransportManager();</b>
+<b class="nc"><i>465</i>&nbsp;        getLegacyServerSocketManager();</b>
+<i>466</i>&nbsp;
+<i>467</i>&nbsp;        // Create a parser to get the configured ORBConfigurator.
+<b class="nc"><i>468</i>&nbsp;        ConfigParser parser = new ConfigParser() ;</b>
+<b class="nc"><i>469</i>&nbsp;        parser.init( dataCollector ) ;</b>
+<i>470</i>&nbsp;
+<b class="nc"><i>471</i>&nbsp;        ORBConfigurator configurator =  null ;</b>
+<i>472</i>&nbsp;        try {
+<b class="nc"><i>473</i>&nbsp;            configurator =</b>
+<b class="nc"><i>474</i>&nbsp;                (ORBConfigurator)(parser.configurator.newInstance()) ;</b>
+<b class="nc"><i>475</i>&nbsp;        } catch (Exception iexc) {</b>
+<b class="nc"><i>476</i>&nbsp;            throw wrapper.badOrbConfigurator( iexc, parser.configurator.getName() ) ;</b>
+<b class="nc"><i>477</i>&nbsp;        }</b>
+<i>478</i>&nbsp;
+<i>479</i>&nbsp;        // Finally, run the configurator.  Note that the default implementation allows
+<i>480</i>&nbsp;        // other configurators with their own parsers to run,
+<i>481</i>&nbsp;        // using the same DataCollector.
+<i>482</i>&nbsp;        try {
+<b class="nc"><i>483</i>&nbsp;            configurator.configure( dataCollector, this ) ;</b>
+<b class="nc"><i>484</i>&nbsp;        } catch (Exception exc) {</b>
+<b class="nc"><i>485</i>&nbsp;            throw wrapper.orbConfiguratorError( exc ) ;</b>
+<b class="nc"><i>486</i>&nbsp;        }</b>
+<i>487</i>&nbsp;
+<i>488</i>&nbsp;        // Last of all, create the PIHandler and run the ORB initializers.
+<b class="nc"><i>489</i>&nbsp;        pihandler = new PIHandlerImpl( this, params) ;</b>
+<b class="nc"><i>490</i>&nbsp;        pihandler.initialize() ;</b>
+<i>491</i>&nbsp;
+<i>492</i>&nbsp;        // Initialize the thread manager pool and byte buffer pool
+<i>493</i>&nbsp;        // so they may be initialized &amp; accessed without synchronization
+<b class="nc"><i>494</i>&nbsp;        getThreadPoolManager();</b>
+<i>495</i>&nbsp;
+<b class="nc"><i>496</i>&nbsp;        super.getByteBufferPool();</b>
+<i>497</i>&nbsp;    }
+<i>498</i>&nbsp;
+<i>499</i>&nbsp;    private synchronized POAFactory getPOAFactory()
+<i>500</i>&nbsp;    {
+<b class="nc"><i>501</i>&nbsp;        if (poaFactory == null) {</b>
+<b class="nc"><i>502</i>&nbsp;            poaFactory = (POAFactory)requestDispatcherRegistry.getObjectAdapterFactory(</b>
+<i>503</i>&nbsp;                ORBConstants.TRANSIENT_SCID ) ;
+<i>504</i>&nbsp;        }
+<i>505</i>&nbsp;
+<b class="nc"><i>506</i>&nbsp;        return poaFactory ;</b>
+<i>507</i>&nbsp;    }
+<i>508</i>&nbsp;
+<i>509</i>&nbsp;    private synchronized TOAFactory getTOAFactory()
+<i>510</i>&nbsp;    {
+<b class="nc"><i>511</i>&nbsp;        if (toaFactory == null) {</b>
+<b class="nc"><i>512</i>&nbsp;            toaFactory = (TOAFactory)requestDispatcherRegistry.getObjectAdapterFactory(</b>
+<i>513</i>&nbsp;                ORBConstants.TOA_SCID ) ;
+<i>514</i>&nbsp;        }
+<i>515</i>&nbsp;
+<b class="nc"><i>516</i>&nbsp;        return toaFactory ;</b>
+<i>517</i>&nbsp;    }
+<i>518</i>&nbsp;
+<i>519</i>&nbsp;    public void set_parameters( Properties props )
+<i>520</i>&nbsp;    {
+<b class="nc"><i>521</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>522</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>523</i>&nbsp;        }</b>
+<b class="nc"><i>524</i>&nbsp;        preInit( null, props ) ;</b>
+<b class="nc"><i>525</i>&nbsp;        DataCollector dataCollector =</b>
+<b class="nc"><i>526</i>&nbsp;            DataCollectorFactory.create( props, getLocalHostName() ) ;</b>
+<b class="nc"><i>527</i>&nbsp;        postInit( null, dataCollector ) ;</b>
+<i>528</i>&nbsp;    }
+<i>529</i>&nbsp;
+<i>530</i>&nbsp;    protected void set_parameters(Applet app, Properties props)
+<i>531</i>&nbsp;    {
+<b class="nc"><i>532</i>&nbsp;        preInit( null, props ) ;</b>
+<b class="nc"><i>533</i>&nbsp;        DataCollector dataCollector =</b>
+<b class="nc"><i>534</i>&nbsp;            DataCollectorFactory.create( app, props, getLocalHostName() ) ;</b>
+<b class="nc"><i>535</i>&nbsp;        postInit( null, dataCollector ) ;</b>
+<i>536</i>&nbsp;    }
+<i>537</i>&nbsp;
+<i>538</i>&nbsp;    protected void set_parameters (String[] params, Properties props)
+<i>539</i>&nbsp;    {
+<b class="nc"><i>540</i>&nbsp;        preInit( params, props ) ;</b>
+<b class="nc"><i>541</i>&nbsp;        DataCollector dataCollector =</b>
+<b class="nc"><i>542</i>&nbsp;            DataCollectorFactory.create( params, props, getLocalHostName() ) ;</b>
+<b class="nc"><i>543</i>&nbsp;        postInit( params, dataCollector ) ;</b>
+<i>544</i>&nbsp;    }
+<i>545</i>&nbsp;
+<i>546</i>&nbsp;/****************************************************************************
+<i>547</i>&nbsp; * The following methods are standard public CORBA ORB APIs
+<i>548</i>&nbsp; ****************************************************************************/
+<i>549</i>&nbsp;
+<i>550</i>&nbsp;    public synchronized org.omg.CORBA.portable.OutputStream create_output_stream()
+<i>551</i>&nbsp;    {
+<b class="nc"><i>552</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>553</i>&nbsp;        return sun.corba.OutputStreamFactory.newEncapsOutputStream(this);</b>
+<i>554</i>&nbsp;    }
+<i>555</i>&nbsp;
+<i>556</i>&nbsp;    /**
+<i>557</i>&nbsp;     * Get a Current pseudo-object.
+<i>558</i>&nbsp;     * The Current interface is used to manage thread-specific
+<i>559</i>&nbsp;     * information for use by the transactions, security and other
+<i>560</i>&nbsp;     * services. This method is deprecated,
+<i>561</i>&nbsp;     * and replaced by ORB.resolve_initial_references(&quot;NameOfCurrentObject&quot;);
+<i>562</i>&nbsp;     *
+<i>563</i>&nbsp;     * @return          a Current pseudo-object.
+<i>564</i>&nbsp;     * @deprecated
+<i>565</i>&nbsp;     */
+<i>566</i>&nbsp;    public synchronized org.omg.CORBA.Current get_current()
+<i>567</i>&nbsp;    {
+<b class="nc"><i>568</i>&nbsp;        checkShutdownState();</b>
+<i>569</i>&nbsp;
+<i>570</i>&nbsp;        /* _REVISIT_
+<i>571</i>&nbsp;           The implementation of get_current is not clear. How would
+<i>572</i>&nbsp;           ORB know whether the caller wants a Current for transactions
+<i>573</i>&nbsp;           or security ?? Or is it assumed that there is just one
+<i>574</i>&nbsp;           implementation for both ? If Current is thread-specific,
+<i>575</i>&nbsp;           then it should not be instantiated; so where does the
+<i>576</i>&nbsp;           ORB get a Current ?
+<i>577</i>&nbsp;
+<i>578</i>&nbsp;           This should probably be deprecated. */
+<i>579</i>&nbsp;
+<b class="nc"><i>580</i>&nbsp;        throw wrapper.genericNoImpl() ;</b>
+<i>581</i>&nbsp;    }
+<i>582</i>&nbsp;
+<i>583</i>&nbsp;    /**
+<i>584</i>&nbsp;     * Create an NVList
+<i>585</i>&nbsp;     *
+<i>586</i>&nbsp;     * @param count     size of list to create
+<i>587</i>&nbsp;     * @result          NVList created
+<i>588</i>&nbsp;     *
+<i>589</i>&nbsp;     * @see NVList
+<i>590</i>&nbsp;     */
+<i>591</i>&nbsp;    public synchronized NVList create_list(int count)
+<i>592</i>&nbsp;    {
+<b class="nc"><i>593</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>594</i>&nbsp;        return new NVListImpl(this, count);</b>
+<i>595</i>&nbsp;    }
+<i>596</i>&nbsp;
+<i>597</i>&nbsp;    /**
+<i>598</i>&nbsp;     * Create an NVList corresponding to an OperationDef
+<i>599</i>&nbsp;     *
+<i>600</i>&nbsp;     * @param oper      operation def to use to create list
+<i>601</i>&nbsp;     * @result          NVList created
+<i>602</i>&nbsp;     *
+<i>603</i>&nbsp;     * @see NVList
+<i>604</i>&nbsp;     */
+<i>605</i>&nbsp;    public synchronized NVList create_operation_list(org.omg.CORBA.Object oper)
+<i>606</i>&nbsp;    {
+<b class="nc"><i>607</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>608</i>&nbsp;        throw wrapper.genericNoImpl() ;</b>
+<i>609</i>&nbsp;    }
+<i>610</i>&nbsp;
+<i>611</i>&nbsp;    /**
+<i>612</i>&nbsp;     * Create a NamedValue
+<i>613</i>&nbsp;     *
+<i>614</i>&nbsp;     * @result          NamedValue created
+<i>615</i>&nbsp;     */
+<i>616</i>&nbsp;    public synchronized NamedValue create_named_value(String s, Any any, int flags)
+<i>617</i>&nbsp;    {
+<b class="nc"><i>618</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>619</i>&nbsp;        return new NamedValueImpl(this, s, any, flags);</b>
+<i>620</i>&nbsp;    }
+<i>621</i>&nbsp;
+<i>622</i>&nbsp;    /**
+<i>623</i>&nbsp;     * Create an ExceptionList
+<i>624</i>&nbsp;     *
+<i>625</i>&nbsp;     * @result          ExceptionList created
+<i>626</i>&nbsp;     */
+<i>627</i>&nbsp;    public synchronized org.omg.CORBA.ExceptionList create_exception_list()
+<i>628</i>&nbsp;    {
+<b class="nc"><i>629</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>630</i>&nbsp;        return new ExceptionListImpl();</b>
+<i>631</i>&nbsp;    }
+<i>632</i>&nbsp;
+<i>633</i>&nbsp;    /**
+<i>634</i>&nbsp;     * Create a ContextList
+<i>635</i>&nbsp;     *
+<i>636</i>&nbsp;     * @result          ContextList created
+<i>637</i>&nbsp;     */
+<i>638</i>&nbsp;    public synchronized org.omg.CORBA.ContextList create_context_list()
+<i>639</i>&nbsp;    {
+<b class="nc"><i>640</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>641</i>&nbsp;        return new ContextListImpl(this);</b>
+<i>642</i>&nbsp;    }
+<i>643</i>&nbsp;
+<i>644</i>&nbsp;    /**
+<i>645</i>&nbsp;     * Get the default Context object
+<i>646</i>&nbsp;     *
+<i>647</i>&nbsp;     * @result          the default Context object
+<i>648</i>&nbsp;     */
+<i>649</i>&nbsp;    public synchronized org.omg.CORBA.Context get_default_context()
+<i>650</i>&nbsp;    {
+<b class="nc"><i>651</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>652</i>&nbsp;        throw wrapper.genericNoImpl() ;</b>
+<i>653</i>&nbsp;    }
+<i>654</i>&nbsp;
+<i>655</i>&nbsp;    /**
+<i>656</i>&nbsp;     * Create an Environment
+<i>657</i>&nbsp;     *
+<i>658</i>&nbsp;     * @result          Environment created
+<i>659</i>&nbsp;     */
+<i>660</i>&nbsp;    public synchronized org.omg.CORBA.Environment create_environment()
+<i>661</i>&nbsp;    {
+<b class="nc"><i>662</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>663</i>&nbsp;        return new EnvironmentImpl();</b>
+<i>664</i>&nbsp;    }
+<i>665</i>&nbsp;
+<i>666</i>&nbsp;    public synchronized void send_multiple_requests_oneway(Request[] req)
+<i>667</i>&nbsp;    {
+<b class="nc"><i>668</i>&nbsp;        checkShutdownState();</b>
+<i>669</i>&nbsp;
+<i>670</i>&nbsp;        // Invoke the send_oneway on each new Request
+<b class="nc"><i>671</i>&nbsp;        for (int i = 0; i &lt; req.length; i++) {</b>
+<b class="nc"><i>672</i>&nbsp;            req[i].send_oneway();</b>
+<i>673</i>&nbsp;        }
+<i>674</i>&nbsp;    }
+<i>675</i>&nbsp;
+<i>676</i>&nbsp;    /**
+<i>677</i>&nbsp;     * Send multiple dynamic requests asynchronously.
+<i>678</i>&nbsp;     *
+<i>679</i>&nbsp;     * @param req         an array of request objects.
+<i>680</i>&nbsp;     */
+<i>681</i>&nbsp;    public synchronized void send_multiple_requests_deferred(Request[] req)
+<i>682</i>&nbsp;    {
+<b class="nc"><i>683</i>&nbsp;        checkShutdownState();</b>
+<i>684</i>&nbsp;
+<i>685</i>&nbsp;        // add the new Requests to pending dynamic Requests
+<b class="nc"><i>686</i>&nbsp;        for (int i = 0; i &lt; req.length; i++) {</b>
+<b class="nc"><i>687</i>&nbsp;            dynamicRequests.addElement(req[i]);</b>
+<i>688</i>&nbsp;        }
+<i>689</i>&nbsp;
+<i>690</i>&nbsp;        // Invoke the send_deferred on each new Request
+<b class="nc"><i>691</i>&nbsp;        for (int i = 0; i &lt; req.length; i++) {</b>
+<b class="nc"><i>692</i>&nbsp;            AsynchInvoke invokeObject = new AsynchInvoke( this,</b>
+<i>693</i>&nbsp;                (com.sun.corba.se.impl.corba.RequestImpl)req[i], true);
+<b class="nc"><i>694</i>&nbsp;            new Thread(invokeObject).start();</b>
+<i>695</i>&nbsp;        }
+<i>696</i>&nbsp;    }
+<i>697</i>&nbsp;
+<i>698</i>&nbsp;    /**
+<i>699</i>&nbsp;     * Find out if any of the deferred invocations have a response yet.
+<i>700</i>&nbsp;     */
+<i>701</i>&nbsp;    public synchronized boolean poll_next_response()
+<i>702</i>&nbsp;    {
+<b class="nc"><i>703</i>&nbsp;        checkShutdownState();</b>
+<i>704</i>&nbsp;
+<i>705</i>&nbsp;        Request currRequest;
+<i>706</i>&nbsp;
+<i>707</i>&nbsp;        // poll on each pending request
+<b class="nc"><i>708</i>&nbsp;        Enumeration ve = dynamicRequests.elements();</b>
+<b class="nc"><i>709</i>&nbsp;        while (ve.hasMoreElements() == true) {</b>
+<b class="nc"><i>710</i>&nbsp;            currRequest = (Request)ve.nextElement();</b>
+<b class="nc"><i>711</i>&nbsp;            if (currRequest.poll_response() == true) {</b>
+<b class="nc"><i>712</i>&nbsp;                return true;</b>
+<i>713</i>&nbsp;            }
+<i>714</i>&nbsp;        }
+<b class="nc"><i>715</i>&nbsp;        return false;</b>
+<i>716</i>&nbsp;    }
+<i>717</i>&nbsp;
+<i>718</i>&nbsp;    /**
+<i>719</i>&nbsp;     * Get the next request that has gotten a response.
+<i>720</i>&nbsp;     *
+<i>721</i>&nbsp;     * @result            the next request ready with a response.
+<i>722</i>&nbsp;     */
+<i>723</i>&nbsp;    public org.omg.CORBA.Request get_next_response()
+<i>724</i>&nbsp;        throws org.omg.CORBA.WrongTransaction
+<i>725</i>&nbsp;    {
+<b class="nc"><i>726</i>&nbsp;        synchronized( this ) {</b>
+<b class="nc"><i>727</i>&nbsp;            checkShutdownState();</b>
+<b class="nc"><i>728</i>&nbsp;        }</b>
+<i>729</i>&nbsp;
+<i>730</i>&nbsp;        while (true) {
+<i>731</i>&nbsp;            // check if there already is a response
+<b class="nc"><i>732</i>&nbsp;            synchronized ( dynamicRequests ) {</b>
+<b class="nc"><i>733</i>&nbsp;                Enumeration elems = dynamicRequests.elements();</b>
+<b class="nc"><i>734</i>&nbsp;                while ( elems.hasMoreElements() ) {</b>
+<b class="nc"><i>735</i>&nbsp;                    Request currRequest = (Request)elems.nextElement();</b>
+<b class="nc"><i>736</i>&nbsp;                    if ( currRequest.poll_response() ) {</b>
+<i>737</i>&nbsp;                        // get the response for this successfully polled Request
+<b class="nc"><i>738</i>&nbsp;                        currRequest.get_response();</b>
+<b class="nc"><i>739</i>&nbsp;                        dynamicRequests.removeElement(currRequest);</b>
+<b class="nc"><i>740</i>&nbsp;                        return currRequest;</b>
+<i>741</i>&nbsp;                    }
+<b class="nc"><i>742</i>&nbsp;                }</b>
+<b class="nc"><i>743</i>&nbsp;            }</b>
+<i>744</i>&nbsp;
+<i>745</i>&nbsp;            // wait for a response
+<b class="nc"><i>746</i>&nbsp;            synchronized(this.svResponseReceived) {</b>
+<b class="nc"><i>747</i>&nbsp;                while (!this.svResponseReceived.value()) {</b>
+<i>748</i>&nbsp;                    try {
+<b class="nc"><i>749</i>&nbsp;                        this.svResponseReceived.wait();</b>
+<b class="nc"><i>750</i>&nbsp;                    } catch(java.lang.InterruptedException ex) {</b>
+<i>751</i>&nbsp;                        // NO-OP
+<b class="nc"><i>752</i>&nbsp;                    }</b>
+<i>753</i>&nbsp;                }
+<i>754</i>&nbsp;                // reinitialize the response flag
+<b class="nc"><i>755</i>&nbsp;                this.svResponseReceived.reset();</b>
+<b class="nc"><i>756</i>&nbsp;            }</b>
+<i>757</i>&nbsp;        }
+<i>758</i>&nbsp;    }
+<i>759</i>&nbsp;
+<i>760</i>&nbsp;    /**
+<i>761</i>&nbsp;     * Notify response to ORB for get_next_response
+<i>762</i>&nbsp;     */
+<i>763</i>&nbsp;    public void notifyORB()
+<i>764</i>&nbsp;    {
+<b class="nc"><i>765</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>766</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>767</i>&nbsp;        }</b>
+<b class="nc"><i>768</i>&nbsp;        synchronized (this.svResponseReceived) {</b>
+<b class="nc"><i>769</i>&nbsp;            this.svResponseReceived.set();</b>
+<b class="nc"><i>770</i>&nbsp;            this.svResponseReceived.notify();</b>
+<b class="nc"><i>771</i>&nbsp;        }</b>
+<i>772</i>&nbsp;    }
+<i>773</i>&nbsp;
+<i>774</i>&nbsp;    /**
+<i>775</i>&nbsp;     * Convert an object ref to a string.
+<i>776</i>&nbsp;     * @param obj The object to stringify.
+<i>777</i>&nbsp;     * @return A stringified object reference.
+<i>778</i>&nbsp;     */
+<i>779</i>&nbsp;    public synchronized String object_to_string(org.omg.CORBA.Object obj)
+<i>780</i>&nbsp;    {
+<b class="nc"><i>781</i>&nbsp;        checkShutdownState();</b>
+<i>782</i>&nbsp;
+<i>783</i>&nbsp;        // Handle the null objref case
+<b class="nc"><i>784</i>&nbsp;        if (obj == null) {</b>
+<b class="nc"><i>785</i>&nbsp;            IOR nullIOR = IORFactories.makeIOR( this ) ;</b>
+<b class="nc"><i>786</i>&nbsp;            return nullIOR.stringify();</b>
+<i>787</i>&nbsp;        }
+<i>788</i>&nbsp;
+<b class="nc"><i>789</i>&nbsp;        IOR ior = null ;</b>
+<i>790</i>&nbsp;
+<i>791</i>&nbsp;        try {
+<b class="nc"><i>792</i>&nbsp;            ior = ORBUtility.connectAndGetIOR( this, obj ) ;</b>
+<b class="nc"><i>793</i>&nbsp;        } catch (BAD_PARAM bp) {</b>
+<i>794</i>&nbsp;            // Throw MARSHAL instead if this is a LOCAL_OBJECT_NOT_ALLOWED error.
+<b class="nc"><i>795</i>&nbsp;            if (bp.minor == ORBUtilSystemException.LOCAL_OBJECT_NOT_ALLOWED) {</b>
+<b class="nc"><i>796</i>&nbsp;                throw omgWrapper.notAnObjectImpl( bp ) ;</b>
+<i>797</i>&nbsp;            } else
+<i>798</i>&nbsp;                // Not a local object problem: just rethrow the exception.
+<i>799</i>&nbsp;                // Do not wrap and log this, since it was already logged at its
+<i>800</i>&nbsp;                // point of origin.
+<b class="nc"><i>801</i>&nbsp;                throw bp ;</b>
+<b class="nc"><i>802</i>&nbsp;        }</b>
+<i>803</i>&nbsp;
+<b class="nc"><i>804</i>&nbsp;        return ior.stringify() ;</b>
+<i>805</i>&nbsp;    }
+<i>806</i>&nbsp;
+<i>807</i>&nbsp;    /**
+<i>808</i>&nbsp;     * Convert a stringified object reference to the object it represents.
+<i>809</i>&nbsp;     * @param str The stringified object reference.
+<i>810</i>&nbsp;     * @return The unstringified object reference.
+<i>811</i>&nbsp;     */
+<i>812</i>&nbsp;    public org.omg.CORBA.Object string_to_object(String str)
+<i>813</i>&nbsp;    {
+<i>814</i>&nbsp;        Operation op ;
+<i>815</i>&nbsp;
+<b class="nc"><i>816</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>817</i>&nbsp;            checkShutdownState();</b>
+<b class="nc"><i>818</i>&nbsp;            op = urlOperation ;</b>
+<b class="nc"><i>819</i>&nbsp;        }</b>
+<i>820</i>&nbsp;
+<b class="nc"><i>821</i>&nbsp;        if (str == null)</b>
+<b class="nc"><i>822</i>&nbsp;            throw wrapper.nullParam() ;</b>
+<i>823</i>&nbsp;
+<b class="nc"><i>824</i>&nbsp;        synchronized (urlOperationLock) {</b>
+<b class="nc"><i>825</i>&nbsp;            org.omg.CORBA.Object obj = (org.omg.CORBA.Object)op.operate( str ) ;</b>
+<b class="nc"><i>826</i>&nbsp;            return obj ;</b>
+<b class="nc"><i>827</i>&nbsp;        }</b>
+<i>828</i>&nbsp;    }
+<i>829</i>&nbsp;
+<i>830</i>&nbsp;    // pure java orb support, moved this method from FVDCodeBaseImpl.
+<i>831</i>&nbsp;    // Note that we connect this if we have not already done so.
+<i>832</i>&nbsp;    public synchronized IOR getFVDCodeBaseIOR()
+<i>833</i>&nbsp;    {
+<b class="nc"><i>834</i>&nbsp;        checkShutdownState();</b>
+<i>835</i>&nbsp;
+<b class="nc"><i>836</i>&nbsp;        if (codeBaseIOR != null) // i.e. We are already connected to it</b>
+<b class="nc"><i>837</i>&nbsp;            return codeBaseIOR;</b>
+<i>838</i>&nbsp;
+<i>839</i>&nbsp;        // backward compatability 4365188
+<i>840</i>&nbsp;        CodeBase cb;
+<i>841</i>&nbsp;
+<b class="nc"><i>842</i>&nbsp;        ValueHandler vh = ORBUtility.createValueHandler();</b>
+<i>843</i>&nbsp;
+<b class="nc"><i>844</i>&nbsp;        cb = (CodeBase)vh.getRunTimeCodeBase();</b>
+<b class="nc"><i>845</i>&nbsp;        return ORBUtility.connectAndGetIOR( this, cb ) ;</b>
+<i>846</i>&nbsp;    }
+<i>847</i>&nbsp;
+<i>848</i>&nbsp;    /**
+<i>849</i>&nbsp;     * Get the TypeCode for a primitive type.
+<i>850</i>&nbsp;     *
+<i>851</i>&nbsp;     * @param tcKind    the integer kind for the primitive type
+<i>852</i>&nbsp;     * @return          the requested TypeCode
+<i>853</i>&nbsp;     */
+<i>854</i>&nbsp;    public synchronized TypeCode get_primitive_tc(TCKind tcKind)
+<i>855</i>&nbsp;    {
+<b class="nc"><i>856</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>857</i>&nbsp;        return get_primitive_tc( tcKind.value() ) ;</b>
+<i>858</i>&nbsp;    }
+<i>859</i>&nbsp;
+<i>860</i>&nbsp;    /**
+<i>861</i>&nbsp;     * Create a TypeCode for a structure.
+<i>862</i>&nbsp;     *
+<i>863</i>&nbsp;     * @param id                the logical id for the typecode.
+<i>864</i>&nbsp;     * @param name      the name for the typecode.
+<i>865</i>&nbsp;     * @param members   an array describing the members of the TypeCode.
+<i>866</i>&nbsp;     * @return          the requested TypeCode.
+<i>867</i>&nbsp;     */
+<i>868</i>&nbsp;    public synchronized TypeCode create_struct_tc(String id,
+<i>869</i>&nbsp;                                     String name,
+<i>870</i>&nbsp;                                     StructMember[] members)
+<i>871</i>&nbsp;    {
+<b class="nc"><i>872</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>873</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_struct, id, name, members);</b>
+<i>874</i>&nbsp;    }
+<i>875</i>&nbsp;
+<i>876</i>&nbsp;    /**
+<i>877</i>&nbsp;     * Create a TypeCode for a union.
+<i>878</i>&nbsp;     *
+<i>879</i>&nbsp;     * @param id                the logical id for the typecode.
+<i>880</i>&nbsp;     * @param name      the name for the typecode.
+<i>881</i>&nbsp;     * @param discriminator_type
+<i>882</i>&nbsp;     *                  the type of the union discriminator.
+<i>883</i>&nbsp;     * @param members   an array describing the members of the TypeCode.
+<i>884</i>&nbsp;     * @return          the requested TypeCode.
+<i>885</i>&nbsp;     */
+<i>886</i>&nbsp;    public synchronized TypeCode create_union_tc(String id,
+<i>887</i>&nbsp;                                    String name,
+<i>888</i>&nbsp;                                    TypeCode discriminator_type,
+<i>889</i>&nbsp;                                    UnionMember[] members)
+<i>890</i>&nbsp;    {
+<b class="nc"><i>891</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>892</i>&nbsp;        return new TypeCodeImpl(this,</b>
+<i>893</i>&nbsp;                                TCKind._tk_union,
+<i>894</i>&nbsp;                                id,
+<i>895</i>&nbsp;                                name,
+<i>896</i>&nbsp;                                discriminator_type,
+<i>897</i>&nbsp;                                members);
+<i>898</i>&nbsp;    }
+<i>899</i>&nbsp;
+<i>900</i>&nbsp;    /**
+<i>901</i>&nbsp;     * Create a TypeCode for an enum.
+<i>902</i>&nbsp;     *
+<i>903</i>&nbsp;     * @param id                the logical id for the typecode.
+<i>904</i>&nbsp;     * @param name      the name for the typecode.
+<i>905</i>&nbsp;     * @param members   an array describing the members of the TypeCode.
+<i>906</i>&nbsp;     * @return          the requested TypeCode.
+<i>907</i>&nbsp;     */
+<i>908</i>&nbsp;    public synchronized TypeCode create_enum_tc(String id,
+<i>909</i>&nbsp;                                   String name,
+<i>910</i>&nbsp;                                   String[] members)
+<i>911</i>&nbsp;    {
+<b class="nc"><i>912</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>913</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_enum, id, name, members);</b>
+<i>914</i>&nbsp;    }
+<i>915</i>&nbsp;
+<i>916</i>&nbsp;    /**
+<i>917</i>&nbsp;     * Create a TypeCode for an alias.
+<i>918</i>&nbsp;     *
+<i>919</i>&nbsp;     * @param id                the logical id for the typecode.
+<i>920</i>&nbsp;     * @param name      the name for the typecode.
+<i>921</i>&nbsp;     * @param original_type
+<i>922</i>&nbsp;     *                  the type this is an alias for.
+<i>923</i>&nbsp;     * @return          the requested TypeCode.
+<i>924</i>&nbsp;     */
+<i>925</i>&nbsp;    public synchronized TypeCode create_alias_tc(String id,
+<i>926</i>&nbsp;                                    String name,
+<i>927</i>&nbsp;                                    TypeCode original_type)
+<i>928</i>&nbsp;    {
+<b class="nc"><i>929</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>930</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_alias, id, name, original_type);</b>
+<i>931</i>&nbsp;    }
+<i>932</i>&nbsp;
+<i>933</i>&nbsp;    /**
+<i>934</i>&nbsp;     * Create a TypeCode for an exception.
+<i>935</i>&nbsp;     *
+<i>936</i>&nbsp;     * @param id                the logical id for the typecode.
+<i>937</i>&nbsp;     * @param name      the name for the typecode.
+<i>938</i>&nbsp;     * @param members   an array describing the members of the TypeCode.
+<i>939</i>&nbsp;     * @return          the requested TypeCode.
+<i>940</i>&nbsp;     */
+<i>941</i>&nbsp;    public synchronized TypeCode create_exception_tc(String id,
+<i>942</i>&nbsp;                                        String name,
+<i>943</i>&nbsp;                                        StructMember[] members)
+<i>944</i>&nbsp;    {
+<b class="nc"><i>945</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>946</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_except, id, name, members);</b>
+<i>947</i>&nbsp;    }
+<i>948</i>&nbsp;
+<i>949</i>&nbsp;    /**
+<i>950</i>&nbsp;     * Create a TypeCode for an interface.
+<i>951</i>&nbsp;     *
+<i>952</i>&nbsp;     * @param id                the logical id for the typecode.
+<i>953</i>&nbsp;     * @param name      the name for the typecode.
+<i>954</i>&nbsp;     * @return          the requested TypeCode.
+<i>955</i>&nbsp;     */
+<i>956</i>&nbsp;    public synchronized TypeCode create_interface_tc(String id,
+<i>957</i>&nbsp;                                        String name)
+<i>958</i>&nbsp;    {
+<b class="nc"><i>959</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>960</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_objref, id, name);</b>
+<i>961</i>&nbsp;    }
+<i>962</i>&nbsp;
+<i>963</i>&nbsp;    /**
+<i>964</i>&nbsp;     * Create a TypeCode for a string.
+<i>965</i>&nbsp;     *
+<i>966</i>&nbsp;     * @param bound     the bound for the string.
+<i>967</i>&nbsp;     * @return          the requested TypeCode.
+<i>968</i>&nbsp;     */
+<i>969</i>&nbsp;    public synchronized TypeCode create_string_tc(int bound)
+<i>970</i>&nbsp;    {
+<b class="nc"><i>971</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>972</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_string, bound);</b>
+<i>973</i>&nbsp;    }
+<i>974</i>&nbsp;
+<i>975</i>&nbsp;    /**
+<i>976</i>&nbsp;     * Create a TypeCode for a wide string.
+<i>977</i>&nbsp;     *
+<i>978</i>&nbsp;     * @param bound     the bound for the string.
+<i>979</i>&nbsp;     * @return          the requested TypeCode.
+<i>980</i>&nbsp;     */
+<i>981</i>&nbsp;    public synchronized TypeCode create_wstring_tc(int bound)
+<i>982</i>&nbsp;    {
+<b class="nc"><i>983</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>984</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_wstring, bound);</b>
+<i>985</i>&nbsp;    }
+<i>986</i>&nbsp;
+<i>987</i>&nbsp;    /**
+<i>988</i>&nbsp;     * Create a TypeCode for a sequence.
+<i>989</i>&nbsp;     *
+<i>990</i>&nbsp;     * @param bound     the bound for the sequence.
+<i>991</i>&nbsp;     * @param element_type
+<i>992</i>&nbsp;     *                  the type of elements of the sequence.
+<i>993</i>&nbsp;     * @return          the requested TypeCode.
+<i>994</i>&nbsp;     */
+<i>995</i>&nbsp;    public synchronized TypeCode create_sequence_tc(int bound,
+<i>996</i>&nbsp;                                       TypeCode element_type)
+<i>997</i>&nbsp;    {
+<b class="nc"><i>998</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>999</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_sequence, bound, element_type);</b>
+<i>1000</i>&nbsp;    }
+<i>1001</i>&nbsp;
+<i>1002</i>&nbsp;
+<i>1003</i>&nbsp;    /**
+<i>1004</i>&nbsp;     * Create a recursive TypeCode in a sequence.
+<i>1005</i>&nbsp;     *
+<i>1006</i>&nbsp;     * @param bound     the bound for the sequence.
+<i>1007</i>&nbsp;     * @param offset    the index to the enclosing TypeCode that is
+<i>1008</i>&nbsp;     *                  being referenced.
+<i>1009</i>&nbsp;     * @return          the requested TypeCode.
+<i>1010</i>&nbsp;     */
+<i>1011</i>&nbsp;    public synchronized TypeCode create_recursive_sequence_tc(int bound,
+<i>1012</i>&nbsp;                                                 int offset)
+<i>1013</i>&nbsp;    {
+<b class="nc"><i>1014</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>1015</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_sequence, bound, offset);</b>
+<i>1016</i>&nbsp;    }
+<i>1017</i>&nbsp;
+<i>1018</i>&nbsp;
+<i>1019</i>&nbsp;    /**
+<i>1020</i>&nbsp;     * Create a TypeCode for an array.
+<i>1021</i>&nbsp;     *
+<i>1022</i>&nbsp;     * @param length    the length of the array.
+<i>1023</i>&nbsp;     * @param element_type
+<i>1024</i>&nbsp;     *                  the type of elements of the array.
+<i>1025</i>&nbsp;     * @return          the requested TypeCode.
+<i>1026</i>&nbsp;     */
+<i>1027</i>&nbsp;    public synchronized TypeCode create_array_tc(int length,
+<i>1028</i>&nbsp;                                    TypeCode element_type)
+<i>1029</i>&nbsp;    {
+<b class="nc"><i>1030</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>1031</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_array, length, element_type);</b>
+<i>1032</i>&nbsp;    }
+<i>1033</i>&nbsp;
+<i>1034</i>&nbsp;
+<i>1035</i>&nbsp;    public synchronized org.omg.CORBA.TypeCode create_native_tc(String id,
+<i>1036</i>&nbsp;                                                   String name)
+<i>1037</i>&nbsp;    {
+<b class="nc"><i>1038</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>1039</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_native, id, name);</b>
+<i>1040</i>&nbsp;    }
+<i>1041</i>&nbsp;
+<i>1042</i>&nbsp;    public synchronized org.omg.CORBA.TypeCode create_abstract_interface_tc(
+<i>1043</i>&nbsp;                                                               String id,
+<i>1044</i>&nbsp;                                                               String name)
+<i>1045</i>&nbsp;    {
+<b class="nc"><i>1046</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>1047</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_abstract_interface, id, name);</b>
+<i>1048</i>&nbsp;    }
+<i>1049</i>&nbsp;
+<i>1050</i>&nbsp;    public synchronized org.omg.CORBA.TypeCode create_fixed_tc(short digits, short scale)
+<i>1051</i>&nbsp;    {
+<b class="nc"><i>1052</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>1053</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_fixed, digits, scale);</b>
+<i>1054</i>&nbsp;    }
+<i>1055</i>&nbsp;
+<i>1056</i>&nbsp;    public synchronized org.omg.CORBA.TypeCode create_value_tc(String id,
+<i>1057</i>&nbsp;                                                  String name,
+<i>1058</i>&nbsp;                                                  short type_modifier,
+<i>1059</i>&nbsp;                                                  TypeCode concrete_base,
+<i>1060</i>&nbsp;                                                  ValueMember[] members)
+<i>1061</i>&nbsp;    {
+<b class="nc"><i>1062</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>1063</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_value, id, name,</b>
+<i>1064</i>&nbsp;                                type_modifier, concrete_base, members);
+<i>1065</i>&nbsp;    }
+<i>1066</i>&nbsp;
+<i>1067</i>&nbsp;    public synchronized org.omg.CORBA.TypeCode create_recursive_tc(String id) {
+<b class="nc"><i>1068</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>1069</i>&nbsp;        return new TypeCodeImpl(this, id);</b>
+<i>1070</i>&nbsp;    }
+<i>1071</i>&nbsp;
+<i>1072</i>&nbsp;    public synchronized org.omg.CORBA.TypeCode create_value_box_tc(String id,
+<i>1073</i>&nbsp;                                                      String name,
+<i>1074</i>&nbsp;                                                      TypeCode boxed_type)
+<i>1075</i>&nbsp;    {
+<b class="nc"><i>1076</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>1077</i>&nbsp;        return new TypeCodeImpl(this, TCKind._tk_value_box, id, name,</b>
+<i>1078</i>&nbsp;            boxed_type);
+<i>1079</i>&nbsp;    }
+<i>1080</i>&nbsp;
+<i>1081</i>&nbsp;    /**
+<i>1082</i>&nbsp;     * Create a new Any
+<i>1083</i>&nbsp;     *
+<i>1084</i>&nbsp;     * @return          the new Any created.
+<i>1085</i>&nbsp;     */
+<i>1086</i>&nbsp;    public synchronized Any create_any()
+<i>1087</i>&nbsp;    {
+<b class="nc"><i>1088</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>1089</i>&nbsp;        return new AnyImpl(this);</b>
+<i>1090</i>&nbsp;    }
+<i>1091</i>&nbsp;
+<i>1092</i>&nbsp;    // TypeCodeFactory interface methods.
+<i>1093</i>&nbsp;    // Keeping track of type codes by repository id.
+<i>1094</i>&nbsp;
+<i>1095</i>&nbsp;    // Keeping a cache of TypeCodes associated with the class
+<i>1096</i>&nbsp;    // they got created from in Util.writeAny().
+<i>1097</i>&nbsp;
+<i>1098</i>&nbsp;    public synchronized void setTypeCodeForClass(Class c, TypeCodeImpl tci)
+<i>1099</i>&nbsp;    {
+<b class="nc"><i>1100</i>&nbsp;        checkShutdownState();</b>
+<i>1101</i>&nbsp;
+<b class="nc"><i>1102</i>&nbsp;        if (typeCodeForClassMap == null)</b>
+<b class="nc"><i>1103</i>&nbsp;            typeCodeForClassMap = Collections.synchronizedMap(</b>
+<i>1104</i>&nbsp;                new WeakHashMap(64));
+<i>1105</i>&nbsp;        // Store only one TypeCode per class.
+<b class="nc"><i>1106</i>&nbsp;        if ( ! typeCodeForClassMap.containsKey(c))</b>
+<b class="nc"><i>1107</i>&nbsp;            typeCodeForClassMap.put(c, tci);</b>
+<i>1108</i>&nbsp;    }
+<i>1109</i>&nbsp;
+<i>1110</i>&nbsp;    public synchronized TypeCodeImpl getTypeCodeForClass(Class c)
+<i>1111</i>&nbsp;    {
+<b class="nc"><i>1112</i>&nbsp;        checkShutdownState();</b>
+<i>1113</i>&nbsp;
+<b class="nc"><i>1114</i>&nbsp;        if (typeCodeForClassMap == null)</b>
+<b class="nc"><i>1115</i>&nbsp;            return null;</b>
+<b class="nc"><i>1116</i>&nbsp;        return (TypeCodeImpl)typeCodeForClassMap.get(c);</b>
+<i>1117</i>&nbsp;    }
+<i>1118</i>&nbsp;
+<i>1119</i>&nbsp;/****************************************************************************
+<i>1120</i>&nbsp; * The following methods deal with listing and resolving the initial
+<i>1121</i>&nbsp; * (bootstrap) object references such as &quot;NameService&quot;.
+<i>1122</i>&nbsp; ****************************************************************************/
+<i>1123</i>&nbsp;
+<i>1124</i>&nbsp;    /**
+<i>1125</i>&nbsp;     * Get a list of the initially available CORBA services.
+<i>1126</i>&nbsp;     * This does not work unless an ORBInitialHost is specified during
+<i>1127</i>&nbsp;     * initialization (or unless there is an ORB running on the AppletHost)
+<i>1128</i>&nbsp;     * since the localhostname
+<i>1129</i>&nbsp;     * is inaccessible to applets. If a service properties URL was specified,
+<i>1130</i>&nbsp;     * then it is used, otherwise the bootstrapping protocol is used.
+<i>1131</i>&nbsp;     * @return A list of the initial services available.
+<i>1132</i>&nbsp;     */
+<i>1133</i>&nbsp;    public String[] list_initial_services()
+<i>1134</i>&nbsp;    {
+<i>1135</i>&nbsp;        Resolver res ;
+<i>1136</i>&nbsp;
+<b class="nc"><i>1137</i>&nbsp;        synchronized( this ) {</b>
+<b class="nc"><i>1138</i>&nbsp;            checkShutdownState();</b>
+<b class="nc"><i>1139</i>&nbsp;            res = resolver ;</b>
+<b class="nc"><i>1140</i>&nbsp;        }</b>
+<i>1141</i>&nbsp;
+<b class="nc"><i>1142</i>&nbsp;        synchronized (resolverLock) {</b>
+<b class="nc"><i>1143</i>&nbsp;            java.util.Set keys = res.list() ;</b>
+<b class="nc"><i>1144</i>&nbsp;            return (String[])keys.toArray( new String[keys.size()] ) ;</b>
+<b class="nc"><i>1145</i>&nbsp;        }</b>
+<i>1146</i>&nbsp;    }
+<i>1147</i>&nbsp;
+<i>1148</i>&nbsp;    /**
+<i>1149</i>&nbsp;     * Resolve the stringified reference of one of the initially
+<i>1150</i>&nbsp;     * available CORBA services.
+<i>1151</i>&nbsp;     * @param identifier The stringified object reference of the
+<i>1152</i>&nbsp;     * desired service.
+<i>1153</i>&nbsp;     * @return An object reference for the desired service.
+<i>1154</i>&nbsp;     * @exception InvalidName The supplied identifier is not associated
+<i>1155</i>&nbsp;     * with a known service.
+<i>1156</i>&nbsp;     * @exception SystemException One of a fixed set of Corba system exceptions.
+<i>1157</i>&nbsp;     */
+<i>1158</i>&nbsp;    public org.omg.CORBA.Object resolve_initial_references(
+<i>1159</i>&nbsp;        String identifier) throws InvalidName
+<i>1160</i>&nbsp;    {
+<i>1161</i>&nbsp;        Resolver res ;
+<i>1162</i>&nbsp;
+<b class="nc"><i>1163</i>&nbsp;        synchronized( this ) {</b>
+<b class="nc"><i>1164</i>&nbsp;            checkShutdownState();</b>
+<b class="nc"><i>1165</i>&nbsp;            res = resolver ;</b>
+<b class="nc"><i>1166</i>&nbsp;        }</b>
+<i>1167</i>&nbsp;
+<b class="nc"><i>1168</i>&nbsp;        synchronized (resolverLock) {</b>
+<b class="nc"><i>1169</i>&nbsp;            org.omg.CORBA.Object result = res.resolve( identifier ) ;</b>
+<i>1170</i>&nbsp;
+<b class="nc"><i>1171</i>&nbsp;            if (result == null)</b>
+<b class="nc"><i>1172</i>&nbsp;                throw new InvalidName() ;</b>
+<i>1173</i>&nbsp;            else
+<b class="nc"><i>1174</i>&nbsp;                return result ;</b>
+<b class="nc"><i>1175</i>&nbsp;        }</b>
+<i>1176</i>&nbsp;    }
+<i>1177</i>&nbsp;
+<i>1178</i>&nbsp;    /**
+<i>1179</i>&nbsp;     * If this operation is called with an id, &lt;code&gt;&quot;Y&quot;&lt;/code&gt;, and an
+<i>1180</i>&nbsp;     * object, &lt;code&gt;YY&lt;/code&gt;, then a subsequent call to
+<i>1181</i>&nbsp;     * &lt;code&gt;ORB.resolve_initial_references( &quot;Y&quot; )&lt;/code&gt; will
+<i>1182</i>&nbsp;     * return object &lt;code&gt;YY&lt;/code&gt;.
+<i>1183</i>&nbsp;     *
+<i>1184</i>&nbsp;     * @param id The ID by which the initial reference will be known.
+<i>1185</i>&nbsp;     * @param obj The initial reference itself.
+<i>1186</i>&nbsp;     * @throws InvalidName if this operation is called with an empty string id
+<i>1187</i>&nbsp;     *     or this operation is called with an id that is already registered,
+<i>1188</i>&nbsp;     *     including the default names defined by OMG.
+<i>1189</i>&nbsp;     * @throws BAD_PARAM if the obj parameter is null.
+<i>1190</i>&nbsp;     */
+<i>1191</i>&nbsp;    public void register_initial_reference(
+<i>1192</i>&nbsp;        String id, org.omg.CORBA.Object obj ) throws InvalidName
+<i>1193</i>&nbsp;    {
+<i>1194</i>&nbsp;        CorbaServerRequestDispatcher insnd ;
+<i>1195</i>&nbsp;
+<b class="nc"><i>1196</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1197</i>&nbsp;            checkShutdownState();</b>
+<b class="nc"><i>1198</i>&nbsp;        }</b>
+<i>1199</i>&nbsp;
+<b class="nc"><i>1200</i>&nbsp;        if ((id == null) || (id.length() == 0))</b>
+<b class="nc"><i>1201</i>&nbsp;            throw new InvalidName() ;</b>
+<i>1202</i>&nbsp;
+<b class="nc"><i>1203</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1204</i>&nbsp;            checkShutdownState();</b>
+<b class="nc"><i>1205</i>&nbsp;        }</b>
+<i>1206</i>&nbsp;
+<b class="nc"><i>1207</i>&nbsp;        synchronized (resolverLock) {</b>
+<b class="nc"><i>1208</i>&nbsp;            insnd = insNamingDelegate ;</b>
+<i>1209</i>&nbsp;
+<b class="nc"><i>1210</i>&nbsp;            java.lang.Object obj2 = localResolver.resolve( id ) ;</b>
+<b class="nc"><i>1211</i>&nbsp;            if (obj2 != null)</b>
+<b class="nc"><i>1212</i>&nbsp;                throw new InvalidName(id + &quot; already registered&quot;) ;</b>
+<i>1213</i>&nbsp;
+<b class="nc"><i>1214</i>&nbsp;            localResolver.register( id, ClosureFactory.makeConstant( obj )) ;</b>
+<b class="nc"><i>1215</i>&nbsp;        }</b>
+<i>1216</i>&nbsp;
+<b class="nc"><i>1217</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1218</i>&nbsp;            if (StubAdapter.isStub(obj))</b>
+<i>1219</i>&nbsp;                // Make all remote object references available for INS.
+<b class="nc"><i>1220</i>&nbsp;                requestDispatcherRegistry.registerServerRequestDispatcher(</b>
+<i>1221</i>&nbsp;                    insnd, id ) ;
+<b class="nc"><i>1222</i>&nbsp;        }</b>
+<i>1223</i>&nbsp;    }
+<i>1224</i>&nbsp;
+<i>1225</i>&nbsp;/****************************************************************************
+<i>1226</i>&nbsp; * The following methods (introduced in POA / CORBA2.1) deal with
+<i>1227</i>&nbsp; * shutdown / single threading.
+<i>1228</i>&nbsp; ****************************************************************************/
+<i>1229</i>&nbsp;
+<i>1230</i>&nbsp;    public void run()
+<i>1231</i>&nbsp;    {
+<b class="nc"><i>1232</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1233</i>&nbsp;            checkShutdownState();</b>
+<b class="nc"><i>1234</i>&nbsp;        }</b>
+<i>1235</i>&nbsp;
+<b class="nc"><i>1236</i>&nbsp;        synchronized (runObj) {</b>
+<i>1237</i>&nbsp;            try {
+<b class="nc"><i>1238</i>&nbsp;                runObj.wait();</b>
+<b class="nc"><i>1239</i>&nbsp;            } catch ( InterruptedException ex ) {}</b>
+<b class="nc"><i>1240</i>&nbsp;        }</b>
+<i>1241</i>&nbsp;    }
+<i>1242</i>&nbsp;
+<i>1243</i>&nbsp;    public void shutdown(boolean wait_for_completion) {
+<b class="nc"><i>1244</i>&nbsp;        boolean wait = false;</b>
+<i>1245</i>&nbsp;
+<b class="nc"><i>1246</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1247</i>&nbsp;            checkShutdownState();</b>
+<i>1248</i>&nbsp;
+<i>1249</i>&nbsp;            // This is to avoid deadlock: don&#39;t allow a thread that is
+<i>1250</i>&nbsp;            // processing a request to call shutdown( true ), because
+<i>1251</i>&nbsp;            // the shutdown would block waiting for the request to complete,
+<i>1252</i>&nbsp;            // while the request would block waiting for shutdown to complete.
+<b class="nc"><i>1253</i>&nbsp;            if (wait_for_completion &amp;&amp;</b>
+<b class="nc"><i>1254</i>&nbsp;                isProcessingInvocation.get() == Boolean.TRUE) {</b>
+<b class="nc"><i>1255</i>&nbsp;                throw omgWrapper.shutdownWaitForCompletionDeadlock();</b>
+<i>1256</i>&nbsp;            }
+<i>1257</i>&nbsp;
+<b class="nc"><i>1258</i>&nbsp;            if (status == STATUS_SHUTTING_DOWN) {</b>
+<b class="nc"><i>1259</i>&nbsp;                if (wait_for_completion) {</b>
+<b class="nc"><i>1260</i>&nbsp;                    wait = true;</b>
+<i>1261</i>&nbsp;                } else {
+<b class="nc"><i>1262</i>&nbsp;                    return;</b>
+<i>1263</i>&nbsp;                }
+<i>1264</i>&nbsp;            }
+<i>1265</i>&nbsp;
+<b class="nc"><i>1266</i>&nbsp;            status = STATUS_SHUTTING_DOWN;</b>
+<b class="nc"><i>1267</i>&nbsp;        }</b>
+<i>1268</i>&nbsp;
+<i>1269</i>&nbsp;        // Avoid more than one thread performing shutdown at a time.
+<b class="nc"><i>1270</i>&nbsp;        synchronized (shutdownObj) {</b>
+<i>1271</i>&nbsp;            // At this point, the ORB status is certainly STATUS_SHUTTING_DOWN.
+<i>1272</i>&nbsp;            // If wait is true, another thread already called shutdown( true ),
+<i>1273</i>&nbsp;            // and so we wait for completion
+<b class="nc"><i>1274</i>&nbsp;            if (wait) {</b>
+<i>1275</i>&nbsp;                while (true) {
+<b class="nc"><i>1276</i>&nbsp;                    synchronized (this) {</b>
+<b class="nc"><i>1277</i>&nbsp;                        if (status == STATUS_SHUTDOWN)</b>
+<b class="nc"><i>1278</i>&nbsp;                            break;</b>
+<b class="nc"><i>1279</i>&nbsp;                    }</b>
+<i>1280</i>&nbsp;
+<i>1281</i>&nbsp;                    try {
+<b class="nc"><i>1282</i>&nbsp;                        shutdownObj.wait();</b>
+<b class="nc"><i>1283</i>&nbsp;                    } catch (InterruptedException exc) {</b>
+<i>1284</i>&nbsp;                        // NOP: just loop and wait until state is changed
+<b class="nc"><i>1285</i>&nbsp;                    }</b>
+<i>1286</i>&nbsp;                }
+<i>1287</i>&nbsp;            } else {
+<i>1288</i>&nbsp;                // perform the actual shutdown
+<b class="nc"><i>1289</i>&nbsp;                shutdownServants(wait_for_completion);</b>
+<i>1290</i>&nbsp;
+<b class="nc"><i>1291</i>&nbsp;                if (wait_for_completion) {</b>
+<b class="nc"><i>1292</i>&nbsp;                    synchronized ( waitForCompletionObj ) {</b>
+<b class="nc"><i>1293</i>&nbsp;                        while (numInvocations &gt; 0) {</b>
+<i>1294</i>&nbsp;                            try {
+<b class="nc"><i>1295</i>&nbsp;                                waitForCompletionObj.wait();</b>
+<b class="nc"><i>1296</i>&nbsp;                            } catch (InterruptedException ex) {}</b>
+<i>1297</i>&nbsp;                        }
+<b class="nc"><i>1298</i>&nbsp;                    }</b>
+<i>1299</i>&nbsp;                }
+<i>1300</i>&nbsp;
+<b class="nc"><i>1301</i>&nbsp;                synchronized (runObj) {</b>
+<b class="nc"><i>1302</i>&nbsp;                    runObj.notifyAll();</b>
+<b class="nc"><i>1303</i>&nbsp;                }</b>
+<i>1304</i>&nbsp;
+<b class="nc"><i>1305</i>&nbsp;                status = STATUS_SHUTDOWN;</b>
+<i>1306</i>&nbsp;
+<b class="nc"><i>1307</i>&nbsp;                shutdownObj.notifyAll();</b>
+<i>1308</i>&nbsp;            }
+<b class="nc"><i>1309</i>&nbsp;        }</b>
+<i>1310</i>&nbsp;    }
+<i>1311</i>&nbsp;
+<i>1312</i>&nbsp;    // Cause all ObjectAdapaterFactories to clean up all of their internal state, which
+<i>1313</i>&nbsp;    // may include activated objects that have associated state and callbacks that must
+<i>1314</i>&nbsp;    // complete in order to shutdown.  This will cause new request to be rejected.
+<i>1315</i>&nbsp;    protected void shutdownServants(boolean wait_for_completion) {
+<i>1316</i>&nbsp;        Set&lt;ObjectAdapterFactory&gt; oaset;
+<b class="nc"><i>1317</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1318</i>&nbsp;            oaset = new HashSet&lt;&gt;(requestDispatcherRegistry.getObjectAdapterFactories());</b>
+<b class="nc"><i>1319</i>&nbsp;        }</b>
+<i>1320</i>&nbsp;
+<b class="nc"><i>1321</i>&nbsp;        for (ObjectAdapterFactory oaf : oaset)</b>
+<b class="nc"><i>1322</i>&nbsp;            oaf.shutdown(wait_for_completion);</b>
+<i>1323</i>&nbsp;    }
+<i>1324</i>&nbsp;
+<i>1325</i>&nbsp;    // Note that the caller must hold the ORBImpl lock.
+<i>1326</i>&nbsp;    public void checkShutdownState()
+<i>1327</i>&nbsp;    {
+<b class="nc"><i>1328</i>&nbsp;        if (status == STATUS_DESTROYED) {</b>
+<b class="nc"><i>1329</i>&nbsp;            throw wrapper.orbDestroyed() ;</b>
+<i>1330</i>&nbsp;        }
+<i>1331</i>&nbsp;
+<b class="nc"><i>1332</i>&nbsp;        if (status == STATUS_SHUTDOWN) {</b>
+<b class="nc"><i>1333</i>&nbsp;            throw omgWrapper.badOperationAfterShutdown() ;</b>
+<i>1334</i>&nbsp;        }
+<i>1335</i>&nbsp;    }
+<i>1336</i>&nbsp;
+<i>1337</i>&nbsp;    public boolean isDuringDispatch()
+<i>1338</i>&nbsp;    {
+<b class="nc"><i>1339</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1340</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1341</i>&nbsp;        }</b>
+<b class="nc"><i>1342</i>&nbsp;        Boolean value = (Boolean)(isProcessingInvocation.get()) ;</b>
+<b class="nc"><i>1343</i>&nbsp;        return value.booleanValue() ;</b>
+<i>1344</i>&nbsp;    }
+<i>1345</i>&nbsp;
+<i>1346</i>&nbsp;    public void startingDispatch()
+<i>1347</i>&nbsp;    {
+<b class="nc"><i>1348</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1349</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1350</i>&nbsp;        }</b>
+<b class="nc"><i>1351</i>&nbsp;        synchronized (invocationObj) {</b>
+<b class="nc"><i>1352</i>&nbsp;            isProcessingInvocation.set(Boolean.TRUE);</b>
+<b class="nc"><i>1353</i>&nbsp;            numInvocations++;</b>
+<b class="nc"><i>1354</i>&nbsp;        }</b>
+<i>1355</i>&nbsp;    }
+<i>1356</i>&nbsp;
+<i>1357</i>&nbsp;    public void finishedDispatch()
+<i>1358</i>&nbsp;    {
+<b class="nc"><i>1359</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1360</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1361</i>&nbsp;        }</b>
+<b class="nc"><i>1362</i>&nbsp;        synchronized (invocationObj) {</b>
+<b class="nc"><i>1363</i>&nbsp;            numInvocations--;</b>
+<b class="nc"><i>1364</i>&nbsp;            isProcessingInvocation.set(false);</b>
+<b class="nc"><i>1365</i>&nbsp;            if (numInvocations == 0) {</b>
+<b class="nc"><i>1366</i>&nbsp;                synchronized (waitForCompletionObj) {</b>
+<b class="nc"><i>1367</i>&nbsp;                    waitForCompletionObj.notifyAll();</b>
+<b class="nc"><i>1368</i>&nbsp;                }</b>
+<b class="nc"><i>1369</i>&nbsp;            } else if (numInvocations &lt; 0) {</b>
+<b class="nc"><i>1370</i>&nbsp;                throw wrapper.numInvocationsAlreadyZero(</b>
+<i>1371</i>&nbsp;                    CompletionStatus.COMPLETED_YES);
+<i>1372</i>&nbsp;            }
+<b class="nc"><i>1373</i>&nbsp;        }</b>
+<i>1374</i>&nbsp;    }
+<i>1375</i>&nbsp;
+<i>1376</i>&nbsp;    /**
+<i>1377</i>&nbsp;     *  formal/99-10-07 p 159: &quot;If destroy is called on an ORB that has
+<i>1378</i>&nbsp;     *  not been shut down, it will start the shutdown process and block until
+<i>1379</i>&nbsp;     *  the ORB has shut down before it destroys the ORB.&quot;
+<i>1380</i>&nbsp;     */
+<i>1381</i>&nbsp;    public void destroy()
+<i>1382</i>&nbsp;    {
+<b class="nc"><i>1383</i>&nbsp;        boolean shutdownFirst = false;</b>
+<i>1384</i>&nbsp;
+<b class="nc"><i>1385</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1386</i>&nbsp;            shutdownFirst = (status == STATUS_OPERATING);</b>
+<b class="nc"><i>1387</i>&nbsp;        }</b>
+<i>1388</i>&nbsp;
+<b class="nc"><i>1389</i>&nbsp;        if (shutdownFirst) {</b>
+<b class="nc"><i>1390</i>&nbsp;            shutdown(true);</b>
+<i>1391</i>&nbsp;        }
+<i>1392</i>&nbsp;
+<b class="nc"><i>1393</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1394</i>&nbsp;            if (status &lt; STATUS_DESTROYED) {</b>
+<b class="nc"><i>1395</i>&nbsp;                getCorbaTransportManager().close();</b>
+<b class="nc"><i>1396</i>&nbsp;                getPIHandler().destroyInterceptors();</b>
+<b class="nc"><i>1397</i>&nbsp;                status = STATUS_DESTROYED;</b>
+<i>1398</i>&nbsp;            }
+<b class="nc"><i>1399</i>&nbsp;        }</b>
+<b class="nc"><i>1400</i>&nbsp;        synchronized (threadPoolManagerAccessLock) {</b>
+<b class="nc"><i>1401</i>&nbsp;            if (orbOwnsThreadPoolManager) {</b>
+<i>1402</i>&nbsp;                try {
+<b class="nc"><i>1403</i>&nbsp;                    threadpoolMgr.close();</b>
+<b class="nc"><i>1404</i>&nbsp;                    threadpoolMgr = null;</b>
+<b class="nc"><i>1405</i>&nbsp;                } catch (IOException exc) {</b>
+<b class="nc"><i>1406</i>&nbsp;                    wrapper.ioExceptionOnClose(exc);</b>
+<b class="nc"><i>1407</i>&nbsp;                }</b>
+<i>1408</i>&nbsp;            }
+<b class="nc"><i>1409</i>&nbsp;        }</b>
+<i>1410</i>&nbsp;
+<i>1411</i>&nbsp;        try {
+<b class="nc"><i>1412</i>&nbsp;            monitoringManager.close();</b>
+<b class="nc"><i>1413</i>&nbsp;            monitoringManager = null;</b>
+<b class="nc"><i>1414</i>&nbsp;        } catch (IOException exc) {</b>
+<b class="nc"><i>1415</i>&nbsp;            wrapper.ioExceptionOnClose(exc);</b>
+<b class="nc"><i>1416</i>&nbsp;        }</b>
+<i>1417</i>&nbsp;
+<b class="nc"><i>1418</i>&nbsp;        CachedCodeBase.cleanCache(this);</b>
+<i>1419</i>&nbsp;        try {
+<b class="nc"><i>1420</i>&nbsp;            pihandler.close();</b>
+<b class="nc"><i>1421</i>&nbsp;        } catch (IOException exc) {</b>
+<b class="nc"><i>1422</i>&nbsp;            wrapper.ioExceptionOnClose(exc);</b>
+<b class="nc"><i>1423</i>&nbsp;        }</b>
+<i>1424</i>&nbsp;
+<b class="nc"><i>1425</i>&nbsp;        super.destroy();</b>
+<i>1426</i>&nbsp;
+<b class="nc"><i>1427</i>&nbsp;        badServerIdHandlerAccessLock = null;</b>
+<b class="nc"><i>1428</i>&nbsp;        clientDelegateFactoryAccessorLock = null;</b>
+<b class="nc"><i>1429</i>&nbsp;        corbaContactInfoListFactoryAccessLock = null;</b>
+<i>1430</i>&nbsp;
+<b class="nc"><i>1431</i>&nbsp;        objectKeyFactoryAccessLock = null;</b>
+<b class="nc"><i>1432</i>&nbsp;        legacyServerSocketManagerAccessLock = null;</b>
+<b class="nc"><i>1433</i>&nbsp;        threadPoolManagerAccessLock = null;</b>
+<b class="nc"><i>1434</i>&nbsp;        transportManager = null;</b>
+<b class="nc"><i>1435</i>&nbsp;        legacyServerSocketManager = null;</b>
+<b class="nc"><i>1436</i>&nbsp;        OAInvocationInfoStack  = null;</b>
+<b class="nc"><i>1437</i>&nbsp;        clientInvocationInfoStack  = null;</b>
+<b class="nc"><i>1438</i>&nbsp;        codeBaseIOR = null;</b>
+<b class="nc"><i>1439</i>&nbsp;        dynamicRequests  = null;</b>
+<b class="nc"><i>1440</i>&nbsp;        svResponseReceived  = null;</b>
+<b class="nc"><i>1441</i>&nbsp;        runObj = null;</b>
+<b class="nc"><i>1442</i>&nbsp;        shutdownObj = null;</b>
+<b class="nc"><i>1443</i>&nbsp;        waitForCompletionObj = null;</b>
+<b class="nc"><i>1444</i>&nbsp;        invocationObj = null;</b>
+<b class="nc"><i>1445</i>&nbsp;        isProcessingInvocation = null;</b>
+<b class="nc"><i>1446</i>&nbsp;        typeCodeForClassMap  = null;</b>
+<b class="nc"><i>1447</i>&nbsp;        valueFactoryCache = null;</b>
+<b class="nc"><i>1448</i>&nbsp;        orbVersionThreadLocal = null;</b>
+<b class="nc"><i>1449</i>&nbsp;        requestDispatcherRegistry = null;</b>
+<b class="nc"><i>1450</i>&nbsp;        copierManager = null;</b>
+<b class="nc"><i>1451</i>&nbsp;        toaFactory = null;</b>
+<b class="nc"><i>1452</i>&nbsp;        poaFactory = null;</b>
+<b class="nc"><i>1453</i>&nbsp;        pihandler = null;</b>
+<b class="nc"><i>1454</i>&nbsp;        configData = null;</b>
+<b class="nc"><i>1455</i>&nbsp;        badServerIdHandler = null;</b>
+<b class="nc"><i>1456</i>&nbsp;        clientDelegateFactory = null;</b>
+<b class="nc"><i>1457</i>&nbsp;        corbaContactInfoListFactory = null;</b>
+<b class="nc"><i>1458</i>&nbsp;        resolver = null;</b>
+<b class="nc"><i>1459</i>&nbsp;        localResolver = null;</b>
+<b class="nc"><i>1460</i>&nbsp;        insNamingDelegate = null;</b>
+<b class="nc"><i>1461</i>&nbsp;        urlOperation = null;</b>
+<b class="nc"><i>1462</i>&nbsp;        taggedComponentFactoryFinder = null;</b>
+<b class="nc"><i>1463</i>&nbsp;        taggedProfileFactoryFinder = null;</b>
+<b class="nc"><i>1464</i>&nbsp;        taggedProfileTemplateFactoryFinder = null;</b>
+<b class="nc"><i>1465</i>&nbsp;        objectKeyFactory = null;</b>
+<i>1466</i>&nbsp;    }
+<i>1467</i>&nbsp;
+<i>1468</i>&nbsp;    /**
+<i>1469</i>&nbsp;     * Registers a value factory for a particular repository ID.
+<i>1470</i>&nbsp;     *
+<i>1471</i>&nbsp;     * @param repositoryID the repository ID.
+<i>1472</i>&nbsp;     * @param factory the factory.
+<i>1473</i>&nbsp;     * @return the previously registered factory for the given repository ID,
+<i>1474</i>&nbsp;     * or null if no such factory was previously registered.
+<i>1475</i>&nbsp;     * @exception org.omg.CORBA.BAD_PARAM if the registration fails.
+<i>1476</i>&nbsp;     **/
+<i>1477</i>&nbsp;    public synchronized ValueFactory register_value_factory(String repositoryID,
+<i>1478</i>&nbsp;        ValueFactory factory)
+<i>1479</i>&nbsp;    {
+<b class="nc"><i>1480</i>&nbsp;        checkShutdownState();</b>
+<i>1481</i>&nbsp;
+<b class="nc"><i>1482</i>&nbsp;        if ((repositoryID == null) || (factory == null))</b>
+<b class="nc"><i>1483</i>&nbsp;            throw omgWrapper.unableRegisterValueFactory() ;</b>
+<i>1484</i>&nbsp;
+<b class="nc"><i>1485</i>&nbsp;        return (ValueFactory)valueFactoryCache.put(repositoryID, factory);</b>
+<i>1486</i>&nbsp;    }
+<i>1487</i>&nbsp;
+<i>1488</i>&nbsp;    /**
+<i>1489</i>&nbsp;     * Unregisters a value factory for a particular repository ID.
+<i>1490</i>&nbsp;     *
+<i>1491</i>&nbsp;     * @param repositoryID the repository ID.
+<i>1492</i>&nbsp;     **/
+<i>1493</i>&nbsp;    public synchronized void unregister_value_factory(String repositoryID)
+<i>1494</i>&nbsp;    {
+<b class="nc"><i>1495</i>&nbsp;        checkShutdownState();</b>
+<i>1496</i>&nbsp;
+<b class="nc"><i>1497</i>&nbsp;        if (valueFactoryCache.remove(repositoryID) == null)</b>
+<b class="nc"><i>1498</i>&nbsp;            throw wrapper.nullParam() ;</b>
+<i>1499</i>&nbsp;    }
+<i>1500</i>&nbsp;
+<i>1501</i>&nbsp;    /**
+<i>1502</i>&nbsp;     * Finds and returns a value factory for the given repository ID.
+<i>1503</i>&nbsp;     * The value factory returned was previously registered by a call to
+<i>1504</i>&nbsp;     * {@link #register_value_factory} or is the default factory.
+<i>1505</i>&nbsp;     *
+<i>1506</i>&nbsp;     * @param repositoryID the repository ID.
+<i>1507</i>&nbsp;     * @return the value factory.
+<i>1508</i>&nbsp;     * @exception org.omg.CORBA.BAD_PARAM if unable to locate a factory.
+<i>1509</i>&nbsp;     **/
+<i>1510</i>&nbsp;    public synchronized ValueFactory lookup_value_factory(String repositoryID)
+<i>1511</i>&nbsp;    {
+<b class="nc"><i>1512</i>&nbsp;        checkShutdownState();</b>
+<i>1513</i>&nbsp;
+<b class="nc"><i>1514</i>&nbsp;        ValueFactory factory =</b>
+<b class="nc"><i>1515</i>&nbsp;            (ValueFactory)valueFactoryCache.get(repositoryID);</b>
+<i>1516</i>&nbsp;
+<b class="nc"><i>1517</i>&nbsp;        if (factory == null) {</b>
+<i>1518</i>&nbsp;            try {
+<b class="nc"><i>1519</i>&nbsp;                factory = Utility.getFactory(null, null, null, repositoryID);</b>
+<b class="nc"><i>1520</i>&nbsp;            } catch(org.omg.CORBA.MARSHAL ex) {</b>
+<b class="nc"><i>1521</i>&nbsp;                throw wrapper.unableFindValueFactory( ex ) ;</b>
+<b class="nc"><i>1522</i>&nbsp;            }</b>
+<i>1523</i>&nbsp;        }
+<i>1524</i>&nbsp;
+<b class="nc"><i>1525</i>&nbsp;        return factory ;</b>
+<i>1526</i>&nbsp;    }
+<i>1527</i>&nbsp;
+<i>1528</i>&nbsp;    public OAInvocationInfo peekInvocationInfo()
+<i>1529</i>&nbsp;    {
+<b class="nc"><i>1530</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1531</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1532</i>&nbsp;        }</b>
+<b class="nc"><i>1533</i>&nbsp;        StackImpl stack = (StackImpl)(OAInvocationInfoStack.get()) ;</b>
+<b class="nc"><i>1534</i>&nbsp;        return (OAInvocationInfo)(stack.peek()) ;</b>
+<i>1535</i>&nbsp;    }
+<i>1536</i>&nbsp;
+<i>1537</i>&nbsp;    public void pushInvocationInfo( OAInvocationInfo info )
+<i>1538</i>&nbsp;    {
+<b class="nc"><i>1539</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1540</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1541</i>&nbsp;        }</b>
+<b class="nc"><i>1542</i>&nbsp;        StackImpl stack = (StackImpl)(OAInvocationInfoStack.get()) ;</b>
+<b class="nc"><i>1543</i>&nbsp;        stack.push( info ) ;</b>
+<i>1544</i>&nbsp;    }
+<i>1545</i>&nbsp;
+<i>1546</i>&nbsp;    public OAInvocationInfo popInvocationInfo()
+<i>1547</i>&nbsp;    {
+<b class="nc"><i>1548</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1549</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1550</i>&nbsp;        }</b>
+<b class="nc"><i>1551</i>&nbsp;        StackImpl stack = (StackImpl)(OAInvocationInfoStack.get()) ;</b>
+<b class="nc"><i>1552</i>&nbsp;        return (OAInvocationInfo)(stack.pop()) ;</b>
+<i>1553</i>&nbsp;    }
+<i>1554</i>&nbsp;
+<i>1555</i>&nbsp;    /**
+<i>1556</i>&nbsp;     * The bad server id handler is used by the Locator to
+<i>1557</i>&nbsp;     * send back the location of a persistant server to the client.
+<i>1558</i>&nbsp;     */
+<i>1559</i>&nbsp;
+<b class="nc"><i>1560</i>&nbsp;    private Object badServerIdHandlerAccessLock = new Object();</b>
+<i>1561</i>&nbsp;
+<i>1562</i>&nbsp;    public void initBadServerIdHandler()
+<i>1563</i>&nbsp;    {
+<b class="nc"><i>1564</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1565</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1566</i>&nbsp;        }</b>
+<b class="nc"><i>1567</i>&nbsp;        synchronized (badServerIdHandlerAccessLock) {</b>
+<b class="nc"><i>1568</i>&nbsp;            Class cls = configData.getBadServerIdHandler() ;</b>
+<b class="nc"><i>1569</i>&nbsp;            if (cls != null) {</b>
+<i>1570</i>&nbsp;                try {
+<b class="nc"><i>1571</i>&nbsp;                    Class[] params = new Class[] { org.omg.CORBA.ORB.class };</b>
+<b class="nc"><i>1572</i>&nbsp;                    java.lang.Object[] args = new java.lang.Object[]{this};</b>
+<b class="nc"><i>1573</i>&nbsp;                    Constructor cons = cls.getConstructor(params);</b>
+<b class="nc"><i>1574</i>&nbsp;                    badServerIdHandler =</b>
+<b class="nc"><i>1575</i>&nbsp;                        (BadServerIdHandler) cons.newInstance(args);</b>
+<b class="nc"><i>1576</i>&nbsp;                } catch (Exception e) {</b>
+<b class="nc"><i>1577</i>&nbsp;                    throw wrapper.errorInitBadserveridhandler( e ) ;</b>
+<b class="nc"><i>1578</i>&nbsp;                }</b>
+<i>1579</i>&nbsp;            }
+<b class="nc"><i>1580</i>&nbsp;        }</b>
+<i>1581</i>&nbsp;    }
+<i>1582</i>&nbsp;
+<i>1583</i>&nbsp;    public void setBadServerIdHandler( BadServerIdHandler handler )
+<i>1584</i>&nbsp;    {
+<b class="nc"><i>1585</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1586</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1587</i>&nbsp;        }</b>
+<b class="nc"><i>1588</i>&nbsp;        synchronized (badServerIdHandlerAccessLock) {</b>
+<b class="nc"><i>1589</i>&nbsp;            badServerIdHandler = handler;</b>
+<b class="nc"><i>1590</i>&nbsp;        }</b>
+<i>1591</i>&nbsp;    }
+<i>1592</i>&nbsp;
+<i>1593</i>&nbsp;    public void handleBadServerId( ObjectKey okey )
+<i>1594</i>&nbsp;    {
+<b class="nc"><i>1595</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1596</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1597</i>&nbsp;        }</b>
+<b class="nc"><i>1598</i>&nbsp;        synchronized (badServerIdHandlerAccessLock) {</b>
+<b class="nc"><i>1599</i>&nbsp;            if (badServerIdHandler == null)</b>
+<b class="nc"><i>1600</i>&nbsp;                throw wrapper.badServerId() ;</b>
+<i>1601</i>&nbsp;            else
+<b class="nc"><i>1602</i>&nbsp;                badServerIdHandler.handle( okey ) ;</b>
+<b class="nc"><i>1603</i>&nbsp;        }</b>
+<i>1604</i>&nbsp;    }
+<i>1605</i>&nbsp;
+<i>1606</i>&nbsp;    public synchronized org.omg.CORBA.Policy create_policy( int type,
+<i>1607</i>&nbsp;        org.omg.CORBA.Any val ) throws org.omg.CORBA.PolicyError
+<i>1608</i>&nbsp;    {
+<b class="nc"><i>1609</i>&nbsp;        checkShutdownState() ;</b>
+<i>1610</i>&nbsp;
+<b class="nc"><i>1611</i>&nbsp;        return pihandler.create_policy( type, val ) ;</b>
+<i>1612</i>&nbsp;    }
+<i>1613</i>&nbsp;
+<i>1614</i>&nbsp;    /** This is the implementation of the public API used to connect
+<i>1615</i>&nbsp;     *  a servant-skeleton to the ORB.
+<i>1616</i>&nbsp;     */
+<i>1617</i>&nbsp;    public synchronized void connect(org.omg.CORBA.Object servant)
+<i>1618</i>&nbsp;    {
+<b class="nc"><i>1619</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>1620</i>&nbsp;        if (getTOAFactory() == null)</b>
+<b class="nc"><i>1621</i>&nbsp;            throw wrapper.noToa() ;</b>
+<i>1622</i>&nbsp;
+<i>1623</i>&nbsp;        try {
+<b class="nc"><i>1624</i>&nbsp;            String codebase = javax.rmi.CORBA.Util.getCodebase( servant.getClass() ) ;</b>
+<b class="nc"><i>1625</i>&nbsp;            getTOAFactory().getTOA( codebase ).connect( servant ) ;</b>
+<b class="nc"><i>1626</i>&nbsp;        } catch ( Exception ex ) {</b>
+<b class="nc"><i>1627</i>&nbsp;            throw wrapper.orbConnectError( ex ) ;</b>
+<b class="nc"><i>1628</i>&nbsp;        }</b>
+<i>1629</i>&nbsp;    }
+<i>1630</i>&nbsp;
+<i>1631</i>&nbsp;    public synchronized void disconnect(org.omg.CORBA.Object obj)
+<i>1632</i>&nbsp;    {
+<b class="nc"><i>1633</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>1634</i>&nbsp;        if (getTOAFactory() == null)</b>
+<b class="nc"><i>1635</i>&nbsp;            throw wrapper.noToa() ;</b>
+<i>1636</i>&nbsp;
+<i>1637</i>&nbsp;        try {
+<b class="nc"><i>1638</i>&nbsp;            getTOAFactory().getTOA().disconnect( obj ) ;</b>
+<b class="nc"><i>1639</i>&nbsp;        } catch ( Exception ex ) {</b>
+<b class="nc"><i>1640</i>&nbsp;            throw wrapper.orbConnectError( ex ) ;</b>
+<b class="nc"><i>1641</i>&nbsp;        }</b>
+<i>1642</i>&nbsp;    }
+<i>1643</i>&nbsp;
+<i>1644</i>&nbsp;    public int getTransientServerId()
+<i>1645</i>&nbsp;    {
+<b class="nc"><i>1646</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1647</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1648</i>&nbsp;        }</b>
+<b class="nc"><i>1649</i>&nbsp;        if( configData.getORBServerIdPropertySpecified( ) ) {</b>
+<i>1650</i>&nbsp;            // ORBServerId is specified then use that value
+<b class="nc"><i>1651</i>&nbsp;            return configData.getPersistentServerId( );</b>
+<i>1652</i>&nbsp;        }
+<b class="nc"><i>1653</i>&nbsp;        return transientServerId;</b>
+<i>1654</i>&nbsp;    }
+<i>1655</i>&nbsp;
+<i>1656</i>&nbsp;    public RequestDispatcherRegistry getRequestDispatcherRegistry()
+<i>1657</i>&nbsp;    {
+<b class="nc"><i>1658</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1659</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1660</i>&nbsp;        }</b>
+<b class="nc"><i>1661</i>&nbsp;        return requestDispatcherRegistry;</b>
+<i>1662</i>&nbsp;    }
+<i>1663</i>&nbsp;
+<i>1664</i>&nbsp;    public ServiceContextRegistry getServiceContextRegistry()
+<i>1665</i>&nbsp;    {
+<b class="nc"><i>1666</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1667</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1668</i>&nbsp;        }</b>
+<b class="nc"><i>1669</i>&nbsp;        return serviceContextRegistry ;</b>
+<i>1670</i>&nbsp;    }
+<i>1671</i>&nbsp;
+<i>1672</i>&nbsp;    // XXX All of the isLocalXXX checking needs to be revisited.
+<i>1673</i>&nbsp;    // First of all, all three of these methods are called from
+<i>1674</i>&nbsp;    // only one place in impl.ior.IORImpl.  Second, we have problems
+<i>1675</i>&nbsp;    // both with multi-homed hosts and with multi-profile IORs.
+<i>1676</i>&nbsp;    // A possible strategy: like the LocalClientRequestDispatcher, we need
+<i>1677</i>&nbsp;    // to determine this more abstractly at the ContactInfo level.
+<i>1678</i>&nbsp;    // This level should probably just get the CorbaContactInfoList from
+<i>1679</i>&nbsp;    // the IOR, then iterator over ContactInfo.  If any ContactInfo is
+<i>1680</i>&nbsp;    // local, the IOR is local, and we can pick one to create the
+<i>1681</i>&nbsp;    // LocalClientRequestDispatcher as well.  Bottom line: this code needs to move.
+<i>1682</i>&nbsp;
+<i>1683</i>&nbsp;    // XXX What about multi-homed host?
+<i>1684</i>&nbsp;    public boolean isLocalHost( String hostName )
+<i>1685</i>&nbsp;    {
+<b class="nc"><i>1686</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1687</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1688</i>&nbsp;        }</b>
+<b class="nc"><i>1689</i>&nbsp;        return hostName.equals( configData.getORBServerHost() ) ||</b>
+<b class="nc"><i>1690</i>&nbsp;            hostName.equals( getLocalHostName() ) ;</b>
+<i>1691</i>&nbsp;    }
+<i>1692</i>&nbsp;
+<i>1693</i>&nbsp;    public boolean isLocalServerId( int subcontractId, int serverId )
+<i>1694</i>&nbsp;    {
+<b class="nc"><i>1695</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1696</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1697</i>&nbsp;        }</b>
+<b class="nc"><i>1698</i>&nbsp;        if ((subcontractId &lt; ORBConstants.FIRST_POA_SCID) ||</b>
+<i>1699</i>&nbsp;            (subcontractId &gt; ORBConstants.MAX_POA_SCID))
+<b class="nc"><i>1700</i>&nbsp;            return serverId == getTransientServerId( ) ;</b>
+<i>1701</i>&nbsp;
+<i>1702</i>&nbsp;        // XXX isTransient info should be stored in subcontract registry
+<b class="nc"><i>1703</i>&nbsp;        if (ORBConstants.isTransient( subcontractId ))</b>
+<b class="nc"><i>1704</i>&nbsp;            return (serverId == getTransientServerId()) ;</b>
+<b class="nc"><i>1705</i>&nbsp;        else if (configData.getPersistentServerIdInitialized())</b>
+<b class="nc"><i>1706</i>&nbsp;            return (serverId == configData.getPersistentServerId()) ;</b>
+<i>1707</i>&nbsp;        else
+<b class="nc"><i>1708</i>&nbsp;            return false ;</b>
+<i>1709</i>&nbsp;    }
+<i>1710</i>&nbsp;
+<i>1711</i>&nbsp;    /*************************************************************************
+<i>1712</i>&nbsp;     *  The following public methods are for ORB shutdown.
+<i>1713</i>&nbsp;     *************************************************************************/
+<i>1714</i>&nbsp;
+<i>1715</i>&nbsp;    private String getHostName(String host)
+<i>1716</i>&nbsp;        throws java.net.UnknownHostException
+<i>1717</i>&nbsp;    {
+<b class="nc"><i>1718</i>&nbsp;        return InetAddress.getByName( host ).getHostAddress();</b>
+<i>1719</i>&nbsp;    }
+<i>1720</i>&nbsp;
+<i>1721</i>&nbsp;    /* keeping a copy of the getLocalHostName so that it can only be called
+<i>1722</i>&nbsp;     * internally and the unauthorized clients cannot have access to the
+<i>1723</i>&nbsp;     * localHost information, originally, the above code was calling
+<i>1724</i>&nbsp;     * getLocalHostName from Connection.java.  If the hostname is cached in
+<i>1725</i>&nbsp;     * Connection.java, then
+<i>1726</i>&nbsp;     * it is a security hole, since any unauthorized client has access to
+<i>1727</i>&nbsp;     * the host information.  With this change it is used internally so the
+<i>1728</i>&nbsp;     * security problem is resolved.  Also in Connection.java, the
+<i>1729</i>&nbsp;     * getLocalHost() implementation has changed to always call the
+<i>1730</i>&nbsp;     * InetAddress.getLocalHost().getHostAddress()
+<i>1731</i>&nbsp;     * The above mentioned method has been removed from the connection class
+<i>1732</i>&nbsp;     */
+<i>1733</i>&nbsp;
+<b class="nc"><i>1734</i>&nbsp;    private static String localHostString = null;</b>
+<i>1735</i>&nbsp;
+<i>1736</i>&nbsp;    private synchronized String getLocalHostName()
+<i>1737</i>&nbsp;    {
+<b class="nc"><i>1738</i>&nbsp;        if (localHostString == null) {</b>
+<i>1739</i>&nbsp;            try {
+<b class="nc"><i>1740</i>&nbsp;                localHostString = InetAddress.getLocalHost().getHostAddress();</b>
+<b class="nc"><i>1741</i>&nbsp;            } catch (Exception ex) {</b>
+<b class="nc"><i>1742</i>&nbsp;                throw wrapper.getLocalHostFailed( ex ) ;</b>
+<b class="nc"><i>1743</i>&nbsp;            }</b>
+<i>1744</i>&nbsp;        }
+<b class="nc"><i>1745</i>&nbsp;        return localHostString ;</b>
+<i>1746</i>&nbsp;    }
+<i>1747</i>&nbsp;
+<i>1748</i>&nbsp; /******************************************************************************
+<i>1749</i>&nbsp; *  The following public methods are for ORB shutdown.
+<i>1750</i>&nbsp; *
+<i>1751</i>&nbsp; ******************************************************************************/
+<i>1752</i>&nbsp;
+<i>1753</i>&nbsp;    /** This method always returns false because the ORB never needs the
+<i>1754</i>&nbsp;     *  main thread to do work.
+<i>1755</i>&nbsp;     */
+<i>1756</i>&nbsp;    public synchronized boolean work_pending()
+<i>1757</i>&nbsp;    {
+<b class="nc"><i>1758</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>1759</i>&nbsp;        throw wrapper.genericNoImpl() ;</b>
+<i>1760</i>&nbsp;    }
+<i>1761</i>&nbsp;
+<i>1762</i>&nbsp;    /** This method does nothing. It is not required by the spec to do anything!
+<i>1763</i>&nbsp;     */
+<i>1764</i>&nbsp;    public synchronized void perform_work()
+<i>1765</i>&nbsp;    {
+<b class="nc"><i>1766</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>1767</i>&nbsp;        throw wrapper.genericNoImpl() ;</b>
+<i>1768</i>&nbsp;    }
+<i>1769</i>&nbsp;
+<i>1770</i>&nbsp;    public synchronized void set_delegate(java.lang.Object servant){
+<b class="nc"><i>1771</i>&nbsp;        checkShutdownState();</b>
+<i>1772</i>&nbsp;
+<b class="nc"><i>1773</i>&nbsp;        POAFactory poaFactory = getPOAFactory() ;</b>
+<b class="nc"><i>1774</i>&nbsp;        if (poaFactory != null)</b>
+<b class="nc"><i>1775</i>&nbsp;            ((org.omg.PortableServer.Servant)servant)</b>
+<b class="nc"><i>1776</i>&nbsp;                ._set_delegate( poaFactory.getDelegateImpl() ) ;</b>
+<i>1777</i>&nbsp;        else
+<b class="nc"><i>1778</i>&nbsp;            throw wrapper.noPoa() ;</b>
+<i>1779</i>&nbsp;    }
+<i>1780</i>&nbsp;
+<i>1781</i>&nbsp;    ////////////////////////////////////////////////////
+<i>1782</i>&nbsp;    //
+<i>1783</i>&nbsp;    // pept.broker.Broker
+<i>1784</i>&nbsp;    //
+<i>1785</i>&nbsp;
+<i>1786</i>&nbsp;    public ClientInvocationInfo createOrIncrementInvocationInfo()
+<i>1787</i>&nbsp;    {
+<b class="nc"><i>1788</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1789</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1790</i>&nbsp;        }</b>
+<b class="nc"><i>1791</i>&nbsp;        StackImpl invocationInfoStack =</b>
+<b class="nc"><i>1792</i>&nbsp;            (StackImpl) clientInvocationInfoStack.get();</b>
+<b class="nc"><i>1793</i>&nbsp;        ClientInvocationInfo clientInvocationInfo = null;</b>
+<b class="nc"><i>1794</i>&nbsp;        if (!invocationInfoStack.empty()) {</b>
+<b class="nc"><i>1795</i>&nbsp;            clientInvocationInfo =</b>
+<b class="nc"><i>1796</i>&nbsp;                (ClientInvocationInfo) invocationInfoStack.peek();</b>
+<i>1797</i>&nbsp;        }
+<b class="nc"><i>1798</i>&nbsp;        if ((clientInvocationInfo == null) ||</b>
+<b class="nc"><i>1799</i>&nbsp;            (!clientInvocationInfo.isRetryInvocation()))</b>
+<i>1800</i>&nbsp;        {
+<i>1801</i>&nbsp;            // This is a new call - not a retry.
+<b class="nc"><i>1802</i>&nbsp;            clientInvocationInfo = new CorbaInvocationInfo(this);</b>
+<b class="nc"><i>1803</i>&nbsp;            startingDispatch();</b>
+<b class="nc"><i>1804</i>&nbsp;            invocationInfoStack.push(clientInvocationInfo);</b>
+<i>1805</i>&nbsp;        }
+<i>1806</i>&nbsp;        // Reset retry so recursive calls will get a new info object.
+<b class="nc"><i>1807</i>&nbsp;        clientInvocationInfo.setIsRetryInvocation(false);</b>
+<b class="nc"><i>1808</i>&nbsp;        clientInvocationInfo.incrementEntryCount();</b>
+<b class="nc"><i>1809</i>&nbsp;        return clientInvocationInfo;</b>
+<i>1810</i>&nbsp;    }
+<i>1811</i>&nbsp;
+<i>1812</i>&nbsp;    public void releaseOrDecrementInvocationInfo()
+<i>1813</i>&nbsp;    {
+<b class="nc"><i>1814</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1815</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1816</i>&nbsp;        }</b>
+<b class="nc"><i>1817</i>&nbsp;        int entryCount = -1;</b>
+<b class="nc"><i>1818</i>&nbsp;        ClientInvocationInfo clientInvocationInfo = null;</b>
+<b class="nc"><i>1819</i>&nbsp;        StackImpl invocationInfoStack =</b>
+<b class="nc"><i>1820</i>&nbsp;            (StackImpl)clientInvocationInfoStack.get();</b>
+<b class="nc"><i>1821</i>&nbsp;        if (!invocationInfoStack.empty()) {</b>
+<b class="nc"><i>1822</i>&nbsp;            clientInvocationInfo =</b>
+<b class="nc"><i>1823</i>&nbsp;                (ClientInvocationInfo)invocationInfoStack.peek();</b>
+<i>1824</i>&nbsp;        } else {
+<b class="nc"><i>1825</i>&nbsp;            throw wrapper.invocationInfoStackEmpty() ;</b>
+<i>1826</i>&nbsp;        }
+<b class="nc"><i>1827</i>&nbsp;        clientInvocationInfo.decrementEntryCount();</b>
+<b class="nc"><i>1828</i>&nbsp;        entryCount = clientInvocationInfo.getEntryCount();</b>
+<b class="nc"><i>1829</i>&nbsp;        if (clientInvocationInfo.getEntryCount() == 0) {</b>
+<i>1830</i>&nbsp;            // 6763340: don&#39;t pop if this is a retry!
+<b class="nc"><i>1831</i>&nbsp;            if (!clientInvocationInfo.isRetryInvocation()) {</b>
+<b class="nc"><i>1832</i>&nbsp;                invocationInfoStack.pop();</b>
+<i>1833</i>&nbsp;            }
+<b class="nc"><i>1834</i>&nbsp;            finishedDispatch();</b>
+<i>1835</i>&nbsp;        }
+<i>1836</i>&nbsp;    }
+<i>1837</i>&nbsp;
+<i>1838</i>&nbsp;    public ClientInvocationInfo getInvocationInfo()
+<i>1839</i>&nbsp;    {
+<b class="nc"><i>1840</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1841</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1842</i>&nbsp;        }</b>
+<b class="nc"><i>1843</i>&nbsp;        StackImpl invocationInfoStack =</b>
+<b class="nc"><i>1844</i>&nbsp;            (StackImpl) clientInvocationInfoStack.get();</b>
+<b class="nc"><i>1845</i>&nbsp;        return (ClientInvocationInfo) invocationInfoStack.peek();</b>
+<i>1846</i>&nbsp;    }
+<i>1847</i>&nbsp;
+<i>1848</i>&nbsp;    ////////////////////////////////////////////////////
+<i>1849</i>&nbsp;    //
+<i>1850</i>&nbsp;    //
+<i>1851</i>&nbsp;    //
+<i>1852</i>&nbsp;
+<b class="nc"><i>1853</i>&nbsp;    private Object clientDelegateFactoryAccessorLock = new Object();</b>
+<i>1854</i>&nbsp;
+<i>1855</i>&nbsp;    public void setClientDelegateFactory( ClientDelegateFactory factory )
+<i>1856</i>&nbsp;    {
+<b class="nc"><i>1857</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1858</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1859</i>&nbsp;        }</b>
+<b class="nc"><i>1860</i>&nbsp;        synchronized (clientDelegateFactoryAccessorLock) {</b>
+<b class="nc"><i>1861</i>&nbsp;            clientDelegateFactory = factory ;</b>
+<b class="nc"><i>1862</i>&nbsp;        }</b>
+<i>1863</i>&nbsp;    }
+<i>1864</i>&nbsp;
+<i>1865</i>&nbsp;    public ClientDelegateFactory getClientDelegateFactory()
+<i>1866</i>&nbsp;    {
+<b class="nc"><i>1867</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1868</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1869</i>&nbsp;        }</b>
+<b class="nc"><i>1870</i>&nbsp;        synchronized (clientDelegateFactoryAccessorLock) {</b>
+<b class="nc"><i>1871</i>&nbsp;            return clientDelegateFactory ;</b>
+<b class="nc"><i>1872</i>&nbsp;        }</b>
+<i>1873</i>&nbsp;    }
+<i>1874</i>&nbsp;
+<b class="nc"><i>1875</i>&nbsp;    private Object corbaContactInfoListFactoryAccessLock = new Object();</b>
+<i>1876</i>&nbsp;
+<i>1877</i>&nbsp;    public void setCorbaContactInfoListFactory( CorbaContactInfoListFactory factory )
+<i>1878</i>&nbsp;    {
+<b class="nc"><i>1879</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1880</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1881</i>&nbsp;        }</b>
+<b class="nc"><i>1882</i>&nbsp;        synchronized (corbaContactInfoListFactoryAccessLock) {</b>
+<b class="nc"><i>1883</i>&nbsp;            corbaContactInfoListFactory = factory ;</b>
+<b class="nc"><i>1884</i>&nbsp;        }</b>
+<i>1885</i>&nbsp;    }
+<i>1886</i>&nbsp;
+<i>1887</i>&nbsp;    public synchronized CorbaContactInfoListFactory getCorbaContactInfoListFactory()
+<i>1888</i>&nbsp;    {
+<b class="nc"><i>1889</i>&nbsp;        checkShutdownState();</b>
+<b class="nc"><i>1890</i>&nbsp;        return corbaContactInfoListFactory ;</b>
+<i>1891</i>&nbsp;    }
+<i>1892</i>&nbsp;
+<i>1893</i>&nbsp;    /** Set the resolver used in this ORB.  This resolver will be used for list_initial_services
+<i>1894</i>&nbsp;     * and resolve_initial_references.
+<i>1895</i>&nbsp;     */
+<i>1896</i>&nbsp;    public void setResolver( Resolver resolver )
+<i>1897</i>&nbsp;    {
+<b class="nc"><i>1898</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1899</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1900</i>&nbsp;        }</b>
+<b class="nc"><i>1901</i>&nbsp;        synchronized (resolverLock) {</b>
+<b class="nc"><i>1902</i>&nbsp;            this.resolver = resolver ;</b>
+<b class="nc"><i>1903</i>&nbsp;        }</b>
+<i>1904</i>&nbsp;    }
+<i>1905</i>&nbsp;
+<i>1906</i>&nbsp;    /** Get the resolver used in this ORB.  This resolver will be used for list_initial_services
+<i>1907</i>&nbsp;     * and resolve_initial_references.
+<i>1908</i>&nbsp;     */
+<i>1909</i>&nbsp;    public Resolver getResolver()
+<i>1910</i>&nbsp;    {
+<b class="nc"><i>1911</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1912</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1913</i>&nbsp;        }</b>
+<b class="nc"><i>1914</i>&nbsp;        synchronized (resolverLock) {</b>
+<b class="nc"><i>1915</i>&nbsp;            return resolver ;</b>
+<b class="nc"><i>1916</i>&nbsp;        }</b>
+<i>1917</i>&nbsp;    }
+<i>1918</i>&nbsp;
+<i>1919</i>&nbsp;    /** Set the LocalResolver used in this ORB.  This LocalResolver is used for
+<i>1920</i>&nbsp;     * register_initial_reference only.
+<i>1921</i>&nbsp;     */
+<i>1922</i>&nbsp;    public void setLocalResolver( LocalResolver resolver )
+<i>1923</i>&nbsp;    {
+<b class="nc"><i>1924</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1925</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1926</i>&nbsp;        }</b>
+<b class="nc"><i>1927</i>&nbsp;        synchronized (resolverLock) {</b>
+<b class="nc"><i>1928</i>&nbsp;            this.localResolver = resolver ;</b>
+<b class="nc"><i>1929</i>&nbsp;        }</b>
+<i>1930</i>&nbsp;    }
+<i>1931</i>&nbsp;
+<i>1932</i>&nbsp;    /** Get the LocalResolver used in this ORB.  This LocalResolver is used for
+<i>1933</i>&nbsp;     * register_initial_reference only.
+<i>1934</i>&nbsp;     */
+<i>1935</i>&nbsp;    public LocalResolver getLocalResolver()
+<i>1936</i>&nbsp;    {
+<b class="nc"><i>1937</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1938</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1939</i>&nbsp;        }</b>
+<b class="nc"><i>1940</i>&nbsp;        synchronized (resolverLock) {</b>
+<b class="nc"><i>1941</i>&nbsp;            return localResolver ;</b>
+<b class="nc"><i>1942</i>&nbsp;        }</b>
+<i>1943</i>&nbsp;    }
+<i>1944</i>&nbsp;
+<i>1945</i>&nbsp;    /** Set the operation used in string_to_object calls.  The Operation must expect a
+<i>1946</i>&nbsp;     * String and return an org.omg.CORBA.Object.
+<i>1947</i>&nbsp;     */
+<i>1948</i>&nbsp;    public void setURLOperation( Operation stringToObject )
+<i>1949</i>&nbsp;    {
+<b class="nc"><i>1950</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1951</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1952</i>&nbsp;        }</b>
+<b class="nc"><i>1953</i>&nbsp;        synchronized (urlOperationLock) {</b>
+<b class="nc"><i>1954</i>&nbsp;            urlOperation = stringToObject ;</b>
+<b class="nc"><i>1955</i>&nbsp;        }</b>
+<i>1956</i>&nbsp;    }
+<i>1957</i>&nbsp;
+<i>1958</i>&nbsp;    /** Get the operation used in string_to_object calls.  The Operation must expect a
+<i>1959</i>&nbsp;     * String and return an org.omg.CORBA.Object.
+<i>1960</i>&nbsp;     */
+<i>1961</i>&nbsp;    public Operation getURLOperation()
+<i>1962</i>&nbsp;    {
+<b class="nc"><i>1963</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1964</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1965</i>&nbsp;        }</b>
+<b class="nc"><i>1966</i>&nbsp;        synchronized (urlOperationLock) {</b>
+<b class="nc"><i>1967</i>&nbsp;            return urlOperation ;</b>
+<b class="nc"><i>1968</i>&nbsp;        }</b>
+<i>1969</i>&nbsp;    }
+<i>1970</i>&nbsp;
+<i>1971</i>&nbsp;    public void setINSDelegate( CorbaServerRequestDispatcher sdel )
+<i>1972</i>&nbsp;    {
+<b class="nc"><i>1973</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1974</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1975</i>&nbsp;        }</b>
+<b class="nc"><i>1976</i>&nbsp;        synchronized (resolverLock) {</b>
+<b class="nc"><i>1977</i>&nbsp;            insNamingDelegate = sdel ;</b>
+<b class="nc"><i>1978</i>&nbsp;        }</b>
+<i>1979</i>&nbsp;    }
+<i>1980</i>&nbsp;
+<i>1981</i>&nbsp;    public TaggedComponentFactoryFinder getTaggedComponentFactoryFinder()
+<i>1982</i>&nbsp;    {
+<b class="nc"><i>1983</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1984</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1985</i>&nbsp;        }</b>
+<b class="nc"><i>1986</i>&nbsp;        return taggedComponentFactoryFinder ;</b>
+<i>1987</i>&nbsp;    }
+<i>1988</i>&nbsp;
+<i>1989</i>&nbsp;    public IdentifiableFactoryFinder getTaggedProfileFactoryFinder()
+<i>1990</i>&nbsp;    {
+<b class="nc"><i>1991</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>1992</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>1993</i>&nbsp;        }</b>
+<b class="nc"><i>1994</i>&nbsp;        return taggedProfileFactoryFinder ;</b>
+<i>1995</i>&nbsp;    }
+<i>1996</i>&nbsp;
+<i>1997</i>&nbsp;    public IdentifiableFactoryFinder getTaggedProfileTemplateFactoryFinder()
+<i>1998</i>&nbsp;    {
+<b class="nc"><i>1999</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>2000</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>2001</i>&nbsp;        }</b>
+<b class="nc"><i>2002</i>&nbsp;        return taggedProfileTemplateFactoryFinder ;</b>
+<i>2003</i>&nbsp;    }
+<i>2004</i>&nbsp;
+<b class="nc"><i>2005</i>&nbsp;    private Object objectKeyFactoryAccessLock = new Object();</b>
+<i>2006</i>&nbsp;
+<i>2007</i>&nbsp;    public ObjectKeyFactory getObjectKeyFactory()
+<i>2008</i>&nbsp;    {
+<b class="nc"><i>2009</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>2010</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>2011</i>&nbsp;        }</b>
+<b class="nc"><i>2012</i>&nbsp;        synchronized (objectKeyFactoryAccessLock) {</b>
+<b class="nc"><i>2013</i>&nbsp;            return objectKeyFactory ;</b>
+<b class="nc"><i>2014</i>&nbsp;        }</b>
+<i>2015</i>&nbsp;    }
+<i>2016</i>&nbsp;
+<i>2017</i>&nbsp;    public void setObjectKeyFactory( ObjectKeyFactory factory )
+<i>2018</i>&nbsp;    {
+<b class="nc"><i>2019</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>2020</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>2021</i>&nbsp;        }</b>
+<b class="nc"><i>2022</i>&nbsp;        synchronized (objectKeyFactoryAccessLock) {</b>
+<b class="nc"><i>2023</i>&nbsp;            objectKeyFactory = factory ;</b>
+<b class="nc"><i>2024</i>&nbsp;        }</b>
+<i>2025</i>&nbsp;    }
+<i>2026</i>&nbsp;
+<b class="nc"><i>2027</i>&nbsp;    private Object transportManagerAccessorLock = new Object();</b>
+<i>2028</i>&nbsp;
+<i>2029</i>&nbsp;    public TransportManager getTransportManager()
+<i>2030</i>&nbsp;    {
+<b class="nc"><i>2031</i>&nbsp;        synchronized (transportManagerAccessorLock) {</b>
+<b class="nc"><i>2032</i>&nbsp;            if (transportManager == null) {</b>
+<b class="nc"><i>2033</i>&nbsp;                transportManager = new CorbaTransportManagerImpl(this);</b>
+<i>2034</i>&nbsp;            }
+<b class="nc"><i>2035</i>&nbsp;            return transportManager;</b>
+<b class="nc"><i>2036</i>&nbsp;        }</b>
+<i>2037</i>&nbsp;    }
+<i>2038</i>&nbsp;
+<i>2039</i>&nbsp;    public CorbaTransportManager getCorbaTransportManager()
+<i>2040</i>&nbsp;    {
+<b class="nc"><i>2041</i>&nbsp;        return (CorbaTransportManager) getTransportManager();</b>
+<i>2042</i>&nbsp;    }
+<i>2043</i>&nbsp;
+<b class="nc"><i>2044</i>&nbsp;    private Object legacyServerSocketManagerAccessLock = new Object();</b>
+<i>2045</i>&nbsp;
+<i>2046</i>&nbsp;    public LegacyServerSocketManager getLegacyServerSocketManager()
+<i>2047</i>&nbsp;    {
+<b class="nc"><i>2048</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>2049</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>2050</i>&nbsp;        }</b>
+<b class="nc"><i>2051</i>&nbsp;        synchronized (legacyServerSocketManagerAccessLock) {</b>
+<b class="nc"><i>2052</i>&nbsp;            if (legacyServerSocketManager == null) {</b>
+<b class="nc"><i>2053</i>&nbsp;                legacyServerSocketManager = new LegacyServerSocketManagerImpl(this);</b>
+<i>2054</i>&nbsp;            }
+<b class="nc"><i>2055</i>&nbsp;            return legacyServerSocketManager;</b>
+<b class="nc"><i>2056</i>&nbsp;        }</b>
+<i>2057</i>&nbsp;    }
+<i>2058</i>&nbsp;
+<b class="nc"><i>2059</i>&nbsp;    private Object threadPoolManagerAccessLock = new Object();</b>
+<i>2060</i>&nbsp;
+<i>2061</i>&nbsp;    public void setThreadPoolManager(ThreadPoolManager mgr)
+<i>2062</i>&nbsp;    {
+<b class="nc"><i>2063</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>2064</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>2065</i>&nbsp;        }</b>
+<b class="nc"><i>2066</i>&nbsp;        synchronized (threadPoolManagerAccessLock) {</b>
+<b class="nc"><i>2067</i>&nbsp;            threadpoolMgr = mgr;</b>
+<b class="nc"><i>2068</i>&nbsp;        }</b>
+<i>2069</i>&nbsp;    }
+<i>2070</i>&nbsp;
+<i>2071</i>&nbsp;    public ThreadPoolManager getThreadPoolManager()
+<i>2072</i>&nbsp;    {
+<b class="nc"><i>2073</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>2074</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>2075</i>&nbsp;        }</b>
+<b class="nc"><i>2076</i>&nbsp;        synchronized (threadPoolManagerAccessLock) {</b>
+<b class="nc"><i>2077</i>&nbsp;            if (threadpoolMgr == null) {</b>
+<b class="nc"><i>2078</i>&nbsp;                threadpoolMgr = new ThreadPoolManagerImpl();</b>
+<b class="nc"><i>2079</i>&nbsp;                orbOwnsThreadPoolManager = true;</b>
+<i>2080</i>&nbsp;            }
+<b class="nc"><i>2081</i>&nbsp;            return threadpoolMgr;</b>
+<b class="nc"><i>2082</i>&nbsp;        }</b>
+<i>2083</i>&nbsp;    }
+<i>2084</i>&nbsp;
+<i>2085</i>&nbsp;    public CopierManager getCopierManager()
+<i>2086</i>&nbsp;    {
+<b class="nc"><i>2087</i>&nbsp;        synchronized (this) {</b>
+<b class="nc"><i>2088</i>&nbsp;                checkShutdownState();</b>
+<b class="nc"><i>2089</i>&nbsp;        }</b>
+<b class="nc"><i>2090</i>&nbsp;        return copierManager ;</b>
+<i>2091</i>&nbsp;    }
+<i>2092</i>&nbsp;} // Class ORBImpl
+<i>2093</i>&nbsp;
+<i>2094</i>&nbsp;////////////////////////////////////////////////////////////////////////
+<i>2095</i>&nbsp;/// Helper class for a Synchronization Variable
+<i>2096</i>&nbsp;////////////////////////////////////////////////////////////////////////
+<i>2097</i>&nbsp;
+<i>2098</i>&nbsp;class SynchVariable
+<i>2099</i>&nbsp;{
+<i>2100</i>&nbsp;    // Synchronization Variable
+<i>2101</i>&nbsp;    public boolean _flag;
+<i>2102</i>&nbsp;
+<i>2103</i>&nbsp;    // Constructor
+<i>2104</i>&nbsp;    SynchVariable()
+<i>2105</i>&nbsp;    {
+<i>2106</i>&nbsp;        _flag = false;
+<i>2107</i>&nbsp;    }
+<i>2108</i>&nbsp;
+<i>2109</i>&nbsp;    // set Flag to true
+<i>2110</i>&nbsp;    public void set()
+<i>2111</i>&nbsp;    {
+<i>2112</i>&nbsp;        _flag = true;
+<i>2113</i>&nbsp;    }
+<i>2114</i>&nbsp;
+<i>2115</i>&nbsp;        // get value
+<i>2116</i>&nbsp;    public boolean value()
+<i>2117</i>&nbsp;    {
+<i>2118</i>&nbsp;        return _flag;
+<i>2119</i>&nbsp;    }
+<i>2120</i>&nbsp;
+<i>2121</i>&nbsp;    // reset Flag to true
+<i>2122</i>&nbsp;    public void reset()
+<i>2123</i>&nbsp;    {
+<i>2124</i>&nbsp;        _flag = false;
+<i>2125</i>&nbsp;    }
+<i>2126</i>&nbsp;}
+<i>2127</i>&nbsp;
+<i>2128</i>&nbsp;// End of file.
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

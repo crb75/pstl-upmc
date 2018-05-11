@@ -1,0 +1,1405 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XMLAttributesImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XMLAttributesImpl (com.sun.org.apache.xerces.internal.util)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XMLAttributesImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 61)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 314)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">XMLAttributesImpl$Attribute</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 62)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 317)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.util;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.Augmentations;
+<i>24</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.QName;
+<i>25</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLAttributes;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLString;
+<i>27</i>&nbsp;import com.sun.xml.internal.stream.XMLBufferListener;
+<i>28</i>&nbsp;/**
+<i>29</i>&nbsp; * The XMLAttributesImpl class is an implementation of the XMLAttributes
+<i>30</i>&nbsp; * interface which defines a collection of attributes for an element.
+<i>31</i>&nbsp; * In the parser, the document source would scan the entire start element
+<i>32</i>&nbsp; * and collect the attributes. The attributes are communicated to the
+<i>33</i>&nbsp; * document handler in the startElement method.
+<i>34</i>&nbsp; * &lt;p&gt;
+<i>35</i>&nbsp; * The attributes are read-write so that subsequent stages in the document
+<i>36</i>&nbsp; * pipeline can modify the values or change the attributes that are
+<i>37</i>&nbsp; * propogated to the next stage.
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; * @see com.sun.org.apache.xerces.internal.xni.XMLDocumentHandler#startElement
+<i>40</i>&nbsp; *
+<i>41</i>&nbsp; * @author Andy Clark, IBM
+<i>42</i>&nbsp; * @author Elena Litani, IBM
+<i>43</i>&nbsp; * @author Michael Glavassevich, IBM
+<i>44</i>&nbsp; *
+<i>45</i>&nbsp; * @version $Id: XMLAttributesImpl.java,v 1.7 2010/05/07 20:13:09 joehw Exp $
+<i>46</i>&nbsp; */
+<i>47</i>&nbsp;public class XMLAttributesImpl
+<i>48</i>&nbsp;implements XMLAttributes, XMLBufferListener {
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    //
+<i>51</i>&nbsp;    // Constants
+<i>52</i>&nbsp;    //
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /** Default table size. */
+<i>55</i>&nbsp;    protected static final int TABLE_SIZE = 101;
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    /** Maximum hash collisions per bucket. */
+<i>58</i>&nbsp;    protected static final int MAX_HASH_COLLISIONS = 40;
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    protected static final int MULTIPLIERS_SIZE = 1 &lt;&lt; 5;
+<i>61</i>&nbsp;    protected static final int MULTIPLIERS_MASK = MULTIPLIERS_SIZE - 1;
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    /**
+<i>64</i>&nbsp;     * Threshold at which an instance is treated
+<i>65</i>&nbsp;     * as a large attribute list.
+<i>66</i>&nbsp;     */
+<i>67</i>&nbsp;    protected static final int SIZE_LIMIT = 20;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    //
+<i>70</i>&nbsp;    // Data
+<i>71</i>&nbsp;    //
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    // features
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    /** Namespaces. */
+<b class="nc"><i>76</i>&nbsp;    protected boolean fNamespaces = true;</b>
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    // data
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    /**
+<i>81</i>&nbsp;     * Usage count for the attribute table view.
+<i>82</i>&nbsp;     * Incremented each time all attributes are removed
+<i>83</i>&nbsp;     * when the attribute table view is in use.
+<i>84</i>&nbsp;     */
+<b class="nc"><i>85</i>&nbsp;    protected int fLargeCount = 1;</b>
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    /** Attribute count. */
+<i>88</i>&nbsp;    protected int fLength;
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    /** Attribute information. */
+<b class="nc"><i>91</i>&nbsp;    protected Attribute[] fAttributes = new Attribute[4];</b>
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    /**
+<i>94</i>&nbsp;     * Provides an alternate view of the attribute specification.
+<i>95</i>&nbsp;     */
+<i>96</i>&nbsp;    protected Attribute[] fAttributeTableView;
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;    /**
+<i>99</i>&nbsp;     * Tracks whether each chain in the hash table is stale
+<i>100</i>&nbsp;     * with respect to the current state of this object.
+<i>101</i>&nbsp;     * A chain is stale if its state is not the same as the number
+<i>102</i>&nbsp;     * of times the attribute table view has been used.
+<i>103</i>&nbsp;     */
+<i>104</i>&nbsp;    protected int[] fAttributeTableViewChainState;
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;    /**
+<i>107</i>&nbsp;     * Actual number of buckets in the table view.
+<i>108</i>&nbsp;     */
+<i>109</i>&nbsp;    protected int fTableViewBuckets;
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;    /**
+<i>112</i>&nbsp;     * Indicates whether the table view contains consistent data.
+<i>113</i>&nbsp;     */
+<i>114</i>&nbsp;    protected boolean fIsTableViewConsistent;
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;    /**
+<i>117</i>&nbsp;     * Array of randomly selected hash function multipliers or &lt;code&gt;null&lt;/code&gt;
+<i>118</i>&nbsp;     * if the default String.hashCode() function should be used.
+<i>119</i>&nbsp;     */
+<i>120</i>&nbsp;    protected int[] fHashMultipliers;
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;    //
+<i>123</i>&nbsp;    // Constructors
+<i>124</i>&nbsp;    //
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;    /** Default constructor. */
+<i>127</i>&nbsp;    public XMLAttributesImpl() {
+<b class="nc"><i>128</i>&nbsp;        this(TABLE_SIZE);</b>
+<i>129</i>&nbsp;    }
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;    /**
+<i>132</i>&nbsp;     * @param tableSize initial size of table view
+<i>133</i>&nbsp;     */
+<b class="nc"><i>134</i>&nbsp;    public XMLAttributesImpl(int tableSize) {</b>
+<b class="nc"><i>135</i>&nbsp;        fTableViewBuckets = tableSize;</b>
+<b class="nc"><i>136</i>&nbsp;        for (int i = 0; i &lt; fAttributes.length; i++) {</b>
+<b class="nc"><i>137</i>&nbsp;            fAttributes[i] = new Attribute();</b>
+<i>138</i>&nbsp;        }
+<i>139</i>&nbsp;    } // &lt;init&gt;()
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;    //
+<i>142</i>&nbsp;    // Public methods
+<i>143</i>&nbsp;    //
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;    /**
+<i>146</i>&nbsp;     * Sets whether namespace processing is being performed. This state
+<i>147</i>&nbsp;     * is needed to return the correct value from the getLocalName method.
+<i>148</i>&nbsp;     *
+<i>149</i>&nbsp;     * @param namespaces True if namespace processing is turned on.
+<i>150</i>&nbsp;     *
+<i>151</i>&nbsp;     * @see #getLocalName
+<i>152</i>&nbsp;     */
+<i>153</i>&nbsp;    public void setNamespaces(boolean namespaces) {
+<b class="nc"><i>154</i>&nbsp;        fNamespaces = namespaces;</b>
+<i>155</i>&nbsp;    } // setNamespaces(boolean)
+<i>156</i>&nbsp;
+<i>157</i>&nbsp;    //
+<i>158</i>&nbsp;    // XMLAttributes methods
+<i>159</i>&nbsp;    //
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;    /**
+<i>162</i>&nbsp;     * Adds an attribute. The attribute&#39;s non-normalized value of the
+<i>163</i>&nbsp;     * attribute will have the same value as the attribute value until
+<i>164</i>&nbsp;     * set using the &lt;code&gt;setNonNormalizedValue&lt;/code&gt; method. Also,
+<i>165</i>&nbsp;     * the added attribute will be marked as specified in the XML instance
+<i>166</i>&nbsp;     * document unless set otherwise using the &lt;code&gt;setSpecified&lt;/code&gt;
+<i>167</i>&nbsp;     * method.
+<i>168</i>&nbsp;     * &lt;p&gt;
+<i>169</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt; If an attribute of the same name already
+<i>170</i>&nbsp;     * exists, the old values for the attribute are replaced by the new
+<i>171</i>&nbsp;     * values.
+<i>172</i>&nbsp;     *
+<i>173</i>&nbsp;     * @param name  The attribute name.
+<i>174</i>&nbsp;     * @param type  The attribute type. The type name is determined by
+<i>175</i>&nbsp;     *                  the type specified for this attribute in the DTD.
+<i>176</i>&nbsp;     *                  For example: &quot;CDATA&quot;, &quot;ID&quot;, &quot;NMTOKEN&quot;, etc. However,
+<i>177</i>&nbsp;     *                  attributes of type enumeration will have the type
+<i>178</i>&nbsp;     *                  value specified as the pipe (&#39;|&#39;) separated list of
+<i>179</i>&nbsp;     *                  the enumeration values prefixed by an open
+<i>180</i>&nbsp;     *                  parenthesis and suffixed by a close parenthesis.
+<i>181</i>&nbsp;     *                  For example: &quot;(true|false)&quot;.
+<i>182</i>&nbsp;     * @param value The attribute value.
+<i>183</i>&nbsp;     *
+<i>184</i>&nbsp;     * @return Returns the attribute index.
+<i>185</i>&nbsp;     *
+<i>186</i>&nbsp;     * @see #setNonNormalizedValue
+<i>187</i>&nbsp;     * @see #setSpecified
+<i>188</i>&nbsp;     */
+<i>189</i>&nbsp;    public int addAttribute(QName name, String type, String value) {
+<b class="nc"><i>190</i>&nbsp;      return addAttribute(name,type,value,null);</b>
+<i>191</i>&nbsp;    }
+<i>192</i>&nbsp;    public int addAttribute(QName name, String type, String value,XMLString valueCache) {
+<i>193</i>&nbsp;
+<i>194</i>&nbsp;        int index;
+<b class="nc"><i>195</i>&nbsp;        if (fLength &lt; SIZE_LIMIT) {</b>
+<b class="nc"><i>196</i>&nbsp;            index = name.uri != null &amp;&amp; !name.uri.equals(&quot;&quot;)</b>
+<b class="nc"><i>197</i>&nbsp;                ? getIndexFast(name.uri, name.localpart)</b>
+<b class="nc"><i>198</i>&nbsp;                : getIndexFast(name.rawname);</b>
+<i>199</i>&nbsp;
+<b class="nc"><i>200</i>&nbsp;            if (index == -1) {</b>
+<b class="nc"><i>201</i>&nbsp;                index = fLength;</b>
+<b class="nc"><i>202</i>&nbsp;                if (fLength++ == fAttributes.length) {</b>
+<b class="nc"><i>203</i>&nbsp;                    Attribute[] attributes = new Attribute[fAttributes.length + 4];</b>
+<b class="nc"><i>204</i>&nbsp;                    System.arraycopy(fAttributes, 0, attributes, 0, fAttributes.length);</b>
+<b class="nc"><i>205</i>&nbsp;                    for (int i = fAttributes.length; i &lt; attributes.length; i++) {</b>
+<b class="nc"><i>206</i>&nbsp;                        attributes[i] = new Attribute();</b>
+<i>207</i>&nbsp;                    }
+<b class="nc"><i>208</i>&nbsp;                    fAttributes = attributes;</b>
+<b class="nc"><i>209</i>&nbsp;                }</b>
+<i>210</i>&nbsp;            }
+<i>211</i>&nbsp;        }
+<b class="nc"><i>212</i>&nbsp;        else if (name.uri == null ||</b>
+<b class="nc"><i>213</i>&nbsp;            name.uri.length() == 0 ||</b>
+<b class="nc"><i>214</i>&nbsp;            (index = getIndexFast(name.uri, name.localpart)) == -1) {</b>
+<i>215</i>&nbsp;
+<i>216</i>&nbsp;            /**
+<i>217</i>&nbsp;             * If attributes were removed from the list after the table
+<i>218</i>&nbsp;             * becomes in use this isn&#39;t reflected in the table view. It&#39;s
+<i>219</i>&nbsp;             * assumed that once a user starts removing attributes they&#39;re
+<i>220</i>&nbsp;             * not likely to add more. We only make the view consistent if
+<i>221</i>&nbsp;             * the user of this class adds attributes, removes them, and
+<i>222</i>&nbsp;             * then adds more.
+<i>223</i>&nbsp;             */
+<b class="nc"><i>224</i>&nbsp;            if (!fIsTableViewConsistent || fLength == SIZE_LIMIT ||</b>
+<i>225</i>&nbsp;                (fLength &gt; SIZE_LIMIT &amp;&amp; fLength &gt; fTableViewBuckets)) {
+<b class="nc"><i>226</i>&nbsp;                prepareAndPopulateTableView();</b>
+<b class="nc"><i>227</i>&nbsp;                fIsTableViewConsistent = true;</b>
+<i>228</i>&nbsp;            }
+<i>229</i>&nbsp;
+<b class="nc"><i>230</i>&nbsp;            int bucket = getTableViewBucket(name.rawname);</b>
+<i>231</i>&nbsp;
+<i>232</i>&nbsp;            // The chain is stale.
+<i>233</i>&nbsp;            // This must be a unique attribute.
+<b class="nc"><i>234</i>&nbsp;            if (fAttributeTableViewChainState[bucket] != fLargeCount) {</b>
+<b class="nc"><i>235</i>&nbsp;                index = fLength;</b>
+<b class="nc"><i>236</i>&nbsp;                if (fLength++ == fAttributes.length) {</b>
+<b class="nc"><i>237</i>&nbsp;                    Attribute[] attributes = new Attribute[fAttributes.length &lt;&lt; 1];</b>
+<b class="nc"><i>238</i>&nbsp;                    System.arraycopy(fAttributes, 0, attributes, 0, fAttributes.length);</b>
+<b class="nc"><i>239</i>&nbsp;                    for (int i = fAttributes.length; i &lt; attributes.length; i++) {</b>
+<b class="nc"><i>240</i>&nbsp;                        attributes[i] = new Attribute();</b>
+<i>241</i>&nbsp;                    }
+<b class="nc"><i>242</i>&nbsp;                    fAttributes = attributes;</b>
+<i>243</i>&nbsp;                }
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;                // Update table view.
+<b class="nc"><i>246</i>&nbsp;                fAttributeTableViewChainState[bucket] = fLargeCount;</b>
+<b class="nc"><i>247</i>&nbsp;                fAttributes[index].next = null;</b>
+<b class="nc"><i>248</i>&nbsp;                fAttributeTableView[bucket] = fAttributes[index];</b>
+<i>249</i>&nbsp;            }
+<i>250</i>&nbsp;            // This chain is active.
+<i>251</i>&nbsp;            // We need to check if any of the attributes has the same rawname.
+<i>252</i>&nbsp;            else {
+<i>253</i>&nbsp;                // Search the table.
+<b class="nc"><i>254</i>&nbsp;                int collisionCount = 0;</b>
+<b class="nc"><i>255</i>&nbsp;                Attribute found = fAttributeTableView[bucket];</b>
+<b class="nc"><i>256</i>&nbsp;                while (found != null) {</b>
+<b class="nc"><i>257</i>&nbsp;                    if (found.name.rawname == name.rawname) {</b>
+<b class="nc"><i>258</i>&nbsp;                        break;</b>
+<i>259</i>&nbsp;                    }
+<b class="nc"><i>260</i>&nbsp;                    found = found.next;</b>
+<b class="nc"><i>261</i>&nbsp;                    ++collisionCount;</b>
+<i>262</i>&nbsp;                }
+<i>263</i>&nbsp;                // This attribute is unique.
+<b class="nc"><i>264</i>&nbsp;                if (found == null) {</b>
+<b class="nc"><i>265</i>&nbsp;                    index = fLength;</b>
+<b class="nc"><i>266</i>&nbsp;                    if (fLength++ == fAttributes.length) {</b>
+<b class="nc"><i>267</i>&nbsp;                        Attribute[] attributes = new Attribute[fAttributes.length &lt;&lt; 1];</b>
+<b class="nc"><i>268</i>&nbsp;                        System.arraycopy(fAttributes, 0, attributes, 0, fAttributes.length);</b>
+<b class="nc"><i>269</i>&nbsp;                        for (int i = fAttributes.length; i &lt; attributes.length; i++) {</b>
+<b class="nc"><i>270</i>&nbsp;                            attributes[i] = new Attribute();</b>
+<i>271</i>&nbsp;                        }
+<b class="nc"><i>272</i>&nbsp;                        fAttributes = attributes;</b>
+<i>273</i>&nbsp;                    }
+<i>274</i>&nbsp;
+<i>275</i>&nbsp;                    // Select a new hash function and rehash the table view
+<i>276</i>&nbsp;                    // if the collision threshold is exceeded.
+<b class="nc"><i>277</i>&nbsp;                    if (collisionCount &gt;= MAX_HASH_COLLISIONS) {</b>
+<i>278</i>&nbsp;                        // The current attribute will be processed in the rehash.
+<i>279</i>&nbsp;                        // Need to set its name first.
+<b class="nc"><i>280</i>&nbsp;                        fAttributes[index].name.setValues(name);</b>
+<b class="nc"><i>281</i>&nbsp;                        rebalanceTableView(fLength);</b>
+<i>282</i>&nbsp;                    }
+<i>283</i>&nbsp;                    else {
+<i>284</i>&nbsp;                        // Update table view
+<b class="nc"><i>285</i>&nbsp;                        fAttributes[index].next = fAttributeTableView[bucket];</b>
+<b class="nc"><i>286</i>&nbsp;                        fAttributeTableView[bucket] = fAttributes[index];</b>
+<i>287</i>&nbsp;                    }
+<i>288</i>&nbsp;                }
+<i>289</i>&nbsp;                // Duplicate. We still need to find the index.
+<i>290</i>&nbsp;                else {
+<b class="nc"><i>291</i>&nbsp;                    index = getIndexFast(name.rawname);</b>
+<i>292</i>&nbsp;                }
+<i>293</i>&nbsp;            }
+<i>294</i>&nbsp;        }
+<i>295</i>&nbsp;
+<i>296</i>&nbsp;        // set values
+<b class="nc"><i>297</i>&nbsp;        Attribute attribute = fAttributes[index];</b>
+<b class="nc"><i>298</i>&nbsp;        attribute.name.setValues(name);</b>
+<b class="nc"><i>299</i>&nbsp;        attribute.type = type;</b>
+<b class="nc"><i>300</i>&nbsp;        attribute.value = value;</b>
+<b class="nc"><i>301</i>&nbsp;        attribute.xmlValue = valueCache;</b>
+<b class="nc"><i>302</i>&nbsp;        attribute.nonNormalizedValue = value;</b>
+<b class="nc"><i>303</i>&nbsp;        attribute.specified = false;</b>
+<i>304</i>&nbsp;
+<i>305</i>&nbsp;        // clear augmentations
+<b class="nc"><i>306</i>&nbsp;        if(attribute.augs != null)</b>
+<b class="nc"><i>307</i>&nbsp;            attribute.augs.removeAllItems();</b>
+<i>308</i>&nbsp;
+<b class="nc"><i>309</i>&nbsp;        return index;</b>
+<i>310</i>&nbsp;
+<i>311</i>&nbsp;    } // addAttribute(QName,String,XMLString)
+<i>312</i>&nbsp;
+<i>313</i>&nbsp;    /**
+<i>314</i>&nbsp;     * Removes all of the attributes. This method will also remove all
+<i>315</i>&nbsp;     * entities associated to the attributes.
+<i>316</i>&nbsp;     */
+<i>317</i>&nbsp;    public void removeAllAttributes() {
+<b class="nc"><i>318</i>&nbsp;        fLength = 0;</b>
+<i>319</i>&nbsp;    } // removeAllAttributes()
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;    /**
+<i>322</i>&nbsp;     * Removes the attribute at the specified index.
+<i>323</i>&nbsp;     * &lt;p&gt;
+<i>324</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt; This operation changes the indexes of all
+<i>325</i>&nbsp;     * attributes following the attribute at the specified index.
+<i>326</i>&nbsp;     *
+<i>327</i>&nbsp;     * @param attrIndex The attribute index.
+<i>328</i>&nbsp;     */
+<i>329</i>&nbsp;    public void removeAttributeAt(int attrIndex) {
+<b class="nc"><i>330</i>&nbsp;        fIsTableViewConsistent = false;</b>
+<b class="nc"><i>331</i>&nbsp;        if (attrIndex &lt; fLength - 1) {</b>
+<b class="nc"><i>332</i>&nbsp;            Attribute removedAttr = fAttributes[attrIndex];</b>
+<b class="nc"><i>333</i>&nbsp;            System.arraycopy(fAttributes, attrIndex + 1,</b>
+<i>334</i>&nbsp;                             fAttributes, attrIndex, fLength - attrIndex - 1);
+<i>335</i>&nbsp;            // Make the discarded Attribute object available for re-use
+<i>336</i>&nbsp;            // by tucking it after the Attributes that are still in use
+<b class="nc"><i>337</i>&nbsp;            fAttributes[fLength-1] = removedAttr;</b>
+<i>338</i>&nbsp;        }
+<b class="nc"><i>339</i>&nbsp;        fLength--;</b>
+<i>340</i>&nbsp;    } // removeAttributeAt(int)
+<i>341</i>&nbsp;
+<i>342</i>&nbsp;    /**
+<i>343</i>&nbsp;     * Sets the name of the attribute at the specified index.
+<i>344</i>&nbsp;     *
+<i>345</i>&nbsp;     * @param attrIndex The attribute index.
+<i>346</i>&nbsp;     * @param attrName  The new attribute name.
+<i>347</i>&nbsp;     */
+<i>348</i>&nbsp;    public void setName(int attrIndex, QName attrName) {
+<b class="nc"><i>349</i>&nbsp;        fAttributes[attrIndex].name.setValues(attrName);</b>
+<i>350</i>&nbsp;    } // setName(int,QName)
+<i>351</i>&nbsp;
+<i>352</i>&nbsp;    /**
+<i>353</i>&nbsp;     * Sets the fields in the given QName structure with the values
+<i>354</i>&nbsp;     * of the attribute name at the specified index.
+<i>355</i>&nbsp;     *
+<i>356</i>&nbsp;     * @param attrIndex The attribute index.
+<i>357</i>&nbsp;     * @param attrName  The attribute name structure to fill in.
+<i>358</i>&nbsp;     */
+<i>359</i>&nbsp;    public void getName(int attrIndex, QName attrName) {
+<b class="nc"><i>360</i>&nbsp;        attrName.setValues(fAttributes[attrIndex].name);</b>
+<i>361</i>&nbsp;    } // getName(int,QName)
+<i>362</i>&nbsp;
+<i>363</i>&nbsp;    /**
+<i>364</i>&nbsp;     * Sets the type of the attribute at the specified index.
+<i>365</i>&nbsp;     *
+<i>366</i>&nbsp;     * @param attrIndex The attribute index.
+<i>367</i>&nbsp;     * @param attrType  The attribute type. The type name is determined by
+<i>368</i>&nbsp;     *                  the type specified for this attribute in the DTD.
+<i>369</i>&nbsp;     *                  For example: &quot;CDATA&quot;, &quot;ID&quot;, &quot;NMTOKEN&quot;, etc. However,
+<i>370</i>&nbsp;     *                  attributes of type enumeration will have the type
+<i>371</i>&nbsp;     *                  value specified as the pipe (&#39;|&#39;) separated list of
+<i>372</i>&nbsp;     *                  the enumeration values prefixed by an open
+<i>373</i>&nbsp;     *                  parenthesis and suffixed by a close parenthesis.
+<i>374</i>&nbsp;     *                  For example: &quot;(true|false)&quot;.
+<i>375</i>&nbsp;     */
+<i>376</i>&nbsp;    public void setType(int attrIndex, String attrType) {
+<b class="nc"><i>377</i>&nbsp;        fAttributes[attrIndex].type = attrType;</b>
+<i>378</i>&nbsp;    } // setType(int,String)
+<i>379</i>&nbsp;
+<i>380</i>&nbsp;    /**
+<i>381</i>&nbsp;     * Sets the value of the attribute at the specified index. This
+<i>382</i>&nbsp;     * method will overwrite the non-normalized value of the attribute.
+<i>383</i>&nbsp;     *
+<i>384</i>&nbsp;     * @param attrIndex The attribute index.
+<i>385</i>&nbsp;     * @param attrValue The new attribute value.
+<i>386</i>&nbsp;     *
+<i>387</i>&nbsp;     * @see #setNonNormalizedValue
+<i>388</i>&nbsp;     */
+<i>389</i>&nbsp;    public void setValue(int attrIndex, String attrValue) {
+<b class="nc"><i>390</i>&nbsp;        setValue(attrIndex,attrValue,null);</b>
+<i>391</i>&nbsp;    }
+<i>392</i>&nbsp;
+<i>393</i>&nbsp;    public void setValue(int attrIndex, String attrValue,XMLString value) {
+<b class="nc"><i>394</i>&nbsp;        Attribute attribute = fAttributes[attrIndex];</b>
+<b class="nc"><i>395</i>&nbsp;        attribute.value = attrValue;</b>
+<b class="nc"><i>396</i>&nbsp;        attribute.nonNormalizedValue = attrValue;</b>
+<b class="nc"><i>397</i>&nbsp;        attribute.xmlValue = value;</b>
+<i>398</i>&nbsp;    } // setValue(int,String)
+<i>399</i>&nbsp;
+<i>400</i>&nbsp;    /**
+<i>401</i>&nbsp;     * Sets the non-normalized value of the attribute at the specified
+<i>402</i>&nbsp;     * index.
+<i>403</i>&nbsp;     *
+<i>404</i>&nbsp;     * @param attrIndex The attribute index.
+<i>405</i>&nbsp;     * @param attrValue The new non-normalized attribute value.
+<i>406</i>&nbsp;     */
+<i>407</i>&nbsp;    public void setNonNormalizedValue(int attrIndex, String attrValue) {
+<b class="nc"><i>408</i>&nbsp;        if (attrValue == null) {</b>
+<b class="nc"><i>409</i>&nbsp;            attrValue = fAttributes[attrIndex].value;</b>
+<i>410</i>&nbsp;        }
+<b class="nc"><i>411</i>&nbsp;        fAttributes[attrIndex].nonNormalizedValue = attrValue;</b>
+<i>412</i>&nbsp;    } // setNonNormalizedValue(int,String)
+<i>413</i>&nbsp;
+<i>414</i>&nbsp;    /**
+<i>415</i>&nbsp;     * Returns the non-normalized value of the attribute at the specified
+<i>416</i>&nbsp;     * index. If no non-normalized value is set, this method will return
+<i>417</i>&nbsp;     * the same value as the &lt;code&gt;getValue(int)&lt;/code&gt; method.
+<i>418</i>&nbsp;     *
+<i>419</i>&nbsp;     * @param attrIndex The attribute index.
+<i>420</i>&nbsp;     */
+<i>421</i>&nbsp;    public String getNonNormalizedValue(int attrIndex) {
+<b class="nc"><i>422</i>&nbsp;        String value = fAttributes[attrIndex].nonNormalizedValue;</b>
+<b class="nc"><i>423</i>&nbsp;        return value;</b>
+<i>424</i>&nbsp;    } // getNonNormalizedValue(int):String
+<i>425</i>&nbsp;
+<i>426</i>&nbsp;    /**
+<i>427</i>&nbsp;     * Sets whether an attribute is specified in the instance document
+<i>428</i>&nbsp;     * or not.
+<i>429</i>&nbsp;     *
+<i>430</i>&nbsp;     * @param attrIndex The attribute index.
+<i>431</i>&nbsp;     * @param specified True if the attribute is specified in the instance
+<i>432</i>&nbsp;     *                  document.
+<i>433</i>&nbsp;     */
+<i>434</i>&nbsp;    public void setSpecified(int attrIndex, boolean specified) {
+<b class="nc"><i>435</i>&nbsp;        fAttributes[attrIndex].specified = specified;</b>
+<i>436</i>&nbsp;    } // setSpecified(int,boolean)
+<i>437</i>&nbsp;
+<i>438</i>&nbsp;    /**
+<i>439</i>&nbsp;     * Returns true if the attribute is specified in the instance document.
+<i>440</i>&nbsp;     *
+<i>441</i>&nbsp;     * @param attrIndex The attribute index.
+<i>442</i>&nbsp;     */
+<i>443</i>&nbsp;    public boolean isSpecified(int attrIndex) {
+<b class="nc"><i>444</i>&nbsp;        return fAttributes[attrIndex].specified;</b>
+<i>445</i>&nbsp;    } // isSpecified(int):boolean
+<i>446</i>&nbsp;
+<i>447</i>&nbsp;    //
+<i>448</i>&nbsp;    // AttributeList and Attributes methods
+<i>449</i>&nbsp;    //
+<i>450</i>&nbsp;
+<i>451</i>&nbsp;    /**
+<i>452</i>&nbsp;     * Return the number of attributes in the list.
+<i>453</i>&nbsp;     *
+<i>454</i>&nbsp;     * &lt;p&gt;Once you know the number of attributes, you can iterate
+<i>455</i>&nbsp;     * through the list.&lt;/p&gt;
+<i>456</i>&nbsp;     *
+<i>457</i>&nbsp;     * @return The number of attributes in the list.
+<i>458</i>&nbsp;     */
+<i>459</i>&nbsp;    public int getLength() {
+<b class="nc"><i>460</i>&nbsp;        return fLength;</b>
+<i>461</i>&nbsp;    } // getLength():int
+<i>462</i>&nbsp;
+<i>463</i>&nbsp;    /**
+<i>464</i>&nbsp;     * Look up an attribute&#39;s type by index.
+<i>465</i>&nbsp;     *
+<i>466</i>&nbsp;     * &lt;p&gt;The attribute type is one of the strings &quot;CDATA&quot;, &quot;ID&quot;,
+<i>467</i>&nbsp;     * &quot;IDREF&quot;, &quot;IDREFS&quot;, &quot;NMTOKEN&quot;, &quot;NMTOKENS&quot;, &quot;ENTITY&quot;, &quot;ENTITIES&quot;,
+<i>468</i>&nbsp;     * or &quot;NOTATION&quot; (always in upper case).&lt;/p&gt;
+<i>469</i>&nbsp;     *
+<i>470</i>&nbsp;     * &lt;p&gt;If the parser has not read a declaration for the attribute,
+<i>471</i>&nbsp;     * or if the parser does not report attribute types, then it must
+<i>472</i>&nbsp;     * return the value &quot;CDATA&quot; as stated in the XML 1.0 Recommentation
+<i>473</i>&nbsp;     * (clause 3.3.3, &quot;Attribute-Value Normalization&quot;).&lt;/p&gt;
+<i>474</i>&nbsp;     *
+<i>475</i>&nbsp;     * &lt;p&gt;For an enumerated attribute that is not a notation, the
+<i>476</i>&nbsp;     * parser will report the type as &quot;NMTOKEN&quot;.&lt;/p&gt;
+<i>477</i>&nbsp;     *
+<i>478</i>&nbsp;     * @param index The attribute index (zero-based).
+<i>479</i>&nbsp;     * @return The attribute&#39;s type as a string, or null if the
+<i>480</i>&nbsp;     *         index is out of range.
+<i>481</i>&nbsp;     * @see #getLength
+<i>482</i>&nbsp;     */
+<i>483</i>&nbsp;    public String getType(int index) {
+<b class="nc"><i>484</i>&nbsp;        if (index &lt; 0 || index &gt;= fLength) {</b>
+<b class="nc"><i>485</i>&nbsp;            return null;</b>
+<i>486</i>&nbsp;        }
+<b class="nc"><i>487</i>&nbsp;        return getReportableType(fAttributes[index].type);</b>
+<i>488</i>&nbsp;    } // getType(int):String
+<i>489</i>&nbsp;
+<i>490</i>&nbsp;    /**
+<i>491</i>&nbsp;     * Look up an attribute&#39;s type by XML 1.0 qualified name.
+<i>492</i>&nbsp;     *
+<i>493</i>&nbsp;     * &lt;p&gt;See {@link #getType(int) getType(int)} for a description
+<i>494</i>&nbsp;     * of the possible types.&lt;/p&gt;
+<i>495</i>&nbsp;     *
+<i>496</i>&nbsp;     * @param qname The XML 1.0 qualified name.
+<i>497</i>&nbsp;     * @return The attribute type as a string, or null if the
+<i>498</i>&nbsp;     *         attribute is not in the list or if qualified names
+<i>499</i>&nbsp;     *         are not available.
+<i>500</i>&nbsp;     */
+<i>501</i>&nbsp;    public String getType(String qname) {
+<b class="nc"><i>502</i>&nbsp;        int index = getIndex(qname);</b>
+<b class="nc"><i>503</i>&nbsp;        return index != -1 ? getReportableType(fAttributes[index].type) : null;</b>
+<i>504</i>&nbsp;    } // getType(String):String
+<i>505</i>&nbsp;
+<i>506</i>&nbsp;    /**
+<i>507</i>&nbsp;     * Look up an attribute&#39;s value by index.
+<i>508</i>&nbsp;     *
+<i>509</i>&nbsp;     * &lt;p&gt;If the attribute value is a list of tokens (IDREFS,
+<i>510</i>&nbsp;     * ENTITIES, or NMTOKENS), the tokens will be concatenated
+<i>511</i>&nbsp;     * into a single string with each token separated by a
+<i>512</i>&nbsp;     * single space.&lt;/p&gt;
+<i>513</i>&nbsp;     *
+<i>514</i>&nbsp;     * @param index The attribute index (zero-based).
+<i>515</i>&nbsp;     * @return The attribute&#39;s value as a string, or null if the
+<i>516</i>&nbsp;     *         index is out of range.
+<i>517</i>&nbsp;     * @see #getLength
+<i>518</i>&nbsp;     */
+<i>519</i>&nbsp;    public String getValue(int index) {
+<b class="nc"><i>520</i>&nbsp;        if (index &lt; 0 || index &gt;= fLength) {</b>
+<b class="nc"><i>521</i>&nbsp;            return null;</b>
+<i>522</i>&nbsp;        }
+<b class="nc"><i>523</i>&nbsp;        if(fAttributes[index].value == null &amp;&amp; fAttributes[index].xmlValue != null)</b>
+<b class="nc"><i>524</i>&nbsp;            fAttributes[index].value = fAttributes[index].xmlValue.toString();</b>
+<b class="nc"><i>525</i>&nbsp;        return fAttributes[index].value;</b>
+<i>526</i>&nbsp;    } // getValue(int):String
+<i>527</i>&nbsp;
+<i>528</i>&nbsp;    /**
+<i>529</i>&nbsp;     * Look up an attribute&#39;s value by XML 1.0 qualified name.
+<i>530</i>&nbsp;     *
+<i>531</i>&nbsp;     * &lt;p&gt;See {@link #getValue(int) getValue(int)} for a description
+<i>532</i>&nbsp;     * of the possible values.&lt;/p&gt;
+<i>533</i>&nbsp;     *
+<i>534</i>&nbsp;     * @param qname The XML 1.0 qualified name.
+<i>535</i>&nbsp;     * @return The attribute value as a string, or null if the
+<i>536</i>&nbsp;     *         attribute is not in the list or if qualified names
+<i>537</i>&nbsp;     *         are not available.
+<i>538</i>&nbsp;     */
+<i>539</i>&nbsp;    public String getValue(String qname) {
+<b class="nc"><i>540</i>&nbsp;        int index = getIndex(qname);</b>
+<b class="nc"><i>541</i>&nbsp;        if(index == -1 )</b>
+<b class="nc"><i>542</i>&nbsp;            return null;</b>
+<b class="nc"><i>543</i>&nbsp;        if(fAttributes[index].value == null)</b>
+<b class="nc"><i>544</i>&nbsp;            fAttributes[index].value = fAttributes[index].xmlValue.toString();</b>
+<b class="nc"><i>545</i>&nbsp;        return fAttributes[index].value;</b>
+<i>546</i>&nbsp;    } // getValue(String):String
+<i>547</i>&nbsp;
+<i>548</i>&nbsp;    //
+<i>549</i>&nbsp;    // AttributeList methods
+<i>550</i>&nbsp;    //
+<i>551</i>&nbsp;
+<i>552</i>&nbsp;    /**
+<i>553</i>&nbsp;     * Return the name of an attribute in this list (by position).
+<i>554</i>&nbsp;     *
+<i>555</i>&nbsp;     * &lt;p&gt;The names must be unique: the SAX parser shall not include the
+<i>556</i>&nbsp;     * same attribute twice.  Attributes without values (those declared
+<i>557</i>&nbsp;     * #IMPLIED without a value specified in the start tag) will be
+<i>558</i>&nbsp;     * omitted from the list.&lt;/p&gt;
+<i>559</i>&nbsp;     *
+<i>560</i>&nbsp;     * &lt;p&gt;If the attribute name has a namespace prefix, the prefix
+<i>561</i>&nbsp;     * will still be attached.&lt;/p&gt;
+<i>562</i>&nbsp;     *
+<i>563</i>&nbsp;     * @param i The index of the attribute in the list (starting at 0).
+<i>564</i>&nbsp;     * @return The name of the indexed attribute, or null
+<i>565</i>&nbsp;     *         if the index is out of range.
+<i>566</i>&nbsp;     * @see #getLength
+<i>567</i>&nbsp;     */
+<i>568</i>&nbsp;    public String getName(int index) {
+<b class="nc"><i>569</i>&nbsp;        if (index &lt; 0 || index &gt;= fLength) {</b>
+<b class="nc"><i>570</i>&nbsp;            return null;</b>
+<i>571</i>&nbsp;        }
+<b class="nc"><i>572</i>&nbsp;        return fAttributes[index].name.rawname;</b>
+<i>573</i>&nbsp;    } // getName(int):String
+<i>574</i>&nbsp;
+<i>575</i>&nbsp;    //
+<i>576</i>&nbsp;    // Attributes methods
+<i>577</i>&nbsp;    //
+<i>578</i>&nbsp;
+<i>579</i>&nbsp;    /**
+<i>580</i>&nbsp;     * Look up the index of an attribute by XML 1.0 qualified name.
+<i>581</i>&nbsp;     *
+<i>582</i>&nbsp;     * @param qName The qualified (prefixed) name.
+<i>583</i>&nbsp;     * @return The index of the attribute, or -1 if it does not
+<i>584</i>&nbsp;     *         appear in the list.
+<i>585</i>&nbsp;     */
+<i>586</i>&nbsp;    public int getIndex(String qName) {
+<b class="nc"><i>587</i>&nbsp;        for (int i = 0; i &lt; fLength; i++) {</b>
+<b class="nc"><i>588</i>&nbsp;            Attribute attribute = fAttributes[i];</b>
+<b class="nc"><i>589</i>&nbsp;            if (attribute.name.rawname != null &amp;&amp;</b>
+<b class="nc"><i>590</i>&nbsp;                attribute.name.rawname.equals(qName)) {</b>
+<b class="nc"><i>591</i>&nbsp;                return i;</b>
+<i>592</i>&nbsp;            }
+<i>593</i>&nbsp;        }
+<b class="nc"><i>594</i>&nbsp;        return -1;</b>
+<i>595</i>&nbsp;    } // getIndex(String):int
+<i>596</i>&nbsp;
+<i>597</i>&nbsp;    /**
+<i>598</i>&nbsp;     * Look up the index of an attribute by Namespace name.
+<i>599</i>&nbsp;     *
+<i>600</i>&nbsp;     * @param uri The Namespace URI, or null if
+<i>601</i>&nbsp;     *        the name has no Namespace URI.
+<i>602</i>&nbsp;     * @param localName The attribute&#39;s local name.
+<i>603</i>&nbsp;     * @return The index of the attribute, or -1 if it does not
+<i>604</i>&nbsp;     *         appear in the list.
+<i>605</i>&nbsp;     */
+<i>606</i>&nbsp;    public int getIndex(String uri, String localPart) {
+<b class="nc"><i>607</i>&nbsp;        for (int i = 0; i &lt; fLength; i++) {</b>
+<b class="nc"><i>608</i>&nbsp;            Attribute attribute = fAttributes[i];</b>
+<b class="nc"><i>609</i>&nbsp;            if (attribute.name.localpart != null &amp;&amp;</b>
+<b class="nc"><i>610</i>&nbsp;                attribute.name.localpart.equals(localPart) &amp;&amp;</b>
+<i>611</i>&nbsp;                ((uri==attribute.name.uri) ||
+<b class="nc"><i>612</i>&nbsp;            (uri!=null &amp;&amp; attribute.name.uri!=null &amp;&amp; attribute.name.uri.equals(uri)))) {</b>
+<b class="nc"><i>613</i>&nbsp;                return i;</b>
+<i>614</i>&nbsp;            }
+<i>615</i>&nbsp;        }
+<b class="nc"><i>616</i>&nbsp;        return -1;</b>
+<i>617</i>&nbsp;    } // getIndex(String,String):int
+<i>618</i>&nbsp;
+<i>619</i>&nbsp;    /**
+<i>620</i>&nbsp;     * Look up the index of an attribute by local name only,
+<i>621</i>&nbsp;     * ignoring its namespace.
+<i>622</i>&nbsp;     *
+<i>623</i>&nbsp;     * @param localName The attribute&#39;s local name.
+<i>624</i>&nbsp;     * @return The index of the attribute, or -1 if it does not
+<i>625</i>&nbsp;     *         appear in the list.
+<i>626</i>&nbsp;     */
+<i>627</i>&nbsp;    public int getIndexByLocalName(String localPart) {
+<b class="nc"><i>628</i>&nbsp;        for (int i = 0; i &lt; fLength; i++) {</b>
+<b class="nc"><i>629</i>&nbsp;            Attribute attribute = fAttributes[i];</b>
+<b class="nc"><i>630</i>&nbsp;            if (attribute.name.localpart != null &amp;&amp;</b>
+<b class="nc"><i>631</i>&nbsp;                attribute.name.localpart.equals(localPart)) {</b>
+<b class="nc"><i>632</i>&nbsp;                return i;</b>
+<i>633</i>&nbsp;            }
+<i>634</i>&nbsp;        }
+<b class="nc"><i>635</i>&nbsp;        return -1;</b>
+<i>636</i>&nbsp;    } // getIndex(String):int
+<i>637</i>&nbsp;
+<i>638</i>&nbsp;    /**
+<i>639</i>&nbsp;     * Look up an attribute&#39;s local name by index.
+<i>640</i>&nbsp;     *
+<i>641</i>&nbsp;     * @param index The attribute index (zero-based).
+<i>642</i>&nbsp;     * @return The local name, or the empty string if Namespace
+<i>643</i>&nbsp;     *         processing is not being performed, or null
+<i>644</i>&nbsp;     *         if the index is out of range.
+<i>645</i>&nbsp;     * @see #getLength
+<i>646</i>&nbsp;     */
+<i>647</i>&nbsp;    public String getLocalName(int index) {
+<b class="nc"><i>648</i>&nbsp;        if (!fNamespaces) {</b>
+<b class="nc"><i>649</i>&nbsp;            return &quot;&quot;;</b>
+<i>650</i>&nbsp;        }
+<b class="nc"><i>651</i>&nbsp;        if (index &lt; 0 || index &gt;= fLength) {</b>
+<b class="nc"><i>652</i>&nbsp;            return null;</b>
+<i>653</i>&nbsp;        }
+<b class="nc"><i>654</i>&nbsp;        return fAttributes[index].name.localpart;</b>
+<i>655</i>&nbsp;    } // getLocalName(int):String
+<i>656</i>&nbsp;
+<i>657</i>&nbsp;    /**
+<i>658</i>&nbsp;     * Look up an attribute&#39;s XML 1.0 qualified name by index.
+<i>659</i>&nbsp;     *
+<i>660</i>&nbsp;     * @param index The attribute index (zero-based).
+<i>661</i>&nbsp;     * @return The XML 1.0 qualified name, or the empty string
+<i>662</i>&nbsp;     *         if none is available, or null if the index
+<i>663</i>&nbsp;     *         is out of range.
+<i>664</i>&nbsp;     * @see #getLength
+<i>665</i>&nbsp;     */
+<i>666</i>&nbsp;    public String getQName(int index) {
+<b class="nc"><i>667</i>&nbsp;        if (index &lt; 0 || index &gt;= fLength) {</b>
+<b class="nc"><i>668</i>&nbsp;            return null;</b>
+<i>669</i>&nbsp;        }
+<b class="nc"><i>670</i>&nbsp;        String rawname = fAttributes[index].name.rawname;</b>
+<b class="nc"><i>671</i>&nbsp;        return rawname != null ? rawname : &quot;&quot;;</b>
+<i>672</i>&nbsp;    } // getQName(int):String
+<i>673</i>&nbsp;
+<i>674</i>&nbsp;    public QName getQualifiedName(int index){
+<b class="nc"><i>675</i>&nbsp;        if (index &lt; 0 || index &gt;= fLength) {</b>
+<b class="nc"><i>676</i>&nbsp;            return null;</b>
+<i>677</i>&nbsp;        }
+<b class="nc"><i>678</i>&nbsp;        return fAttributes[index].name;</b>
+<i>679</i>&nbsp;    }
+<i>680</i>&nbsp;
+<i>681</i>&nbsp;    /**
+<i>682</i>&nbsp;     * Look up an attribute&#39;s type by Namespace name.
+<i>683</i>&nbsp;     *
+<i>684</i>&nbsp;     * &lt;p&gt;See {@link #getType(int) getType(int)} for a description
+<i>685</i>&nbsp;     * of the possible types.&lt;/p&gt;
+<i>686</i>&nbsp;     *
+<i>687</i>&nbsp;     * @param uri The Namespace URI, or null if the
+<i>688</i>&nbsp;     *        name has no Namespace URI.
+<i>689</i>&nbsp;     * @param localName The local name of the attribute.
+<i>690</i>&nbsp;     * @return The attribute type as a string, or null if the
+<i>691</i>&nbsp;     *         attribute is not in the list or if Namespace
+<i>692</i>&nbsp;     *         processing is not being performed.
+<i>693</i>&nbsp;     */
+<i>694</i>&nbsp;    public String getType(String uri, String localName) {
+<b class="nc"><i>695</i>&nbsp;        if (!fNamespaces) {</b>
+<b class="nc"><i>696</i>&nbsp;            return null;</b>
+<i>697</i>&nbsp;        }
+<b class="nc"><i>698</i>&nbsp;        int index = getIndex(uri, localName);</b>
+<b class="nc"><i>699</i>&nbsp;        return index != -1 ? getType(index) : null;</b>
+<i>700</i>&nbsp;    } // getType(String,String):String
+<i>701</i>&nbsp;    /**
+<i>702</i>&nbsp;     * Look up the index of an attribute by XML 1.0 qualified name.
+<i>703</i>&nbsp;     * &lt;p&gt;
+<i>704</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt;
+<i>705</i>&nbsp;     * This method uses reference comparison, and thus should
+<i>706</i>&nbsp;     * only be used internally. We cannot use this method in any
+<i>707</i>&nbsp;     * code exposed to users as they may not pass in unique strings.
+<i>708</i>&nbsp;     *
+<i>709</i>&nbsp;     * @param qName The qualified (prefixed) name.
+<i>710</i>&nbsp;     * @return The index of the attribute, or -1 if it does not
+<i>711</i>&nbsp;     *         appear in the list.
+<i>712</i>&nbsp;     */
+<i>713</i>&nbsp;    public int getIndexFast(String qName) {
+<b class="nc"><i>714</i>&nbsp;        for (int i = 0; i &lt; fLength; ++i) {</b>
+<b class="nc"><i>715</i>&nbsp;            Attribute attribute = fAttributes[i];</b>
+<b class="nc"><i>716</i>&nbsp;            if (attribute.name.rawname == qName) {</b>
+<b class="nc"><i>717</i>&nbsp;                return i;</b>
+<i>718</i>&nbsp;            }
+<i>719</i>&nbsp;        }
+<b class="nc"><i>720</i>&nbsp;        return -1;</b>
+<i>721</i>&nbsp;    } // getIndexFast(String):int
+<i>722</i>&nbsp;
+<i>723</i>&nbsp;    /**
+<i>724</i>&nbsp;     * Adds an attribute. The attribute&#39;s non-normalized value of the
+<i>725</i>&nbsp;     * attribute will have the same value as the attribute value until
+<i>726</i>&nbsp;     * set using the &lt;code&gt;setNonNormalizedValue&lt;/code&gt; method. Also,
+<i>727</i>&nbsp;     * the added attribute will be marked as specified in the XML instance
+<i>728</i>&nbsp;     * document unless set otherwise using the &lt;code&gt;setSpecified&lt;/code&gt;
+<i>729</i>&nbsp;     * method.
+<i>730</i>&nbsp;     * &lt;p&gt;
+<i>731</i>&nbsp;     * This method differs from &lt;code&gt;addAttribute&lt;/code&gt; in that it
+<i>732</i>&nbsp;     * does not check if an attribute of the same name already exists
+<i>733</i>&nbsp;     * in the list before adding it. In order to improve performance
+<i>734</i>&nbsp;     * of namespace processing, this method allows uniqueness checks
+<i>735</i>&nbsp;     * to be deferred until all the namespace information is available
+<i>736</i>&nbsp;     * after the entire attribute specification has been read.
+<i>737</i>&nbsp;     * &lt;p&gt;
+<i>738</i>&nbsp;     * &lt;strong&gt;Caution:&lt;/strong&gt; If this method is called it should
+<i>739</i>&nbsp;     * not be mixed with calls to &lt;code&gt;addAttribute&lt;/code&gt; unless
+<i>740</i>&nbsp;     * it has been determined that all the attribute names are unique.
+<i>741</i>&nbsp;     *
+<i>742</i>&nbsp;     * @param name the attribute name
+<i>743</i>&nbsp;     * @param type the attribute type
+<i>744</i>&nbsp;     * @param value the attribute value
+<i>745</i>&nbsp;     *
+<i>746</i>&nbsp;     * @see #setNonNormalizedValue
+<i>747</i>&nbsp;     * @see #setSpecified
+<i>748</i>&nbsp;     * @see #checkDuplicatesNS
+<i>749</i>&nbsp;     */
+<i>750</i>&nbsp;    public void addAttributeNS(QName name, String type, String value) {
+<b class="nc"><i>751</i>&nbsp;        int index = fLength;</b>
+<b class="nc"><i>752</i>&nbsp;        if (fLength++ == fAttributes.length) {</b>
+<i>753</i>&nbsp;            Attribute[] attributes;
+<b class="nc"><i>754</i>&nbsp;            if (fLength &lt; SIZE_LIMIT) {</b>
+<b class="nc"><i>755</i>&nbsp;                attributes = new Attribute[fAttributes.length + 4];</b>
+<i>756</i>&nbsp;            }
+<i>757</i>&nbsp;            else {
+<b class="nc"><i>758</i>&nbsp;                attributes = new Attribute[fAttributes.length &lt;&lt; 1];</b>
+<i>759</i>&nbsp;            }
+<b class="nc"><i>760</i>&nbsp;            System.arraycopy(fAttributes, 0, attributes, 0, fAttributes.length);</b>
+<b class="nc"><i>761</i>&nbsp;            for (int i = fAttributes.length; i &lt; attributes.length; i++) {</b>
+<b class="nc"><i>762</i>&nbsp;                attributes[i] = new Attribute();</b>
+<i>763</i>&nbsp;            }
+<b class="nc"><i>764</i>&nbsp;            fAttributes = attributes;</b>
+<i>765</i>&nbsp;        }
+<i>766</i>&nbsp;
+<i>767</i>&nbsp;        // set values
+<b class="nc"><i>768</i>&nbsp;        Attribute attribute = fAttributes[index];</b>
+<b class="nc"><i>769</i>&nbsp;        attribute.name.setValues(name);</b>
+<b class="nc"><i>770</i>&nbsp;        attribute.type = type;</b>
+<b class="nc"><i>771</i>&nbsp;        attribute.value = value;</b>
+<b class="nc"><i>772</i>&nbsp;        attribute.nonNormalizedValue = value;</b>
+<b class="nc"><i>773</i>&nbsp;        attribute.specified = false;</b>
+<i>774</i>&nbsp;
+<i>775</i>&nbsp;        // clear augmentations
+<b class="nc"><i>776</i>&nbsp;        attribute.augs.removeAllItems();</b>
+<i>777</i>&nbsp;    }
+<i>778</i>&nbsp;
+<i>779</i>&nbsp;    /**
+<i>780</i>&nbsp;     * Checks for duplicate expanded names (local part and namespace name
+<i>781</i>&nbsp;     * pairs) in the attribute specification. If a duplicate is found its
+<i>782</i>&nbsp;     * name is returned.
+<i>783</i>&nbsp;     * &lt;p&gt;
+<i>784</i>&nbsp;     * This should be called once all the in-scope namespaces for the element
+<i>785</i>&nbsp;     * enclosing these attributes is known, and after all the attributes
+<i>786</i>&nbsp;     * have gone through namespace binding.
+<i>787</i>&nbsp;     *
+<i>788</i>&nbsp;     * @return the name of a duplicate attribute found in the search,
+<i>789</i>&nbsp;     * otherwise null.
+<i>790</i>&nbsp;     */
+<i>791</i>&nbsp;    public QName checkDuplicatesNS() {
+<i>792</i>&nbsp;        // If the list is small check for duplicates using pairwise comparison.
+<b class="nc"><i>793</i>&nbsp;        final int length = fLength;</b>
+<b class="nc"><i>794</i>&nbsp;        if (length &lt;= SIZE_LIMIT) {</b>
+<b class="nc"><i>795</i>&nbsp;            final Attribute[] attributes = fAttributes;</b>
+<b class="nc"><i>796</i>&nbsp;            for (int i = 0; i &lt; length - 1; ++i) {</b>
+<b class="nc"><i>797</i>&nbsp;                Attribute att1 = attributes[i];</b>
+<b class="nc"><i>798</i>&nbsp;                for (int j = i + 1; j &lt; length; ++j) {</b>
+<b class="nc"><i>799</i>&nbsp;                    Attribute att2 = attributes[j];</b>
+<b class="nc"><i>800</i>&nbsp;                    if (att1.name.localpart == att2.name.localpart &amp;&amp;</b>
+<i>801</i>&nbsp;                        att1.name.uri == att2.name.uri) {
+<b class="nc"><i>802</i>&nbsp;                        return att2.name;</b>
+<i>803</i>&nbsp;                    }
+<i>804</i>&nbsp;                }
+<i>805</i>&nbsp;            }
+<b class="nc"><i>806</i>&nbsp;            return null;</b>
+<i>807</i>&nbsp;        }
+<i>808</i>&nbsp;        // If the list is large check duplicates using a hash table.
+<i>809</i>&nbsp;        else {
+<b class="nc"><i>810</i>&nbsp;            return checkManyDuplicatesNS();</b>
+<i>811</i>&nbsp;        }
+<i>812</i>&nbsp;    }
+<i>813</i>&nbsp;
+<i>814</i>&nbsp;    private QName checkManyDuplicatesNS() {
+<i>815</i>&nbsp;        // We don&#39;t want this table view to be read if someone calls
+<i>816</i>&nbsp;        // addAttribute so we invalidate it up front.
+<b class="nc"><i>817</i>&nbsp;        fIsTableViewConsistent = false;</b>
+<i>818</i>&nbsp;
+<b class="nc"><i>819</i>&nbsp;        prepareTableView();</b>
+<i>820</i>&nbsp;
+<i>821</i>&nbsp;        Attribute attr;
+<i>822</i>&nbsp;        int bucket;
+<i>823</i>&nbsp;
+<b class="nc"><i>824</i>&nbsp;        final int length = fLength;</b>
+<b class="nc"><i>825</i>&nbsp;        final Attribute[] attributes = fAttributes;</b>
+<b class="nc"><i>826</i>&nbsp;        final Attribute[] attributeTableView = fAttributeTableView;</b>
+<b class="nc"><i>827</i>&nbsp;        final int[] attributeTableViewChainState = fAttributeTableViewChainState;</b>
+<b class="nc"><i>828</i>&nbsp;        int largeCount = fLargeCount;</b>
+<i>829</i>&nbsp;
+<b class="nc"><i>830</i>&nbsp;        for (int i = 0; i &lt; length; ++i) {</b>
+<b class="nc"><i>831</i>&nbsp;            attr = attributes[i];</b>
+<b class="nc"><i>832</i>&nbsp;            bucket = getTableViewBucket(attr.name.localpart, attr.name.uri);</b>
+<i>833</i>&nbsp;
+<i>834</i>&nbsp;            // The chain is stale.
+<i>835</i>&nbsp;            // This must be a unique attribute.
+<b class="nc"><i>836</i>&nbsp;            if (attributeTableViewChainState[bucket] != largeCount) {</b>
+<b class="nc"><i>837</i>&nbsp;                attributeTableViewChainState[bucket] = largeCount;</b>
+<b class="nc"><i>838</i>&nbsp;                attr.next = null;</b>
+<b class="nc"><i>839</i>&nbsp;                attributeTableView[bucket] = attr;</b>
+<i>840</i>&nbsp;            }
+<i>841</i>&nbsp;            // This chain is active.
+<i>842</i>&nbsp;            // We need to check if any of the attributes has the same name.
+<i>843</i>&nbsp;            else {
+<i>844</i>&nbsp;                // Search the table.
+<b class="nc"><i>845</i>&nbsp;                int collisionCount = 0;</b>
+<b class="nc"><i>846</i>&nbsp;                Attribute found = attributeTableView[bucket];</b>
+<b class="nc"><i>847</i>&nbsp;                while (found != null) {</b>
+<b class="nc"><i>848</i>&nbsp;                    if (found.name.localpart == attr.name.localpart &amp;&amp;</b>
+<i>849</i>&nbsp;                        found.name.uri == attr.name.uri) {
+<b class="nc"><i>850</i>&nbsp;                        return attr.name;</b>
+<i>851</i>&nbsp;                    }
+<b class="nc"><i>852</i>&nbsp;                    found = found.next;</b>
+<b class="nc"><i>853</i>&nbsp;                    ++collisionCount;</b>
+<i>854</i>&nbsp;                }
+<i>855</i>&nbsp;                // Select a new hash function and rehash the table view
+<i>856</i>&nbsp;                // if the collision threshold is exceeded.
+<b class="nc"><i>857</i>&nbsp;                if (collisionCount &gt;= MAX_HASH_COLLISIONS) {</b>
+<i>858</i>&nbsp;                    // The current attribute will be processed in the rehash.
+<b class="nc"><i>859</i>&nbsp;                    rebalanceTableViewNS(i+1);</b>
+<b class="nc"><i>860</i>&nbsp;                    largeCount = fLargeCount;</b>
+<i>861</i>&nbsp;                }
+<i>862</i>&nbsp;                else {
+<i>863</i>&nbsp;                    // Update table view
+<b class="nc"><i>864</i>&nbsp;                    attr.next = attributeTableView[bucket];</b>
+<b class="nc"><i>865</i>&nbsp;                    attributeTableView[bucket] = attr;</b>
+<i>866</i>&nbsp;                }
+<i>867</i>&nbsp;            }
+<i>868</i>&nbsp;        }
+<b class="nc"><i>869</i>&nbsp;        return null;</b>
+<i>870</i>&nbsp;    }
+<i>871</i>&nbsp;
+<i>872</i>&nbsp;    /**
+<i>873</i>&nbsp;     * Look up the index of an attribute by Namespace name.
+<i>874</i>&nbsp;     * &lt;p&gt;
+<i>875</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt;
+<i>876</i>&nbsp;     * This method uses reference comparison, and thus should
+<i>877</i>&nbsp;     * only be used internally. We cannot use this method in any
+<i>878</i>&nbsp;     * code exposed to users as they may not pass in unique strings.
+<i>879</i>&nbsp;     *
+<i>880</i>&nbsp;     * @param uri The Namespace URI, or null if
+<i>881</i>&nbsp;     *        the name has no Namespace URI.
+<i>882</i>&nbsp;     * @param localName The attribute&#39;s local name.
+<i>883</i>&nbsp;     * @return The index of the attribute, or -1 if it does not
+<i>884</i>&nbsp;     *         appear in the list.
+<i>885</i>&nbsp;     */
+<i>886</i>&nbsp;    public int getIndexFast(String uri, String localPart) {
+<b class="nc"><i>887</i>&nbsp;        for (int i = 0; i &lt; fLength; ++i) {</b>
+<b class="nc"><i>888</i>&nbsp;            Attribute attribute = fAttributes[i];</b>
+<b class="nc"><i>889</i>&nbsp;            if (attribute.name.localpart == localPart &amp;&amp;</b>
+<i>890</i>&nbsp;                attribute.name.uri == uri) {
+<b class="nc"><i>891</i>&nbsp;                return i;</b>
+<i>892</i>&nbsp;            }
+<i>893</i>&nbsp;        }
+<b class="nc"><i>894</i>&nbsp;        return -1;</b>
+<i>895</i>&nbsp;    } // getIndexFast(String,String):int
+<i>896</i>&nbsp;
+<i>897</i>&nbsp;    /**
+<i>898</i>&nbsp;     * Returns the value passed in or NMTOKEN if it&#39;s an enumerated type.
+<i>899</i>&nbsp;     *
+<i>900</i>&nbsp;     * @param type attribute type
+<i>901</i>&nbsp;     * @return the value passed in or NMTOKEN if it&#39;s an enumerated type.
+<i>902</i>&nbsp;     */
+<i>903</i>&nbsp;    private String getReportableType(String type) {
+<i>904</i>&nbsp;
+<b class="nc"><i>905</i>&nbsp;        if (type.charAt(0) == &#39;(&#39;) {</b>
+<b class="nc"><i>906</i>&nbsp;            return &quot;NMTOKEN&quot;;</b>
+<i>907</i>&nbsp;        }
+<b class="nc"><i>908</i>&nbsp;        return type;</b>
+<i>909</i>&nbsp;    }
+<i>910</i>&nbsp;
+<i>911</i>&nbsp;    /**
+<i>912</i>&nbsp;     * Returns the position in the table view
+<i>913</i>&nbsp;     * where the given attribute name would be hashed.
+<i>914</i>&nbsp;     *
+<i>915</i>&nbsp;     * @param qname the attribute name
+<i>916</i>&nbsp;     * @return the position in the table view where the given attribute
+<i>917</i>&nbsp;     * would be hashed
+<i>918</i>&nbsp;     */
+<i>919</i>&nbsp;    protected int getTableViewBucket(String qname) {
+<b class="nc"><i>920</i>&nbsp;        return (hash(qname) &amp; 0x7FFFFFFF) % fTableViewBuckets;</b>
+<i>921</i>&nbsp;    }
+<i>922</i>&nbsp;
+<i>923</i>&nbsp;    /**
+<i>924</i>&nbsp;     * Returns the position in the table view
+<i>925</i>&nbsp;     * where the given attribute name would be hashed.
+<i>926</i>&nbsp;     *
+<i>927</i>&nbsp;     * @param localpart the local part of the attribute
+<i>928</i>&nbsp;     * @param uri the namespace name of the attribute
+<i>929</i>&nbsp;     * @return the position in the table view where the given attribute
+<i>930</i>&nbsp;     * would be hashed
+<i>931</i>&nbsp;     */
+<i>932</i>&nbsp;    protected int getTableViewBucket(String localpart, String uri) {
+<b class="nc"><i>933</i>&nbsp;        if (uri == null) {</b>
+<b class="nc"><i>934</i>&nbsp;            return (hash(localpart) &amp; 0x7FFFFFFF) % fTableViewBuckets;</b>
+<i>935</i>&nbsp;        }
+<i>936</i>&nbsp;        else {
+<b class="nc"><i>937</i>&nbsp;            return (hash(localpart, uri) &amp; 0x7FFFFFFF) % fTableViewBuckets;</b>
+<i>938</i>&nbsp;        }
+<i>939</i>&nbsp;    }
+<i>940</i>&nbsp;
+<i>941</i>&nbsp;    private int hash(String localpart) {
+<b class="nc"><i>942</i>&nbsp;        if (fHashMultipliers == null) {</b>
+<b class="nc"><i>943</i>&nbsp;            return localpart.hashCode();</b>
+<i>944</i>&nbsp;        }
+<b class="nc"><i>945</i>&nbsp;        return hash0(localpart);</b>
+<i>946</i>&nbsp;    } // hash(String):int
+<i>947</i>&nbsp;
+<i>948</i>&nbsp;    private int hash(String localpart, String uri) {
+<b class="nc"><i>949</i>&nbsp;        if (fHashMultipliers == null) {</b>
+<b class="nc"><i>950</i>&nbsp;            return localpart.hashCode() + uri.hashCode() * 31;</b>
+<i>951</i>&nbsp;        }
+<b class="nc"><i>952</i>&nbsp;        return hash0(localpart) + hash0(uri) * fHashMultipliers[MULTIPLIERS_SIZE];</b>
+<i>953</i>&nbsp;    } // hash(String,String):int
+<i>954</i>&nbsp;
+<i>955</i>&nbsp;    private int hash0(String symbol) {
+<b class="nc"><i>956</i>&nbsp;        int code = 0;</b>
+<b class="nc"><i>957</i>&nbsp;        final int length = symbol.length();</b>
+<b class="nc"><i>958</i>&nbsp;        final int[] multipliers = fHashMultipliers;</b>
+<b class="nc"><i>959</i>&nbsp;        for (int i = 0; i &lt; length; ++i) {</b>
+<b class="nc"><i>960</i>&nbsp;            code = code * multipliers[i &amp; MULTIPLIERS_MASK] + symbol.charAt(i);</b>
+<i>961</i>&nbsp;        }
+<b class="nc"><i>962</i>&nbsp;        return code;</b>
+<i>963</i>&nbsp;    } // hash0(String):int
+<i>964</i>&nbsp;
+<i>965</i>&nbsp;    /**
+<i>966</i>&nbsp;     * Purges all elements from the table view.
+<i>967</i>&nbsp;     */
+<i>968</i>&nbsp;    protected void cleanTableView() {
+<b class="nc"><i>969</i>&nbsp;        if (++fLargeCount &lt; 0) {</b>
+<i>970</i>&nbsp;            // Overflow. We actually need to visit the chain state array.
+<b class="nc"><i>971</i>&nbsp;            if (fAttributeTableViewChainState != null) {</b>
+<b class="nc"><i>972</i>&nbsp;                for (int i = fTableViewBuckets - 1; i &gt;= 0; --i) {</b>
+<b class="nc"><i>973</i>&nbsp;                    fAttributeTableViewChainState[i] = 0;</b>
+<i>974</i>&nbsp;                }
+<i>975</i>&nbsp;            }
+<b class="nc"><i>976</i>&nbsp;            fLargeCount = 1;</b>
+<i>977</i>&nbsp;        }
+<i>978</i>&nbsp;    }
+<i>979</i>&nbsp;
+<i>980</i>&nbsp;     /**
+<i>981</i>&nbsp;     * Increases the capacity of the table view.
+<i>982</i>&nbsp;     */
+<i>983</i>&nbsp;    private void growTableView() {
+<b class="nc"><i>984</i>&nbsp;        final int length = fLength;</b>
+<b class="nc"><i>985</i>&nbsp;        int tableViewBuckets = fTableViewBuckets;</b>
+<i>986</i>&nbsp;        do {
+<b class="nc"><i>987</i>&nbsp;            tableViewBuckets = (tableViewBuckets &lt;&lt; 1) + 1;</b>
+<b class="nc"><i>988</i>&nbsp;            if (tableViewBuckets &lt; 0) {</b>
+<b class="nc"><i>989</i>&nbsp;                tableViewBuckets = Integer.MAX_VALUE;</b>
+<b class="nc"><i>990</i>&nbsp;                break;</b>
+<i>991</i>&nbsp;            }
+<i>992</i>&nbsp;        }
+<b class="nc"><i>993</i>&nbsp;       while (length &gt; tableViewBuckets);</b>
+<b class="nc"><i>994</i>&nbsp;        fTableViewBuckets = tableViewBuckets;</b>
+<b class="nc"><i>995</i>&nbsp;        fAttributeTableView = null;</b>
+<b class="nc"><i>996</i>&nbsp;        fLargeCount = 1;</b>
+<i>997</i>&nbsp;    }
+<i>998</i>&nbsp;
+<i>999</i>&nbsp;    /**
+<i>1000</i>&nbsp;     * Prepares the table view of the attributes list for use.
+<i>1001</i>&nbsp;     */
+<i>1002</i>&nbsp;    protected void prepareTableView() {
+<b class="nc"><i>1003</i>&nbsp;        if (fLength &gt; fTableViewBuckets) {</b>
+<b class="nc"><i>1004</i>&nbsp;            growTableView();</b>
+<i>1005</i>&nbsp;        }
+<b class="nc"><i>1006</i>&nbsp;        if (fAttributeTableView == null) {</b>
+<b class="nc"><i>1007</i>&nbsp;            fAttributeTableView = new Attribute[fTableViewBuckets];</b>
+<b class="nc"><i>1008</i>&nbsp;            fAttributeTableViewChainState = new int[fTableViewBuckets];</b>
+<i>1009</i>&nbsp;        }
+<i>1010</i>&nbsp;        else {
+<b class="nc"><i>1011</i>&nbsp;            cleanTableView();</b>
+<i>1012</i>&nbsp;        }
+<i>1013</i>&nbsp;    }
+<i>1014</i>&nbsp;
+<i>1015</i>&nbsp;    /**
+<i>1016</i>&nbsp;     * Prepares the table view of the attributes list for use,
+<i>1017</i>&nbsp;     * and populates it with the attributes which have been
+<i>1018</i>&nbsp;     * previously read.
+<i>1019</i>&nbsp;     */
+<i>1020</i>&nbsp;    protected void prepareAndPopulateTableView() {
+<b class="nc"><i>1021</i>&nbsp;        prepareAndPopulateTableView(fLength);</b>
+<i>1022</i>&nbsp;    }
+<i>1023</i>&nbsp;
+<i>1024</i>&nbsp;    private void prepareAndPopulateTableView(final int count) {
+<b class="nc"><i>1025</i>&nbsp;        prepareTableView();</b>
+<i>1026</i>&nbsp;        // Need to populate the hash table with the attributes we&#39;ve processed so far.
+<i>1027</i>&nbsp;        Attribute attr;
+<i>1028</i>&nbsp;        int bucket;
+<b class="nc"><i>1029</i>&nbsp;        for (int i = 0; i &lt; count; ++i) {</b>
+<b class="nc"><i>1030</i>&nbsp;            attr = fAttributes[i];</b>
+<b class="nc"><i>1031</i>&nbsp;            bucket = getTableViewBucket(attr.name.rawname);</b>
+<b class="nc"><i>1032</i>&nbsp;            if (fAttributeTableViewChainState[bucket] != fLargeCount) {</b>
+<b class="nc"><i>1033</i>&nbsp;                fAttributeTableViewChainState[bucket] = fLargeCount;</b>
+<b class="nc"><i>1034</i>&nbsp;                attr.next = null;</b>
+<b class="nc"><i>1035</i>&nbsp;                fAttributeTableView[bucket] = attr;</b>
+<i>1036</i>&nbsp;            }
+<i>1037</i>&nbsp;            else {
+<i>1038</i>&nbsp;                // Update table view
+<b class="nc"><i>1039</i>&nbsp;                attr.next = fAttributeTableView[bucket];</b>
+<b class="nc"><i>1040</i>&nbsp;                fAttributeTableView[bucket] = attr;</b>
+<i>1041</i>&nbsp;            }
+<i>1042</i>&nbsp;        }
+<i>1043</i>&nbsp;    }
+<i>1044</i>&nbsp;
+<i>1045</i>&nbsp;
+<i>1046</i>&nbsp;    /**
+<i>1047</i>&nbsp;     * Returns the prefix of the attribute at the specified index.
+<i>1048</i>&nbsp;     *
+<i>1049</i>&nbsp;     * @param index The index of the attribute.
+<i>1050</i>&nbsp;     */
+<i>1051</i>&nbsp;    public String getPrefix(int index) {
+<b class="nc"><i>1052</i>&nbsp;        if (index &lt; 0 || index &gt;= fLength) {</b>
+<b class="nc"><i>1053</i>&nbsp;            return null;</b>
+<i>1054</i>&nbsp;        }
+<b class="nc"><i>1055</i>&nbsp;        String prefix = fAttributes[index].name.prefix;</b>
+<i>1056</i>&nbsp;        // REVISIT: The empty string is not entered in the symbol table!
+<b class="nc"><i>1057</i>&nbsp;        return prefix != null ? prefix : &quot;&quot;;</b>
+<i>1058</i>&nbsp;    } // getPrefix(int):String
+<i>1059</i>&nbsp;
+<i>1060</i>&nbsp;    /**
+<i>1061</i>&nbsp;     * Look up an attribute&#39;s Namespace URI by index.
+<i>1062</i>&nbsp;     *
+<i>1063</i>&nbsp;     * @param index The attribute index (zero-based).
+<i>1064</i>&nbsp;     * @return The Namespace URI
+<i>1065</i>&nbsp;     * @see #getLength
+<i>1066</i>&nbsp;     */
+<i>1067</i>&nbsp;    public String getURI(int index) {
+<b class="nc"><i>1068</i>&nbsp;        if (index &lt; 0 || index &gt;= fLength) {</b>
+<b class="nc"><i>1069</i>&nbsp;            return null;</b>
+<i>1070</i>&nbsp;        }
+<b class="nc"><i>1071</i>&nbsp;        String uri = fAttributes[index].name.uri;</b>
+<b class="nc"><i>1072</i>&nbsp;        return uri;</b>
+<i>1073</i>&nbsp;    } // getURI(int):String
+<i>1074</i>&nbsp;
+<i>1075</i>&nbsp;    /**
+<i>1076</i>&nbsp;     * Look up an attribute&#39;s value by Namespace name and
+<i>1077</i>&nbsp;     * Local name. If Namespace is null, ignore namespace
+<i>1078</i>&nbsp;     * comparison. If Namespace is &quot;&quot;, treat the name as
+<i>1079</i>&nbsp;     * having no Namespace URI.
+<i>1080</i>&nbsp;     *
+<i>1081</i>&nbsp;     * &lt;p&gt;See {@link #getValue(int) getValue(int)} for a description
+<i>1082</i>&nbsp;     * of the possible values.&lt;/p&gt;
+<i>1083</i>&nbsp;     *
+<i>1084</i>&nbsp;     * @param uri The Namespace URI, or null namespaces are ignored.
+<i>1085</i>&nbsp;     * @param localName The local name of the attribute.
+<i>1086</i>&nbsp;     * @return The attribute value as a string, or null if the
+<i>1087</i>&nbsp;     *         attribute is not in the list.
+<i>1088</i>&nbsp;     */
+<i>1089</i>&nbsp;    public String getValue(String uri, String localName) {
+<b class="nc"><i>1090</i>&nbsp;        int index = getIndex(uri, localName);</b>
+<b class="nc"><i>1091</i>&nbsp;        return index != -1 ? getValue(index) : null;</b>
+<i>1092</i>&nbsp;    } // getValue(String,String):String
+<i>1093</i>&nbsp;
+<i>1094</i>&nbsp;    /**
+<i>1095</i>&nbsp;     * Look up an augmentations by Namespace name.
+<i>1096</i>&nbsp;     *
+<i>1097</i>&nbsp;     * @param uri The Namespace URI, or null if the
+<i>1098</i>&nbsp;     * @param localName The local name of the attribute.
+<i>1099</i>&nbsp;     * @return Augmentations
+<i>1100</i>&nbsp;     */
+<i>1101</i>&nbsp;    public Augmentations getAugmentations (String uri, String localName) {
+<b class="nc"><i>1102</i>&nbsp;        int index = getIndex(uri, localName);</b>
+<b class="nc"><i>1103</i>&nbsp;        return index != -1 ? fAttributes[index].augs : null;</b>
+<i>1104</i>&nbsp;    }
+<i>1105</i>&nbsp;
+<i>1106</i>&nbsp;    /**
+<i>1107</i>&nbsp;     * Look up an augmentation by XML 1.0 qualified name.
+<i>1108</i>&nbsp;     * &lt;p&gt;
+<i>1109</i>&nbsp;     *
+<i>1110</i>&nbsp;     * @param qName The XML 1.0 qualified name.
+<i>1111</i>&nbsp;     *
+<i>1112</i>&nbsp;     * @return Augmentations
+<i>1113</i>&nbsp;     *
+<i>1114</i>&nbsp;     */
+<i>1115</i>&nbsp;    public Augmentations getAugmentations(String qName){
+<b class="nc"><i>1116</i>&nbsp;        int index = getIndex(qName);</b>
+<b class="nc"><i>1117</i>&nbsp;        return index != -1 ? fAttributes[index].augs : null;</b>
+<i>1118</i>&nbsp;    }
+<i>1119</i>&nbsp;
+<i>1120</i>&nbsp;
+<i>1121</i>&nbsp;
+<i>1122</i>&nbsp;    /**
+<i>1123</i>&nbsp;     * Look up an augmentations by attributes index.
+<i>1124</i>&nbsp;     *
+<i>1125</i>&nbsp;     * @param attributeIndex The attribute index.
+<i>1126</i>&nbsp;     * @return Augmentations
+<i>1127</i>&nbsp;     */
+<i>1128</i>&nbsp;    public Augmentations getAugmentations (int attributeIndex){
+<b class="nc"><i>1129</i>&nbsp;        if (attributeIndex &lt; 0 || attributeIndex &gt;= fLength) {</b>
+<b class="nc"><i>1130</i>&nbsp;            return null;</b>
+<i>1131</i>&nbsp;        }
+<b class="nc"><i>1132</i>&nbsp;        return fAttributes[attributeIndex].augs;</b>
+<i>1133</i>&nbsp;    }
+<i>1134</i>&nbsp;
+<i>1135</i>&nbsp;    /**
+<i>1136</i>&nbsp;     * Sets the augmentations of the attribute at the specified index.
+<i>1137</i>&nbsp;     *
+<i>1138</i>&nbsp;     * @param attrIndex The attribute index.
+<i>1139</i>&nbsp;     * @param augs      The augmentations.
+<i>1140</i>&nbsp;     */
+<i>1141</i>&nbsp;    public void setAugmentations(int attrIndex, Augmentations augs) {
+<b class="nc"><i>1142</i>&nbsp;        fAttributes[attrIndex].augs = augs;</b>
+<i>1143</i>&nbsp;    }
+<i>1144</i>&nbsp;
+<i>1145</i>&nbsp;    /**
+<i>1146</i>&nbsp;     * Sets the uri of the attribute at the specified index.
+<i>1147</i>&nbsp;     *
+<i>1148</i>&nbsp;     * @param attrIndex The attribute index.
+<i>1149</i>&nbsp;     * @param uri       Namespace uri
+<i>1150</i>&nbsp;     */
+<i>1151</i>&nbsp;    public void setURI(int attrIndex, String uri) {
+<b class="nc"><i>1152</i>&nbsp;        fAttributes[attrIndex].name.uri = uri;</b>
+<i>1153</i>&nbsp;    } // getURI(int,QName)
+<i>1154</i>&nbsp;
+<i>1155</i>&nbsp;    // Implementation methods
+<i>1156</i>&nbsp;    public void setSchemaId(int attrIndex, boolean schemaId) {
+<b class="nc"><i>1157</i>&nbsp;        fAttributes[attrIndex].schemaId = schemaId;</b>
+<i>1158</i>&nbsp;    }
+<i>1159</i>&nbsp;
+<i>1160</i>&nbsp;    public boolean getSchemaId(int index) {
+<b class="nc"><i>1161</i>&nbsp;        if (index &lt; 0 || index &gt;= fLength) {</b>
+<b class="nc"><i>1162</i>&nbsp;            return false;</b>
+<i>1163</i>&nbsp;        }
+<b class="nc"><i>1164</i>&nbsp;        return fAttributes[index].schemaId;</b>
+<i>1165</i>&nbsp;    }
+<i>1166</i>&nbsp;
+<i>1167</i>&nbsp;    public boolean getSchemaId(String qname) {
+<b class="nc"><i>1168</i>&nbsp;        int index = getIndex(qname);</b>
+<b class="nc"><i>1169</i>&nbsp;        return index != -1 ? fAttributes[index].schemaId : false;</b>
+<i>1170</i>&nbsp;    } // getType(String):String
+<i>1171</i>&nbsp;
+<i>1172</i>&nbsp;    public boolean getSchemaId(String uri, String localName) {
+<b class="nc"><i>1173</i>&nbsp;        if (!fNamespaces) {</b>
+<b class="nc"><i>1174</i>&nbsp;            return false;</b>
+<i>1175</i>&nbsp;        }
+<b class="nc"><i>1176</i>&nbsp;        int index = getIndex(uri, localName);</b>
+<b class="nc"><i>1177</i>&nbsp;        return index != -1 ? fAttributes[index].schemaId : false;</b>
+<i>1178</i>&nbsp;    } // getType(String,String):String
+<i>1179</i>&nbsp;
+<i>1180</i>&nbsp;    //XMLBufferListener methods
+<i>1181</i>&nbsp;    /**
+<i>1182</i>&nbsp;     * This method will be invoked by XMLEntityReader before ScannedEntities buffer
+<i>1183</i>&nbsp;     * is reloaded.
+<i>1184</i>&nbsp;     */
+<i>1185</i>&nbsp;    public void refresh() {
+<b class="nc"><i>1186</i>&nbsp;        if(fLength &gt; 0){</b>
+<b class="nc"><i>1187</i>&nbsp;            for(int i = 0 ; i &lt; fLength ; i++){</b>
+<b class="nc"><i>1188</i>&nbsp;                getValue(i);</b>
+<i>1189</i>&nbsp;            }
+<i>1190</i>&nbsp;        }
+<i>1191</i>&nbsp;    }
+<i>1192</i>&nbsp;    public void refresh(int pos) {
+<i>1193</i>&nbsp;    }
+<i>1194</i>&nbsp;
+<i>1195</i>&nbsp;    private void prepareAndPopulateTableViewNS(final int count) {
+<b class="nc"><i>1196</i>&nbsp;        prepareTableView();</b>
+<i>1197</i>&nbsp;        // Need to populate the hash table with the attributes we&#39;ve processed so far.
+<i>1198</i>&nbsp;        Attribute attr;
+<i>1199</i>&nbsp;        int bucket;
+<b class="nc"><i>1200</i>&nbsp;        for (int i = 0; i &lt; count; ++i) {</b>
+<b class="nc"><i>1201</i>&nbsp;            attr = fAttributes[i];</b>
+<b class="nc"><i>1202</i>&nbsp;            bucket = getTableViewBucket(attr.name.localpart, attr.name.uri);</b>
+<b class="nc"><i>1203</i>&nbsp;            if (fAttributeTableViewChainState[bucket] != fLargeCount) {</b>
+<b class="nc"><i>1204</i>&nbsp;                fAttributeTableViewChainState[bucket] = fLargeCount;</b>
+<b class="nc"><i>1205</i>&nbsp;                attr.next = null;</b>
+<b class="nc"><i>1206</i>&nbsp;                fAttributeTableView[bucket] = attr;</b>
+<i>1207</i>&nbsp;            }
+<i>1208</i>&nbsp;            else {
+<i>1209</i>&nbsp;                // Update table view
+<b class="nc"><i>1210</i>&nbsp;                attr.next = fAttributeTableView[bucket];</b>
+<b class="nc"><i>1211</i>&nbsp;                fAttributeTableView[bucket] = attr;</b>
+<i>1212</i>&nbsp;            }
+<i>1213</i>&nbsp;        }
+<i>1214</i>&nbsp;    }
+<i>1215</i>&nbsp;
+<i>1216</i>&nbsp;    /**
+<i>1217</i>&nbsp;     * Randomly selects a new hash function and reorganizes the table view
+<i>1218</i>&nbsp;     * in order to more evenly distribute its entries. This method is called
+<i>1219</i>&nbsp;     * automatically when the number of attributes in one bucket exceeds
+<i>1220</i>&nbsp;     * MAX_HASH_COLLISIONS.
+<i>1221</i>&nbsp;     */
+<i>1222</i>&nbsp;    private void rebalanceTableView(final int count) {
+<b class="nc"><i>1223</i>&nbsp;        if (fHashMultipliers == null) {</b>
+<b class="nc"><i>1224</i>&nbsp;            fHashMultipliers = new int[MULTIPLIERS_SIZE + 1];</b>
+<i>1225</i>&nbsp;        }
+<b class="nc"><i>1226</i>&nbsp;        PrimeNumberSequenceGenerator.generateSequence(fHashMultipliers);</b>
+<b class="nc"><i>1227</i>&nbsp;        prepareAndPopulateTableView(count);</b>
+<i>1228</i>&nbsp;    }
+<i>1229</i>&nbsp;
+<i>1230</i>&nbsp;    /**
+<i>1231</i>&nbsp;     * Randomly selects a new hash function and reorganizes the table view
+<i>1232</i>&nbsp;     * in order to more evenly distribute its entries. This method is called
+<i>1233</i>&nbsp;     * automatically when the number of attributes in one bucket exceeds
+<i>1234</i>&nbsp;     * MAX_HASH_COLLISIONS.
+<i>1235</i>&nbsp;     */
+<i>1236</i>&nbsp;    private void rebalanceTableViewNS(final int count) {
+<b class="nc"><i>1237</i>&nbsp;        if (fHashMultipliers == null) {</b>
+<b class="nc"><i>1238</i>&nbsp;            fHashMultipliers = new int[MULTIPLIERS_SIZE + 1];</b>
+<i>1239</i>&nbsp;        }
+<b class="nc"><i>1240</i>&nbsp;        PrimeNumberSequenceGenerator.generateSequence(fHashMultipliers);</b>
+<b class="nc"><i>1241</i>&nbsp;        prepareAndPopulateTableViewNS(count);</b>
+<i>1242</i>&nbsp;    }
+<i>1243</i>&nbsp;
+<i>1244</i>&nbsp;    //
+<i>1245</i>&nbsp;    // Classes
+<i>1246</i>&nbsp;    //
+<i>1247</i>&nbsp;
+<i>1248</i>&nbsp;    /**
+<i>1249</i>&nbsp;     * Attribute information.
+<i>1250</i>&nbsp;     *
+<i>1251</i>&nbsp;     * @author Andy Clark, IBM
+<i>1252</i>&nbsp;     */
+<b class="nc"><i>1253</i>&nbsp;    static class Attribute {</b>
+<i>1254</i>&nbsp;
+<i>1255</i>&nbsp;        //
+<i>1256</i>&nbsp;        // Data
+<i>1257</i>&nbsp;        //
+<i>1258</i>&nbsp;
+<i>1259</i>&nbsp;        // basic info
+<i>1260</i>&nbsp;
+<i>1261</i>&nbsp;        /** Name. */
+<b class="nc"><i>1262</i>&nbsp;        public QName name = new QName();</b>
+<i>1263</i>&nbsp;
+<i>1264</i>&nbsp;        /** Type. */
+<i>1265</i>&nbsp;        public String type;
+<i>1266</i>&nbsp;
+<i>1267</i>&nbsp;        /** Value. */
+<i>1268</i>&nbsp;        public String value;
+<i>1269</i>&nbsp;
+<i>1270</i>&nbsp;        /** This will point to the ScannedEntities buffer.*/
+<i>1271</i>&nbsp;        public XMLString xmlValue;
+<i>1272</i>&nbsp;
+<i>1273</i>&nbsp;        /** Non-normalized value. */
+<i>1274</i>&nbsp;        public String nonNormalizedValue;
+<i>1275</i>&nbsp;
+<i>1276</i>&nbsp;        /** Specified. */
+<i>1277</i>&nbsp;        public boolean specified;
+<i>1278</i>&nbsp;
+<i>1279</i>&nbsp;        /** Schema ID type. */
+<i>1280</i>&nbsp;        public boolean schemaId;
+<i>1281</i>&nbsp;
+<i>1282</i>&nbsp;        /**
+<i>1283</i>&nbsp;         * Augmentations information for this attribute.
+<i>1284</i>&nbsp;         * XMLAttributes has no knowledge if any augmentations
+<i>1285</i>&nbsp;         * were attached to Augmentations.
+<i>1286</i>&nbsp;         */
+<b class="nc"><i>1287</i>&nbsp;        public Augmentations augs = new AugmentationsImpl();</b>
+<i>1288</i>&nbsp;
+<i>1289</i>&nbsp;        // Additional data for attribute table view
+<i>1290</i>&nbsp;
+<i>1291</i>&nbsp;        /** Pointer to the next attribute in the chain. **/
+<i>1292</i>&nbsp;        public Attribute next;
+<i>1293</i>&nbsp;
+<i>1294</i>&nbsp;    } // class Attribute
+<i>1295</i>&nbsp;
+<i>1296</i>&nbsp;} // class XMLAttributesImpl
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

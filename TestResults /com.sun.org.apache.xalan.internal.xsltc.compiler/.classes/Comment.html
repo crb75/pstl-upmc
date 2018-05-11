@@ -1,0 +1,201 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Comment</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Comment (com.sun.org.apache.xalan.internal.xsltc.compiler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Comment</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 36)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: Comment.java,v 1.2.4.1 2005/09/01 12:02:37 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+<i>27</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.GETFIELD;
+<i>28</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKEINTERFACE;
+<i>29</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL;
+<i>30</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.PUSH;
+<i>31</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>32</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
+<i>33</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+<i>34</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
+<i>35</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;/**
+<i>38</i>&nbsp; * @author Jacek Ambroziak
+<i>39</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>40</i>&nbsp; * @author Morten Jorgensen
+<i>41</i>&nbsp; */
+<b class="nc"><i>42</i>&nbsp;final class Comment extends Instruction {</b>
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    public void parseContents(Parser parser) {
+<b class="nc"><i>45</i>&nbsp;        parseChildren(parser);</b>
+<i>46</i>&nbsp;    }
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+<b class="nc"><i>49</i>&nbsp;        typeCheckContents(stable);</b>
+<b class="nc"><i>50</i>&nbsp;        return Type.String;</b>
+<i>51</i>&nbsp;    }
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+<b class="nc"><i>54</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>55</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;        // Shortcut for literal strings
+<b class="nc"><i>58</i>&nbsp;        Text rawText = null;</b>
+<b class="nc"><i>59</i>&nbsp;        if (elementCount() == 1) {</b>
+<b class="nc"><i>60</i>&nbsp;            Object content = elementAt(0);</b>
+<b class="nc"><i>61</i>&nbsp;            if (content instanceof Text) {</b>
+<b class="nc"><i>62</i>&nbsp;                rawText = (Text) content;</b>
+<i>63</i>&nbsp;            }
+<i>64</i>&nbsp;        }
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;        // If the content is literal text, call comment(char[],int,int) or
+<i>67</i>&nbsp;        // comment(String), as appropriate.  Otherwise, use a
+<i>68</i>&nbsp;        // StringValueHandler to gather the textual content of the xsl:comment
+<i>69</i>&nbsp;        // and call comment(String) with the result.
+<b class="nc"><i>70</i>&nbsp;        if (rawText != null) {</b>
+<b class="nc"><i>71</i>&nbsp;            il.append(methodGen.loadHandler());</b>
+<i>72</i>&nbsp;
+<b class="nc"><i>73</i>&nbsp;            if (rawText.canLoadAsArrayOffsetLength()) {</b>
+<b class="nc"><i>74</i>&nbsp;                rawText.loadAsArrayOffsetLength(classGen, methodGen);</b>
+<b class="nc"><i>75</i>&nbsp;                final int comment =</b>
+<b class="nc"><i>76</i>&nbsp;                        cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,</b>
+<i>77</i>&nbsp;                                                  &quot;comment&quot;,
+<i>78</i>&nbsp;                                                  &quot;([CII)V&quot;);
+<b class="nc"><i>79</i>&nbsp;                il.append(new INVOKEINTERFACE(comment, 4));</b>
+<b class="nc"><i>80</i>&nbsp;            } else {</b>
+<b class="nc"><i>81</i>&nbsp;                il.append(new PUSH(cpg, rawText.getText()));</b>
+<b class="nc"><i>82</i>&nbsp;                final int comment =</b>
+<b class="nc"><i>83</i>&nbsp;                        cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,</b>
+<i>84</i>&nbsp;                                                  &quot;comment&quot;,
+<i>85</i>&nbsp;                                                  &quot;(&quot; + STRING_SIG + &quot;)V&quot;);
+<b class="nc"><i>86</i>&nbsp;                il.append(new INVOKEINTERFACE(comment, 2));</b>
+<b class="nc"><i>87</i>&nbsp;            }</b>
+<i>88</i>&nbsp;        } else {
+<i>89</i>&nbsp;            // Save the current handler base on the stack
+<b class="nc"><i>90</i>&nbsp;            il.append(methodGen.loadHandler());</b>
+<b class="nc"><i>91</i>&nbsp;            il.append(DUP);             // first arg to &quot;comment&quot; call</b>
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;            // Get the translet&#39;s StringValueHandler
+<b class="nc"><i>94</i>&nbsp;            il.append(classGen.loadTranslet());</b>
+<b class="nc"><i>95</i>&nbsp;            il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS,</b>
+<i>96</i>&nbsp;                                                   &quot;stringValueHandler&quot;,
+<i>97</i>&nbsp;                                                   STRING_VALUE_HANDLER_SIG)));
+<b class="nc"><i>98</i>&nbsp;            il.append(DUP);</b>
+<b class="nc"><i>99</i>&nbsp;            il.append(methodGen.storeHandler());</b>
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;            // translate contents with substituted handler
+<b class="nc"><i>102</i>&nbsp;            translateContents(classGen, methodGen);</b>
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;            // get String out of the handler
+<b class="nc"><i>105</i>&nbsp;            il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_VALUE_HANDLER,</b>
+<i>106</i>&nbsp;                                                         &quot;getValue&quot;,
+<i>107</i>&nbsp;                                                         &quot;()&quot; + STRING_SIG)));
+<i>108</i>&nbsp;            // call &quot;comment&quot;
+<b class="nc"><i>109</i>&nbsp;            final int comment =</b>
+<b class="nc"><i>110</i>&nbsp;                        cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,</b>
+<i>111</i>&nbsp;                                                  &quot;comment&quot;,
+<i>112</i>&nbsp;                                                  &quot;(&quot; + STRING_SIG + &quot;)V&quot;);
+<b class="nc"><i>113</i>&nbsp;            il.append(new INVOKEINTERFACE(comment, 2));</b>
+<i>114</i>&nbsp;            // Restore old handler base from stack
+<b class="nc"><i>115</i>&nbsp;            il.append(methodGen.storeHandler());</b>
+<i>116</i>&nbsp;        }
+<i>117</i>&nbsp;    }
+<i>118</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

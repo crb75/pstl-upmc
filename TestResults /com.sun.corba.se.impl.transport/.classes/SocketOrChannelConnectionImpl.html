@@ -1,0 +1,1770 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SocketOrChannelConnectionImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.transport</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SocketOrChannelConnectionImpl (com.sun.corba.se.impl.transport)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SocketOrChannelConnectionImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 86)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 553)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2001, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.transport;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.io.IOException;
+<i>29</i>&nbsp;import java.net.InetSocketAddress;
+<i>30</i>&nbsp;import java.net.Socket;
+<i>31</i>&nbsp;import java.nio.ByteBuffer;
+<i>32</i>&nbsp;import java.nio.channels.SelectableChannel;
+<i>33</i>&nbsp;import java.nio.channels.SelectionKey;
+<i>34</i>&nbsp;import java.nio.channels.SocketChannel;
+<i>35</i>&nbsp;import java.security.AccessController;
+<i>36</i>&nbsp;import java.security.PrivilegedAction;
+<i>37</i>&nbsp;import java.util.Collections;
+<i>38</i>&nbsp;import java.util.Hashtable;
+<i>39</i>&nbsp;import java.util.HashMap;
+<i>40</i>&nbsp;import java.util.Map;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import org.omg.CORBA.COMM_FAILURE;
+<i>43</i>&nbsp;import org.omg.CORBA.CompletionStatus;
+<i>44</i>&nbsp;import org.omg.CORBA.DATA_CONVERSION;
+<i>45</i>&nbsp;import org.omg.CORBA.INTERNAL;
+<i>46</i>&nbsp;import org.omg.CORBA.MARSHAL;
+<i>47</i>&nbsp;import org.omg.CORBA.OBJECT_NOT_EXIST;
+<i>48</i>&nbsp;import org.omg.CORBA.SystemException;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;import com.sun.org.omg.SendingContext.CodeBase;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;import com.sun.corba.se.pept.broker.Broker;
+<i>53</i>&nbsp;import com.sun.corba.se.pept.encoding.InputObject;
+<i>54</i>&nbsp;import com.sun.corba.se.pept.encoding.OutputObject;
+<i>55</i>&nbsp;import com.sun.corba.se.pept.protocol.MessageMediator;
+<i>56</i>&nbsp;import com.sun.corba.se.pept.transport.Acceptor;
+<i>57</i>&nbsp;import com.sun.corba.se.pept.transport.Connection;
+<i>58</i>&nbsp;import com.sun.corba.se.pept.transport.ConnectionCache;
+<i>59</i>&nbsp;import com.sun.corba.se.pept.transport.ContactInfo;
+<i>60</i>&nbsp;import com.sun.corba.se.pept.transport.EventHandler;
+<i>61</i>&nbsp;import com.sun.corba.se.pept.transport.InboundConnectionCache;
+<i>62</i>&nbsp;import com.sun.corba.se.pept.transport.OutboundConnectionCache;
+<i>63</i>&nbsp;import com.sun.corba.se.pept.transport.ResponseWaitingRoom;
+<i>64</i>&nbsp;import com.sun.corba.se.pept.transport.Selector;
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;import com.sun.corba.se.spi.ior.IOR;
+<i>67</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.GIOPVersion;
+<i>68</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains;
+<i>69</i>&nbsp;import com.sun.corba.se.spi.orb.ORB ;
+<i>70</i>&nbsp;import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
+<i>71</i>&nbsp;import com.sun.corba.se.spi.orbutil.threadpool.NoSuchWorkQueueException;
+<i>72</i>&nbsp;import com.sun.corba.se.spi.orbutil.threadpool.Work;
+<i>73</i>&nbsp;import com.sun.corba.se.spi.protocol.CorbaMessageMediator;
+<i>74</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaContactInfo;
+<i>75</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaConnection;
+<i>76</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaResponseWaitingRoom;
+<i>77</i>&nbsp;import com.sun.corba.se.spi.transport.ReadTimeouts;
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;import com.sun.corba.se.impl.encoding.CachedCodeBase;
+<i>80</i>&nbsp;import com.sun.corba.se.impl.encoding.CDRInputStream_1_0;
+<i>81</i>&nbsp;import com.sun.corba.se.impl.encoding.CDROutputObject;
+<i>82</i>&nbsp;import com.sun.corba.se.impl.encoding.CDROutputStream_1_0;
+<i>83</i>&nbsp;import com.sun.corba.se.impl.encoding.CodeSetComponentInfo;
+<i>84</i>&nbsp;import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
+<i>85</i>&nbsp;import com.sun.corba.se.impl.logging.ORBUtilSystemException;
+<i>86</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBConstants;
+<i>87</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBUtility;
+<i>88</i>&nbsp;import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
+<i>89</i>&nbsp;import com.sun.corba.se.impl.protocol.giopmsgheaders.MessageBase;
+<i>90</i>&nbsp;import com.sun.corba.se.impl.transport.CorbaResponseWaitingRoomImpl;
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;/**
+<i>93</i>&nbsp; * @author Harold Carr
+<i>94</i>&nbsp; */
+<i>95</i>&nbsp;public class SocketOrChannelConnectionImpl
+<i>96</i>&nbsp;    extends
+<i>97</i>&nbsp;        EventHandlerBase
+<i>98</i>&nbsp;    implements
+<i>99</i>&nbsp;        CorbaConnection,
+<i>100</i>&nbsp;        Work
+<i>101</i>&nbsp;{
+<b class="nc"><i>102</i>&nbsp;    public static boolean dprintWriteLocks = false;</b>
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    //
+<i>105</i>&nbsp;    // New transport.
+<i>106</i>&nbsp;    //
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;    protected long enqueueTime;
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;    protected SocketChannel socketChannel;
+<i>111</i>&nbsp;    public SocketChannel getSocketChannel()
+<i>112</i>&nbsp;    {
+<b class="nc"><i>113</i>&nbsp;        return socketChannel;</b>
+<i>114</i>&nbsp;    }
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;    // REVISIT:
+<i>117</i>&nbsp;    // protected for test: genericRPCMSGFramework.IIOPConnection constructor.
+<i>118</i>&nbsp;    protected CorbaContactInfo contactInfo;
+<i>119</i>&nbsp;    protected Acceptor acceptor;
+<i>120</i>&nbsp;    protected ConnectionCache connectionCache;
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;    //
+<i>123</i>&nbsp;    // From iiop.Connection.java
+<i>124</i>&nbsp;    //
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;    protected Socket socket;    // The socket used for this connection.
+<b class="nc"><i>127</i>&nbsp;    protected long timeStamp = 0;</b>
+<b class="nc"><i>128</i>&nbsp;    protected boolean isServer = false;</b>
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    // Start at some value other than zero since this is a magic
+<i>131</i>&nbsp;    // value in some protocols.
+<b class="nc"><i>132</i>&nbsp;    protected int requestId = 5;</b>
+<i>133</i>&nbsp;    protected CorbaResponseWaitingRoom responseWaitingRoom;
+<i>134</i>&nbsp;    protected int state;
+<b class="nc"><i>135</i>&nbsp;    protected java.lang.Object stateEvent = new java.lang.Object();</b>
+<b class="nc"><i>136</i>&nbsp;    protected java.lang.Object writeEvent = new java.lang.Object();</b>
+<i>137</i>&nbsp;    protected boolean writeLocked;
+<b class="nc"><i>138</i>&nbsp;    protected int serverRequestCount = 0;</b>
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;    // Server request map: used on the server side of Connection
+<i>141</i>&nbsp;    // Maps request ID to IIOPInputStream.
+<b class="nc"><i>142</i>&nbsp;    Map serverRequestMap = null;</b>
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;    // This is a flag associated per connection telling us if the
+<i>145</i>&nbsp;    // initial set of sending contexts were sent to the receiver
+<i>146</i>&nbsp;    // already...
+<b class="nc"><i>147</i>&nbsp;    protected boolean postInitialContexts = false;</b>
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    // Remote reference to CodeBase server (supplies
+<i>150</i>&nbsp;    // FullValueDescription, among other things)
+<i>151</i>&nbsp;    protected IOR codeBaseServerIOR;
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;    // CodeBase cache for this connection.  This will cache remote operations,
+<i>154</i>&nbsp;    // handle connecting, and ensure we don&#39;t do any remote operations until
+<i>155</i>&nbsp;    // necessary.
+<b class="nc"><i>156</i>&nbsp;    protected CachedCodeBase cachedCodeBase = new CachedCodeBase(this);</b>
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;    protected ORBUtilSystemException wrapper ;
+<i>159</i>&nbsp;
+<i>160</i>&nbsp;    // transport read timeout values
+<i>161</i>&nbsp;    protected ReadTimeouts readTimeouts;
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;    protected boolean shouldReadGiopHeaderOnly;
+<i>164</i>&nbsp;
+<i>165</i>&nbsp;    // A message mediator used when shouldReadGiopHeaderOnly is
+<i>166</i>&nbsp;    // true to maintain request message state across execution in a
+<i>167</i>&nbsp;    // SelectorThread and WorkerThread.
+<b class="nc"><i>168</i>&nbsp;    protected CorbaMessageMediator partialMessageMediator = null;</b>
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;    // Used in genericRPCMSGFramework test.
+<i>171</i>&nbsp;    protected SocketOrChannelConnectionImpl(ORB orb)
+<b class="nc"><i>172</i>&nbsp;    {</b>
+<b class="nc"><i>173</i>&nbsp;        this.orb = orb;</b>
+<b class="nc"><i>174</i>&nbsp;        wrapper = ORBUtilSystemException.get( orb,</b>
+<i>175</i>&nbsp;            CORBALogDomains.RPC_TRANSPORT ) ;
+<i>176</i>&nbsp;
+<b class="nc"><i>177</i>&nbsp;        setWork(this);</b>
+<b class="nc"><i>178</i>&nbsp;        responseWaitingRoom = new CorbaResponseWaitingRoomImpl(orb, this);</b>
+<b class="nc"><i>179</i>&nbsp;        setReadTimeouts(orb.getORBData().getTransportTCPReadTimeouts());</b>
+<i>180</i>&nbsp;    }
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;    // Both client and servers.
+<i>183</i>&nbsp;    protected SocketOrChannelConnectionImpl(ORB orb,
+<i>184</i>&nbsp;                                            boolean useSelectThreadToWait,
+<i>185</i>&nbsp;                                            boolean useWorkerThread)
+<i>186</i>&nbsp;    {
+<b class="nc"><i>187</i>&nbsp;        this(orb) ;</b>
+<b class="nc"><i>188</i>&nbsp;        setUseSelectThreadToWait(useSelectThreadToWait);</b>
+<b class="nc"><i>189</i>&nbsp;        setUseWorkerThreadForEvent(useWorkerThread);</b>
+<i>190</i>&nbsp;    }
+<i>191</i>&nbsp;
+<i>192</i>&nbsp;    // Client constructor.
+<i>193</i>&nbsp;    public SocketOrChannelConnectionImpl(ORB orb,
+<i>194</i>&nbsp;                                         CorbaContactInfo contactInfo,
+<i>195</i>&nbsp;                                         boolean useSelectThreadToWait,
+<i>196</i>&nbsp;                                         boolean useWorkerThread,
+<i>197</i>&nbsp;                                         String socketType,
+<i>198</i>&nbsp;                                         String hostname,
+<i>199</i>&nbsp;                                         int port)
+<i>200</i>&nbsp;    {
+<b class="nc"><i>201</i>&nbsp;        this(orb, useSelectThreadToWait, useWorkerThread);</b>
+<i>202</i>&nbsp;
+<b class="nc"><i>203</i>&nbsp;        this.contactInfo = contactInfo;</b>
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;        try {
+<b class="nc"><i>206</i>&nbsp;            socket = orb.getORBData().getSocketFactory()</b>
+<b class="nc"><i>207</i>&nbsp;                .createSocket(socketType,</b>
+<i>208</i>&nbsp;                              new InetSocketAddress(hostname, port));
+<b class="nc"><i>209</i>&nbsp;            socketChannel = socket.getChannel();</b>
+<i>210</i>&nbsp;
+<b class="nc"><i>211</i>&nbsp;            if (socketChannel != null) {</b>
+<b class="nc"><i>212</i>&nbsp;                boolean isBlocking = !useSelectThreadToWait;</b>
+<b class="nc"><i>213</i>&nbsp;                socketChannel.configureBlocking(isBlocking);</b>
+<b class="nc"><i>214</i>&nbsp;            } else {</b>
+<i>215</i>&nbsp;                // IMPORTANT: non-channel-backed sockets must use
+<i>216</i>&nbsp;                // dedicated reader threads.
+<b class="nc"><i>217</i>&nbsp;                setUseSelectThreadToWait(false);</b>
+<i>218</i>&nbsp;            }
+<b class="nc"><i>219</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>220</i>&nbsp;                dprint(&quot;.initialize: connection created: &quot; + socket);</b>
+<i>221</i>&nbsp;            }
+<b class="nc"><i>222</i>&nbsp;        } catch (Throwable t) {</b>
+<b class="nc"><i>223</i>&nbsp;            throw wrapper.connectFailure(t, socketType, hostname,</b>
+<b class="nc"><i>224</i>&nbsp;                                         Integer.toString(port));</b>
+<b class="nc"><i>225</i>&nbsp;        }</b>
+<b class="nc"><i>226</i>&nbsp;        state = OPENING;</b>
+<i>227</i>&nbsp;    }
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;    // Client-side convenience.
+<i>230</i>&nbsp;    public SocketOrChannelConnectionImpl(ORB orb,
+<i>231</i>&nbsp;                                         CorbaContactInfo contactInfo,
+<i>232</i>&nbsp;                                         String socketType,
+<i>233</i>&nbsp;                                         String hostname,
+<i>234</i>&nbsp;                                         int port)
+<i>235</i>&nbsp;    {
+<b class="nc"><i>236</i>&nbsp;        this(orb, contactInfo,</b>
+<b class="nc"><i>237</i>&nbsp;             orb.getORBData().connectionSocketUseSelectThreadToWait(),</b>
+<b class="nc"><i>238</i>&nbsp;             orb.getORBData().connectionSocketUseWorkerThreadForEvent(),</b>
+<i>239</i>&nbsp;             socketType, hostname, port);
+<i>240</i>&nbsp;    }
+<i>241</i>&nbsp;
+<i>242</i>&nbsp;    // Server-side constructor.
+<i>243</i>&nbsp;    public SocketOrChannelConnectionImpl(ORB orb,
+<i>244</i>&nbsp;                                         Acceptor acceptor,
+<i>245</i>&nbsp;                                         Socket socket,
+<i>246</i>&nbsp;                                         boolean useSelectThreadToWait,
+<i>247</i>&nbsp;                                         boolean useWorkerThread)
+<i>248</i>&nbsp;    {
+<b class="nc"><i>249</i>&nbsp;        this(orb, useSelectThreadToWait, useWorkerThread);</b>
+<i>250</i>&nbsp;
+<b class="nc"><i>251</i>&nbsp;        this.socket = socket;</b>
+<b class="nc"><i>252</i>&nbsp;        socketChannel = socket.getChannel();</b>
+<b class="nc"><i>253</i>&nbsp;        if (socketChannel != null) {</b>
+<i>254</i>&nbsp;            // REVISIT
+<i>255</i>&nbsp;            try {
+<b class="nc"><i>256</i>&nbsp;                boolean isBlocking = !useSelectThreadToWait;</b>
+<b class="nc"><i>257</i>&nbsp;                socketChannel.configureBlocking(isBlocking);</b>
+<b class="nc"><i>258</i>&nbsp;            } catch (IOException e) {</b>
+<b class="nc"><i>259</i>&nbsp;                RuntimeException rte = new RuntimeException();</b>
+<b class="nc"><i>260</i>&nbsp;                rte.initCause(e);</b>
+<b class="nc"><i>261</i>&nbsp;                throw rte;</b>
+<b class="nc"><i>262</i>&nbsp;            }</b>
+<i>263</i>&nbsp;        }
+<b class="nc"><i>264</i>&nbsp;        this.acceptor = acceptor;</b>
+<i>265</i>&nbsp;
+<b class="nc"><i>266</i>&nbsp;        serverRequestMap = Collections.synchronizedMap(new HashMap());</b>
+<b class="nc"><i>267</i>&nbsp;        isServer = true;</b>
+<i>268</i>&nbsp;
+<b class="nc"><i>269</i>&nbsp;        state = ESTABLISHED;</b>
+<i>270</i>&nbsp;    }
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;    // Server-side convenience
+<i>273</i>&nbsp;    public SocketOrChannelConnectionImpl(ORB orb,
+<i>274</i>&nbsp;                                         Acceptor acceptor,
+<i>275</i>&nbsp;                                         Socket socket)
+<i>276</i>&nbsp;    {
+<b class="nc"><i>277</i>&nbsp;        this(orb, acceptor, socket,</b>
+<b class="nc"><i>278</i>&nbsp;             (socket.getChannel() == null</b>
+<i>279</i>&nbsp;              ? false
+<b class="nc"><i>280</i>&nbsp;              : orb.getORBData().connectionSocketUseSelectThreadToWait()),</b>
+<b class="nc"><i>281</i>&nbsp;             (socket.getChannel() == null</b>
+<i>282</i>&nbsp;              ? false
+<b class="nc"><i>283</i>&nbsp;              : orb.getORBData().connectionSocketUseWorkerThreadForEvent()));</b>
+<i>284</i>&nbsp;    }
+<i>285</i>&nbsp;
+<i>286</i>&nbsp;    ////////////////////////////////////////////////////
+<i>287</i>&nbsp;    //
+<i>288</i>&nbsp;    // framework.transport.Connection
+<i>289</i>&nbsp;    //
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;    public boolean shouldRegisterReadEvent()
+<i>292</i>&nbsp;    {
+<b class="nc"><i>293</i>&nbsp;        return true;</b>
+<i>294</i>&nbsp;    }
+<i>295</i>&nbsp;
+<i>296</i>&nbsp;    public boolean shouldRegisterServerReadEvent()
+<i>297</i>&nbsp;    {
+<b class="nc"><i>298</i>&nbsp;        return true;</b>
+<i>299</i>&nbsp;    }
+<i>300</i>&nbsp;
+<i>301</i>&nbsp;    public boolean read()
+<i>302</i>&nbsp;    {
+<i>303</i>&nbsp;        try {
+<b class="nc"><i>304</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>305</i>&nbsp;                dprint(&quot;.read-&gt;: &quot; + this);</b>
+<i>306</i>&nbsp;            }
+<b class="nc"><i>307</i>&nbsp;            CorbaMessageMediator messageMediator = readBits();</b>
+<b class="nc"><i>308</i>&nbsp;            if (messageMediator != null) {</b>
+<i>309</i>&nbsp;                // Null can happen when client closes stream
+<i>310</i>&nbsp;                // causing purgecalls.
+<b class="nc"><i>311</i>&nbsp;                return dispatch(messageMediator);</b>
+<i>312</i>&nbsp;            }
+<b class="nc"><i>313</i>&nbsp;            return true;</b>
+<i>314</i>&nbsp;        } finally {
+<b class="nc"><i>315</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>316</i>&nbsp;                dprint(&quot;.read&lt;-: &quot; + this);</b>
+<i>317</i>&nbsp;            }
+<i>318</i>&nbsp;        }
+<i>319</i>&nbsp;    }
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;    protected CorbaMessageMediator readBits()
+<i>322</i>&nbsp;    {
+<i>323</i>&nbsp;        try {
+<i>324</i>&nbsp;
+<b class="nc"><i>325</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>326</i>&nbsp;                dprint(&quot;.readBits-&gt;: &quot; + this);</b>
+<i>327</i>&nbsp;            }
+<i>328</i>&nbsp;
+<i>329</i>&nbsp;            MessageMediator messageMediator;
+<i>330</i>&nbsp;            // REVISIT - use common factory base class.
+<b class="nc"><i>331</i>&nbsp;            if (contactInfo != null) {</b>
+<b class="nc"><i>332</i>&nbsp;                messageMediator =</b>
+<b class="nc"><i>333</i>&nbsp;                    contactInfo.createMessageMediator(orb, this);</b>
+<b class="nc"><i>334</i>&nbsp;            } else if (acceptor != null) {</b>
+<b class="nc"><i>335</i>&nbsp;                messageMediator = acceptor.createMessageMediator(orb, this);</b>
+<i>336</i>&nbsp;            } else {
+<b class="nc"><i>337</i>&nbsp;                throw</b>
+<i>338</i>&nbsp;                    new RuntimeException(&quot;SocketOrChannelConnectionImpl.readBits&quot;);
+<i>339</i>&nbsp;            }
+<b class="nc"><i>340</i>&nbsp;            return (CorbaMessageMediator) messageMediator;</b>
+<i>341</i>&nbsp;
+<b class="nc"><i>342</i>&nbsp;        } catch (ThreadDeath td) {</b>
+<b class="nc"><i>343</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>344</i>&nbsp;                dprint(&quot;.readBits: &quot; + this + &quot;: ThreadDeath: &quot; + td, td);</b>
+<i>345</i>&nbsp;            }
+<i>346</i>&nbsp;            try {
+<b class="nc"><i>347</i>&nbsp;                purgeCalls(wrapper.connectionAbort(td), false, false);</b>
+<b class="nc"><i>348</i>&nbsp;            } catch (Throwable t) {</b>
+<b class="nc"><i>349</i>&nbsp;                if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>350</i>&nbsp;                    dprint(&quot;.readBits: &quot; + this + &quot;: purgeCalls: Throwable: &quot; + t, t);</b>
+<i>351</i>&nbsp;                }
+<b class="nc"><i>352</i>&nbsp;            }</b>
+<b class="nc"><i>353</i>&nbsp;            throw td;</b>
+<b class="nc"><i>354</i>&nbsp;        } catch (Throwable ex) {</b>
+<b class="nc"><i>355</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>356</i>&nbsp;                dprint(&quot;.readBits: &quot; + this + &quot;: Throwable: &quot; + ex, ex);</b>
+<i>357</i>&nbsp;            }
+<i>358</i>&nbsp;
+<i>359</i>&nbsp;            try {
+<b class="nc"><i>360</i>&nbsp;                if (ex instanceof INTERNAL) {</b>
+<b class="nc"><i>361</i>&nbsp;                    sendMessageError(GIOPVersion.DEFAULT_VERSION);</b>
+<i>362</i>&nbsp;                }
+<b class="nc"><i>363</i>&nbsp;            } catch (IOException e) {</b>
+<b class="nc"><i>364</i>&nbsp;                if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>365</i>&nbsp;                    dprint(&quot;.readBits: &quot; + this +</b>
+<i>366</i>&nbsp;                           &quot;: sendMessageError: IOException: &quot; + e, e);
+<i>367</i>&nbsp;                }
+<b class="nc"><i>368</i>&nbsp;            }</b>
+<i>369</i>&nbsp;            // REVISIT - make sure reader thread is killed.
+<b class="nc"><i>370</i>&nbsp;            Selector selector = orb.getTransportManager().getSelector(0);</b>
+<b class="nc"><i>371</i>&nbsp;            if (selector != null) {</b>
+<b class="nc"><i>372</i>&nbsp;                selector.unregisterForEvent(this);</b>
+<i>373</i>&nbsp;            }
+<i>374</i>&nbsp;            // Notify anyone waiting.
+<b class="nc"><i>375</i>&nbsp;            purgeCalls(wrapper.connectionAbort(ex), true, false);</b>
+<i>376</i>&nbsp;            // REVISIT
+<i>377</i>&nbsp;            //keepRunning = false;
+<i>378</i>&nbsp;            // REVISIT - if this is called after purgeCalls then
+<i>379</i>&nbsp;            // the state of the socket is ABORT so the writeLock
+<i>380</i>&nbsp;            // in close throws an exception.  It is ignored but
+<i>381</i>&nbsp;            // causes IBM (screen scraping) tests to fail.
+<i>382</i>&nbsp;            //close();
+<i>383</i>&nbsp;        } finally {
+<b class="nc"><i>384</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>385</i>&nbsp;                dprint(&quot;.readBits&lt;-: &quot; + this);</b>
+<i>386</i>&nbsp;            }
+<i>387</i>&nbsp;        }
+<b class="nc"><i>388</i>&nbsp;        return null;</b>
+<i>389</i>&nbsp;    }
+<i>390</i>&nbsp;
+<i>391</i>&nbsp;    protected CorbaMessageMediator finishReadingBits(MessageMediator messageMediator)
+<i>392</i>&nbsp;    {
+<i>393</i>&nbsp;        try {
+<i>394</i>&nbsp;
+<b class="nc"><i>395</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>396</i>&nbsp;                dprint(&quot;.finishReadingBits-&gt;: &quot; + this);</b>
+<i>397</i>&nbsp;            }
+<i>398</i>&nbsp;
+<i>399</i>&nbsp;            // REVISIT - use common factory base class.
+<b class="nc"><i>400</i>&nbsp;            if (contactInfo != null) {</b>
+<b class="nc"><i>401</i>&nbsp;                messageMediator =</b>
+<b class="nc"><i>402</i>&nbsp;                    contactInfo.finishCreatingMessageMediator(orb, this, messageMediator);</b>
+<b class="nc"><i>403</i>&nbsp;            } else if (acceptor != null) {</b>
+<b class="nc"><i>404</i>&nbsp;                messageMediator =</b>
+<b class="nc"><i>405</i>&nbsp;                    acceptor.finishCreatingMessageMediator(orb, this, messageMediator);</b>
+<i>406</i>&nbsp;            } else {
+<b class="nc"><i>407</i>&nbsp;                throw</b>
+<i>408</i>&nbsp;                    new RuntimeException(&quot;SocketOrChannelConnectionImpl.finishReadingBits&quot;);
+<i>409</i>&nbsp;            }
+<b class="nc"><i>410</i>&nbsp;            return (CorbaMessageMediator) messageMediator;</b>
+<i>411</i>&nbsp;
+<b class="nc"><i>412</i>&nbsp;        } catch (ThreadDeath td) {</b>
+<b class="nc"><i>413</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>414</i>&nbsp;                dprint(&quot;.finishReadingBits: &quot; + this + &quot;: ThreadDeath: &quot; + td, td);</b>
+<i>415</i>&nbsp;            }
+<i>416</i>&nbsp;            try {
+<b class="nc"><i>417</i>&nbsp;                purgeCalls(wrapper.connectionAbort(td), false, false);</b>
+<b class="nc"><i>418</i>&nbsp;            } catch (Throwable t) {</b>
+<b class="nc"><i>419</i>&nbsp;                if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>420</i>&nbsp;                    dprint(&quot;.finishReadingBits: &quot; + this + &quot;: purgeCalls: Throwable: &quot; + t, t);</b>
+<i>421</i>&nbsp;                }
+<b class="nc"><i>422</i>&nbsp;            }</b>
+<b class="nc"><i>423</i>&nbsp;            throw td;</b>
+<b class="nc"><i>424</i>&nbsp;        } catch (Throwable ex) {</b>
+<b class="nc"><i>425</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>426</i>&nbsp;                dprint(&quot;.finishReadingBits: &quot; + this + &quot;: Throwable: &quot; + ex, ex);</b>
+<i>427</i>&nbsp;            }
+<i>428</i>&nbsp;
+<i>429</i>&nbsp;            try {
+<b class="nc"><i>430</i>&nbsp;                if (ex instanceof INTERNAL) {</b>
+<b class="nc"><i>431</i>&nbsp;                    sendMessageError(GIOPVersion.DEFAULT_VERSION);</b>
+<i>432</i>&nbsp;                }
+<b class="nc"><i>433</i>&nbsp;            } catch (IOException e) {</b>
+<b class="nc"><i>434</i>&nbsp;                if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>435</i>&nbsp;                    dprint(&quot;.finishReadingBits: &quot; + this +</b>
+<i>436</i>&nbsp;                           &quot;: sendMessageError: IOException: &quot; + e, e);
+<i>437</i>&nbsp;                }
+<b class="nc"><i>438</i>&nbsp;            }</b>
+<i>439</i>&nbsp;            // REVISIT - make sure reader thread is killed.
+<b class="nc"><i>440</i>&nbsp;            orb.getTransportManager().getSelector(0).unregisterForEvent(this);</b>
+<i>441</i>&nbsp;            // Notify anyone waiting.
+<b class="nc"><i>442</i>&nbsp;            purgeCalls(wrapper.connectionAbort(ex), true, false);</b>
+<i>443</i>&nbsp;            // REVISIT
+<i>444</i>&nbsp;            //keepRunning = false;
+<i>445</i>&nbsp;            // REVISIT - if this is called after purgeCalls then
+<i>446</i>&nbsp;            // the state of the socket is ABORT so the writeLock
+<i>447</i>&nbsp;            // in close throws an exception.  It is ignored but
+<i>448</i>&nbsp;            // causes IBM (screen scraping) tests to fail.
+<i>449</i>&nbsp;            //close();
+<i>450</i>&nbsp;        } finally {
+<b class="nc"><i>451</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>452</i>&nbsp;                dprint(&quot;.finishReadingBits&lt;-: &quot; + this);</b>
+<i>453</i>&nbsp;            }
+<i>454</i>&nbsp;        }
+<b class="nc"><i>455</i>&nbsp;        return null;</b>
+<i>456</i>&nbsp;    }
+<i>457</i>&nbsp;
+<i>458</i>&nbsp;    protected boolean dispatch(CorbaMessageMediator messageMediator)
+<i>459</i>&nbsp;    {
+<i>460</i>&nbsp;        try {
+<b class="nc"><i>461</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>462</i>&nbsp;                dprint(&quot;.dispatch-&gt;: &quot; + this);</b>
+<i>463</i>&nbsp;            }
+<i>464</i>&nbsp;
+<i>465</i>&nbsp;            //
+<i>466</i>&nbsp;            // NOTE:
+<i>467</i>&nbsp;            //
+<i>468</i>&nbsp;            // This call is the transition from the tranport block
+<i>469</i>&nbsp;            // to the protocol block.
+<i>470</i>&nbsp;            //
+<i>471</i>&nbsp;
+<b class="nc"><i>472</i>&nbsp;            boolean result =</b>
+<b class="nc"><i>473</i>&nbsp;                messageMediator.getProtocolHandler()</b>
+<b class="nc"><i>474</i>&nbsp;                .handleRequest(messageMediator);</b>
+<i>475</i>&nbsp;
+<b class="nc"><i>476</i>&nbsp;            return result;</b>
+<i>477</i>&nbsp;
+<b class="nc"><i>478</i>&nbsp;        } catch (ThreadDeath td) {</b>
+<b class="nc"><i>479</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>480</i>&nbsp;                dprint(&quot;.dispatch: ThreadDeath&quot;, td );</b>
+<i>481</i>&nbsp;            }
+<i>482</i>&nbsp;            try {
+<b class="nc"><i>483</i>&nbsp;                purgeCalls(wrapper.connectionAbort(td), false, false);</b>
+<b class="nc"><i>484</i>&nbsp;            } catch (Throwable t) {</b>
+<b class="nc"><i>485</i>&nbsp;                if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>486</i>&nbsp;                    dprint(&quot;.dispatch: purgeCalls: Throwable&quot;, t);</b>
+<i>487</i>&nbsp;                }
+<b class="nc"><i>488</i>&nbsp;            }</b>
+<b class="nc"><i>489</i>&nbsp;            throw td;</b>
+<b class="nc"><i>490</i>&nbsp;        } catch (Throwable ex) {</b>
+<b class="nc"><i>491</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>492</i>&nbsp;                dprint(&quot;.dispatch: Throwable&quot;, ex ) ;</b>
+<i>493</i>&nbsp;            }
+<i>494</i>&nbsp;
+<i>495</i>&nbsp;            try {
+<b class="nc"><i>496</i>&nbsp;                if (ex instanceof INTERNAL) {</b>
+<b class="nc"><i>497</i>&nbsp;                    sendMessageError(GIOPVersion.DEFAULT_VERSION);</b>
+<i>498</i>&nbsp;                }
+<b class="nc"><i>499</i>&nbsp;            } catch (IOException e) {</b>
+<b class="nc"><i>500</i>&nbsp;                if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>501</i>&nbsp;                    dprint(&quot;.dispatch: sendMessageError: IOException&quot;, e);</b>
+<i>502</i>&nbsp;                }
+<b class="nc"><i>503</i>&nbsp;            }</b>
+<b class="nc"><i>504</i>&nbsp;            purgeCalls(wrapper.connectionAbort(ex), false, false);</b>
+<i>505</i>&nbsp;            // REVISIT
+<i>506</i>&nbsp;            //keepRunning = false;
+<i>507</i>&nbsp;        } finally {
+<b class="nc"><i>508</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>509</i>&nbsp;                dprint(&quot;.dispatch&lt;-: &quot; + this);</b>
+<i>510</i>&nbsp;            }
+<i>511</i>&nbsp;        }
+<i>512</i>&nbsp;
+<b class="nc"><i>513</i>&nbsp;        return true;</b>
+<i>514</i>&nbsp;    }
+<i>515</i>&nbsp;
+<i>516</i>&nbsp;    public boolean shouldUseDirectByteBuffers()
+<i>517</i>&nbsp;    {
+<b class="nc"><i>518</i>&nbsp;        return getSocketChannel() != null;</b>
+<i>519</i>&nbsp;    }
+<i>520</i>&nbsp;
+<i>521</i>&nbsp;    public ByteBuffer read(int size, int offset, int length, long max_wait_time)
+<i>522</i>&nbsp;        throws IOException
+<i>523</i>&nbsp;    {
+<b class="nc"><i>524</i>&nbsp;        if (shouldUseDirectByteBuffers()) {</b>
+<i>525</i>&nbsp;
+<b class="nc"><i>526</i>&nbsp;            ByteBuffer byteBuffer =</b>
+<b class="nc"><i>527</i>&nbsp;                orb.getByteBufferPool().getByteBuffer(size);</b>
+<i>528</i>&nbsp;
+<b class="nc"><i>529</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<i>530</i>&nbsp;                // print address of ByteBuffer gotten from pool
+<b class="nc"><i>531</i>&nbsp;                int bbAddress = System.identityHashCode(byteBuffer);</b>
+<b class="nc"><i>532</i>&nbsp;                StringBuffer sb = new StringBuffer(80);</b>
+<b class="nc"><i>533</i>&nbsp;                sb.append(&quot;.read: got ByteBuffer id (&quot;);</b>
+<b class="nc"><i>534</i>&nbsp;                sb.append(bbAddress).append(&quot;) from ByteBufferPool.&quot;);</b>
+<b class="nc"><i>535</i>&nbsp;                String msgStr = sb.toString();</b>
+<b class="nc"><i>536</i>&nbsp;                dprint(msgStr);</b>
+<i>537</i>&nbsp;            }
+<i>538</i>&nbsp;
+<b class="nc"><i>539</i>&nbsp;            byteBuffer.position(offset);</b>
+<b class="nc"><i>540</i>&nbsp;            byteBuffer.limit(size);</b>
+<i>541</i>&nbsp;
+<b class="nc"><i>542</i>&nbsp;            readFully(byteBuffer, length, max_wait_time);</b>
+<i>543</i>&nbsp;
+<b class="nc"><i>544</i>&nbsp;            return byteBuffer;</b>
+<i>545</i>&nbsp;        }
+<i>546</i>&nbsp;
+<b class="nc"><i>547</i>&nbsp;        byte[] buf = new byte[size];</b>
+<b class="nc"><i>548</i>&nbsp;        readFully(getSocket().getInputStream(), buf,</b>
+<i>549</i>&nbsp;                  offset, length, max_wait_time);
+<b class="nc"><i>550</i>&nbsp;        ByteBuffer byteBuffer = ByteBuffer.wrap(buf);</b>
+<b class="nc"><i>551</i>&nbsp;        byteBuffer.limit(size);</b>
+<b class="nc"><i>552</i>&nbsp;        return byteBuffer;</b>
+<i>553</i>&nbsp;    }
+<i>554</i>&nbsp;
+<i>555</i>&nbsp;    public ByteBuffer read(ByteBuffer byteBuffer, int offset,
+<i>556</i>&nbsp;                           int length, long max_wait_time)
+<i>557</i>&nbsp;        throws IOException
+<i>558</i>&nbsp;    {
+<b class="nc"><i>559</i>&nbsp;        int size = offset + length;</b>
+<b class="nc"><i>560</i>&nbsp;        if (shouldUseDirectByteBuffers()) {</b>
+<i>561</i>&nbsp;
+<b class="nc"><i>562</i>&nbsp;            if (! byteBuffer.isDirect()) {</b>
+<b class="nc"><i>563</i>&nbsp;                throw wrapper.unexpectedNonDirectByteBufferWithChannelSocket();</b>
+<i>564</i>&nbsp;            }
+<b class="nc"><i>565</i>&nbsp;            if (size &gt; byteBuffer.capacity()) {</b>
+<b class="nc"><i>566</i>&nbsp;                if (orb.transportDebugFlag) {</b>
+<i>567</i>&nbsp;                    // print address of ByteBuffer being released
+<b class="nc"><i>568</i>&nbsp;                    int bbAddress = System.identityHashCode(byteBuffer);</b>
+<b class="nc"><i>569</i>&nbsp;                    StringBuffer bbsb = new StringBuffer(80);</b>
+<b class="nc"><i>570</i>&nbsp;                    bbsb.append(&quot;.read: releasing ByteBuffer id (&quot;)</b>
+<b class="nc"><i>571</i>&nbsp;                        .append(bbAddress).append(&quot;) to ByteBufferPool.&quot;);</b>
+<b class="nc"><i>572</i>&nbsp;                    String bbmsg = bbsb.toString();</b>
+<b class="nc"><i>573</i>&nbsp;                    dprint(bbmsg);</b>
+<i>574</i>&nbsp;                }
+<b class="nc"><i>575</i>&nbsp;                orb.getByteBufferPool().releaseByteBuffer(byteBuffer);</b>
+<b class="nc"><i>576</i>&nbsp;                byteBuffer = orb.getByteBufferPool().getByteBuffer(size);</b>
+<i>577</i>&nbsp;            }
+<b class="nc"><i>578</i>&nbsp;            byteBuffer.position(offset);</b>
+<b class="nc"><i>579</i>&nbsp;            byteBuffer.limit(size);</b>
+<b class="nc"><i>580</i>&nbsp;            readFully(byteBuffer, length, max_wait_time);</b>
+<b class="nc"><i>581</i>&nbsp;            byteBuffer.position(0);</b>
+<b class="nc"><i>582</i>&nbsp;            byteBuffer.limit(size);</b>
+<b class="nc"><i>583</i>&nbsp;            return byteBuffer;</b>
+<i>584</i>&nbsp;        }
+<b class="nc"><i>585</i>&nbsp;        if (byteBuffer.isDirect()) {</b>
+<b class="nc"><i>586</i>&nbsp;            throw wrapper.unexpectedDirectByteBufferWithNonChannelSocket();</b>
+<i>587</i>&nbsp;        }
+<b class="nc"><i>588</i>&nbsp;        byte[] buf = new byte[size];</b>
+<b class="nc"><i>589</i>&nbsp;        readFully(getSocket().getInputStream(), buf,</b>
+<i>590</i>&nbsp;                  offset, length, max_wait_time);
+<b class="nc"><i>591</i>&nbsp;        return ByteBuffer.wrap(buf);</b>
+<i>592</i>&nbsp;    }
+<i>593</i>&nbsp;
+<i>594</i>&nbsp;    public void readFully(ByteBuffer byteBuffer, int size, long max_wait_time)
+<i>595</i>&nbsp;        throws IOException
+<i>596</i>&nbsp;    {
+<b class="nc"><i>597</i>&nbsp;        int n = 0;</b>
+<b class="nc"><i>598</i>&nbsp;        int bytecount = 0;</b>
+<b class="nc"><i>599</i>&nbsp;        long time_to_wait = readTimeouts.get_initial_time_to_wait();</b>
+<b class="nc"><i>600</i>&nbsp;        long total_time_in_wait = 0;</b>
+<i>601</i>&nbsp;
+<i>602</i>&nbsp;        // The reading of data incorporates a strategy to detect a
+<i>603</i>&nbsp;        // rogue client. The strategy is implemented as follows. As
+<i>604</i>&nbsp;        // long as data is being read, at least 1 byte or more, we
+<i>605</i>&nbsp;        // assume we have a well behaved client. If no data is read,
+<i>606</i>&nbsp;        // then we sleep for a time to wait, re-calculate a new time to
+<i>607</i>&nbsp;        // wait which is lengthier than the previous time spent waiting.
+<i>608</i>&nbsp;        // Then, if the total time spent waiting does not exceed a
+<i>609</i>&nbsp;        // maximum time we are willing to wait, we attempt another
+<i>610</i>&nbsp;        // read. If the maximum amount of time we are willing to
+<i>611</i>&nbsp;        // spend waiting for more data is exceeded, we throw an
+<i>612</i>&nbsp;        // IOException.
+<i>613</i>&nbsp;
+<i>614</i>&nbsp;        // NOTE: Reading of GIOP headers are treated with a smaller
+<i>615</i>&nbsp;        //       maximum time to wait threshold. Based on extensive
+<i>616</i>&nbsp;        //       performance testing, all GIOP headers are being
+<i>617</i>&nbsp;        //       read in 1 read access.
+<i>618</i>&nbsp;
+<i>619</i>&nbsp;        do {
+<b class="nc"><i>620</i>&nbsp;            bytecount = getSocketChannel().read(byteBuffer);</b>
+<i>621</i>&nbsp;
+<b class="nc"><i>622</i>&nbsp;            if (bytecount &lt; 0) {</b>
+<b class="nc"><i>623</i>&nbsp;                throw new IOException(&quot;End-of-stream&quot;);</b>
+<i>624</i>&nbsp;            }
+<b class="nc"><i>625</i>&nbsp;            else if (bytecount == 0) {</b>
+<i>626</i>&nbsp;                try {
+<b class="nc"><i>627</i>&nbsp;                    Thread.sleep(time_to_wait);</b>
+<b class="nc"><i>628</i>&nbsp;                    total_time_in_wait += time_to_wait;</b>
+<b class="nc"><i>629</i>&nbsp;                    time_to_wait =</b>
+<b class="nc"><i>630</i>&nbsp;                        (long)(time_to_wait*readTimeouts.get_backoff_factor());</b>
+<i>631</i>&nbsp;                }
+<b class="nc"><i>632</i>&nbsp;                catch (InterruptedException ie) {</b>
+<i>633</i>&nbsp;                    // ignore exception
+<b class="nc"><i>634</i>&nbsp;                    if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>635</i>&nbsp;                        dprint(&quot;readFully(): unexpected exception &quot;</b>
+<b class="nc"><i>636</i>&nbsp;                                + ie.toString());</b>
+<i>637</i>&nbsp;                    }
+<b class="nc"><i>638</i>&nbsp;                }</b>
+<i>639</i>&nbsp;            }
+<i>640</i>&nbsp;            else {
+<b class="nc"><i>641</i>&nbsp;                n += bytecount;</b>
+<i>642</i>&nbsp;            }
+<i>643</i>&nbsp;        }
+<b class="nc"><i>644</i>&nbsp;        while (n &lt; size &amp;&amp; total_time_in_wait &lt; max_wait_time);</b>
+<i>645</i>&nbsp;
+<b class="nc"><i>646</i>&nbsp;        if (n &lt; size &amp;&amp; total_time_in_wait &gt;= max_wait_time)</b>
+<i>647</i>&nbsp;        {
+<i>648</i>&nbsp;            // failed to read entire message
+<b class="nc"><i>649</i>&nbsp;            throw wrapper.transportReadTimeoutExceeded(new Integer(size),</b>
+<i>650</i>&nbsp;                                      new Integer(n), new Long(max_wait_time),
+<i>651</i>&nbsp;                                      new Long(total_time_in_wait));
+<i>652</i>&nbsp;        }
+<i>653</i>&nbsp;
+<b class="nc"><i>654</i>&nbsp;        getConnectionCache().stampTime(this);</b>
+<i>655</i>&nbsp;    }
+<i>656</i>&nbsp;
+<i>657</i>&nbsp;    // To support non-channel connections.
+<i>658</i>&nbsp;    public void readFully(java.io.InputStream is, byte[] buf,
+<i>659</i>&nbsp;                          int offset, int size, long max_wait_time)
+<i>660</i>&nbsp;        throws IOException
+<i>661</i>&nbsp;    {
+<b class="nc"><i>662</i>&nbsp;        int n = 0;</b>
+<b class="nc"><i>663</i>&nbsp;        int bytecount = 0;</b>
+<b class="nc"><i>664</i>&nbsp;        long time_to_wait = readTimeouts.get_initial_time_to_wait();</b>
+<b class="nc"><i>665</i>&nbsp;        long total_time_in_wait = 0;</b>
+<i>666</i>&nbsp;
+<i>667</i>&nbsp;        // The reading of data incorporates a strategy to detect a
+<i>668</i>&nbsp;        // rogue client. The strategy is implemented as follows. As
+<i>669</i>&nbsp;        // long as data is being read, at least 1 byte or more, we
+<i>670</i>&nbsp;        // assume we have a well behaved client. If no data is read,
+<i>671</i>&nbsp;        // then we sleep for a time to wait, re-calculate a new time to
+<i>672</i>&nbsp;        // wait which is lengthier than the previous time spent waiting.
+<i>673</i>&nbsp;        // Then, if the total time spent waiting does not exceed a
+<i>674</i>&nbsp;        // maximum time we are willing to wait, we attempt another
+<i>675</i>&nbsp;        // read. If the maximum amount of time we are willing to
+<i>676</i>&nbsp;        // spend waiting for more data is exceeded, we throw an
+<i>677</i>&nbsp;        // IOException.
+<i>678</i>&nbsp;
+<i>679</i>&nbsp;        // NOTE: Reading of GIOP headers are treated with a smaller
+<i>680</i>&nbsp;        //       maximum time to wait threshold. Based on extensive
+<i>681</i>&nbsp;        //       performance testing, all GIOP headers are being
+<i>682</i>&nbsp;        //       read in 1 read access.
+<i>683</i>&nbsp;
+<i>684</i>&nbsp;        do {
+<b class="nc"><i>685</i>&nbsp;            bytecount = is.read(buf, offset + n, size - n);</b>
+<b class="nc"><i>686</i>&nbsp;            if (bytecount &lt; 0) {</b>
+<b class="nc"><i>687</i>&nbsp;                throw new IOException(&quot;End-of-stream&quot;);</b>
+<i>688</i>&nbsp;            }
+<b class="nc"><i>689</i>&nbsp;            else if (bytecount == 0) {</b>
+<i>690</i>&nbsp;                try {
+<b class="nc"><i>691</i>&nbsp;                    Thread.sleep(time_to_wait);</b>
+<b class="nc"><i>692</i>&nbsp;                    total_time_in_wait += time_to_wait;</b>
+<b class="nc"><i>693</i>&nbsp;                    time_to_wait =</b>
+<b class="nc"><i>694</i>&nbsp;                        (long)(time_to_wait*readTimeouts.get_backoff_factor());</b>
+<i>695</i>&nbsp;                }
+<b class="nc"><i>696</i>&nbsp;                catch (InterruptedException ie) {</b>
+<i>697</i>&nbsp;                    // ignore exception
+<b class="nc"><i>698</i>&nbsp;                    if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>699</i>&nbsp;                        dprint(&quot;readFully(): unexpected exception &quot;</b>
+<b class="nc"><i>700</i>&nbsp;                                + ie.toString());</b>
+<i>701</i>&nbsp;                    }
+<b class="nc"><i>702</i>&nbsp;                }</b>
+<i>703</i>&nbsp;            }
+<i>704</i>&nbsp;            else {
+<b class="nc"><i>705</i>&nbsp;                n += bytecount;</b>
+<i>706</i>&nbsp;            }
+<i>707</i>&nbsp;        }
+<b class="nc"><i>708</i>&nbsp;        while (n &lt; size &amp;&amp; total_time_in_wait &lt; max_wait_time);</b>
+<i>709</i>&nbsp;
+<b class="nc"><i>710</i>&nbsp;        if (n &lt; size &amp;&amp; total_time_in_wait &gt;= max_wait_time)</b>
+<i>711</i>&nbsp;        {
+<i>712</i>&nbsp;            // failed to read entire message
+<b class="nc"><i>713</i>&nbsp;            throw wrapper.transportReadTimeoutExceeded(new Integer(size),</b>
+<i>714</i>&nbsp;                                      new Integer(n), new Long(max_wait_time),
+<i>715</i>&nbsp;                                      new Long(total_time_in_wait));
+<i>716</i>&nbsp;        }
+<i>717</i>&nbsp;
+<b class="nc"><i>718</i>&nbsp;        getConnectionCache().stampTime(this);</b>
+<i>719</i>&nbsp;    }
+<i>720</i>&nbsp;
+<i>721</i>&nbsp;    public void write(ByteBuffer byteBuffer)
+<i>722</i>&nbsp;        throws IOException
+<i>723</i>&nbsp;    {
+<b class="nc"><i>724</i>&nbsp;        if (shouldUseDirectByteBuffers()) {</b>
+<i>725</i>&nbsp;            /* NOTE: cannot perform this test.  If one ask for a
+<i>726</i>&nbsp;               ByteBuffer from the pool which is bigger than the size
+<i>727</i>&nbsp;               of ByteBuffers managed by the pool, then the pool will
+<i>728</i>&nbsp;               return a HeapByteBuffer.
+<i>729</i>&nbsp;            if (byteBuffer.hasArray()) {
+<i>730</i>&nbsp;                throw wrapper.unexpectedNonDirectByteBufferWithChannelSocket();
+<i>731</i>&nbsp;            }
+<i>732</i>&nbsp;            */
+<i>733</i>&nbsp;            // IMPORTANT: For non-blocking SocketChannels, there&#39;s no guarantee
+<i>734</i>&nbsp;            //            all bytes are written on first write attempt.
+<i>735</i>&nbsp;            do {
+<b class="nc"><i>736</i>&nbsp;                getSocketChannel().write(byteBuffer);</b>
+<i>737</i>&nbsp;            }
+<b class="nc"><i>738</i>&nbsp;            while (byteBuffer.hasRemaining());</b>
+<i>739</i>&nbsp;
+<i>740</i>&nbsp;        } else {
+<b class="nc"><i>741</i>&nbsp;            if (! byteBuffer.hasArray()) {</b>
+<b class="nc"><i>742</i>&nbsp;                throw wrapper.unexpectedDirectByteBufferWithNonChannelSocket();</b>
+<i>743</i>&nbsp;            }
+<b class="nc"><i>744</i>&nbsp;            byte[] tmpBuf = byteBuffer.array();</b>
+<b class="nc"><i>745</i>&nbsp;            getSocket().getOutputStream().write(tmpBuf, 0, byteBuffer.limit());</b>
+<b class="nc"><i>746</i>&nbsp;            getSocket().getOutputStream().flush();</b>
+<i>747</i>&nbsp;        }
+<i>748</i>&nbsp;
+<i>749</i>&nbsp;        // TimeStamp connection to indicate it has been used
+<i>750</i>&nbsp;        // Note granularity of connection usage is assumed for
+<i>751</i>&nbsp;        // now to be that of a IIOP packet.
+<b class="nc"><i>752</i>&nbsp;        getConnectionCache().stampTime(this);</b>
+<i>753</i>&nbsp;    }
+<i>754</i>&nbsp;
+<i>755</i>&nbsp;    /**
+<i>756</i>&nbsp;     * Note:it is possible for this to be called more than once
+<i>757</i>&nbsp;     */
+<i>758</i>&nbsp;    public synchronized void close()
+<i>759</i>&nbsp;    {
+<i>760</i>&nbsp;        try {
+<b class="nc"><i>761</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>762</i>&nbsp;                dprint(&quot;.close-&gt;: &quot; + this);</b>
+<i>763</i>&nbsp;            }
+<b class="nc"><i>764</i>&nbsp;            writeLock();</b>
+<i>765</i>&nbsp;
+<i>766</i>&nbsp;            // REVISIT It will be good to have a read lock on the reader thread
+<i>767</i>&nbsp;            // before we proceed further, to avoid the reader thread (server side)
+<i>768</i>&nbsp;            // from processing requests. This avoids the risk that a new request
+<i>769</i>&nbsp;            // will be accepted by ReaderThread while the ListenerThread is
+<i>770</i>&nbsp;            // attempting to close this connection.
+<i>771</i>&nbsp;
+<b class="nc"><i>772</i>&nbsp;            if (isBusy()) { // we are busy!</b>
+<b class="nc"><i>773</i>&nbsp;                writeUnlock();</b>
+<b class="nc"><i>774</i>&nbsp;                if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>775</i>&nbsp;                    dprint(&quot;.close: isBusy so no close: &quot; + this);</b>
+<i>776</i>&nbsp;                }
+<i>777</i>&nbsp;                return;
+<i>778</i>&nbsp;            }
+<i>779</i>&nbsp;
+<i>780</i>&nbsp;            try {
+<i>781</i>&nbsp;                try {
+<b class="nc"><i>782</i>&nbsp;                    sendCloseConnection(GIOPVersion.V1_0);</b>
+<b class="nc"><i>783</i>&nbsp;                } catch (Throwable t) {</b>
+<b class="nc"><i>784</i>&nbsp;                    wrapper.exceptionWhenSendingCloseConnection(t);</b>
+<b class="nc"><i>785</i>&nbsp;                }</b>
+<i>786</i>&nbsp;
+<b class="nc"><i>787</i>&nbsp;                synchronized ( stateEvent ){</b>
+<b class="nc"><i>788</i>&nbsp;                    state = CLOSE_SENT;</b>
+<b class="nc"><i>789</i>&nbsp;                    stateEvent.notifyAll();</b>
+<b class="nc"><i>790</i>&nbsp;                }</b>
+<i>791</i>&nbsp;
+<i>792</i>&nbsp;                // stop the reader without causing it to do purgeCalls
+<i>793</i>&nbsp;                //Exception ex = new Exception();
+<i>794</i>&nbsp;                //reader.stop(ex); // REVISIT
+<i>795</i>&nbsp;
+<i>796</i>&nbsp;                // NOTE: !!!!!!
+<i>797</i>&nbsp;                // This does writeUnlock().
+<b class="nc"><i>798</i>&nbsp;                purgeCalls(wrapper.connectionRebind(), false, true);</b>
+<i>799</i>&nbsp;
+<b class="nc"><i>800</i>&nbsp;            } catch (Exception ex) {</b>
+<b class="nc"><i>801</i>&nbsp;                if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>802</i>&nbsp;                    dprint(&quot;.close: exception: &quot; + this, ex);</b>
+<i>803</i>&nbsp;                }
+<b class="nc"><i>804</i>&nbsp;            }</b>
+<i>805</i>&nbsp;            try {
+<b class="nc"><i>806</i>&nbsp;                Selector selector = orb.getTransportManager().getSelector(0);</b>
+<b class="nc"><i>807</i>&nbsp;                if (selector != null) {</b>
+<b class="nc"><i>808</i>&nbsp;                    selector.unregisterForEvent(this);</b>
+<i>809</i>&nbsp;                }
+<b class="nc"><i>810</i>&nbsp;                if (socketChannel != null) {</b>
+<b class="nc"><i>811</i>&nbsp;                    socketChannel.close();</b>
+<i>812</i>&nbsp;                }
+<b class="nc"><i>813</i>&nbsp;                socket.close();</b>
+<b class="nc"><i>814</i>&nbsp;            } catch (IOException e) {</b>
+<b class="nc"><i>815</i>&nbsp;                if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>816</i>&nbsp;                    dprint(&quot;.close: &quot; + this, e);</b>
+<i>817</i>&nbsp;                }
+<b class="nc"><i>818</i>&nbsp;            }</b>
+<b class="nc"><i>819</i>&nbsp;            closeConnectionResources();</b>
+<i>820</i>&nbsp;        } finally {
+<b class="nc"><i>821</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>822</i>&nbsp;                dprint(&quot;.close&lt;-: &quot; + this);</b>
+<i>823</i>&nbsp;            }
+<i>824</i>&nbsp;        }
+<i>825</i>&nbsp;    }
+<i>826</i>&nbsp;
+<i>827</i>&nbsp;    public void closeConnectionResources() {
+<b class="nc"><i>828</i>&nbsp;           if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>829</i>&nbsp;               dprint(&quot;.closeConnectionResources-&gt;: &quot; + this);</b>
+<i>830</i>&nbsp;           }
+<b class="nc"><i>831</i>&nbsp;           Selector selector = orb.getTransportManager().getSelector(0);</b>
+<b class="nc"><i>832</i>&nbsp;           if (selector != null) {</b>
+<b class="nc"><i>833</i>&nbsp;               selector.unregisterForEvent(this);</b>
+<i>834</i>&nbsp;           }
+<i>835</i>&nbsp;           try {
+<b class="nc"><i>836</i>&nbsp;             if (socketChannel != null)</b>
+<b class="nc"><i>837</i>&nbsp;              socketChannel.close() ;</b>
+<b class="nc"><i>838</i>&nbsp;                if (socket != null &amp;&amp; !socket.isClosed())</b>
+<b class="nc"><i>839</i>&nbsp;                socket.close() ;</b>
+<b class="nc"><i>840</i>&nbsp;           } catch (IOException e) {</b>
+<b class="nc"><i>841</i>&nbsp;             if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>842</i>&nbsp;                 dprint( &quot;.closeConnectionResources: &quot; + this, e ) ;</b>
+<i>843</i>&nbsp;             }
+<b class="nc"><i>844</i>&nbsp;           }</b>
+<b class="nc"><i>845</i>&nbsp;           if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>846</i>&nbsp;               dprint(&quot;.closeConnectionResources&lt;-: &quot; + this);</b>
+<i>847</i>&nbsp;           }
+<i>848</i>&nbsp;     }
+<i>849</i>&nbsp;
+<i>850</i>&nbsp;
+<i>851</i>&nbsp;    public Acceptor getAcceptor()
+<i>852</i>&nbsp;    {
+<b class="nc"><i>853</i>&nbsp;        return acceptor;</b>
+<i>854</i>&nbsp;    }
+<i>855</i>&nbsp;
+<i>856</i>&nbsp;    public ContactInfo getContactInfo()
+<i>857</i>&nbsp;    {
+<b class="nc"><i>858</i>&nbsp;        return contactInfo;</b>
+<i>859</i>&nbsp;    }
+<i>860</i>&nbsp;
+<i>861</i>&nbsp;    public EventHandler getEventHandler()
+<i>862</i>&nbsp;    {
+<b class="nc"><i>863</i>&nbsp;        return this;</b>
+<i>864</i>&nbsp;    }
+<i>865</i>&nbsp;
+<i>866</i>&nbsp;    public OutputObject createOutputObject(MessageMediator messageMediator)
+<i>867</i>&nbsp;    {
+<i>868</i>&nbsp;        // REVISIT - remove this method from Connection and all it subclasses.
+<b class="nc"><i>869</i>&nbsp;        throw new RuntimeException(&quot;*****SocketOrChannelConnectionImpl.createOutputObject - should not be called.&quot;);</b>
+<i>870</i>&nbsp;    }
+<i>871</i>&nbsp;
+<i>872</i>&nbsp;    // This is used by the GIOPOutputObject in order to
+<i>873</i>&nbsp;    // throw the correct error when handling code sets.
+<i>874</i>&nbsp;    // Can we determine if we are on the server side by
+<i>875</i>&nbsp;    // other means?  XREVISIT
+<i>876</i>&nbsp;    public boolean isServer()
+<i>877</i>&nbsp;    {
+<b class="nc"><i>878</i>&nbsp;        return isServer;</b>
+<i>879</i>&nbsp;    }
+<i>880</i>&nbsp;
+<i>881</i>&nbsp;    public boolean isBusy()
+<i>882</i>&nbsp;    {
+<b class="nc"><i>883</i>&nbsp;        if (serverRequestCount &gt; 0 ||</b>
+<b class="nc"><i>884</i>&nbsp;            getResponseWaitingRoom().numberRegistered() &gt; 0)</b>
+<i>885</i>&nbsp;        {
+<b class="nc"><i>886</i>&nbsp;            return true;</b>
+<i>887</i>&nbsp;        } else {
+<b class="nc"><i>888</i>&nbsp;            return false;</b>
+<i>889</i>&nbsp;        }
+<i>890</i>&nbsp;    }
+<i>891</i>&nbsp;
+<i>892</i>&nbsp;    public long getTimeStamp()
+<i>893</i>&nbsp;    {
+<b class="nc"><i>894</i>&nbsp;        return timeStamp;</b>
+<i>895</i>&nbsp;    }
+<i>896</i>&nbsp;
+<i>897</i>&nbsp;    public void setTimeStamp(long time)
+<i>898</i>&nbsp;    {
+<b class="nc"><i>899</i>&nbsp;        timeStamp = time;</b>
+<i>900</i>&nbsp;    }
+<i>901</i>&nbsp;
+<i>902</i>&nbsp;    public void setState(String stateString)
+<i>903</i>&nbsp;    {
+<b class="nc"><i>904</i>&nbsp;        synchronized (stateEvent) {</b>
+<b class="nc"><i>905</i>&nbsp;            if (stateString.equals(&quot;ESTABLISHED&quot;)) {</b>
+<b class="nc"><i>906</i>&nbsp;                state =  ESTABLISHED;</b>
+<b class="nc"><i>907</i>&nbsp;                stateEvent.notifyAll();</b>
+<i>908</i>&nbsp;            } else {
+<i>909</i>&nbsp;                // REVISIT: ASSERT
+<i>910</i>&nbsp;            }
+<b class="nc"><i>911</i>&nbsp;        }</b>
+<i>912</i>&nbsp;    }
+<i>913</i>&nbsp;
+<i>914</i>&nbsp;    /**
+<i>915</i>&nbsp;     * Sets the writeLock for this connection.
+<i>916</i>&nbsp;     * If the writeLock is already set by someone else, block till the
+<i>917</i>&nbsp;     * writeLock is released and can set by us.
+<i>918</i>&nbsp;     * IMPORTANT: this connection&#39;s lock must be acquired before
+<i>919</i>&nbsp;     * setting the writeLock and must be unlocked after setting the writeLock.
+<i>920</i>&nbsp;     */
+<i>921</i>&nbsp;    public void writeLock()
+<i>922</i>&nbsp;    {
+<i>923</i>&nbsp;      try {
+<b class="nc"><i>924</i>&nbsp;        if (dprintWriteLocks &amp;&amp; orb.transportDebugFlag) {</b>
+<b class="nc"><i>925</i>&nbsp;            dprint(&quot;.writeLock-&gt;: &quot; + this);</b>
+<i>926</i>&nbsp;        }
+<i>927</i>&nbsp;        // Keep looping till we can set the writeLock.
+<i>928</i>&nbsp;        while ( true ) {
+<b class="nc"><i>929</i>&nbsp;            int localState = state;</b>
+<b class="nc"><i>930</i>&nbsp;            switch ( localState ) {</b>
+<i>931</i>&nbsp;
+<i>932</i>&nbsp;            case OPENING:
+<b class="nc"><i>933</i>&nbsp;                synchronized (stateEvent) {</b>
+<b class="nc"><i>934</i>&nbsp;                    if (state != OPENING) {</b>
+<i>935</i>&nbsp;                        // somebody has changed &#39;state&#39; so be careful
+<b class="nc"><i>936</i>&nbsp;                        break;</b>
+<i>937</i>&nbsp;                    }
+<i>938</i>&nbsp;                    try {
+<b class="nc"><i>939</i>&nbsp;                        stateEvent.wait();</b>
+<b class="nc"><i>940</i>&nbsp;                    } catch (InterruptedException ie) {</b>
+<b class="nc"><i>941</i>&nbsp;                        if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>942</i>&nbsp;                            dprint(&quot;.writeLock: OPENING InterruptedException: &quot; + this);</b>
+<i>943</i>&nbsp;                        }
+<b class="nc"><i>944</i>&nbsp;                    }</b>
+<b class="nc"><i>945</i>&nbsp;                }</b>
+<i>946</i>&nbsp;                // Loop back
+<b class="nc"><i>947</i>&nbsp;                break;</b>
+<i>948</i>&nbsp;
+<i>949</i>&nbsp;            case ESTABLISHED:
+<b class="nc"><i>950</i>&nbsp;                synchronized (writeEvent) {</b>
+<b class="nc"><i>951</i>&nbsp;                    if (!writeLocked) {</b>
+<b class="nc"><i>952</i>&nbsp;                        writeLocked = true;</b>
+<i>953</i>&nbsp;                        return;
+<i>954</i>&nbsp;                    }
+<i>955</i>&nbsp;
+<i>956</i>&nbsp;                    try {
+<i>957</i>&nbsp;                        // do not stay here too long if state != ESTABLISHED
+<i>958</i>&nbsp;                        // Bug 4752117
+<b class="nc"><i>959</i>&nbsp;                        while (state == ESTABLISHED &amp;&amp; writeLocked) {</b>
+<b class="nc"><i>960</i>&nbsp;                            writeEvent.wait(100);</b>
+<i>961</i>&nbsp;                        }
+<b class="nc"><i>962</i>&nbsp;                    } catch (InterruptedException ie) {</b>
+<b class="nc"><i>963</i>&nbsp;                        if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>964</i>&nbsp;                            dprint(&quot;.writeLock: ESTABLISHED InterruptedException: &quot; + this);</b>
+<i>965</i>&nbsp;                        }
+<b class="nc"><i>966</i>&nbsp;                    }</b>
+<b class="nc"><i>967</i>&nbsp;                }</b>
+<i>968</i>&nbsp;                // Loop back
+<b class="nc"><i>969</i>&nbsp;                break;</b>
+<i>970</i>&nbsp;
+<i>971</i>&nbsp;                //
+<i>972</i>&nbsp;                // XXX
+<i>973</i>&nbsp;                // Need to distinguish between client and server roles
+<i>974</i>&nbsp;                // here probably.
+<i>975</i>&nbsp;                //
+<i>976</i>&nbsp;            case ABORT:
+<b class="nc"><i>977</i>&nbsp;                synchronized ( stateEvent ){</b>
+<b class="nc"><i>978</i>&nbsp;                    if (state != ABORT) {</b>
+<b class="nc"><i>979</i>&nbsp;                        break;</b>
+<i>980</i>&nbsp;                    }
+<b class="nc"><i>981</i>&nbsp;                    throw wrapper.writeErrorSend() ;</b>
+<b class="nc"><i>982</i>&nbsp;                }</b>
+<i>983</i>&nbsp;
+<i>984</i>&nbsp;            case CLOSE_RECVD:
+<i>985</i>&nbsp;                // the connection has been closed or closing
+<i>986</i>&nbsp;                // ==&gt; throw rebind exception
+<b class="nc"><i>987</i>&nbsp;                synchronized ( stateEvent ){</b>
+<b class="nc"><i>988</i>&nbsp;                    if (state != CLOSE_RECVD) {</b>
+<b class="nc"><i>989</i>&nbsp;                        break;</b>
+<i>990</i>&nbsp;                    }
+<b class="nc"><i>991</i>&nbsp;                    throw wrapper.connectionCloseRebind() ;</b>
+<b class="nc"><i>992</i>&nbsp;                }</b>
+<i>993</i>&nbsp;
+<i>994</i>&nbsp;            default:
+<b class="nc"><i>995</i>&nbsp;                if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>996</i>&nbsp;                    dprint(&quot;.writeLock: default: &quot; + this);</b>
+<i>997</i>&nbsp;                }
+<i>998</i>&nbsp;                // REVISIT
+<b class="nc"><i>999</i>&nbsp;                throw new RuntimeException(&quot;.writeLock: bad state&quot;);</b>
+<i>1000</i>&nbsp;            }
+<b class="nc"><i>1001</i>&nbsp;        }</b>
+<i>1002</i>&nbsp;      } finally {
+<b class="nc"><i>1003</i>&nbsp;        if (dprintWriteLocks &amp;&amp; orb.transportDebugFlag) {</b>
+<b class="nc"><i>1004</i>&nbsp;            dprint(&quot;.writeLock&lt;-: &quot; + this);</b>
+<i>1005</i>&nbsp;        }
+<i>1006</i>&nbsp;      }
+<i>1007</i>&nbsp;    }
+<i>1008</i>&nbsp;
+<i>1009</i>&nbsp;    public void writeUnlock()
+<i>1010</i>&nbsp;    {
+<i>1011</i>&nbsp;        try {
+<b class="nc"><i>1012</i>&nbsp;            if (dprintWriteLocks &amp;&amp; orb.transportDebugFlag) {</b>
+<b class="nc"><i>1013</i>&nbsp;                dprint(&quot;.writeUnlock-&gt;: &quot; + this);</b>
+<i>1014</i>&nbsp;            }
+<b class="nc"><i>1015</i>&nbsp;            synchronized (writeEvent) {</b>
+<b class="nc"><i>1016</i>&nbsp;                writeLocked = false;</b>
+<b class="nc"><i>1017</i>&nbsp;                writeEvent.notify(); // wake up one guy waiting to write</b>
+<b class="nc"><i>1018</i>&nbsp;            }</b>
+<i>1019</i>&nbsp;        } finally {
+<b class="nc"><i>1020</i>&nbsp;            if (dprintWriteLocks &amp;&amp; orb.transportDebugFlag) {</b>
+<b class="nc"><i>1021</i>&nbsp;                dprint(&quot;.writeUnlock&lt;-: &quot; + this);</b>
+<i>1022</i>&nbsp;            }
+<i>1023</i>&nbsp;        }
+<i>1024</i>&nbsp;    }
+<i>1025</i>&nbsp;
+<i>1026</i>&nbsp;    // Assumes the caller handles writeLock and writeUnlock
+<i>1027</i>&nbsp;    public void sendWithoutLock(OutputObject outputObject)
+<i>1028</i>&nbsp;    {
+<i>1029</i>&nbsp;        // Don&#39;t we need to check for CloseConnection
+<i>1030</i>&nbsp;        // here?  REVISIT
+<i>1031</i>&nbsp;
+<i>1032</i>&nbsp;        // XREVISIT - Shouldn&#39;t the MessageMediator
+<i>1033</i>&nbsp;        // be the one to handle writing the data here?
+<i>1034</i>&nbsp;
+<i>1035</i>&nbsp;        try {
+<i>1036</i>&nbsp;
+<i>1037</i>&nbsp;            // Write the fragment/message
+<i>1038</i>&nbsp;
+<b class="nc"><i>1039</i>&nbsp;            CDROutputObject cdrOutputObject = (CDROutputObject) outputObject;</b>
+<b class="nc"><i>1040</i>&nbsp;            cdrOutputObject.writeTo(this);</b>
+<i>1041</i>&nbsp;            // REVISIT - no flush?
+<i>1042</i>&nbsp;            //socket.getOutputStream().flush();
+<i>1043</i>&nbsp;
+<b class="nc"><i>1044</i>&nbsp;        } catch (IOException e1) {</b>
+<i>1045</i>&nbsp;
+<i>1046</i>&nbsp;            /*
+<i>1047</i>&nbsp;             * ADDED(Ram J) 10/13/2000 In the event of an IOException, try
+<i>1048</i>&nbsp;             * sending a CancelRequest for regular requests / locate requests
+<i>1049</i>&nbsp;             */
+<i>1050</i>&nbsp;
+<i>1051</i>&nbsp;            // Since IIOPOutputStream&#39;s msgheader is set only once, and not
+<i>1052</i>&nbsp;            // altered during sending multiple fragments, the original
+<i>1053</i>&nbsp;            // msgheader will always have the requestId.
+<i>1054</i>&nbsp;            // REVISIT This could be optimized to send a CancelRequest only
+<i>1055</i>&nbsp;            // if any fragments had been sent already.
+<i>1056</i>&nbsp;
+<i>1057</i>&nbsp;            /* REVISIT: MOVE TO SUBCONTRACT
+<i>1058</i>&nbsp;            Message msg = os.getMessage();
+<i>1059</i>&nbsp;            if (msg.getType() == Message.GIOPRequest ||
+<i>1060</i>&nbsp;                    msg.getType() == Message.GIOPLocateRequest) {
+<i>1061</i>&nbsp;                GIOPVersion requestVersion = msg.getGIOPVersion();
+<i>1062</i>&nbsp;                int requestId = MessageBase.getRequestId(msg);
+<i>1063</i>&nbsp;                try {
+<i>1064</i>&nbsp;                    sendCancelRequest(requestVersion, requestId);
+<i>1065</i>&nbsp;                } catch (IOException e2) {
+<i>1066</i>&nbsp;                    // most likely an abortive connection closure.
+<i>1067</i>&nbsp;                    // ignore, since nothing more can be done.
+<i>1068</i>&nbsp;                    if (orb.transportDebugFlag) {
+<i>1069</i>&nbsp;
+<i>1070</i>&nbsp;                }
+<i>1071</i>&nbsp;            }
+<i>1072</i>&nbsp;            */
+<i>1073</i>&nbsp;
+<i>1074</i>&nbsp;            // REVISIT When a send failure happens, purgeCalls() need to be
+<i>1075</i>&nbsp;            // called to ensure that the connection is properly removed from
+<i>1076</i>&nbsp;            // further usage (ie., cancelling pending requests with COMM_FAILURE
+<i>1077</i>&nbsp;            // with an appropriate minor_code CompletionStatus.MAY_BE).
+<i>1078</i>&nbsp;
+<i>1079</i>&nbsp;            // Relying on the IIOPOutputStream (as noted below) is not
+<i>1080</i>&nbsp;            // sufficient as it handles COMM_FAILURE only for the final
+<i>1081</i>&nbsp;            // fragment (during invoke processing). Note that COMM_FAILURE could
+<i>1082</i>&nbsp;            // happen while sending the initial fragments.
+<i>1083</i>&nbsp;            // Also the IIOPOutputStream does not properly close the connection.
+<i>1084</i>&nbsp;            // It simply removes the connection from the table. An orderly
+<i>1085</i>&nbsp;            // closure is needed (ie., cancel pending requests on the connection
+<i>1086</i>&nbsp;            // COMM_FAILURE as well.
+<i>1087</i>&nbsp;
+<i>1088</i>&nbsp;            // IIOPOutputStream will cleanup the connection info when it
+<i>1089</i>&nbsp;            // sees this exception.
+<b class="nc"><i>1090</i>&nbsp;            SystemException exc = wrapper.writeErrorSend(e1);</b>
+<b class="nc"><i>1091</i>&nbsp;            purgeCalls(exc, false, true);</b>
+<b class="nc"><i>1092</i>&nbsp;            throw exc;</b>
+<b class="nc"><i>1093</i>&nbsp;        }</b>
+<i>1094</i>&nbsp;    }
+<i>1095</i>&nbsp;
+<i>1096</i>&nbsp;    public void registerWaiter(MessageMediator messageMediator)
+<i>1097</i>&nbsp;    {
+<b class="nc"><i>1098</i>&nbsp;        responseWaitingRoom.registerWaiter(messageMediator);</b>
+<i>1099</i>&nbsp;    }
+<i>1100</i>&nbsp;
+<i>1101</i>&nbsp;    public void unregisterWaiter(MessageMediator messageMediator)
+<i>1102</i>&nbsp;    {
+<b class="nc"><i>1103</i>&nbsp;        responseWaitingRoom.unregisterWaiter(messageMediator);</b>
+<i>1104</i>&nbsp;    }
+<i>1105</i>&nbsp;
+<i>1106</i>&nbsp;    public InputObject waitForResponse(MessageMediator messageMediator)
+<i>1107</i>&nbsp;    {
+<b class="nc"><i>1108</i>&nbsp;        return responseWaitingRoom.waitForResponse(messageMediator);</b>
+<i>1109</i>&nbsp;    }
+<i>1110</i>&nbsp;
+<i>1111</i>&nbsp;    public void setConnectionCache(ConnectionCache connectionCache)
+<i>1112</i>&nbsp;    {
+<b class="nc"><i>1113</i>&nbsp;        this.connectionCache = connectionCache;</b>
+<i>1114</i>&nbsp;    }
+<i>1115</i>&nbsp;
+<i>1116</i>&nbsp;    public ConnectionCache getConnectionCache()
+<i>1117</i>&nbsp;    {
+<b class="nc"><i>1118</i>&nbsp;        return connectionCache;</b>
+<i>1119</i>&nbsp;    }
+<i>1120</i>&nbsp;
+<i>1121</i>&nbsp;    ////////////////////////////////////////////////////
+<i>1122</i>&nbsp;    //
+<i>1123</i>&nbsp;    // EventHandler methods
+<i>1124</i>&nbsp;    //
+<i>1125</i>&nbsp;
+<i>1126</i>&nbsp;    public void setUseSelectThreadToWait(boolean x)
+<i>1127</i>&nbsp;    {
+<b class="nc"><i>1128</i>&nbsp;        useSelectThreadToWait = x;</b>
+<i>1129</i>&nbsp;        // REVISIT - Reading of a GIOP header only is information
+<i>1130</i>&nbsp;        //           that should be passed into the constructor
+<i>1131</i>&nbsp;        //           from the SocketOrChannelConnection factory.
+<b class="nc"><i>1132</i>&nbsp;        setReadGiopHeaderOnly(shouldUseSelectThreadToWait());</b>
+<i>1133</i>&nbsp;    }
+<i>1134</i>&nbsp;
+<i>1135</i>&nbsp;    public void handleEvent()
+<i>1136</i>&nbsp;    {
+<b class="nc"><i>1137</i>&nbsp;        if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>1138</i>&nbsp;            dprint(&quot;.handleEvent-&gt;: &quot; + this);</b>
+<i>1139</i>&nbsp;        }
+<b class="nc"><i>1140</i>&nbsp;        getSelectionKey().interestOps(getSelectionKey().interestOps() &amp;</b>
+<b class="nc"><i>1141</i>&nbsp;                                      (~ getInterestOps()));</b>
+<i>1142</i>&nbsp;
+<b class="nc"><i>1143</i>&nbsp;        if (shouldUseWorkerThreadForEvent()) {</b>
+<b class="nc"><i>1144</i>&nbsp;            Throwable throwable = null;</b>
+<i>1145</i>&nbsp;            try {
+<b class="nc"><i>1146</i>&nbsp;                int poolToUse = 0;</b>
+<b class="nc"><i>1147</i>&nbsp;                if (shouldReadGiopHeaderOnly()) {</b>
+<b class="nc"><i>1148</i>&nbsp;                    partialMessageMediator = readBits();</b>
+<b class="nc"><i>1149</i>&nbsp;                    poolToUse =</b>
+<b class="nc"><i>1150</i>&nbsp;                        partialMessageMediator.getThreadPoolToUse();</b>
+<i>1151</i>&nbsp;                }
+<i>1152</i>&nbsp;
+<b class="nc"><i>1153</i>&nbsp;                if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>1154</i>&nbsp;                    dprint(&quot;.handleEvent: addWork to pool: &quot; + poolToUse);</b>
+<i>1155</i>&nbsp;                }
+<b class="nc"><i>1156</i>&nbsp;                orb.getThreadPoolManager().getThreadPool(poolToUse)</b>
+<b class="nc"><i>1157</i>&nbsp;                    .getWorkQueue(0).addWork(getWork());</b>
+<b class="nc"><i>1158</i>&nbsp;            } catch (NoSuchThreadPoolException e) {</b>
+<b class="nc"><i>1159</i>&nbsp;                throwable = e;</b>
+<b class="nc"><i>1160</i>&nbsp;            } catch (NoSuchWorkQueueException e) {</b>
+<b class="nc"><i>1161</i>&nbsp;                throwable = e;</b>
+<b class="nc"><i>1162</i>&nbsp;            }</b>
+<i>1163</i>&nbsp;            // REVISIT: need to close connection.
+<b class="nc"><i>1164</i>&nbsp;            if (throwable != null) {</b>
+<b class="nc"><i>1165</i>&nbsp;                if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>1166</i>&nbsp;                    dprint(&quot;.handleEvent: &quot; + throwable);</b>
+<i>1167</i>&nbsp;                }
+<b class="nc"><i>1168</i>&nbsp;                INTERNAL i = new INTERNAL(&quot;NoSuchThreadPoolException&quot;);</b>
+<b class="nc"><i>1169</i>&nbsp;                i.initCause(throwable);</b>
+<b class="nc"><i>1170</i>&nbsp;                throw i;</b>
+<i>1171</i>&nbsp;            }
+<b class="nc"><i>1172</i>&nbsp;        } else {</b>
+<b class="nc"><i>1173</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>1174</i>&nbsp;                dprint(&quot;.handleEvent: doWork&quot;);</b>
+<i>1175</i>&nbsp;            }
+<b class="nc"><i>1176</i>&nbsp;            getWork().doWork();</b>
+<i>1177</i>&nbsp;        }
+<b class="nc"><i>1178</i>&nbsp;        if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>1179</i>&nbsp;            dprint(&quot;.handleEvent&lt;-: &quot; + this);</b>
+<i>1180</i>&nbsp;        }
+<i>1181</i>&nbsp;    }
+<i>1182</i>&nbsp;
+<i>1183</i>&nbsp;    public SelectableChannel getChannel()
+<i>1184</i>&nbsp;    {
+<b class="nc"><i>1185</i>&nbsp;        return socketChannel;</b>
+<i>1186</i>&nbsp;    }
+<i>1187</i>&nbsp;
+<i>1188</i>&nbsp;    public int getInterestOps()
+<i>1189</i>&nbsp;    {
+<b class="nc"><i>1190</i>&nbsp;        return SelectionKey.OP_READ;</b>
+<i>1191</i>&nbsp;    }
+<i>1192</i>&nbsp;
+<i>1193</i>&nbsp;    //    public Acceptor getAcceptor() - already defined above.
+<i>1194</i>&nbsp;
+<i>1195</i>&nbsp;    public Connection getConnection()
+<i>1196</i>&nbsp;    {
+<b class="nc"><i>1197</i>&nbsp;        return this;</b>
+<i>1198</i>&nbsp;    }
+<i>1199</i>&nbsp;
+<i>1200</i>&nbsp;    ////////////////////////////////////////////////////
+<i>1201</i>&nbsp;    //
+<i>1202</i>&nbsp;    // Work methods.
+<i>1203</i>&nbsp;    //
+<i>1204</i>&nbsp;
+<i>1205</i>&nbsp;    public String getName()
+<i>1206</i>&nbsp;    {
+<b class="nc"><i>1207</i>&nbsp;        return this.toString();</b>
+<i>1208</i>&nbsp;    }
+<i>1209</i>&nbsp;
+<i>1210</i>&nbsp;    public void doWork()
+<i>1211</i>&nbsp;    {
+<i>1212</i>&nbsp;        try {
+<b class="nc"><i>1213</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>1214</i>&nbsp;                dprint(&quot;.doWork-&gt;: &quot; + this);</b>
+<i>1215</i>&nbsp;            }
+<i>1216</i>&nbsp;
+<i>1217</i>&nbsp;            // IMPORTANT: Sanity checks on SelectionKeys such as
+<i>1218</i>&nbsp;            //            SelectorKey.isValid() should not be done
+<i>1219</i>&nbsp;            //            here.
+<i>1220</i>&nbsp;            //
+<i>1221</i>&nbsp;
+<b class="nc"><i>1222</i>&nbsp;            if (!shouldReadGiopHeaderOnly()) {</b>
+<b class="nc"><i>1223</i>&nbsp;                read();</b>
+<i>1224</i>&nbsp;            }
+<i>1225</i>&nbsp;            else {
+<i>1226</i>&nbsp;                // get the partialMessageMediator
+<i>1227</i>&nbsp;                // created by SelectorThread
+<b class="nc"><i>1228</i>&nbsp;                CorbaMessageMediator messageMediator =</b>
+<b class="nc"><i>1229</i>&nbsp;                                         this.getPartialMessageMediator();</b>
+<i>1230</i>&nbsp;
+<i>1231</i>&nbsp;                // read remaining info needed in a MessageMediator
+<b class="nc"><i>1232</i>&nbsp;                messageMediator = finishReadingBits(messageMediator);</b>
+<i>1233</i>&nbsp;
+<b class="nc"><i>1234</i>&nbsp;                if (messageMediator != null) {</b>
+<i>1235</i>&nbsp;                    // Null can happen when client closes stream
+<i>1236</i>&nbsp;                    // causing purgecalls.
+<b class="nc"><i>1237</i>&nbsp;                    dispatch(messageMediator);</b>
+<i>1238</i>&nbsp;                }
+<i>1239</i>&nbsp;            }
+<b class="nc"><i>1240</i>&nbsp;        } catch (Throwable t) {</b>
+<b class="nc"><i>1241</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>1242</i>&nbsp;                dprint(&quot;.doWork: ignoring Throwable: &quot;</b>
+<i>1243</i>&nbsp;                       + t
+<i>1244</i>&nbsp;                       + &quot; &quot; + this);
+<i>1245</i>&nbsp;            }
+<i>1246</i>&nbsp;        } finally {
+<b class="nc"><i>1247</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>1248</i>&nbsp;                dprint(&quot;.doWork&lt;-: &quot; + this);</b>
+<i>1249</i>&nbsp;            }
+<i>1250</i>&nbsp;        }
+<i>1251</i>&nbsp;    }
+<i>1252</i>&nbsp;
+<i>1253</i>&nbsp;    public void setEnqueueTime(long timeInMillis)
+<i>1254</i>&nbsp;    {
+<b class="nc"><i>1255</i>&nbsp;        enqueueTime = timeInMillis;</b>
+<i>1256</i>&nbsp;    }
+<i>1257</i>&nbsp;
+<i>1258</i>&nbsp;    public long getEnqueueTime()
+<i>1259</i>&nbsp;    {
+<b class="nc"><i>1260</i>&nbsp;        return enqueueTime;</b>
+<i>1261</i>&nbsp;    }
+<i>1262</i>&nbsp;
+<i>1263</i>&nbsp;    ////////////////////////////////////////////////////
+<i>1264</i>&nbsp;    //
+<i>1265</i>&nbsp;    // spi.transport.CorbaConnection.
+<i>1266</i>&nbsp;    //
+<i>1267</i>&nbsp;
+<i>1268</i>&nbsp;    // IMPORTANT: Reader Threads must NOT read Giop header only.
+<i>1269</i>&nbsp;    public boolean shouldReadGiopHeaderOnly() {
+<b class="nc"><i>1270</i>&nbsp;        return shouldReadGiopHeaderOnly;</b>
+<i>1271</i>&nbsp;    }
+<i>1272</i>&nbsp;
+<i>1273</i>&nbsp;    protected void setReadGiopHeaderOnly(boolean shouldReadHeaderOnly) {
+<b class="nc"><i>1274</i>&nbsp;        shouldReadGiopHeaderOnly = shouldReadHeaderOnly;</b>
+<i>1275</i>&nbsp;    }
+<i>1276</i>&nbsp;
+<i>1277</i>&nbsp;    public ResponseWaitingRoom getResponseWaitingRoom()
+<i>1278</i>&nbsp;    {
+<b class="nc"><i>1279</i>&nbsp;        return responseWaitingRoom;</b>
+<i>1280</i>&nbsp;    }
+<i>1281</i>&nbsp;
+<i>1282</i>&nbsp;    // REVISIT - inteface defines isServer but already defined in
+<i>1283</i>&nbsp;    // higher interface.
+<i>1284</i>&nbsp;
+<i>1285</i>&nbsp;    public void serverRequestMapPut(int requestId,
+<i>1286</i>&nbsp;                                    CorbaMessageMediator messageMediator)
+<i>1287</i>&nbsp;    {
+<b class="nc"><i>1288</i>&nbsp;        serverRequestMap.put(new Integer(requestId), messageMediator);</b>
+<i>1289</i>&nbsp;    }
+<i>1290</i>&nbsp;
+<i>1291</i>&nbsp;    public CorbaMessageMediator serverRequestMapGet(int requestId)
+<i>1292</i>&nbsp;    {
+<b class="nc"><i>1293</i>&nbsp;        return (CorbaMessageMediator)</b>
+<b class="nc"><i>1294</i>&nbsp;            serverRequestMap.get(new Integer(requestId));</b>
+<i>1295</i>&nbsp;    }
+<i>1296</i>&nbsp;
+<i>1297</i>&nbsp;    public void serverRequestMapRemove(int requestId)
+<i>1298</i>&nbsp;    {
+<b class="nc"><i>1299</i>&nbsp;        serverRequestMap.remove(new Integer(requestId));</b>
+<i>1300</i>&nbsp;    }
+<i>1301</i>&nbsp;
+<i>1302</i>&nbsp;
+<i>1303</i>&nbsp;    // REVISIT: this is also defined in:
+<i>1304</i>&nbsp;    // com.sun.corba.se.spi.legacy.connection.Connection
+<i>1305</i>&nbsp;    public java.net.Socket getSocket()
+<i>1306</i>&nbsp;    {
+<b class="nc"><i>1307</i>&nbsp;        return socket;</b>
+<i>1308</i>&nbsp;    }
+<i>1309</i>&nbsp;
+<i>1310</i>&nbsp;    /** It is possible for a Close Connection to have been
+<i>1311</i>&nbsp;     ** sent here, but we will not check for this. A &quot;lazy&quot;
+<i>1312</i>&nbsp;     ** Exception will be thrown in the Worker thread after the
+<i>1313</i>&nbsp;     ** incoming request has been processed even though the connection
+<i>1314</i>&nbsp;     ** is closed before the request is processed. This is o.k because
+<i>1315</i>&nbsp;     ** it is a boundary condition. To prevent it we would have to add
+<i>1316</i>&nbsp;     ** more locks which would reduce performance in the normal case.
+<i>1317</i>&nbsp;     **/
+<i>1318</i>&nbsp;    public synchronized void serverRequestProcessingBegins()
+<i>1319</i>&nbsp;    {
+<b class="nc"><i>1320</i>&nbsp;        serverRequestCount++;</b>
+<i>1321</i>&nbsp;    }
+<i>1322</i>&nbsp;
+<i>1323</i>&nbsp;    public synchronized void serverRequestProcessingEnds()
+<i>1324</i>&nbsp;    {
+<b class="nc"><i>1325</i>&nbsp;        serverRequestCount--;</b>
+<i>1326</i>&nbsp;    }
+<i>1327</i>&nbsp;
+<i>1328</i>&nbsp;    //
+<i>1329</i>&nbsp;    //
+<i>1330</i>&nbsp;    //
+<i>1331</i>&nbsp;
+<i>1332</i>&nbsp;    public synchronized int getNextRequestId()
+<i>1333</i>&nbsp;    {
+<b class="nc"><i>1334</i>&nbsp;        return requestId++;</b>
+<i>1335</i>&nbsp;    }
+<i>1336</i>&nbsp;
+<i>1337</i>&nbsp;    // Negotiated code sets for char and wchar data
+<b class="nc"><i>1338</i>&nbsp;    protected CodeSetComponentInfo.CodeSetContext codeSetContext = null;</b>
+<i>1339</i>&nbsp;
+<i>1340</i>&nbsp;    public ORB getBroker()
+<i>1341</i>&nbsp;    {
+<b class="nc"><i>1342</i>&nbsp;        return orb;</b>
+<i>1343</i>&nbsp;    }
+<i>1344</i>&nbsp;
+<i>1345</i>&nbsp;    public CodeSetComponentInfo.CodeSetContext getCodeSetContext() {
+<i>1346</i>&nbsp;        // Needs to be synchronized for the following case when the client
+<i>1347</i>&nbsp;        // doesn&#39;t send the code set context twice, and we have two threads
+<i>1348</i>&nbsp;        // in ServerRequestDispatcher processCodeSetContext.
+<i>1349</i>&nbsp;        //
+<i>1350</i>&nbsp;        // Thread A checks to see if there is a context, there is none, so
+<i>1351</i>&nbsp;        //     it calls setCodeSetContext, getting the synch lock.
+<i>1352</i>&nbsp;        // Thread B checks to see if there is a context.  If we didn&#39;t synch,
+<i>1353</i>&nbsp;        //     it might decide to outlaw wchar/wstring.
+<b class="nc"><i>1354</i>&nbsp;        if (codeSetContext == null) {</b>
+<b class="nc"><i>1355</i>&nbsp;            synchronized(this) {</b>
+<b class="nc"><i>1356</i>&nbsp;                return codeSetContext;</b>
+<b class="nc"><i>1357</i>&nbsp;            }</b>
+<i>1358</i>&nbsp;        }
+<i>1359</i>&nbsp;
+<b class="nc"><i>1360</i>&nbsp;        return codeSetContext;</b>
+<i>1361</i>&nbsp;    }
+<i>1362</i>&nbsp;
+<i>1363</i>&nbsp;    public synchronized void setCodeSetContext(CodeSetComponentInfo.CodeSetContext csc) {
+<i>1364</i>&nbsp;        // Double check whether or not we need to do this
+<b class="nc"><i>1365</i>&nbsp;        if (codeSetContext == null) {</b>
+<i>1366</i>&nbsp;
+<b class="nc"><i>1367</i>&nbsp;            if (OSFCodeSetRegistry.lookupEntry(csc.getCharCodeSet()) == null ||</b>
+<b class="nc"><i>1368</i>&nbsp;                OSFCodeSetRegistry.lookupEntry(csc.getWCharCodeSet()) == null) {</b>
+<i>1369</i>&nbsp;                // If the client says it&#39;s negotiated a code set that
+<i>1370</i>&nbsp;                // isn&#39;t a fallback and we never said we support, then
+<i>1371</i>&nbsp;                // it has a bug.
+<b class="nc"><i>1372</i>&nbsp;                throw wrapper.badCodesetsFromClient() ;</b>
+<i>1373</i>&nbsp;            }
+<i>1374</i>&nbsp;
+<b class="nc"><i>1375</i>&nbsp;            codeSetContext = csc;</b>
+<i>1376</i>&nbsp;        }
+<i>1377</i>&nbsp;    }
+<i>1378</i>&nbsp;
+<i>1379</i>&nbsp;    //
+<i>1380</i>&nbsp;    // from iiop.IIOPConnection.java
+<i>1381</i>&nbsp;    //
+<i>1382</i>&nbsp;
+<i>1383</i>&nbsp;    // Map request ID to an InputObject.
+<i>1384</i>&nbsp;    // This is so the client thread can start unmarshaling
+<i>1385</i>&nbsp;    // the reply and remove it from the out_calls map while the
+<i>1386</i>&nbsp;    // ReaderThread can still obtain the input stream to give
+<i>1387</i>&nbsp;    // new fragments.  Only the ReaderThread touches the clientReplyMap,
+<i>1388</i>&nbsp;    // so it doesn&#39;t incur synchronization overhead.
+<i>1389</i>&nbsp;
+<i>1390</i>&nbsp;    public MessageMediator clientRequestMapGet(int requestId)
+<i>1391</i>&nbsp;    {
+<b class="nc"><i>1392</i>&nbsp;        return responseWaitingRoom.getMessageMediator(requestId);</b>
+<i>1393</i>&nbsp;    }
+<i>1394</i>&nbsp;
+<i>1395</i>&nbsp;    protected MessageMediator clientReply_1_1;
+<i>1396</i>&nbsp;
+<i>1397</i>&nbsp;    public void clientReply_1_1_Put(MessageMediator x)
+<i>1398</i>&nbsp;    {
+<b class="nc"><i>1399</i>&nbsp;        clientReply_1_1 = x;</b>
+<i>1400</i>&nbsp;    }
+<i>1401</i>&nbsp;
+<i>1402</i>&nbsp;    public MessageMediator clientReply_1_1_Get()
+<i>1403</i>&nbsp;    {
+<b class="nc"><i>1404</i>&nbsp;        return  clientReply_1_1;</b>
+<i>1405</i>&nbsp;    }
+<i>1406</i>&nbsp;
+<i>1407</i>&nbsp;    public void clientReply_1_1_Remove()
+<i>1408</i>&nbsp;    {
+<b class="nc"><i>1409</i>&nbsp;        clientReply_1_1 = null;</b>
+<i>1410</i>&nbsp;    }
+<i>1411</i>&nbsp;
+<i>1412</i>&nbsp;    protected MessageMediator serverRequest_1_1;
+<i>1413</i>&nbsp;
+<i>1414</i>&nbsp;    public void serverRequest_1_1_Put(MessageMediator x)
+<i>1415</i>&nbsp;    {
+<b class="nc"><i>1416</i>&nbsp;        serverRequest_1_1 = x;</b>
+<i>1417</i>&nbsp;    }
+<i>1418</i>&nbsp;
+<i>1419</i>&nbsp;    public MessageMediator serverRequest_1_1_Get()
+<i>1420</i>&nbsp;    {
+<b class="nc"><i>1421</i>&nbsp;        return  serverRequest_1_1;</b>
+<i>1422</i>&nbsp;    }
+<i>1423</i>&nbsp;
+<i>1424</i>&nbsp;    public void serverRequest_1_1_Remove()
+<i>1425</i>&nbsp;    {
+<b class="nc"><i>1426</i>&nbsp;        serverRequest_1_1 = null;</b>
+<i>1427</i>&nbsp;    }
+<i>1428</i>&nbsp;
+<i>1429</i>&nbsp;    protected String getStateString( int state )
+<i>1430</i>&nbsp;    {
+<b class="nc"><i>1431</i>&nbsp;        synchronized ( stateEvent ){</b>
+<b class="nc"><i>1432</i>&nbsp;            switch (state) {</b>
+<b class="nc"><i>1433</i>&nbsp;            case OPENING : return &quot;OPENING&quot; ;</b>
+<b class="nc"><i>1434</i>&nbsp;            case ESTABLISHED : return &quot;ESTABLISHED&quot; ;</b>
+<b class="nc"><i>1435</i>&nbsp;            case CLOSE_SENT : return &quot;CLOSE_SENT&quot; ;</b>
+<b class="nc"><i>1436</i>&nbsp;            case CLOSE_RECVD : return &quot;CLOSE_RECVD&quot; ;</b>
+<b class="nc"><i>1437</i>&nbsp;            case ABORT : return &quot;ABORT&quot; ;</b>
+<b class="nc"><i>1438</i>&nbsp;            default : return &quot;???&quot; ;</b>
+<i>1439</i>&nbsp;            }
+<b class="nc"><i>1440</i>&nbsp;        }</b>
+<i>1441</i>&nbsp;    }
+<i>1442</i>&nbsp;
+<i>1443</i>&nbsp;    public synchronized boolean isPostInitialContexts() {
+<b class="nc"><i>1444</i>&nbsp;        return postInitialContexts;</b>
+<i>1445</i>&nbsp;    }
+<i>1446</i>&nbsp;
+<i>1447</i>&nbsp;    // Can never be unset...
+<i>1448</i>&nbsp;    public synchronized void setPostInitialContexts(){
+<b class="nc"><i>1449</i>&nbsp;        postInitialContexts = true;</b>
+<i>1450</i>&nbsp;    }
+<i>1451</i>&nbsp;
+<i>1452</i>&nbsp;    /**
+<i>1453</i>&nbsp;     * Wake up the outstanding requests on the connection, and hand them
+<i>1454</i>&nbsp;     * COMM_FAILURE exception with a given minor code.
+<i>1455</i>&nbsp;     *
+<i>1456</i>&nbsp;     * Also, delete connection from connection table and
+<i>1457</i>&nbsp;     * stop the reader thread.
+<i>1458</i>&nbsp;
+<i>1459</i>&nbsp;     * Note that this should only ever be called by the Reader thread for
+<i>1460</i>&nbsp;     * this connection.
+<i>1461</i>&nbsp;     *
+<i>1462</i>&nbsp;     * @param minor_code The minor code for the COMM_FAILURE major code.
+<i>1463</i>&nbsp;     * @param die Kill the reader thread (this thread) before exiting.
+<i>1464</i>&nbsp;     */
+<i>1465</i>&nbsp;    public void purgeCalls(SystemException systemException,
+<i>1466</i>&nbsp;                           boolean die, boolean lockHeld)
+<i>1467</i>&nbsp;    {
+<b class="nc"><i>1468</i>&nbsp;        int minor_code = systemException.minor;</b>
+<i>1469</i>&nbsp;
+<i>1470</i>&nbsp;        try{
+<b class="nc"><i>1471</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>1472</i>&nbsp;                dprint(&quot;.purgeCalls-&gt;: &quot;</b>
+<i>1473</i>&nbsp;                       + minor_code + &quot;/&quot; + die + &quot;/&quot; + lockHeld
+<i>1474</i>&nbsp;                       + &quot; &quot; + this);
+<i>1475</i>&nbsp;            }
+<i>1476</i>&nbsp;
+<i>1477</i>&nbsp;            // If this invocation is a result of ThreadDeath caused
+<i>1478</i>&nbsp;            // by a previous execution of this routine, just exit.
+<i>1479</i>&nbsp;
+<b class="nc"><i>1480</i>&nbsp;            synchronized ( stateEvent ){</b>
+<b class="nc"><i>1481</i>&nbsp;                if ((state == ABORT) || (state == CLOSE_RECVD)) {</b>
+<b class="nc"><i>1482</i>&nbsp;                    if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>1483</i>&nbsp;                        dprint(&quot;.purgeCalls: exiting since state is: &quot;</b>
+<b class="nc"><i>1484</i>&nbsp;                               + getStateString(state)</b>
+<i>1485</i>&nbsp;                               + &quot; &quot; + this);
+<i>1486</i>&nbsp;                    }
+<i>1487</i>&nbsp;                    return;
+<i>1488</i>&nbsp;                }
+<b class="nc"><i>1489</i>&nbsp;            }</b>
+<i>1490</i>&nbsp;
+<i>1491</i>&nbsp;            // Grab the writeLock (freeze the calls)
+<i>1492</i>&nbsp;            try {
+<b class="nc"><i>1493</i>&nbsp;                if (!lockHeld) {</b>
+<b class="nc"><i>1494</i>&nbsp;                    writeLock();</b>
+<i>1495</i>&nbsp;                }
+<b class="nc"><i>1496</i>&nbsp;            } catch (SystemException ex) {</b>
+<b class="nc"><i>1497</i>&nbsp;                if (orb.transportDebugFlag)</b>
+<b class="nc"><i>1498</i>&nbsp;                    dprint(&quot;.purgeCalls: SystemException&quot; + ex</b>
+<i>1499</i>&nbsp;                           + &quot;; continuing &quot; + this);
+<b class="nc"><i>1500</i>&nbsp;            }</b>
+<i>1501</i>&nbsp;
+<i>1502</i>&nbsp;            // Mark the state of the connection
+<i>1503</i>&nbsp;            // and determine the request status
+<i>1504</i>&nbsp;            org.omg.CORBA.CompletionStatus completion_status;
+<b class="nc"><i>1505</i>&nbsp;            synchronized ( stateEvent ){</b>
+<b class="nc"><i>1506</i>&nbsp;                if (minor_code == ORBUtilSystemException.CONNECTION_REBIND) {</b>
+<b class="nc"><i>1507</i>&nbsp;                    state = CLOSE_RECVD;</b>
+<b class="nc"><i>1508</i>&nbsp;                    systemException.completed = CompletionStatus.COMPLETED_NO;</b>
+<i>1509</i>&nbsp;                } else {
+<b class="nc"><i>1510</i>&nbsp;                    state = ABORT;</b>
+<b class="nc"><i>1511</i>&nbsp;                    systemException.completed = CompletionStatus.COMPLETED_MAYBE;</b>
+<i>1512</i>&nbsp;                }
+<b class="nc"><i>1513</i>&nbsp;                stateEvent.notifyAll();</b>
+<b class="nc"><i>1514</i>&nbsp;            }</b>
+<i>1515</i>&nbsp;
+<i>1516</i>&nbsp;            try {
+<b class="nc"><i>1517</i>&nbsp;                socket.getInputStream().close();</b>
+<b class="nc"><i>1518</i>&nbsp;                socket.getOutputStream().close();</b>
+<b class="nc"><i>1519</i>&nbsp;                socket.close();</b>
+<b class="nc"><i>1520</i>&nbsp;            } catch (Exception ex) {</b>
+<b class="nc"><i>1521</i>&nbsp;                if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>1522</i>&nbsp;                    dprint(&quot;.purgeCalls: Exception closing socket: &quot; + ex</b>
+<i>1523</i>&nbsp;                           + &quot; &quot; + this);
+<i>1524</i>&nbsp;                }
+<b class="nc"><i>1525</i>&nbsp;            }</b>
+<i>1526</i>&nbsp;
+<i>1527</i>&nbsp;            // Signal all threads with outstanding requests on this
+<i>1528</i>&nbsp;            // connection and give them the SystemException;
+<i>1529</i>&nbsp;
+<b class="nc"><i>1530</i>&nbsp;            responseWaitingRoom.signalExceptionToAllWaiters(systemException);</b>
+<i>1531</i>&nbsp;        } finally {
+<b class="nc"><i>1532</i>&nbsp;            if (contactInfo != null) {</b>
+<b class="nc"><i>1533</i>&nbsp;                ((OutboundConnectionCache)getConnectionCache()).remove(contactInfo);</b>
+<b class="nc"><i>1534</i>&nbsp;            } else if (acceptor != null) {</b>
+<b class="nc"><i>1535</i>&nbsp;                ((InboundConnectionCache)getConnectionCache()).remove(this);</b>
+<i>1536</i>&nbsp;            }
+<i>1537</i>&nbsp;
+<i>1538</i>&nbsp;            //
+<i>1539</i>&nbsp;            // REVISIT: Stop the reader thread
+<i>1540</i>&nbsp;            //
+<i>1541</i>&nbsp;
+<i>1542</i>&nbsp;            // Signal all the waiters of the writeLock.
+<i>1543</i>&nbsp;            // There are 4 types of writeLock waiters:
+<i>1544</i>&nbsp;            // 1. Send waiters:
+<i>1545</i>&nbsp;            // 2. SendReply waiters:
+<i>1546</i>&nbsp;            // 3. cleanUp waiters:
+<i>1547</i>&nbsp;            // 4. purge_call waiters:
+<i>1548</i>&nbsp;            //
+<i>1549</i>&nbsp;
+<b class="nc"><i>1550</i>&nbsp;            writeUnlock();</b>
+<i>1551</i>&nbsp;
+<b class="nc"><i>1552</i>&nbsp;            if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>1553</i>&nbsp;                dprint(&quot;.purgeCalls&lt;-: &quot;</b>
+<i>1554</i>&nbsp;                       + minor_code + &quot;/&quot; + die + &quot;/&quot; + lockHeld
+<i>1555</i>&nbsp;                       + &quot; &quot; + this);
+<i>1556</i>&nbsp;            }
+<i>1557</i>&nbsp;        }
+<i>1558</i>&nbsp;    }
+<i>1559</i>&nbsp;
+<i>1560</i>&nbsp;    /*************************************************************************
+<i>1561</i>&nbsp;    * The following methods are for dealing with Connection cleaning for
+<i>1562</i>&nbsp;    * better scalability of servers in high network load conditions.
+<i>1563</i>&nbsp;    **************************************************************************/
+<i>1564</i>&nbsp;
+<i>1565</i>&nbsp;    public void sendCloseConnection(GIOPVersion giopVersion)
+<i>1566</i>&nbsp;        throws IOException
+<i>1567</i>&nbsp;    {
+<b class="nc"><i>1568</i>&nbsp;        Message msg = MessageBase.createCloseConnection(giopVersion);</b>
+<b class="nc"><i>1569</i>&nbsp;        sendHelper(giopVersion, msg);</b>
+<i>1570</i>&nbsp;    }
+<i>1571</i>&nbsp;
+<i>1572</i>&nbsp;    public void sendMessageError(GIOPVersion giopVersion)
+<i>1573</i>&nbsp;        throws IOException
+<i>1574</i>&nbsp;    {
+<b class="nc"><i>1575</i>&nbsp;        Message msg = MessageBase.createMessageError(giopVersion);</b>
+<b class="nc"><i>1576</i>&nbsp;        sendHelper(giopVersion, msg);</b>
+<i>1577</i>&nbsp;    }
+<i>1578</i>&nbsp;
+<i>1579</i>&nbsp;    /**
+<i>1580</i>&nbsp;     * Send a CancelRequest message. This does not lock the connection, so the
+<i>1581</i>&nbsp;     * caller needs to ensure this method is called appropriately.
+<i>1582</i>&nbsp;     * @exception IOException - could be due to abortive connection closure.
+<i>1583</i>&nbsp;     */
+<i>1584</i>&nbsp;    public void sendCancelRequest(GIOPVersion giopVersion, int requestId)
+<i>1585</i>&nbsp;        throws IOException
+<i>1586</i>&nbsp;    {
+<i>1587</i>&nbsp;
+<b class="nc"><i>1588</i>&nbsp;        Message msg = MessageBase.createCancelRequest(giopVersion, requestId);</b>
+<b class="nc"><i>1589</i>&nbsp;        sendHelper(giopVersion, msg);</b>
+<i>1590</i>&nbsp;    }
+<i>1591</i>&nbsp;
+<i>1592</i>&nbsp;    protected void sendHelper(GIOPVersion giopVersion, Message msg)
+<i>1593</i>&nbsp;        throws IOException
+<i>1594</i>&nbsp;    {
+<i>1595</i>&nbsp;        // REVISIT: See comments in CDROutputObject constructor.
+<b class="nc"><i>1596</i>&nbsp;        CDROutputObject outputObject =</b>
+<b class="nc"><i>1597</i>&nbsp;            sun.corba.OutputStreamFactory.newCDROutputObject((ORB)orb, null, giopVersion,</b>
+<i>1598</i>&nbsp;                                this, msg, ORBConstants.STREAM_FORMAT_VERSION_1);
+<b class="nc"><i>1599</i>&nbsp;        msg.write(outputObject);</b>
+<i>1600</i>&nbsp;
+<b class="nc"><i>1601</i>&nbsp;        outputObject.writeTo(this);</b>
+<i>1602</i>&nbsp;    }
+<i>1603</i>&nbsp;
+<i>1604</i>&nbsp;    public void sendCancelRequestWithLock(GIOPVersion giopVersion,
+<i>1605</i>&nbsp;                                          int requestId)
+<i>1606</i>&nbsp;        throws IOException
+<i>1607</i>&nbsp;    {
+<b class="nc"><i>1608</i>&nbsp;        writeLock();</b>
+<i>1609</i>&nbsp;        try {
+<b class="nc"><i>1610</i>&nbsp;            sendCancelRequest(giopVersion, requestId);</b>
+<i>1611</i>&nbsp;        } finally {
+<b class="nc"><i>1612</i>&nbsp;            writeUnlock();</b>
+<b class="nc"><i>1613</i>&nbsp;        }</b>
+<i>1614</i>&nbsp;    }
+<i>1615</i>&nbsp;
+<i>1616</i>&nbsp;    // Begin Code Base methods ---------------------------------------
+<i>1617</i>&nbsp;    //
+<i>1618</i>&nbsp;    // Set this connection&#39;s code base IOR.  The IOR comes from the
+<i>1619</i>&nbsp;    // SendingContext.  This is an optional service context, but all
+<i>1620</i>&nbsp;    // JavaSoft ORBs send it.
+<i>1621</i>&nbsp;    //
+<i>1622</i>&nbsp;    // The set and get methods don&#39;t need to be synchronized since the
+<i>1623</i>&nbsp;    // first possible get would occur during reading a valuetype, and
+<i>1624</i>&nbsp;    // that would be after the set.
+<i>1625</i>&nbsp;
+<i>1626</i>&nbsp;    // Sets this connection&#39;s code base IOR.  This is done after
+<i>1627</i>&nbsp;    // getting the IOR out of the SendingContext service context.
+<i>1628</i>&nbsp;    // Our ORBs always send this, but it&#39;s optional in CORBA.
+<i>1629</i>&nbsp;
+<i>1630</i>&nbsp;    public final void setCodeBaseIOR(IOR ior) {
+<b class="nc"><i>1631</i>&nbsp;        codeBaseServerIOR = ior;</b>
+<i>1632</i>&nbsp;    }
+<i>1633</i>&nbsp;
+<i>1634</i>&nbsp;    public final IOR getCodeBaseIOR() {
+<b class="nc"><i>1635</i>&nbsp;        return codeBaseServerIOR;</b>
+<i>1636</i>&nbsp;    }
+<i>1637</i>&nbsp;
+<i>1638</i>&nbsp;    // Get a CodeBase stub to use in unmarshaling.  The CachedCodeBase
+<i>1639</i>&nbsp;    // won&#39;t connect to the remote codebase unless it&#39;s necessary.
+<i>1640</i>&nbsp;    public final CodeBase getCodeBase() {
+<b class="nc"><i>1641</i>&nbsp;        return cachedCodeBase;</b>
+<i>1642</i>&nbsp;    }
+<i>1643</i>&nbsp;
+<i>1644</i>&nbsp;    // End Code Base methods -----------------------------------------
+<i>1645</i>&nbsp;
+<i>1646</i>&nbsp;    // set transport read thresholds
+<i>1647</i>&nbsp;    protected void setReadTimeouts(ReadTimeouts readTimeouts) {
+<b class="nc"><i>1648</i>&nbsp;        this.readTimeouts = readTimeouts;</b>
+<i>1649</i>&nbsp;    }
+<i>1650</i>&nbsp;
+<i>1651</i>&nbsp;    protected void setPartialMessageMediator(CorbaMessageMediator messageMediator) {
+<b class="nc"><i>1652</i>&nbsp;        partialMessageMediator = messageMediator;</b>
+<i>1653</i>&nbsp;    }
+<i>1654</i>&nbsp;
+<i>1655</i>&nbsp;    protected CorbaMessageMediator getPartialMessageMediator() {
+<b class="nc"><i>1656</i>&nbsp;        return partialMessageMediator;</b>
+<i>1657</i>&nbsp;    }
+<i>1658</i>&nbsp;
+<i>1659</i>&nbsp;    public String toString()
+<i>1660</i>&nbsp;    {
+<b class="nc"><i>1661</i>&nbsp;        synchronized ( stateEvent ){</b>
+<b class="nc"><i>1662</i>&nbsp;            return</b>
+<i>1663</i>&nbsp;                &quot;SocketOrChannelConnectionImpl[&quot; + &quot; &quot;
+<i>1664</i>&nbsp;                + (socketChannel == null ?
+<b class="nc"><i>1665</i>&nbsp;                   socket.toString() : socketChannel.toString()) + &quot; &quot;</b>
+<b class="nc"><i>1666</i>&nbsp;                + getStateString( state ) + &quot; &quot;</b>
+<b class="nc"><i>1667</i>&nbsp;                + shouldUseSelectThreadToWait() + &quot; &quot;</b>
+<b class="nc"><i>1668</i>&nbsp;                + shouldUseWorkerThreadForEvent() + &quot; &quot;</b>
+<b class="nc"><i>1669</i>&nbsp;                + shouldReadGiopHeaderOnly()</b>
+<i>1670</i>&nbsp;                + &quot;]&quot; ;
+<b class="nc"><i>1671</i>&nbsp;        }</b>
+<i>1672</i>&nbsp;    }
+<i>1673</i>&nbsp;
+<i>1674</i>&nbsp;    // Must be public - used in encoding.
+<i>1675</i>&nbsp;    public void dprint(String msg)
+<i>1676</i>&nbsp;    {
+<b class="nc"><i>1677</i>&nbsp;        ORBUtility.dprint(&quot;SocketOrChannelConnectionImpl&quot;, msg);</b>
+<i>1678</i>&nbsp;    }
+<i>1679</i>&nbsp;
+<i>1680</i>&nbsp;    protected void dprint(String msg, Throwable t)
+<i>1681</i>&nbsp;    {
+<b class="nc"><i>1682</i>&nbsp;        dprint(msg);</b>
+<b class="nc"><i>1683</i>&nbsp;        t.printStackTrace(System.out);</b>
+<i>1684</i>&nbsp;    }
+<i>1685</i>&nbsp;}
+<i>1686</i>&nbsp;
+<i>1687</i>&nbsp;// End of file.
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,208 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XSDKeyrefTraverser</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.xs.traversers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XSDKeyrefTraverser (com.sun.org.apache.xerces.internal.impl.xs.traversers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XSDKeyrefTraverser</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 35)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001, 2002,2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.xs.traversers;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.SchemaGrammar;
+<i>24</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.SchemaSymbols;
+<i>25</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.XSElementDecl;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.identity.IdentityConstraint;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.identity.KeyRef;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.identity.UniqueOrKey;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.QName;
+<i>30</i>&nbsp;import org.w3c.dom.Element;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;/**
+<i>33</i>&nbsp; * This class contains code that is used to traverse &lt;keyref&gt;s.
+<i>34</i>&nbsp; *
+<i>35</i>&nbsp; * @xerces.internal
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; * @author Neil Graham, IBM
+<i>38</i>&nbsp; * @version $Id: XSDKeyrefTraverser.java,v 1.7 2010-11-01 04:40:02 joehw Exp $
+<i>39</i>&nbsp; */
+<i>40</i>&nbsp;class XSDKeyrefTraverser extends XSDAbstractIDConstraintTraverser {
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;    public XSDKeyrefTraverser (XSDHandler handler,
+<i>43</i>&nbsp;                                  XSAttributeChecker gAttrCheck) {
+<b class="nc"><i>44</i>&nbsp;        super(handler, gAttrCheck);</b>
+<i>45</i>&nbsp;    }
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    void traverse(Element krElem, XSElementDecl element,
+<i>48</i>&nbsp;            XSDocumentInfo schemaDoc, SchemaGrammar grammar) {
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;        // General Attribute Checking
+<b class="nc"><i>51</i>&nbsp;        Object[] attrValues = fAttrChecker.checkAttributes(krElem, false, schemaDoc);</b>
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;        // create identity constraint
+<b class="nc"><i>54</i>&nbsp;        String krName = (String)attrValues[XSAttributeChecker.ATTIDX_NAME];</b>
+<b class="nc"><i>55</i>&nbsp;        if(krName == null){</b>
+<b class="nc"><i>56</i>&nbsp;            reportSchemaError(&quot;s4s-att-must-appear&quot;, new Object [] {SchemaSymbols.ELT_KEYREF , SchemaSymbols.ATT_NAME }, krElem);</b>
+<i>57</i>&nbsp;            //return this array back to pool
+<b class="nc"><i>58</i>&nbsp;            fAttrChecker.returnAttrArray(attrValues, schemaDoc);</b>
+<i>59</i>&nbsp;            return;
+<i>60</i>&nbsp;        }
+<b class="nc"><i>61</i>&nbsp;        QName kName = (QName)attrValues[XSAttributeChecker.ATTIDX_REFER];</b>
+<b class="nc"><i>62</i>&nbsp;        if(kName == null){</b>
+<b class="nc"><i>63</i>&nbsp;            reportSchemaError(&quot;s4s-att-must-appear&quot;, new Object [] {SchemaSymbols.ELT_KEYREF , SchemaSymbols.ATT_REFER }, krElem);</b>
+<i>64</i>&nbsp;            //return this array back to pool
+<b class="nc"><i>65</i>&nbsp;            fAttrChecker.returnAttrArray(attrValues, schemaDoc);</b>
+<i>66</i>&nbsp;            return;
+<i>67</i>&nbsp;        }
+<i>68</i>&nbsp;
+<b class="nc"><i>69</i>&nbsp;        UniqueOrKey key = null;</b>
+<b class="nc"><i>70</i>&nbsp;        IdentityConstraint ret = (IdentityConstraint)fSchemaHandler.getGlobalDecl(schemaDoc, XSDHandler.IDENTITYCONSTRAINT_TYPE, kName, krElem);</b>
+<i>71</i>&nbsp;        // if ret == null, we&#39;ve already reported an error in getGlobalDecl
+<i>72</i>&nbsp;        // we report an error only when ret != null, and the return type keyref
+<b class="nc"><i>73</i>&nbsp;        if (ret != null) {</b>
+<b class="nc"><i>74</i>&nbsp;            if (ret.getCategory() == IdentityConstraint.IC_KEY ||</b>
+<b class="nc"><i>75</i>&nbsp;                ret.getCategory() == IdentityConstraint.IC_UNIQUE) {</b>
+<b class="nc"><i>76</i>&nbsp;                key = (UniqueOrKey)ret;</b>
+<i>77</i>&nbsp;            } else {
+<b class="nc"><i>78</i>&nbsp;                reportSchemaError(&quot;src-resolve&quot;, new Object[]{kName.rawname, &quot;identity constraint key/unique&quot;}, krElem);</b>
+<i>79</i>&nbsp;            }
+<i>80</i>&nbsp;        }
+<i>81</i>&nbsp;
+<b class="nc"><i>82</i>&nbsp;        if(key == null) {</b>
+<b class="nc"><i>83</i>&nbsp;            fAttrChecker.returnAttrArray(attrValues, schemaDoc);</b>
+<i>84</i>&nbsp;            return;
+<i>85</i>&nbsp;        }
+<i>86</i>&nbsp;
+<b class="nc"><i>87</i>&nbsp;        KeyRef keyRef = new KeyRef(schemaDoc.fTargetNamespace, krName, element.fName, key);</b>
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;        // If errors occurred in traversing the identity constraint, then don&#39;t
+<i>90</i>&nbsp;        // add it to the schema, to avoid errors when processing the instance.
+<b class="nc"><i>91</i>&nbsp;        if (traverseIdentityConstraint(keyRef, krElem, schemaDoc, attrValues)) {</b>
+<i>92</i>&nbsp;            //Schema Component Constraint: Identity-constraint Definition Properties Correct
+<i>93</i>&nbsp;            //2 If the {identity-constraint category} is keyref, the cardinality of the {fields} must equal that of the {fields} of the {referenced key}.
+<b class="nc"><i>94</i>&nbsp;            if(key.getFieldCount() != keyRef.getFieldCount()) {</b>
+<b class="nc"><i>95</i>&nbsp;                reportSchemaError(&quot;c-props-correct.2&quot; , new Object [] {krName,key.getIdentityConstraintName()}, krElem);</b>
+<i>96</i>&nbsp;            } else {
+<i>97</i>&nbsp;                // add key reference to element decl
+<i>98</i>&nbsp;                // and stuff this in the grammar
+<b class="nc"><i>99</i>&nbsp;                if (grammar.getIDConstraintDecl(keyRef.getIdentityConstraintName()) == null) {</b>
+<b class="nc"><i>100</i>&nbsp;                    grammar.addIDConstraintDecl(element, keyRef);</b>
+<i>101</i>&nbsp;                }
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;                // also add it to extended map
+<b class="nc"><i>104</i>&nbsp;                final String loc = fSchemaHandler.schemaDocument2SystemId(schemaDoc);</b>
+<b class="nc"><i>105</i>&nbsp;                final IdentityConstraint idc = grammar.getIDConstraintDecl(keyRef.getIdentityConstraintName(), loc);</b>
+<b class="nc"><i>106</i>&nbsp;                if (idc  == null) {</b>
+<b class="nc"><i>107</i>&nbsp;                    grammar.addIDConstraintDecl(element, keyRef, loc);</b>
+<i>108</i>&nbsp;                }
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;                // handle duplicates
+<b class="nc"><i>111</i>&nbsp;                if (fSchemaHandler.fTolerateDuplicates) {</b>
+<b class="nc"><i>112</i>&nbsp;                    if (idc  != null) {</b>
+<b class="nc"><i>113</i>&nbsp;                        if (idc instanceof KeyRef) {</b>
+<b class="nc"><i>114</i>&nbsp;                            keyRef = (KeyRef) idc;</b>
+<i>115</i>&nbsp;                        }
+<i>116</i>&nbsp;                    }
+<b class="nc"><i>117</i>&nbsp;                    fSchemaHandler.addIDConstraintDecl(keyRef);</b>
+<i>118</i>&nbsp;                }
+<i>119</i>&nbsp;            }
+<i>120</i>&nbsp;        }
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;        // and put back attributes
+<b class="nc"><i>123</i>&nbsp;        fAttrChecker.returnAttrArray(attrValues, schemaDoc);</b>
+<i>124</i>&nbsp;    } // traverse(Element,int,XSDocumentInfo, SchemaGrammar)
+<i>125</i>&nbsp;} // XSDKeyrefTraverser
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

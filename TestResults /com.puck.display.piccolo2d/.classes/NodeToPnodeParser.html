@@ -1,0 +1,178 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: NodeToPnodeParser</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.puck.display.piccolo2d</a> ]
+</div>
+
+<h1>Coverage Summary for Class: NodeToPnodeParser (com.puck.display.piccolo2d)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">NodeToPnodeParser</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 56)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package com.puck.display.piccolo2d;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import java.util.ArrayList;
+<i>4</i>&nbsp;import java.util.Collection;
+<i>5</i>&nbsp;import java.util.HashMap;
+<i>6</i>&nbsp;import java.util.Map;
+<i>7</i>&nbsp;import java.util.Map.Entry;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;import com.puck.nodes.piccolo2d.Edge;
+<i>10</i>&nbsp;import com.puck.nodes.piccolo2d.Node;
+<i>11</i>&nbsp;import com.puck.nodes.piccolo2d.PiccoloCustomNode;
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;public class NodeToPnodeParser {
+<i>14</i>&nbsp;	private HashMap&lt;String, PiccoloCustomNode&gt; allPNodes ;
+<i>15</i>&nbsp;	private Map&lt;String, Node&gt; listNodes;
+<i>16</i>&nbsp;
+<b class="nc"><i>17</i>&nbsp;	public NodeToPnodeParser(HashMap&lt;String, PiccoloCustomNode&gt; allPNodes,Map&lt;String, Node&gt; listNodes) {</b>
+<b class="nc"><i>18</i>&nbsp;		this.allPNodes= allPNodes;</b>
+<b class="nc"><i>19</i>&nbsp;		this.listNodes = listNodes ;</b>
+<b class="nc"><i>20</i>&nbsp;	}</b>
+<i>21</i>&nbsp;	
+<i>22</i>&nbsp;	public PiccoloCustomNode getPackageNodes() {
+<b class="nc"><i>23</i>&nbsp;		Collection&lt;PiccoloCustomNode&gt; listePNode = new ArrayList&lt;&gt;();</b>
+<i>24</i>&nbsp;		
+<i>25</i>&nbsp;
+<b class="nc"><i>26</i>&nbsp;		PiccoloCustomNode root = new PiccoloCustomNode(&quot;root&quot;, &quot;r01&quot;,&quot;root&quot;);</b>
+<b class="nc"><i>27</i>&nbsp;		for (Entry&lt;String, Node&gt; entry : listNodes.entrySet()) {</b>
+<b class="nc"><i>28</i>&nbsp;			String key = entry.getKey();</b>
+<b class="nc"><i>29</i>&nbsp;			Node n = entry.getValue();</b>
+<b class="nc"><i>30</i>&nbsp;			if (n.getType().equals(&quot;package&quot;)) {</b>
+<b class="nc"><i>31</i>&nbsp;				Node packag = n;</b>
+<b class="nc"><i>32</i>&nbsp;				PiccoloCustomNode p = new PiccoloCustomNode(packag.getName(), packag.getId(),n.getType());</b>
+<b class="nc"><i>33</i>&nbsp;				allPNodes.put(p.getidNode(), p);</b>
+<b class="nc"><i>34</i>&nbsp;				p.setName(packag.getName());</b>
+<i>35</i>&nbsp;				// les relation contain du package
+<b class="nc"><i>36</i>&nbsp;				HashMap&lt;String, Edge&gt; relation = new HashMap&lt;&gt;(packag.getRelation());</b>
+<i>37</i>&nbsp;				// collection des classes du package
+<b class="nc"><i>38</i>&nbsp;				Collection&lt;PiccoloCustomNode&gt; children = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>39</i>&nbsp;				for (Entry&lt;String, Edge&gt; edgeEntry : relation.entrySet()) {</b>
+<b class="nc"><i>40</i>&nbsp;					Edge e = edgeEntry.getValue();</b>
+<b class="nc"><i>41</i>&nbsp;					Node node = listNodes.get(e.getTo());</b>
+<i>42</i>&nbsp;					PiccoloCustomNode pnode;
+<b class="nc"><i>43</i>&nbsp;					if (allPNodes.containsKey(node.getId())) {</b>
+<b class="nc"><i>44</i>&nbsp;						listePNode.remove(allPNodes.get(node.getId()));</b>
+<b class="nc"><i>45</i>&nbsp;						pnode = allPNodes.get(node.getId());</b>
+<b class="nc"><i>46</i>&nbsp;						pnode.setName(node.getName());</b>
+<b class="nc"><i>47</i>&nbsp;						children.add(pnode);</b>
+<i>48</i>&nbsp;					} else {
+<b class="nc"><i>49</i>&nbsp;						pnode = new PiccoloCustomNode(node.getName(), node.getId(),node.getType());</b>
+<b class="nc"><i>50</i>&nbsp;						allPNodes.put(pnode.getidNode(), pnode);</b>
+<b class="nc"><i>51</i>&nbsp;						pnode = structureToPiccolo(node, pnode);</b>
+<b class="nc"><i>52</i>&nbsp;						pnode.setName(node.getName());</b>
+<b class="nc"><i>53</i>&nbsp;						pnode.setParentNode(p);</b>
+<b class="nc"><i>54</i>&nbsp;						children.add(pnode);</b>
+<i>55</i>&nbsp;					}
+<b class="nc"><i>56</i>&nbsp;				}</b>
+<b class="nc"><i>57</i>&nbsp;				p.setChilldren(children);</b>
+<b class="nc"><i>58</i>&nbsp;				p.setParentNode(root);</b>
+<b class="nc"><i>59</i>&nbsp;				listePNode.add(p);</b>
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;			}
+<b class="nc"><i>62</i>&nbsp;		}</b>
+<b class="nc"><i>63</i>&nbsp;		root.addChildren(listePNode);</b>
+<b class="nc"><i>64</i>&nbsp;		root.setName(&quot;root&quot;);</b>
+<b class="nc"><i>65</i>&nbsp;		return root;</b>
+<i>66</i>&nbsp;	}
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;	public PiccoloCustomNode structureToPiccolo(Node node, PiccoloCustomNode pnode) {
+<b class="nc"><i>69</i>&nbsp;		if (pnode.getidNode() == null) {</b>
+<b class="nc"><i>70</i>&nbsp;			pnode = new PiccoloCustomNode(node.getName(), node.getId(),node.getType());</b>
+<b class="nc"><i>71</i>&nbsp;			pnode.setName(node.getName());</b>
+<i>72</i>&nbsp;		}
+<b class="nc"><i>73</i>&nbsp;		Collection&lt;PiccoloCustomNode&gt; children = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>74</i>&nbsp;		HashMap&lt;String, Edge&gt; relation = new HashMap&lt;&gt;(node.getRelation());</b>
+<b class="nc"><i>75</i>&nbsp;		for (Entry&lt;String, Edge&gt; edgeEntry : relation.entrySet()) {</b>
+<b class="nc"><i>76</i>&nbsp;			Edge e = edgeEntry.getValue();</b>
+<b class="nc"><i>77</i>&nbsp;			if (e.getType().equals(&quot;contains&quot;)) {</b>
+<b class="nc"><i>78</i>&nbsp;				Node n = listNodes.get(e.getTo());</b>
+<b class="nc"><i>79</i>&nbsp;				PiccoloCustomNode pnodeBis = new PiccoloCustomNode(n.getName(), n.getId(),n.getType());</b>
+<b class="nc"><i>80</i>&nbsp;				pnodeBis.setName(n.getName());</b>
+<b class="nc"><i>81</i>&nbsp;				pnode.setParentNode(pnode);</b>
+<b class="nc"><i>82</i>&nbsp;				allPNodes.put(pnodeBis.getidNode(), pnodeBis);</b>
+<b class="nc"><i>83</i>&nbsp;				children.add(pnodeBis);</b>
+<b class="nc"><i>84</i>&nbsp;				structureToPiccolo(n, pnodeBis);</b>
+<i>85</i>&nbsp;			}
+<b class="nc"><i>86</i>&nbsp;		}</b>
+<i>87</i>&nbsp;
+<b class="nc"><i>88</i>&nbsp;		pnode.setChilldren(children);</b>
+<b class="nc"><i>89</i>&nbsp;		return pnode;</b>
+<i>90</i>&nbsp;	}
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;	
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

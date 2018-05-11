@@ -1,0 +1,233 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ChildNode</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.dom</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ChildNode (com.sun.org.apache.xerces.internal.dom)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChildNode</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2000-2002,2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.dom;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import org.w3c.dom.Node;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;/**
+<i>26</i>&nbsp; * ChildNode inherits from NodeImpl and adds the capability of being a child by
+<i>27</i>&nbsp; * having references to its previous and next siblings.
+<i>28</i>&nbsp; *
+<i>29</i>&nbsp; * @xerces.internal
+<i>30</i>&nbsp; *
+<i>31</i>&nbsp; */
+<i>32</i>&nbsp;public abstract class ChildNode
+<i>33</i>&nbsp;    extends NodeImpl {
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;    //
+<i>36</i>&nbsp;    // Constants
+<i>37</i>&nbsp;    //
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    /** Serialization version. */
+<i>40</i>&nbsp;    static final long serialVersionUID = -6112455738802414002L;
+<i>41</i>&nbsp;
+<b class="nc"><i>42</i>&nbsp;    transient StringBuffer fBufferStr = null;</b>
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    //
+<i>45</i>&nbsp;    // Data
+<i>46</i>&nbsp;    //
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    /** Previous sibling. */
+<i>49</i>&nbsp;    protected ChildNode previousSibling;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    /** Next sibling. */
+<i>52</i>&nbsp;    protected ChildNode nextSibling;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    //
+<i>55</i>&nbsp;    // Constructors
+<i>56</i>&nbsp;    //
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    /**
+<i>59</i>&nbsp;     * No public constructor; only subclasses of Node should be
+<i>60</i>&nbsp;     * instantiated, and those normally via a Document&#39;s factory methods
+<i>61</i>&nbsp;     * &lt;p&gt;
+<i>62</i>&nbsp;     * Every Node knows what Document it belongs to.
+<i>63</i>&nbsp;     */
+<i>64</i>&nbsp;    protected ChildNode(CoreDocumentImpl ownerDocument) {
+<b class="nc"><i>65</i>&nbsp;        super(ownerDocument);</b>
+<i>66</i>&nbsp;    } // &lt;init&gt;(CoreDocumentImpl)
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    /** Constructor for serialization. */
+<i>69</i>&nbsp;    public ChildNode() {}
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    //
+<i>72</i>&nbsp;    // Node methods
+<i>73</i>&nbsp;    //
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    /**
+<i>76</i>&nbsp;     * Returns a duplicate of a given node. You can consider this a
+<i>77</i>&nbsp;     * generic &quot;copy constructor&quot; for nodes. The newly returned object should
+<i>78</i>&nbsp;     * be completely independent of the source object&#39;s subtree, so changes
+<i>79</i>&nbsp;     * in one after the clone has been made will not affect the other.
+<i>80</i>&nbsp;     * &lt;P&gt;
+<i>81</i>&nbsp;     * Note: since we never have any children deep is meaningless here,
+<i>82</i>&nbsp;     * ParentNode overrides this behavior.
+<i>83</i>&nbsp;     * @see ParentNode
+<i>84</i>&nbsp;     *
+<i>85</i>&nbsp;     * &lt;p&gt;
+<i>86</i>&nbsp;     * Example: Cloning a Text node will copy both the node and the text it
+<i>87</i>&nbsp;     * contains.
+<i>88</i>&nbsp;     * &lt;p&gt;
+<i>89</i>&nbsp;     * Example: Cloning something that has children -- Element or Attr, for
+<i>90</i>&nbsp;     * example -- will _not_ clone those children unless a &quot;deep clone&quot;
+<i>91</i>&nbsp;     * has been requested. A shallow clone of an Attr node will yield an
+<i>92</i>&nbsp;     * empty Attr of the same name.
+<i>93</i>&nbsp;     * &lt;p&gt;
+<i>94</i>&nbsp;     * NOTE: Clones will always be read/write, even if the node being cloned
+<i>95</i>&nbsp;     * is read-only, to permit applications using only the DOM API to obtain
+<i>96</i>&nbsp;     * editable copies of locked portions of the tree.
+<i>97</i>&nbsp;     */
+<i>98</i>&nbsp;    public Node cloneNode(boolean deep) {
+<i>99</i>&nbsp;
+<b class="nc"><i>100</i>&nbsp;        ChildNode newnode = (ChildNode) super.cloneNode(deep);</b>
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;        // Need to break the association w/ original kids
+<b class="nc"><i>103</i>&nbsp;        newnode.previousSibling = null;</b>
+<b class="nc"><i>104</i>&nbsp;        newnode.nextSibling     = null;</b>
+<b class="nc"><i>105</i>&nbsp;        newnode.isFirstChild(false);</b>
+<i>106</i>&nbsp;
+<b class="nc"><i>107</i>&nbsp;        return newnode;</b>
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    } // cloneNode(boolean):Node
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;    /**
+<i>112</i>&nbsp;     * Returns the parent node of this node
+<i>113</i>&nbsp;     */
+<i>114</i>&nbsp;    public Node getParentNode() {
+<i>115</i>&nbsp;        // if we have an owner, ownerNode is our parent, otherwise it&#39;s
+<i>116</i>&nbsp;        // our ownerDocument and we don&#39;t have a parent
+<b class="nc"><i>117</i>&nbsp;        return isOwned() ? ownerNode : null;</b>
+<i>118</i>&nbsp;    }
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    /*
+<i>121</i>&nbsp;     * same as above but returns internal type
+<i>122</i>&nbsp;     */
+<i>123</i>&nbsp;    final NodeImpl parentNode() {
+<i>124</i>&nbsp;        // if we have an owner, ownerNode is our parent, otherwise it&#39;s
+<i>125</i>&nbsp;        // our ownerDocument and we don&#39;t have a parent
+<b class="nc"><i>126</i>&nbsp;        return isOwned() ? ownerNode : null;</b>
+<i>127</i>&nbsp;    }
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;    /** The next child of this node&#39;s parent, or null if none */
+<i>130</i>&nbsp;    public Node getNextSibling() {
+<b class="nc"><i>131</i>&nbsp;        return nextSibling;</b>
+<i>132</i>&nbsp;    }
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;    /** The previous child of this node&#39;s parent, or null if none */
+<i>135</i>&nbsp;    public Node getPreviousSibling() {
+<i>136</i>&nbsp;        // if we are the firstChild, previousSibling actually refers to our
+<i>137</i>&nbsp;        // parent&#39;s lastChild, but we hide that
+<b class="nc"><i>138</i>&nbsp;        return isFirstChild() ? null : previousSibling;</b>
+<i>139</i>&nbsp;    }
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;    /*
+<i>142</i>&nbsp;     * same as above but returns internal type
+<i>143</i>&nbsp;     */
+<i>144</i>&nbsp;    final ChildNode previousSibling() {
+<i>145</i>&nbsp;        // if we are the firstChild, previousSibling actually refers to our
+<i>146</i>&nbsp;        // parent&#39;s lastChild, but we hide that
+<b class="nc"><i>147</i>&nbsp;        return isFirstChild() ? null : previousSibling;</b>
+<i>148</i>&nbsp;    }
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;} // class ChildNode
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

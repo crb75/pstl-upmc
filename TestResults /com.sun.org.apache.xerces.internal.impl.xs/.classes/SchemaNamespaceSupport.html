@@ -1,0 +1,195 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SchemaNamespaceSupport</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.xs</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SchemaNamespaceSupport (com.sun.org.apache.xerces.internal.impl.xs)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SchemaNamespaceSupport</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 30)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2000-2002,2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.xs;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import com.sun.org.apache.xerces.internal.util.NamespaceSupport;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;/**
+<i>26</i>&nbsp; * This class customizes the behaviour of the util.NamespaceSupport
+<i>27</i>&nbsp; * class in order to easily implement some features that we need for
+<i>28</i>&nbsp; * efficient schema handling.  It will not be generally useful.
+<i>29</i>&nbsp; *
+<i>30</i>&nbsp; * @xerces.internal
+<i>31</i>&nbsp; *
+<i>32</i>&nbsp; * @author Neil Graham, IBM
+<i>33</i>&nbsp; *
+<i>34</i>&nbsp; */
+<i>35</i>&nbsp;public class SchemaNamespaceSupport
+<i>36</i>&nbsp;    extends NamespaceSupport {
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;    public SchemaNamespaceSupport () {
+<b class="nc"><i>39</i>&nbsp;        super();</b>
+<i>40</i>&nbsp;    } // constructor
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;    // more effecient than NamespaceSupport(NamespaceContext)
+<b class="nc"><i>43</i>&nbsp;    public SchemaNamespaceSupport(SchemaNamespaceSupport nSupport) {</b>
+<b class="nc"><i>44</i>&nbsp;        fNamespaceSize = nSupport.fNamespaceSize;</b>
+<b class="nc"><i>45</i>&nbsp;        if (fNamespace.length &lt; fNamespaceSize)</b>
+<b class="nc"><i>46</i>&nbsp;            fNamespace = new String[fNamespaceSize];</b>
+<b class="nc"><i>47</i>&nbsp;        System.arraycopy(nSupport.fNamespace, 0, fNamespace, 0, fNamespaceSize);</b>
+<b class="nc"><i>48</i>&nbsp;        fCurrentContext = nSupport.fCurrentContext;</b>
+<b class="nc"><i>49</i>&nbsp;        if (fContext.length &lt;= fCurrentContext)</b>
+<b class="nc"><i>50</i>&nbsp;            fContext = new int[fCurrentContext+1];</b>
+<b class="nc"><i>51</i>&nbsp;        System.arraycopy(nSupport.fContext, 0, fContext, 0, fCurrentContext+1);</b>
+<i>52</i>&nbsp;    } // end constructor
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /**
+<i>55</i>&nbsp;     * This method takes a set of Strings, as stored in a
+<i>56</i>&nbsp;     * NamespaceSupport object, and &quot;fools&quot; the object into thinking
+<i>57</i>&nbsp;     * that this is one unified context.  This is meant to be used in
+<i>58</i>&nbsp;     * conjunction with things like local elements, whose declarations
+<i>59</i>&nbsp;     * may be deeply nested but which for all practical purposes may
+<i>60</i>&nbsp;     * be regarded as being one level below the global &lt;schema&gt;
+<i>61</i>&nbsp;     * element--at least with regard to namespace declarations.
+<i>62</i>&nbsp;     * It&#39;s worth noting that the context from which the strings are
+<i>63</i>&nbsp;     * being imported had better be using the same SymbolTable.
+<i>64</i>&nbsp;     */
+<i>65</i>&nbsp;    public void setEffectiveContext (String [] namespaceDecls) {
+<b class="nc"><i>66</i>&nbsp;        if(namespaceDecls == null || namespaceDecls.length == 0) return;</b>
+<b class="nc"><i>67</i>&nbsp;        pushContext();</b>
+<b class="nc"><i>68</i>&nbsp;        int newSize = fNamespaceSize + namespaceDecls.length;</b>
+<b class="nc"><i>69</i>&nbsp;        if (fNamespace.length &lt; newSize) {</b>
+<i>70</i>&nbsp;            // expand namespace&#39;s size...
+<b class="nc"><i>71</i>&nbsp;            String[] tempNSArray = new String[newSize];</b>
+<b class="nc"><i>72</i>&nbsp;            System.arraycopy(fNamespace, 0, tempNSArray, 0, fNamespace.length);</b>
+<b class="nc"><i>73</i>&nbsp;            fNamespace = tempNSArray;</b>
+<i>74</i>&nbsp;        }
+<b class="nc"><i>75</i>&nbsp;        System.arraycopy(namespaceDecls, 0, fNamespace, fNamespaceSize,</b>
+<i>76</i>&nbsp;                         namespaceDecls.length);
+<b class="nc"><i>77</i>&nbsp;        fNamespaceSize = newSize;</b>
+<i>78</i>&nbsp;    } // setEffectiveContext(String):void
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    /**
+<i>81</i>&nbsp;     * This method returns an array of Strings, as would be stored in
+<i>82</i>&nbsp;     * a NamespaceSupport object.  This array contains all
+<i>83</i>&nbsp;     * declarations except those at the global level.
+<i>84</i>&nbsp;     */
+<i>85</i>&nbsp;    public String [] getEffectiveLocalContext() {
+<i>86</i>&nbsp;        // the trick here is to recognize that all local contexts
+<i>87</i>&nbsp;        // happen to start at fContext[3].
+<i>88</i>&nbsp;        // context 1: empty
+<i>89</i>&nbsp;        // context 2: decls for xml and xmlns;
+<i>90</i>&nbsp;        // context 3: decls on &lt;xs:schema&gt;: the global ones
+<b class="nc"><i>91</i>&nbsp;        String[] returnVal = null;</b>
+<b class="nc"><i>92</i>&nbsp;        if (fCurrentContext &gt;= 3) {</b>
+<b class="nc"><i>93</i>&nbsp;            int bottomLocalContext = fContext[3];</b>
+<b class="nc"><i>94</i>&nbsp;            int copyCount = fNamespaceSize - bottomLocalContext;</b>
+<b class="nc"><i>95</i>&nbsp;            if (copyCount &gt; 0) {</b>
+<b class="nc"><i>96</i>&nbsp;                returnVal = new String[copyCount];</b>
+<b class="nc"><i>97</i>&nbsp;                System.arraycopy(fNamespace, bottomLocalContext, returnVal, 0,</b>
+<i>98</i>&nbsp;                                 copyCount);
+<i>99</i>&nbsp;            }
+<i>100</i>&nbsp;        }
+<b class="nc"><i>101</i>&nbsp;        return returnVal;</b>
+<i>102</i>&nbsp;    } // getEffectiveLocalContext():String
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    // This method removes from this object all the namespaces
+<i>105</i>&nbsp;    // returned by getEffectiveLocalContext.
+<i>106</i>&nbsp;    public void makeGlobal() {
+<b class="nc"><i>107</i>&nbsp;        if (fCurrentContext &gt;= 3) {</b>
+<b class="nc"><i>108</i>&nbsp;            fCurrentContext = 3;</b>
+<b class="nc"><i>109</i>&nbsp;            fNamespaceSize = fContext[3];</b>
+<i>110</i>&nbsp;        }
+<i>111</i>&nbsp;    } // makeGlobal
+<i>112</i>&nbsp;} // class NamespaceSupport
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:55</div>
+</div>
+</body>
+</html>

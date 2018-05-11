@@ -1,0 +1,1400 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: GIFImageWriteParam</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.imageio.plugins.gif</a> ]
+</div>
+
+<h1>Coverage Summary for Class: GIFImageWriteParam (com.sun.imageio.plugins.gif)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GIFImageWriteParam</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.imageio.plugins.gif;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.awt.Dimension;
+<i>29</i>&nbsp;import java.awt.Rectangle;
+<i>30</i>&nbsp;import java.awt.image.ColorModel;
+<i>31</i>&nbsp;import java.awt.image.ComponentSampleModel;
+<i>32</i>&nbsp;import java.awt.image.DataBufferByte;
+<i>33</i>&nbsp;import java.awt.image.IndexColorModel;
+<i>34</i>&nbsp;import java.awt.image.Raster;
+<i>35</i>&nbsp;import java.awt.image.RenderedImage;
+<i>36</i>&nbsp;import java.awt.image.SampleModel;
+<i>37</i>&nbsp;import java.awt.image.WritableRaster;
+<i>38</i>&nbsp;import java.io.IOException;
+<i>39</i>&nbsp;import java.nio.ByteOrder;
+<i>40</i>&nbsp;import java.util.Arrays;
+<i>41</i>&nbsp;import java.util.Iterator;
+<i>42</i>&nbsp;import java.util.Locale;
+<i>43</i>&nbsp;import javax.imageio.IIOException;
+<i>44</i>&nbsp;import javax.imageio.IIOImage;
+<i>45</i>&nbsp;import javax.imageio.ImageTypeSpecifier;
+<i>46</i>&nbsp;import javax.imageio.ImageWriteParam;
+<i>47</i>&nbsp;import javax.imageio.ImageWriter;
+<i>48</i>&nbsp;import javax.imageio.spi.ImageWriterSpi;
+<i>49</i>&nbsp;import javax.imageio.metadata.IIOInvalidTreeException;
+<i>50</i>&nbsp;import javax.imageio.metadata.IIOMetadata;
+<i>51</i>&nbsp;import javax.imageio.metadata.IIOMetadataFormatImpl;
+<i>52</i>&nbsp;import javax.imageio.metadata.IIOMetadataNode;
+<i>53</i>&nbsp;import javax.imageio.stream.ImageOutputStream;
+<i>54</i>&nbsp;import org.w3c.dom.Node;
+<i>55</i>&nbsp;import org.w3c.dom.NodeList;
+<i>56</i>&nbsp;import com.sun.imageio.plugins.common.LZWCompressor;
+<i>57</i>&nbsp;import com.sun.imageio.plugins.common.PaletteBuilder;
+<i>58</i>&nbsp;import sun.awt.image.ByteComponentRaster;
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;public class GIFImageWriter extends ImageWriter {
+<i>61</i>&nbsp;    private static final boolean DEBUG = false; // XXX false for release!
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    static final String STANDARD_METADATA_NAME =
+<i>64</i>&nbsp;    IIOMetadataFormatImpl.standardMetadataFormatName;
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    static final String STREAM_METADATA_NAME =
+<i>67</i>&nbsp;    GIFWritableStreamMetadata.NATIVE_FORMAT_NAME;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    static final String IMAGE_METADATA_NAME =
+<i>70</i>&nbsp;    GIFWritableImageMetadata.NATIVE_FORMAT_NAME;
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;    /**
+<i>73</i>&nbsp;     * The &lt;code&gt;output&lt;/code&gt; case to an &lt;code&gt;ImageOutputStream&lt;/code&gt;.
+<i>74</i>&nbsp;     */
+<i>75</i>&nbsp;    private ImageOutputStream stream = null;
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    /**
+<i>78</i>&nbsp;     * Whether a sequence is being written.
+<i>79</i>&nbsp;     */
+<i>80</i>&nbsp;    private boolean isWritingSequence = false;
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    /**
+<i>83</i>&nbsp;     * Whether the header has been written.
+<i>84</i>&nbsp;     */
+<i>85</i>&nbsp;    private boolean wroteSequenceHeader = false;
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    /**
+<i>88</i>&nbsp;     * The stream metadata of a sequence.
+<i>89</i>&nbsp;     */
+<i>90</i>&nbsp;    private GIFWritableStreamMetadata theStreamMetadata = null;
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;    /**
+<i>93</i>&nbsp;     * The index of the image being written.
+<i>94</i>&nbsp;     */
+<i>95</i>&nbsp;    private int imageIndex = 0;
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    /**
+<i>98</i>&nbsp;     * The number of bits represented by the value which should be a
+<i>99</i>&nbsp;     * legal length for a color table.
+<i>100</i>&nbsp;     */
+<i>101</i>&nbsp;    private static int getNumBits(int value) throws IOException {
+<i>102</i>&nbsp;        int numBits;
+<i>103</i>&nbsp;        switch(value) {
+<i>104</i>&nbsp;        case 2:
+<i>105</i>&nbsp;            numBits = 1;
+<i>106</i>&nbsp;            break;
+<i>107</i>&nbsp;        case 4:
+<i>108</i>&nbsp;            numBits = 2;
+<i>109</i>&nbsp;            break;
+<i>110</i>&nbsp;        case 8:
+<i>111</i>&nbsp;            numBits = 3;
+<i>112</i>&nbsp;            break;
+<i>113</i>&nbsp;        case 16:
+<i>114</i>&nbsp;            numBits = 4;
+<i>115</i>&nbsp;            break;
+<i>116</i>&nbsp;        case 32:
+<i>117</i>&nbsp;            numBits = 5;
+<i>118</i>&nbsp;            break;
+<i>119</i>&nbsp;        case 64:
+<i>120</i>&nbsp;            numBits = 6;
+<i>121</i>&nbsp;            break;
+<i>122</i>&nbsp;        case 128:
+<i>123</i>&nbsp;            numBits = 7;
+<i>124</i>&nbsp;            break;
+<i>125</i>&nbsp;        case 256:
+<i>126</i>&nbsp;            numBits = 8;
+<i>127</i>&nbsp;            break;
+<i>128</i>&nbsp;        default:
+<i>129</i>&nbsp;            throw new IOException(&quot;Bad palette length: &quot;+value+&quot;!&quot;);
+<i>130</i>&nbsp;        }
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;        return numBits;
+<i>133</i>&nbsp;    }
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;    /**
+<i>136</i>&nbsp;     * Compute the source region and destination dimensions taking any
+<i>137</i>&nbsp;     * parameter settings into account.
+<i>138</i>&nbsp;     */
+<i>139</i>&nbsp;    private static void computeRegions(Rectangle sourceBounds,
+<i>140</i>&nbsp;                                       Dimension destSize,
+<i>141</i>&nbsp;                                       ImageWriteParam p) {
+<i>142</i>&nbsp;        ImageWriteParam param;
+<i>143</i>&nbsp;        int periodX = 1;
+<i>144</i>&nbsp;        int periodY = 1;
+<i>145</i>&nbsp;        if (p != null) {
+<i>146</i>&nbsp;            int[] sourceBands = p.getSourceBands();
+<i>147</i>&nbsp;            if (sourceBands != null &amp;&amp;
+<i>148</i>&nbsp;                (sourceBands.length != 1 ||
+<i>149</i>&nbsp;                 sourceBands[0] != 0)) {
+<i>150</i>&nbsp;                throw new IllegalArgumentException(&quot;Cannot sub-band image!&quot;);
+<i>151</i>&nbsp;            }
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;            // Get source region and subsampling factors
+<i>154</i>&nbsp;            Rectangle sourceRegion = p.getSourceRegion();
+<i>155</i>&nbsp;            if (sourceRegion != null) {
+<i>156</i>&nbsp;                // Clip to actual image bounds
+<i>157</i>&nbsp;                sourceRegion = sourceRegion.intersection(sourceBounds);
+<i>158</i>&nbsp;                sourceBounds.setBounds(sourceRegion);
+<i>159</i>&nbsp;            }
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;            // Adjust for subsampling offsets
+<i>162</i>&nbsp;            int gridX = p.getSubsamplingXOffset();
+<i>163</i>&nbsp;            int gridY = p.getSubsamplingYOffset();
+<i>164</i>&nbsp;            sourceBounds.x += gridX;
+<i>165</i>&nbsp;            sourceBounds.y += gridY;
+<i>166</i>&nbsp;            sourceBounds.width -= gridX;
+<i>167</i>&nbsp;            sourceBounds.height -= gridY;
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;            // Get subsampling factors
+<i>170</i>&nbsp;            periodX = p.getSourceXSubsampling();
+<i>171</i>&nbsp;            periodY = p.getSourceYSubsampling();
+<i>172</i>&nbsp;        }
+<i>173</i>&nbsp;
+<i>174</i>&nbsp;        // Compute output dimensions
+<i>175</i>&nbsp;        destSize.setSize((sourceBounds.width + periodX - 1)/periodX,
+<i>176</i>&nbsp;                         (sourceBounds.height + periodY - 1)/periodY);
+<i>177</i>&nbsp;        if (destSize.width &lt;= 0 || destSize.height &lt;= 0) {
+<i>178</i>&nbsp;            throw new IllegalArgumentException(&quot;Empty source region!&quot;);
+<i>179</i>&nbsp;        }
+<i>180</i>&nbsp;    }
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;    /**
+<i>183</i>&nbsp;     * Create a color table from the image ColorModel and SampleModel.
+<i>184</i>&nbsp;     */
+<i>185</i>&nbsp;    private static byte[] createColorTable(ColorModel colorModel,
+<i>186</i>&nbsp;                                           SampleModel sampleModel)
+<i>187</i>&nbsp;    {
+<i>188</i>&nbsp;        byte[] colorTable;
+<i>189</i>&nbsp;        if (colorModel instanceof IndexColorModel) {
+<i>190</i>&nbsp;            IndexColorModel icm = (IndexColorModel)colorModel;
+<i>191</i>&nbsp;            int mapSize = icm.getMapSize();
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;            /**
+<i>194</i>&nbsp;             * The GIF image format assumes that size of image palette
+<i>195</i>&nbsp;             * is power of two. We will use closest larger power of two
+<i>196</i>&nbsp;             * as size of color table.
+<i>197</i>&nbsp;             */
+<i>198</i>&nbsp;            int ctSize = getGifPaletteSize(mapSize);
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;            byte[] reds = new byte[ctSize];
+<i>201</i>&nbsp;            byte[] greens = new byte[ctSize];
+<i>202</i>&nbsp;            byte[] blues = new byte[ctSize];
+<i>203</i>&nbsp;            icm.getReds(reds);
+<i>204</i>&nbsp;            icm.getGreens(greens);
+<i>205</i>&nbsp;            icm.getBlues(blues);
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;            /**
+<i>208</i>&nbsp;             * fill tail of color component arrays by replica of first color
+<i>209</i>&nbsp;             * in order to avoid appearance of extra colors in the color table
+<i>210</i>&nbsp;             */
+<i>211</i>&nbsp;            for (int i = mapSize; i &lt; ctSize; i++) {
+<i>212</i>&nbsp;                reds[i] = reds[0];
+<i>213</i>&nbsp;                greens[i] = greens[0];
+<i>214</i>&nbsp;                blues[i] = blues[0];
+<i>215</i>&nbsp;            }
+<i>216</i>&nbsp;
+<i>217</i>&nbsp;            colorTable = new byte[3*ctSize];
+<i>218</i>&nbsp;            int idx = 0;
+<i>219</i>&nbsp;            for (int i = 0; i &lt; ctSize; i++) {
+<i>220</i>&nbsp;                colorTable[idx++] = reds[i];
+<i>221</i>&nbsp;                colorTable[idx++] = greens[i];
+<i>222</i>&nbsp;                colorTable[idx++] = blues[i];
+<i>223</i>&nbsp;            }
+<i>224</i>&nbsp;        } else if (sampleModel.getNumBands() == 1) {
+<i>225</i>&nbsp;            // create gray-scaled color table for single-banded images
+<i>226</i>&nbsp;            int numBits = sampleModel.getSampleSize()[0];
+<i>227</i>&nbsp;            if (numBits &gt; 8) {
+<i>228</i>&nbsp;                numBits = 8;
+<i>229</i>&nbsp;            }
+<i>230</i>&nbsp;            int colorTableLength = 3*(1 &lt;&lt; numBits);
+<i>231</i>&nbsp;            colorTable = new byte[colorTableLength];
+<i>232</i>&nbsp;            for (int i = 0; i &lt; colorTableLength; i++) {
+<i>233</i>&nbsp;                colorTable[i] = (byte)(i/3);
+<i>234</i>&nbsp;            }
+<i>235</i>&nbsp;        } else {
+<i>236</i>&nbsp;            // We do not have enough information here
+<i>237</i>&nbsp;            // to create well-fit color table for RGB image.
+<i>238</i>&nbsp;            colorTable = null;
+<i>239</i>&nbsp;        }
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;        return colorTable;
+<i>242</i>&nbsp;    }
+<i>243</i>&nbsp;
+<i>244</i>&nbsp;    /**
+<i>245</i>&nbsp;     * According do GIF specification size of clor table (palette here)
+<i>246</i>&nbsp;     * must be in range from 2 to 256 and must be power of 2.
+<i>247</i>&nbsp;     */
+<i>248</i>&nbsp;    private static int getGifPaletteSize(int x) {
+<i>249</i>&nbsp;        if (x &lt;= 2) {
+<i>250</i>&nbsp;            return 2;
+<i>251</i>&nbsp;        }
+<i>252</i>&nbsp;        x = x - 1;
+<i>253</i>&nbsp;        x = x | (x &gt;&gt; 1);
+<i>254</i>&nbsp;        x = x | (x &gt;&gt; 2);
+<i>255</i>&nbsp;        x = x | (x &gt;&gt; 4);
+<i>256</i>&nbsp;        x = x | (x &gt;&gt; 8);
+<i>257</i>&nbsp;        x = x | (x &gt;&gt; 16);
+<i>258</i>&nbsp;        return x + 1;
+<i>259</i>&nbsp;    }
+<i>260</i>&nbsp;
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;    public GIFImageWriter(GIFImageWriterSpi originatingProvider) {
+<i>264</i>&nbsp;        super(originatingProvider);
+<i>265</i>&nbsp;        if (DEBUG) {
+<i>266</i>&nbsp;            System.err.println(&quot;GIF Writer is created&quot;);
+<i>267</i>&nbsp;        }
+<i>268</i>&nbsp;    }
+<i>269</i>&nbsp;
+<i>270</i>&nbsp;    public boolean canWriteSequence() {
+<i>271</i>&nbsp;        return true;
+<i>272</i>&nbsp;    }
+<i>273</i>&nbsp;
+<i>274</i>&nbsp;    /**
+<i>275</i>&nbsp;     * Merges &lt;code&gt;inData&lt;/code&gt; into &lt;code&gt;outData&lt;/code&gt;. The supplied
+<i>276</i>&nbsp;     * metadata format name is attempted first and failing that the standard
+<i>277</i>&nbsp;     * metadata format name is attempted.
+<i>278</i>&nbsp;     */
+<i>279</i>&nbsp;    private void convertMetadata(String metadataFormatName,
+<i>280</i>&nbsp;                                 IIOMetadata inData,
+<i>281</i>&nbsp;                                 IIOMetadata outData) {
+<i>282</i>&nbsp;        String formatName = null;
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;        String nativeFormatName = inData.getNativeMetadataFormatName();
+<i>285</i>&nbsp;        if (nativeFormatName != null &amp;&amp;
+<i>286</i>&nbsp;            nativeFormatName.equals(metadataFormatName)) {
+<i>287</i>&nbsp;            formatName = metadataFormatName;
+<i>288</i>&nbsp;        } else {
+<i>289</i>&nbsp;            String[] extraFormatNames = inData.getExtraMetadataFormatNames();
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;            if (extraFormatNames != null) {
+<i>292</i>&nbsp;                for (int i = 0; i &lt; extraFormatNames.length; i++) {
+<i>293</i>&nbsp;                    if (extraFormatNames[i].equals(metadataFormatName)) {
+<i>294</i>&nbsp;                        formatName = metadataFormatName;
+<i>295</i>&nbsp;                        break;
+<i>296</i>&nbsp;                    }
+<i>297</i>&nbsp;                }
+<i>298</i>&nbsp;            }
+<i>299</i>&nbsp;        }
+<i>300</i>&nbsp;
+<i>301</i>&nbsp;        if (formatName == null &amp;&amp;
+<i>302</i>&nbsp;            inData.isStandardMetadataFormatSupported()) {
+<i>303</i>&nbsp;            formatName = STANDARD_METADATA_NAME;
+<i>304</i>&nbsp;        }
+<i>305</i>&nbsp;
+<i>306</i>&nbsp;        if (formatName != null) {
+<i>307</i>&nbsp;            try {
+<i>308</i>&nbsp;                Node root = inData.getAsTree(formatName);
+<i>309</i>&nbsp;                outData.mergeTree(formatName, root);
+<i>310</i>&nbsp;            } catch(IIOInvalidTreeException e) {
+<i>311</i>&nbsp;                // ignore
+<i>312</i>&nbsp;            }
+<i>313</i>&nbsp;        }
+<i>314</i>&nbsp;    }
+<i>315</i>&nbsp;
+<i>316</i>&nbsp;    /**
+<i>317</i>&nbsp;     * Creates a default stream metadata object and merges in the
+<i>318</i>&nbsp;     * supplied metadata.
+<i>319</i>&nbsp;     */
+<i>320</i>&nbsp;    public IIOMetadata convertStreamMetadata(IIOMetadata inData,
+<i>321</i>&nbsp;                                             ImageWriteParam param) {
+<i>322</i>&nbsp;        if (inData == null) {
+<i>323</i>&nbsp;            throw new IllegalArgumentException(&quot;inData == null!&quot;);
+<i>324</i>&nbsp;        }
+<i>325</i>&nbsp;
+<i>326</i>&nbsp;        IIOMetadata sm = getDefaultStreamMetadata(param);
+<i>327</i>&nbsp;
+<i>328</i>&nbsp;        convertMetadata(STREAM_METADATA_NAME, inData, sm);
+<i>329</i>&nbsp;
+<i>330</i>&nbsp;        return sm;
+<i>331</i>&nbsp;    }
+<i>332</i>&nbsp;
+<i>333</i>&nbsp;    /**
+<i>334</i>&nbsp;     * Creates a default image metadata object and merges in the
+<i>335</i>&nbsp;     * supplied metadata.
+<i>336</i>&nbsp;     */
+<i>337</i>&nbsp;    public IIOMetadata convertImageMetadata(IIOMetadata inData,
+<i>338</i>&nbsp;                                            ImageTypeSpecifier imageType,
+<i>339</i>&nbsp;                                            ImageWriteParam param) {
+<i>340</i>&nbsp;        if (inData == null) {
+<i>341</i>&nbsp;            throw new IllegalArgumentException(&quot;inData == null!&quot;);
+<i>342</i>&nbsp;        }
+<i>343</i>&nbsp;        if (imageType == null) {
+<i>344</i>&nbsp;            throw new IllegalArgumentException(&quot;imageType == null!&quot;);
+<i>345</i>&nbsp;        }
+<i>346</i>&nbsp;
+<i>347</i>&nbsp;        GIFWritableImageMetadata im =
+<i>348</i>&nbsp;            (GIFWritableImageMetadata)getDefaultImageMetadata(imageType,
+<i>349</i>&nbsp;                                                              param);
+<i>350</i>&nbsp;
+<i>351</i>&nbsp;        // Save interlace flag state.
+<i>352</i>&nbsp;
+<i>353</i>&nbsp;        boolean isProgressive = im.interlaceFlag;
+<i>354</i>&nbsp;
+<i>355</i>&nbsp;        convertMetadata(IMAGE_METADATA_NAME, inData, im);
+<i>356</i>&nbsp;
+<i>357</i>&nbsp;        // Undo change to interlace flag if not MODE_COPY_FROM_METADATA.
+<i>358</i>&nbsp;
+<i>359</i>&nbsp;        if (param != null &amp;&amp; param.canWriteProgressive() &amp;&amp;
+<i>360</i>&nbsp;            param.getProgressiveMode() != param.MODE_COPY_FROM_METADATA) {
+<i>361</i>&nbsp;            im.interlaceFlag = isProgressive;
+<i>362</i>&nbsp;        }
+<i>363</i>&nbsp;
+<i>364</i>&nbsp;        return im;
+<i>365</i>&nbsp;    }
+<i>366</i>&nbsp;
+<i>367</i>&nbsp;    public void endWriteSequence() throws IOException {
+<i>368</i>&nbsp;        if (stream == null) {
+<i>369</i>&nbsp;            throw new IllegalStateException(&quot;output == null!&quot;);
+<i>370</i>&nbsp;        }
+<i>371</i>&nbsp;        if (!isWritingSequence) {
+<i>372</i>&nbsp;            throw new IllegalStateException(&quot;prepareWriteSequence() was not invoked!&quot;);
+<i>373</i>&nbsp;        }
+<i>374</i>&nbsp;        writeTrailer();
+<i>375</i>&nbsp;        resetLocal();
+<i>376</i>&nbsp;    }
+<i>377</i>&nbsp;
+<i>378</i>&nbsp;    public IIOMetadata getDefaultImageMetadata(ImageTypeSpecifier imageType,
+<i>379</i>&nbsp;                                               ImageWriteParam param) {
+<i>380</i>&nbsp;        GIFWritableImageMetadata imageMetadata =
+<i>381</i>&nbsp;            new GIFWritableImageMetadata();
+<i>382</i>&nbsp;
+<i>383</i>&nbsp;        // Image dimensions
+<i>384</i>&nbsp;
+<i>385</i>&nbsp;        SampleModel sampleModel = imageType.getSampleModel();
+<i>386</i>&nbsp;
+<i>387</i>&nbsp;        Rectangle sourceBounds = new Rectangle(sampleModel.getWidth(),
+<i>388</i>&nbsp;                                               sampleModel.getHeight());
+<i>389</i>&nbsp;        Dimension destSize = new Dimension();
+<i>390</i>&nbsp;        computeRegions(sourceBounds, destSize, param);
+<i>391</i>&nbsp;
+<i>392</i>&nbsp;        imageMetadata.imageWidth = destSize.width;
+<i>393</i>&nbsp;        imageMetadata.imageHeight = destSize.height;
+<i>394</i>&nbsp;
+<i>395</i>&nbsp;        // Interlacing
+<i>396</i>&nbsp;
+<i>397</i>&nbsp;        if (param != null &amp;&amp; param.canWriteProgressive() &amp;&amp;
+<i>398</i>&nbsp;            param.getProgressiveMode() == ImageWriteParam.MODE_DISABLED) {
+<i>399</i>&nbsp;            imageMetadata.interlaceFlag = false;
+<i>400</i>&nbsp;        } else {
+<i>401</i>&nbsp;            imageMetadata.interlaceFlag = true;
+<i>402</i>&nbsp;        }
+<i>403</i>&nbsp;
+<i>404</i>&nbsp;        // Local color table
+<i>405</i>&nbsp;
+<i>406</i>&nbsp;        ColorModel colorModel = imageType.getColorModel();
+<i>407</i>&nbsp;
+<i>408</i>&nbsp;        imageMetadata.localColorTable =
+<i>409</i>&nbsp;            createColorTable(colorModel, sampleModel);
+<i>410</i>&nbsp;
+<i>411</i>&nbsp;        // Transparency
+<i>412</i>&nbsp;
+<i>413</i>&nbsp;        if (colorModel instanceof IndexColorModel) {
+<i>414</i>&nbsp;            int transparentIndex =
+<i>415</i>&nbsp;                ((IndexColorModel)colorModel).getTransparentPixel();
+<i>416</i>&nbsp;            if (transparentIndex != -1) {
+<i>417</i>&nbsp;                imageMetadata.transparentColorFlag = true;
+<i>418</i>&nbsp;                imageMetadata.transparentColorIndex = transparentIndex;
+<i>419</i>&nbsp;            }
+<i>420</i>&nbsp;        }
+<i>421</i>&nbsp;
+<i>422</i>&nbsp;        return imageMetadata;
+<i>423</i>&nbsp;    }
+<i>424</i>&nbsp;
+<i>425</i>&nbsp;    public IIOMetadata getDefaultStreamMetadata(ImageWriteParam param) {
+<i>426</i>&nbsp;        GIFWritableStreamMetadata streamMetadata =
+<i>427</i>&nbsp;            new GIFWritableStreamMetadata();
+<i>428</i>&nbsp;        streamMetadata.version = &quot;89a&quot;;
+<i>429</i>&nbsp;        return streamMetadata;
+<i>430</i>&nbsp;    }
+<i>431</i>&nbsp;
+<i>432</i>&nbsp;    public ImageWriteParam getDefaultWriteParam() {
+<i>433</i>&nbsp;        return new GIFImageWriteParam(getLocale());
+<i>434</i>&nbsp;    }
+<i>435</i>&nbsp;
+<i>436</i>&nbsp;    public void prepareWriteSequence(IIOMetadata streamMetadata)
+<i>437</i>&nbsp;      throws IOException {
+<i>438</i>&nbsp;
+<i>439</i>&nbsp;        if (stream == null) {
+<i>440</i>&nbsp;            throw new IllegalStateException(&quot;Output is not set.&quot;);
+<i>441</i>&nbsp;        }
+<i>442</i>&nbsp;
+<i>443</i>&nbsp;        resetLocal();
+<i>444</i>&nbsp;
+<i>445</i>&nbsp;        // Save the possibly converted stream metadata as an instance variable.
+<i>446</i>&nbsp;        if (streamMetadata == null) {
+<i>447</i>&nbsp;            this.theStreamMetadata =
+<i>448</i>&nbsp;                (GIFWritableStreamMetadata)getDefaultStreamMetadata(null);
+<i>449</i>&nbsp;        } else {
+<i>450</i>&nbsp;            this.theStreamMetadata = new GIFWritableStreamMetadata();
+<i>451</i>&nbsp;            convertMetadata(STREAM_METADATA_NAME, streamMetadata,
+<i>452</i>&nbsp;                            theStreamMetadata);
+<i>453</i>&nbsp;        }
+<i>454</i>&nbsp;
+<i>455</i>&nbsp;        this.isWritingSequence = true;
+<i>456</i>&nbsp;    }
+<i>457</i>&nbsp;
+<i>458</i>&nbsp;    public void reset() {
+<i>459</i>&nbsp;        super.reset();
+<i>460</i>&nbsp;        resetLocal();
+<i>461</i>&nbsp;    }
+<i>462</i>&nbsp;
+<i>463</i>&nbsp;    /**
+<i>464</i>&nbsp;     * Resets locally defined instance variables.
+<i>465</i>&nbsp;     */
+<i>466</i>&nbsp;    private void resetLocal() {
+<i>467</i>&nbsp;        this.isWritingSequence = false;
+<i>468</i>&nbsp;        this.wroteSequenceHeader = false;
+<i>469</i>&nbsp;        this.theStreamMetadata = null;
+<i>470</i>&nbsp;        this.imageIndex = 0;
+<i>471</i>&nbsp;    }
+<i>472</i>&nbsp;
+<i>473</i>&nbsp;    public void setOutput(Object output) {
+<i>474</i>&nbsp;        super.setOutput(output);
+<i>475</i>&nbsp;        if (output != null) {
+<i>476</i>&nbsp;            if (!(output instanceof ImageOutputStream)) {
+<i>477</i>&nbsp;                throw new
+<i>478</i>&nbsp;                    IllegalArgumentException(&quot;output is not an ImageOutputStream&quot;);
+<i>479</i>&nbsp;            }
+<i>480</i>&nbsp;            this.stream = (ImageOutputStream)output;
+<i>481</i>&nbsp;            this.stream.setByteOrder(ByteOrder.LITTLE_ENDIAN);
+<i>482</i>&nbsp;        } else {
+<i>483</i>&nbsp;            this.stream = null;
+<i>484</i>&nbsp;        }
+<i>485</i>&nbsp;    }
+<i>486</i>&nbsp;
+<i>487</i>&nbsp;    public void write(IIOMetadata sm,
+<i>488</i>&nbsp;                      IIOImage iioimage,
+<i>489</i>&nbsp;                      ImageWriteParam p) throws IOException {
+<i>490</i>&nbsp;        if (stream == null) {
+<i>491</i>&nbsp;            throw new IllegalStateException(&quot;output == null!&quot;);
+<i>492</i>&nbsp;        }
+<i>493</i>&nbsp;        if (iioimage == null) {
+<i>494</i>&nbsp;            throw new IllegalArgumentException(&quot;iioimage == null!&quot;);
+<i>495</i>&nbsp;        }
+<i>496</i>&nbsp;        if (iioimage.hasRaster()) {
+<i>497</i>&nbsp;            throw new UnsupportedOperationException(&quot;canWriteRasters() == false!&quot;);
+<i>498</i>&nbsp;        }
+<i>499</i>&nbsp;
+<i>500</i>&nbsp;        resetLocal();
+<i>501</i>&nbsp;
+<i>502</i>&nbsp;        GIFWritableStreamMetadata streamMetadata;
+<i>503</i>&nbsp;        if (sm == null) {
+<i>504</i>&nbsp;            streamMetadata =
+<i>505</i>&nbsp;                (GIFWritableStreamMetadata)getDefaultStreamMetadata(p);
+<i>506</i>&nbsp;        } else {
+<i>507</i>&nbsp;            streamMetadata =
+<i>508</i>&nbsp;                (GIFWritableStreamMetadata)convertStreamMetadata(sm, p);
+<i>509</i>&nbsp;        }
+<i>510</i>&nbsp;
+<i>511</i>&nbsp;        write(true, true, streamMetadata, iioimage, p);
+<i>512</i>&nbsp;    }
+<i>513</i>&nbsp;
+<i>514</i>&nbsp;    public void writeToSequence(IIOImage image, ImageWriteParam param)
+<i>515</i>&nbsp;      throws IOException {
+<i>516</i>&nbsp;        if (stream == null) {
+<i>517</i>&nbsp;            throw new IllegalStateException(&quot;output == null!&quot;);
+<i>518</i>&nbsp;        }
+<i>519</i>&nbsp;        if (image == null) {
+<i>520</i>&nbsp;            throw new IllegalArgumentException(&quot;image == null!&quot;);
+<i>521</i>&nbsp;        }
+<i>522</i>&nbsp;        if (image.hasRaster()) {
+<i>523</i>&nbsp;            throw new UnsupportedOperationException(&quot;canWriteRasters() == false!&quot;);
+<i>524</i>&nbsp;        }
+<i>525</i>&nbsp;        if (!isWritingSequence) {
+<i>526</i>&nbsp;            throw new IllegalStateException(&quot;prepareWriteSequence() was not invoked!&quot;);
+<i>527</i>&nbsp;        }
+<i>528</i>&nbsp;
+<i>529</i>&nbsp;        write(!wroteSequenceHeader, false, theStreamMetadata,
+<i>530</i>&nbsp;              image, param);
+<i>531</i>&nbsp;
+<i>532</i>&nbsp;        if (!wroteSequenceHeader) {
+<i>533</i>&nbsp;            wroteSequenceHeader = true;
+<i>534</i>&nbsp;        }
+<i>535</i>&nbsp;
+<i>536</i>&nbsp;        this.imageIndex++;
+<i>537</i>&nbsp;    }
+<i>538</i>&nbsp;
+<i>539</i>&nbsp;
+<i>540</i>&nbsp;    private boolean needToCreateIndex(RenderedImage image) {
+<i>541</i>&nbsp;
+<i>542</i>&nbsp;        SampleModel sampleModel = image.getSampleModel();
+<i>543</i>&nbsp;        ColorModel colorModel = image.getColorModel();
+<i>544</i>&nbsp;
+<i>545</i>&nbsp;        return sampleModel.getNumBands() != 1 ||
+<i>546</i>&nbsp;            sampleModel.getSampleSize()[0] &gt; 8 ||
+<i>547</i>&nbsp;            colorModel.getComponentSize()[0] &gt; 8;
+<i>548</i>&nbsp;    }
+<i>549</i>&nbsp;
+<i>550</i>&nbsp;    /**
+<i>551</i>&nbsp;     * Writes any extension blocks, the Image Descriptor, the image data,
+<i>552</i>&nbsp;     * and optionally the header (Signature and Logical Screen Descriptor)
+<i>553</i>&nbsp;     * and trailer (Block Terminator).
+<i>554</i>&nbsp;     *
+<i>555</i>&nbsp;     * @param writeHeader Whether to write the header.
+<i>556</i>&nbsp;     * @param writeTrailer Whether to write the trailer.
+<i>557</i>&nbsp;     * @param sm The stream metadata or &lt;code&gt;null&lt;/code&gt; if
+<i>558</i>&nbsp;     * &lt;code&gt;writeHeader&lt;/code&gt; is &lt;code&gt;false&lt;/code&gt;.
+<i>559</i>&nbsp;     * @param iioimage The image and image metadata.
+<i>560</i>&nbsp;     * @param p The write parameters.
+<i>561</i>&nbsp;     *
+<i>562</i>&nbsp;     * @throws IllegalArgumentException if the number of bands is not 1.
+<i>563</i>&nbsp;     * @throws IllegalArgumentException if the number of bits per sample is
+<i>564</i>&nbsp;     * greater than 8.
+<i>565</i>&nbsp;     * @throws IllegalArgumentException if the color component size is
+<i>566</i>&nbsp;     * greater than 8.
+<i>567</i>&nbsp;     * @throws IllegalArgumentException if &lt;code&gt;writeHeader&lt;/code&gt; is
+<i>568</i>&nbsp;     * &lt;code&gt;true&lt;/code&gt; and &lt;code&gt;sm&lt;/code&gt; is &lt;code&gt;null&lt;/code&gt;.
+<i>569</i>&nbsp;     * @throws IllegalArgumentException if &lt;code&gt;writeHeader&lt;/code&gt; is
+<i>570</i>&nbsp;     * &lt;code&gt;false&lt;/code&gt; and a sequence is not being written.
+<i>571</i>&nbsp;     */
+<i>572</i>&nbsp;    private void write(boolean writeHeader,
+<i>573</i>&nbsp;                       boolean writeTrailer,
+<i>574</i>&nbsp;                       IIOMetadata sm,
+<i>575</i>&nbsp;                       IIOImage iioimage,
+<i>576</i>&nbsp;                       ImageWriteParam p) throws IOException {
+<i>577</i>&nbsp;        clearAbortRequest();
+<i>578</i>&nbsp;
+<i>579</i>&nbsp;        RenderedImage image = iioimage.getRenderedImage();
+<i>580</i>&nbsp;
+<i>581</i>&nbsp;        // Check for ability to encode image.
+<i>582</i>&nbsp;        if (needToCreateIndex(image)) {
+<i>583</i>&nbsp;            image = PaletteBuilder.createIndexedImage(image);
+<i>584</i>&nbsp;            iioimage.setRenderedImage(image);
+<i>585</i>&nbsp;        }
+<i>586</i>&nbsp;
+<i>587</i>&nbsp;        ColorModel colorModel = image.getColorModel();
+<i>588</i>&nbsp;        SampleModel sampleModel = image.getSampleModel();
+<i>589</i>&nbsp;
+<i>590</i>&nbsp;        // Determine source region and destination dimensions.
+<i>591</i>&nbsp;        Rectangle sourceBounds = new Rectangle(image.getMinX(),
+<i>592</i>&nbsp;                                               image.getMinY(),
+<i>593</i>&nbsp;                                               image.getWidth(),
+<i>594</i>&nbsp;                                               image.getHeight());
+<i>595</i>&nbsp;        Dimension destSize = new Dimension();
+<i>596</i>&nbsp;        computeRegions(sourceBounds, destSize, p);
+<i>597</i>&nbsp;
+<i>598</i>&nbsp;        // Convert any provided image metadata.
+<i>599</i>&nbsp;        GIFWritableImageMetadata imageMetadata = null;
+<i>600</i>&nbsp;        if (iioimage.getMetadata() != null) {
+<i>601</i>&nbsp;            imageMetadata = new GIFWritableImageMetadata();
+<i>602</i>&nbsp;            convertMetadata(IMAGE_METADATA_NAME, iioimage.getMetadata(),
+<i>603</i>&nbsp;                            imageMetadata);
+<i>604</i>&nbsp;            // Converted rgb image can use palette different from global.
+<i>605</i>&nbsp;            // In order to avoid color artefacts we want to be sure we use
+<i>606</i>&nbsp;            // appropriate palette. For this we initialize local color table
+<i>607</i>&nbsp;            // from current color and sample models.
+<i>608</i>&nbsp;            // At this point we can guarantee that local color table can be
+<i>609</i>&nbsp;            // build because image was already converted to indexed or
+<i>610</i>&nbsp;            // gray-scale representations
+<i>611</i>&nbsp;            if (imageMetadata.localColorTable == null) {
+<i>612</i>&nbsp;                imageMetadata.localColorTable =
+<i>613</i>&nbsp;                    createColorTable(colorModel, sampleModel);
+<i>614</i>&nbsp;
+<i>615</i>&nbsp;                // in case of indexed image we should take care of
+<i>616</i>&nbsp;                // transparent pixels
+<i>617</i>&nbsp;                if (colorModel instanceof IndexColorModel) {
+<i>618</i>&nbsp;                    IndexColorModel icm =
+<i>619</i>&nbsp;                        (IndexColorModel)colorModel;
+<i>620</i>&nbsp;                    int index = icm.getTransparentPixel();
+<i>621</i>&nbsp;                    imageMetadata.transparentColorFlag = (index != -1);
+<i>622</i>&nbsp;                    if (imageMetadata.transparentColorFlag) {
+<i>623</i>&nbsp;                        imageMetadata.transparentColorIndex = index;
+<i>624</i>&nbsp;                    }
+<i>625</i>&nbsp;                    /* NB: transparentColorFlag might have not beed reset for
+<i>626</i>&nbsp;                       greyscale images but explicitly reseting it here
+<i>627</i>&nbsp;                       is potentially not right thing to do until we have way
+<i>628</i>&nbsp;                       to find whether current value was explicitly set by
+<i>629</i>&nbsp;                       the user.
+<i>630</i>&nbsp;                    */
+<i>631</i>&nbsp;                }
+<i>632</i>&nbsp;            }
+<i>633</i>&nbsp;        }
+<i>634</i>&nbsp;
+<i>635</i>&nbsp;        // Global color table values.
+<i>636</i>&nbsp;        byte[] globalColorTable = null;
+<i>637</i>&nbsp;
+<i>638</i>&nbsp;        // Write the header (Signature+Logical Screen Descriptor+
+<i>639</i>&nbsp;        // Global Color Table).
+<i>640</i>&nbsp;        if (writeHeader) {
+<i>641</i>&nbsp;            if (sm == null) {
+<i>642</i>&nbsp;                throw new IllegalArgumentException(&quot;Cannot write null header!&quot;);
+<i>643</i>&nbsp;            }
+<i>644</i>&nbsp;
+<i>645</i>&nbsp;            GIFWritableStreamMetadata streamMetadata =
+<i>646</i>&nbsp;                (GIFWritableStreamMetadata)sm;
+<i>647</i>&nbsp;
+<i>648</i>&nbsp;            // Set the version if not set.
+<i>649</i>&nbsp;            if (streamMetadata.version == null) {
+<i>650</i>&nbsp;                streamMetadata.version = &quot;89a&quot;;
+<i>651</i>&nbsp;            }
+<i>652</i>&nbsp;
+<i>653</i>&nbsp;            // Set the Logical Screen Desriptor if not set.
+<i>654</i>&nbsp;            if (streamMetadata.logicalScreenWidth ==
+<i>655</i>&nbsp;                GIFMetadata.UNDEFINED_INTEGER_VALUE)
+<i>656</i>&nbsp;            {
+<i>657</i>&nbsp;                streamMetadata.logicalScreenWidth = destSize.width;
+<i>658</i>&nbsp;            }
+<i>659</i>&nbsp;
+<i>660</i>&nbsp;            if (streamMetadata.logicalScreenHeight ==
+<i>661</i>&nbsp;                GIFMetadata.UNDEFINED_INTEGER_VALUE)
+<i>662</i>&nbsp;            {
+<i>663</i>&nbsp;                streamMetadata.logicalScreenHeight = destSize.height;
+<i>664</i>&nbsp;            }
+<i>665</i>&nbsp;
+<i>666</i>&nbsp;            if (streamMetadata.colorResolution ==
+<i>667</i>&nbsp;                GIFMetadata.UNDEFINED_INTEGER_VALUE)
+<i>668</i>&nbsp;            {
+<i>669</i>&nbsp;                streamMetadata.colorResolution = colorModel != null ?
+<i>670</i>&nbsp;                    colorModel.getComponentSize()[0] :
+<i>671</i>&nbsp;                    sampleModel.getSampleSize()[0];
+<i>672</i>&nbsp;            }
+<i>673</i>&nbsp;
+<i>674</i>&nbsp;            // Set the Global Color Table if not set, i.e., if not
+<i>675</i>&nbsp;            // provided in the stream metadata.
+<i>676</i>&nbsp;            if (streamMetadata.globalColorTable == null) {
+<i>677</i>&nbsp;                if (isWritingSequence &amp;&amp; imageMetadata != null &amp;&amp;
+<i>678</i>&nbsp;                    imageMetadata.localColorTable != null) {
+<i>679</i>&nbsp;                    // Writing a sequence and a local color table was
+<i>680</i>&nbsp;                    // provided in the metadata of the first image: use it.
+<i>681</i>&nbsp;                    streamMetadata.globalColorTable =
+<i>682</i>&nbsp;                        imageMetadata.localColorTable;
+<i>683</i>&nbsp;                } else if (imageMetadata == null ||
+<i>684</i>&nbsp;                           imageMetadata.localColorTable == null) {
+<i>685</i>&nbsp;                    // Create a color table.
+<i>686</i>&nbsp;                    streamMetadata.globalColorTable =
+<i>687</i>&nbsp;                        createColorTable(colorModel, sampleModel);
+<i>688</i>&nbsp;                }
+<i>689</i>&nbsp;            }
+<i>690</i>&nbsp;
+<i>691</i>&nbsp;            // Set the Global Color Table. At this point it should be
+<i>692</i>&nbsp;            // A) the global color table provided in stream metadata, if any;
+<i>693</i>&nbsp;            // B) the local color table of the image metadata, if any, if
+<i>694</i>&nbsp;            //    writing a sequence;
+<i>695</i>&nbsp;            // C) a table created on the basis of the first image ColorModel
+<i>696</i>&nbsp;            //    and SampleModel if no local color table is available; or
+<i>697</i>&nbsp;            // D) null if none of the foregoing conditions obtain (which
+<i>698</i>&nbsp;            //    should only be if a sequence is not being written and
+<i>699</i>&nbsp;            //    a local color table is provided in image metadata).
+<i>700</i>&nbsp;            globalColorTable = streamMetadata.globalColorTable;
+<i>701</i>&nbsp;
+<i>702</i>&nbsp;            // Write the header.
+<i>703</i>&nbsp;            int bitsPerPixel;
+<i>704</i>&nbsp;            if (globalColorTable != null) {
+<i>705</i>&nbsp;                bitsPerPixel = getNumBits(globalColorTable.length/3);
+<i>706</i>&nbsp;            } else if (imageMetadata != null &amp;&amp;
+<i>707</i>&nbsp;                       imageMetadata.localColorTable != null) {
+<i>708</i>&nbsp;                bitsPerPixel =
+<i>709</i>&nbsp;                    getNumBits(imageMetadata.localColorTable.length/3);
+<i>710</i>&nbsp;            } else {
+<i>711</i>&nbsp;                bitsPerPixel = sampleModel.getSampleSize(0);
+<i>712</i>&nbsp;            }
+<i>713</i>&nbsp;            writeHeader(streamMetadata, bitsPerPixel);
+<i>714</i>&nbsp;        } else if (isWritingSequence) {
+<i>715</i>&nbsp;            globalColorTable = theStreamMetadata.globalColorTable;
+<i>716</i>&nbsp;        } else {
+<i>717</i>&nbsp;            throw new IllegalArgumentException(&quot;Must write header for single image!&quot;);
+<i>718</i>&nbsp;        }
+<i>719</i>&nbsp;
+<i>720</i>&nbsp;        // Write extension blocks, Image Descriptor, and image data.
+<i>721</i>&nbsp;        writeImage(iioimage.getRenderedImage(), imageMetadata, p,
+<i>722</i>&nbsp;                   globalColorTable, sourceBounds, destSize);
+<i>723</i>&nbsp;
+<i>724</i>&nbsp;        // Write the trailer.
+<i>725</i>&nbsp;        if (writeTrailer) {
+<i>726</i>&nbsp;            writeTrailer();
+<i>727</i>&nbsp;        }
+<i>728</i>&nbsp;    }
+<i>729</i>&nbsp;
+<i>730</i>&nbsp;    /**
+<i>731</i>&nbsp;     * Writes any extension blocks, the Image Descriptor, and the image data
+<i>732</i>&nbsp;     *
+<i>733</i>&nbsp;     * @param iioimage The image and image metadata.
+<i>734</i>&nbsp;     * @param param The write parameters.
+<i>735</i>&nbsp;     * @param globalColorTable The Global Color Table.
+<i>736</i>&nbsp;     * @param sourceBounds The source region.
+<i>737</i>&nbsp;     * @param destSize The destination dimensions.
+<i>738</i>&nbsp;     */
+<i>739</i>&nbsp;    private void writeImage(RenderedImage image,
+<i>740</i>&nbsp;                            GIFWritableImageMetadata imageMetadata,
+<i>741</i>&nbsp;                            ImageWriteParam param, byte[] globalColorTable,
+<i>742</i>&nbsp;                            Rectangle sourceBounds, Dimension destSize)
+<i>743</i>&nbsp;      throws IOException {
+<i>744</i>&nbsp;        ColorModel colorModel = image.getColorModel();
+<i>745</i>&nbsp;        SampleModel sampleModel = image.getSampleModel();
+<i>746</i>&nbsp;
+<i>747</i>&nbsp;        boolean writeGraphicsControlExtension;
+<i>748</i>&nbsp;        if (imageMetadata == null) {
+<i>749</i>&nbsp;            // Create default metadata.
+<i>750</i>&nbsp;            imageMetadata = (GIFWritableImageMetadata)getDefaultImageMetadata(
+<i>751</i>&nbsp;                new ImageTypeSpecifier(image), param);
+<i>752</i>&nbsp;
+<i>753</i>&nbsp;            // Set GraphicControlExtension flag only if there is
+<i>754</i>&nbsp;            // transparency.
+<i>755</i>&nbsp;            writeGraphicsControlExtension = imageMetadata.transparentColorFlag;
+<i>756</i>&nbsp;        } else {
+<i>757</i>&nbsp;            // Check for GraphicControlExtension element.
+<i>758</i>&nbsp;            NodeList list = null;
+<i>759</i>&nbsp;            try {
+<i>760</i>&nbsp;                IIOMetadataNode root = (IIOMetadataNode)
+<i>761</i>&nbsp;                    imageMetadata.getAsTree(IMAGE_METADATA_NAME);
+<i>762</i>&nbsp;                list = root.getElementsByTagName(&quot;GraphicControlExtension&quot;);
+<i>763</i>&nbsp;            } catch(IllegalArgumentException iae) {
+<i>764</i>&nbsp;                // Should never happen.
+<i>765</i>&nbsp;            }
+<i>766</i>&nbsp;
+<i>767</i>&nbsp;            // Set GraphicControlExtension flag if element present.
+<i>768</i>&nbsp;            writeGraphicsControlExtension =
+<i>769</i>&nbsp;                list != null &amp;&amp; list.getLength() &gt; 0;
+<i>770</i>&nbsp;
+<i>771</i>&nbsp;            // If progressive mode is not MODE_COPY_FROM_METADATA, ensure
+<i>772</i>&nbsp;            // the interlacing is set per the ImageWriteParam mode setting.
+<i>773</i>&nbsp;            if (param != null &amp;&amp; param.canWriteProgressive()) {
+<i>774</i>&nbsp;                if (param.getProgressiveMode() ==
+<i>775</i>&nbsp;                    ImageWriteParam.MODE_DISABLED) {
+<i>776</i>&nbsp;                    imageMetadata.interlaceFlag = false;
+<i>777</i>&nbsp;                } else if (param.getProgressiveMode() ==
+<i>778</i>&nbsp;                           ImageWriteParam.MODE_DEFAULT) {
+<i>779</i>&nbsp;                    imageMetadata.interlaceFlag = true;
+<i>780</i>&nbsp;                }
+<i>781</i>&nbsp;            }
+<i>782</i>&nbsp;        }
+<i>783</i>&nbsp;
+<i>784</i>&nbsp;        // Unset local color table if equal to global color table.
+<i>785</i>&nbsp;        if (Arrays.equals(globalColorTable, imageMetadata.localColorTable)) {
+<i>786</i>&nbsp;            imageMetadata.localColorTable = null;
+<i>787</i>&nbsp;        }
+<i>788</i>&nbsp;
+<i>789</i>&nbsp;        // Override dimensions
+<i>790</i>&nbsp;        imageMetadata.imageWidth = destSize.width;
+<i>791</i>&nbsp;        imageMetadata.imageHeight = destSize.height;
+<i>792</i>&nbsp;
+<i>793</i>&nbsp;        // Write Graphics Control Extension.
+<i>794</i>&nbsp;        if (writeGraphicsControlExtension) {
+<i>795</i>&nbsp;            writeGraphicControlExtension(imageMetadata);
+<i>796</i>&nbsp;        }
+<i>797</i>&nbsp;
+<i>798</i>&nbsp;        // Write extension blocks.
+<i>799</i>&nbsp;        writePlainTextExtension(imageMetadata);
+<i>800</i>&nbsp;        writeApplicationExtension(imageMetadata);
+<i>801</i>&nbsp;        writeCommentExtension(imageMetadata);
+<i>802</i>&nbsp;
+<i>803</i>&nbsp;        // Write Image Descriptor
+<i>804</i>&nbsp;        int bitsPerPixel =
+<i>805</i>&nbsp;            getNumBits(imageMetadata.localColorTable == null ?
+<i>806</i>&nbsp;                       (globalColorTable == null ?
+<i>807</i>&nbsp;                        sampleModel.getSampleSize(0) :
+<i>808</i>&nbsp;                        globalColorTable.length/3) :
+<i>809</i>&nbsp;                       imageMetadata.localColorTable.length/3);
+<i>810</i>&nbsp;        writeImageDescriptor(imageMetadata, bitsPerPixel);
+<i>811</i>&nbsp;
+<i>812</i>&nbsp;        // Write image data
+<i>813</i>&nbsp;        writeRasterData(image, sourceBounds, destSize,
+<i>814</i>&nbsp;                        param, imageMetadata.interlaceFlag);
+<i>815</i>&nbsp;    }
+<i>816</i>&nbsp;
+<i>817</i>&nbsp;    private void writeRows(RenderedImage image, LZWCompressor compressor,
+<i>818</i>&nbsp;                           int sx, int sdx, int sy, int sdy, int sw,
+<i>819</i>&nbsp;                           int dy, int ddy, int dw, int dh,
+<i>820</i>&nbsp;                           int numRowsWritten, int progressReportRowPeriod)
+<i>821</i>&nbsp;      throws IOException {
+<i>822</i>&nbsp;        if (DEBUG) System.out.println(&quot;Writing unoptimized&quot;);
+<i>823</i>&nbsp;
+<i>824</i>&nbsp;        int[] sbuf = new int[sw];
+<i>825</i>&nbsp;        byte[] dbuf = new byte[dw];
+<i>826</i>&nbsp;
+<i>827</i>&nbsp;        Raster raster =
+<i>828</i>&nbsp;            image.getNumXTiles() == 1 &amp;&amp; image.getNumYTiles() == 1 ?
+<i>829</i>&nbsp;            image.getTile(0, 0) : image.getData();
+<i>830</i>&nbsp;        for (int y = dy; y &lt; dh; y += ddy) {
+<i>831</i>&nbsp;            if (numRowsWritten % progressReportRowPeriod == 0) {
+<i>832</i>&nbsp;                if (abortRequested()) {
+<i>833</i>&nbsp;                    processWriteAborted();
+<i>834</i>&nbsp;                    return;
+<i>835</i>&nbsp;                }
+<i>836</i>&nbsp;                processImageProgress((numRowsWritten*100.0F)/dh);
+<i>837</i>&nbsp;            }
+<i>838</i>&nbsp;
+<i>839</i>&nbsp;            raster.getSamples(sx, sy, sw, 1, 0, sbuf);
+<i>840</i>&nbsp;            for (int i = 0, j = 0; i &lt; dw; i++, j += sdx) {
+<i>841</i>&nbsp;                dbuf[i] = (byte)sbuf[j];
+<i>842</i>&nbsp;            }
+<i>843</i>&nbsp;            compressor.compress(dbuf, 0, dw);
+<i>844</i>&nbsp;            numRowsWritten++;
+<i>845</i>&nbsp;            sy += sdy;
+<i>846</i>&nbsp;        }
+<i>847</i>&nbsp;    }
+<i>848</i>&nbsp;
+<i>849</i>&nbsp;    private void writeRowsOpt(byte[] data, int offset, int lineStride,
+<i>850</i>&nbsp;                              LZWCompressor compressor,
+<i>851</i>&nbsp;                              int dy, int ddy, int dw, int dh,
+<i>852</i>&nbsp;                              int numRowsWritten, int progressReportRowPeriod)
+<i>853</i>&nbsp;      throws IOException {
+<i>854</i>&nbsp;        if (DEBUG) System.out.println(&quot;Writing optimized&quot;);
+<i>855</i>&nbsp;
+<i>856</i>&nbsp;        offset += dy*lineStride;
+<i>857</i>&nbsp;        lineStride *= ddy;
+<i>858</i>&nbsp;        for (int y = dy; y &lt; dh; y += ddy) {
+<i>859</i>&nbsp;            if (numRowsWritten % progressReportRowPeriod == 0) {
+<i>860</i>&nbsp;                if (abortRequested()) {
+<i>861</i>&nbsp;                    processWriteAborted();
+<i>862</i>&nbsp;                    return;
+<i>863</i>&nbsp;                }
+<i>864</i>&nbsp;                processImageProgress((numRowsWritten*100.0F)/dh);
+<i>865</i>&nbsp;            }
+<i>866</i>&nbsp;
+<i>867</i>&nbsp;            compressor.compress(data, offset, dw);
+<i>868</i>&nbsp;            numRowsWritten++;
+<i>869</i>&nbsp;            offset += lineStride;
+<i>870</i>&nbsp;        }
+<i>871</i>&nbsp;    }
+<i>872</i>&nbsp;
+<i>873</i>&nbsp;    private void writeRasterData(RenderedImage image,
+<i>874</i>&nbsp;                                 Rectangle sourceBounds,
+<i>875</i>&nbsp;                                 Dimension destSize,
+<i>876</i>&nbsp;                                 ImageWriteParam param,
+<i>877</i>&nbsp;                                 boolean interlaceFlag) throws IOException {
+<i>878</i>&nbsp;
+<i>879</i>&nbsp;        int sourceXOffset = sourceBounds.x;
+<i>880</i>&nbsp;        int sourceYOffset = sourceBounds.y;
+<i>881</i>&nbsp;        int sourceWidth = sourceBounds.width;
+<i>882</i>&nbsp;        int sourceHeight = sourceBounds.height;
+<i>883</i>&nbsp;
+<i>884</i>&nbsp;        int destWidth = destSize.width;
+<i>885</i>&nbsp;        int destHeight = destSize.height;
+<i>886</i>&nbsp;
+<i>887</i>&nbsp;        int periodX;
+<i>888</i>&nbsp;        int periodY;
+<i>889</i>&nbsp;        if (param == null) {
+<i>890</i>&nbsp;            periodX = 1;
+<i>891</i>&nbsp;            periodY = 1;
+<i>892</i>&nbsp;        } else {
+<i>893</i>&nbsp;            periodX = param.getSourceXSubsampling();
+<i>894</i>&nbsp;            periodY = param.getSourceYSubsampling();
+<i>895</i>&nbsp;        }
+<i>896</i>&nbsp;
+<i>897</i>&nbsp;        SampleModel sampleModel = image.getSampleModel();
+<i>898</i>&nbsp;        int bitsPerPixel = sampleModel.getSampleSize()[0];
+<i>899</i>&nbsp;
+<i>900</i>&nbsp;        int initCodeSize = bitsPerPixel;
+<i>901</i>&nbsp;        if (initCodeSize == 1) {
+<i>902</i>&nbsp;            initCodeSize++;
+<i>903</i>&nbsp;        }
+<i>904</i>&nbsp;        stream.write(initCodeSize);
+<i>905</i>&nbsp;
+<i>906</i>&nbsp;        LZWCompressor compressor =
+<i>907</i>&nbsp;            new LZWCompressor(stream, initCodeSize, false);
+<i>908</i>&nbsp;
+<i>909</i>&nbsp;        /* At this moment we know that input image is indexed image.
+<i>910</i>&nbsp;         * We can directly copy data iff:
+<i>911</i>&nbsp;         *   - no subsampling required (periodX = 1, periodY = 0)
+<i>912</i>&nbsp;         *   - we can access data directly (image is non-tiled,
+<i>913</i>&nbsp;         *     i.e. image data are in single block)
+<i>914</i>&nbsp;         *   - we can calculate offset in data buffer (next 3 lines)
+<i>915</i>&nbsp;         */
+<i>916</i>&nbsp;        boolean isOptimizedCase =
+<i>917</i>&nbsp;            periodX == 1 &amp;&amp; periodY == 1 &amp;&amp;
+<i>918</i>&nbsp;            image.getNumXTiles() == 1 &amp;&amp; image.getNumYTiles() == 1 &amp;&amp;
+<i>919</i>&nbsp;            sampleModel instanceof ComponentSampleModel &amp;&amp;
+<i>920</i>&nbsp;            image.getTile(0, 0) instanceof ByteComponentRaster &amp;&amp;
+<i>921</i>&nbsp;            image.getTile(0, 0).getDataBuffer() instanceof DataBufferByte;
+<i>922</i>&nbsp;
+<i>923</i>&nbsp;        int numRowsWritten = 0;
+<i>924</i>&nbsp;
+<i>925</i>&nbsp;        int progressReportRowPeriod = Math.max(destHeight/20, 1);
+<i>926</i>&nbsp;
+<i>927</i>&nbsp;        processImageStarted(imageIndex);
+<i>928</i>&nbsp;
+<i>929</i>&nbsp;        if (interlaceFlag) {
+<i>930</i>&nbsp;            if (DEBUG) System.out.println(&quot;Writing interlaced&quot;);
+<i>931</i>&nbsp;
+<i>932</i>&nbsp;            if (isOptimizedCase) {
+<i>933</i>&nbsp;                ByteComponentRaster tile =
+<i>934</i>&nbsp;                    (ByteComponentRaster)image.getTile(0, 0);
+<i>935</i>&nbsp;                byte[] data = ((DataBufferByte)tile.getDataBuffer()).getData();
+<i>936</i>&nbsp;                ComponentSampleModel csm =
+<i>937</i>&nbsp;                    (ComponentSampleModel)tile.getSampleModel();
+<i>938</i>&nbsp;                int offset = csm.getOffset(sourceXOffset, sourceYOffset, 0);
+<i>939</i>&nbsp;                // take into account the raster data offset
+<i>940</i>&nbsp;                offset += tile.getDataOffset(0);
+<i>941</i>&nbsp;                int lineStride = csm.getScanlineStride();
+<i>942</i>&nbsp;
+<i>943</i>&nbsp;                writeRowsOpt(data, offset, lineStride, compressor,
+<i>944</i>&nbsp;                             0, 8, destWidth, destHeight,
+<i>945</i>&nbsp;                             numRowsWritten, progressReportRowPeriod);
+<i>946</i>&nbsp;
+<i>947</i>&nbsp;                if (abortRequested()) {
+<i>948</i>&nbsp;                    return;
+<i>949</i>&nbsp;                }
+<i>950</i>&nbsp;
+<i>951</i>&nbsp;                numRowsWritten += destHeight/8;
+<i>952</i>&nbsp;
+<i>953</i>&nbsp;                writeRowsOpt(data, offset, lineStride, compressor,
+<i>954</i>&nbsp;                             4, 8, destWidth, destHeight,
+<i>955</i>&nbsp;                             numRowsWritten, progressReportRowPeriod);
+<i>956</i>&nbsp;
+<i>957</i>&nbsp;                if (abortRequested()) {
+<i>958</i>&nbsp;                    return;
+<i>959</i>&nbsp;                }
+<i>960</i>&nbsp;
+<i>961</i>&nbsp;                numRowsWritten += (destHeight - 4)/8;
+<i>962</i>&nbsp;
+<i>963</i>&nbsp;                writeRowsOpt(data, offset, lineStride, compressor,
+<i>964</i>&nbsp;                             2, 4, destWidth, destHeight,
+<i>965</i>&nbsp;                             numRowsWritten, progressReportRowPeriod);
+<i>966</i>&nbsp;
+<i>967</i>&nbsp;                if (abortRequested()) {
+<i>968</i>&nbsp;                    return;
+<i>969</i>&nbsp;                }
+<i>970</i>&nbsp;
+<i>971</i>&nbsp;                numRowsWritten += (destHeight - 2)/4;
+<i>972</i>&nbsp;
+<i>973</i>&nbsp;                writeRowsOpt(data, offset, lineStride, compressor,
+<i>974</i>&nbsp;                             1, 2, destWidth, destHeight,
+<i>975</i>&nbsp;                             numRowsWritten, progressReportRowPeriod);
+<i>976</i>&nbsp;            } else {
+<i>977</i>&nbsp;                writeRows(image, compressor,
+<i>978</i>&nbsp;                          sourceXOffset, periodX,
+<i>979</i>&nbsp;                          sourceYOffset, 8*periodY,
+<i>980</i>&nbsp;                          sourceWidth,
+<i>981</i>&nbsp;                          0, 8, destWidth, destHeight,
+<i>982</i>&nbsp;                          numRowsWritten, progressReportRowPeriod);
+<i>983</i>&nbsp;
+<i>984</i>&nbsp;                if (abortRequested()) {
+<i>985</i>&nbsp;                    return;
+<i>986</i>&nbsp;                }
+<i>987</i>&nbsp;
+<i>988</i>&nbsp;                numRowsWritten += destHeight/8;
+<i>989</i>&nbsp;
+<i>990</i>&nbsp;                writeRows(image, compressor, sourceXOffset, periodX,
+<i>991</i>&nbsp;                          sourceYOffset + 4*periodY, 8*periodY,
+<i>992</i>&nbsp;                          sourceWidth,
+<i>993</i>&nbsp;                          4, 8, destWidth, destHeight,
+<i>994</i>&nbsp;                          numRowsWritten, progressReportRowPeriod);
+<i>995</i>&nbsp;
+<i>996</i>&nbsp;                if (abortRequested()) {
+<i>997</i>&nbsp;                    return;
+<i>998</i>&nbsp;                }
+<i>999</i>&nbsp;
+<i>1000</i>&nbsp;                numRowsWritten += (destHeight - 4)/8;
+<i>1001</i>&nbsp;
+<i>1002</i>&nbsp;                writeRows(image, compressor, sourceXOffset, periodX,
+<i>1003</i>&nbsp;                          sourceYOffset + 2*periodY, 4*periodY,
+<i>1004</i>&nbsp;                          sourceWidth,
+<i>1005</i>&nbsp;                          2, 4, destWidth, destHeight,
+<i>1006</i>&nbsp;                          numRowsWritten, progressReportRowPeriod);
+<i>1007</i>&nbsp;
+<i>1008</i>&nbsp;                if (abortRequested()) {
+<i>1009</i>&nbsp;                    return;
+<i>1010</i>&nbsp;                }
+<i>1011</i>&nbsp;
+<i>1012</i>&nbsp;                numRowsWritten += (destHeight - 2)/4;
+<i>1013</i>&nbsp;
+<i>1014</i>&nbsp;                writeRows(image, compressor, sourceXOffset, periodX,
+<i>1015</i>&nbsp;                          sourceYOffset + periodY, 2*periodY,
+<i>1016</i>&nbsp;                          sourceWidth,
+<i>1017</i>&nbsp;                          1, 2, destWidth, destHeight,
+<i>1018</i>&nbsp;                          numRowsWritten, progressReportRowPeriod);
+<i>1019</i>&nbsp;            }
+<i>1020</i>&nbsp;        } else {
+<i>1021</i>&nbsp;            if (DEBUG) System.out.println(&quot;Writing non-interlaced&quot;);
+<i>1022</i>&nbsp;
+<i>1023</i>&nbsp;            if (isOptimizedCase) {
+<i>1024</i>&nbsp;                Raster tile = image.getTile(0, 0);
+<i>1025</i>&nbsp;                byte[] data = ((DataBufferByte)tile.getDataBuffer()).getData();
+<i>1026</i>&nbsp;                ComponentSampleModel csm =
+<i>1027</i>&nbsp;                    (ComponentSampleModel)tile.getSampleModel();
+<i>1028</i>&nbsp;                int offset = csm.getOffset(sourceXOffset, sourceYOffset, 0);
+<i>1029</i>&nbsp;                int lineStride = csm.getScanlineStride();
+<i>1030</i>&nbsp;
+<i>1031</i>&nbsp;                writeRowsOpt(data, offset, lineStride, compressor,
+<i>1032</i>&nbsp;                             0, 1, destWidth, destHeight,
+<i>1033</i>&nbsp;                             numRowsWritten, progressReportRowPeriod);
+<i>1034</i>&nbsp;            } else {
+<i>1035</i>&nbsp;                writeRows(image, compressor,
+<i>1036</i>&nbsp;                          sourceXOffset, periodX,
+<i>1037</i>&nbsp;                          sourceYOffset, periodY,
+<i>1038</i>&nbsp;                          sourceWidth,
+<i>1039</i>&nbsp;                          0, 1, destWidth, destHeight,
+<i>1040</i>&nbsp;                          numRowsWritten, progressReportRowPeriod);
+<i>1041</i>&nbsp;            }
+<i>1042</i>&nbsp;        }
+<i>1043</i>&nbsp;
+<i>1044</i>&nbsp;        if (abortRequested()) {
+<i>1045</i>&nbsp;            return;
+<i>1046</i>&nbsp;        }
+<i>1047</i>&nbsp;
+<i>1048</i>&nbsp;        processImageProgress(100.0F);
+<i>1049</i>&nbsp;
+<i>1050</i>&nbsp;        compressor.flush();
+<i>1051</i>&nbsp;
+<i>1052</i>&nbsp;        stream.write(0x00);
+<i>1053</i>&nbsp;
+<i>1054</i>&nbsp;        processImageComplete();
+<i>1055</i>&nbsp;    }
+<i>1056</i>&nbsp;
+<i>1057</i>&nbsp;    private void writeHeader(String version,
+<i>1058</i>&nbsp;                             int logicalScreenWidth,
+<i>1059</i>&nbsp;                             int logicalScreenHeight,
+<i>1060</i>&nbsp;                             int colorResolution,
+<i>1061</i>&nbsp;                             int pixelAspectRatio,
+<i>1062</i>&nbsp;                             int backgroundColorIndex,
+<i>1063</i>&nbsp;                             boolean sortFlag,
+<i>1064</i>&nbsp;                             int bitsPerPixel,
+<i>1065</i>&nbsp;                             byte[] globalColorTable) throws IOException {
+<i>1066</i>&nbsp;        try {
+<i>1067</i>&nbsp;            // Signature
+<i>1068</i>&nbsp;            stream.writeBytes(&quot;GIF&quot;+version);
+<i>1069</i>&nbsp;
+<i>1070</i>&nbsp;            // Screen Descriptor
+<i>1071</i>&nbsp;            // Width
+<i>1072</i>&nbsp;            stream.writeShort((short)logicalScreenWidth);
+<i>1073</i>&nbsp;
+<i>1074</i>&nbsp;            // Height
+<i>1075</i>&nbsp;            stream.writeShort((short)logicalScreenHeight);
+<i>1076</i>&nbsp;
+<i>1077</i>&nbsp;            // Global Color Table
+<i>1078</i>&nbsp;            // Packed fields
+<i>1079</i>&nbsp;            int packedFields = globalColorTable != null ? 0x80 : 0x00;
+<i>1080</i>&nbsp;            packedFields |= ((colorResolution - 1) &amp; 0x7) &lt;&lt; 4;
+<i>1081</i>&nbsp;            if (sortFlag) {
+<i>1082</i>&nbsp;                packedFields |= 0x8;
+<i>1083</i>&nbsp;            }
+<i>1084</i>&nbsp;            packedFields |= (bitsPerPixel - 1);
+<i>1085</i>&nbsp;            stream.write(packedFields);
+<i>1086</i>&nbsp;
+<i>1087</i>&nbsp;            // Background color index
+<i>1088</i>&nbsp;            stream.write(backgroundColorIndex);
+<i>1089</i>&nbsp;
+<i>1090</i>&nbsp;            // Pixel aspect ratio
+<i>1091</i>&nbsp;            stream.write(pixelAspectRatio);
+<i>1092</i>&nbsp;
+<i>1093</i>&nbsp;            // Global Color Table
+<i>1094</i>&nbsp;            if (globalColorTable != null) {
+<i>1095</i>&nbsp;                stream.write(globalColorTable);
+<i>1096</i>&nbsp;            }
+<i>1097</i>&nbsp;        } catch (IOException e) {
+<i>1098</i>&nbsp;            throw new IIOException(&quot;I/O error writing header!&quot;, e);
+<i>1099</i>&nbsp;        }
+<i>1100</i>&nbsp;    }
+<i>1101</i>&nbsp;
+<i>1102</i>&nbsp;    private void writeHeader(IIOMetadata streamMetadata, int bitsPerPixel)
+<i>1103</i>&nbsp;      throws IOException {
+<i>1104</i>&nbsp;
+<i>1105</i>&nbsp;        GIFWritableStreamMetadata sm;
+<i>1106</i>&nbsp;        if (streamMetadata instanceof GIFWritableStreamMetadata) {
+<i>1107</i>&nbsp;            sm = (GIFWritableStreamMetadata)streamMetadata;
+<i>1108</i>&nbsp;        } else {
+<i>1109</i>&nbsp;            sm = new GIFWritableStreamMetadata();
+<i>1110</i>&nbsp;            Node root =
+<i>1111</i>&nbsp;                streamMetadata.getAsTree(STREAM_METADATA_NAME);
+<i>1112</i>&nbsp;            sm.setFromTree(STREAM_METADATA_NAME, root);
+<i>1113</i>&nbsp;        }
+<i>1114</i>&nbsp;
+<i>1115</i>&nbsp;        writeHeader(sm.version,
+<i>1116</i>&nbsp;                    sm.logicalScreenWidth,
+<i>1117</i>&nbsp;                    sm.logicalScreenHeight,
+<i>1118</i>&nbsp;                    sm.colorResolution,
+<i>1119</i>&nbsp;                    sm.pixelAspectRatio,
+<i>1120</i>&nbsp;                    sm.backgroundColorIndex,
+<i>1121</i>&nbsp;                    sm.sortFlag,
+<i>1122</i>&nbsp;                    bitsPerPixel,
+<i>1123</i>&nbsp;                    sm.globalColorTable);
+<i>1124</i>&nbsp;    }
+<i>1125</i>&nbsp;
+<i>1126</i>&nbsp;    private void writeGraphicControlExtension(int disposalMethod,
+<i>1127</i>&nbsp;                                              boolean userInputFlag,
+<i>1128</i>&nbsp;                                              boolean transparentColorFlag,
+<i>1129</i>&nbsp;                                              int delayTime,
+<i>1130</i>&nbsp;                                              int transparentColorIndex)
+<i>1131</i>&nbsp;      throws IOException {
+<i>1132</i>&nbsp;        try {
+<i>1133</i>&nbsp;            stream.write(0x21);
+<i>1134</i>&nbsp;            stream.write(0xf9);
+<i>1135</i>&nbsp;
+<i>1136</i>&nbsp;            stream.write(4);
+<i>1137</i>&nbsp;
+<i>1138</i>&nbsp;            int packedFields = (disposalMethod &amp; 0x3) &lt;&lt; 2;
+<i>1139</i>&nbsp;            if (userInputFlag) {
+<i>1140</i>&nbsp;                packedFields |= 0x2;
+<i>1141</i>&nbsp;            }
+<i>1142</i>&nbsp;            if (transparentColorFlag) {
+<i>1143</i>&nbsp;                packedFields |= 0x1;
+<i>1144</i>&nbsp;            }
+<i>1145</i>&nbsp;            stream.write(packedFields);
+<i>1146</i>&nbsp;
+<i>1147</i>&nbsp;            stream.writeShort((short)delayTime);
+<i>1148</i>&nbsp;
+<i>1149</i>&nbsp;            stream.write(transparentColorIndex);
+<i>1150</i>&nbsp;            stream.write(0x00);
+<i>1151</i>&nbsp;        } catch (IOException e) {
+<i>1152</i>&nbsp;            throw new IIOException(&quot;I/O error writing Graphic Control Extension!&quot;, e);
+<i>1153</i>&nbsp;        }
+<i>1154</i>&nbsp;    }
+<i>1155</i>&nbsp;
+<i>1156</i>&nbsp;    private void writeGraphicControlExtension(GIFWritableImageMetadata im)
+<i>1157</i>&nbsp;      throws IOException {
+<i>1158</i>&nbsp;        writeGraphicControlExtension(im.disposalMethod,
+<i>1159</i>&nbsp;                                     im.userInputFlag,
+<i>1160</i>&nbsp;                                     im.transparentColorFlag,
+<i>1161</i>&nbsp;                                     im.delayTime,
+<i>1162</i>&nbsp;                                     im.transparentColorIndex);
+<i>1163</i>&nbsp;    }
+<i>1164</i>&nbsp;
+<i>1165</i>&nbsp;    private void writeBlocks(byte[] data) throws IOException {
+<i>1166</i>&nbsp;        if (data != null &amp;&amp; data.length &gt; 0) {
+<i>1167</i>&nbsp;            int offset = 0;
+<i>1168</i>&nbsp;            while (offset &lt; data.length) {
+<i>1169</i>&nbsp;                int len = Math.min(data.length - offset, 255);
+<i>1170</i>&nbsp;                stream.write(len);
+<i>1171</i>&nbsp;                stream.write(data, offset, len);
+<i>1172</i>&nbsp;                offset += len;
+<i>1173</i>&nbsp;            }
+<i>1174</i>&nbsp;        }
+<i>1175</i>&nbsp;    }
+<i>1176</i>&nbsp;
+<i>1177</i>&nbsp;    private void writePlainTextExtension(GIFWritableImageMetadata im)
+<i>1178</i>&nbsp;      throws IOException {
+<i>1179</i>&nbsp;        if (im.hasPlainTextExtension) {
+<i>1180</i>&nbsp;            try {
+<i>1181</i>&nbsp;                stream.write(0x21);
+<i>1182</i>&nbsp;                stream.write(0x1);
+<i>1183</i>&nbsp;
+<i>1184</i>&nbsp;                stream.write(12);
+<i>1185</i>&nbsp;
+<i>1186</i>&nbsp;                stream.writeShort(im.textGridLeft);
+<i>1187</i>&nbsp;                stream.writeShort(im.textGridTop);
+<i>1188</i>&nbsp;                stream.writeShort(im.textGridWidth);
+<i>1189</i>&nbsp;                stream.writeShort(im.textGridHeight);
+<i>1190</i>&nbsp;                stream.write(im.characterCellWidth);
+<i>1191</i>&nbsp;                stream.write(im.characterCellHeight);
+<i>1192</i>&nbsp;                stream.write(im.textForegroundColor);
+<i>1193</i>&nbsp;                stream.write(im.textBackgroundColor);
+<i>1194</i>&nbsp;
+<i>1195</i>&nbsp;                writeBlocks(im.text);
+<i>1196</i>&nbsp;
+<i>1197</i>&nbsp;                stream.write(0x00);
+<i>1198</i>&nbsp;            } catch (IOException e) {
+<i>1199</i>&nbsp;                throw new IIOException(&quot;I/O error writing Plain Text Extension!&quot;, e);
+<i>1200</i>&nbsp;            }
+<i>1201</i>&nbsp;        }
+<i>1202</i>&nbsp;    }
+<i>1203</i>&nbsp;
+<i>1204</i>&nbsp;    private void writeApplicationExtension(GIFWritableImageMetadata im)
+<i>1205</i>&nbsp;      throws IOException {
+<i>1206</i>&nbsp;        if (im.applicationIDs != null) {
+<i>1207</i>&nbsp;            Iterator iterIDs = im.applicationIDs.iterator();
+<i>1208</i>&nbsp;            Iterator iterCodes = im.authenticationCodes.iterator();
+<i>1209</i>&nbsp;            Iterator iterData = im.applicationData.iterator();
+<i>1210</i>&nbsp;
+<i>1211</i>&nbsp;            while (iterIDs.hasNext()) {
+<i>1212</i>&nbsp;                try {
+<i>1213</i>&nbsp;                    stream.write(0x21);
+<i>1214</i>&nbsp;                    stream.write(0xff);
+<i>1215</i>&nbsp;
+<i>1216</i>&nbsp;                    stream.write(11);
+<i>1217</i>&nbsp;                    stream.write((byte[])iterIDs.next(), 0, 8);
+<i>1218</i>&nbsp;                    stream.write((byte[])iterCodes.next(), 0, 3);
+<i>1219</i>&nbsp;
+<i>1220</i>&nbsp;                    writeBlocks((byte[])iterData.next());
+<i>1221</i>&nbsp;
+<i>1222</i>&nbsp;                    stream.write(0x00);
+<i>1223</i>&nbsp;                } catch (IOException e) {
+<i>1224</i>&nbsp;                    throw new IIOException(&quot;I/O error writing Application Extension!&quot;, e);
+<i>1225</i>&nbsp;                }
+<i>1226</i>&nbsp;            }
+<i>1227</i>&nbsp;        }
+<i>1228</i>&nbsp;    }
+<i>1229</i>&nbsp;
+<i>1230</i>&nbsp;    private void writeCommentExtension(GIFWritableImageMetadata im)
+<i>1231</i>&nbsp;      throws IOException {
+<i>1232</i>&nbsp;        if (im.comments != null) {
+<i>1233</i>&nbsp;            try {
+<i>1234</i>&nbsp;                Iterator iter = im.comments.iterator();
+<i>1235</i>&nbsp;                while (iter.hasNext()) {
+<i>1236</i>&nbsp;                    stream.write(0x21);
+<i>1237</i>&nbsp;                    stream.write(0xfe);
+<i>1238</i>&nbsp;                    writeBlocks((byte[])iter.next());
+<i>1239</i>&nbsp;                    stream.write(0x00);
+<i>1240</i>&nbsp;                }
+<i>1241</i>&nbsp;            } catch (IOException e) {
+<i>1242</i>&nbsp;                throw new IIOException(&quot;I/O error writing Comment Extension!&quot;, e);
+<i>1243</i>&nbsp;            }
+<i>1244</i>&nbsp;        }
+<i>1245</i>&nbsp;    }
+<i>1246</i>&nbsp;
+<i>1247</i>&nbsp;    private void writeImageDescriptor(int imageLeftPosition,
+<i>1248</i>&nbsp;                                      int imageTopPosition,
+<i>1249</i>&nbsp;                                      int imageWidth,
+<i>1250</i>&nbsp;                                      int imageHeight,
+<i>1251</i>&nbsp;                                      boolean interlaceFlag,
+<i>1252</i>&nbsp;                                      boolean sortFlag,
+<i>1253</i>&nbsp;                                      int bitsPerPixel,
+<i>1254</i>&nbsp;                                      byte[] localColorTable)
+<i>1255</i>&nbsp;      throws IOException {
+<i>1256</i>&nbsp;
+<i>1257</i>&nbsp;        try {
+<i>1258</i>&nbsp;            stream.write(0x2c);
+<i>1259</i>&nbsp;
+<i>1260</i>&nbsp;            stream.writeShort((short)imageLeftPosition);
+<i>1261</i>&nbsp;            stream.writeShort((short)imageTopPosition);
+<i>1262</i>&nbsp;            stream.writeShort((short)imageWidth);
+<i>1263</i>&nbsp;            stream.writeShort((short)imageHeight);
+<i>1264</i>&nbsp;
+<i>1265</i>&nbsp;            int packedFields = localColorTable != null ? 0x80 : 0x00;
+<i>1266</i>&nbsp;            if (interlaceFlag) {
+<i>1267</i>&nbsp;                packedFields |= 0x40;
+<i>1268</i>&nbsp;            }
+<i>1269</i>&nbsp;            if (sortFlag) {
+<i>1270</i>&nbsp;                packedFields |= 0x8;
+<i>1271</i>&nbsp;            }
+<i>1272</i>&nbsp;            packedFields |= (bitsPerPixel - 1);
+<i>1273</i>&nbsp;            stream.write(packedFields);
+<i>1274</i>&nbsp;
+<i>1275</i>&nbsp;            if (localColorTable != null) {
+<i>1276</i>&nbsp;                stream.write(localColorTable);
+<i>1277</i>&nbsp;            }
+<i>1278</i>&nbsp;        } catch (IOException e) {
+<i>1279</i>&nbsp;            throw new IIOException(&quot;I/O error writing Image Descriptor!&quot;, e);
+<i>1280</i>&nbsp;        }
+<i>1281</i>&nbsp;    }
+<i>1282</i>&nbsp;
+<i>1283</i>&nbsp;    private void writeImageDescriptor(GIFWritableImageMetadata imageMetadata,
+<i>1284</i>&nbsp;                                      int bitsPerPixel)
+<i>1285</i>&nbsp;      throws IOException {
+<i>1286</i>&nbsp;
+<i>1287</i>&nbsp;        writeImageDescriptor(imageMetadata.imageLeftPosition,
+<i>1288</i>&nbsp;                             imageMetadata.imageTopPosition,
+<i>1289</i>&nbsp;                             imageMetadata.imageWidth,
+<i>1290</i>&nbsp;                             imageMetadata.imageHeight,
+<i>1291</i>&nbsp;                             imageMetadata.interlaceFlag,
+<i>1292</i>&nbsp;                             imageMetadata.sortFlag,
+<i>1293</i>&nbsp;                             bitsPerPixel,
+<i>1294</i>&nbsp;                             imageMetadata.localColorTable);
+<i>1295</i>&nbsp;    }
+<i>1296</i>&nbsp;
+<i>1297</i>&nbsp;    private void writeTrailer() throws IOException {
+<i>1298</i>&nbsp;        stream.write(0x3b);
+<i>1299</i>&nbsp;    }
+<i>1300</i>&nbsp;}
+<i>1301</i>&nbsp;
+<i>1302</i>&nbsp;class GIFImageWriteParam extends ImageWriteParam {
+<i>1303</i>&nbsp;    GIFImageWriteParam(Locale locale) {
+<b class="nc"><i>1304</i>&nbsp;        super(locale);</b>
+<b class="nc"><i>1305</i>&nbsp;        this.canWriteCompressed = true;</b>
+<b class="nc"><i>1306</i>&nbsp;        this.canWriteProgressive = true;</b>
+<b class="nc"><i>1307</i>&nbsp;        this.compressionTypes = new String[] {&quot;LZW&quot;, &quot;lzw&quot;};</b>
+<b class="nc"><i>1308</i>&nbsp;        this.compressionType = compressionTypes[0];</b>
+<i>1309</i>&nbsp;    }
+<i>1310</i>&nbsp;
+<i>1311</i>&nbsp;    public void setCompressionMode(int mode) {
+<b class="nc"><i>1312</i>&nbsp;        if (mode == MODE_DISABLED) {</b>
+<b class="nc"><i>1313</i>&nbsp;            throw new UnsupportedOperationException(&quot;MODE_DISABLED is not supported.&quot;);</b>
+<i>1314</i>&nbsp;        }
+<b class="nc"><i>1315</i>&nbsp;        super.setCompressionMode(mode);</b>
+<i>1316</i>&nbsp;    }
+<i>1317</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

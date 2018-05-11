@@ -1,0 +1,456 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: IdentityHashtable</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: IdentityHashtable (com.sun.corba.se.impl.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">IdentityHashtable</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 97)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 1999, 2004, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;/*
+<i>27</i>&nbsp; * Licensed Materials - Property of IBM
+<i>28</i>&nbsp; * RMI-IIOP v1.0
+<i>29</i>&nbsp; * Copyright IBM Corp. 1998 1999  All Rights Reserved
+<i>30</i>&nbsp; *
+<i>31</i>&nbsp; */
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;package com.sun.corba.se.impl.util;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import java.util.Dictionary;
+<i>36</i>&nbsp;import java.util.Enumeration;
+<i>37</i>&nbsp;import java.util.NoSuchElementException;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**
+<i>40</i>&nbsp; * IdentityHashtable is a modified copy of the 1.1.6 Hashtable class which
+<i>41</i>&nbsp; * does not rely on the hashCode() and equals() methods of the key or value;
+<i>42</i>&nbsp; * instead, it uses the System.identityHashcode() method and pointer comparison.
+<i>43</i>&nbsp; * In addition, all synchronization has been removed.
+<i>44</i>&nbsp; */
+<i>45</i>&nbsp;public final class IdentityHashtable extends Dictionary {
+<i>46</i>&nbsp;    /**
+<i>47</i>&nbsp;     * The hash table data.
+<i>48</i>&nbsp;     */
+<i>49</i>&nbsp;    private transient IdentityHashtableEntry table[];
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    /**
+<i>52</i>&nbsp;     * The total number of entries in the hash table.
+<i>53</i>&nbsp;     */
+<i>54</i>&nbsp;    private transient int count;
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    /**
+<i>57</i>&nbsp;     * Rehashes the table when count exceeds this threshold.
+<i>58</i>&nbsp;     */
+<i>59</i>&nbsp;    private int threshold;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    /**
+<i>62</i>&nbsp;     * The load factor for the hashtable.
+<i>63</i>&nbsp;     */
+<i>64</i>&nbsp;    private float loadFactor;
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    /**
+<i>67</i>&nbsp;     * Constructs a new, empty hashtable with the specified initial
+<i>68</i>&nbsp;     * capacity and the specified load factor.
+<i>69</i>&nbsp;     *
+<i>70</i>&nbsp;     * @param      initialCapacity   the initial capacity of the hashtable.
+<i>71</i>&nbsp;     * @param      loadFactor        a number between 0.0 and 1.0.
+<i>72</i>&nbsp;     * @exception  IllegalArgumentException  if the initial capacity is less
+<i>73</i>&nbsp;     *               than or equal to zero, or if the load factor is less than
+<i>74</i>&nbsp;     *               or equal to zero.
+<i>75</i>&nbsp;     * @since      JDK1.0
+<i>76</i>&nbsp;     */
+<b class="nc"><i>77</i>&nbsp;    public IdentityHashtable(int initialCapacity, float loadFactor) {</b>
+<b class="nc"><i>78</i>&nbsp;        if ((initialCapacity &lt;= 0) || (loadFactor &lt;= 0.0)) {</b>
+<b class="nc"><i>79</i>&nbsp;            throw new IllegalArgumentException();</b>
+<i>80</i>&nbsp;        }
+<b class="nc"><i>81</i>&nbsp;        this.loadFactor = loadFactor;</b>
+<b class="nc"><i>82</i>&nbsp;        table = new IdentityHashtableEntry[initialCapacity];</b>
+<b class="nc"><i>83</i>&nbsp;        threshold = (int)(initialCapacity * loadFactor);</b>
+<i>84</i>&nbsp;    }
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    /**
+<i>87</i>&nbsp;     * Constructs a new, empty hashtable with the specified initial capacity
+<i>88</i>&nbsp;     * and default load factor.
+<i>89</i>&nbsp;     *
+<i>90</i>&nbsp;     * @param   initialCapacity   the initial capacity of the hashtable.
+<i>91</i>&nbsp;     * @since   JDK1.0
+<i>92</i>&nbsp;     */
+<i>93</i>&nbsp;    public IdentityHashtable(int initialCapacity) {
+<b class="nc"><i>94</i>&nbsp;        this(initialCapacity, 0.75f);</b>
+<i>95</i>&nbsp;    }
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    /**
+<i>98</i>&nbsp;     * Constructs a new, empty hashtable with a default capacity and load
+<i>99</i>&nbsp;     * factor.
+<i>100</i>&nbsp;     *
+<i>101</i>&nbsp;     * @since   JDK1.0
+<i>102</i>&nbsp;     */
+<i>103</i>&nbsp;    public IdentityHashtable() {
+<b class="nc"><i>104</i>&nbsp;        this(101, 0.75f);</b>
+<i>105</i>&nbsp;    }
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    /**
+<i>108</i>&nbsp;     * Returns the number of keys in this hashtable.
+<i>109</i>&nbsp;     *
+<i>110</i>&nbsp;     * @return  the number of keys in this hashtable.
+<i>111</i>&nbsp;     * @since   JDK1.0
+<i>112</i>&nbsp;     */
+<i>113</i>&nbsp;    public int size() {
+<b class="nc"><i>114</i>&nbsp;        return count;</b>
+<i>115</i>&nbsp;    }
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    /**
+<i>118</i>&nbsp;     * Tests if this hashtable maps no keys to values.
+<i>119</i>&nbsp;     *
+<i>120</i>&nbsp;     * @return  &lt;code&gt;true&lt;/code&gt; if this hashtable maps no keys to values;
+<i>121</i>&nbsp;     *          &lt;code&gt;false&lt;/code&gt; otherwise.
+<i>122</i>&nbsp;     * @since   JDK1.0
+<i>123</i>&nbsp;     */
+<i>124</i>&nbsp;    public boolean isEmpty() {
+<b class="nc"><i>125</i>&nbsp;        return count == 0;</b>
+<i>126</i>&nbsp;    }
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;    /**
+<i>129</i>&nbsp;     * Returns an enumeration of the keys in this hashtable.
+<i>130</i>&nbsp;     *
+<i>131</i>&nbsp;     * @return  an enumeration of the keys in this hashtable.
+<i>132</i>&nbsp;     * @see     java.util.Enumeration
+<i>133</i>&nbsp;     * @see     java.util.Hashtable#elements()
+<i>134</i>&nbsp;     * @since   JDK1.0
+<i>135</i>&nbsp;     */
+<i>136</i>&nbsp;    public Enumeration keys() {
+<b class="nc"><i>137</i>&nbsp;        return new IdentityHashtableEnumerator(table, true);</b>
+<i>138</i>&nbsp;    }
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;    /**
+<i>141</i>&nbsp;     * Returns an enumeration of the values in this hashtable.
+<i>142</i>&nbsp;     * Use the Enumeration methods on the returned object to fetch the elements
+<i>143</i>&nbsp;     * sequentially.
+<i>144</i>&nbsp;     *
+<i>145</i>&nbsp;     * @return  an enumeration of the values in this hashtable.
+<i>146</i>&nbsp;     * @see     java.util.Enumeration
+<i>147</i>&nbsp;     * @see     java.util.Hashtable#keys()
+<i>148</i>&nbsp;     * @since   JDK1.0
+<i>149</i>&nbsp;     */
+<i>150</i>&nbsp;    public Enumeration elements() {
+<b class="nc"><i>151</i>&nbsp;        return new IdentityHashtableEnumerator(table, false);</b>
+<i>152</i>&nbsp;    }
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;    /**
+<i>155</i>&nbsp;     * Tests if some key maps into the specified value in this hashtable.
+<i>156</i>&nbsp;     * This operation is more expensive than the &lt;code&gt;containsKey&lt;/code&gt;
+<i>157</i>&nbsp;     * method.
+<i>158</i>&nbsp;     *
+<i>159</i>&nbsp;     * @param      value   a value to search for.
+<i>160</i>&nbsp;     * @return     &lt;code&gt;true&lt;/code&gt; if some key maps to the
+<i>161</i>&nbsp;     *             &lt;code&gt;value&lt;/code&gt; argument in this hashtable;
+<i>162</i>&nbsp;     *             &lt;code&gt;false&lt;/code&gt; otherwise.
+<i>163</i>&nbsp;     * @exception  NullPointerException  if the value is &lt;code&gt;null&lt;/code&gt;.
+<i>164</i>&nbsp;     * @see        java.util.Hashtable#containsKey(java.lang.Object)
+<i>165</i>&nbsp;     * @since      JDK1.0
+<i>166</i>&nbsp;     */
+<i>167</i>&nbsp;    public boolean contains(Object value) {
+<b class="nc"><i>168</i>&nbsp;        if (value == null) {</b>
+<b class="nc"><i>169</i>&nbsp;            throw new NullPointerException();</b>
+<i>170</i>&nbsp;        }
+<i>171</i>&nbsp;
+<b class="nc"><i>172</i>&nbsp;        IdentityHashtableEntry tab[] = table;</b>
+<b class="nc"><i>173</i>&nbsp;        for (int i = tab.length ; i-- &gt; 0 ;) {</b>
+<b class="nc"><i>174</i>&nbsp;            for (IdentityHashtableEntry e = tab[i] ; e != null ; e = e.next) {</b>
+<b class="nc"><i>175</i>&nbsp;                if (e.value == value) {</b>
+<b class="nc"><i>176</i>&nbsp;                    return true;</b>
+<i>177</i>&nbsp;                }
+<i>178</i>&nbsp;            }
+<i>179</i>&nbsp;        }
+<b class="nc"><i>180</i>&nbsp;        return false;</b>
+<i>181</i>&nbsp;    }
+<i>182</i>&nbsp;
+<i>183</i>&nbsp;    /**
+<i>184</i>&nbsp;     * Tests if the specified object is a key in this hashtable.
+<i>185</i>&nbsp;     *
+<i>186</i>&nbsp;     * @param   key   possible key.
+<i>187</i>&nbsp;     * @return  &lt;code&gt;true&lt;/code&gt; if the specified object is a key in this
+<i>188</i>&nbsp;     *          hashtable; &lt;code&gt;false&lt;/code&gt; otherwise.
+<i>189</i>&nbsp;     * @see     java.util.Hashtable#contains(java.lang.Object)
+<i>190</i>&nbsp;     * @since   JDK1.0
+<i>191</i>&nbsp;     */
+<i>192</i>&nbsp;    public boolean containsKey(Object key) {
+<b class="nc"><i>193</i>&nbsp;        IdentityHashtableEntry tab[] = table;</b>
+<b class="nc"><i>194</i>&nbsp;        int hash = System.identityHashCode(key);</b>
+<b class="nc"><i>195</i>&nbsp;        int index = (hash &amp; 0x7FFFFFFF) % tab.length;</b>
+<b class="nc"><i>196</i>&nbsp;        for (IdentityHashtableEntry e = tab[index] ; e != null ; e = e.next) {</b>
+<b class="nc"><i>197</i>&nbsp;            if ((e.hash == hash) &amp;&amp; e.key == key) {</b>
+<b class="nc"><i>198</i>&nbsp;                return true;</b>
+<i>199</i>&nbsp;            }
+<i>200</i>&nbsp;        }
+<b class="nc"><i>201</i>&nbsp;        return false;</b>
+<i>202</i>&nbsp;    }
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;    /**
+<i>205</i>&nbsp;     * Returns the value to which the specified key is mapped in this hashtable.
+<i>206</i>&nbsp;     *
+<i>207</i>&nbsp;     * @param   key   a key in the hashtable.
+<i>208</i>&nbsp;     * @return  the value to which the key is mapped in this hashtable;
+<i>209</i>&nbsp;     *          &lt;code&gt;null&lt;/code&gt; if the key is not mapped to any value in
+<i>210</i>&nbsp;     *          this hashtable.
+<i>211</i>&nbsp;     * @see     java.util.Hashtable#put(java.lang.Object, java.lang.Object)
+<i>212</i>&nbsp;     * @since   JDK1.0
+<i>213</i>&nbsp;     */
+<i>214</i>&nbsp;    public Object get(Object key) {
+<b class="nc"><i>215</i>&nbsp;        IdentityHashtableEntry tab[] = table;</b>
+<b class="nc"><i>216</i>&nbsp;        int hash = System.identityHashCode(key);</b>
+<b class="nc"><i>217</i>&nbsp;        int index = (hash &amp; 0x7FFFFFFF) % tab.length;</b>
+<b class="nc"><i>218</i>&nbsp;        for (IdentityHashtableEntry e = tab[index] ; e != null ; e = e.next) {</b>
+<b class="nc"><i>219</i>&nbsp;            if ((e.hash == hash) &amp;&amp; e.key == key) {</b>
+<b class="nc"><i>220</i>&nbsp;                return e.value;</b>
+<i>221</i>&nbsp;            }
+<i>222</i>&nbsp;        }
+<b class="nc"><i>223</i>&nbsp;        return null;</b>
+<i>224</i>&nbsp;    }
+<i>225</i>&nbsp;
+<i>226</i>&nbsp;    /**
+<i>227</i>&nbsp;     * Rehashes the contents of the hashtable into a hashtable with a
+<i>228</i>&nbsp;     * larger capacity. This method is called automatically when the
+<i>229</i>&nbsp;     * number of keys in the hashtable exceeds this hashtable&#39;s capacity
+<i>230</i>&nbsp;     * and load factor.
+<i>231</i>&nbsp;     *
+<i>232</i>&nbsp;     * @since   JDK1.0
+<i>233</i>&nbsp;     */
+<i>234</i>&nbsp;    protected void rehash() {
+<b class="nc"><i>235</i>&nbsp;        int oldCapacity = table.length;</b>
+<b class="nc"><i>236</i>&nbsp;        IdentityHashtableEntry oldTable[] = table;</b>
+<i>237</i>&nbsp;
+<b class="nc"><i>238</i>&nbsp;        int newCapacity = oldCapacity * 2 + 1;</b>
+<b class="nc"><i>239</i>&nbsp;        IdentityHashtableEntry newTable[] = new IdentityHashtableEntry[newCapacity];</b>
+<i>240</i>&nbsp;
+<b class="nc"><i>241</i>&nbsp;        threshold = (int)(newCapacity * loadFactor);</b>
+<b class="nc"><i>242</i>&nbsp;        table = newTable;</b>
+<i>243</i>&nbsp;
+<i>244</i>&nbsp;        //System.out.println(&quot;rehash old=&quot; + oldCapacity + &quot;, new=&quot; + newCapacity + &quot;, thresh=&quot; + threshold + &quot;, count=&quot; + count);
+<i>245</i>&nbsp;
+<b class="nc"><i>246</i>&nbsp;        for (int i = oldCapacity ; i-- &gt; 0 ;) {</b>
+<b class="nc"><i>247</i>&nbsp;            for (IdentityHashtableEntry old = oldTable[i] ; old != null ; ) {</b>
+<b class="nc"><i>248</i>&nbsp;                IdentityHashtableEntry e = old;</b>
+<b class="nc"><i>249</i>&nbsp;                old = old.next;</b>
+<i>250</i>&nbsp;
+<b class="nc"><i>251</i>&nbsp;                int index = (e.hash &amp; 0x7FFFFFFF) % newCapacity;</b>
+<b class="nc"><i>252</i>&nbsp;                e.next = newTable[index];</b>
+<b class="nc"><i>253</i>&nbsp;                newTable[index] = e;</b>
+<b class="nc"><i>254</i>&nbsp;            }</b>
+<i>255</i>&nbsp;        }
+<i>256</i>&nbsp;    }
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;    /**
+<i>259</i>&nbsp;     * Maps the specified &lt;code&gt;key&lt;/code&gt; to the specified
+<i>260</i>&nbsp;     * &lt;code&gt;value&lt;/code&gt; in this hashtable. Neither the key nor the
+<i>261</i>&nbsp;     * value can be &lt;code&gt;null&lt;/code&gt;.
+<i>262</i>&nbsp;     * &lt;p&gt;
+<i>263</i>&nbsp;     * The value can be retrieved by calling the &lt;code&gt;get&lt;/code&gt; method
+<i>264</i>&nbsp;     * with a key that is equal to the original key.
+<i>265</i>&nbsp;     *
+<i>266</i>&nbsp;     * @param      key     the hashtable key.
+<i>267</i>&nbsp;     * @param      value   the value.
+<i>268</i>&nbsp;     * @return     the previous value of the specified key in this hashtable,
+<i>269</i>&nbsp;     *             or &lt;code&gt;null&lt;/code&gt; if it did not have one.
+<i>270</i>&nbsp;     * @exception  NullPointerException  if the key or value is
+<i>271</i>&nbsp;     *               &lt;code&gt;null&lt;/code&gt;.
+<i>272</i>&nbsp;     * @see     java.util.Hashtable#get(java.lang.Object)
+<i>273</i>&nbsp;     * @since   JDK1.0
+<i>274</i>&nbsp;     */
+<i>275</i>&nbsp;    public Object put(Object key, Object value) {
+<i>276</i>&nbsp;        // Make sure the value is not null
+<b class="nc"><i>277</i>&nbsp;        if (value == null) {</b>
+<b class="nc"><i>278</i>&nbsp;            throw new NullPointerException();</b>
+<i>279</i>&nbsp;        }
+<i>280</i>&nbsp;
+<i>281</i>&nbsp;        // Makes sure the key is not already in the hashtable.
+<b class="nc"><i>282</i>&nbsp;        IdentityHashtableEntry tab[] = table;</b>
+<b class="nc"><i>283</i>&nbsp;        int hash = System.identityHashCode(key);</b>
+<b class="nc"><i>284</i>&nbsp;        int index = (hash &amp; 0x7FFFFFFF) % tab.length;</b>
+<b class="nc"><i>285</i>&nbsp;        for (IdentityHashtableEntry e = tab[index] ; e != null ; e = e.next) {</b>
+<b class="nc"><i>286</i>&nbsp;            if ((e.hash == hash) &amp;&amp; e.key == key) {</b>
+<b class="nc"><i>287</i>&nbsp;                Object old = e.value;</b>
+<b class="nc"><i>288</i>&nbsp;                e.value = value;</b>
+<b class="nc"><i>289</i>&nbsp;                return old;</b>
+<i>290</i>&nbsp;            }
+<i>291</i>&nbsp;        }
+<i>292</i>&nbsp;
+<b class="nc"><i>293</i>&nbsp;        if (count &gt;= threshold) {</b>
+<i>294</i>&nbsp;            // Rehash the table if the threshold is exceeded
+<b class="nc"><i>295</i>&nbsp;            rehash();</b>
+<b class="nc"><i>296</i>&nbsp;            return put(key, value);</b>
+<i>297</i>&nbsp;        }
+<i>298</i>&nbsp;
+<i>299</i>&nbsp;        // Creates the new entry.
+<b class="nc"><i>300</i>&nbsp;        IdentityHashtableEntry e = new IdentityHashtableEntry();</b>
+<b class="nc"><i>301</i>&nbsp;        e.hash = hash;</b>
+<b class="nc"><i>302</i>&nbsp;        e.key = key;</b>
+<b class="nc"><i>303</i>&nbsp;        e.value = value;</b>
+<b class="nc"><i>304</i>&nbsp;        e.next = tab[index];</b>
+<b class="nc"><i>305</i>&nbsp;        tab[index] = e;</b>
+<b class="nc"><i>306</i>&nbsp;        count++;</b>
+<b class="nc"><i>307</i>&nbsp;        return null;</b>
+<i>308</i>&nbsp;    }
+<i>309</i>&nbsp;
+<i>310</i>&nbsp;        /**
+<i>311</i>&nbsp;     * Removes the key (and its corresponding value) from this
+<i>312</i>&nbsp;     * hashtable. This method does nothing if the key is not in the hashtable.
+<i>313</i>&nbsp;     *
+<i>314</i>&nbsp;     * @param   key   the key that needs to be removed.
+<i>315</i>&nbsp;     * @return  the value to which the key had been mapped in this hashtable,
+<i>316</i>&nbsp;     *          or &lt;code&gt;null&lt;/code&gt; if the key did not have a mapping.
+<i>317</i>&nbsp;     * @since   JDK1.0
+<i>318</i>&nbsp;     */
+<i>319</i>&nbsp;    public Object remove(Object key) {
+<b class="nc"><i>320</i>&nbsp;        IdentityHashtableEntry tab[] = table;</b>
+<b class="nc"><i>321</i>&nbsp;        int hash = System.identityHashCode(key);</b>
+<b class="nc"><i>322</i>&nbsp;        int index = (hash &amp; 0x7FFFFFFF) % tab.length;</b>
+<b class="nc"><i>323</i>&nbsp;        for (IdentityHashtableEntry e = tab[index], prev = null ; e != null ; prev = e, e = e.next) {</b>
+<b class="nc"><i>324</i>&nbsp;            if ((e.hash == hash) &amp;&amp; e.key == key) {</b>
+<b class="nc"><i>325</i>&nbsp;                if (prev != null) {</b>
+<b class="nc"><i>326</i>&nbsp;                    prev.next = e.next;</b>
+<i>327</i>&nbsp;                } else {
+<b class="nc"><i>328</i>&nbsp;                    tab[index] = e.next;</b>
+<i>329</i>&nbsp;                }
+<b class="nc"><i>330</i>&nbsp;                count--;</b>
+<b class="nc"><i>331</i>&nbsp;                return e.value;</b>
+<i>332</i>&nbsp;            }
+<i>333</i>&nbsp;        }
+<b class="nc"><i>334</i>&nbsp;        return null;</b>
+<i>335</i>&nbsp;    }
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;    /**
+<i>338</i>&nbsp;     * Clears this hashtable so that it contains no keys.
+<i>339</i>&nbsp;     *
+<i>340</i>&nbsp;     * @since   JDK1.0
+<i>341</i>&nbsp;     */
+<i>342</i>&nbsp;    public void clear() {
+<b class="nc"><i>343</i>&nbsp;        IdentityHashtableEntry tab[] = table;</b>
+<b class="nc"><i>344</i>&nbsp;        for (int index = tab.length; --index &gt;= 0; )</b>
+<b class="nc"><i>345</i>&nbsp;            tab[index] = null;</b>
+<b class="nc"><i>346</i>&nbsp;        count = 0;</b>
+<i>347</i>&nbsp;    }
+<i>348</i>&nbsp;
+<i>349</i>&nbsp;    /**
+<i>350</i>&nbsp;     * Returns a rather long string representation of this hashtable.
+<i>351</i>&nbsp;     *
+<i>352</i>&nbsp;     * @return  a string representation of this hashtable.
+<i>353</i>&nbsp;     * @since   JDK1.0
+<i>354</i>&nbsp;     */
+<i>355</i>&nbsp;    public String toString() {
+<b class="nc"><i>356</i>&nbsp;        int max = size() - 1;</b>
+<b class="nc"><i>357</i>&nbsp;        StringBuffer buf = new StringBuffer();</b>
+<b class="nc"><i>358</i>&nbsp;        Enumeration k = keys();</b>
+<b class="nc"><i>359</i>&nbsp;        Enumeration e = elements();</b>
+<b class="nc"><i>360</i>&nbsp;        buf.append(&quot;{&quot;);</b>
+<i>361</i>&nbsp;
+<b class="nc"><i>362</i>&nbsp;        for (int i = 0; i &lt;= max; i++) {</b>
+<b class="nc"><i>363</i>&nbsp;            String s1 = k.nextElement().toString();</b>
+<b class="nc"><i>364</i>&nbsp;            String s2 = e.nextElement().toString();</b>
+<b class="nc"><i>365</i>&nbsp;            buf.append(s1 + &quot;=&quot; + s2);</b>
+<b class="nc"><i>366</i>&nbsp;            if (i &lt; max) {</b>
+<b class="nc"><i>367</i>&nbsp;                buf.append(&quot;, &quot;);</b>
+<i>368</i>&nbsp;            }
+<i>369</i>&nbsp;        }
+<b class="nc"><i>370</i>&nbsp;        buf.append(&quot;}&quot;);</b>
+<b class="nc"><i>371</i>&nbsp;        return buf.toString();</b>
+<i>372</i>&nbsp;    }
+<i>373</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

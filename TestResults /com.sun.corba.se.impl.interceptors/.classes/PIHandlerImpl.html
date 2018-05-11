@@ -1,0 +1,1139 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PIHandlerImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.interceptors</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PIHandlerImpl (com.sun.corba.se.impl.interceptors)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PIHandlerImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 44)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 285)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">PIHandlerImpl$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">PIHandlerImpl$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">PIHandlerImpl$RequestInfoStack</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 50)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 291)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2002, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;package com.sun.corba.se.impl.interceptors;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import java.util.*;
+<i>28</i>&nbsp;import java.io.IOException;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import org.omg.CORBA.Any;
+<i>31</i>&nbsp;import org.omg.CORBA.BAD_PARAM;
+<i>32</i>&nbsp;import org.omg.CORBA.BAD_POLICY;
+<i>33</i>&nbsp;import org.omg.CORBA.BAD_INV_ORDER;
+<i>34</i>&nbsp;import org.omg.CORBA.COMM_FAILURE;
+<i>35</i>&nbsp;import org.omg.CORBA.CompletionStatus;
+<i>36</i>&nbsp;import org.omg.CORBA.INTERNAL;
+<i>37</i>&nbsp;import org.omg.CORBA.NVList;
+<i>38</i>&nbsp;import org.omg.CORBA.OBJECT_NOT_EXIST;
+<i>39</i>&nbsp;import org.omg.CORBA.ORBPackage.InvalidName;
+<i>40</i>&nbsp;import org.omg.CORBA.SystemException;
+<i>41</i>&nbsp;import org.omg.CORBA.UserException;
+<i>42</i>&nbsp;import org.omg.CORBA.UNKNOWN;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import org.omg.CORBA.portable.ApplicationException;
+<i>45</i>&nbsp;import org.omg.CORBA.portable.RemarshalException;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;import org.omg.IOP.CodecFactory;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;import org.omg.PortableInterceptor.ForwardRequest;
+<i>50</i>&nbsp;import org.omg.PortableInterceptor.Current;
+<i>51</i>&nbsp;import org.omg.PortableInterceptor.Interceptor;
+<i>52</i>&nbsp;import org.omg.PortableInterceptor.LOCATION_FORWARD;
+<i>53</i>&nbsp;import org.omg.PortableInterceptor.ORBInitializer;
+<i>54</i>&nbsp;import org.omg.PortableInterceptor.ORBInitInfo;
+<i>55</i>&nbsp;import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
+<i>56</i>&nbsp;import org.omg.PortableInterceptor.SUCCESSFUL;
+<i>57</i>&nbsp;import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+<i>58</i>&nbsp;import org.omg.PortableInterceptor.TRANSPORT_RETRY;
+<i>59</i>&nbsp;import org.omg.PortableInterceptor.USER_EXCEPTION;
+<i>60</i>&nbsp;import org.omg.PortableInterceptor.PolicyFactory;
+<i>61</i>&nbsp;import org.omg.PortableInterceptor.ObjectReferenceTemplate;
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;import com.sun.corba.se.pept.encoding.OutputObject;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;import com.sun.corba.se.spi.ior.IOR;
+<i>66</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectKeyTemplate;
+<i>67</i>&nbsp;import com.sun.corba.se.spi.oa.ObjectAdapter;
+<i>68</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>69</i>&nbsp;import com.sun.corba.se.spi.orbutil.closure.ClosureFactory;
+<i>70</i>&nbsp;import com.sun.corba.se.spi.protocol.CorbaMessageMediator;
+<i>71</i>&nbsp;import com.sun.corba.se.spi.protocol.ForwardException;
+<i>72</i>&nbsp;import com.sun.corba.se.spi.protocol.PIHandler;
+<i>73</i>&nbsp;import com.sun.corba.se.spi.protocol.RetryType;
+<i>74</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains;
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;import com.sun.corba.se.impl.logging.InterceptorsSystemException;
+<i>77</i>&nbsp;import com.sun.corba.se.impl.logging.ORBUtilSystemException;
+<i>78</i>&nbsp;import com.sun.corba.se.impl.logging.OMGSystemException;
+<i>79</i>&nbsp;import com.sun.corba.se.impl.corba.RequestImpl;
+<i>80</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBConstants;
+<i>81</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBUtility;
+<i>82</i>&nbsp;import com.sun.corba.se.impl.orbutil.StackImpl;
+<i>83</i>&nbsp;import com.sun.corba.se.impl.protocol.giopmsgheaders.ReplyMessage;
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;/**
+<i>86</i>&nbsp; * Provides portable interceptor functionality.
+<i>87</i>&nbsp; */
+<i>88</i>&nbsp;public class PIHandlerImpl implements PIHandler
+<i>89</i>&nbsp;{
+<i>90</i>&nbsp;    // REVISIT - delete these after framework merging.
+<b class="nc"><i>91</i>&nbsp;    boolean printPushPopEnabled = false;</b>
+<b class="nc"><i>92</i>&nbsp;    int pushLevel = 0;</b>
+<i>93</i>&nbsp;    private void printPush()
+<i>94</i>&nbsp;    {
+<b class="nc"><i>95</i>&nbsp;        if (! printPushPopEnabled) return;</b>
+<b class="nc"><i>96</i>&nbsp;        printSpaces(pushLevel);</b>
+<b class="nc"><i>97</i>&nbsp;        pushLevel++;</b>
+<b class="nc"><i>98</i>&nbsp;        System.out.println(&quot;PUSH&quot;);</b>
+<i>99</i>&nbsp;    }
+<i>100</i>&nbsp;    private void printPop()
+<i>101</i>&nbsp;    {
+<b class="nc"><i>102</i>&nbsp;        if (! printPushPopEnabled) return;</b>
+<b class="nc"><i>103</i>&nbsp;        pushLevel--;</b>
+<b class="nc"><i>104</i>&nbsp;        printSpaces(pushLevel);</b>
+<b class="nc"><i>105</i>&nbsp;        System.out.println(&quot;POP&quot;);</b>
+<i>106</i>&nbsp;    }
+<i>107</i>&nbsp;    private void printSpaces(int n)
+<i>108</i>&nbsp;    {
+<b class="nc"><i>109</i>&nbsp;        for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>110</i>&nbsp;            System.out.print(&quot; &quot;);</b>
+<i>111</i>&nbsp;        }
+<i>112</i>&nbsp;    }
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;    private ORB orb;
+<i>115</i>&nbsp;    InterceptorsSystemException wrapper;
+<i>116</i>&nbsp;    ORBUtilSystemException orbutilWrapper;
+<i>117</i>&nbsp;    OMGSystemException omgWrapper;
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;    // A unique id used in ServerRequestInfo.
+<i>120</i>&nbsp;    // This does not correspond to the GIOP request id.
+<b class="nc"><i>121</i>&nbsp;    private int serverRequestIdCounter = 0;</b>
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;    // Stores the codec factory for producing codecs
+<b class="nc"><i>124</i>&nbsp;    CodecFactory codecFactory = null;</b>
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;    // The arguments passed to the application&#39;s main method.  May be null.
+<i>127</i>&nbsp;    // This is used for ORBInitializers and set from set_parameters.
+<b class="nc"><i>128</i>&nbsp;    String[] arguments = null;</b>
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    // The list of portable interceptors, organized by type:
+<i>131</i>&nbsp;    private InterceptorList interceptorList;
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;    // Cached information for optimization - do we have any interceptors
+<i>134</i>&nbsp;    // registered of the given types?  Set during ORB initialization.
+<i>135</i>&nbsp;    private boolean hasIORInterceptors;
+<i>136</i>&nbsp;    private boolean hasClientInterceptors;  // temp always true
+<i>137</i>&nbsp;    private boolean hasServerInterceptors;
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;    // The class responsible for invoking interceptors
+<i>140</i>&nbsp;    private InterceptorInvoker interceptorInvoker;
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;    // There will be one PICurrent instantiated for every ORB.
+<i>143</i>&nbsp;    private PICurrent current;
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;    // This table contains a list of PolicyFactories registered using
+<i>146</i>&nbsp;    // ORBInitInfo.registerPolicyFactory() method.
+<i>147</i>&nbsp;    // Key for the table is PolicyType which is an Integer
+<i>148</i>&nbsp;    // Value is PolicyFactory.
+<i>149</i>&nbsp;    private HashMap policyFactoryTable;
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;    // Table to convert from a ReplyMessage.? to a PI replyStatus short.
+<i>152</i>&nbsp;    // Note that this table relies on the order and constants of
+<i>153</i>&nbsp;    // ReplyMessage not to change.
+<b class="nc"><i>154</i>&nbsp;    private final static short REPLY_MESSAGE_TO_PI_REPLY_STATUS[] = {</b>
+<i>155</i>&nbsp;        SUCCESSFUL.value,       // = ReplyMessage.NO_EXCEPTION
+<i>156</i>&nbsp;        USER_EXCEPTION.value,   // = ReplyMessage.USER_EXCEPTION
+<i>157</i>&nbsp;        SYSTEM_EXCEPTION.value, // = ReplyMessage.SYSTEM_EXCEPTION
+<i>158</i>&nbsp;        LOCATION_FORWARD.value, // = ReplyMessage.LOCATION_FORWARD
+<i>159</i>&nbsp;        LOCATION_FORWARD.value, // = ReplyMessage.LOCATION_FORWARD_PERM
+<i>160</i>&nbsp;        TRANSPORT_RETRY.value   // = ReplyMessage.NEEDS_ADDRESSING_MODE
+<i>161</i>&nbsp;    };
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;    // ThreadLocal containing a stack to store client request info objects
+<i>164</i>&nbsp;    // and a disable count.
+<b class="nc"><i>165</i>&nbsp;    private ThreadLocal threadLocalClientRequestInfoStack =</b>
+<b class="nc"><i>166</i>&nbsp;        new ThreadLocal() {</b>
+<i>167</i>&nbsp;            protected Object initialValue() {
+<b class="nc"><i>168</i>&nbsp;                return new RequestInfoStack();</b>
+<i>169</i>&nbsp;            }
+<i>170</i>&nbsp;        };
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;    // ThreadLocal containing the current server request info object.
+<b class="nc"><i>173</i>&nbsp;    private ThreadLocal threadLocalServerRequestInfoStack =</b>
+<b class="nc"><i>174</i>&nbsp;        new ThreadLocal() {</b>
+<i>175</i>&nbsp;            protected Object initialValue() {
+<b class="nc"><i>176</i>&nbsp;                return new RequestInfoStack();</b>
+<i>177</i>&nbsp;            }
+<i>178</i>&nbsp;        };
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;    public void close() {
+<b class="nc"><i>181</i>&nbsp;        orb = null;</b>
+<b class="nc"><i>182</i>&nbsp;        wrapper = null;</b>
+<b class="nc"><i>183</i>&nbsp;        orbutilWrapper = null;</b>
+<b class="nc"><i>184</i>&nbsp;        omgWrapper = null;</b>
+<b class="nc"><i>185</i>&nbsp;        codecFactory = null;</b>
+<b class="nc"><i>186</i>&nbsp;        arguments = null;</b>
+<b class="nc"><i>187</i>&nbsp;        interceptorList = null;</b>
+<b class="nc"><i>188</i>&nbsp;        interceptorInvoker = null;</b>
+<b class="nc"><i>189</i>&nbsp;        current = null;</b>
+<b class="nc"><i>190</i>&nbsp;        policyFactoryTable = null;</b>
+<b class="nc"><i>191</i>&nbsp;        threadLocalClientRequestInfoStack = null;</b>
+<b class="nc"><i>192</i>&nbsp;        threadLocalServerRequestInfoStack = null;</b>
+<i>193</i>&nbsp;    }
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;    // Class to contain all ThreadLocal data for ClientRequestInfo
+<i>196</i>&nbsp;    // maintenance.
+<i>197</i>&nbsp;    //
+<i>198</i>&nbsp;    // We use an ArrayList instead since it is not thread-safe.
+<i>199</i>&nbsp;    // RequestInfoStack is used quite frequently.
+<b class="nc"><i>200</i>&nbsp;    private final class RequestInfoStack extends Stack {</b>
+<i>201</i>&nbsp;        // Number of times a request has been made to disable interceptors.
+<i>202</i>&nbsp;        // When this reaches 0, interception hooks are disabled.  Any higher
+<i>203</i>&nbsp;        // value indicates they are enabled.
+<i>204</i>&nbsp;        // NOTE: The is only currently used on the client side.
+<b class="nc"><i>205</i>&nbsp;        public int disableCount = 0;</b>
+<i>206</i>&nbsp;    }
+<i>207</i>&nbsp;
+<b class="nc"><i>208</i>&nbsp;    public PIHandlerImpl( ORB orb, String[] args ) {</b>
+<b class="nc"><i>209</i>&nbsp;        this.orb = orb ;</b>
+<b class="nc"><i>210</i>&nbsp;        wrapper = InterceptorsSystemException.get( orb,</b>
+<i>211</i>&nbsp;            CORBALogDomains.RPC_PROTOCOL ) ;
+<b class="nc"><i>212</i>&nbsp;        orbutilWrapper = ORBUtilSystemException.get( orb,</b>
+<i>213</i>&nbsp;            CORBALogDomains.RPC_PROTOCOL ) ;
+<b class="nc"><i>214</i>&nbsp;        omgWrapper = OMGSystemException.get( orb,</b>
+<i>215</i>&nbsp;            CORBALogDomains.RPC_PROTOCOL ) ;
+<b class="nc"><i>216</i>&nbsp;        arguments = args ;</b>
+<i>217</i>&nbsp;
+<i>218</i>&nbsp;        // Create codec factory:
+<b class="nc"><i>219</i>&nbsp;        codecFactory = new CodecFactoryImpl( orb );</b>
+<i>220</i>&nbsp;
+<i>221</i>&nbsp;        // Create new interceptor list:
+<b class="nc"><i>222</i>&nbsp;        interceptorList = new InterceptorList( wrapper );</b>
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;        // Create a new PICurrent.
+<b class="nc"><i>225</i>&nbsp;        current = new PICurrent( orb );</b>
+<i>226</i>&nbsp;
+<i>227</i>&nbsp;        // Create new interceptor invoker, initially disabled:
+<b class="nc"><i>228</i>&nbsp;        interceptorInvoker = new InterceptorInvoker( orb, interceptorList,</b>
+<i>229</i>&nbsp;                                                     current );
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;        // Register the PI current and Codec factory objects
+<b class="nc"><i>232</i>&nbsp;        orb.getLocalResolver().register( ORBConstants.PI_CURRENT_NAME,</b>
+<b class="nc"><i>233</i>&nbsp;            ClosureFactory.makeConstant( current ) ) ;</b>
+<b class="nc"><i>234</i>&nbsp;        orb.getLocalResolver().register( ORBConstants.CODEC_FACTORY_NAME,</b>
+<b class="nc"><i>235</i>&nbsp;            ClosureFactory.makeConstant( codecFactory ) ) ;</b>
+<i>236</i>&nbsp;    }
+<i>237</i>&nbsp;
+<i>238</i>&nbsp;    public void initialize() {
+<i>239</i>&nbsp;        // If we have any orb initializers, make use of them:
+<b class="nc"><i>240</i>&nbsp;        if( orb.getORBData().getORBInitializers() != null ) {</b>
+<i>241</i>&nbsp;            // Create the ORBInitInfo object to pass to ORB intializers:
+<b class="nc"><i>242</i>&nbsp;            ORBInitInfoImpl orbInitInfo = createORBInitInfo();</b>
+<i>243</i>&nbsp;
+<i>244</i>&nbsp;            // Make sure get_slot and set_slot are not called from within
+<i>245</i>&nbsp;            // ORB initializers:
+<b class="nc"><i>246</i>&nbsp;            current.setORBInitializing( true );</b>
+<i>247</i>&nbsp;
+<i>248</i>&nbsp;            // Call pre_init on all ORB initializers:
+<b class="nc"><i>249</i>&nbsp;            preInitORBInitializers( orbInitInfo );</b>
+<i>250</i>&nbsp;
+<i>251</i>&nbsp;            // Call post_init on all ORB initializers:
+<b class="nc"><i>252</i>&nbsp;            postInitORBInitializers( orbInitInfo );</b>
+<i>253</i>&nbsp;
+<i>254</i>&nbsp;            // Proprietary: sort interceptors:
+<b class="nc"><i>255</i>&nbsp;            interceptorList.sortInterceptors();</b>
+<i>256</i>&nbsp;
+<i>257</i>&nbsp;            // Re-enable get_slot and set_slot to be called from within
+<i>258</i>&nbsp;            // ORB initializers:
+<b class="nc"><i>259</i>&nbsp;            current.setORBInitializing( false );</b>
+<i>260</i>&nbsp;
+<i>261</i>&nbsp;            // Ensure nobody makes any more calls on this object.
+<b class="nc"><i>262</i>&nbsp;            orbInitInfo.setStage( ORBInitInfoImpl.STAGE_CLOSED );</b>
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;            // Set cached flags indicating whether we have interceptors
+<i>265</i>&nbsp;            // registered of a given type.
+<b class="nc"><i>266</i>&nbsp;            hasIORInterceptors = interceptorList.hasInterceptorsOfType(</b>
+<i>267</i>&nbsp;                InterceptorList.INTERCEPTOR_TYPE_IOR );
+<i>268</i>&nbsp;            // XXX This must always be true, so that using the new generic
+<i>269</i>&nbsp;            // RPC framework can pass info between the PI stack and the
+<i>270</i>&nbsp;            // framework invocation stack.  Temporary until Harold fixes
+<i>271</i>&nbsp;            // this.  Note that this must never be true until after the
+<i>272</i>&nbsp;            // ORBInitializer instances complete executing.
+<i>273</i>&nbsp;            //hasClientInterceptors = interceptorList.hasInterceptorsOfType(
+<i>274</i>&nbsp;                //InterceptorList.INTERCEPTOR_TYPE_CLIENT );
+<b class="nc"><i>275</i>&nbsp;            hasClientInterceptors = true;</b>
+<b class="nc"><i>276</i>&nbsp;            hasServerInterceptors = interceptorList.hasInterceptorsOfType(</b>
+<i>277</i>&nbsp;                InterceptorList.INTERCEPTOR_TYPE_SERVER );
+<i>278</i>&nbsp;
+<i>279</i>&nbsp;            // Enable interceptor invoker (not necessary if no interceptors
+<i>280</i>&nbsp;            // are registered).  This should be the last stage of ORB
+<i>281</i>&nbsp;            // initialization.
+<b class="nc"><i>282</i>&nbsp;            interceptorInvoker.setEnabled( true );</b>
+<i>283</i>&nbsp;        }
+<i>284</i>&nbsp;    }
+<i>285</i>&nbsp;
+<i>286</i>&nbsp;    /**
+<i>287</i>&nbsp;     *  ptc/00-08-06 p 205: &quot;When an application calls ORB::destroy, the ORB
+<i>288</i>&nbsp;     *  1) waits for all requests in progress to complete
+<i>289</i>&nbsp;     *  2) calls the Interceptor::destroy operation for each interceptor
+<i>290</i>&nbsp;     *  3) completes destruction of the ORB&quot;
+<i>291</i>&nbsp;     *
+<i>292</i>&nbsp;     * This must be called at the end of ORB.destroy.  Note that this is not
+<i>293</i>&nbsp;     * part of the PIHandler interface, since ORBImpl implements the ORB interface.
+<i>294</i>&nbsp;     */
+<i>295</i>&nbsp;    public void destroyInterceptors() {
+<b class="nc"><i>296</i>&nbsp;        interceptorList.destroyAll();</b>
+<i>297</i>&nbsp;    }
+<i>298</i>&nbsp;
+<i>299</i>&nbsp;    public void objectAdapterCreated( ObjectAdapter oa )
+<i>300</i>&nbsp;    {
+<b class="nc"><i>301</i>&nbsp;        if (!hasIORInterceptors)</b>
+<i>302</i>&nbsp;            return ;
+<i>303</i>&nbsp;
+<b class="nc"><i>304</i>&nbsp;        interceptorInvoker.objectAdapterCreated( oa ) ;</b>
+<i>305</i>&nbsp;    }
+<i>306</i>&nbsp;
+<i>307</i>&nbsp;    public void adapterManagerStateChanged( int managerId,
+<i>308</i>&nbsp;        short newState )
+<i>309</i>&nbsp;    {
+<b class="nc"><i>310</i>&nbsp;        if (!hasIORInterceptors)</b>
+<i>311</i>&nbsp;            return ;
+<i>312</i>&nbsp;
+<b class="nc"><i>313</i>&nbsp;        interceptorInvoker.adapterManagerStateChanged( managerId, newState ) ;</b>
+<i>314</i>&nbsp;    }
+<i>315</i>&nbsp;
+<i>316</i>&nbsp;    public void adapterStateChanged( ObjectReferenceTemplate[]
+<i>317</i>&nbsp;        templates, short newState )
+<i>318</i>&nbsp;    {
+<b class="nc"><i>319</i>&nbsp;        if (!hasIORInterceptors)</b>
+<i>320</i>&nbsp;            return ;
+<i>321</i>&nbsp;
+<b class="nc"><i>322</i>&nbsp;        interceptorInvoker.adapterStateChanged( templates, newState ) ;</b>
+<i>323</i>&nbsp;    }
+<i>324</i>&nbsp;
+<i>325</i>&nbsp;    /*
+<i>326</i>&nbsp;     *****************
+<i>327</i>&nbsp;     * Client PI hooks
+<i>328</i>&nbsp;     *****************/
+<i>329</i>&nbsp;
+<i>330</i>&nbsp;    public void disableInterceptorsThisThread() {
+<b class="nc"><i>331</i>&nbsp;        if( !hasClientInterceptors ) return;</b>
+<i>332</i>&nbsp;
+<b class="nc"><i>333</i>&nbsp;        RequestInfoStack infoStack =</b>
+<b class="nc"><i>334</i>&nbsp;            (RequestInfoStack)threadLocalClientRequestInfoStack.get();</b>
+<b class="nc"><i>335</i>&nbsp;        infoStack.disableCount++;</b>
+<i>336</i>&nbsp;    }
+<i>337</i>&nbsp;
+<i>338</i>&nbsp;    public void enableInterceptorsThisThread() {
+<b class="nc"><i>339</i>&nbsp;        if( !hasClientInterceptors ) return;</b>
+<i>340</i>&nbsp;
+<b class="nc"><i>341</i>&nbsp;        RequestInfoStack infoStack =</b>
+<b class="nc"><i>342</i>&nbsp;            (RequestInfoStack)threadLocalClientRequestInfoStack.get();</b>
+<b class="nc"><i>343</i>&nbsp;        infoStack.disableCount--;</b>
+<i>344</i>&nbsp;    }
+<i>345</i>&nbsp;
+<i>346</i>&nbsp;    public void invokeClientPIStartingPoint()
+<i>347</i>&nbsp;        throws RemarshalException
+<i>348</i>&nbsp;    {
+<b class="nc"><i>349</i>&nbsp;        if( !hasClientInterceptors ) return;</b>
+<b class="nc"><i>350</i>&nbsp;        if( !isClientPIEnabledForThisThread() ) return;</b>
+<i>351</i>&nbsp;
+<i>352</i>&nbsp;        // Invoke the starting interception points and record exception
+<i>353</i>&nbsp;        // and reply status info in the info object:
+<b class="nc"><i>354</i>&nbsp;        ClientRequestInfoImpl info = peekClientRequestInfoImplStack();</b>
+<b class="nc"><i>355</i>&nbsp;        interceptorInvoker.invokeClientInterceptorStartingPoint( info );</b>
+<i>356</i>&nbsp;
+<i>357</i>&nbsp;        // Check reply status.  If we will not have another chance later
+<i>358</i>&nbsp;        // to invoke the client ending points, do it now.
+<b class="nc"><i>359</i>&nbsp;        short replyStatus = info.getReplyStatus();</b>
+<b class="nc"><i>360</i>&nbsp;        if( (replyStatus == SYSTEM_EXCEPTION.value) ||</b>
+<i>361</i>&nbsp;            (replyStatus == LOCATION_FORWARD.value) )
+<i>362</i>&nbsp;        {
+<i>363</i>&nbsp;            // Note: Transport retry cannot happen here since this happens
+<i>364</i>&nbsp;            // before the request hits the wire.
+<i>365</i>&nbsp;
+<b class="nc"><i>366</i>&nbsp;            Exception exception = invokeClientPIEndingPoint(</b>
+<b class="nc"><i>367</i>&nbsp;                convertPIReplyStatusToReplyMessage( replyStatus ),</b>
+<b class="nc"><i>368</i>&nbsp;                info.getException() );</b>
+<b class="nc"><i>369</i>&nbsp;            if( exception == null ) {</b>
+<i>370</i>&nbsp;                // Do not throw anything.  Otherwise, it must be a
+<i>371</i>&nbsp;                // SystemException, UserException or RemarshalException.
+<b class="nc"><i>372</i>&nbsp;            } if( exception instanceof SystemException ) {</b>
+<b class="nc"><i>373</i>&nbsp;                throw (SystemException)exception;</b>
+<b class="nc"><i>374</i>&nbsp;            } else if( exception instanceof RemarshalException ) {</b>
+<b class="nc"><i>375</i>&nbsp;                throw (RemarshalException)exception;</b>
+<b class="nc"><i>376</i>&nbsp;            } else if( (exception instanceof UserException) ||</b>
+<i>377</i>&nbsp;                     (exception instanceof ApplicationException) ) {
+<i>378</i>&nbsp;                // It should not be possible for an interceptor to throw
+<i>379</i>&nbsp;                // a UserException.  By asserting instead of throwing the
+<i>380</i>&nbsp;                // UserException, we need not declare anything but
+<i>381</i>&nbsp;                // RemarshalException in the throws clause.
+<b class="nc"><i>382</i>&nbsp;                throw wrapper.exceptionInvalid() ;</b>
+<i>383</i>&nbsp;            }
+<b class="nc"><i>384</i>&nbsp;        }</b>
+<b class="nc"><i>385</i>&nbsp;        else if( replyStatus != ClientRequestInfoImpl.UNINITIALIZED ) {</b>
+<b class="nc"><i>386</i>&nbsp;            throw wrapper.replyStatusNotInit() ;</b>
+<i>387</i>&nbsp;        }
+<i>388</i>&nbsp;    }
+<i>389</i>&nbsp;
+<i>390</i>&nbsp;    // Needed when an error forces a retry AFTER initiateClientPIRequest
+<i>391</i>&nbsp;    // but BEFORE invokeClientPIStartingPoint.
+<i>392</i>&nbsp;    public Exception makeCompletedClientRequest( int replyStatus,
+<i>393</i>&nbsp;        Exception exception ) {
+<i>394</i>&nbsp;
+<i>395</i>&nbsp;        // 6763340
+<b class="nc"><i>396</i>&nbsp;        return handleClientPIEndingPoint( replyStatus, exception, false ) ;</b>
+<i>397</i>&nbsp;    }
+<i>398</i>&nbsp;
+<i>399</i>&nbsp;    public Exception invokeClientPIEndingPoint( int replyStatus,
+<i>400</i>&nbsp;        Exception exception ) {
+<i>401</i>&nbsp;
+<i>402</i>&nbsp;        // 6763340
+<b class="nc"><i>403</i>&nbsp;        return handleClientPIEndingPoint( replyStatus, exception, true ) ;</b>
+<i>404</i>&nbsp;    }
+<i>405</i>&nbsp;
+<i>406</i>&nbsp;    public Exception handleClientPIEndingPoint(
+<i>407</i>&nbsp;        int replyStatus, Exception exception, boolean invokeEndingPoint ) {
+<b class="nc"><i>408</i>&nbsp;        if( !hasClientInterceptors ) return exception;</b>
+<b class="nc"><i>409</i>&nbsp;        if( !isClientPIEnabledForThisThread() ) return exception;</b>
+<i>410</i>&nbsp;
+<i>411</i>&nbsp;        // Translate ReplyMessage.replyStatus into PI replyStatus:
+<i>412</i>&nbsp;        // Note: this is also an assertion to make sure a valid replyStatus
+<i>413</i>&nbsp;        // is passed in (IndexOutOfBoundsException will be thrown otherwise)
+<b class="nc"><i>414</i>&nbsp;        short piReplyStatus = REPLY_MESSAGE_TO_PI_REPLY_STATUS[replyStatus];</b>
+<i>415</i>&nbsp;
+<i>416</i>&nbsp;        // Invoke the ending interception points and record exception
+<i>417</i>&nbsp;        // and reply status info in the info object:
+<b class="nc"><i>418</i>&nbsp;        ClientRequestInfoImpl info = peekClientRequestInfoImplStack();</b>
+<b class="nc"><i>419</i>&nbsp;        info.setReplyStatus( piReplyStatus );</b>
+<b class="nc"><i>420</i>&nbsp;        info.setException( exception );</b>
+<i>421</i>&nbsp;
+<b class="nc"><i>422</i>&nbsp;        if (invokeEndingPoint) {</b>
+<i>423</i>&nbsp;            // 6763340
+<b class="nc"><i>424</i>&nbsp;            interceptorInvoker.invokeClientInterceptorEndingPoint( info );</b>
+<b class="nc"><i>425</i>&nbsp;            piReplyStatus = info.getReplyStatus();</b>
+<i>426</i>&nbsp;        }
+<i>427</i>&nbsp;
+<i>428</i>&nbsp;        // Check reply status:
+<b class="nc"><i>429</i>&nbsp;        if( (piReplyStatus == LOCATION_FORWARD.value) ||</b>
+<i>430</i>&nbsp;            (piReplyStatus == TRANSPORT_RETRY.value) ) {
+<i>431</i>&nbsp;            // If this is a forward or a retry, reset and reuse
+<i>432</i>&nbsp;            // info object:
+<b class="nc"><i>433</i>&nbsp;            info.reset();</b>
+<i>434</i>&nbsp;
+<i>435</i>&nbsp;            // fix for 6763340:
+<b class="nc"><i>436</i>&nbsp;            if (invokeEndingPoint) {</b>
+<b class="nc"><i>437</i>&nbsp;                info.setRetryRequest( RetryType.AFTER_RESPONSE ) ;</b>
+<i>438</i>&nbsp;            } else {
+<b class="nc"><i>439</i>&nbsp;                info.setRetryRequest( RetryType.BEFORE_RESPONSE ) ;</b>
+<i>440</i>&nbsp;            }
+<i>441</i>&nbsp;
+<i>442</i>&nbsp;            // ... and return a RemarshalException so the orb internals know
+<b class="nc"><i>443</i>&nbsp;            exception = new RemarshalException();</b>
+<b class="nc"><i>444</i>&nbsp;        } else if( (piReplyStatus == SYSTEM_EXCEPTION.value) ||</b>
+<i>445</i>&nbsp;                 (piReplyStatus == USER_EXCEPTION.value) ) {
+<b class="nc"><i>446</i>&nbsp;            exception = info.getException();</b>
+<i>447</i>&nbsp;        }
+<i>448</i>&nbsp;
+<b class="nc"><i>449</i>&nbsp;        return exception;</b>
+<i>450</i>&nbsp;    }
+<i>451</i>&nbsp;
+<i>452</i>&nbsp;    public void initiateClientPIRequest( boolean diiRequest ) {
+<b class="nc"><i>453</i>&nbsp;        if( !hasClientInterceptors ) return;</b>
+<b class="nc"><i>454</i>&nbsp;        if( !isClientPIEnabledForThisThread() ) return;</b>
+<i>455</i>&nbsp;
+<i>456</i>&nbsp;        // Get the most recent info object from the thread local
+<i>457</i>&nbsp;        // ClientRequestInfoImpl stack:
+<b class="nc"><i>458</i>&nbsp;        RequestInfoStack infoStack =</b>
+<b class="nc"><i>459</i>&nbsp;            (RequestInfoStack)threadLocalClientRequestInfoStack.get();</b>
+<b class="nc"><i>460</i>&nbsp;        ClientRequestInfoImpl info = null;</b>
+<i>461</i>&nbsp;
+<b class="nc"><i>462</i>&nbsp;        if (!infoStack.empty() ) {</b>
+<b class="nc"><i>463</i>&nbsp;            info = (ClientRequestInfoImpl)infoStack.peek();</b>
+<i>464</i>&nbsp;        }
+<i>465</i>&nbsp;
+<b class="nc"><i>466</i>&nbsp;        if (!diiRequest &amp;&amp; (info != null) &amp;&amp; info.isDIIInitiate() ) {</b>
+<i>467</i>&nbsp;            // In RequestImpl.doInvocation we already called
+<i>468</i>&nbsp;            // initiateClientPIRequest( true ), so ignore this initiate.
+<b class="nc"><i>469</i>&nbsp;            info.setDIIInitiate( false );</b>
+<i>470</i>&nbsp;        } else {
+<i>471</i>&nbsp;            // If there is no info object or if we are not retrying a request,
+<i>472</i>&nbsp;            // push a new ClientRequestInfoImpl on the stack:
+<i>473</i>&nbsp;
+<i>474</i>&nbsp;            // 6763340: don&#39;t push unless this is not a retry
+<b class="nc"><i>475</i>&nbsp;            if( (info == null) || !info.getRetryRequest().isRetry() ) {</b>
+<b class="nc"><i>476</i>&nbsp;                info = new ClientRequestInfoImpl( orb );</b>
+<b class="nc"><i>477</i>&nbsp;                infoStack.push( info );</b>
+<b class="nc"><i>478</i>&nbsp;                printPush();</b>
+<i>479</i>&nbsp;                // Note: the entry count is automatically initialized to 0.
+<i>480</i>&nbsp;            }
+<i>481</i>&nbsp;
+<i>482</i>&nbsp;            // Reset the retry request flag so that recursive calls will
+<i>483</i>&nbsp;            // push a new info object, and bump up entry count so we know
+<i>484</i>&nbsp;            // when to pop this info object:
+<b class="nc"><i>485</i>&nbsp;            info.setRetryRequest( RetryType.NONE );</b>
+<b class="nc"><i>486</i>&nbsp;            info.incrementEntryCount();</b>
+<i>487</i>&nbsp;
+<i>488</i>&nbsp;            // KMC 6763340: I don&#39;t know why this wasn&#39;t set earlier,
+<i>489</i>&nbsp;            // but we do not want a retry to pick up the previous
+<i>490</i>&nbsp;            // reply status, so clear it here.  Most likely a new
+<i>491</i>&nbsp;            // info was pushed before, so that this was not a problem.
+<b class="nc"><i>492</i>&nbsp;            info.setReplyStatus( RequestInfoImpl.UNINITIALIZED ) ;</b>
+<i>493</i>&nbsp;
+<i>494</i>&nbsp;            // If this is a DII request, make sure we ignore the next initiate.
+<b class="nc"><i>495</i>&nbsp;            if( diiRequest ) {</b>
+<b class="nc"><i>496</i>&nbsp;                info.setDIIInitiate( true );</b>
+<i>497</i>&nbsp;            }
+<i>498</i>&nbsp;        }
+<i>499</i>&nbsp;    }
+<i>500</i>&nbsp;
+<i>501</i>&nbsp;    public void cleanupClientPIRequest() {
+<b class="nc"><i>502</i>&nbsp;        if( !hasClientInterceptors ) return;</b>
+<b class="nc"><i>503</i>&nbsp;        if( !isClientPIEnabledForThisThread() ) return;</b>
+<i>504</i>&nbsp;
+<b class="nc"><i>505</i>&nbsp;        ClientRequestInfoImpl info = peekClientRequestInfoImplStack();</b>
+<b class="nc"><i>506</i>&nbsp;        RetryType rt = info.getRetryRequest() ;</b>
+<i>507</i>&nbsp;
+<i>508</i>&nbsp;        // fix for 6763340
+<b class="nc"><i>509</i>&nbsp;        if (!rt.equals( RetryType.BEFORE_RESPONSE )) {</b>
+<i>510</i>&nbsp;
+<i>511</i>&nbsp;            // If the replyStatus has not yet been set, this is an indication
+<i>512</i>&nbsp;            // that the ORB threw an exception before we had a chance to
+<i>513</i>&nbsp;            // invoke the client interceptor ending points.
+<i>514</i>&nbsp;            //
+<i>515</i>&nbsp;            // _REVISIT_ We cannot handle any exceptions or ForwardRequests
+<i>516</i>&nbsp;            // flagged by the ending points here because there is no way
+<i>517</i>&nbsp;            // to gracefully handle this in any of the calling code.
+<i>518</i>&nbsp;            // This is a rare corner case, so we will ignore this for now.
+<b class="nc"><i>519</i>&nbsp;            short replyStatus = info.getReplyStatus();</b>
+<b class="nc"><i>520</i>&nbsp;            if (replyStatus == info.UNINITIALIZED ) {</b>
+<b class="nc"><i>521</i>&nbsp;                invokeClientPIEndingPoint( ReplyMessage.SYSTEM_EXCEPTION,</b>
+<b class="nc"><i>522</i>&nbsp;                    wrapper.unknownRequestInvoke(</b>
+<i>523</i>&nbsp;                        CompletionStatus.COMPLETED_MAYBE ) ) ;
+<i>524</i>&nbsp;            }
+<i>525</i>&nbsp;        }
+<i>526</i>&nbsp;
+<i>527</i>&nbsp;        // Decrement entry count, and if it is zero, pop it from the stack.
+<b class="nc"><i>528</i>&nbsp;        info.decrementEntryCount();</b>
+<i>529</i>&nbsp;
+<i>530</i>&nbsp;        // fix for 6763340, and probably other cases (non-recursive retry)
+<b class="nc"><i>531</i>&nbsp;        if (info.getEntryCount() == 0 &amp;&amp; !info.getRetryRequest().isRetry()) {</b>
+<i>532</i>&nbsp;            // RequestInfoStack&lt;ClientRequestInfoImpl&gt; infoStack =
+<i>533</i>&nbsp;            //     threadLocalClientRequestInfoStack.get();
+<b class="nc"><i>534</i>&nbsp;            RequestInfoStack infoStack =</b>
+<b class="nc"><i>535</i>&nbsp;                (RequestInfoStack)threadLocalClientRequestInfoStack.get();</b>
+<b class="nc"><i>536</i>&nbsp;            infoStack.pop();</b>
+<b class="nc"><i>537</i>&nbsp;            printPop();</b>
+<i>538</i>&nbsp;        }
+<i>539</i>&nbsp;    }
+<i>540</i>&nbsp;
+<i>541</i>&nbsp;    public void setClientPIInfo(CorbaMessageMediator messageMediator)
+<i>542</i>&nbsp;    {
+<b class="nc"><i>543</i>&nbsp;        if( !hasClientInterceptors ) return;</b>
+<b class="nc"><i>544</i>&nbsp;        if( !isClientPIEnabledForThisThread() ) return;</b>
+<i>545</i>&nbsp;
+<b class="nc"><i>546</i>&nbsp;        peekClientRequestInfoImplStack().setInfo(messageMediator);</b>
+<i>547</i>&nbsp;    }
+<i>548</i>&nbsp;
+<i>549</i>&nbsp;    public void setClientPIInfo( RequestImpl requestImpl ) {
+<b class="nc"><i>550</i>&nbsp;        if( !hasClientInterceptors ) return;</b>
+<b class="nc"><i>551</i>&nbsp;        if( !isClientPIEnabledForThisThread() ) return;</b>
+<i>552</i>&nbsp;
+<b class="nc"><i>553</i>&nbsp;        peekClientRequestInfoImplStack().setDIIRequest( requestImpl );</b>
+<i>554</i>&nbsp;    }
+<i>555</i>&nbsp;
+<i>556</i>&nbsp;    /*
+<i>557</i>&nbsp;     *****************
+<i>558</i>&nbsp;     * Server PI hooks
+<i>559</i>&nbsp;     *****************/
+<i>560</i>&nbsp;
+<i>561</i>&nbsp;    public void invokeServerPIStartingPoint()
+<i>562</i>&nbsp;    {
+<b class="nc"><i>563</i>&nbsp;        if( !hasServerInterceptors ) return;</b>
+<i>564</i>&nbsp;
+<b class="nc"><i>565</i>&nbsp;        ServerRequestInfoImpl info = peekServerRequestInfoImplStack();</b>
+<b class="nc"><i>566</i>&nbsp;        interceptorInvoker.invokeServerInterceptorStartingPoint( info );</b>
+<i>567</i>&nbsp;
+<i>568</i>&nbsp;        // Handle SystemException or ForwardRequest:
+<b class="nc"><i>569</i>&nbsp;        serverPIHandleExceptions( info );</b>
+<i>570</i>&nbsp;    }
+<i>571</i>&nbsp;
+<i>572</i>&nbsp;    public void invokeServerPIIntermediatePoint()
+<i>573</i>&nbsp;    {
+<b class="nc"><i>574</i>&nbsp;        if( !hasServerInterceptors ) return;</b>
+<i>575</i>&nbsp;
+<b class="nc"><i>576</i>&nbsp;        ServerRequestInfoImpl info = peekServerRequestInfoImplStack();</b>
+<b class="nc"><i>577</i>&nbsp;        interceptorInvoker.invokeServerInterceptorIntermediatePoint( info );</b>
+<i>578</i>&nbsp;
+<i>579</i>&nbsp;        // Clear servant from info object so that the user has control over
+<i>580</i>&nbsp;        // its lifetime:
+<b class="nc"><i>581</i>&nbsp;        info.releaseServant();</b>
+<i>582</i>&nbsp;
+<i>583</i>&nbsp;        // Handle SystemException or ForwardRequest:
+<b class="nc"><i>584</i>&nbsp;        serverPIHandleExceptions( info );</b>
+<i>585</i>&nbsp;    }
+<i>586</i>&nbsp;
+<i>587</i>&nbsp;    public void invokeServerPIEndingPoint( ReplyMessage replyMessage )
+<i>588</i>&nbsp;    {
+<b class="nc"><i>589</i>&nbsp;        if( !hasServerInterceptors ) return;</b>
+<b class="nc"><i>590</i>&nbsp;        ServerRequestInfoImpl info = peekServerRequestInfoImplStack();</b>
+<i>591</i>&nbsp;
+<i>592</i>&nbsp;        // REVISIT: This needs to be done &quot;early&quot; for the following workaround.
+<b class="nc"><i>593</i>&nbsp;        info.setReplyMessage( replyMessage );</b>
+<i>594</i>&nbsp;
+<i>595</i>&nbsp;        // REVISIT: This was done inside of invokeServerInterceptorEndingPoint
+<i>596</i>&nbsp;        // but needs to be here for now.  See comment in that method for why.
+<b class="nc"><i>597</i>&nbsp;        info.setCurrentExecutionPoint( info.EXECUTION_POINT_ENDING );</b>
+<i>598</i>&nbsp;
+<i>599</i>&nbsp;        // It is possible we might have entered this method more than
+<i>600</i>&nbsp;        // once (e.g. if an ending point threw a SystemException, then
+<i>601</i>&nbsp;        // a new ServerResponseImpl is created).
+<b class="nc"><i>602</i>&nbsp;        if( !info.getAlreadyExecuted() ) {</b>
+<b class="nc"><i>603</i>&nbsp;            int replyStatus = replyMessage.getReplyStatus();</b>
+<i>604</i>&nbsp;
+<i>605</i>&nbsp;            // Translate ReplyMessage.replyStatus into PI replyStatus:
+<i>606</i>&nbsp;            // Note: this is also an assertion to make sure a valid
+<i>607</i>&nbsp;            // replyStatus is passed in (IndexOutOfBoundsException will be
+<i>608</i>&nbsp;            // thrown otherwise)
+<b class="nc"><i>609</i>&nbsp;            short piReplyStatus =</b>
+<i>610</i>&nbsp;                REPLY_MESSAGE_TO_PI_REPLY_STATUS[replyStatus];
+<i>611</i>&nbsp;
+<i>612</i>&nbsp;            // Make forwarded IOR available to interceptors, if applicable:
+<b class="nc"><i>613</i>&nbsp;            if( ( piReplyStatus == LOCATION_FORWARD.value ) ||</b>
+<i>614</i>&nbsp;                ( piReplyStatus == TRANSPORT_RETRY.value ) )
+<i>615</i>&nbsp;            {
+<b class="nc"><i>616</i>&nbsp;                info.setForwardRequest( replyMessage.getIOR() );</b>
+<i>617</i>&nbsp;            }
+<i>618</i>&nbsp;
+<i>619</i>&nbsp;            // REVISIT: Do early above for now.
+<i>620</i>&nbsp;            // Make reply message available to interceptors:
+<i>621</i>&nbsp;            //info.setReplyMessage( replyMessage );
+<i>622</i>&nbsp;
+<i>623</i>&nbsp;            // Remember exception so we can tell if an interceptor changed it.
+<b class="nc"><i>624</i>&nbsp;            Exception prevException = info.getException();</b>
+<i>625</i>&nbsp;
+<i>626</i>&nbsp;            // _REVISIT_ We do not have access to the User Exception at
+<i>627</i>&nbsp;            // this point, so treat it as an UNKNOWN for now.
+<i>628</i>&nbsp;            // Note that if this is a DSI call, we do have the user exception.
+<b class="nc"><i>629</i>&nbsp;            if( !info.isDynamic() &amp;&amp;</b>
+<i>630</i>&nbsp;                (piReplyStatus == USER_EXCEPTION.value) )
+<i>631</i>&nbsp;            {
+<b class="nc"><i>632</i>&nbsp;                info.setException( omgWrapper.unknownUserException(</b>
+<i>633</i>&nbsp;                    CompletionStatus.COMPLETED_MAYBE ) ) ;
+<i>634</i>&nbsp;            }
+<i>635</i>&nbsp;
+<i>636</i>&nbsp;            // Invoke the ending interception points:
+<b class="nc"><i>637</i>&nbsp;            info.setReplyStatus( piReplyStatus );</b>
+<b class="nc"><i>638</i>&nbsp;            interceptorInvoker.invokeServerInterceptorEndingPoint( info );</b>
+<b class="nc"><i>639</i>&nbsp;            short newPIReplyStatus = info.getReplyStatus();</b>
+<b class="nc"><i>640</i>&nbsp;            Exception newException = info.getException();</b>
+<i>641</i>&nbsp;
+<i>642</i>&nbsp;            // Check reply status.  If an interceptor threw a SystemException
+<i>643</i>&nbsp;            // and it is different than the one that we came in with,
+<i>644</i>&nbsp;            // rethrow it so the proper response can be constructed:
+<b class="nc"><i>645</i>&nbsp;            if( ( newPIReplyStatus == SYSTEM_EXCEPTION.value ) &amp;&amp;</b>
+<i>646</i>&nbsp;                ( newException != prevException ) )
+<i>647</i>&nbsp;            {
+<b class="nc"><i>648</i>&nbsp;                throw (SystemException)newException;</b>
+<i>649</i>&nbsp;            }
+<i>650</i>&nbsp;
+<i>651</i>&nbsp;            // If we are to forward the location:
+<b class="nc"><i>652</i>&nbsp;            if( newPIReplyStatus == LOCATION_FORWARD.value ) {</b>
+<b class="nc"><i>653</i>&nbsp;                if( piReplyStatus != LOCATION_FORWARD.value ) {</b>
+<i>654</i>&nbsp;                    // Treat a ForwardRequest as a ForwardException.
+<b class="nc"><i>655</i>&nbsp;                    IOR ior = info.getForwardRequestIOR();</b>
+<b class="nc"><i>656</i>&nbsp;                    throw new ForwardException( orb, ior ) ;</b>
+<i>657</i>&nbsp;                }
+<b class="nc"><i>658</i>&nbsp;                else if( info.isForwardRequestRaisedInEnding() ) {</b>
+<i>659</i>&nbsp;                    // Treat a ForwardRequest by changing the IOR.
+<b class="nc"><i>660</i>&nbsp;                    replyMessage.setIOR( info.getForwardRequestIOR() );</b>
+<i>661</i>&nbsp;                }
+<i>662</i>&nbsp;            }
+<i>663</i>&nbsp;        }
+<i>664</i>&nbsp;    }
+<i>665</i>&nbsp;
+<i>666</i>&nbsp;    public void setServerPIInfo( Exception exception ) {
+<b class="nc"><i>667</i>&nbsp;        if( !hasServerInterceptors ) return;</b>
+<i>668</i>&nbsp;
+<b class="nc"><i>669</i>&nbsp;        ServerRequestInfoImpl info = peekServerRequestInfoImplStack();</b>
+<b class="nc"><i>670</i>&nbsp;        info.setException( exception );</b>
+<i>671</i>&nbsp;    }
+<i>672</i>&nbsp;
+<i>673</i>&nbsp;    public void setServerPIInfo( NVList arguments )
+<i>674</i>&nbsp;    {
+<b class="nc"><i>675</i>&nbsp;        if( !hasServerInterceptors ) return;</b>
+<i>676</i>&nbsp;
+<b class="nc"><i>677</i>&nbsp;        ServerRequestInfoImpl info = peekServerRequestInfoImplStack();</b>
+<b class="nc"><i>678</i>&nbsp;        info.setDSIArguments( arguments );</b>
+<i>679</i>&nbsp;    }
+<i>680</i>&nbsp;
+<i>681</i>&nbsp;    public void setServerPIExceptionInfo( Any exception )
+<i>682</i>&nbsp;    {
+<b class="nc"><i>683</i>&nbsp;        if( !hasServerInterceptors ) return;</b>
+<i>684</i>&nbsp;
+<b class="nc"><i>685</i>&nbsp;        ServerRequestInfoImpl info = peekServerRequestInfoImplStack();</b>
+<b class="nc"><i>686</i>&nbsp;        info.setDSIException( exception );</b>
+<i>687</i>&nbsp;    }
+<i>688</i>&nbsp;
+<i>689</i>&nbsp;    public void setServerPIInfo( Any result )
+<i>690</i>&nbsp;    {
+<b class="nc"><i>691</i>&nbsp;        if( !hasServerInterceptors ) return;</b>
+<i>692</i>&nbsp;
+<b class="nc"><i>693</i>&nbsp;        ServerRequestInfoImpl info = peekServerRequestInfoImplStack();</b>
+<b class="nc"><i>694</i>&nbsp;        info.setDSIResult( result );</b>
+<i>695</i>&nbsp;    }
+<i>696</i>&nbsp;
+<i>697</i>&nbsp;    public void initializeServerPIInfo( CorbaMessageMediator request,
+<i>698</i>&nbsp;        ObjectAdapter oa, byte[] objectId, ObjectKeyTemplate oktemp )
+<i>699</i>&nbsp;    {
+<b class="nc"><i>700</i>&nbsp;        if( !hasServerInterceptors ) return;</b>
+<i>701</i>&nbsp;
+<b class="nc"><i>702</i>&nbsp;        RequestInfoStack infoStack =</b>
+<b class="nc"><i>703</i>&nbsp;            (RequestInfoStack)threadLocalServerRequestInfoStack.get();</b>
+<b class="nc"><i>704</i>&nbsp;        ServerRequestInfoImpl info = new ServerRequestInfoImpl( orb );</b>
+<b class="nc"><i>705</i>&nbsp;        infoStack.push( info );</b>
+<b class="nc"><i>706</i>&nbsp;        printPush();</b>
+<i>707</i>&nbsp;
+<i>708</i>&nbsp;        // Notify request object that once response is constructed, make
+<i>709</i>&nbsp;        // sure we execute ending points.
+<b class="nc"><i>710</i>&nbsp;        request.setExecutePIInResponseConstructor( true );</b>
+<i>711</i>&nbsp;
+<b class="nc"><i>712</i>&nbsp;        info.setInfo( request, oa, objectId, oktemp );</b>
+<i>713</i>&nbsp;    }
+<i>714</i>&nbsp;
+<i>715</i>&nbsp;    public void setServerPIInfo( java.lang.Object servant,
+<i>716</i>&nbsp;                                          String targetMostDerivedInterface )
+<i>717</i>&nbsp;    {
+<b class="nc"><i>718</i>&nbsp;        if( !hasServerInterceptors ) return;</b>
+<i>719</i>&nbsp;
+<b class="nc"><i>720</i>&nbsp;        ServerRequestInfoImpl info = peekServerRequestInfoImplStack();</b>
+<b class="nc"><i>721</i>&nbsp;        info.setInfo( servant, targetMostDerivedInterface );</b>
+<i>722</i>&nbsp;    }
+<i>723</i>&nbsp;
+<i>724</i>&nbsp;    public void cleanupServerPIRequest() {
+<b class="nc"><i>725</i>&nbsp;        if( !hasServerInterceptors ) return;</b>
+<i>726</i>&nbsp;
+<b class="nc"><i>727</i>&nbsp;        RequestInfoStack infoStack =</b>
+<b class="nc"><i>728</i>&nbsp;            (RequestInfoStack)threadLocalServerRequestInfoStack.get();</b>
+<b class="nc"><i>729</i>&nbsp;        infoStack.pop();</b>
+<b class="nc"><i>730</i>&nbsp;        printPop();</b>
+<i>731</i>&nbsp;    }
+<i>732</i>&nbsp;
+<i>733</i>&nbsp;    /*
+<i>734</i>&nbsp;     **********************************************************************
+<i>735</i>&nbsp;     *  The following methods are private utility methods.
+<i>736</i>&nbsp;     ************************************************************************/
+<i>737</i>&nbsp;
+<i>738</i>&nbsp;    /**
+<i>739</i>&nbsp;     * Handles exceptions for the starting and intermediate points for
+<i>740</i>&nbsp;     * server request interceptors.  This is common code that has been
+<i>741</i>&nbsp;     * factored out into this utility method.
+<i>742</i>&nbsp;     * &lt;p&gt;
+<i>743</i>&nbsp;     * This method will NOT work for ending points.
+<i>744</i>&nbsp;     */
+<i>745</i>&nbsp;    private void serverPIHandleExceptions( ServerRequestInfoImpl info )
+<i>746</i>&nbsp;    {
+<b class="nc"><i>747</i>&nbsp;        int endingPointCall = info.getEndingPointCall();</b>
+<b class="nc"><i>748</i>&nbsp;        if(endingPointCall == ServerRequestInfoImpl.CALL_SEND_EXCEPTION) {</b>
+<i>749</i>&nbsp;            // If a system exception was thrown, throw it to caller:
+<b class="nc"><i>750</i>&nbsp;            throw (SystemException)info.getException();</b>
+<i>751</i>&nbsp;        }
+<b class="nc"><i>752</i>&nbsp;        else if( (endingPointCall == ServerRequestInfoImpl.CALL_SEND_OTHER) &amp;&amp;</b>
+<b class="nc"><i>753</i>&nbsp;                 (info.getForwardRequestException() != null) )</b>
+<i>754</i>&nbsp;        {
+<i>755</i>&nbsp;            // If an interceptor throws a forward request, convert it
+<i>756</i>&nbsp;            // into a ForwardException for easier handling:
+<b class="nc"><i>757</i>&nbsp;            IOR ior = info.getForwardRequestIOR();</b>
+<b class="nc"><i>758</i>&nbsp;            throw new ForwardException( orb, ior );</b>
+<i>759</i>&nbsp;        }
+<i>760</i>&nbsp;    }
+<i>761</i>&nbsp;
+<i>762</i>&nbsp;    /**
+<i>763</i>&nbsp;     * Utility method to convert a PI reply status short to a ReplyMessage
+<i>764</i>&nbsp;     * constant.  This is a reverse lookup on the table defined in
+<i>765</i>&nbsp;     * REPLY_MESSAGE_TO_PI_REPLY_STATUS.  The reverse lookup need not be
+<i>766</i>&nbsp;     * performed as quickly since it is only executed in exception
+<i>767</i>&nbsp;     * conditions.
+<i>768</i>&nbsp;     */
+<i>769</i>&nbsp;    private int convertPIReplyStatusToReplyMessage( short replyStatus ) {
+<b class="nc"><i>770</i>&nbsp;        int result = 0;</b>
+<b class="nc"><i>771</i>&nbsp;        for( int i = 0; i &lt; REPLY_MESSAGE_TO_PI_REPLY_STATUS.length; i++ ) {</b>
+<b class="nc"><i>772</i>&nbsp;            if( REPLY_MESSAGE_TO_PI_REPLY_STATUS[i] == replyStatus ) {</b>
+<b class="nc"><i>773</i>&nbsp;                result = i;</b>
+<b class="nc"><i>774</i>&nbsp;                break;</b>
+<i>775</i>&nbsp;            }
+<i>776</i>&nbsp;        }
+<b class="nc"><i>777</i>&nbsp;        return result;</b>
+<i>778</i>&nbsp;    }
+<i>779</i>&nbsp;
+<i>780</i>&nbsp;    /**
+<i>781</i>&nbsp;     * Convenience method to get the ClientRequestInfoImpl object off the
+<i>782</i>&nbsp;     * top of the ThreadLocal stack.  Throws an INTERNAL exception if
+<i>783</i>&nbsp;     * the Info stack is empty.
+<i>784</i>&nbsp;     */
+<i>785</i>&nbsp;    private ClientRequestInfoImpl peekClientRequestInfoImplStack() {
+<b class="nc"><i>786</i>&nbsp;        RequestInfoStack infoStack =</b>
+<b class="nc"><i>787</i>&nbsp;            (RequestInfoStack)threadLocalClientRequestInfoStack.get();</b>
+<b class="nc"><i>788</i>&nbsp;        ClientRequestInfoImpl info = null;</b>
+<b class="nc"><i>789</i>&nbsp;        if( !infoStack.empty() ) {</b>
+<b class="nc"><i>790</i>&nbsp;            info = (ClientRequestInfoImpl)infoStack.peek();</b>
+<i>791</i>&nbsp;        } else {
+<b class="nc"><i>792</i>&nbsp;            throw wrapper.clientInfoStackNull() ;</b>
+<i>793</i>&nbsp;        }
+<i>794</i>&nbsp;
+<b class="nc"><i>795</i>&nbsp;        return info;</b>
+<i>796</i>&nbsp;    }
+<i>797</i>&nbsp;
+<i>798</i>&nbsp;    /**
+<i>799</i>&nbsp;     * Convenience method to get the ServerRequestInfoImpl object off the
+<i>800</i>&nbsp;     * top of the ThreadLocal stack.  Returns null if there are none.
+<i>801</i>&nbsp;     */
+<i>802</i>&nbsp;    private ServerRequestInfoImpl peekServerRequestInfoImplStack() {
+<b class="nc"><i>803</i>&nbsp;        RequestInfoStack infoStack =</b>
+<b class="nc"><i>804</i>&nbsp;            (RequestInfoStack)threadLocalServerRequestInfoStack.get();</b>
+<b class="nc"><i>805</i>&nbsp;        ServerRequestInfoImpl info = null;</b>
+<i>806</i>&nbsp;
+<b class="nc"><i>807</i>&nbsp;        if( !infoStack.empty() ) {</b>
+<b class="nc"><i>808</i>&nbsp;            info = (ServerRequestInfoImpl)infoStack.peek();</b>
+<i>809</i>&nbsp;        } else {
+<b class="nc"><i>810</i>&nbsp;            throw wrapper.serverInfoStackNull() ;</b>
+<i>811</i>&nbsp;        }
+<i>812</i>&nbsp;
+<b class="nc"><i>813</i>&nbsp;        return info;</b>
+<i>814</i>&nbsp;    }
+<i>815</i>&nbsp;
+<i>816</i>&nbsp;    /**
+<i>817</i>&nbsp;     * Convenience method to determine whether Client PI is enabled
+<i>818</i>&nbsp;     * for requests on this thread.
+<i>819</i>&nbsp;     */
+<i>820</i>&nbsp;    private boolean isClientPIEnabledForThisThread() {
+<b class="nc"><i>821</i>&nbsp;        RequestInfoStack infoStack =</b>
+<b class="nc"><i>822</i>&nbsp;            (RequestInfoStack)threadLocalClientRequestInfoStack.get();</b>
+<b class="nc"><i>823</i>&nbsp;        return (infoStack.disableCount == 0);</b>
+<i>824</i>&nbsp;    }
+<i>825</i>&nbsp;
+<i>826</i>&nbsp;    /**
+<i>827</i>&nbsp;     * Call pre_init on all ORB initializers
+<i>828</i>&nbsp;     */
+<i>829</i>&nbsp;    private void preInitORBInitializers( ORBInitInfoImpl info ) {
+<i>830</i>&nbsp;
+<i>831</i>&nbsp;        // Inform ORBInitInfo we are in pre_init stage
+<b class="nc"><i>832</i>&nbsp;        info.setStage( ORBInitInfoImpl.STAGE_PRE_INIT );</b>
+<i>833</i>&nbsp;
+<i>834</i>&nbsp;        // Step through each initializer instantiation and call its
+<i>835</i>&nbsp;        // pre_init.  Ignore any exceptions.
+<b class="nc"><i>836</i>&nbsp;        for( int i = 0; i &lt; orb.getORBData().getORBInitializers().length;</b>
+<b class="nc"><i>837</i>&nbsp;            i++ ) {</b>
+<b class="nc"><i>838</i>&nbsp;            ORBInitializer init = orb.getORBData().getORBInitializers()[i];</b>
+<b class="nc"><i>839</i>&nbsp;            if( init != null ) {</b>
+<i>840</i>&nbsp;                try {
+<b class="nc"><i>841</i>&nbsp;                    init.pre_init( info );</b>
+<i>842</i>&nbsp;                }
+<b class="nc"><i>843</i>&nbsp;                catch( Exception e ) {</b>
+<i>844</i>&nbsp;                    // As per orbos/99-12-02, section 9.3.1.2, &quot;If there are
+<i>845</i>&nbsp;                    // any exceptions, the ORB shall ignore them and proceed.&quot;
+<b class="nc"><i>846</i>&nbsp;                }</b>
+<i>847</i>&nbsp;            }
+<i>848</i>&nbsp;        }
+<i>849</i>&nbsp;    }
+<i>850</i>&nbsp;
+<i>851</i>&nbsp;    /**
+<i>852</i>&nbsp;     * Call post_init on all ORB initializers
+<i>853</i>&nbsp;     */
+<i>854</i>&nbsp;    private void postInitORBInitializers( ORBInitInfoImpl info ) {
+<i>855</i>&nbsp;
+<i>856</i>&nbsp;        // Inform ORBInitInfo we are in post_init stage
+<b class="nc"><i>857</i>&nbsp;        info.setStage( ORBInitInfoImpl.STAGE_POST_INIT );</b>
+<i>858</i>&nbsp;
+<i>859</i>&nbsp;        // Step through each initializer instantiation and call its post_init.
+<i>860</i>&nbsp;        // Ignore any exceptions.
+<b class="nc"><i>861</i>&nbsp;        for( int i = 0; i &lt; orb.getORBData().getORBInitializers().length;</b>
+<b class="nc"><i>862</i>&nbsp;            i++ ) {</b>
+<b class="nc"><i>863</i>&nbsp;            ORBInitializer init = orb.getORBData().getORBInitializers()[i];</b>
+<b class="nc"><i>864</i>&nbsp;            if( init != null ) {</b>
+<i>865</i>&nbsp;                try {
+<b class="nc"><i>866</i>&nbsp;                    init.post_init( info );</b>
+<i>867</i>&nbsp;                }
+<b class="nc"><i>868</i>&nbsp;                catch( Exception e ) {</b>
+<i>869</i>&nbsp;                    // As per orbos/99-12-02, section 9.3.1.2, &quot;If there are
+<i>870</i>&nbsp;                    // any exceptions, the ORB shall ignore them and proceed.&quot;
+<b class="nc"><i>871</i>&nbsp;                }</b>
+<i>872</i>&nbsp;            }
+<i>873</i>&nbsp;        }
+<i>874</i>&nbsp;    }
+<i>875</i>&nbsp;
+<i>876</i>&nbsp;    /**
+<i>877</i>&nbsp;     * Creates the ORBInitInfo object to be passed to ORB intializers&#39;
+<i>878</i>&nbsp;     * pre_init and post_init methods
+<i>879</i>&nbsp;     */
+<i>880</i>&nbsp;    private ORBInitInfoImpl createORBInitInfo() {
+<b class="nc"><i>881</i>&nbsp;        ORBInitInfoImpl result = null;</b>
+<i>882</i>&nbsp;
+<i>883</i>&nbsp;        // arguments comes from set_parameters.  May be null.
+<i>884</i>&nbsp;
+<i>885</i>&nbsp;        // _REVISIT_ The spec does not specify which ID this is to be.
+<i>886</i>&nbsp;        // We currently get this from the corba.ORB, which reads it from
+<i>887</i>&nbsp;        // the ORB_ID_PROPERTY property.
+<b class="nc"><i>888</i>&nbsp;        String orbId = orb.getORBData().getORBId() ;</b>
+<i>889</i>&nbsp;
+<b class="nc"><i>890</i>&nbsp;        result = new ORBInitInfoImpl( orb, arguments, orbId, codecFactory );</b>
+<i>891</i>&nbsp;
+<b class="nc"><i>892</i>&nbsp;        return result;</b>
+<i>893</i>&nbsp;    }
+<i>894</i>&nbsp;
+<i>895</i>&nbsp;    /**
+<i>896</i>&nbsp;     * Called by ORBInitInfo when an interceptor needs to be registered.
+<i>897</i>&nbsp;     * The type is one of:
+<i>898</i>&nbsp;     * &lt;ul&gt;
+<i>899</i>&nbsp;     *   &lt;li&gt;INTERCEPTOR_TYPE_CLIENT - ClientRequestInterceptor
+<i>900</i>&nbsp;     *   &lt;li&gt;INTERCEPTOR_TYPE_SERVER - ServerRequestInterceptor
+<i>901</i>&nbsp;     *   &lt;li&gt;INTERCEPTOR_TYPE_IOR - IORInterceptor
+<i>902</i>&nbsp;     * &lt;/ul&gt;
+<i>903</i>&nbsp;     *
+<i>904</i>&nbsp;     * @exception DuplicateName Thrown if an interceptor of the given
+<i>905</i>&nbsp;     *     name already exists for the given type.
+<i>906</i>&nbsp;     */
+<i>907</i>&nbsp;    public void register_interceptor( Interceptor interceptor, int type )
+<i>908</i>&nbsp;        throws DuplicateName
+<i>909</i>&nbsp;    {
+<i>910</i>&nbsp;        // We will assume interceptor is not null, since it is called
+<i>911</i>&nbsp;        // internally.
+<b class="nc"><i>912</i>&nbsp;        if( (type &gt;= InterceptorList.NUM_INTERCEPTOR_TYPES) || (type &lt; 0) ) {</b>
+<b class="nc"><i>913</i>&nbsp;            throw wrapper.typeOutOfRange( new Integer( type ) ) ;</b>
+<i>914</i>&nbsp;        }
+<i>915</i>&nbsp;
+<b class="nc"><i>916</i>&nbsp;        String interceptorName = interceptor.name();</b>
+<i>917</i>&nbsp;
+<b class="nc"><i>918</i>&nbsp;        if( interceptorName == null ) {</b>
+<b class="nc"><i>919</i>&nbsp;            throw wrapper.nameNull() ;</b>
+<i>920</i>&nbsp;        }
+<i>921</i>&nbsp;
+<i>922</i>&nbsp;        // Register with interceptor list:
+<b class="nc"><i>923</i>&nbsp;        interceptorList.register_interceptor( interceptor, type );</b>
+<i>924</i>&nbsp;    }
+<i>925</i>&nbsp;
+<i>926</i>&nbsp;    public Current getPICurrent( ) {
+<b class="nc"><i>927</i>&nbsp;        return current;</b>
+<i>928</i>&nbsp;    }
+<i>929</i>&nbsp;
+<i>930</i>&nbsp;    /**
+<i>931</i>&nbsp;     * Called when an invalid null parameter was passed.  Throws a
+<i>932</i>&nbsp;     * BAD_PARAM with a minor code of 1
+<i>933</i>&nbsp;     */
+<i>934</i>&nbsp;    private void nullParam()
+<i>935</i>&nbsp;        throws BAD_PARAM
+<i>936</i>&nbsp;    {
+<b class="nc"><i>937</i>&nbsp;        throw orbutilWrapper.nullParam() ;</b>
+<i>938</i>&nbsp;    }
+<i>939</i>&nbsp;
+<i>940</i>&nbsp;    /** This is the implementation of standard API defined in org.omg.CORBA.ORB
+<i>941</i>&nbsp;     *  class. This method finds the Policy Factory for the given Policy Type
+<i>942</i>&nbsp;     *  and instantiates the Policy object from the Factory. It will throw
+<i>943</i>&nbsp;     *  PolicyError exception, If the PolicyFactory for the given type is
+<i>944</i>&nbsp;     *  not registered.
+<i>945</i>&nbsp;     *  _REVISIT_, Once Policy Framework work is completed, Reorganize
+<i>946</i>&nbsp;     *  this method to com.sun.corba.se.spi.orb.ORB.
+<i>947</i>&nbsp;     */
+<i>948</i>&nbsp;    public org.omg.CORBA.Policy create_policy(int type, org.omg.CORBA.Any val)
+<i>949</i>&nbsp;        throws org.omg.CORBA.PolicyError
+<i>950</i>&nbsp;    {
+<b class="nc"><i>951</i>&nbsp;        if( val == null ) {</b>
+<b class="nc"><i>952</i>&nbsp;            nullParam( );</b>
+<i>953</i>&nbsp;        }
+<b class="nc"><i>954</i>&nbsp;        if( policyFactoryTable == null ) {</b>
+<b class="nc"><i>955</i>&nbsp;            throw new org.omg.CORBA.PolicyError(</b>
+<i>956</i>&nbsp;                &quot;There is no PolicyFactory Registered for type &quot; + type,
+<i>957</i>&nbsp;                BAD_POLICY.value );
+<i>958</i>&nbsp;        }
+<b class="nc"><i>959</i>&nbsp;        PolicyFactory factory = (PolicyFactory)policyFactoryTable.get(</b>
+<i>960</i>&nbsp;            new Integer(type) );
+<b class="nc"><i>961</i>&nbsp;        if( factory == null ) {</b>
+<b class="nc"><i>962</i>&nbsp;            throw new org.omg.CORBA.PolicyError(</b>
+<i>963</i>&nbsp;                &quot; Could Not Find PolicyFactory for the Type &quot; + type,
+<i>964</i>&nbsp;                BAD_POLICY.value);
+<i>965</i>&nbsp;        }
+<b class="nc"><i>966</i>&nbsp;        org.omg.CORBA.Policy policy = factory.create_policy( type, val );</b>
+<b class="nc"><i>967</i>&nbsp;        return policy;</b>
+<i>968</i>&nbsp;    }
+<i>969</i>&nbsp;
+<i>970</i>&nbsp;    /** This method registers the Policy Factory in the policyFactoryTable,
+<i>971</i>&nbsp;     *  which is a HashMap. This method is made package private, because
+<i>972</i>&nbsp;     *  it is used internally by the  Interceptors.
+<i>973</i>&nbsp;     */
+<i>974</i>&nbsp;    public void registerPolicyFactory( int type, PolicyFactory factory ) {
+<b class="nc"><i>975</i>&nbsp;        if( policyFactoryTable == null ) {</b>
+<b class="nc"><i>976</i>&nbsp;            policyFactoryTable = new HashMap();</b>
+<i>977</i>&nbsp;        }
+<b class="nc"><i>978</i>&nbsp;        Integer key = new Integer( type );</b>
+<b class="nc"><i>979</i>&nbsp;        java.lang.Object val = policyFactoryTable.get( key );</b>
+<b class="nc"><i>980</i>&nbsp;        if( val == null ) {</b>
+<b class="nc"><i>981</i>&nbsp;            policyFactoryTable.put( key, factory );</b>
+<i>982</i>&nbsp;        }
+<i>983</i>&nbsp;        else {
+<b class="nc"><i>984</i>&nbsp;            throw omgWrapper.policyFactoryRegFailed( new Integer( type ) ) ;</b>
+<i>985</i>&nbsp;        }
+<i>986</i>&nbsp;    }
+<i>987</i>&nbsp;
+<i>988</i>&nbsp;    public synchronized int allocateServerRequestId ()
+<i>989</i>&nbsp;    {
+<b class="nc"><i>990</i>&nbsp;        return serverRequestIdCounter++;</b>
+<i>991</i>&nbsp;    }
+<i>992</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,175 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: LogWrapperBase</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.spi.logging</a> ]
+</div>
+
+<h1>Coverage Summary for Class: LogWrapperBase (com.sun.corba.se.spi.logging)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LogWrapperBase</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 27)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2003, 2004, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.spi.logging ;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.util.logging.Level ;
+<i>29</i>&nbsp;import java.util.logging.Logger ;
+<i>30</i>&nbsp;import java.util.logging.LogRecord ;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;public abstract class LogWrapperBase {
+<i>33</i>&nbsp;    protected Logger logger ;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;    protected String loggerName ;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;    protected LogWrapperBase( Logger logger )
+<b class="nc"><i>38</i>&nbsp;    {</b>
+<b class="nc"><i>39</i>&nbsp;        this.logger = logger ;</b>
+<b class="nc"><i>40</i>&nbsp;        this.loggerName = logger.getName( );</b>
+<i>41</i>&nbsp;    }
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    protected void doLog( Level level, String key, Object[] params, Class wrapperClass,
+<i>44</i>&nbsp;        Throwable thr )
+<i>45</i>&nbsp;    {
+<b class="nc"><i>46</i>&nbsp;        LogRecord lrec = new LogRecord( level, key ) ;</b>
+<b class="nc"><i>47</i>&nbsp;        if (params != null)</b>
+<b class="nc"><i>48</i>&nbsp;            lrec.setParameters( params ) ;</b>
+<b class="nc"><i>49</i>&nbsp;        inferCaller( wrapperClass, lrec ) ;</b>
+<b class="nc"><i>50</i>&nbsp;        lrec.setThrown( thr ) ;</b>
+<b class="nc"><i>51</i>&nbsp;        lrec.setLoggerName( loggerName );</b>
+<b class="nc"><i>52</i>&nbsp;        lrec.setResourceBundle( logger.getResourceBundle() ) ;</b>
+<b class="nc"><i>53</i>&nbsp;        logger.log( lrec ) ;</b>
+<i>54</i>&nbsp;    }
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    private void inferCaller( Class wrapperClass, LogRecord lrec )
+<i>57</i>&nbsp;    {
+<i>58</i>&nbsp;        // Private method to infer the caller&#39;s class and method names
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;        // Get the stack trace.
+<b class="nc"><i>61</i>&nbsp;        StackTraceElement stack[] = (new Throwable()).getStackTrace();</b>
+<b class="nc"><i>62</i>&nbsp;        StackTraceElement frame = null ;</b>
+<b class="nc"><i>63</i>&nbsp;        String wcname = wrapperClass.getName() ;</b>
+<b class="nc"><i>64</i>&nbsp;        String baseName = LogWrapperBase.class.getName() ;</b>
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;        // The top of the stack should always be a method in the wrapper class,
+<i>67</i>&nbsp;        // or in this base class.
+<i>68</i>&nbsp;        // Search back to the first method not in the wrapper class or this class.
+<b class="nc"><i>69</i>&nbsp;        int ix = 0;</b>
+<b class="nc"><i>70</i>&nbsp;        while (ix &lt; stack.length) {</b>
+<b class="nc"><i>71</i>&nbsp;            frame = stack[ix];</b>
+<b class="nc"><i>72</i>&nbsp;            String cname = frame.getClassName();</b>
+<b class="nc"><i>73</i>&nbsp;            if (!cname.equals(wcname) &amp;&amp; !cname.equals(baseName))  {</b>
+<b class="nc"><i>74</i>&nbsp;                break;</b>
+<i>75</i>&nbsp;            }
+<i>76</i>&nbsp;
+<b class="nc"><i>77</i>&nbsp;            ix++;</b>
+<b class="nc"><i>78</i>&nbsp;        }</b>
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;        // Set the class and method if we are not past the end of the stack
+<i>81</i>&nbsp;        // trace
+<b class="nc"><i>82</i>&nbsp;        if (ix &lt; stack.length) {</b>
+<b class="nc"><i>83</i>&nbsp;            lrec.setSourceClassName(frame.getClassName());</b>
+<b class="nc"><i>84</i>&nbsp;            lrec.setSourceMethodName(frame.getMethodName());</b>
+<i>85</i>&nbsp;        }
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    protected void doLog( Level level, String key, Class wrapperClass, Throwable thr )
+<i>89</i>&nbsp;    {
+<b class="nc"><i>90</i>&nbsp;        doLog( level, key, null, wrapperClass, thr ) ;</b>
+<i>91</i>&nbsp;    }
+<i>92</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

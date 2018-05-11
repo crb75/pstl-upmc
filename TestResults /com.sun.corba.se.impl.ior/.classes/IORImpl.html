@@ -1,0 +1,421 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: IORImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.ior</a> ]
+</div>
+
+<h1>Coverage Summary for Class: IORImpl (com.sun.corba.se.impl.ior)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">IORImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 107)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.ior;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.util.ListIterator ;
+<i>29</i>&nbsp;import java.util.Iterator ;
+<i>30</i>&nbsp;import java.util.Map ;
+<i>31</i>&nbsp;import java.util.HashMap ;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import java.io.StringWriter;
+<i>34</i>&nbsp;import java.io.IOException;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import javax.rmi.CORBA.Util;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import org.omg.CORBA_2_3.portable.InputStream ;
+<i>39</i>&nbsp;import org.omg.CORBA_2_3.portable.OutputStream ;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import org.omg.IOP.TAG_INTERNET_IOP ;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectId ;
+<i>44</i>&nbsp;import com.sun.corba.se.spi.ior.TaggedProfileTemplate ;
+<i>45</i>&nbsp;import com.sun.corba.se.spi.ior.TaggedProfile ;
+<i>46</i>&nbsp;import com.sun.corba.se.spi.ior.IOR ;
+<i>47</i>&nbsp;import com.sun.corba.se.spi.ior.IORTemplate ;
+<i>48</i>&nbsp;import com.sun.corba.se.spi.ior.IORTemplateList ;
+<i>49</i>&nbsp;import com.sun.corba.se.spi.ior.IdentifiableFactoryFinder ;
+<i>50</i>&nbsp;import com.sun.corba.se.spi.ior.IdentifiableContainerBase ;
+<i>51</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectKeyTemplate ;
+<i>52</i>&nbsp;import com.sun.corba.se.spi.ior.IORFactories ;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.GIOPVersion;
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;import com.sun.corba.se.spi.protocol.RequestDispatcherRegistry;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains;
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;import com.sun.corba.se.impl.encoding.MarshalOutputStream;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;import com.sun.corba.se.impl.encoding.EncapsOutputStream;
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;import com.sun.corba.se.impl.orbutil.HexOutputStream;
+<i>67</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBConstants;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;import com.sun.corba.se.impl.logging.IORSystemException ;
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;// XXX remove this once getProfile is gone
+<i>72</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.IIOPProfile ;
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;/** An IOR is represented as a list of profiles.
+<i>75</i>&nbsp;* Only objects that extend TaggedProfile should be added to an IOR.
+<i>76</i>&nbsp;* However, enforcing this restriction requires overriding all
+<i>77</i>&nbsp;* of the addXXX methods inherited from List, so no check
+<i>78</i>&nbsp;* is included here.
+<i>79</i>&nbsp;* @author Ken Cavanaugh
+<i>80</i>&nbsp;*/
+<i>81</i>&nbsp;public class IORImpl extends IdentifiableContainerBase implements IOR
+<i>82</i>&nbsp;{
+<i>83</i>&nbsp;    private String typeId;
+<b class="nc"><i>84</i>&nbsp;    private ORB factory = null ;</b>
+<b class="nc"><i>85</i>&nbsp;    private boolean isCachedHashValue = false;</b>
+<i>86</i>&nbsp;    private int cachedHashValue;
+<i>87</i>&nbsp;    IORSystemException wrapper ;
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    public ORB getORB()
+<i>90</i>&nbsp;    {
+<b class="nc"><i>91</i>&nbsp;        return factory ;</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    /* This variable is set directly from the constructors that take
+<i>95</i>&nbsp;     * an IORTemplate or IORTemplateList as arguments; otherwise it
+<i>96</i>&nbsp;     * is derived from the list of TaggedProfile instances on the first
+<i>97</i>&nbsp;     * call to getIORTemplates.  Note that we assume that an IOR with
+<i>98</i>&nbsp;     * mutiple TaggedProfile instances has the same ObjectId in each
+<i>99</i>&nbsp;     * TaggedProfile, as otherwise the IOR could never be created through
+<i>100</i>&nbsp;     * an ObjectReferenceFactory.
+<i>101</i>&nbsp;     */
+<b class="nc"><i>102</i>&nbsp;    private IORTemplateList iortemps = null ;</b>
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    public boolean equals( Object obj )
+<i>105</i>&nbsp;    {
+<b class="nc"><i>106</i>&nbsp;        if (obj == null)</b>
+<b class="nc"><i>107</i>&nbsp;            return false ;</b>
+<i>108</i>&nbsp;
+<b class="nc"><i>109</i>&nbsp;        if (!(obj instanceof IOR))</b>
+<b class="nc"><i>110</i>&nbsp;            return false ;</b>
+<i>111</i>&nbsp;
+<b class="nc"><i>112</i>&nbsp;        IOR other = (IOR)obj ;</b>
+<i>113</i>&nbsp;
+<b class="nc"><i>114</i>&nbsp;        return super.equals( obj ) &amp;&amp; typeId.equals( other.getTypeId() ) ;</b>
+<i>115</i>&nbsp;    }
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    public synchronized int hashCode()
+<i>118</i>&nbsp;    {
+<b class="nc"><i>119</i>&nbsp;        if (! isCachedHashValue) {</b>
+<b class="nc"><i>120</i>&nbsp;              cachedHashValue =  (super.hashCode() ^ typeId.hashCode());</b>
+<b class="nc"><i>121</i>&nbsp;              isCachedHashValue = true;</b>
+<i>122</i>&nbsp;        }
+<b class="nc"><i>123</i>&nbsp;        return cachedHashValue;</b>
+<i>124</i>&nbsp;    }
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;    /** Construct an empty IOR.  This is needed for null object references.
+<i>127</i>&nbsp;    */
+<i>128</i>&nbsp;    public IORImpl( ORB orb )
+<i>129</i>&nbsp;    {
+<b class="nc"><i>130</i>&nbsp;        this( orb, &quot;&quot; ) ;</b>
+<i>131</i>&nbsp;    }
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;    public IORImpl( ORB orb, String typeid )
+<b class="nc"><i>134</i>&nbsp;    {</b>
+<b class="nc"><i>135</i>&nbsp;        factory = orb ;</b>
+<b class="nc"><i>136</i>&nbsp;        wrapper = IORSystemException.get( orb,</b>
+<i>137</i>&nbsp;            CORBALogDomains.OA_IOR ) ;
+<b class="nc"><i>138</i>&nbsp;        this.typeId = typeid ;</b>
+<i>139</i>&nbsp;    }
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;    /** Construct an IOR from an IORTemplate by applying the same
+<i>142</i>&nbsp;    * object id to each TaggedProfileTemplate in the IORTemplate.
+<i>143</i>&nbsp;    */
+<i>144</i>&nbsp;    public IORImpl( ORB orb, String typeId, IORTemplate iortemp, ObjectId id)
+<i>145</i>&nbsp;    {
+<b class="nc"><i>146</i>&nbsp;        this( orb, typeId ) ;</b>
+<i>147</i>&nbsp;
+<b class="nc"><i>148</i>&nbsp;        this.iortemps = IORFactories.makeIORTemplateList() ;</b>
+<b class="nc"><i>149</i>&nbsp;        this.iortemps.add( iortemp ) ;</b>
+<i>150</i>&nbsp;
+<b class="nc"><i>151</i>&nbsp;        addTaggedProfiles( iortemp, id ) ;</b>
+<i>152</i>&nbsp;
+<b class="nc"><i>153</i>&nbsp;        makeImmutable() ;</b>
+<i>154</i>&nbsp;    }
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;    private void addTaggedProfiles( IORTemplate iortemp, ObjectId id )
+<i>157</i>&nbsp;    {
+<b class="nc"><i>158</i>&nbsp;        ObjectKeyTemplate oktemp = iortemp.getObjectKeyTemplate() ;</b>
+<b class="nc"><i>159</i>&nbsp;        Iterator templateIterator = iortemp.iterator() ;</b>
+<i>160</i>&nbsp;
+<b class="nc"><i>161</i>&nbsp;        while (templateIterator.hasNext()) {</b>
+<b class="nc"><i>162</i>&nbsp;            TaggedProfileTemplate ptemp =</b>
+<b class="nc"><i>163</i>&nbsp;                (TaggedProfileTemplate)(templateIterator.next()) ;</b>
+<i>164</i>&nbsp;
+<b class="nc"><i>165</i>&nbsp;            TaggedProfile profile = ptemp.create( oktemp, id ) ;</b>
+<i>166</i>&nbsp;
+<b class="nc"><i>167</i>&nbsp;            add( profile ) ;</b>
+<b class="nc"><i>168</i>&nbsp;        }</b>
+<i>169</i>&nbsp;    }
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;    /** Construct an IOR from an IORTemplate by applying the same
+<i>172</i>&nbsp;    * object id to each TaggedProfileTemplate in the IORTemplate.
+<i>173</i>&nbsp;    */
+<i>174</i>&nbsp;    public IORImpl( ORB orb, String typeId, IORTemplateList iortemps, ObjectId id)
+<i>175</i>&nbsp;    {
+<b class="nc"><i>176</i>&nbsp;        this( orb, typeId ) ;</b>
+<i>177</i>&nbsp;
+<b class="nc"><i>178</i>&nbsp;        this.iortemps = iortemps ;</b>
+<i>179</i>&nbsp;
+<b class="nc"><i>180</i>&nbsp;        Iterator iter = iortemps.iterator() ;</b>
+<b class="nc"><i>181</i>&nbsp;        while (iter.hasNext()) {</b>
+<b class="nc"><i>182</i>&nbsp;            IORTemplate iortemp = (IORTemplate)(iter.next()) ;</b>
+<b class="nc"><i>183</i>&nbsp;            addTaggedProfiles( iortemp, id ) ;</b>
+<b class="nc"><i>184</i>&nbsp;        }</b>
+<i>185</i>&nbsp;
+<b class="nc"><i>186</i>&nbsp;        makeImmutable() ;</b>
+<i>187</i>&nbsp;    }
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;    public IORImpl(InputStream is)
+<i>190</i>&nbsp;    {
+<b class="nc"><i>191</i>&nbsp;        this( (ORB)(is.orb()), is.read_string() ) ;</b>
+<i>192</i>&nbsp;
+<b class="nc"><i>193</i>&nbsp;        IdentifiableFactoryFinder finder =</b>
+<b class="nc"><i>194</i>&nbsp;            factory.getTaggedProfileFactoryFinder() ;</b>
+<i>195</i>&nbsp;
+<b class="nc"><i>196</i>&nbsp;        EncapsulationUtility.readIdentifiableSequence( this, finder, is ) ;</b>
+<i>197</i>&nbsp;
+<b class="nc"><i>198</i>&nbsp;        makeImmutable() ;</b>
+<i>199</i>&nbsp;    }
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;    public String getTypeId()
+<i>202</i>&nbsp;    {
+<b class="nc"><i>203</i>&nbsp;        return typeId ;</b>
+<i>204</i>&nbsp;    }
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;    public void write(OutputStream os)
+<i>207</i>&nbsp;    {
+<b class="nc"><i>208</i>&nbsp;        os.write_string( typeId ) ;</b>
+<b class="nc"><i>209</i>&nbsp;        EncapsulationUtility.writeIdentifiableSequence( this, os ) ;</b>
+<i>210</i>&nbsp;    }
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;    public String stringify()
+<i>213</i>&nbsp;    {
+<i>214</i>&nbsp;        StringWriter bs;
+<i>215</i>&nbsp;
+<b class="nc"><i>216</i>&nbsp;        MarshalOutputStream s =</b>
+<b class="nc"><i>217</i>&nbsp;            sun.corba.OutputStreamFactory.newEncapsOutputStream(factory);</b>
+<b class="nc"><i>218</i>&nbsp;        s.putEndian();</b>
+<b class="nc"><i>219</i>&nbsp;        write( (OutputStream)s );</b>
+<b class="nc"><i>220</i>&nbsp;        bs = new StringWriter();</b>
+<i>221</i>&nbsp;        try {
+<b class="nc"><i>222</i>&nbsp;            s.writeTo(new HexOutputStream(bs));</b>
+<b class="nc"><i>223</i>&nbsp;        } catch (IOException ex) {</b>
+<b class="nc"><i>224</i>&nbsp;            throw wrapper.stringifyWriteError( ex ) ;</b>
+<b class="nc"><i>225</i>&nbsp;        }</b>
+<i>226</i>&nbsp;
+<b class="nc"><i>227</i>&nbsp;        return ORBConstants.STRINGIFY_PREFIX + bs;</b>
+<i>228</i>&nbsp;    }
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;    public synchronized void makeImmutable()
+<i>231</i>&nbsp;    {
+<b class="nc"><i>232</i>&nbsp;        makeElementsImmutable() ;</b>
+<i>233</i>&nbsp;
+<b class="nc"><i>234</i>&nbsp;        if (iortemps != null)</b>
+<b class="nc"><i>235</i>&nbsp;            iortemps.makeImmutable() ;</b>
+<i>236</i>&nbsp;
+<b class="nc"><i>237</i>&nbsp;        super.makeImmutable() ;</b>
+<i>238</i>&nbsp;    }
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;    public org.omg.IOP.IOR getIOPIOR() {
+<b class="nc"><i>241</i>&nbsp;        EncapsOutputStream os =</b>
+<b class="nc"><i>242</i>&nbsp;            sun.corba.OutputStreamFactory.newEncapsOutputStream(factory);</b>
+<b class="nc"><i>243</i>&nbsp;        write(os);</b>
+<b class="nc"><i>244</i>&nbsp;        InputStream is = (InputStream) (os.create_input_stream());</b>
+<b class="nc"><i>245</i>&nbsp;        return org.omg.IOP.IORHelper.read(is);</b>
+<i>246</i>&nbsp;    }
+<i>247</i>&nbsp;
+<i>248</i>&nbsp;    public boolean isNil()
+<i>249</i>&nbsp;    {
+<i>250</i>&nbsp;        //
+<i>251</i>&nbsp;        // The check for typeId length of 0 below is commented out
+<i>252</i>&nbsp;        // as a workaround for a bug in ORBs which send a
+<i>253</i>&nbsp;        // null objref with a non-empty typeId string.
+<i>254</i>&nbsp;        //
+<b class="nc"><i>255</i>&nbsp;        return ((size() == 0) /* &amp;&amp; (typeId.length() == 0) */);</b>
+<i>256</i>&nbsp;    }
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;    public boolean isEquivalent(IOR ior)
+<i>259</i>&nbsp;    {
+<b class="nc"><i>260</i>&nbsp;        Iterator myIterator = iterator() ;</b>
+<b class="nc"><i>261</i>&nbsp;        Iterator otherIterator = ior.iterator() ;</b>
+<b class="nc"><i>262</i>&nbsp;        while (myIterator.hasNext() &amp;&amp; otherIterator.hasNext()) {</b>
+<b class="nc"><i>263</i>&nbsp;            TaggedProfile myProfile = (TaggedProfile)(myIterator.next()) ;</b>
+<b class="nc"><i>264</i>&nbsp;            TaggedProfile otherProfile = (TaggedProfile)(otherIterator.next()) ;</b>
+<b class="nc"><i>265</i>&nbsp;            if (!myProfile.isEquivalent( otherProfile ))</b>
+<b class="nc"><i>266</i>&nbsp;                return false ;</b>
+<b class="nc"><i>267</i>&nbsp;        }</b>
+<i>268</i>&nbsp;
+<b class="nc"><i>269</i>&nbsp;        return myIterator.hasNext() == otherIterator.hasNext() ;</b>
+<i>270</i>&nbsp;    }
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;    private void initializeIORTemplateList()
+<i>273</i>&nbsp;    {
+<i>274</i>&nbsp;        // Maps ObjectKeyTemplate to IORTemplate
+<b class="nc"><i>275</i>&nbsp;        Map oktempToIORTemplate = new HashMap() ;</b>
+<i>276</i>&nbsp;
+<b class="nc"><i>277</i>&nbsp;        iortemps = IORFactories.makeIORTemplateList() ;</b>
+<b class="nc"><i>278</i>&nbsp;        Iterator iter = iterator() ;</b>
+<b class="nc"><i>279</i>&nbsp;        ObjectId oid = null ; // used to check that all profiles have the same oid.</b>
+<b class="nc"><i>280</i>&nbsp;        while (iter.hasNext()) {</b>
+<b class="nc"><i>281</i>&nbsp;            TaggedProfile prof = (TaggedProfile)(iter.next()) ;</b>
+<b class="nc"><i>282</i>&nbsp;            TaggedProfileTemplate ptemp = prof.getTaggedProfileTemplate() ;</b>
+<b class="nc"><i>283</i>&nbsp;            ObjectKeyTemplate oktemp = prof.getObjectKeyTemplate() ;</b>
+<i>284</i>&nbsp;
+<i>285</i>&nbsp;            // Check that all oids for all profiles are the same: if they are not,
+<i>286</i>&nbsp;            // throw exception.
+<b class="nc"><i>287</i>&nbsp;            if (oid == null)</b>
+<b class="nc"><i>288</i>&nbsp;                oid = prof.getObjectId() ;</b>
+<b class="nc"><i>289</i>&nbsp;            else if (!oid.equals( prof.getObjectId() ))</b>
+<b class="nc"><i>290</i>&nbsp;                throw wrapper.badOidInIorTemplateList() ;</b>
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;            // Find or create the IORTemplate for oktemp.
+<b class="nc"><i>293</i>&nbsp;            IORTemplate iortemp = (IORTemplate)(oktempToIORTemplate.get( oktemp )) ;</b>
+<b class="nc"><i>294</i>&nbsp;            if (iortemp == null) {</b>
+<b class="nc"><i>295</i>&nbsp;                iortemp = IORFactories.makeIORTemplate( oktemp ) ;</b>
+<b class="nc"><i>296</i>&nbsp;                oktempToIORTemplate.put( oktemp, iortemp ) ;</b>
+<b class="nc"><i>297</i>&nbsp;                iortemps.add( iortemp ) ;</b>
+<i>298</i>&nbsp;            }
+<i>299</i>&nbsp;
+<b class="nc"><i>300</i>&nbsp;            iortemp.add( ptemp ) ;</b>
+<b class="nc"><i>301</i>&nbsp;        }</b>
+<i>302</i>&nbsp;
+<b class="nc"><i>303</i>&nbsp;        iortemps.makeImmutable() ;</b>
+<i>304</i>&nbsp;    }
+<i>305</i>&nbsp;
+<i>306</i>&nbsp;    /** Return the IORTemplateList for this IOR.  Will throw
+<i>307</i>&nbsp;     * exception if it is not possible to generate an IOR
+<i>308</i>&nbsp;     * from the IORTemplateList that is equal to this IOR,
+<i>309</i>&nbsp;     * which can only happen if not every TaggedProfile in the
+<i>310</i>&nbsp;     * IOR has the same ObjectId.
+<i>311</i>&nbsp;     */
+<i>312</i>&nbsp;    public synchronized IORTemplateList getIORTemplates()
+<i>313</i>&nbsp;    {
+<b class="nc"><i>314</i>&nbsp;        if (iortemps == null)</b>
+<b class="nc"><i>315</i>&nbsp;            initializeIORTemplateList() ;</b>
+<i>316</i>&nbsp;
+<b class="nc"><i>317</i>&nbsp;        return iortemps ;</b>
+<i>318</i>&nbsp;    }
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;    /** Return the first IIOPProfile in this IOR.
+<i>321</i>&nbsp;     * XXX THIS IS TEMPORARY FOR BACKWARDS COMPATIBILITY AND WILL BE REMOVED
+<i>322</i>&nbsp;     * SOON!
+<i>323</i>&nbsp;     */
+<i>324</i>&nbsp;    public IIOPProfile getProfile()
+<i>325</i>&nbsp;    {
+<b class="nc"><i>326</i>&nbsp;        IIOPProfile iop = null ;</b>
+<b class="nc"><i>327</i>&nbsp;        Iterator iter = iteratorById( TAG_INTERNET_IOP.value ) ;</b>
+<b class="nc"><i>328</i>&nbsp;        if (iter.hasNext())</b>
+<b class="nc"><i>329</i>&nbsp;            iop = (IIOPProfile)(iter.next()) ;</b>
+<i>330</i>&nbsp;
+<b class="nc"><i>331</i>&nbsp;        if (iop != null)</b>
+<b class="nc"><i>332</i>&nbsp;            return iop ;</b>
+<i>333</i>&nbsp;
+<i>334</i>&nbsp;        // if we come to this point then no IIOP Profile
+<i>335</i>&nbsp;        // is present.  Therefore, throw an exception.
+<b class="nc"><i>336</i>&nbsp;        throw wrapper.iorMustHaveIiopProfile() ;</b>
+<i>337</i>&nbsp;    }
+<i>338</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,641 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Whitespace</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Whitespace (com.sun.org.apache.xalan.internal.xsltc.compiler)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Whitespace</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 153)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Whitespace$WhitespaceRule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 22)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 175)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: Whitespace.java,v 1.5 2005/09/28 13:48:18 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.StringTokenizer;
+<i>27</i>&nbsp;import java.util.Vector;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ALOAD;
+<i>30</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.BranchHandle;
+<i>31</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+<i>32</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.IF_ICMPEQ;
+<i>33</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ILOAD;
+<i>34</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKEINTERFACE;
+<i>35</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL;
+<i>36</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+<i>37</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>38</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.PUSH;
+<i>39</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
+<i>40</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg;
+<i>41</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+<i>42</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
+<i>43</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+<i>44</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;/**
+<i>47</i>&nbsp; * @author Morten Jorgensen
+<i>48</i>&nbsp; */
+<b class="nc"><i>49</i>&nbsp;final class Whitespace extends TopLevelElement {</b>
+<i>50</i>&nbsp;    // Three possible actions for the translet:
+<i>51</i>&nbsp;    public static final int USE_PREDICATE  = 0;
+<i>52</i>&nbsp;    public static final int STRIP_SPACE    = 1;
+<i>53</i>&nbsp;    public static final int PRESERVE_SPACE = 2;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    // The 3 different categories of strip/preserve rules (order important)
+<i>56</i>&nbsp;    public static final int RULE_NONE      = 0;
+<i>57</i>&nbsp;    public static final int RULE_ELEMENT   = 1; // priority 0
+<i>58</i>&nbsp;    public static final int RULE_NAMESPACE = 2; // priority -1/4
+<i>59</i>&nbsp;    public static final int RULE_ALL       = 3; // priority -1/2
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    private String _elementList;
+<i>62</i>&nbsp;    private int    _action;
+<i>63</i>&nbsp;    private int    _importPrecedence;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    /**
+<i>66</i>&nbsp;     * Auxillary class for encapsulating a single strip/preserve rule
+<i>67</i>&nbsp;     */
+<i>68</i>&nbsp;    private final static class WhitespaceRule {
+<i>69</i>&nbsp;        private final int _action;
+<i>70</i>&nbsp;        private String _namespace; // Should be replaced by NS type (int)
+<i>71</i>&nbsp;        private String _element;   // Should be replaced by node type (int)
+<i>72</i>&nbsp;        private int    _type;
+<i>73</i>&nbsp;        private int    _priority;
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;        /**
+<i>76</i>&nbsp;         * Strip/preserve rule constructor
+<i>77</i>&nbsp;         */
+<b class="nc"><i>78</i>&nbsp;        public WhitespaceRule(int action, String element, int precedence) {</b>
+<i>79</i>&nbsp;            // Determine the action (strip or preserve) for this rule
+<b class="nc"><i>80</i>&nbsp;            _action = action;</b>
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;            // Get the namespace and element name for this rule
+<b class="nc"><i>83</i>&nbsp;            final int colon = element.lastIndexOf(&#39;:&#39;);</b>
+<b class="nc"><i>84</i>&nbsp;            if (colon &gt;= 0) {</b>
+<b class="nc"><i>85</i>&nbsp;                _namespace = element.substring(0,colon);</b>
+<b class="nc"><i>86</i>&nbsp;                _element = element.substring(colon+1,element.length());</b>
+<i>87</i>&nbsp;            }
+<i>88</i>&nbsp;            else {
+<b class="nc"><i>89</i>&nbsp;                _namespace = Constants.EMPTYSTRING;</b>
+<b class="nc"><i>90</i>&nbsp;                _element = element;</b>
+<i>91</i>&nbsp;            }
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;            // Determine the initial priority for this rule
+<b class="nc"><i>94</i>&nbsp;            _priority = precedence &lt;&lt; 2;</b>
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;            // Get the strip/preserve type; either &quot;NS:EL&quot;, &quot;NS:*&quot; or &quot;*&quot;
+<b class="nc"><i>97</i>&nbsp;            if (_element.equals(&quot;*&quot;)) {</b>
+<b class="nc"><i>98</i>&nbsp;                if (_namespace == Constants.EMPTYSTRING) {</b>
+<b class="nc"><i>99</i>&nbsp;                    _type = RULE_ALL;       // Strip/preserve _all_ elements</b>
+<b class="nc"><i>100</i>&nbsp;                    _priority += 2;         // Lowest priority</b>
+<i>101</i>&nbsp;                }
+<i>102</i>&nbsp;                else {
+<b class="nc"><i>103</i>&nbsp;                    _type = RULE_NAMESPACE; // Strip/reserve elements within NS</b>
+<b class="nc"><i>104</i>&nbsp;                    _priority += 1;         // Medium priority</b>
+<i>105</i>&nbsp;                }
+<i>106</i>&nbsp;            }
+<i>107</i>&nbsp;            else {
+<b class="nc"><i>108</i>&nbsp;                _type = RULE_ELEMENT;       // Strip/preserve single element</b>
+<i>109</i>&nbsp;            }
+<i>110</i>&nbsp;        }
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;        /**
+<i>113</i>&nbsp;         * For sorting rules depending on priority
+<i>114</i>&nbsp;         */
+<i>115</i>&nbsp;        public int compareTo(WhitespaceRule other) {
+<b class="nc"><i>116</i>&nbsp;            return _priority &lt; other._priority</b>
+<i>117</i>&nbsp;                ? -1
+<i>118</i>&nbsp;                : _priority &gt; other._priority ? 1 : 0;
+<i>119</i>&nbsp;        }
+<i>120</i>&nbsp;
+<b class="nc"><i>121</i>&nbsp;        public int getAction() { return _action; }</b>
+<b class="nc"><i>122</i>&nbsp;        public int getStrength() { return _type; }</b>
+<b class="nc"><i>123</i>&nbsp;        public int getPriority() { return _priority; }</b>
+<b class="nc"><i>124</i>&nbsp;        public String getElement() { return _element; }</b>
+<b class="nc"><i>125</i>&nbsp;        public String getNamespace() { return _namespace; }</b>
+<i>126</i>&nbsp;    }
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;    /**
+<i>129</i>&nbsp;     * Parse the attributes of the xsl:strip/preserve-space element.
+<i>130</i>&nbsp;     * The element should have not contents (ignored if any).
+<i>131</i>&nbsp;     */
+<i>132</i>&nbsp;    public void parseContents(Parser parser) {
+<i>133</i>&nbsp;        // Determine if this is an xsl:strip- or preserve-space element
+<b class="nc"><i>134</i>&nbsp;        _action = _qname.getLocalPart().endsWith(&quot;strip-space&quot;)</b>
+<i>135</i>&nbsp;            ? STRIP_SPACE : PRESERVE_SPACE;
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;        // Determine the import precedence
+<b class="nc"><i>138</i>&nbsp;        _importPrecedence = parser.getCurrentImportPrecedence();</b>
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;        // Get the list of elements to strip/preserve
+<b class="nc"><i>141</i>&nbsp;        _elementList = getAttribute(&quot;elements&quot;);</b>
+<b class="nc"><i>142</i>&nbsp;        if (_elementList == null || _elementList.length() == 0) {</b>
+<b class="nc"><i>143</i>&nbsp;            reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, &quot;elements&quot;);</b>
+<i>144</i>&nbsp;            return;
+<i>145</i>&nbsp;        }
+<i>146</i>&nbsp;
+<b class="nc"><i>147</i>&nbsp;        final SymbolTable stable = parser.getSymbolTable();</b>
+<b class="nc"><i>148</i>&nbsp;        StringTokenizer list = new StringTokenizer(_elementList);</b>
+<b class="nc"><i>149</i>&nbsp;        StringBuffer elements = new StringBuffer(Constants.EMPTYSTRING);</b>
+<i>150</i>&nbsp;
+<b class="nc"><i>151</i>&nbsp;        while (list.hasMoreElements()) {</b>
+<b class="nc"><i>152</i>&nbsp;            String token = list.nextToken();</b>
+<i>153</i>&nbsp;            String prefix;
+<i>154</i>&nbsp;            String namespace;
+<b class="nc"><i>155</i>&nbsp;            int col = token.indexOf(&#39;:&#39;);</b>
+<i>156</i>&nbsp;
+<b class="nc"><i>157</i>&nbsp;            if (col != -1) {</b>
+<b class="nc"><i>158</i>&nbsp;                namespace = lookupNamespace(token.substring(0,col));</b>
+<b class="nc"><i>159</i>&nbsp;                if (namespace != null) {</b>
+<b class="nc"><i>160</i>&nbsp;                    elements.append(namespace).append(&#39;:&#39;).append(token.substring(col + 1));</b>
+<i>161</i>&nbsp;                } else {
+<b class="nc"><i>162</i>&nbsp;                    elements.append(token);</b>
+<i>163</i>&nbsp;                }
+<i>164</i>&nbsp;            } else {
+<b class="nc"><i>165</i>&nbsp;                elements.append(token);</b>
+<i>166</i>&nbsp;            }
+<i>167</i>&nbsp;
+<b class="nc"><i>168</i>&nbsp;            if (list.hasMoreElements())</b>
+<b class="nc"><i>169</i>&nbsp;                elements.append(&quot; &quot;);</b>
+<b class="nc"><i>170</i>&nbsp;        }</b>
+<b class="nc"><i>171</i>&nbsp;        _elementList = elements.toString();</b>
+<i>172</i>&nbsp;    }
+<i>173</i>&nbsp;
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;    /**
+<i>176</i>&nbsp;     * De-tokenize the elements listed in the &#39;elements&#39; attribute and
+<i>177</i>&nbsp;     * instanciate a set of strip/preserve rules.
+<i>178</i>&nbsp;     */
+<i>179</i>&nbsp;    public Vector getRules() {
+<b class="nc"><i>180</i>&nbsp;        final Vector rules = new Vector();</b>
+<i>181</i>&nbsp;        // Go through each element and instanciate strip/preserve-object
+<b class="nc"><i>182</i>&nbsp;        final StringTokenizer list = new StringTokenizer(_elementList);</b>
+<b class="nc"><i>183</i>&nbsp;        while (list.hasMoreElements()) {</b>
+<b class="nc"><i>184</i>&nbsp;            rules.add(new WhitespaceRule(_action,</b>
+<b class="nc"><i>185</i>&nbsp;                                         list.nextToken(),</b>
+<i>186</i>&nbsp;                                         _importPrecedence));
+<i>187</i>&nbsp;        }
+<b class="nc"><i>188</i>&nbsp;        return rules;</b>
+<i>189</i>&nbsp;    }
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;
+<i>192</i>&nbsp;    /**
+<i>193</i>&nbsp;     * Scans through the rules vector and looks for a rule of higher
+<i>194</i>&nbsp;     * priority that contradicts the current rule.
+<i>195</i>&nbsp;     */
+<i>196</i>&nbsp;    private static WhitespaceRule findContradictingRule(Vector rules,
+<i>197</i>&nbsp;                                                        WhitespaceRule rule) {
+<b class="nc"><i>198</i>&nbsp;        for (int i = 0; i &lt; rules.size(); i++) {</b>
+<i>199</i>&nbsp;            // Get the next rule in the prioritized list
+<b class="nc"><i>200</i>&nbsp;            WhitespaceRule currentRule = (WhitespaceRule)rules.elementAt(i);</b>
+<i>201</i>&nbsp;            // We only consider rules with higher priority
+<b class="nc"><i>202</i>&nbsp;            if (currentRule == rule) {</b>
+<b class="nc"><i>203</i>&nbsp;                return null;</b>
+<i>204</i>&nbsp;            }
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;            /*
+<i>207</i>&nbsp;             * See if there is a contradicting rule with higher priority.
+<i>208</i>&nbsp;             * If the rules has the same action then this rule is redundant,
+<i>209</i>&nbsp;             * if they have different action then this rule will never win.
+<i>210</i>&nbsp;             */
+<b class="nc"><i>211</i>&nbsp;            switch (currentRule.getStrength()) {</b>
+<i>212</i>&nbsp;            case RULE_ALL:
+<b class="nc"><i>213</i>&nbsp;                return currentRule;</b>
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;            case RULE_ELEMENT:
+<b class="nc"><i>216</i>&nbsp;                if (!rule.getElement().equals(currentRule.getElement())) {</b>
+<b class="nc"><i>217</i>&nbsp;                    break;</b>
+<i>218</i>&nbsp;                }
+<i>219</i>&nbsp;                // intentional fall-through
+<i>220</i>&nbsp;            case RULE_NAMESPACE:
+<b class="nc"><i>221</i>&nbsp;                if (rule.getNamespace().equals(currentRule.getNamespace())) {</b>
+<b class="nc"><i>222</i>&nbsp;                    return currentRule;</b>
+<i>223</i>&nbsp;                }
+<i>224</i>&nbsp;                break;
+<i>225</i>&nbsp;            }
+<i>226</i>&nbsp;        }
+<b class="nc"><i>227</i>&nbsp;        return null;</b>
+<i>228</i>&nbsp;    }
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;    /**
+<i>232</i>&nbsp;     * Orders a set or rules by priority, removes redundant rules and rules
+<i>233</i>&nbsp;     * that are shadowed by stronger, contradicting rules.
+<i>234</i>&nbsp;     */
+<i>235</i>&nbsp;    private static int prioritizeRules(Vector rules) {
+<i>236</i>&nbsp;        WhitespaceRule currentRule;
+<b class="nc"><i>237</i>&nbsp;        int defaultAction = PRESERVE_SPACE;</b>
+<i>238</i>&nbsp;
+<i>239</i>&nbsp;        // Sort all rules with regard to priority
+<b class="nc"><i>240</i>&nbsp;        quicksort(rules, 0, rules.size()-1);</b>
+<i>241</i>&nbsp;
+<i>242</i>&nbsp;        // Check if there are any &quot;xsl:strip-space&quot; elements at all.
+<i>243</i>&nbsp;        // If there are no xsl:strip elements we can ignore all xsl:preserve
+<i>244</i>&nbsp;        // elements and signal that all whitespaces should be preserved
+<b class="nc"><i>245</i>&nbsp;        boolean strip = false;</b>
+<b class="nc"><i>246</i>&nbsp;        for (int i = 0; i &lt; rules.size(); i++) {</b>
+<b class="nc"><i>247</i>&nbsp;            currentRule = (WhitespaceRule)rules.elementAt(i);</b>
+<b class="nc"><i>248</i>&nbsp;            if (currentRule.getAction() == STRIP_SPACE) {</b>
+<b class="nc"><i>249</i>&nbsp;                strip = true;</b>
+<i>250</i>&nbsp;            }
+<i>251</i>&nbsp;        }
+<i>252</i>&nbsp;        // Return with default action: PRESERVE_SPACE
+<b class="nc"><i>253</i>&nbsp;        if (!strip) {</b>
+<b class="nc"><i>254</i>&nbsp;            rules.removeAllElements();</b>
+<b class="nc"><i>255</i>&nbsp;            return PRESERVE_SPACE;</b>
+<i>256</i>&nbsp;        }
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;        // Remove all rules that are contradicted by rules with higher priority
+<b class="nc"><i>259</i>&nbsp;        for (int idx = 0; idx &lt; rules.size(); ) {</b>
+<b class="nc"><i>260</i>&nbsp;            currentRule = (WhitespaceRule)rules.elementAt(idx);</b>
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;            // Remove this single rule if it has no purpose
+<b class="nc"><i>263</i>&nbsp;            if (findContradictingRule(rules,currentRule) != null) {</b>
+<b class="nc"><i>264</i>&nbsp;                rules.remove(idx);</b>
+<i>265</i>&nbsp;            }
+<i>266</i>&nbsp;            else {
+<i>267</i>&nbsp;                // Remove all following rules if this one overrides all
+<b class="nc"><i>268</i>&nbsp;                if (currentRule.getStrength() == RULE_ALL) {</b>
+<b class="nc"><i>269</i>&nbsp;                    defaultAction = currentRule.getAction();</b>
+<b class="nc"><i>270</i>&nbsp;                    for (int i = idx; i &lt; rules.size(); i++) {</b>
+<b class="nc"><i>271</i>&nbsp;                        rules.removeElementAt(i);</b>
+<i>272</i>&nbsp;                    }
+<i>273</i>&nbsp;                }
+<i>274</i>&nbsp;                // Skip to next rule (there might not be any)...
+<b class="nc"><i>275</i>&nbsp;                idx++;</b>
+<i>276</i>&nbsp;            }
+<i>277</i>&nbsp;        }
+<i>278</i>&nbsp;
+<i>279</i>&nbsp;        // The rules vector could be empty if first rule has strength RULE_ALL
+<b class="nc"><i>280</i>&nbsp;        if (rules.size() == 0) {</b>
+<b class="nc"><i>281</i>&nbsp;            return defaultAction;</b>
+<i>282</i>&nbsp;        }
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;        // Now work backwards and strip away all rules that have the same
+<i>285</i>&nbsp;        // action as the default rule (no reason the check them at the end).
+<i>286</i>&nbsp;        do {
+<b class="nc"><i>287</i>&nbsp;            currentRule = (WhitespaceRule)rules.lastElement();</b>
+<b class="nc"><i>288</i>&nbsp;            if (currentRule.getAction() == defaultAction) {</b>
+<b class="nc"><i>289</i>&nbsp;                rules.removeElementAt(rules.size() - 1);</b>
+<i>290</i>&nbsp;            }
+<i>291</i>&nbsp;            else {
+<i>292</i>&nbsp;                break;
+<i>293</i>&nbsp;            }
+<b class="nc"><i>294</i>&nbsp;        } while (rules.size() &gt; 0);</b>
+<i>295</i>&nbsp;
+<i>296</i>&nbsp;        // Signal that whitespace detection predicate must be used.
+<b class="nc"><i>297</i>&nbsp;        return defaultAction;</b>
+<i>298</i>&nbsp;    }
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;    public static void compileStripSpace(BranchHandle strip[],
+<i>301</i>&nbsp;                                         int sCount,
+<i>302</i>&nbsp;                                         InstructionList il) {
+<b class="nc"><i>303</i>&nbsp;        final InstructionHandle target = il.append(ICONST_1);</b>
+<b class="nc"><i>304</i>&nbsp;        il.append(IRETURN);</b>
+<b class="nc"><i>305</i>&nbsp;        for (int i = 0; i &lt; sCount; i++) {</b>
+<b class="nc"><i>306</i>&nbsp;            strip[i].setTarget(target);</b>
+<i>307</i>&nbsp;        }
+<i>308</i>&nbsp;    }
+<i>309</i>&nbsp;
+<i>310</i>&nbsp;    public static void compilePreserveSpace(BranchHandle preserve[],
+<i>311</i>&nbsp;                                            int pCount,
+<i>312</i>&nbsp;                                            InstructionList il) {
+<b class="nc"><i>313</i>&nbsp;        final InstructionHandle target = il.append(ICONST_0);</b>
+<b class="nc"><i>314</i>&nbsp;        il.append(IRETURN);</b>
+<b class="nc"><i>315</i>&nbsp;        for (int i = 0; i &lt; pCount; i++) {</b>
+<b class="nc"><i>316</i>&nbsp;            preserve[i].setTarget(target);</b>
+<i>317</i>&nbsp;        }
+<i>318</i>&nbsp;    }
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;    /*
+<i>321</i>&nbsp;    private static void compileDebug(ClassGenerator classGen,
+<i>322</i>&nbsp;                                     InstructionList il) {
+<i>323</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();
+<i>324</i>&nbsp;        final int prt = cpg.addMethodref(&quot;java/lang/System/out&quot;,
+<i>325</i>&nbsp;                                         &quot;println&quot;,
+<i>326</i>&nbsp;                                         &quot;(Ljava/lang/String;)V&quot;);
+<i>327</i>&nbsp;        il.append(DUP);
+<i>328</i>&nbsp;        il.append(new INVOKESTATIC(prt));
+<i>329</i>&nbsp;    }
+<i>330</i>&nbsp;    */
+<i>331</i>&nbsp;
+<i>332</i>&nbsp;    /**
+<i>333</i>&nbsp;     * Compiles the predicate method
+<i>334</i>&nbsp;     */
+<i>335</i>&nbsp;    private static void compilePredicate(Vector rules,
+<i>336</i>&nbsp;                                         int defaultAction,
+<i>337</i>&nbsp;                                         ClassGenerator classGen) {
+<b class="nc"><i>338</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>339</i>&nbsp;        final InstructionList il = new InstructionList();</b>
+<b class="nc"><i>340</i>&nbsp;        final XSLTC xsltc = classGen.getParser().getXSLTC();</b>
+<i>341</i>&nbsp;
+<i>342</i>&nbsp;        // private boolean Translet.stripSpace(int type) - cannot be static
+<b class="nc"><i>343</i>&nbsp;        final MethodGenerator stripSpace =</b>
+<i>344</i>&nbsp;            new MethodGenerator(ACC_PUBLIC | ACC_FINAL ,
+<i>345</i>&nbsp;                        com.sun.org.apache.bcel.internal.generic.Type.BOOLEAN,
+<i>346</i>&nbsp;                        new com.sun.org.apache.bcel.internal.generic.Type[] {
+<b class="nc"><i>347</i>&nbsp;                            Util.getJCRefType(DOM_INTF_SIG),</b>
+<i>348</i>&nbsp;                            com.sun.org.apache.bcel.internal.generic.Type.INT,
+<i>349</i>&nbsp;                            com.sun.org.apache.bcel.internal.generic.Type.INT
+<i>350</i>&nbsp;                        },
+<i>351</i>&nbsp;                        new String[] { &quot;dom&quot;,&quot;node&quot;,&quot;type&quot; },
+<b class="nc"><i>352</i>&nbsp;                        &quot;stripSpace&quot;,classGen.getClassName(),il,cpg);</b>
+<i>353</i>&nbsp;
+<b class="nc"><i>354</i>&nbsp;        classGen.addInterface(&quot;com/sun/org/apache/xalan/internal/xsltc/StripFilter&quot;);</b>
+<i>355</i>&nbsp;
+<b class="nc"><i>356</i>&nbsp;        final int paramDom = stripSpace.getLocalIndex(&quot;dom&quot;);</b>
+<b class="nc"><i>357</i>&nbsp;        final int paramCurrent = stripSpace.getLocalIndex(&quot;node&quot;);</b>
+<b class="nc"><i>358</i>&nbsp;        final int paramType = stripSpace.getLocalIndex(&quot;type&quot;);</b>
+<i>359</i>&nbsp;
+<b class="nc"><i>360</i>&nbsp;        BranchHandle strip[] = new BranchHandle[rules.size()];</b>
+<b class="nc"><i>361</i>&nbsp;        BranchHandle preserve[] = new BranchHandle[rules.size()];</b>
+<b class="nc"><i>362</i>&nbsp;        int sCount = 0;</b>
+<b class="nc"><i>363</i>&nbsp;        int pCount = 0;</b>
+<i>364</i>&nbsp;
+<i>365</i>&nbsp;        // Traverse all strip/preserve rules
+<b class="nc"><i>366</i>&nbsp;        for (int i = 0; i&lt;rules.size(); i++) {</b>
+<i>367</i>&nbsp;            // Get the next rule in the prioritised list
+<b class="nc"><i>368</i>&nbsp;            WhitespaceRule rule = (WhitespaceRule)rules.elementAt(i);</b>
+<i>369</i>&nbsp;
+<i>370</i>&nbsp;            // Returns the namespace for a node in the DOM
+<b class="nc"><i>371</i>&nbsp;            final int gns = cpg.addInterfaceMethodref(DOM_INTF,</b>
+<i>372</i>&nbsp;                                                      &quot;getNamespaceName&quot;,
+<i>373</i>&nbsp;                                                      &quot;(I)Ljava/lang/String;&quot;);
+<i>374</i>&nbsp;
+<b class="nc"><i>375</i>&nbsp;            final int strcmp = cpg.addMethodref(&quot;java/lang/String&quot;,</b>
+<i>376</i>&nbsp;                                                &quot;compareTo&quot;,
+<i>377</i>&nbsp;                                                &quot;(Ljava/lang/String;)I&quot;);
+<i>378</i>&nbsp;
+<i>379</i>&nbsp;            // Handle elements=&quot;ns:*&quot; type rule
+<b class="nc"><i>380</i>&nbsp;            if (rule.getStrength() == RULE_NAMESPACE) {</b>
+<b class="nc"><i>381</i>&nbsp;                il.append(new ALOAD(paramDom));</b>
+<b class="nc"><i>382</i>&nbsp;                il.append(new ILOAD(paramCurrent));</b>
+<b class="nc"><i>383</i>&nbsp;                il.append(new INVOKEINTERFACE(gns,2));</b>
+<b class="nc"><i>384</i>&nbsp;                il.append(new PUSH(cpg, rule.getNamespace()));</b>
+<b class="nc"><i>385</i>&nbsp;                il.append(new INVOKEVIRTUAL(strcmp));</b>
+<b class="nc"><i>386</i>&nbsp;                il.append(ICONST_0);</b>
+<i>387</i>&nbsp;
+<b class="nc"><i>388</i>&nbsp;                if (rule.getAction() == STRIP_SPACE) {</b>
+<b class="nc"><i>389</i>&nbsp;                    strip[sCount++] = il.append(new IF_ICMPEQ(null));</b>
+<i>390</i>&nbsp;                }
+<i>391</i>&nbsp;                else {
+<b class="nc"><i>392</i>&nbsp;                    preserve[pCount++] = il.append(new IF_ICMPEQ(null));</b>
+<i>393</i>&nbsp;                }
+<i>394</i>&nbsp;            }
+<i>395</i>&nbsp;            // Handle elements=&quot;ns:el&quot; type rule
+<b class="nc"><i>396</i>&nbsp;            else if (rule.getStrength() == RULE_ELEMENT) {</b>
+<i>397</i>&nbsp;                // Create the QName for the element
+<b class="nc"><i>398</i>&nbsp;                final Parser parser = classGen.getParser();</b>
+<i>399</i>&nbsp;                QName qname;
+<b class="nc"><i>400</i>&nbsp;                if (rule.getNamespace() != Constants.EMPTYSTRING )</b>
+<b class="nc"><i>401</i>&nbsp;                    qname = parser.getQName(rule.getNamespace(), null,</b>
+<b class="nc"><i>402</i>&nbsp;                                            rule.getElement());</b>
+<i>403</i>&nbsp;                else
+<b class="nc"><i>404</i>&nbsp;                    qname = parser.getQName(rule.getElement());</b>
+<i>405</i>&nbsp;
+<i>406</i>&nbsp;                // Register the element.
+<b class="nc"><i>407</i>&nbsp;                final int elementType = xsltc.registerElement(qname);</b>
+<b class="nc"><i>408</i>&nbsp;                il.append(new ILOAD(paramType));</b>
+<b class="nc"><i>409</i>&nbsp;                il.append(new PUSH(cpg, elementType));</b>
+<i>410</i>&nbsp;
+<i>411</i>&nbsp;                // Compare current node type with wanted element type
+<b class="nc"><i>412</i>&nbsp;                if (rule.getAction() == STRIP_SPACE)</b>
+<b class="nc"><i>413</i>&nbsp;                    strip[sCount++] = il.append(new IF_ICMPEQ(null));</b>
+<i>414</i>&nbsp;                else
+<b class="nc"><i>415</i>&nbsp;                    preserve[pCount++] = il.append(new IF_ICMPEQ(null));</b>
+<i>416</i>&nbsp;            }
+<i>417</i>&nbsp;        }
+<i>418</i>&nbsp;
+<b class="nc"><i>419</i>&nbsp;        if (defaultAction == STRIP_SPACE) {</b>
+<b class="nc"><i>420</i>&nbsp;            compileStripSpace(strip, sCount, il);</b>
+<b class="nc"><i>421</i>&nbsp;            compilePreserveSpace(preserve, pCount, il);</b>
+<i>422</i>&nbsp;        }
+<i>423</i>&nbsp;        else {
+<b class="nc"><i>424</i>&nbsp;            compilePreserveSpace(preserve, pCount, il);</b>
+<b class="nc"><i>425</i>&nbsp;            compileStripSpace(strip, sCount, il);</b>
+<i>426</i>&nbsp;        }
+<i>427</i>&nbsp;
+<b class="nc"><i>428</i>&nbsp;        classGen.addMethod(stripSpace);</b>
+<i>429</i>&nbsp;    }
+<i>430</i>&nbsp;
+<i>431</i>&nbsp;    /**
+<i>432</i>&nbsp;     * Compiles the predicate method
+<i>433</i>&nbsp;     */
+<i>434</i>&nbsp;    private static void compileDefault(int defaultAction,
+<i>435</i>&nbsp;                                       ClassGenerator classGen) {
+<b class="nc"><i>436</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>437</i>&nbsp;        final InstructionList il = new InstructionList();</b>
+<b class="nc"><i>438</i>&nbsp;        final XSLTC xsltc = classGen.getParser().getXSLTC();</b>
+<i>439</i>&nbsp;
+<i>440</i>&nbsp;        // private boolean Translet.stripSpace(int type) - cannot be static
+<b class="nc"><i>441</i>&nbsp;        final MethodGenerator stripSpace =</b>
+<i>442</i>&nbsp;            new MethodGenerator(ACC_PUBLIC | ACC_FINAL ,
+<i>443</i>&nbsp;                        com.sun.org.apache.bcel.internal.generic.Type.BOOLEAN,
+<i>444</i>&nbsp;                        new com.sun.org.apache.bcel.internal.generic.Type[] {
+<b class="nc"><i>445</i>&nbsp;                            Util.getJCRefType(DOM_INTF_SIG),</b>
+<i>446</i>&nbsp;                            com.sun.org.apache.bcel.internal.generic.Type.INT,
+<i>447</i>&nbsp;                            com.sun.org.apache.bcel.internal.generic.Type.INT
+<i>448</i>&nbsp;                        },
+<i>449</i>&nbsp;                        new String[] { &quot;dom&quot;,&quot;node&quot;,&quot;type&quot; },
+<b class="nc"><i>450</i>&nbsp;                        &quot;stripSpace&quot;,classGen.getClassName(),il,cpg);</b>
+<i>451</i>&nbsp;
+<b class="nc"><i>452</i>&nbsp;        classGen.addInterface(&quot;com/sun/org/apache/xalan/internal/xsltc/StripFilter&quot;);</b>
+<i>453</i>&nbsp;
+<b class="nc"><i>454</i>&nbsp;        if (defaultAction == STRIP_SPACE)</b>
+<b class="nc"><i>455</i>&nbsp;            il.append(ICONST_1);</b>
+<i>456</i>&nbsp;        else
+<b class="nc"><i>457</i>&nbsp;            il.append(ICONST_0);</b>
+<b class="nc"><i>458</i>&nbsp;        il.append(IRETURN);</b>
+<i>459</i>&nbsp;
+<b class="nc"><i>460</i>&nbsp;        classGen.addMethod(stripSpace);</b>
+<i>461</i>&nbsp;    }
+<i>462</i>&nbsp;
+<i>463</i>&nbsp;
+<i>464</i>&nbsp;    /**
+<i>465</i>&nbsp;     * Takes a vector of WhitespaceRule objects and generates a predicate
+<i>466</i>&nbsp;     * method. This method returns the translets default action for handling
+<i>467</i>&nbsp;     * whitespace text-nodes:
+<i>468</i>&nbsp;     *    - USE_PREDICATE  (run the method generated by this method)
+<i>469</i>&nbsp;     *    - STRIP_SPACE    (always strip whitespace text-nodes)
+<i>470</i>&nbsp;     *    - PRESERVE_SPACE (always preserve whitespace text-nodes)
+<i>471</i>&nbsp;     */
+<i>472</i>&nbsp;    public static int translateRules(Vector rules,
+<i>473</i>&nbsp;                                     ClassGenerator classGen) {
+<i>474</i>&nbsp;        // Get the core rules in prioritized order
+<b class="nc"><i>475</i>&nbsp;        final int defaultAction = prioritizeRules(rules);</b>
+<i>476</i>&nbsp;        // The rules vector may be empty after prioritising
+<b class="nc"><i>477</i>&nbsp;        if (rules.size() == 0) {</b>
+<b class="nc"><i>478</i>&nbsp;            compileDefault(defaultAction,classGen);</b>
+<b class="nc"><i>479</i>&nbsp;            return defaultAction;</b>
+<i>480</i>&nbsp;        }
+<i>481</i>&nbsp;        // Now - create a predicate method and sequence through rules...
+<b class="nc"><i>482</i>&nbsp;        compilePredicate(rules, defaultAction, classGen);</b>
+<i>483</i>&nbsp;        // Return with the translets required action (
+<b class="nc"><i>484</i>&nbsp;        return USE_PREDICATE;</b>
+<i>485</i>&nbsp;    }
+<i>486</i>&nbsp;
+<i>487</i>&nbsp;    /**
+<i>488</i>&nbsp;     * Sorts a range of rules with regard to PRIORITY only
+<i>489</i>&nbsp;     */
+<i>490</i>&nbsp;    private static void quicksort(Vector rules, int p, int r) {
+<b class="nc"><i>491</i>&nbsp;        while (p &lt; r) {</b>
+<b class="nc"><i>492</i>&nbsp;            final int q = partition(rules, p, r);</b>
+<b class="nc"><i>493</i>&nbsp;            quicksort(rules, p, q);</b>
+<b class="nc"><i>494</i>&nbsp;            p = q + 1;</b>
+<b class="nc"><i>495</i>&nbsp;        }</b>
+<i>496</i>&nbsp;    }
+<i>497</i>&nbsp;
+<i>498</i>&nbsp;    /**
+<i>499</i>&nbsp;     * Used with quicksort method above
+<i>500</i>&nbsp;     */
+<i>501</i>&nbsp;    private static int partition(Vector rules, int p, int r) {
+<b class="nc"><i>502</i>&nbsp;        final WhitespaceRule x = (WhitespaceRule)rules.elementAt((p+r) &gt;&gt;&gt; 1);</b>
+<b class="nc"><i>503</i>&nbsp;        int i = p - 1, j = r + 1;</b>
+<i>504</i>&nbsp;        while (true) {
+<b class="nc"><i>505</i>&nbsp;            while (x.compareTo((WhitespaceRule)rules.elementAt(--j)) &lt; 0) {</b>
+<i>506</i>&nbsp;            }
+<b class="nc"><i>507</i>&nbsp;            while (x.compareTo((WhitespaceRule)rules.elementAt(++i)) &gt; 0) {</b>
+<i>508</i>&nbsp;            }
+<b class="nc"><i>509</i>&nbsp;            if (i &lt; j) {</b>
+<b class="nc"><i>510</i>&nbsp;                final WhitespaceRule tmp = (WhitespaceRule)rules.elementAt(i);</b>
+<b class="nc"><i>511</i>&nbsp;                rules.setElementAt(rules.elementAt(j), i);</b>
+<b class="nc"><i>512</i>&nbsp;                rules.setElementAt(tmp, j);</b>
+<b class="nc"><i>513</i>&nbsp;            }</b>
+<i>514</i>&nbsp;            else {
+<b class="nc"><i>515</i>&nbsp;                return j;</b>
+<i>516</i>&nbsp;            }
+<i>517</i>&nbsp;        }
+<i>518</i>&nbsp;    }
+<i>519</i>&nbsp;
+<i>520</i>&nbsp;    /**
+<i>521</i>&nbsp;     * Type-check contents/attributes - nothing to do...
+<i>522</i>&nbsp;     */
+<i>523</i>&nbsp;    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+<b class="nc"><i>524</i>&nbsp;        return Type.Void; // We don&#39;t return anything.</b>
+<i>525</i>&nbsp;    }
+<i>526</i>&nbsp;
+<i>527</i>&nbsp;    /**
+<i>528</i>&nbsp;     * This method should not produce any code
+<i>529</i>&nbsp;     */
+<i>530</i>&nbsp;    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+<i>531</i>&nbsp;    }
+<i>532</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

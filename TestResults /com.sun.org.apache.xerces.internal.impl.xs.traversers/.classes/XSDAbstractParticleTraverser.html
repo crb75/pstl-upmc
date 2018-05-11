@@ -1,0 +1,494 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XSDAbstractParticleTraverser</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.xs.traversers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XSDAbstractParticleTraverser (com.sun.org.apache.xerces.internal.impl.xs.traversers)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XSDAbstractParticleTraverser</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 108)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">XSDAbstractParticleTraverser$ParticleArray</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 27)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 135)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.xs.traversers;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.SchemaGrammar;
+<i>24</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.SchemaSymbols;
+<i>25</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.XSAnnotationImpl;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.XSModelGroupImpl;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.XSParticleDecl;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.util.XInt;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.util.XSObjectListImpl;
+<i>30</i>&nbsp;import com.sun.org.apache.xerces.internal.util.DOMUtil;
+<i>31</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSObject;
+<i>32</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSObjectList;
+<i>33</i>&nbsp;import org.w3c.dom.Element;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;/**
+<i>36</i>&nbsp; * @xerces.internal
+<i>37</i>&nbsp; *
+<i>38</i>&nbsp; * @author Elena Litani, IBM
+<i>39</i>&nbsp; * @author Sandy Gao, IBM
+<i>40</i>&nbsp; * @version $Id: XSDAbstractParticleTraverser.java,v 1.7 2010-11-01 04:40:02 joehw Exp $
+<i>41</i>&nbsp; */
+<i>42</i>&nbsp;abstract class XSDAbstractParticleTraverser extends XSDAbstractTraverser {
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    XSDAbstractParticleTraverser (XSDHandler handler,
+<i>45</i>&nbsp;            XSAttributeChecker gAttrCheck) {
+<b class="nc"><i>46</i>&nbsp;        super(handler, gAttrCheck);</b>
+<i>47</i>&nbsp;    }
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    /**
+<i>50</i>&nbsp;     *
+<i>51</i>&nbsp;     * Traverse the &quot;All&quot; declaration
+<i>52</i>&nbsp;     *
+<i>53</i>&nbsp;     * &amp;lt;all
+<i>54</i>&nbsp;     *   id = ID
+<i>55</i>&nbsp;     *   maxOccurs = 1 : 1
+<i>56</i>&nbsp;     *   minOccurs = (0 | 1) : 1&amp;gt;
+<i>57</i>&nbsp;     *   Content: (annotation? , element*)
+<i>58</i>&nbsp;     * &amp;lt;/all&amp;gt;
+<i>59</i>&nbsp;     **/
+<i>60</i>&nbsp;    XSParticleDecl traverseAll(Element allDecl,
+<i>61</i>&nbsp;            XSDocumentInfo schemaDoc,
+<i>62</i>&nbsp;            SchemaGrammar grammar,
+<i>63</i>&nbsp;            int allContextFlags,
+<i>64</i>&nbsp;            XSObject parent) {
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;        // General Attribute Checking
+<i>67</i>&nbsp;
+<b class="nc"><i>68</i>&nbsp;        Object[] attrValues = fAttrChecker.checkAttributes(allDecl, false, schemaDoc);</b>
+<i>69</i>&nbsp;
+<b class="nc"><i>70</i>&nbsp;        Element child = DOMUtil.getFirstChildElement(allDecl);</b>
+<i>71</i>&nbsp;
+<b class="nc"><i>72</i>&nbsp;        XSAnnotationImpl annotation = null;</b>
+<b class="nc"><i>73</i>&nbsp;        if (child !=null &amp;&amp; DOMUtil.getLocalName(child).equals(SchemaSymbols.ELT_ANNOTATION)) {</b>
+<b class="nc"><i>74</i>&nbsp;            annotation = traverseAnnotationDecl(child, attrValues, false, schemaDoc);</b>
+<b class="nc"><i>75</i>&nbsp;            child = DOMUtil.getNextSiblingElement(child);</b>
+<i>76</i>&nbsp;        }
+<i>77</i>&nbsp;        else {
+<b class="nc"><i>78</i>&nbsp;            String text = DOMUtil.getSyntheticAnnotation(allDecl);</b>
+<b class="nc"><i>79</i>&nbsp;            if (text != null) {</b>
+<b class="nc"><i>80</i>&nbsp;                annotation = traverseSyntheticAnnotation(allDecl, text, attrValues, false, schemaDoc);</b>
+<i>81</i>&nbsp;            }
+<i>82</i>&nbsp;        }
+<b class="nc"><i>83</i>&nbsp;        String childName = null;</b>
+<i>84</i>&nbsp;        XSParticleDecl particle;
+<b class="nc"><i>85</i>&nbsp;        fPArray.pushContext();</b>
+<i>86</i>&nbsp;
+<b class="nc"><i>87</i>&nbsp;        for (; child != null; child = DOMUtil.getNextSiblingElement(child)) {</b>
+<i>88</i>&nbsp;
+<b class="nc"><i>89</i>&nbsp;            particle = null;</b>
+<b class="nc"><i>90</i>&nbsp;            childName = DOMUtil.getLocalName(child);</b>
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;            // Only elements are allowed in &lt;all&gt;
+<b class="nc"><i>93</i>&nbsp;            if (childName.equals(SchemaSymbols.ELT_ELEMENT)) {</b>
+<b class="nc"><i>94</i>&nbsp;                particle = fSchemaHandler.fElementTraverser.traverseLocal(child, schemaDoc, grammar, PROCESSING_ALL_EL, parent);</b>
+<i>95</i>&nbsp;            }
+<i>96</i>&nbsp;            else {
+<b class="nc"><i>97</i>&nbsp;                Object[] args = {&quot;all&quot;, &quot;(annotation?, element*)&quot;, DOMUtil.getLocalName(child)};</b>
+<b class="nc"><i>98</i>&nbsp;                reportSchemaError(&quot;s4s-elt-must-match.1&quot;, args, child);</b>
+<i>99</i>&nbsp;            }
+<i>100</i>&nbsp;
+<b class="nc"><i>101</i>&nbsp;            if (particle != null)</b>
+<b class="nc"><i>102</i>&nbsp;                fPArray.addParticle(particle);</b>
+<i>103</i>&nbsp;        }
+<i>104</i>&nbsp;
+<b class="nc"><i>105</i>&nbsp;        particle = null;</b>
+<b class="nc"><i>106</i>&nbsp;        XInt minAtt = (XInt)attrValues[XSAttributeChecker.ATTIDX_MINOCCURS];</b>
+<b class="nc"><i>107</i>&nbsp;        XInt maxAtt = (XInt)attrValues[XSAttributeChecker.ATTIDX_MAXOCCURS];</b>
+<b class="nc"><i>108</i>&nbsp;        Long defaultVals = (Long)attrValues[XSAttributeChecker.ATTIDX_FROMDEFAULT];</b>
+<i>109</i>&nbsp;
+<b class="nc"><i>110</i>&nbsp;        XSModelGroupImpl group = new XSModelGroupImpl();</b>
+<b class="nc"><i>111</i>&nbsp;        group.fCompositor = XSModelGroupImpl.MODELGROUP_ALL;</b>
+<b class="nc"><i>112</i>&nbsp;        group.fParticleCount = fPArray.getParticleCount();</b>
+<b class="nc"><i>113</i>&nbsp;        group.fParticles = fPArray.popContext();</b>
+<i>114</i>&nbsp;        XSObjectList annotations;
+<b class="nc"><i>115</i>&nbsp;        if (annotation != null) {</b>
+<b class="nc"><i>116</i>&nbsp;            annotations = new XSObjectListImpl();</b>
+<b class="nc"><i>117</i>&nbsp;            ((XSObjectListImpl)annotations).addXSObject (annotation);</b>
+<i>118</i>&nbsp;        } else {
+<b class="nc"><i>119</i>&nbsp;            annotations = XSObjectListImpl.EMPTY_LIST;</b>
+<i>120</i>&nbsp;        }
+<b class="nc"><i>121</i>&nbsp;        group.fAnnotations = annotations;</b>
+<b class="nc"><i>122</i>&nbsp;        particle = new XSParticleDecl();</b>
+<b class="nc"><i>123</i>&nbsp;        particle.fType = XSParticleDecl.PARTICLE_MODELGROUP;</b>
+<b class="nc"><i>124</i>&nbsp;        particle.fMinOccurs = minAtt.intValue();</b>
+<b class="nc"><i>125</i>&nbsp;        particle.fMaxOccurs = maxAtt.intValue();</b>
+<b class="nc"><i>126</i>&nbsp;        particle.fValue = group;</b>
+<b class="nc"><i>127</i>&nbsp;        particle.fAnnotations = annotations;</b>
+<i>128</i>&nbsp;
+<b class="nc"><i>129</i>&nbsp;        particle = checkOccurrences(particle,</b>
+<i>130</i>&nbsp;                SchemaSymbols.ELT_ALL,
+<b class="nc"><i>131</i>&nbsp;                (Element)allDecl.getParentNode(),</b>
+<i>132</i>&nbsp;                allContextFlags,
+<b class="nc"><i>133</i>&nbsp;                defaultVals.longValue());</b>
+<b class="nc"><i>134</i>&nbsp;        fAttrChecker.returnAttrArray(attrValues, schemaDoc);</b>
+<i>135</i>&nbsp;
+<b class="nc"><i>136</i>&nbsp;        return particle;</b>
+<i>137</i>&nbsp;    }
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;    /**
+<i>140</i>&nbsp;     * Traverse the Sequence declaration
+<i>141</i>&nbsp;     *
+<i>142</i>&nbsp;     * &lt;sequence
+<i>143</i>&nbsp;     *   id = ID
+<i>144</i>&nbsp;     *   maxOccurs = string
+<i>145</i>&nbsp;     *   minOccurs = nonNegativeInteger&gt;
+<i>146</i>&nbsp;     *   Content: (annotation? , (element | group | choice | sequence | any)*)
+<i>147</i>&nbsp;     * &lt;/sequence&gt;
+<i>148</i>&nbsp;     *
+<i>149</i>&nbsp;     * @param seqDecl
+<i>150</i>&nbsp;     * @param schemaDoc
+<i>151</i>&nbsp;     * @param grammar
+<i>152</i>&nbsp;     * @return
+<i>153</i>&nbsp;     */
+<i>154</i>&nbsp;    XSParticleDecl traverseSequence(Element seqDecl,
+<i>155</i>&nbsp;            XSDocumentInfo schemaDoc,
+<i>156</i>&nbsp;            SchemaGrammar grammar,
+<i>157</i>&nbsp;            int allContextFlags,
+<i>158</i>&nbsp;            XSObject parent) {
+<i>159</i>&nbsp;
+<b class="nc"><i>160</i>&nbsp;        return traverseSeqChoice(seqDecl, schemaDoc, grammar, allContextFlags, false, parent);</b>
+<i>161</i>&nbsp;    }
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;    /**
+<i>164</i>&nbsp;     * Traverse the Choice declaration
+<i>165</i>&nbsp;     *
+<i>166</i>&nbsp;     * &lt;choice
+<i>167</i>&nbsp;     *   id = ID
+<i>168</i>&nbsp;     *   maxOccurs = string
+<i>169</i>&nbsp;     *   minOccurs = nonNegativeInteger&gt;
+<i>170</i>&nbsp;     *   Content: (annotation? , (element | group | choice | sequence | any)*)
+<i>171</i>&nbsp;     * &lt;/choice&gt;
+<i>172</i>&nbsp;     *
+<i>173</i>&nbsp;     * @param choiceDecl
+<i>174</i>&nbsp;     * @param schemaDoc
+<i>175</i>&nbsp;     * @param grammar
+<i>176</i>&nbsp;     * @return
+<i>177</i>&nbsp;     */
+<i>178</i>&nbsp;    XSParticleDecl traverseChoice(Element choiceDecl,
+<i>179</i>&nbsp;            XSDocumentInfo schemaDoc,
+<i>180</i>&nbsp;            SchemaGrammar grammar,
+<i>181</i>&nbsp;            int allContextFlags,
+<i>182</i>&nbsp;            XSObject parent) {
+<i>183</i>&nbsp;
+<b class="nc"><i>184</i>&nbsp;        return traverseSeqChoice (choiceDecl, schemaDoc, grammar, allContextFlags, true, parent);</b>
+<i>185</i>&nbsp;    }
+<i>186</i>&nbsp;
+<i>187</i>&nbsp;    /**
+<i>188</i>&nbsp;     * Common traversal for &lt;choice&gt; and &lt;sequence&gt;
+<i>189</i>&nbsp;     *
+<i>190</i>&nbsp;     * @param decl
+<i>191</i>&nbsp;     * @param schemaDoc
+<i>192</i>&nbsp;     * @param grammar
+<i>193</i>&nbsp;     * @param choice    If traversing &lt;choice&gt; this parameter is true.
+<i>194</i>&nbsp;     * @return
+<i>195</i>&nbsp;     */
+<i>196</i>&nbsp;    private XSParticleDecl traverseSeqChoice(Element decl,
+<i>197</i>&nbsp;            XSDocumentInfo schemaDoc,
+<i>198</i>&nbsp;            SchemaGrammar grammar,
+<i>199</i>&nbsp;            int allContextFlags,
+<i>200</i>&nbsp;            boolean choice,
+<i>201</i>&nbsp;            XSObject parent) {
+<i>202</i>&nbsp;
+<i>203</i>&nbsp;        // General Attribute Checking
+<b class="nc"><i>204</i>&nbsp;        Object[] attrValues = fAttrChecker.checkAttributes(decl, false, schemaDoc);</b>
+<i>205</i>&nbsp;
+<b class="nc"><i>206</i>&nbsp;        Element child = DOMUtil.getFirstChildElement(decl);</b>
+<b class="nc"><i>207</i>&nbsp;        XSAnnotationImpl annotation = null;</b>
+<b class="nc"><i>208</i>&nbsp;        if (child !=null &amp;&amp; DOMUtil.getLocalName(child).equals(SchemaSymbols.ELT_ANNOTATION)) {</b>
+<b class="nc"><i>209</i>&nbsp;            annotation = traverseAnnotationDecl(child, attrValues, false, schemaDoc);</b>
+<b class="nc"><i>210</i>&nbsp;            child = DOMUtil.getNextSiblingElement(child);</b>
+<i>211</i>&nbsp;        }
+<i>212</i>&nbsp;        else {
+<b class="nc"><i>213</i>&nbsp;            String text = DOMUtil.getSyntheticAnnotation(decl);</b>
+<b class="nc"><i>214</i>&nbsp;            if (text != null) {</b>
+<b class="nc"><i>215</i>&nbsp;                annotation = traverseSyntheticAnnotation(decl, text, attrValues, false, schemaDoc);</b>
+<i>216</i>&nbsp;            }
+<i>217</i>&nbsp;        }
+<i>218</i>&nbsp;
+<b class="nc"><i>219</i>&nbsp;        String childName = null;</b>
+<i>220</i>&nbsp;        XSParticleDecl particle;
+<b class="nc"><i>221</i>&nbsp;        fPArray.pushContext();</b>
+<i>222</i>&nbsp;
+<b class="nc"><i>223</i>&nbsp;        for (;child != null;child = DOMUtil.getNextSiblingElement(child)) {</b>
+<i>224</i>&nbsp;
+<b class="nc"><i>225</i>&nbsp;            particle = null;</b>
+<i>226</i>&nbsp;
+<b class="nc"><i>227</i>&nbsp;            childName = DOMUtil.getLocalName(child);</b>
+<b class="nc"><i>228</i>&nbsp;            if (childName.equals(SchemaSymbols.ELT_ELEMENT)) {</b>
+<b class="nc"><i>229</i>&nbsp;                particle = fSchemaHandler.fElementTraverser.traverseLocal(child, schemaDoc, grammar, NOT_ALL_CONTEXT, parent);</b>
+<i>230</i>&nbsp;            }
+<b class="nc"><i>231</i>&nbsp;            else if (childName.equals(SchemaSymbols.ELT_GROUP)) {</b>
+<b class="nc"><i>232</i>&nbsp;                particle = fSchemaHandler.fGroupTraverser.traverseLocal(child, schemaDoc, grammar);</b>
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;                // A content type of all can only appear
+<i>235</i>&nbsp;                // as the content type of a complex type definition.
+<b class="nc"><i>236</i>&nbsp;                if (hasAllContent(particle)) {</b>
+<i>237</i>&nbsp;                    // don&#39;t insert the &quot;all&quot; particle, otherwise we won&#39;t be
+<i>238</i>&nbsp;                    // able to create DFA from this content model
+<b class="nc"><i>239</i>&nbsp;                    particle = null;</b>
+<b class="nc"><i>240</i>&nbsp;                    reportSchemaError(&quot;cos-all-limited.1.2&quot;, null, child);</b>
+<i>241</i>&nbsp;                }
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;            }
+<b class="nc"><i>244</i>&nbsp;            else if (childName.equals(SchemaSymbols.ELT_CHOICE)) {</b>
+<b class="nc"><i>245</i>&nbsp;                particle = traverseChoice(child, schemaDoc, grammar, NOT_ALL_CONTEXT, parent);</b>
+<i>246</i>&nbsp;            }
+<b class="nc"><i>247</i>&nbsp;            else if (childName.equals(SchemaSymbols.ELT_SEQUENCE)) {</b>
+<b class="nc"><i>248</i>&nbsp;                particle = traverseSequence(child, schemaDoc, grammar, NOT_ALL_CONTEXT, parent);</b>
+<i>249</i>&nbsp;            }
+<b class="nc"><i>250</i>&nbsp;            else if (childName.equals(SchemaSymbols.ELT_ANY)) {</b>
+<b class="nc"><i>251</i>&nbsp;                particle = fSchemaHandler.fWildCardTraverser.traverseAny(child, schemaDoc, grammar);</b>
+<i>252</i>&nbsp;            }
+<i>253</i>&nbsp;            else {
+<i>254</i>&nbsp;                Object [] args;
+<b class="nc"><i>255</i>&nbsp;                if (choice) {</b>
+<b class="nc"><i>256</i>&nbsp;                    args = new Object[]{&quot;choice&quot;, &quot;(annotation?, (element | group | choice | sequence | any)*)&quot;, DOMUtil.getLocalName(child)};</b>
+<i>257</i>&nbsp;                }
+<i>258</i>&nbsp;                else {
+<b class="nc"><i>259</i>&nbsp;                    args = new Object[]{&quot;sequence&quot;, &quot;(annotation?, (element | group | choice | sequence | any)*)&quot;, DOMUtil.getLocalName(child)};</b>
+<i>260</i>&nbsp;                }
+<b class="nc"><i>261</i>&nbsp;                reportSchemaError(&quot;s4s-elt-must-match.1&quot;, args, child);</b>
+<i>262</i>&nbsp;            }
+<i>263</i>&nbsp;
+<b class="nc"><i>264</i>&nbsp;            if (particle != null)</b>
+<b class="nc"><i>265</i>&nbsp;                fPArray.addParticle(particle);</b>
+<i>266</i>&nbsp;        }
+<i>267</i>&nbsp;
+<b class="nc"><i>268</i>&nbsp;        particle = null;</b>
+<i>269</i>&nbsp;
+<b class="nc"><i>270</i>&nbsp;        XInt minAtt = (XInt)attrValues[XSAttributeChecker.ATTIDX_MINOCCURS];</b>
+<b class="nc"><i>271</i>&nbsp;        XInt maxAtt = (XInt)attrValues[XSAttributeChecker.ATTIDX_MAXOCCURS];</b>
+<b class="nc"><i>272</i>&nbsp;        Long defaultVals = (Long)attrValues[XSAttributeChecker.ATTIDX_FROMDEFAULT];</b>
+<i>273</i>&nbsp;
+<b class="nc"><i>274</i>&nbsp;        XSModelGroupImpl group = new XSModelGroupImpl();</b>
+<b class="nc"><i>275</i>&nbsp;        group.fCompositor = choice ? XSModelGroupImpl.MODELGROUP_CHOICE : XSModelGroupImpl.MODELGROUP_SEQUENCE;</b>
+<b class="nc"><i>276</i>&nbsp;        group.fParticleCount = fPArray.getParticleCount();</b>
+<b class="nc"><i>277</i>&nbsp;        group.fParticles = fPArray.popContext();</b>
+<i>278</i>&nbsp;        XSObjectList annotations;
+<b class="nc"><i>279</i>&nbsp;        if (annotation != null) {</b>
+<b class="nc"><i>280</i>&nbsp;            annotations = new XSObjectListImpl();</b>
+<b class="nc"><i>281</i>&nbsp;            ((XSObjectListImpl)annotations).addXSObject (annotation);</b>
+<i>282</i>&nbsp;        } else {
+<b class="nc"><i>283</i>&nbsp;            annotations = XSObjectListImpl.EMPTY_LIST;</b>
+<i>284</i>&nbsp;        }
+<b class="nc"><i>285</i>&nbsp;        group.fAnnotations = annotations;</b>
+<b class="nc"><i>286</i>&nbsp;        particle = new XSParticleDecl();</b>
+<b class="nc"><i>287</i>&nbsp;        particle.fType = XSParticleDecl.PARTICLE_MODELGROUP;</b>
+<b class="nc"><i>288</i>&nbsp;        particle.fMinOccurs = minAtt.intValue();</b>
+<b class="nc"><i>289</i>&nbsp;        particle.fMaxOccurs = maxAtt.intValue();</b>
+<b class="nc"><i>290</i>&nbsp;        particle.fValue = group;</b>
+<b class="nc"><i>291</i>&nbsp;        particle.fAnnotations = annotations;</b>
+<i>292</i>&nbsp;
+<b class="nc"><i>293</i>&nbsp;        particle = checkOccurrences(particle,</b>
+<i>294</i>&nbsp;                choice ? SchemaSymbols.ELT_CHOICE : SchemaSymbols.ELT_SEQUENCE,
+<b class="nc"><i>295</i>&nbsp;                        (Element)decl.getParentNode(),</b>
+<i>296</i>&nbsp;                        allContextFlags,
+<b class="nc"><i>297</i>&nbsp;                        defaultVals.longValue());</b>
+<b class="nc"><i>298</i>&nbsp;        fAttrChecker.returnAttrArray(attrValues, schemaDoc);</b>
+<i>299</i>&nbsp;
+<b class="nc"><i>300</i>&nbsp;        return particle;</b>
+<i>301</i>&nbsp;    }
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;    // Determines whether a content spec tree represents an &quot;all&quot; content model
+<i>304</i>&nbsp;    protected boolean hasAllContent(XSParticleDecl particle) {
+<i>305</i>&nbsp;        // If the content is not empty, is the top node ALL?
+<b class="nc"><i>306</i>&nbsp;        if (particle != null &amp;&amp; particle.fType == XSParticleDecl.PARTICLE_MODELGROUP) {</b>
+<b class="nc"><i>307</i>&nbsp;            return ((XSModelGroupImpl)particle.fValue).fCompositor == XSModelGroupImpl.MODELGROUP_ALL;</b>
+<i>308</i>&nbsp;        }
+<i>309</i>&nbsp;
+<b class="nc"><i>310</i>&nbsp;        return false;</b>
+<i>311</i>&nbsp;    }
+<i>312</i>&nbsp;
+<i>313</i>&nbsp;    // the inner class: used to store particles for model groups
+<i>314</i>&nbsp;    // to avoid creating a new Vector in each model group, or when traversing
+<i>315</i>&nbsp;    // each model group, we use this one big array to store all particles
+<i>316</i>&nbsp;    // for model groups. when the traversal finishes, this class returns an
+<i>317</i>&nbsp;    // XSParticleDecl[] containing all particles for the current model group.
+<i>318</i>&nbsp;    // it&#39;s possible that we need to traverse another model group while
+<i>319</i>&nbsp;    // traversing one (one inside another one; referring to a global group,
+<i>320</i>&nbsp;    // etc.), so we have push/pos context methods to save the same of the
+<i>321</i>&nbsp;    // current traversal before starting the traversal of another model group.
+<b class="nc"><i>322</i>&nbsp;    protected static class ParticleArray {</b>
+<i>323</i>&nbsp;        // big array to contain all particles
+<b class="nc"><i>324</i>&nbsp;        XSParticleDecl[] fParticles = new XSParticleDecl[10];</b>
+<i>325</i>&nbsp;        // the ending position of particles in the array for each context
+<i>326</i>&nbsp;        // index 0 is reserved, with value 0. index 1 is used for the fist
+<i>327</i>&nbsp;        // context. so that the number of particles for context &#39;i&#39; can be
+<i>328</i>&nbsp;        // computed simply by fPos[i] - fPos[i-1].
+<b class="nc"><i>329</i>&nbsp;        int[] fPos = new int[5];</b>
+<i>330</i>&nbsp;        // number of contexts
+<b class="nc"><i>331</i>&nbsp;        int fContextCount = 0;</b>
+<i>332</i>&nbsp;
+<i>333</i>&nbsp;        // start a new context (start traversing a new model group)
+<i>334</i>&nbsp;        void pushContext() {
+<b class="nc"><i>335</i>&nbsp;            fContextCount++;</b>
+<i>336</i>&nbsp;            // resize position array if necessary
+<b class="nc"><i>337</i>&nbsp;            if (fContextCount == fPos.length) {</b>
+<b class="nc"><i>338</i>&nbsp;                int newSize = fContextCount * 2;</b>
+<b class="nc"><i>339</i>&nbsp;                int[] newArray = new int[newSize];</b>
+<b class="nc"><i>340</i>&nbsp;                System.arraycopy(fPos, 0, newArray, 0, fContextCount);</b>
+<b class="nc"><i>341</i>&nbsp;                fPos = newArray;</b>
+<i>342</i>&nbsp;            }
+<i>343</i>&nbsp;            // the initial ending position of the current context is the
+<i>344</i>&nbsp;            // ending position of the previsous context. which means there is
+<i>345</i>&nbsp;            // no particle for the current context yet.
+<b class="nc"><i>346</i>&nbsp;            fPos[fContextCount] = fPos[fContextCount-1];</b>
+<i>347</i>&nbsp;        }
+<i>348</i>&nbsp;
+<i>349</i>&nbsp;        // get the number of particles of this context (model group)
+<i>350</i>&nbsp;        int getParticleCount() {
+<b class="nc"><i>351</i>&nbsp;            return fPos[fContextCount] - fPos[fContextCount-1];</b>
+<i>352</i>&nbsp;        }
+<i>353</i>&nbsp;
+<i>354</i>&nbsp;        // add a particle to the current context
+<i>355</i>&nbsp;        void addParticle(XSParticleDecl particle) {
+<i>356</i>&nbsp;            // resize the particle array if necessary
+<b class="nc"><i>357</i>&nbsp;            if (fPos[fContextCount] == fParticles.length) {</b>
+<b class="nc"><i>358</i>&nbsp;                int newSize = fPos[fContextCount] * 2;</b>
+<b class="nc"><i>359</i>&nbsp;                XSParticleDecl[] newArray = new XSParticleDecl[newSize];</b>
+<b class="nc"><i>360</i>&nbsp;                System.arraycopy(fParticles, 0, newArray, 0, fPos[fContextCount]);</b>
+<b class="nc"><i>361</i>&nbsp;                fParticles = newArray;</b>
+<i>362</i>&nbsp;            }
+<b class="nc"><i>363</i>&nbsp;            fParticles[fPos[fContextCount]++] = particle;</b>
+<i>364</i>&nbsp;        }
+<i>365</i>&nbsp;
+<i>366</i>&nbsp;        // end the current context, and return an array of particles
+<i>367</i>&nbsp;        XSParticleDecl[] popContext() {
+<b class="nc"><i>368</i>&nbsp;            int count = fPos[fContextCount] - fPos[fContextCount-1];</b>
+<b class="nc"><i>369</i>&nbsp;            XSParticleDecl[] array = null;</b>
+<b class="nc"><i>370</i>&nbsp;            if (count != 0) {</b>
+<b class="nc"><i>371</i>&nbsp;                array = new XSParticleDecl[count];</b>
+<b class="nc"><i>372</i>&nbsp;                System.arraycopy(fParticles, fPos[fContextCount-1], array, 0, count);</b>
+<i>373</i>&nbsp;                // clear the particle array, to release memory
+<b class="nc"><i>374</i>&nbsp;                for (int i = fPos[fContextCount-1]; i &lt; fPos[fContextCount]; i++)</b>
+<b class="nc"><i>375</i>&nbsp;                    fParticles[i] = null;</b>
+<i>376</i>&nbsp;            }
+<b class="nc"><i>377</i>&nbsp;            fContextCount--;</b>
+<b class="nc"><i>378</i>&nbsp;            return array;</b>
+<i>379</i>&nbsp;        }
+<i>380</i>&nbsp;
+<i>381</i>&nbsp;    }
+<i>382</i>&nbsp;
+<i>383</i>&nbsp;    // the big particle array to hold all particles in model groups
+<b class="nc"><i>384</i>&nbsp;    ParticleArray fPArray = new ParticleArray();</b>
+<i>385</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

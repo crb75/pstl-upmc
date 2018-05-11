@@ -1,0 +1,431 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XSLoaderImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.xs</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XSLoaderImpl (com.sun.org.apache.xerces.internal.impl.xs)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XSLoaderImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 35)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">XSLoaderImpl$XSGrammarMerger</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 54)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 89)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.xs;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.util.XSGrammarPool;
+<i>24</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.grammars.Grammar;
+<i>25</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarDescription;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.grammars.XSGrammar;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.LSInputList;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.StringList;
+<i>30</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSConstants;
+<i>31</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSLoader;
+<i>32</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSModel;
+<i>33</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSNamedMap;
+<i>34</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSObjectList;
+<i>35</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
+<i>36</i>&nbsp;import org.w3c.dom.DOMConfiguration;
+<i>37</i>&nbsp;import org.w3c.dom.DOMException;
+<i>38</i>&nbsp;import org.w3c.dom.DOMStringList;
+<i>39</i>&nbsp;import org.w3c.dom.ls.LSInput;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;/**
+<i>42</i>&nbsp; * &lt;p&gt;An implementation of XSLoader which wraps XMLSchemaLoader.&lt;/p&gt;
+<i>43</i>&nbsp; *
+<i>44</i>&nbsp; * @xerces.internal
+<i>45</i>&nbsp; *
+<i>46</i>&nbsp; * @author Michael Glavassevich, IBM
+<i>47</i>&nbsp; *
+<i>48</i>&nbsp; * @version $Id: XSLoaderImpl.java,v 1.7 2010-11-01 04:39:55 joehw Exp $
+<i>49</i>&nbsp; */
+<i>50</i>&nbsp;public final class XSLoaderImpl implements XSLoader, DOMConfiguration {
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    /**
+<i>53</i>&nbsp;     * Grammar pool. Need this to prevent us from
+<i>54</i>&nbsp;     * getting two grammars from the same namespace.
+<i>55</i>&nbsp;     */
+<b class="nc"><i>56</i>&nbsp;    private final XSGrammarPool fGrammarPool = new XSGrammarMerger();</b>
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    /** Schema loader. **/
+<b class="nc"><i>59</i>&nbsp;    private final XMLSchemaLoader fSchemaLoader = new XMLSchemaLoader();</b>
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    /**
+<i>62</i>&nbsp;     * No-args constructor.
+<i>63</i>&nbsp;     */
+<b class="nc"><i>64</i>&nbsp;    public XSLoaderImpl() {</b>
+<b class="nc"><i>65</i>&nbsp;        fSchemaLoader.setProperty(XMLSchemaLoader.XMLGRAMMAR_POOL, fGrammarPool);</b>
+<i>66</i>&nbsp;    }
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    /**
+<i>69</i>&nbsp;     *  The configuration of a document. It maintains a table of recognized
+<i>70</i>&nbsp;     * parameters. Using the configuration, it is possible to change the
+<i>71</i>&nbsp;     * behavior of the load methods. The configuration may support the
+<i>72</i>&nbsp;     * setting of and the retrieval of the following non-boolean parameters
+<i>73</i>&nbsp;     * defined on the &lt;code&gt;DOMConfiguration&lt;/code&gt; interface:
+<i>74</i>&nbsp;     * &lt;code&gt;error-handler&lt;/code&gt; (&lt;code&gt;DOMErrorHandler&lt;/code&gt;) and
+<i>75</i>&nbsp;     * &lt;code&gt;resource-resolver&lt;/code&gt; (&lt;code&gt;LSResourceResolver&lt;/code&gt;).
+<i>76</i>&nbsp;     * &lt;br&gt; The following list of boolean parameters is defined:
+<i>77</i>&nbsp;     * &lt;dl&gt;
+<i>78</i>&nbsp;     * &lt;dt&gt;
+<i>79</i>&nbsp;     * &lt;code&gt;&quot;validate&quot;&lt;/code&gt;&lt;/dt&gt;
+<i>80</i>&nbsp;     * &lt;dd&gt;
+<i>81</i>&nbsp;     * &lt;dl&gt;
+<i>82</i>&nbsp;     * &lt;dt&gt;&lt;code&gt;true&lt;/code&gt;&lt;/dt&gt;
+<i>83</i>&nbsp;     * &lt;dd&gt;[required] (default) Validate an XML
+<i>84</i>&nbsp;     * Schema during loading. If validation errors are found, the error
+<i>85</i>&nbsp;     * handler is notified. &lt;/dd&gt;
+<i>86</i>&nbsp;     * &lt;dt&gt;&lt;code&gt;false&lt;/code&gt;&lt;/dt&gt;
+<i>87</i>&nbsp;     * &lt;dd&gt;[optional] Do not
+<i>88</i>&nbsp;     * report errors during the loading of an XML Schema document. &lt;/dd&gt;
+<i>89</i>&nbsp;     * &lt;/dl&gt;&lt;/dd&gt;
+<i>90</i>&nbsp;     * &lt;/dl&gt;
+<i>91</i>&nbsp;     */
+<i>92</i>&nbsp;    public DOMConfiguration getConfig() {
+<b class="nc"><i>93</i>&nbsp;        return this;</b>
+<i>94</i>&nbsp;    }
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    /**
+<i>97</i>&nbsp;     * Parses the content of XML Schema documents specified as the list of URI
+<i>98</i>&nbsp;     * references. If the URI contains a fragment identifier, the behavior
+<i>99</i>&nbsp;     * is not defined by this specification.
+<i>100</i>&nbsp;     * @param uriList The list of URI locations.
+<i>101</i>&nbsp;     * @return An XSModel representing the schema documents.
+<i>102</i>&nbsp;     */
+<i>103</i>&nbsp;    public XSModel loadURIList(StringList uriList) {
+<b class="nc"><i>104</i>&nbsp;        int length = uriList.getLength();</b>
+<i>105</i>&nbsp;        try {
+<b class="nc"><i>106</i>&nbsp;            fGrammarPool.clear();</b>
+<b class="nc"><i>107</i>&nbsp;            for (int i = 0; i &lt; length; ++i) {</b>
+<b class="nc"><i>108</i>&nbsp;                fSchemaLoader.loadGrammar(new XMLInputSource(null, uriList.item(i), null));</b>
+<i>109</i>&nbsp;            }
+<b class="nc"><i>110</i>&nbsp;            return fGrammarPool.toXSModel();</b>
+<i>111</i>&nbsp;        }
+<b class="nc"><i>112</i>&nbsp;        catch (Exception e) {</b>
+<b class="nc"><i>113</i>&nbsp;            fSchemaLoader.reportDOMFatalError(e);</b>
+<b class="nc"><i>114</i>&nbsp;            return null;</b>
+<i>115</i>&nbsp;        }
+<i>116</i>&nbsp;    }
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;    /**
+<i>119</i>&nbsp;     *  Parses the content of XML Schema documents specified as a list of
+<i>120</i>&nbsp;     * &lt;code&gt;LSInput&lt;/code&gt;s.
+<i>121</i>&nbsp;     * @param is  The list of &lt;code&gt;LSInput&lt;/code&gt;s from which the XML
+<i>122</i>&nbsp;     *   Schema documents are to be read.
+<i>123</i>&nbsp;     * @return An XSModel representing the schema documents.
+<i>124</i>&nbsp;     */
+<i>125</i>&nbsp;    public XSModel loadInputList(LSInputList is) {
+<b class="nc"><i>126</i>&nbsp;        final int length = is.getLength();</b>
+<i>127</i>&nbsp;        try {
+<b class="nc"><i>128</i>&nbsp;            fGrammarPool.clear();</b>
+<b class="nc"><i>129</i>&nbsp;            for (int i = 0; i &lt; length; ++i) {</b>
+<b class="nc"><i>130</i>&nbsp;                fSchemaLoader.loadGrammar(fSchemaLoader.dom2xmlInputSource(is.item(i)));</b>
+<i>131</i>&nbsp;            }
+<b class="nc"><i>132</i>&nbsp;            return fGrammarPool.toXSModel();</b>
+<i>133</i>&nbsp;        }
+<b class="nc"><i>134</i>&nbsp;        catch (Exception e) {</b>
+<b class="nc"><i>135</i>&nbsp;            fSchemaLoader.reportDOMFatalError(e);</b>
+<b class="nc"><i>136</i>&nbsp;            return null;</b>
+<i>137</i>&nbsp;        }
+<i>138</i>&nbsp;    }
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;    /**
+<i>141</i>&nbsp;     * Parse an XML Schema document from a location identified by a URI
+<i>142</i>&nbsp;     * reference. If the URI contains a fragment identifier, the behavior is
+<i>143</i>&nbsp;     * not defined by this specification.
+<i>144</i>&nbsp;     * @param uri The location of the XML Schema document to be read.
+<i>145</i>&nbsp;     * @return An XSModel representing this schema.
+<i>146</i>&nbsp;     */
+<i>147</i>&nbsp;    public XSModel loadURI(String uri) {
+<i>148</i>&nbsp;        try {
+<b class="nc"><i>149</i>&nbsp;            fGrammarPool.clear();</b>
+<b class="nc"><i>150</i>&nbsp;            return ((XSGrammar) fSchemaLoader.loadGrammar(new XMLInputSource(null, uri, null))).toXSModel();</b>
+<i>151</i>&nbsp;        }
+<b class="nc"><i>152</i>&nbsp;        catch (Exception e){</b>
+<b class="nc"><i>153</i>&nbsp;            fSchemaLoader.reportDOMFatalError(e);</b>
+<b class="nc"><i>154</i>&nbsp;            return null;</b>
+<i>155</i>&nbsp;        }
+<i>156</i>&nbsp;    }
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;    /**
+<i>159</i>&nbsp;     *  Parse an XML Schema document from a resource identified by a
+<i>160</i>&nbsp;     * &lt;code&gt;LSInput&lt;/code&gt; .
+<i>161</i>&nbsp;     * @param is  The &lt;code&gt;LSInput&lt;/code&gt; from which the source
+<i>162</i>&nbsp;     *   document is to be read.
+<i>163</i>&nbsp;     * @return An XSModel representing this schema.
+<i>164</i>&nbsp;     */
+<i>165</i>&nbsp;    public XSModel load(LSInput is) {
+<i>166</i>&nbsp;        try {
+<b class="nc"><i>167</i>&nbsp;            fGrammarPool.clear();</b>
+<b class="nc"><i>168</i>&nbsp;            return ((XSGrammar) fSchemaLoader.loadGrammar(fSchemaLoader.dom2xmlInputSource(is))).toXSModel();</b>
+<i>169</i>&nbsp;        }
+<b class="nc"><i>170</i>&nbsp;        catch (Exception e) {</b>
+<b class="nc"><i>171</i>&nbsp;            fSchemaLoader.reportDOMFatalError(e);</b>
+<b class="nc"><i>172</i>&nbsp;            return null;</b>
+<i>173</i>&nbsp;        }
+<i>174</i>&nbsp;    }
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    /* (non-Javadoc)
+<i>177</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.dom3.DOMConfiguration#setParameter(java.lang.String, java.lang.Object)
+<i>178</i>&nbsp;     */
+<i>179</i>&nbsp;    public void setParameter(String name, Object value) throws DOMException {
+<b class="nc"><i>180</i>&nbsp;        fSchemaLoader.setParameter(name, value);</b>
+<i>181</i>&nbsp;    }
+<i>182</i>&nbsp;
+<i>183</i>&nbsp;    /* (non-Javadoc)
+<i>184</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.dom3.DOMConfiguration#getParameter(java.lang.String)
+<i>185</i>&nbsp;     */
+<i>186</i>&nbsp;    public Object getParameter(String name) throws DOMException {
+<b class="nc"><i>187</i>&nbsp;        return fSchemaLoader.getParameter(name);</b>
+<i>188</i>&nbsp;    }
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;    /* (non-Javadoc)
+<i>191</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.dom3.DOMConfiguration#canSetParameter(java.lang.String, java.lang.Object)
+<i>192</i>&nbsp;     */
+<i>193</i>&nbsp;    public boolean canSetParameter(String name, Object value) {
+<b class="nc"><i>194</i>&nbsp;        return fSchemaLoader.canSetParameter(name, value);</b>
+<i>195</i>&nbsp;    }
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;    /* (non-Javadoc)
+<i>198</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.dom3.DOMConfiguration#getParameterNames()
+<i>199</i>&nbsp;     */
+<i>200</i>&nbsp;    public DOMStringList getParameterNames() {
+<b class="nc"><i>201</i>&nbsp;        return fSchemaLoader.getParameterNames();</b>
+<i>202</i>&nbsp;    }
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;    /**
+<i>205</i>&nbsp;     * Grammar pool which merges grammars from the same namespace into one. This eliminates
+<i>206</i>&nbsp;     * duplicate named components. It doesn&#39;t ensure that the grammar is consistent, however
+<i>207</i>&nbsp;     * this no worse than than the behaviour of XMLSchemaLoader alone when used as an XSLoader.
+<i>208</i>&nbsp;     */
+<i>209</i>&nbsp;    private static final class XSGrammarMerger extends XSGrammarPool {
+<i>210</i>&nbsp;
+<b class="nc"><i>211</i>&nbsp;        public XSGrammarMerger () {}</b>
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;        public void putGrammar(Grammar grammar) {
+<b class="nc"><i>214</i>&nbsp;            SchemaGrammar cachedGrammar =</b>
+<b class="nc"><i>215</i>&nbsp;                toSchemaGrammar(super.getGrammar(grammar.getGrammarDescription()));</b>
+<b class="nc"><i>216</i>&nbsp;            if (cachedGrammar != null) {</b>
+<b class="nc"><i>217</i>&nbsp;                SchemaGrammar newGrammar = toSchemaGrammar(grammar);</b>
+<b class="nc"><i>218</i>&nbsp;                if (newGrammar != null) {</b>
+<b class="nc"><i>219</i>&nbsp;                    mergeSchemaGrammars(cachedGrammar, newGrammar);</b>
+<i>220</i>&nbsp;                }
+<b class="nc"><i>221</i>&nbsp;            }</b>
+<i>222</i>&nbsp;            else {
+<b class="nc"><i>223</i>&nbsp;                super.putGrammar(grammar);</b>
+<i>224</i>&nbsp;            }
+<i>225</i>&nbsp;        }
+<i>226</i>&nbsp;
+<i>227</i>&nbsp;        private SchemaGrammar toSchemaGrammar (Grammar grammar) {
+<b class="nc"><i>228</i>&nbsp;            return (grammar instanceof SchemaGrammar) ? (SchemaGrammar) grammar : null;</b>
+<i>229</i>&nbsp;        }
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;        private void mergeSchemaGrammars(SchemaGrammar cachedGrammar, SchemaGrammar newGrammar) {
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;            /** Add new top-level element declarations. **/
+<b class="nc"><i>234</i>&nbsp;            XSNamedMap map = newGrammar.getComponents(XSConstants.ELEMENT_DECLARATION);</b>
+<b class="nc"><i>235</i>&nbsp;            int length = map.getLength();</b>
+<b class="nc"><i>236</i>&nbsp;            for (int i = 0; i &lt; length; ++i) {</b>
+<b class="nc"><i>237</i>&nbsp;                XSElementDecl decl = (XSElementDecl) map.item(i);</b>
+<b class="nc"><i>238</i>&nbsp;                if (cachedGrammar.getGlobalElementDecl(decl.getName()) == null) {</b>
+<b class="nc"><i>239</i>&nbsp;                    cachedGrammar.addGlobalElementDecl(decl);</b>
+<i>240</i>&nbsp;                }
+<i>241</i>&nbsp;            }
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;            /** Add new top-level attribute declarations. **/
+<b class="nc"><i>244</i>&nbsp;            map = newGrammar.getComponents(XSConstants.ATTRIBUTE_DECLARATION);</b>
+<b class="nc"><i>245</i>&nbsp;            length = map.getLength();</b>
+<b class="nc"><i>246</i>&nbsp;            for (int i = 0; i &lt; length; ++i) {</b>
+<b class="nc"><i>247</i>&nbsp;                XSAttributeDecl decl = (XSAttributeDecl) map.item(i);</b>
+<b class="nc"><i>248</i>&nbsp;                if (cachedGrammar.getGlobalAttributeDecl(decl.getName()) == null) {</b>
+<b class="nc"><i>249</i>&nbsp;                    cachedGrammar.addGlobalAttributeDecl(decl);</b>
+<i>250</i>&nbsp;                }
+<i>251</i>&nbsp;            }
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;            /** Add new top-level type definitions. **/
+<b class="nc"><i>254</i>&nbsp;            map = newGrammar.getComponents(XSConstants.TYPE_DEFINITION);</b>
+<b class="nc"><i>255</i>&nbsp;            length = map.getLength();</b>
+<b class="nc"><i>256</i>&nbsp;            for (int i = 0; i &lt; length; ++i) {</b>
+<b class="nc"><i>257</i>&nbsp;                XSTypeDefinition decl = (XSTypeDefinition) map.item(i);</b>
+<b class="nc"><i>258</i>&nbsp;                if (cachedGrammar.getGlobalTypeDecl(decl.getName()) == null) {</b>
+<b class="nc"><i>259</i>&nbsp;                    cachedGrammar.addGlobalTypeDecl(decl);</b>
+<i>260</i>&nbsp;                }
+<i>261</i>&nbsp;            }
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;            /** Add new top-level attribute group definitions. **/
+<b class="nc"><i>264</i>&nbsp;            map = newGrammar.getComponents(XSConstants.ATTRIBUTE_GROUP);</b>
+<b class="nc"><i>265</i>&nbsp;            length = map.getLength();</b>
+<b class="nc"><i>266</i>&nbsp;            for (int i = 0; i &lt; length; ++i) {</b>
+<b class="nc"><i>267</i>&nbsp;                XSAttributeGroupDecl decl = (XSAttributeGroupDecl) map.item(i);</b>
+<b class="nc"><i>268</i>&nbsp;                if (cachedGrammar.getGlobalAttributeGroupDecl(decl.getName()) == null) {</b>
+<b class="nc"><i>269</i>&nbsp;                    cachedGrammar.addGlobalAttributeGroupDecl(decl);</b>
+<i>270</i>&nbsp;                }
+<i>271</i>&nbsp;            }
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;            /** Add new top-level model group definitions. **/
+<b class="nc"><i>274</i>&nbsp;            map = newGrammar.getComponents(XSConstants.MODEL_GROUP);</b>
+<b class="nc"><i>275</i>&nbsp;            length = map.getLength();</b>
+<b class="nc"><i>276</i>&nbsp;            for (int i = 0; i &lt; length; ++i) {</b>
+<b class="nc"><i>277</i>&nbsp;                XSGroupDecl decl = (XSGroupDecl) map.item(i);</b>
+<b class="nc"><i>278</i>&nbsp;                if (cachedGrammar.getGlobalGroupDecl(decl.getName()) == null) {</b>
+<b class="nc"><i>279</i>&nbsp;                    cachedGrammar.addGlobalGroupDecl(decl);</b>
+<i>280</i>&nbsp;                }
+<i>281</i>&nbsp;            }
+<i>282</i>&nbsp;
+<i>283</i>&nbsp;            /** Add new top-level notation declarations. **/
+<b class="nc"><i>284</i>&nbsp;            map = newGrammar.getComponents(XSConstants.NOTATION_DECLARATION);</b>
+<b class="nc"><i>285</i>&nbsp;            length = map.getLength();</b>
+<b class="nc"><i>286</i>&nbsp;            for (int i = 0; i &lt; length; ++i) {</b>
+<b class="nc"><i>287</i>&nbsp;                XSNotationDecl decl = (XSNotationDecl) map.item(i);</b>
+<b class="nc"><i>288</i>&nbsp;                if (cachedGrammar.getGlobalNotationDecl(decl.getName()) == null) {</b>
+<b class="nc"><i>289</i>&nbsp;                    cachedGrammar.addGlobalNotationDecl(decl);</b>
+<i>290</i>&nbsp;                }
+<i>291</i>&nbsp;            }
+<i>292</i>&nbsp;
+<i>293</i>&nbsp;            /**
+<i>294</i>&nbsp;             * Add all annotations. Since these components are not named it&#39;s
+<i>295</i>&nbsp;             * possible we&#39;ll add duplicate components. There isn&#39;t much we can
+<i>296</i>&nbsp;             * do. It&#39;s no worse than XMLSchemaLoader when used as an XSLoader.
+<i>297</i>&nbsp;             */
+<b class="nc"><i>298</i>&nbsp;            XSObjectList annotations = newGrammar.getAnnotations();</b>
+<b class="nc"><i>299</i>&nbsp;            length = annotations.getLength();</b>
+<b class="nc"><i>300</i>&nbsp;            for (int i = 0; i &lt; length; ++i) {</b>
+<b class="nc"><i>301</i>&nbsp;                cachedGrammar.addAnnotation((XSAnnotationImpl) annotations.item(i));</b>
+<i>302</i>&nbsp;            }
+<i>303</i>&nbsp;
+<i>304</i>&nbsp;        }
+<i>305</i>&nbsp;
+<i>306</i>&nbsp;        public boolean containsGrammar(XMLGrammarDescription desc) {
+<b class="nc"><i>307</i>&nbsp;            return false;</b>
+<i>308</i>&nbsp;        }
+<i>309</i>&nbsp;
+<i>310</i>&nbsp;        public Grammar getGrammar(XMLGrammarDescription desc) {
+<b class="nc"><i>311</i>&nbsp;            return null;</b>
+<i>312</i>&nbsp;        }
+<i>313</i>&nbsp;
+<i>314</i>&nbsp;        public Grammar retrieveGrammar(XMLGrammarDescription desc) {
+<b class="nc"><i>315</i>&nbsp;            return null;</b>
+<i>316</i>&nbsp;        }
+<i>317</i>&nbsp;
+<i>318</i>&nbsp;        public Grammar [] retrieveInitialGrammarSet (String grammarType) {
+<b class="nc"><i>319</i>&nbsp;            return new Grammar[0];</b>
+<i>320</i>&nbsp;        }
+<i>321</i>&nbsp;    }
+<i>322</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:55</div>
+</div>
+</body>
+</html>

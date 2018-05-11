@@ -1,0 +1,166 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TreePathScanner</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.source.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TreePathScanner (com.sun.source.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TreePathScanner</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2006, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.source.util;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import com.sun.source.tree.*;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;/**
+<i>31</i>&nbsp; * A TreeVisitor that visits all the child tree nodes, and provides
+<i>32</i>&nbsp; * support for maintaining a path for the parent nodes.
+<i>33</i>&nbsp; * To visit nodes of a particular type, just override the
+<i>34</i>&nbsp; * corresponding visitorXYZ method.
+<i>35</i>&nbsp; * Inside your method, call super.visitXYZ to visit descendant
+<i>36</i>&nbsp; * nodes.
+<i>37</i>&nbsp; *
+<i>38</i>&nbsp; * @author Jonathan Gibbons
+<i>39</i>&nbsp; * @since 1.6
+<i>40</i>&nbsp; */
+<i>41</i>&nbsp;@jdk.Exported
+<b class="nc"><i>42</i>&nbsp;public class TreePathScanner&lt;R, P&gt; extends TreeScanner&lt;R, P&gt; {</b>
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    /**
+<i>45</i>&nbsp;     * Scan a tree from a position identified by a TreePath.
+<i>46</i>&nbsp;     */
+<i>47</i>&nbsp;    public R scan(TreePath path, P p) {
+<b class="nc"><i>48</i>&nbsp;        this.path = path;</b>
+<i>49</i>&nbsp;        try {
+<b class="nc"><i>50</i>&nbsp;            return path.getLeaf().accept(this, p);</b>
+<i>51</i>&nbsp;        } finally {
+<b class="nc"><i>52</i>&nbsp;            this.path = null;</b>
+<i>53</i>&nbsp;        }
+<i>54</i>&nbsp;    }
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    /**
+<i>57</i>&nbsp;     * Scan a single node.
+<i>58</i>&nbsp;     * The current path is updated for the duration of the scan.
+<i>59</i>&nbsp;     */
+<i>60</i>&nbsp;    @Override
+<i>61</i>&nbsp;    public R scan(Tree tree, P p) {
+<b class="nc"><i>62</i>&nbsp;        if (tree == null)</b>
+<b class="nc"><i>63</i>&nbsp;            return null;</b>
+<i>64</i>&nbsp;
+<b class="nc"><i>65</i>&nbsp;        TreePath prev = path;</b>
+<b class="nc"><i>66</i>&nbsp;        path = new TreePath(path, tree);</b>
+<i>67</i>&nbsp;        try {
+<b class="nc"><i>68</i>&nbsp;            return tree.accept(this, p);</b>
+<i>69</i>&nbsp;        } finally {
+<b class="nc"><i>70</i>&nbsp;            path = prev;</b>
+<i>71</i>&nbsp;        }
+<i>72</i>&nbsp;    }
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    /**
+<i>75</i>&nbsp;     * Get the current path for the node, as built up by the currently
+<i>76</i>&nbsp;     * active set of scan calls.
+<i>77</i>&nbsp;     */
+<i>78</i>&nbsp;    public TreePath getCurrentPath() {
+<b class="nc"><i>79</i>&nbsp;        return path;</b>
+<i>80</i>&nbsp;    }
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    private TreePath path;
+<i>83</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

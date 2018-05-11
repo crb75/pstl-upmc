@@ -1,0 +1,174 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CustomStringPool</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.dtm.ref</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CustomStringPool (com.sun.org.apache.xml.internal.dtm.ref)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CustomStringPool</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: CustomStringPool.java,v 1.2.4.1 2005/09/15 08:14:59 suresh_emailid Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.dtm.ref;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.util.HashMap;
+<i>26</i>&nbsp;import java.util.Map;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;/**
+<i>29</i>&nbsp; * CustomStringPool is an example of an application-provided data structure for a
+<i>30</i>&nbsp; * DTM implementation to hold symbol references, e.g. element names. It will
+<i>31</i>&nbsp; * follow the DTMStringPool interface and use two simple methods
+<i>32</i>&nbsp; * indexToString(int i) and stringToIndex(String s) to map between a set of
+<i>33</i>&nbsp; * string values and a set of integer index values. Therefore, an application
+<i>34</i>&nbsp; * may improve DTM processing speed by substituting the DTM symbol resolution
+<i>35</i>&nbsp; * tables with application specific quick symbol resolution tables.
+<i>36</i>&nbsp; * &lt;p&gt;
+<i>37</i>&nbsp; * %REVIEW% The only difference between this an DTMStringPool seems to be that
+<i>38</i>&nbsp; * it uses a java.lang.Hashtable full of Integers rather than implementing its
+<i>39</i>&nbsp; * own hashing. Joe deliberately avoided that approach when writing
+<i>40</i>&nbsp; * DTMStringPool, since it is both much more memory-hungry and probably slower
+<i>41</i>&nbsp; * -- especially in JDK 1.1.x, where Hashtable is synchronized. We need to
+<i>42</i>&nbsp; * either justify this implementation or discard it.
+<i>43</i>&nbsp; *
+<i>44</i>&nbsp; * &lt;p&gt;
+<i>45</i>&nbsp; * Status: In progress, under discussion.
+<i>46</i>&nbsp; *
+<i>47</i>&nbsp; */
+<i>48</i>&nbsp;public class CustomStringPool extends DTMStringPool {
+<i>49</i>&nbsp;
+<b class="nc"><i>50</i>&nbsp;    final Map&lt;String, Integer&gt; m_stringToInt = new HashMap&lt;&gt;();</b>
+<i>51</i>&nbsp;    public static final int NULL = -1;
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    public CustomStringPool() {
+<b class="nc"><i>54</i>&nbsp;        super();</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    public void removeAllElements() {
+<b class="nc"><i>58</i>&nbsp;        m_intToString.removeAllElements();</b>
+<b class="nc"><i>59</i>&nbsp;        if (m_stringToInt != null) {</b>
+<b class="nc"><i>60</i>&nbsp;            m_stringToInt.clear();</b>
+<i>61</i>&nbsp;        }
+<i>62</i>&nbsp;    }
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    /**
+<i>65</i>&nbsp;     * @return string whose value is uniquely identified by this integer index.
+<i>66</i>&nbsp;     * @throws java.lang.ArrayIndexOutOfBoundsException if index doesn&#39;t map to
+<i>67</i>&nbsp;     * a string.
+<i>68</i>&nbsp;     */
+<i>69</i>&nbsp;    @Override
+<i>70</i>&nbsp;    public String indexToString(int i)
+<i>71</i>&nbsp;            throws java.lang.ArrayIndexOutOfBoundsException {
+<b class="nc"><i>72</i>&nbsp;        return (String) m_intToString.elementAt(i);</b>
+<i>73</i>&nbsp;    }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    /**
+<i>76</i>&nbsp;     * @return integer index uniquely identifying the value of this string.
+<i>77</i>&nbsp;     */
+<i>78</i>&nbsp;    @Override
+<i>79</i>&nbsp;    public int stringToIndex(String s) {
+<b class="nc"><i>80</i>&nbsp;        if (s == null) {</b>
+<b class="nc"><i>81</i>&nbsp;            return NULL;</b>
+<i>82</i>&nbsp;        }
+<b class="nc"><i>83</i>&nbsp;        Integer iobj = m_stringToInt.get(s);</b>
+<b class="nc"><i>84</i>&nbsp;        if (iobj == null) {</b>
+<b class="nc"><i>85</i>&nbsp;            m_intToString.addElement(s);</b>
+<b class="nc"><i>86</i>&nbsp;            iobj = m_intToString.size();</b>
+<b class="nc"><i>87</i>&nbsp;            m_stringToInt.put(s, iobj);</b>
+<i>88</i>&nbsp;        }
+<b class="nc"><i>89</i>&nbsp;        return iobj;</b>
+<i>90</i>&nbsp;    }
+<i>91</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

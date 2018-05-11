@@ -1,0 +1,376 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XslElement</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XslElement (com.sun.org.apache.xalan.internal.xsltc.compiler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XslElement</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 108)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: XslElement.java,v 1.2.4.1 2005/09/12 11:39:55 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ALOAD;
+<i>27</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ASTORE;
+<i>28</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+<i>29</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKESTATIC;
+<i>30</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>31</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.LocalVariableGen;
+<i>32</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.PUSH;
+<i>33</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
+<i>34</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg;
+<i>35</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+<i>36</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
+<i>37</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+<i>38</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
+<i>39</i>&nbsp;import com.sun.org.apache.xml.internal.utils.XML11Char;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;/**
+<i>42</i>&nbsp; * @author Jacek Ambroziak
+<b class="nc"><i>43</i>&nbsp; * @author Santiago Pericas-Geertsen</b>
+<i>44</i>&nbsp; * @author Morten Jorgensen
+<i>45</i>&nbsp; */
+<b class="nc"><i>46</i>&nbsp;final class XslElement extends Instruction {</b>
+<b class="nc"><i>47</i>&nbsp;</b>
+<i>48</i>&nbsp;    private String  _prefix;
+<i>49</i>&nbsp;    private boolean _ignore = false;
+<i>50</i>&nbsp;    private boolean _isLiteralName = true;
+<i>51</i>&nbsp;    private AttributeValueTemplate _name;
+<i>52</i>&nbsp;    private AttributeValueTemplate _namespace;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /**
+<b class="nc"><i>55</i>&nbsp;     * Displays the contents of the element</b>
+<b class="nc"><i>56</i>&nbsp;     */</b>
+<b class="nc"><i>57</i>&nbsp;    public void display(int indent) {</b>
+<i>58</i>&nbsp;        indent(indent);
+<i>59</i>&nbsp;        Util.println(&quot;Element &quot; + _name);
+<i>60</i>&nbsp;        displayContents(indent + IndentIncrement);
+<b class="nc"><i>61</i>&nbsp;    }</b>
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    /**
+<b class="nc"><i>64</i>&nbsp;     * This method is now deprecated. The new implemation of this class</b>
+<b class="nc"><i>65</i>&nbsp;     * never declares the default NS.</b>
+<b class="nc"><i>66</i>&nbsp;     */</b>
+<i>67</i>&nbsp;    public boolean declaresDefaultNS() {
+<b class="nc"><i>68</i>&nbsp;        return false;</b>
+<b class="nc"><i>69</i>&nbsp;    }</b>
+<b class="nc"><i>70</i>&nbsp;</b>
+<i>71</i>&nbsp;    public void parseContents(Parser parser) {
+<i>72</i>&nbsp;        final SymbolTable stable = parser.getSymbolTable();
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;        // Handle the &#39;name&#39; attribute
+<b class="nc"><i>75</i>&nbsp;        String name = getAttribute(&quot;name&quot;);</b>
+<i>76</i>&nbsp;        if (name == EMPTYSTRING) {
+<i>77</i>&nbsp;            ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_ELEM_NAME_ERR,
+<b class="nc"><i>78</i>&nbsp;                                        name, this);</b>
+<b class="nc"><i>79</i>&nbsp;            parser.reportError(WARNING, msg);</b>
+<b class="nc"><i>80</i>&nbsp;            parseChildren(parser);</b>
+<b class="nc"><i>81</i>&nbsp;            _ignore = true;     // Ignore the element if the QName is invalid</b>
+<i>82</i>&nbsp;            return;
+<b class="nc"><i>83</i>&nbsp;        }</b>
+<b class="nc"><i>84</i>&nbsp;</b>
+<b class="nc"><i>85</i>&nbsp;        // Get namespace attribute</b>
+<i>86</i>&nbsp;        String namespace = getAttribute(&quot;namespace&quot;);
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;        // Optimize compilation when name is known at compile time
+<b class="nc"><i>89</i>&nbsp;        _isLiteralName = Util.isLiteral(name);</b>
+<b class="nc"><i>90</i>&nbsp;        if (_isLiteralName) {</b>
+<b class="nc"><i>91</i>&nbsp;            if (!XML11Char.isXML11ValidQName(name)) {</b>
+<i>92</i>&nbsp;                ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_ELEM_NAME_ERR,
+<b class="nc"><i>93</i>&nbsp;                                            name, this);</b>
+<b class="nc"><i>94</i>&nbsp;                parser.reportError(WARNING, msg);</b>
+<i>95</i>&nbsp;                parseChildren(parser);
+<i>96</i>&nbsp;                _ignore = true;         // Ignore the element if the QName is invalid
+<b class="nc"><i>97</i>&nbsp;                return;</b>
+<b class="nc"><i>98</i>&nbsp;            }</b>
+<b class="nc"><i>99</i>&nbsp;</b>
+<b class="nc"><i>100</i>&nbsp;            final QName qname = parser.getQNameSafe(name);</b>
+<i>101</i>&nbsp;            String prefix = qname.getPrefix();
+<b class="nc"><i>102</i>&nbsp;            String local = qname.getLocalPart();</b>
+<b class="nc"><i>103</i>&nbsp;</b>
+<b class="nc"><i>104</i>&nbsp;            if (prefix == null) {</b>
+<i>105</i>&nbsp;                prefix = EMPTYSTRING;
+<i>106</i>&nbsp;            }
+<b class="nc"><i>107</i>&nbsp;</b>
+<b class="nc"><i>108</i>&nbsp;            if (!hasAttribute(&quot;namespace&quot;)) {</b>
+<i>109</i>&nbsp;                namespace = lookupNamespace(prefix);
+<i>110</i>&nbsp;                if (namespace == null) {
+<b class="nc"><i>111</i>&nbsp;                    ErrorMsg err = new ErrorMsg(ErrorMsg.NAMESPACE_UNDEF_ERR,</b>
+<b class="nc"><i>112</i>&nbsp;                                                prefix, this);</b>
+<b class="nc"><i>113</i>&nbsp;                    parser.reportError(WARNING, err);</b>
+<b class="nc"><i>114</i>&nbsp;                    parseChildren(parser);</b>
+<b class="nc"><i>115</i>&nbsp;                    _ignore = true;     // Ignore the element if prefix is undeclared</b>
+<i>116</i>&nbsp;                    return;
+<i>117</i>&nbsp;                }
+<i>118</i>&nbsp;                _prefix = prefix;
+<i>119</i>&nbsp;                _namespace = new AttributeValueTemplate(namespace, parser, this);
+<b class="nc"><i>120</i>&nbsp;            }</b>
+<b class="nc"><i>121</i>&nbsp;            else {</b>
+<b class="nc"><i>122</i>&nbsp;                if (prefix == EMPTYSTRING) {</b>
+<i>123</i>&nbsp;                    if (Util.isLiteral(namespace)) {
+<b class="nc"><i>124</i>&nbsp;                        prefix = lookupPrefix(namespace);</b>
+<i>125</i>&nbsp;                        if (prefix == null) {
+<b class="nc"><i>126</i>&nbsp;                            prefix = stable.generateNamespacePrefix();</b>
+<b class="nc"><i>127</i>&nbsp;                        }</b>
+<i>128</i>&nbsp;                    }
+<b class="nc"><i>129</i>&nbsp;</b>
+<i>130</i>&nbsp;                    // Prepend prefix to local name
+<b class="nc"><i>131</i>&nbsp;                    final StringBuffer newName = new StringBuffer(prefix);</b>
+<i>132</i>&nbsp;                    if (prefix != EMPTYSTRING) {
+<i>133</i>&nbsp;                        newName.append(&#39;:&#39;);
+<i>134</i>&nbsp;                    }
+<b class="nc"><i>135</i>&nbsp;                    name = newName.append(local).toString();</b>
+<i>136</i>&nbsp;                }
+<b class="nc"><i>137</i>&nbsp;                _prefix = prefix;</b>
+<b class="nc"><i>138</i>&nbsp;                _namespace = new AttributeValueTemplate(namespace, parser, this);</b>
+<b class="nc"><i>139</i>&nbsp;            }</b>
+<b class="nc"><i>140</i>&nbsp;        }</b>
+<b class="nc"><i>141</i>&nbsp;        else {</b>
+<i>142</i>&nbsp;            _namespace = (namespace == EMPTYSTRING) ? null :
+<b class="nc"><i>143</i>&nbsp;                         new AttributeValueTemplate(namespace, parser, this);</b>
+<i>144</i>&nbsp;        }
+<i>145</i>&nbsp;
+<b class="nc"><i>146</i>&nbsp;        _name = new AttributeValueTemplate(name, parser, this);</b>
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;        final String useSets = getAttribute(&quot;use-attribute-sets&quot;);
+<i>149</i>&nbsp;        if (useSets.length() &gt; 0) {
+<i>150</i>&nbsp;            if (!Util.isValidQNames(useSets)) {
+<i>151</i>&nbsp;                ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, useSets, this);
+<i>152</i>&nbsp;                parser.reportError(Constants.ERROR, err);
+<b class="nc"><i>153</i>&nbsp;            }</b>
+<b class="nc"><i>154</i>&nbsp;            setFirstElement(new UseAttributeSets(useSets, parser));</b>
+<b class="nc"><i>155</i>&nbsp;        }</b>
+<b class="nc"><i>156</i>&nbsp;</b>
+<i>157</i>&nbsp;        parseChildren(parser);
+<i>158</i>&nbsp;    }
+<b class="nc"><i>159</i>&nbsp;</b>
+<b class="nc"><i>160</i>&nbsp;    /**</b>
+<i>161</i>&nbsp;     * Run type check on element name &amp; contents
+<i>162</i>&nbsp;     */
+<i>163</i>&nbsp;    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+<i>164</i>&nbsp;        if (!_ignore) {
+<i>165</i>&nbsp;            _name.typeCheck(stable);
+<i>166</i>&nbsp;            if (_namespace != null) {
+<i>167</i>&nbsp;                _namespace.typeCheck(stable);
+<i>168</i>&nbsp;            }
+<b class="nc"><i>169</i>&nbsp;        }</b>
+<b class="nc"><i>170</i>&nbsp;        typeCheckContents(stable);</b>
+<i>171</i>&nbsp;        return Type.Void;
+<b class="nc"><i>172</i>&nbsp;    }</b>
+<b class="nc"><i>173</i>&nbsp;</b>
+<b class="nc"><i>174</i>&nbsp;    /**</b>
+<b class="nc"><i>175</i>&nbsp;     * This method is called when the name of the element is known at compile time.</b>
+<b class="nc"><i>176</i>&nbsp;     * In this case, there is no need to inspect the element name at runtime to</b>
+<i>177</i>&nbsp;     * determine if a prefix exists, needs to be generated, etc.
+<b class="nc"><i>178</i>&nbsp;     */</b>
+<b class="nc"><i>179</i>&nbsp;    public void translateLiteral(ClassGenerator classGen, MethodGenerator methodGen) {</b>
+<b class="nc"><i>180</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>181</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<b class="nc"><i>182</i>&nbsp;</b>
+<i>183</i>&nbsp;        if (!_ignore) {
+<i>184</i>&nbsp;            il.append(methodGen.loadHandler());
+<i>185</i>&nbsp;            _name.translate(classGen, methodGen);
+<b class="nc"><i>186</i>&nbsp;            il.append(DUP2);</b>
+<i>187</i>&nbsp;            il.append(methodGen.startElement());
+<b class="nc"><i>188</i>&nbsp;</b>
+<b class="nc"><i>189</i>&nbsp;            if (_namespace != null) {</b>
+<i>190</i>&nbsp;                il.append(methodGen.loadHandler());
+<i>191</i>&nbsp;                il.append(new PUSH(cpg, _prefix));
+<i>192</i>&nbsp;                _namespace.translate(classGen,methodGen);
+<i>193</i>&nbsp;                il.append(methodGen.namespace());
+<i>194</i>&nbsp;            }
+<i>195</i>&nbsp;        }
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;        translateContents(classGen, methodGen);
+<i>198</i>&nbsp;
+<i>199</i>&nbsp;        if (!_ignore) {
+<i>200</i>&nbsp;            il.append(methodGen.endElement());
+<i>201</i>&nbsp;        }
+<b class="nc"><i>202</i>&nbsp;    }</b>
+<b class="nc"><i>203</i>&nbsp;</b>
+<i>204</i>&nbsp;    /**
+<i>205</i>&nbsp;     * At runtime the compilation of xsl:element results in code that: (i)
+<b class="nc"><i>206</i>&nbsp;     * evaluates the avt for the name, (ii) checks for a prefix in the name</b>
+<b class="nc"><i>207</i>&nbsp;     * (iii) generates a new prefix and create a new qname when necessary</b>
+<i>208</i>&nbsp;     * (iv) calls startElement() on the handler (v) looks up a uri in the XML
+<i>209</i>&nbsp;     * when the prefix is not known at compile time (vi) calls namespace()
+<i>210</i>&nbsp;     * on the handler (vii) evaluates the contents (viii) calls endElement().
+<b class="nc"><i>211</i>&nbsp;     */</b>
+<i>212</i>&nbsp;    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+<i>213</i>&nbsp;        LocalVariableGen local = null;
+<b class="nc"><i>214</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>215</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<b class="nc"><i>216</i>&nbsp;</b>
+<i>217</i>&nbsp;        // Optimize translation if element name is a literal
+<i>218</i>&nbsp;        if (_isLiteralName) {
+<i>219</i>&nbsp;            translateLiteral(classGen, methodGen);
+<b class="nc"><i>220</i>&nbsp;            return;</b>
+<b class="nc"><i>221</i>&nbsp;        }</b>
+<b class="nc"><i>222</i>&nbsp;</b>
+<i>223</i>&nbsp;        if (!_ignore) {
+<i>224</i>&nbsp;
+<b class="nc"><i>225</i>&nbsp;            // if the qname is an AVT, then the qname has to be checked at runtime if it is a valid qname</b>
+<i>226</i>&nbsp;            LocalVariableGen nameValue =
+<i>227</i>&nbsp;                    methodGen.addLocalVariable2(&quot;nameValue&quot;,
+<i>228</i>&nbsp;                                                Util.getJCRefType(STRING_SIG),
+<b class="nc"><i>229</i>&nbsp;                                                null);</b>
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;            // store the name into a variable first so _name.translate only needs to be called once
+<b class="nc"><i>232</i>&nbsp;            _name.translate(classGen, methodGen);</b>
+<i>233</i>&nbsp;            nameValue.setStart(il.append(new ASTORE(nameValue.getIndex())));
+<i>234</i>&nbsp;            il.append(new ALOAD(nameValue.getIndex()));
+<b class="nc"><i>235</i>&nbsp;</b>
+<i>236</i>&nbsp;            // call checkQName if the name is an AVT
+<b class="nc"><i>237</i>&nbsp;            final int check = cpg.addMethodref(BASIS_LIBRARY_CLASS, &quot;checkQName&quot;,</b>
+<b class="nc"><i>238</i>&nbsp;                            &quot;(&quot;</b>
+<i>239</i>&nbsp;                            +STRING_SIG
+<i>240</i>&nbsp;                            +&quot;)V&quot;);
+<b class="nc"><i>241</i>&nbsp;            il.append(new INVOKESTATIC(check));</b>
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;            // Push handler for call to endElement()
+<i>244</i>&nbsp;            il.append(methodGen.loadHandler());
+<b class="nc"><i>245</i>&nbsp;</b>
+<b class="nc"><i>246</i>&nbsp;            // load name value again</b>
+<b class="nc"><i>247</i>&nbsp;            nameValue.setEnd(il.append(new ALOAD(nameValue.getIndex())));</b>
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;            if (_namespace != null) {
+<b class="nc"><i>250</i>&nbsp;                _namespace.translate(classGen, methodGen);</b>
+<b class="nc"><i>251</i>&nbsp;            }</b>
+<i>252</i>&nbsp;            else {
+<i>253</i>&nbsp;                il.append(ACONST_NULL);
+<i>254</i>&nbsp;            }
+<i>255</i>&nbsp;
+<i>256</i>&nbsp;            // Push additional arguments
+<i>257</i>&nbsp;            il.append(methodGen.loadHandler());
+<i>258</i>&nbsp;            il.append(methodGen.loadDOM());
+<i>259</i>&nbsp;            il.append(methodGen.loadCurrentNode());
+<b class="nc"><i>260</i>&nbsp;</b>
+<i>261</i>&nbsp;            // Invoke BasisLibrary.startXslElemCheckQName()
+<b class="nc"><i>262</i>&nbsp;            il.append(new INVOKESTATIC(</b>
+<b class="nc"><i>263</i>&nbsp;            cpg.addMethodref(BASIS_LIBRARY_CLASS, &quot;startXslElement&quot;,</b>
+<i>264</i>&nbsp;                    &quot;(&quot; + STRING_SIG
+<i>265</i>&nbsp;                    + STRING_SIG
+<i>266</i>&nbsp;                    + TRANSLET_OUTPUT_SIG
+<i>267</i>&nbsp;                    + DOM_INTF_SIG + &quot;I)&quot; + STRING_SIG)));
+<i>268</i>&nbsp;
+<i>269</i>&nbsp;
+<i>270</i>&nbsp;        }
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;        translateContents(classGen, methodGen);
+<b class="nc"><i>273</i>&nbsp;</b>
+<b class="nc"><i>274</i>&nbsp;        if (!_ignore) {</b>
+<b class="nc"><i>275</i>&nbsp;            il.append(methodGen.endElement());</b>
+<b class="nc"><i>276</i>&nbsp;        }</b>
+<b class="nc"><i>277</i>&nbsp;    }</b>
+<i>278</i>&nbsp;
+<i>279</i>&nbsp;    /**
+<i>280</i>&nbsp;     * Override this method to make sure that xsl:attributes are not
+<i>281</i>&nbsp;     * copied to output if this xsl:element is to be ignored
+<i>282</i>&nbsp;     */
+<i>283</i>&nbsp;    public void translateContents(ClassGenerator classGen,
+<i>284</i>&nbsp;                                  MethodGenerator methodGen) {
+<i>285</i>&nbsp;        final int n = elementCount();
+<i>286</i>&nbsp;        for (int i = 0; i &lt; n; i++) {
+<i>287</i>&nbsp;            final SyntaxTreeNode item = getContents().get(i);
+<i>288</i>&nbsp;            if (_ignore &amp;&amp; item instanceof XslAttribute) continue;
+<i>289</i>&nbsp;            item.translate(classGen, methodGen);
+<i>290</i>&nbsp;        }
+<i>291</i>&nbsp;    }
+<i>292</i>&nbsp;
+<i>293</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

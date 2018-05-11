@@ -1,0 +1,1122 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: LdapLoginModule</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.security.auth.module</a> ]
+</div>
+
+<h1>Coverage Summary for Class: LdapLoginModule (com.sun.security.auth.module)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LdapLoginModule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 270)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LdapLoginModule$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 272)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.security.auth.module;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.security.AccessController;
+<i>29</i>&nbsp;import java.net.SocketPermission;
+<i>30</i>&nbsp;import java.security.Principal;
+<i>31</i>&nbsp;import java.security.PrivilegedAction;
+<i>32</i>&nbsp;import java.util.Arrays;
+<i>33</i>&nbsp;import java.util.Hashtable;
+<i>34</i>&nbsp;import java.util.Map;
+<i>35</i>&nbsp;import java.util.ResourceBundle;
+<i>36</i>&nbsp;import java.util.regex.Matcher;
+<i>37</i>&nbsp;import java.util.regex.Pattern;
+<i>38</i>&nbsp;import java.util.Set;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import javax.naming.*;
+<i>41</i>&nbsp;import javax.naming.directory.*;
+<i>42</i>&nbsp;import javax.naming.ldap.*;
+<i>43</i>&nbsp;import javax.security.auth.*;
+<i>44</i>&nbsp;import javax.security.auth.callback.*;
+<i>45</i>&nbsp;import javax.security.auth.login.*;
+<i>46</i>&nbsp;import javax.security.auth.spi.*;
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;import com.sun.security.auth.LdapPrincipal;
+<i>49</i>&nbsp;import com.sun.security.auth.UserPrincipal;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;/**
+<i>53</i>&nbsp; * This {@link LoginModule} performs LDAP-based authentication.
+<i>54</i>&nbsp; * A username and password is verified against the corresponding user
+<i>55</i>&nbsp; * credentials stored in an LDAP directory.
+<i>56</i>&nbsp; * This module requires the supplied {@link CallbackHandler} to support a
+<i>57</i>&nbsp; * {@link NameCallback} and a {@link PasswordCallback}.
+<i>58</i>&nbsp; * If authentication is successful then a new {@link LdapPrincipal} is created
+<i>59</i>&nbsp; * using the user&#39;s distinguished name and a new {@link UserPrincipal} is
+<i>60</i>&nbsp; * created using the user&#39;s username and both are associated
+<i>61</i>&nbsp; * with the current {@link Subject}.
+<i>62</i>&nbsp; *
+<i>63</i>&nbsp; * &lt;p&gt; This module operates in one of three modes: &lt;i&gt;search-first&lt;/i&gt;,
+<i>64</i>&nbsp; * &lt;i&gt;authentication-first&lt;/i&gt; or &lt;i&gt;authentication-only&lt;/i&gt;.
+<i>65</i>&nbsp; * A mode is selected by specifying a particular set of options.
+<i>66</i>&nbsp; *
+<i>67</i>&nbsp; * &lt;p&gt; In search-first mode, the LDAP directory is searched to determine the
+<i>68</i>&nbsp; * user&#39;s distinguished name and then authentication is attempted.
+<i>69</i>&nbsp; * An (anonymous) search is performed using the supplied username in
+<i>70</i>&nbsp; * conjunction with a specified search filter.
+<i>71</i>&nbsp; * If successful then authentication is attempted using the user&#39;s
+<i>72</i>&nbsp; * distinguished name and the supplied password.
+<i>73</i>&nbsp; * To enable this mode, set the &lt;code&gt;userFilter&lt;/code&gt; option and omit the
+<i>74</i>&nbsp; * &lt;code&gt;authIdentity&lt;/code&gt; option.
+<i>75</i>&nbsp; * Use search-first mode when the user&#39;s distinguished name is not
+<i>76</i>&nbsp; * known in advance.
+<i>77</i>&nbsp; *
+<i>78</i>&nbsp; * &lt;p&gt; In authentication-first mode, authentication is attempted using the
+<i>79</i>&nbsp; * supplied username and password and then the LDAP directory is searched.
+<i>80</i>&nbsp; * If authentication is successful then a search is performed using the
+<i>81</i>&nbsp; * supplied username in conjunction with a specified search filter.
+<i>82</i>&nbsp; * To enable this mode, set the &lt;code&gt;authIdentity&lt;/code&gt; and the
+<i>83</i>&nbsp; * &lt;code&gt;userFilter&lt;/code&gt; options.
+<i>84</i>&nbsp; * Use authentication-first mode when accessing an LDAP directory
+<i>85</i>&nbsp; * that has been configured to disallow anonymous searches.
+<i>86</i>&nbsp; *
+<i>87</i>&nbsp; * &lt;p&gt; In authentication-only mode, authentication is attempted using the
+<i>88</i>&nbsp; * supplied username and password. The LDAP directory is not searched because
+<i>89</i>&nbsp; * the user&#39;s distinguished name is already known.
+<i>90</i>&nbsp; * To enable this mode, set the &lt;code&gt;authIdentity&lt;/code&gt; option to a valid
+<i>91</i>&nbsp; * distinguished name and omit the &lt;code&gt;userFilter&lt;/code&gt; option.
+<i>92</i>&nbsp; * Use authentication-only mode when the user&#39;s distinguished name is
+<i>93</i>&nbsp; * known in advance.
+<i>94</i>&nbsp; *
+<i>95</i>&nbsp; * &lt;p&gt; The following option is mandatory and must be specified in this
+<i>96</i>&nbsp; * module&#39;s login {@link Configuration}:
+<i>97</i>&nbsp; * &lt;dl&gt;&lt;dt&gt;&lt;/dt&gt;&lt;dd&gt;
+<i>98</i>&nbsp; * &lt;dl&gt;
+<i>99</i>&nbsp; * &lt;dt&gt; &lt;code&gt;userProvider=&lt;b&gt;ldap_urls&lt;/b&gt;&lt;/code&gt;
+<i>100</i>&nbsp; * &lt;/dt&gt;
+<i>101</i>&nbsp; * &lt;dd&gt; This option identifies the LDAP directory that stores user entries.
+<i>102</i>&nbsp; *      &lt;b&gt;ldap_urls&lt;/b&gt; is a list of space-separated LDAP URLs
+<i>103</i>&nbsp; *      (&lt;a href=&quot;http://www.ietf.org/rfc/rfc2255.txt&quot;&gt;RFC 2255&lt;/a&gt;)
+<i>104</i>&nbsp; *      that identifies the LDAP server to use and the position in
+<i>105</i>&nbsp; *      its directory tree where user entries are located.
+<i>106</i>&nbsp; *      When several LDAP URLs are specified then each is attempted,
+<i>107</i>&nbsp; *      in turn, until the first successful connection is established.
+<i>108</i>&nbsp; *      Spaces in the distinguished name component of the URL must be escaped
+<i>109</i>&nbsp; *      using the standard mechanism of percent character (&#39;&lt;code&gt;%&lt;/code&gt;&#39;)
+<i>110</i>&nbsp; *      followed by two hexadecimal digits (see {@link java.net.URI}).
+<i>111</i>&nbsp; *      Query components must also be omitted from the URL.
+<i>112</i>&nbsp; *
+<i>113</i>&nbsp; *      &lt;p&gt;
+<i>114</i>&nbsp; *      Automatic discovery of the LDAP server via DNS
+<i>115</i>&nbsp; *      (&lt;a href=&quot;http://www.ietf.org/rfc/rfc2782.txt&quot;&gt;RFC 2782&lt;/a&gt;)
+<i>116</i>&nbsp; *      is supported (once DNS has been configured to support such a service).
+<i>117</i>&nbsp; *      It is enabled by omitting the hostname and port number components from
+<i>118</i>&nbsp; *      the LDAP URL. &lt;/dd&gt;
+<i>119</i>&nbsp; * &lt;/dl&gt;&lt;/dl&gt;
+<i>120</i>&nbsp; *
+<i>121</i>&nbsp; * &lt;p&gt; This module also recognizes the following optional {@link Configuration}
+<i>122</i>&nbsp; *     options:
+<i>123</i>&nbsp; * &lt;dl&gt;&lt;dt&gt;&lt;/dt&gt;&lt;dd&gt;
+<i>124</i>&nbsp; * &lt;dl&gt;
+<i>125</i>&nbsp; * &lt;dt&gt; &lt;code&gt;userFilter=&lt;b&gt;ldap_filter&lt;/b&gt;&lt;/code&gt; &lt;/dt&gt;
+<i>126</i>&nbsp; * &lt;dd&gt; This option specifies the search filter to use to locate a user&#39;s
+<i>127</i>&nbsp; *      entry in the LDAP directory. It is used to determine a user&#39;s
+<i>128</i>&nbsp; *      distinguished name.
+<i>129</i>&nbsp; *      &lt;code&gt;&lt;b&gt;ldap_filter&lt;/b&gt;&lt;/code&gt; is an LDAP filter string
+<i>130</i>&nbsp; *      (&lt;a href=&quot;http://www.ietf.org/rfc/rfc2254.txt&quot;&gt;RFC 2254&lt;/a&gt;).
+<i>131</i>&nbsp; *      If it contains the special token &quot;&lt;code&gt;&lt;b&gt;{USERNAME}&lt;/b&gt;&lt;/code&gt;&quot;
+<i>132</i>&nbsp; *      then that token will be replaced with the supplied username value
+<i>133</i>&nbsp; *      before the filter is used to search the directory. &lt;/dd&gt;
+<i>134</i>&nbsp; *
+<i>135</i>&nbsp; * &lt;dt&gt; &lt;code&gt;authIdentity=&lt;b&gt;auth_id&lt;/b&gt;&lt;/code&gt; &lt;/dt&gt;
+<i>136</i>&nbsp; * &lt;dd&gt; This option specifies the identity to use when authenticating a user
+<i>137</i>&nbsp; *      to the LDAP directory.
+<i>138</i>&nbsp; *      &lt;code&gt;&lt;b&gt;auth_id&lt;/b&gt;&lt;/code&gt; may be an LDAP distinguished name string
+<i>139</i>&nbsp; *      (&lt;a href=&quot;http://www.ietf.org/rfc/rfc2253.txt&quot;&gt;RFC 2253&lt;/a&gt;) or some
+<i>140</i>&nbsp; *      other string name.
+<i>141</i>&nbsp; *      It must contain the special token &quot;&lt;code&gt;&lt;b&gt;{USERNAME}&lt;/b&gt;&lt;/code&gt;&quot;
+<i>142</i>&nbsp; *      which will be replaced with the supplied username value before the
+<i>143</i>&nbsp; *      name is used for authentication.
+<i>144</i>&nbsp; *      Note that if this option does not contain a distinguished name then
+<i>145</i>&nbsp; *      the &lt;code&gt;userFilter&lt;/code&gt; option must also be specified. &lt;/dd&gt;
+<i>146</i>&nbsp; *
+<i>147</i>&nbsp; * &lt;dt&gt; &lt;code&gt;authzIdentity=&lt;b&gt;authz_id&lt;/b&gt;&lt;/code&gt; &lt;/dt&gt;
+<i>148</i>&nbsp; * &lt;dd&gt; This option specifies an authorization identity for the user.
+<i>149</i>&nbsp; *      &lt;code&gt;&lt;b&gt;authz_id&lt;/b&gt;&lt;/code&gt; is any string name.
+<i>150</i>&nbsp; *      If it comprises a single special token with curly braces then
+<i>151</i>&nbsp; *      that token is treated as a attribute name and will be replaced with a
+<i>152</i>&nbsp; *      single value of that attribute from the user&#39;s LDAP entry.
+<i>153</i>&nbsp; *      If the attribute cannot be found then the option is ignored.
+<i>154</i>&nbsp; *      When this option is supplied and the user has been successfully
+<i>155</i>&nbsp; *      authenticated then an additional {@link UserPrincipal}
+<i>156</i>&nbsp; *      is created using the authorization identity and it is associated with
+<i>157</i>&nbsp; *      the current {@link Subject}. &lt;/dd&gt;
+<i>158</i>&nbsp; *
+<i>159</i>&nbsp; * &lt;dt&gt; &lt;code&gt;useSSL&lt;/code&gt; &lt;/dt&gt;
+<i>160</i>&nbsp; * &lt;dd&gt; if &lt;code&gt;false&lt;/code&gt;, this module does not establish an SSL connection
+<i>161</i>&nbsp; *      to the LDAP server before attempting authentication. SSL is used to
+<i>162</i>&nbsp; *      protect the privacy of the user&#39;s password because it is transmitted
+<i>163</i>&nbsp; *      in the clear over LDAP.
+<i>164</i>&nbsp; *      By default, this module uses SSL. &lt;/dd&gt;
+<i>165</i>&nbsp; *
+<i>166</i>&nbsp; * &lt;dt&gt; &lt;code&gt;useFirstPass&lt;/code&gt; &lt;/dt&gt;
+<i>167</i>&nbsp; * &lt;dd&gt; if &lt;code&gt;true&lt;/code&gt;, this module retrieves the username and password
+<i>168</i>&nbsp; *      from the module&#39;s shared state, using &quot;javax.security.auth.login.name&quot;
+<i>169</i>&nbsp; *      and &quot;javax.security.auth.login.password&quot; as the respective keys. The
+<i>170</i>&nbsp; *      retrieved values are used for authentication. If authentication fails,
+<i>171</i>&nbsp; *      no attempt for a retry is made, and the failure is reported back to
+<i>172</i>&nbsp; *      the calling application.&lt;/dd&gt;
+<i>173</i>&nbsp; *
+<i>174</i>&nbsp; * &lt;dt&gt; &lt;code&gt;tryFirstPass&lt;/code&gt; &lt;/dt&gt;
+<i>175</i>&nbsp; * &lt;dd&gt; if &lt;code&gt;true&lt;/code&gt;, this module retrieves the username and password
+<i>176</i>&nbsp; *      from the module&#39;s shared state, using &quot;javax.security.auth.login.name&quot;
+<i>177</i>&nbsp; *       and &quot;javax.security.auth.login.password&quot; as the respective keys.  The
+<i>178</i>&nbsp; *      retrieved values are used for authentication. If authentication fails,
+<i>179</i>&nbsp; *      the module uses the {@link CallbackHandler} to retrieve a new username
+<i>180</i>&nbsp; *      and password, and another attempt to authenticate is made. If the
+<i>181</i>&nbsp; *      authentication fails, the failure is reported back to the calling
+<i>182</i>&nbsp; *      application.&lt;/dd&gt;
+<i>183</i>&nbsp; *
+<i>184</i>&nbsp; * &lt;dt&gt; &lt;code&gt;storePass&lt;/code&gt; &lt;/dt&gt;
+<i>185</i>&nbsp; * &lt;dd&gt; if &lt;code&gt;true&lt;/code&gt;, this module stores the username and password
+<i>186</i>&nbsp; *      obtained from the {@link CallbackHandler} in the module&#39;s shared state,
+<i>187</i>&nbsp; *      using
+<i>188</i>&nbsp; *      &quot;javax.security.auth.login.name&quot; and
+<i>189</i>&nbsp; *      &quot;javax.security.auth.login.password&quot; as the respective keys.  This is
+<i>190</i>&nbsp; *      not performed if existing values already exist for the username and
+<i>191</i>&nbsp; *      password in the shared state, or if authentication fails.&lt;/dd&gt;
+<i>192</i>&nbsp; *
+<i>193</i>&nbsp; * &lt;dt&gt; &lt;code&gt;clearPass&lt;/code&gt; &lt;/dt&gt;
+<i>194</i>&nbsp; * &lt;dd&gt; if &lt;code&gt;true&lt;/code&gt;, this module clears the username and password
+<i>195</i>&nbsp; *      stored in the module&#39;s shared state after both phases of authentication
+<i>196</i>&nbsp; *      (login and commit) have completed.&lt;/dd&gt;
+<i>197</i>&nbsp; *
+<i>198</i>&nbsp; * &lt;dt&gt; &lt;code&gt;debug&lt;/code&gt; &lt;/dt&gt;
+<i>199</i>&nbsp; * &lt;dd&gt; if &lt;code&gt;true&lt;/code&gt;, debug messages are displayed on the standard
+<i>200</i>&nbsp; *      output stream.
+<i>201</i>&nbsp; * &lt;/dl&gt;
+<i>202</i>&nbsp; * &lt;/dl&gt;
+<i>203</i>&nbsp; *
+<i>204</i>&nbsp; * &lt;p&gt;
+<i>205</i>&nbsp; * Arbitrary
+<i>206</i>&nbsp; * &lt;a href=&quot;{@docRoot}/../../../../../technotes/guides/jndi/jndi-ldap-gl.html#PROP&quot;&gt;JNDI properties&lt;/a&gt;
+<i>207</i>&nbsp; * may also be specified in the {@link Configuration}.
+<i>208</i>&nbsp; * They are added to the environment and passed to the LDAP provider.
+<i>209</i>&nbsp; * Note that the following four JNDI properties are set by this module directly
+<i>210</i>&nbsp; * and are ignored if also present in the configuration:
+<i>211</i>&nbsp; * &lt;ul&gt;
+<i>212</i>&nbsp; * &lt;li&gt; &lt;code&gt;java.naming.provider.url&lt;/code&gt;
+<i>213</i>&nbsp; * &lt;li&gt; &lt;code&gt;java.naming.security.principal&lt;/code&gt;
+<i>214</i>&nbsp; * &lt;li&gt; &lt;code&gt;java.naming.security.credentials&lt;/code&gt;
+<i>215</i>&nbsp; * &lt;li&gt; &lt;code&gt;java.naming.security.protocol&lt;/code&gt;
+<i>216</i>&nbsp; * &lt;/ul&gt;
+<i>217</i>&nbsp; *
+<i>218</i>&nbsp; * &lt;p&gt;
+<i>219</i>&nbsp; * Three sample {@link Configuration}s are shown below.
+<i>220</i>&nbsp; * The first one activates search-first mode. It identifies the LDAP server
+<i>221</i>&nbsp; * and specifies that users&#39; entries be located by their &lt;code&gt;uid&lt;/code&gt; and
+<i>222</i>&nbsp; * &lt;code&gt;objectClass&lt;/code&gt; attributes. It also specifies that an identity
+<i>223</i>&nbsp; * based on the user&#39;s &lt;code&gt;employeeNumber&lt;/code&gt; attribute should be created.
+<i>224</i>&nbsp; * The second one activates authentication-first mode. It requests that the
+<i>225</i>&nbsp; * LDAP server be located dynamically, that authentication be performed using
+<i>226</i>&nbsp; * the supplied username directly but without the protection of SSL and that
+<i>227</i>&nbsp; * users&#39; entries be located by one of three naming attributes and their
+<i>228</i>&nbsp; * &lt;code&gt;objectClass&lt;/code&gt; attribute.
+<i>229</i>&nbsp; * The third one activates authentication-only mode. It identifies alternative
+<i>230</i>&nbsp; * LDAP servers, it specifies the distinguished name to use for
+<i>231</i>&nbsp; * authentication and a fixed identity to use for authorization. No directory
+<i>232</i>&nbsp; * search is performed.
+<i>233</i>&nbsp; *
+<i>234</i>&nbsp; * &lt;pre&gt;
+<i>235</i>&nbsp; *
+<i>236</i>&nbsp; *     ExampleApplication {
+<i>237</i>&nbsp; *         com.sun.security.auth.module.LdapLoginModule REQUIRED
+<i>238</i>&nbsp; *             userProvider=&quot;ldap://ldap-svr/ou=people,dc=example,dc=com&quot;
+<i>239</i>&nbsp; *             userFilter=&quot;(&amp;(uid={USERNAME})(objectClass=inetOrgPerson))&quot;
+<i>240</i>&nbsp; *             authzIdentity=&quot;{EMPLOYEENUMBER}&quot;
+<i>241</i>&nbsp; *             debug=true;
+<i>242</i>&nbsp; *     };
+<i>243</i>&nbsp; *
+<i>244</i>&nbsp; *     ExampleApplication {
+<i>245</i>&nbsp; *         com.sun.security.auth.module.LdapLoginModule REQUIRED
+<i>246</i>&nbsp; *             userProvider=&quot;ldap:///cn=users,dc=example,dc=com&quot;
+<i>247</i>&nbsp; *             authIdentity=&quot;{USERNAME}&quot;
+<i>248</i>&nbsp; *             userFilter=&quot;(&amp;(|(samAccountName={USERNAME})(userPrincipalName={USERNAME})(cn={USERNAME}))(objectClass=user))&quot;
+<i>249</i>&nbsp; *             useSSL=false
+<i>250</i>&nbsp; *             debug=true;
+<i>251</i>&nbsp; *     };
+<i>252</i>&nbsp; *
+<i>253</i>&nbsp; *     ExampleApplication {
+<i>254</i>&nbsp; *         com.sun.security.auth.module.LdapLoginModule REQUIRED
+<i>255</i>&nbsp; *             userProvider=&quot;ldap://ldap-svr1 ldap://ldap-svr2&quot;
+<i>256</i>&nbsp; *             authIdentity=&quot;cn={USERNAME},ou=people,dc=example,dc=com&quot;
+<i>257</i>&nbsp; *             authzIdentity=&quot;staff&quot;
+<i>258</i>&nbsp; *             debug=true;
+<i>259</i>&nbsp; *     };
+<i>260</i>&nbsp; *
+<i>261</i>&nbsp; * &lt;/pre&gt;
+<i>262</i>&nbsp; *
+<i>263</i>&nbsp; * &lt;dl&gt;
+<i>264</i>&nbsp; * &lt;dt&gt;&lt;b&gt;Note:&lt;/b&gt; &lt;/dt&gt;
+<i>265</i>&nbsp; * &lt;dd&gt;When a {@link SecurityManager} is active then an application
+<i>266</i>&nbsp; *     that creates a {@link LoginContext} and uses a {@link LoginModule}
+<i>267</i>&nbsp; *     must be granted certain permissions.
+<i>268</i>&nbsp; *     &lt;p&gt;
+<i>269</i>&nbsp; *     If the application creates a login context using an &lt;em&gt;installed&lt;/em&gt;
+<i>270</i>&nbsp; *     {@link Configuration} then the application must be granted the
+<i>271</i>&nbsp; *     {@link AuthPermission} to create login contexts.
+<i>272</i>&nbsp; *     For example, the following security policy allows an application in
+<i>273</i>&nbsp; *     the user&#39;s current directory to instantiate &lt;em&gt;any&lt;/em&gt; login context:
+<i>274</i>&nbsp; *     &lt;pre&gt;
+<i>275</i>&nbsp; *
+<i>276</i>&nbsp; *     grant codebase &quot;file:${user.dir}/&quot; {
+<i>277</i>&nbsp; *         permission javax.security.auth.AuthPermission &quot;createLoginContext.*&quot;;
+<i>278</i>&nbsp; *     };
+<i>279</i>&nbsp; *     &lt;/pre&gt;
+<i>280</i>&nbsp; *
+<i>281</i>&nbsp; *     Alternatively, if the application creates a login context using a
+<i>282</i>&nbsp; *     &lt;em&gt;caller-specified&lt;/em&gt; {@link Configuration} then the application
+<i>283</i>&nbsp; *     must be granted the permissions required by the {@link LoginModule}.
+<i>284</i>&nbsp; *     &lt;em&gt;This&lt;/em&gt; module requires the following two permissions:
+<i>285</i>&nbsp; *     &lt;p&gt;
+<i>286</i>&nbsp; *     &lt;ul&gt;
+<i>287</i>&nbsp; *     &lt;li&gt; The {@link SocketPermission} to connect to an LDAP server.
+<i>288</i>&nbsp; *     &lt;li&gt; The {@link AuthPermission} to modify the set of {@link Principal}s
+<i>289</i>&nbsp; *          associated with a {@link Subject}.
+<i>290</i>&nbsp; *     &lt;/ul&gt;
+<i>291</i>&nbsp; *     &lt;p&gt;
+<i>292</i>&nbsp; *     For example, the following security policy grants an application in the
+<i>293</i>&nbsp; *     user&#39;s current directory all the permissions required by this module:
+<i>294</i>&nbsp; *     &lt;pre&gt;
+<i>295</i>&nbsp; *
+<i>296</i>&nbsp; *     grant codebase &quot;file:${user.dir}/&quot; {
+<i>297</i>&nbsp; *         permission java.net.SocketPermission &quot;*:389&quot;, &quot;connect&quot;;
+<i>298</i>&nbsp; *         permission java.net.SocketPermission &quot;*:636&quot;, &quot;connect&quot;;
+<i>299</i>&nbsp; *         permission javax.security.auth.AuthPermission &quot;modifyPrincipals&quot;;
+<i>300</i>&nbsp; *     };
+<i>301</i>&nbsp; *     &lt;/pre&gt;
+<i>302</i>&nbsp; * &lt;/dd&gt;
+<i>303</i>&nbsp; * &lt;/dl&gt;
+<i>304</i>&nbsp; *
+<i>305</i>&nbsp; * @since 1.6
+<i>306</i>&nbsp; */
+<i>307</i>&nbsp;@jdk.Exported
+<b class="nc"><i>308</i>&nbsp;public class LdapLoginModule implements LoginModule {</b>
+<i>309</i>&nbsp;
+<i>310</i>&nbsp;    // Use the default classloader for this class to load the prompt strings.
+<b class="nc"><i>311</i>&nbsp;    private static final ResourceBundle rb = AccessController.doPrivileged(</b>
+<b class="nc"><i>312</i>&nbsp;            new PrivilegedAction&lt;ResourceBundle&gt;() {</b>
+<i>313</i>&nbsp;                public ResourceBundle run() {
+<b class="nc"><i>314</i>&nbsp;                    return ResourceBundle.getBundle(</b>
+<i>315</i>&nbsp;                        &quot;sun.security.util.AuthResources&quot;);
+<i>316</i>&nbsp;                }
+<i>317</i>&nbsp;            }
+<i>318</i>&nbsp;        );
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;    // Keys to retrieve the stored username and password
+<i>321</i>&nbsp;    private static final String USERNAME_KEY = &quot;javax.security.auth.login.name&quot;;
+<i>322</i>&nbsp;    private static final String PASSWORD_KEY =
+<i>323</i>&nbsp;        &quot;javax.security.auth.login.password&quot;;
+<i>324</i>&nbsp;
+<i>325</i>&nbsp;    // Option names
+<i>326</i>&nbsp;    private static final String USER_PROVIDER = &quot;userProvider&quot;;
+<i>327</i>&nbsp;    private static final String USER_FILTER = &quot;userFilter&quot;;
+<i>328</i>&nbsp;    private static final String AUTHC_IDENTITY = &quot;authIdentity&quot;;
+<i>329</i>&nbsp;    private static final String AUTHZ_IDENTITY = &quot;authzIdentity&quot;;
+<i>330</i>&nbsp;
+<i>331</i>&nbsp;    // Used for the username token replacement
+<i>332</i>&nbsp;    private static final String USERNAME_TOKEN = &quot;{USERNAME}&quot;;
+<i>333</i>&nbsp;    private static final Pattern USERNAME_PATTERN =
+<b class="nc"><i>334</i>&nbsp;        Pattern.compile(&quot;\\{USERNAME\\}&quot;);</b>
+<i>335</i>&nbsp;
+<i>336</i>&nbsp;    // Configurable options
+<i>337</i>&nbsp;    private String userProvider;
+<i>338</i>&nbsp;    private String userFilter;
+<i>339</i>&nbsp;    private String authcIdentity;
+<i>340</i>&nbsp;    private String authzIdentity;
+<b class="nc"><i>341</i>&nbsp;    private String authzIdentityAttr = null;</b>
+<b class="nc"><i>342</i>&nbsp;    private boolean useSSL = true;</b>
+<b class="nc"><i>343</i>&nbsp;    private boolean authFirst = false;</b>
+<b class="nc"><i>344</i>&nbsp;    private boolean authOnly = false;</b>
+<b class="nc"><i>345</i>&nbsp;    private boolean useFirstPass = false;</b>
+<b class="nc"><i>346</i>&nbsp;    private boolean tryFirstPass = false;</b>
+<b class="nc"><i>347</i>&nbsp;    private boolean storePass = false;</b>
+<b class="nc"><i>348</i>&nbsp;    private boolean clearPass = false;</b>
+<b class="nc"><i>349</i>&nbsp;    private boolean debug = false;</b>
+<i>350</i>&nbsp;
+<i>351</i>&nbsp;    // Authentication status
+<b class="nc"><i>352</i>&nbsp;    private boolean succeeded = false;</b>
+<b class="nc"><i>353</i>&nbsp;    private boolean commitSucceeded = false;</b>
+<i>354</i>&nbsp;
+<i>355</i>&nbsp;    // Supplied username and password
+<i>356</i>&nbsp;    private String username;
+<i>357</i>&nbsp;    private char[] password;
+<i>358</i>&nbsp;
+<i>359</i>&nbsp;    // User&#39;s identities
+<i>360</i>&nbsp;    private LdapPrincipal ldapPrincipal;
+<i>361</i>&nbsp;    private UserPrincipal userPrincipal;
+<i>362</i>&nbsp;    private UserPrincipal authzPrincipal;
+<i>363</i>&nbsp;
+<i>364</i>&nbsp;    // Initial state
+<i>365</i>&nbsp;    private Subject subject;
+<i>366</i>&nbsp;    private CallbackHandler callbackHandler;
+<i>367</i>&nbsp;    private Map&lt;String, Object&gt; sharedState;
+<i>368</i>&nbsp;    private Map&lt;String, ?&gt; options;
+<i>369</i>&nbsp;    private LdapContext ctx;
+<b class="nc"><i>370</i>&nbsp;    private Matcher identityMatcher = null;</b>
+<b class="nc"><i>371</i>&nbsp;    private Matcher filterMatcher = null;</b>
+<i>372</i>&nbsp;    private Hashtable&lt;String, Object&gt; ldapEnvironment;
+<b class="nc"><i>373</i>&nbsp;    private SearchControls constraints = null;</b>
+<i>374</i>&nbsp;
+<i>375</i>&nbsp;    /**
+<i>376</i>&nbsp;     * Initialize this &lt;code&gt;LoginModule&lt;/code&gt;.
+<i>377</i>&nbsp;     *
+<i>378</i>&nbsp;     * @param subject the &lt;code&gt;Subject&lt;/code&gt; to be authenticated.
+<i>379</i>&nbsp;     * @param callbackHandler a &lt;code&gt;CallbackHandler&lt;/code&gt; to acquire the
+<i>380</i>&nbsp;     *                  username and password.
+<i>381</i>&nbsp;     * @param sharedState shared &lt;code&gt;LoginModule&lt;/code&gt; state.
+<i>382</i>&nbsp;     * @param options options specified in the login
+<i>383</i>&nbsp;     *                  &lt;code&gt;Configuration&lt;/code&gt; for this particular
+<i>384</i>&nbsp;     *                  &lt;code&gt;LoginModule&lt;/code&gt;.
+<i>385</i>&nbsp;     */
+<i>386</i>&nbsp;    // Unchecked warning from (Map&lt;String, Object&gt;)sharedState is safe
+<i>387</i>&nbsp;    // since javax.security.auth.login.LoginContext passes a raw HashMap.
+<i>388</i>&nbsp;    @SuppressWarnings(&quot;unchecked&quot;)
+<i>389</i>&nbsp;    public void initialize(Subject subject, CallbackHandler callbackHandler,
+<i>390</i>&nbsp;                        Map&lt;String, ?&gt; sharedState, Map&lt;String, ?&gt; options) {
+<i>391</i>&nbsp;
+<b class="nc"><i>392</i>&nbsp;        this.subject = subject;</b>
+<b class="nc"><i>393</i>&nbsp;        this.callbackHandler = callbackHandler;</b>
+<b class="nc"><i>394</i>&nbsp;        this.sharedState = (Map&lt;String, Object&gt;)sharedState;</b>
+<b class="nc"><i>395</i>&nbsp;        this.options = options;</b>
+<i>396</i>&nbsp;
+<b class="nc"><i>397</i>&nbsp;        ldapEnvironment = new Hashtable&lt;String, Object&gt;(9);</b>
+<b class="nc"><i>398</i>&nbsp;        ldapEnvironment.put(Context.INITIAL_CONTEXT_FACTORY,</b>
+<i>399</i>&nbsp;            &quot;com.sun.jndi.ldap.LdapCtxFactory&quot;);
+<i>400</i>&nbsp;
+<i>401</i>&nbsp;        // Add any JNDI properties to the environment
+<b class="nc"><i>402</i>&nbsp;        for (String key : options.keySet()) {</b>
+<b class="nc"><i>403</i>&nbsp;            if (key.indexOf(&quot;.&quot;) &gt; -1) {</b>
+<b class="nc"><i>404</i>&nbsp;                ldapEnvironment.put(key, options.get(key));</b>
+<i>405</i>&nbsp;            }
+<b class="nc"><i>406</i>&nbsp;        }</b>
+<i>407</i>&nbsp;
+<i>408</i>&nbsp;        // initialize any configured options
+<i>409</i>&nbsp;
+<b class="nc"><i>410</i>&nbsp;        userProvider = (String)options.get(USER_PROVIDER);</b>
+<b class="nc"><i>411</i>&nbsp;        if (userProvider != null) {</b>
+<b class="nc"><i>412</i>&nbsp;            ldapEnvironment.put(Context.PROVIDER_URL, userProvider);</b>
+<i>413</i>&nbsp;        }
+<i>414</i>&nbsp;
+<b class="nc"><i>415</i>&nbsp;        authcIdentity = (String)options.get(AUTHC_IDENTITY);</b>
+<b class="nc"><i>416</i>&nbsp;        if (authcIdentity != null &amp;&amp;</b>
+<b class="nc"><i>417</i>&nbsp;            (authcIdentity.indexOf(USERNAME_TOKEN) != -1)) {</b>
+<b class="nc"><i>418</i>&nbsp;            identityMatcher = USERNAME_PATTERN.matcher(authcIdentity);</b>
+<i>419</i>&nbsp;        }
+<i>420</i>&nbsp;
+<b class="nc"><i>421</i>&nbsp;        userFilter = (String)options.get(USER_FILTER);</b>
+<b class="nc"><i>422</i>&nbsp;        if (userFilter != null) {</b>
+<b class="nc"><i>423</i>&nbsp;            if (userFilter.indexOf(USERNAME_TOKEN) != -1) {</b>
+<b class="nc"><i>424</i>&nbsp;                filterMatcher = USERNAME_PATTERN.matcher(userFilter);</b>
+<i>425</i>&nbsp;            }
+<b class="nc"><i>426</i>&nbsp;            constraints = new SearchControls();</b>
+<b class="nc"><i>427</i>&nbsp;            constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);</b>
+<b class="nc"><i>428</i>&nbsp;            constraints.setReturningAttributes(new String[0]); //return no attrs</b>
+<i>429</i>&nbsp;        }
+<i>430</i>&nbsp;
+<b class="nc"><i>431</i>&nbsp;        authzIdentity = (String)options.get(AUTHZ_IDENTITY);</b>
+<b class="nc"><i>432</i>&nbsp;        if (authzIdentity != null &amp;&amp;</b>
+<b class="nc"><i>433</i>&nbsp;            authzIdentity.startsWith(&quot;{&quot;) &amp;&amp; authzIdentity.endsWith(&quot;}&quot;)) {</b>
+<b class="nc"><i>434</i>&nbsp;            if (constraints != null) {</b>
+<b class="nc"><i>435</i>&nbsp;                authzIdentityAttr =</b>
+<b class="nc"><i>436</i>&nbsp;                    authzIdentity.substring(1, authzIdentity.length() - 1);</b>
+<b class="nc"><i>437</i>&nbsp;                constraints.setReturningAttributes(</b>
+<i>438</i>&nbsp;                    new String[]{authzIdentityAttr});
+<i>439</i>&nbsp;            }
+<b class="nc"><i>440</i>&nbsp;            authzIdentity = null; // set later, from the specified attribute</b>
+<i>441</i>&nbsp;        }
+<i>442</i>&nbsp;
+<i>443</i>&nbsp;        // determine mode
+<b class="nc"><i>444</i>&nbsp;        if (authcIdentity != null) {</b>
+<b class="nc"><i>445</i>&nbsp;            if (userFilter != null) {</b>
+<b class="nc"><i>446</i>&nbsp;                authFirst = true; // authentication-first mode</b>
+<i>447</i>&nbsp;            } else {
+<b class="nc"><i>448</i>&nbsp;                authOnly = true; // authentication-only mode</b>
+<i>449</i>&nbsp;            }
+<i>450</i>&nbsp;        }
+<i>451</i>&nbsp;
+<b class="nc"><i>452</i>&nbsp;        if (&quot;false&quot;.equalsIgnoreCase((String)options.get(&quot;useSSL&quot;))) {</b>
+<b class="nc"><i>453</i>&nbsp;            useSSL = false;</b>
+<b class="nc"><i>454</i>&nbsp;            ldapEnvironment.remove(Context.SECURITY_PROTOCOL);</b>
+<i>455</i>&nbsp;        } else {
+<b class="nc"><i>456</i>&nbsp;            ldapEnvironment.put(Context.SECURITY_PROTOCOL, &quot;ssl&quot;);</b>
+<i>457</i>&nbsp;        }
+<i>458</i>&nbsp;
+<b class="nc"><i>459</i>&nbsp;        tryFirstPass =</b>
+<b class="nc"><i>460</i>&nbsp;                &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;tryFirstPass&quot;));</b>
+<i>461</i>&nbsp;
+<b class="nc"><i>462</i>&nbsp;        useFirstPass =</b>
+<b class="nc"><i>463</i>&nbsp;                &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;useFirstPass&quot;));</b>
+<i>464</i>&nbsp;
+<b class="nc"><i>465</i>&nbsp;        storePass = &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;storePass&quot;));</b>
+<i>466</i>&nbsp;
+<b class="nc"><i>467</i>&nbsp;        clearPass = &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;clearPass&quot;));</b>
+<i>468</i>&nbsp;
+<b class="nc"><i>469</i>&nbsp;        debug = &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;debug&quot;));</b>
+<i>470</i>&nbsp;
+<b class="nc"><i>471</i>&nbsp;        if (debug) {</b>
+<b class="nc"><i>472</i>&nbsp;            if (authFirst) {</b>
+<b class="nc"><i>473</i>&nbsp;                System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>474</i>&nbsp;                    &quot;authentication-first mode; &quot; +
+<i>475</i>&nbsp;                    (useSSL ? &quot;SSL enabled&quot; : &quot;SSL disabled&quot;));
+<b class="nc"><i>476</i>&nbsp;            } else if (authOnly) {</b>
+<b class="nc"><i>477</i>&nbsp;                System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>478</i>&nbsp;                    &quot;authentication-only mode; &quot; +
+<i>479</i>&nbsp;                    (useSSL ? &quot;SSL enabled&quot; : &quot;SSL disabled&quot;));
+<i>480</i>&nbsp;            } else {
+<b class="nc"><i>481</i>&nbsp;                System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>482</i>&nbsp;                    &quot;search-first mode; &quot; +
+<i>483</i>&nbsp;                    (useSSL ? &quot;SSL enabled&quot; : &quot;SSL disabled&quot;));
+<i>484</i>&nbsp;            }
+<i>485</i>&nbsp;        }
+<i>486</i>&nbsp;    }
+<i>487</i>&nbsp;
+<i>488</i>&nbsp;    /**
+<i>489</i>&nbsp;     * Begin user authentication.
+<i>490</i>&nbsp;     *
+<i>491</i>&nbsp;     * &lt;p&gt; Acquire the user&#39;s credentials and verify them against the
+<i>492</i>&nbsp;     * specified LDAP directory.
+<i>493</i>&nbsp;     *
+<i>494</i>&nbsp;     * @return true always, since this &lt;code&gt;LoginModule&lt;/code&gt;
+<i>495</i>&nbsp;     *          should not be ignored.
+<i>496</i>&nbsp;     * @exception FailedLoginException if the authentication fails.
+<i>497</i>&nbsp;     * @exception LoginException if this &lt;code&gt;LoginModule&lt;/code&gt;
+<i>498</i>&nbsp;     *          is unable to perform the authentication.
+<i>499</i>&nbsp;     */
+<i>500</i>&nbsp;    public boolean login() throws LoginException {
+<i>501</i>&nbsp;
+<b class="nc"><i>502</i>&nbsp;        if (userProvider == null) {</b>
+<b class="nc"><i>503</i>&nbsp;            throw new LoginException</b>
+<i>504</i>&nbsp;                (&quot;Unable to locate the LDAP directory service&quot;);
+<i>505</i>&nbsp;        }
+<i>506</i>&nbsp;
+<b class="nc"><i>507</i>&nbsp;        if (debug) {</b>
+<b class="nc"><i>508</i>&nbsp;            System.out.println(&quot;\t\t[LdapLoginModule] user provider: &quot; +</b>
+<i>509</i>&nbsp;                userProvider);
+<i>510</i>&nbsp;        }
+<i>511</i>&nbsp;
+<i>512</i>&nbsp;        // attempt the authentication
+<b class="nc"><i>513</i>&nbsp;        if (tryFirstPass) {</b>
+<i>514</i>&nbsp;
+<i>515</i>&nbsp;            try {
+<i>516</i>&nbsp;                // attempt the authentication by getting the
+<i>517</i>&nbsp;                // username and password from shared state
+<b class="nc"><i>518</i>&nbsp;                attemptAuthentication(true);</b>
+<i>519</i>&nbsp;
+<i>520</i>&nbsp;                // authentication succeeded
+<b class="nc"><i>521</i>&nbsp;                succeeded = true;</b>
+<b class="nc"><i>522</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>523</i>&nbsp;                    System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>524</i>&nbsp;                                &quot;tryFirstPass succeeded&quot;);
+<i>525</i>&nbsp;                }
+<b class="nc"><i>526</i>&nbsp;                return true;</b>
+<i>527</i>&nbsp;
+<b class="nc"><i>528</i>&nbsp;            } catch (LoginException le) {</b>
+<i>529</i>&nbsp;                // authentication failed -- try again below by prompting
+<b class="nc"><i>530</i>&nbsp;                cleanState();</b>
+<b class="nc"><i>531</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>532</i>&nbsp;                    System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<b class="nc"><i>533</i>&nbsp;                                &quot;tryFirstPass failed: &quot; + le.toString());</b>
+<i>534</i>&nbsp;                }
+<b class="nc"><i>535</i>&nbsp;            }</b>
+<i>536</i>&nbsp;
+<b class="nc"><i>537</i>&nbsp;        } else if (useFirstPass) {</b>
+<i>538</i>&nbsp;
+<i>539</i>&nbsp;            try {
+<i>540</i>&nbsp;                // attempt the authentication by getting the
+<i>541</i>&nbsp;                // username and password from shared state
+<b class="nc"><i>542</i>&nbsp;                attemptAuthentication(true);</b>
+<i>543</i>&nbsp;
+<i>544</i>&nbsp;                // authentication succeeded
+<b class="nc"><i>545</i>&nbsp;                succeeded = true;</b>
+<b class="nc"><i>546</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>547</i>&nbsp;                    System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>548</i>&nbsp;                                &quot;useFirstPass succeeded&quot;);
+<i>549</i>&nbsp;                }
+<b class="nc"><i>550</i>&nbsp;                return true;</b>
+<i>551</i>&nbsp;
+<b class="nc"><i>552</i>&nbsp;            } catch (LoginException le) {</b>
+<i>553</i>&nbsp;                // authentication failed
+<b class="nc"><i>554</i>&nbsp;                cleanState();</b>
+<b class="nc"><i>555</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>556</i>&nbsp;                    System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>557</i>&nbsp;                                &quot;useFirstPass failed&quot;);
+<i>558</i>&nbsp;                }
+<b class="nc"><i>559</i>&nbsp;                throw le;</b>
+<i>560</i>&nbsp;            }
+<i>561</i>&nbsp;        }
+<i>562</i>&nbsp;
+<i>563</i>&nbsp;        // attempt the authentication by prompting for the username and pwd
+<i>564</i>&nbsp;        try {
+<b class="nc"><i>565</i>&nbsp;            attemptAuthentication(false);</b>
+<i>566</i>&nbsp;
+<i>567</i>&nbsp;            // authentication succeeded
+<b class="nc"><i>568</i>&nbsp;           succeeded = true;</b>
+<b class="nc"><i>569</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>570</i>&nbsp;                System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>571</i>&nbsp;                                &quot;authentication succeeded&quot;);
+<i>572</i>&nbsp;            }
+<b class="nc"><i>573</i>&nbsp;            return true;</b>
+<i>574</i>&nbsp;
+<b class="nc"><i>575</i>&nbsp;        } catch (LoginException le) {</b>
+<b class="nc"><i>576</i>&nbsp;            cleanState();</b>
+<b class="nc"><i>577</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>578</i>&nbsp;                System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>579</i>&nbsp;                                &quot;authentication failed&quot;);
+<i>580</i>&nbsp;            }
+<b class="nc"><i>581</i>&nbsp;            throw le;</b>
+<i>582</i>&nbsp;        }
+<i>583</i>&nbsp;    }
+<i>584</i>&nbsp;
+<i>585</i>&nbsp;    /**
+<i>586</i>&nbsp;     * Complete user authentication.
+<i>587</i>&nbsp;     *
+<i>588</i>&nbsp;     * &lt;p&gt; This method is called if the LoginContext&#39;s
+<i>589</i>&nbsp;     * overall authentication succeeded
+<i>590</i>&nbsp;     * (the relevant REQUIRED, REQUISITE, SUFFICIENT and OPTIONAL LoginModules
+<i>591</i>&nbsp;     * succeeded).
+<i>592</i>&nbsp;     *
+<i>593</i>&nbsp;     * &lt;p&gt; If this LoginModule&#39;s own authentication attempt
+<i>594</i>&nbsp;     * succeeded (checked by retrieving the private state saved by the
+<i>595</i>&nbsp;     * &lt;code&gt;login&lt;/code&gt; method), then this method associates an
+<i>596</i>&nbsp;     * &lt;code&gt;LdapPrincipal&lt;/code&gt; and one or more &lt;code&gt;UserPrincipal&lt;/code&gt;s
+<i>597</i>&nbsp;     * with the &lt;code&gt;Subject&lt;/code&gt; located in the
+<i>598</i>&nbsp;     * &lt;code&gt;LoginModule&lt;/code&gt;.  If this LoginModule&#39;s own
+<i>599</i>&nbsp;     * authentication attempted failed, then this method removes
+<i>600</i>&nbsp;     * any state that was originally saved.
+<i>601</i>&nbsp;     *
+<i>602</i>&nbsp;     * @exception LoginException if the commit fails
+<i>603</i>&nbsp;     * @return true if this LoginModule&#39;s own login and commit
+<i>604</i>&nbsp;     *          attempts succeeded, or false otherwise.
+<i>605</i>&nbsp;     */
+<i>606</i>&nbsp;    public boolean commit() throws LoginException {
+<i>607</i>&nbsp;
+<b class="nc"><i>608</i>&nbsp;        if (succeeded == false) {</b>
+<b class="nc"><i>609</i>&nbsp;            return false;</b>
+<i>610</i>&nbsp;        } else {
+<b class="nc"><i>611</i>&nbsp;            if (subject.isReadOnly()) {</b>
+<b class="nc"><i>612</i>&nbsp;                cleanState();</b>
+<b class="nc"><i>613</i>&nbsp;                throw new LoginException (&quot;Subject is read-only&quot;);</b>
+<i>614</i>&nbsp;            }
+<i>615</i>&nbsp;            // add Principals to the Subject
+<b class="nc"><i>616</i>&nbsp;            Set&lt;Principal&gt; principals = subject.getPrincipals();</b>
+<b class="nc"><i>617</i>&nbsp;            if (! principals.contains(ldapPrincipal)) {</b>
+<b class="nc"><i>618</i>&nbsp;                principals.add(ldapPrincipal);</b>
+<i>619</i>&nbsp;            }
+<b class="nc"><i>620</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>621</i>&nbsp;                System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>622</i>&nbsp;                                   &quot;added LdapPrincipal \&quot;&quot; +
+<i>623</i>&nbsp;                                   ldapPrincipal +
+<i>624</i>&nbsp;                                   &quot;\&quot; to Subject&quot;);
+<i>625</i>&nbsp;            }
+<i>626</i>&nbsp;
+<b class="nc"><i>627</i>&nbsp;            if (! principals.contains(userPrincipal)) {</b>
+<b class="nc"><i>628</i>&nbsp;                principals.add(userPrincipal);</b>
+<i>629</i>&nbsp;            }
+<b class="nc"><i>630</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>631</i>&nbsp;                System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>632</i>&nbsp;                                   &quot;added UserPrincipal \&quot;&quot; +
+<i>633</i>&nbsp;                                   userPrincipal +
+<i>634</i>&nbsp;                                   &quot;\&quot; to Subject&quot;);
+<i>635</i>&nbsp;            }
+<i>636</i>&nbsp;
+<b class="nc"><i>637</i>&nbsp;            if (authzPrincipal != null &amp;&amp;</b>
+<b class="nc"><i>638</i>&nbsp;                (! principals.contains(authzPrincipal))) {</b>
+<b class="nc"><i>639</i>&nbsp;                principals.add(authzPrincipal);</b>
+<i>640</i>&nbsp;
+<b class="nc"><i>641</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>642</i>&nbsp;                    System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>643</i>&nbsp;                                   &quot;added UserPrincipal \&quot;&quot; +
+<i>644</i>&nbsp;                                   authzPrincipal +
+<i>645</i>&nbsp;                                   &quot;\&quot; to Subject&quot;);
+<i>646</i>&nbsp;                }
+<i>647</i>&nbsp;            }
+<i>648</i>&nbsp;        }
+<i>649</i>&nbsp;        // in any case, clean out state
+<b class="nc"><i>650</i>&nbsp;        cleanState();</b>
+<b class="nc"><i>651</i>&nbsp;        commitSucceeded = true;</b>
+<b class="nc"><i>652</i>&nbsp;        return true;</b>
+<i>653</i>&nbsp;    }
+<i>654</i>&nbsp;
+<i>655</i>&nbsp;    /**
+<i>656</i>&nbsp;     * Abort user authentication.
+<i>657</i>&nbsp;     *
+<i>658</i>&nbsp;     * &lt;p&gt; This method is called if the overall authentication failed.
+<i>659</i>&nbsp;     * (the relevant REQUIRED, REQUISITE, SUFFICIENT and OPTIONAL LoginModules
+<i>660</i>&nbsp;     * did not succeed).
+<i>661</i>&nbsp;     *
+<i>662</i>&nbsp;     * &lt;p&gt; If this LoginModule&#39;s own authentication attempt
+<i>663</i>&nbsp;     * succeeded (checked by retrieving the private state saved by the
+<i>664</i>&nbsp;     * &lt;code&gt;login&lt;/code&gt; and &lt;code&gt;commit&lt;/code&gt; methods),
+<i>665</i>&nbsp;     * then this method cleans up any state that was originally saved.
+<i>666</i>&nbsp;     *
+<i>667</i>&nbsp;     * @exception LoginException if the abort fails.
+<i>668</i>&nbsp;     * @return false if this LoginModule&#39;s own login and/or commit attempts
+<i>669</i>&nbsp;     *          failed, and true otherwise.
+<i>670</i>&nbsp;     */
+<i>671</i>&nbsp;    public boolean abort() throws LoginException {
+<b class="nc"><i>672</i>&nbsp;        if (debug)</b>
+<b class="nc"><i>673</i>&nbsp;            System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>674</i>&nbsp;                &quot;aborted authentication&quot;);
+<i>675</i>&nbsp;
+<b class="nc"><i>676</i>&nbsp;        if (succeeded == false) {</b>
+<b class="nc"><i>677</i>&nbsp;            return false;</b>
+<b class="nc"><i>678</i>&nbsp;        } else if (succeeded == true &amp;&amp; commitSucceeded == false) {</b>
+<i>679</i>&nbsp;
+<i>680</i>&nbsp;            // Clean out state
+<b class="nc"><i>681</i>&nbsp;            succeeded = false;</b>
+<b class="nc"><i>682</i>&nbsp;            cleanState();</b>
+<i>683</i>&nbsp;
+<b class="nc"><i>684</i>&nbsp;            ldapPrincipal = null;</b>
+<b class="nc"><i>685</i>&nbsp;            userPrincipal = null;</b>
+<b class="nc"><i>686</i>&nbsp;            authzPrincipal = null;</b>
+<i>687</i>&nbsp;        } else {
+<i>688</i>&nbsp;            // overall authentication succeeded and commit succeeded,
+<i>689</i>&nbsp;            // but someone else&#39;s commit failed
+<b class="nc"><i>690</i>&nbsp;            logout();</b>
+<i>691</i>&nbsp;        }
+<b class="nc"><i>692</i>&nbsp;        return true;</b>
+<i>693</i>&nbsp;    }
+<i>694</i>&nbsp;
+<i>695</i>&nbsp;    /**
+<i>696</i>&nbsp;     * Logout a user.
+<i>697</i>&nbsp;     *
+<i>698</i>&nbsp;     * &lt;p&gt; This method removes the Principals
+<i>699</i>&nbsp;     * that were added by the &lt;code&gt;commit&lt;/code&gt; method.
+<i>700</i>&nbsp;     *
+<i>701</i>&nbsp;     * @exception LoginException if the logout fails.
+<i>702</i>&nbsp;     * @return true in all cases since this &lt;code&gt;LoginModule&lt;/code&gt;
+<i>703</i>&nbsp;     *          should not be ignored.
+<i>704</i>&nbsp;     */
+<i>705</i>&nbsp;    public boolean logout() throws LoginException {
+<b class="nc"><i>706</i>&nbsp;        if (subject.isReadOnly()) {</b>
+<b class="nc"><i>707</i>&nbsp;            cleanState();</b>
+<b class="nc"><i>708</i>&nbsp;            throw new LoginException (&quot;Subject is read-only&quot;);</b>
+<i>709</i>&nbsp;        }
+<b class="nc"><i>710</i>&nbsp;        Set&lt;Principal&gt; principals = subject.getPrincipals();</b>
+<b class="nc"><i>711</i>&nbsp;        principals.remove(ldapPrincipal);</b>
+<b class="nc"><i>712</i>&nbsp;        principals.remove(userPrincipal);</b>
+<b class="nc"><i>713</i>&nbsp;        if (authzIdentity != null) {</b>
+<b class="nc"><i>714</i>&nbsp;            principals.remove(authzPrincipal);</b>
+<i>715</i>&nbsp;        }
+<i>716</i>&nbsp;
+<i>717</i>&nbsp;        // clean out state
+<b class="nc"><i>718</i>&nbsp;        cleanState();</b>
+<b class="nc"><i>719</i>&nbsp;        succeeded = false;</b>
+<b class="nc"><i>720</i>&nbsp;        commitSucceeded = false;</b>
+<i>721</i>&nbsp;
+<b class="nc"><i>722</i>&nbsp;        ldapPrincipal = null;</b>
+<b class="nc"><i>723</i>&nbsp;        userPrincipal = null;</b>
+<b class="nc"><i>724</i>&nbsp;        authzPrincipal = null;</b>
+<i>725</i>&nbsp;
+<b class="nc"><i>726</i>&nbsp;        if (debug) {</b>
+<b class="nc"><i>727</i>&nbsp;            System.out.println(&quot;\t\t[LdapLoginModule] logged out Subject&quot;);</b>
+<i>728</i>&nbsp;        }
+<b class="nc"><i>729</i>&nbsp;        return true;</b>
+<i>730</i>&nbsp;    }
+<i>731</i>&nbsp;
+<i>732</i>&nbsp;    /**
+<i>733</i>&nbsp;     * Attempt authentication
+<i>734</i>&nbsp;     *
+<i>735</i>&nbsp;     * @param getPasswdFromSharedState boolean that tells this method whether
+<i>736</i>&nbsp;     *          to retrieve the password from the sharedState.
+<i>737</i>&nbsp;     * @exception LoginException if the authentication attempt fails.
+<i>738</i>&nbsp;     */
+<i>739</i>&nbsp;    private void attemptAuthentication(boolean getPasswdFromSharedState)
+<i>740</i>&nbsp;        throws LoginException {
+<i>741</i>&nbsp;
+<i>742</i>&nbsp;        // first get the username and password
+<b class="nc"><i>743</i>&nbsp;        getUsernamePassword(getPasswdFromSharedState);</b>
+<i>744</i>&nbsp;
+<b class="nc"><i>745</i>&nbsp;        if (password == null || password.length == 0) {</b>
+<b class="nc"><i>746</i>&nbsp;            throw (LoginException)</b>
+<i>747</i>&nbsp;                new FailedLoginException(&quot;No password was supplied&quot;);
+<i>748</i>&nbsp;        }
+<i>749</i>&nbsp;
+<b class="nc"><i>750</i>&nbsp;        String dn = &quot;&quot;;</b>
+<i>751</i>&nbsp;
+<b class="nc"><i>752</i>&nbsp;        if (authFirst || authOnly) {</b>
+<i>753</i>&nbsp;
+<b class="nc"><i>754</i>&nbsp;            String id = replaceUsernameToken(identityMatcher, authcIdentity);</b>
+<i>755</i>&nbsp;
+<i>756</i>&nbsp;            // Prepare to bind using user&#39;s username and password
+<b class="nc"><i>757</i>&nbsp;            ldapEnvironment.put(Context.SECURITY_CREDENTIALS, password);</b>
+<b class="nc"><i>758</i>&nbsp;            ldapEnvironment.put(Context.SECURITY_PRINCIPAL, id);</b>
+<i>759</i>&nbsp;
+<b class="nc"><i>760</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>761</i>&nbsp;                System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>762</i>&nbsp;                    &quot;attempting to authenticate user: &quot; + username);
+<i>763</i>&nbsp;            }
+<i>764</i>&nbsp;
+<i>765</i>&nbsp;            try {
+<i>766</i>&nbsp;                // Connect to the LDAP server (using simple bind)
+<b class="nc"><i>767</i>&nbsp;                ctx = new InitialLdapContext(ldapEnvironment, null);</b>
+<i>768</i>&nbsp;
+<b class="nc"><i>769</i>&nbsp;            } catch (NamingException e) {</b>
+<b class="nc"><i>770</i>&nbsp;                throw (LoginException)</b>
+<i>771</i>&nbsp;                    new FailedLoginException(&quot;Cannot bind to LDAP server&quot;)
+<b class="nc"><i>772</i>&nbsp;                        .initCause(e);</b>
+<b class="nc"><i>773</i>&nbsp;            }</b>
+<i>774</i>&nbsp;
+<i>775</i>&nbsp;            // Authentication has succeeded
+<i>776</i>&nbsp;
+<i>777</i>&nbsp;            // Locate the user&#39;s distinguished name
+<b class="nc"><i>778</i>&nbsp;            if (userFilter != null) {</b>
+<b class="nc"><i>779</i>&nbsp;                dn = findUserDN(ctx);</b>
+<i>780</i>&nbsp;            } else {
+<b class="nc"><i>781</i>&nbsp;                dn = id;</b>
+<i>782</i>&nbsp;            }
+<i>783</i>&nbsp;
+<b class="nc"><i>784</i>&nbsp;        } else {</b>
+<i>785</i>&nbsp;
+<i>786</i>&nbsp;            try {
+<i>787</i>&nbsp;                // Connect to the LDAP server (using anonymous bind)
+<b class="nc"><i>788</i>&nbsp;                ctx = new InitialLdapContext(ldapEnvironment, null);</b>
+<i>789</i>&nbsp;
+<b class="nc"><i>790</i>&nbsp;            } catch (NamingException e) {</b>
+<b class="nc"><i>791</i>&nbsp;                throw (LoginException)</b>
+<i>792</i>&nbsp;                    new FailedLoginException(&quot;Cannot connect to LDAP server&quot;)
+<b class="nc"><i>793</i>&nbsp;                        .initCause(e);</b>
+<b class="nc"><i>794</i>&nbsp;            }</b>
+<i>795</i>&nbsp;
+<i>796</i>&nbsp;            // Locate the user&#39;s distinguished name
+<b class="nc"><i>797</i>&nbsp;            dn = findUserDN(ctx);</b>
+<i>798</i>&nbsp;
+<i>799</i>&nbsp;            try {
+<i>800</i>&nbsp;
+<i>801</i>&nbsp;                // Prepare to bind using user&#39;s distinguished name and password
+<b class="nc"><i>802</i>&nbsp;                ctx.addToEnvironment(Context.SECURITY_AUTHENTICATION, &quot;simple&quot;);</b>
+<b class="nc"><i>803</i>&nbsp;                ctx.addToEnvironment(Context.SECURITY_PRINCIPAL, dn);</b>
+<b class="nc"><i>804</i>&nbsp;                ctx.addToEnvironment(Context.SECURITY_CREDENTIALS, password);</b>
+<i>805</i>&nbsp;
+<b class="nc"><i>806</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>807</i>&nbsp;                    System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>808</i>&nbsp;                        &quot;attempting to authenticate user: &quot; + username);
+<i>809</i>&nbsp;                }
+<i>810</i>&nbsp;                // Connect to the LDAP server (using simple bind)
+<b class="nc"><i>811</i>&nbsp;                ctx.reconnect(null);</b>
+<i>812</i>&nbsp;
+<i>813</i>&nbsp;                // Authentication has succeeded
+<i>814</i>&nbsp;
+<b class="nc"><i>815</i>&nbsp;            } catch (NamingException e) {</b>
+<b class="nc"><i>816</i>&nbsp;                throw (LoginException)</b>
+<i>817</i>&nbsp;                    new FailedLoginException(&quot;Cannot bind to LDAP server&quot;)
+<b class="nc"><i>818</i>&nbsp;                        .initCause(e);</b>
+<b class="nc"><i>819</i>&nbsp;            }</b>
+<i>820</i>&nbsp;        }
+<i>821</i>&nbsp;
+<i>822</i>&nbsp;        // Save input as shared state only if authentication succeeded
+<b class="nc"><i>823</i>&nbsp;        if (storePass &amp;&amp;</b>
+<b class="nc"><i>824</i>&nbsp;            !sharedState.containsKey(USERNAME_KEY) &amp;&amp;</b>
+<b class="nc"><i>825</i>&nbsp;            !sharedState.containsKey(PASSWORD_KEY)) {</b>
+<b class="nc"><i>826</i>&nbsp;            sharedState.put(USERNAME_KEY, username);</b>
+<b class="nc"><i>827</i>&nbsp;            sharedState.put(PASSWORD_KEY, password);</b>
+<i>828</i>&nbsp;        }
+<i>829</i>&nbsp;
+<i>830</i>&nbsp;        // Create the user principals
+<b class="nc"><i>831</i>&nbsp;        userPrincipal = new UserPrincipal(username);</b>
+<b class="nc"><i>832</i>&nbsp;        if (authzIdentity != null) {</b>
+<b class="nc"><i>833</i>&nbsp;            authzPrincipal = new UserPrincipal(authzIdentity);</b>
+<i>834</i>&nbsp;        }
+<i>835</i>&nbsp;
+<i>836</i>&nbsp;        try {
+<i>837</i>&nbsp;
+<b class="nc"><i>838</i>&nbsp;            ldapPrincipal = new LdapPrincipal(dn);</b>
+<i>839</i>&nbsp;
+<b class="nc"><i>840</i>&nbsp;        } catch (InvalidNameException e) {</b>
+<b class="nc"><i>841</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>842</i>&nbsp;                System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>843</i>&nbsp;                                   &quot;cannot create LdapPrincipal: bad DN&quot;);
+<i>844</i>&nbsp;            }
+<b class="nc"><i>845</i>&nbsp;            throw (LoginException)</b>
+<i>846</i>&nbsp;                new FailedLoginException(&quot;Cannot create LdapPrincipal&quot;)
+<b class="nc"><i>847</i>&nbsp;                    .initCause(e);</b>
+<b class="nc"><i>848</i>&nbsp;        }</b>
+<i>849</i>&nbsp;    }
+<i>850</i>&nbsp;
+<i>851</i>&nbsp;    /**
+<i>852</i>&nbsp;     * Search for the user&#39;s entry.
+<i>853</i>&nbsp;     * Determine the distinguished name of the user&#39;s entry and optionally
+<i>854</i>&nbsp;     * an authorization identity for the user.
+<i>855</i>&nbsp;     *
+<i>856</i>&nbsp;     * @param ctx an LDAP context to use for the search
+<i>857</i>&nbsp;     * @return the user&#39;s distinguished name or an empty string if none
+<i>858</i>&nbsp;     *         was found.
+<i>859</i>&nbsp;     * @exception LoginException if the user&#39;s entry cannot be found.
+<i>860</i>&nbsp;     */
+<i>861</i>&nbsp;    private String findUserDN(LdapContext ctx) throws LoginException {
+<i>862</i>&nbsp;
+<b class="nc"><i>863</i>&nbsp;        String userDN = &quot;&quot;;</b>
+<i>864</i>&nbsp;
+<i>865</i>&nbsp;        // Locate the user&#39;s LDAP entry
+<b class="nc"><i>866</i>&nbsp;        if (userFilter != null) {</b>
+<b class="nc"><i>867</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>868</i>&nbsp;                System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>869</i>&nbsp;                    &quot;searching for entry belonging to user: &quot; + username);
+<i>870</i>&nbsp;            }
+<i>871</i>&nbsp;        } else {
+<b class="nc"><i>872</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>873</i>&nbsp;                System.out.println(&quot;\t\t[LdapLoginModule] &quot; +</b>
+<i>874</i>&nbsp;                    &quot;cannot search for entry belonging to user: &quot; + username);
+<i>875</i>&nbsp;            }
+<b class="nc"><i>876</i>&nbsp;            throw (LoginException)</b>
+<i>877</i>&nbsp;                new FailedLoginException(&quot;Cannot find user&#39;s LDAP entry&quot;);
+<i>878</i>&nbsp;        }
+<i>879</i>&nbsp;
+<i>880</i>&nbsp;        try {
+<b class="nc"><i>881</i>&nbsp;            NamingEnumeration&lt;SearchResult&gt; results = ctx.search(&quot;&quot;,</b>
+<b class="nc"><i>882</i>&nbsp;                replaceUsernameToken(filterMatcher, userFilter), constraints);</b>
+<i>883</i>&nbsp;
+<i>884</i>&nbsp;            // Extract the distinguished name of the user&#39;s entry
+<i>885</i>&nbsp;            // (Use the first entry if more than one is returned)
+<b class="nc"><i>886</i>&nbsp;            if (results.hasMore()) {</b>
+<b class="nc"><i>887</i>&nbsp;                SearchResult entry = results.next();</b>
+<b class="nc"><i>888</i>&nbsp;                userDN = entry.getNameInNamespace();</b>
+<i>889</i>&nbsp;
+<b class="nc"><i>890</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>891</i>&nbsp;                    System.out.println(&quot;\t\t[LdapLoginModule] found entry: &quot; +</b>
+<i>892</i>&nbsp;                        userDN);
+<i>893</i>&nbsp;                }
+<i>894</i>&nbsp;
+<i>895</i>&nbsp;                // Extract a value from user&#39;s authorization identity attribute
+<b class="nc"><i>896</i>&nbsp;                if (authzIdentityAttr != null) {</b>
+<b class="nc"><i>897</i>&nbsp;                    Attribute attr =</b>
+<b class="nc"><i>898</i>&nbsp;                        entry.getAttributes().get(authzIdentityAttr);</b>
+<b class="nc"><i>899</i>&nbsp;                    if (attr != null) {</b>
+<b class="nc"><i>900</i>&nbsp;                        Object val = attr.get();</b>
+<b class="nc"><i>901</i>&nbsp;                        if (val instanceof String) {</b>
+<b class="nc"><i>902</i>&nbsp;                            authzIdentity = (String) val;</b>
+<i>903</i>&nbsp;                        }
+<i>904</i>&nbsp;                    }
+<i>905</i>&nbsp;                }
+<i>906</i>&nbsp;
+<b class="nc"><i>907</i>&nbsp;                results.close();</b>
+<i>908</i>&nbsp;
+<b class="nc"><i>909</i>&nbsp;            } else {</b>
+<i>910</i>&nbsp;                // Bad username
+<b class="nc"><i>911</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>912</i>&nbsp;                    System.out.println(&quot;\t\t[LdapLoginModule] user&#39;s entry &quot; +</b>
+<i>913</i>&nbsp;                        &quot;not found&quot;);
+<i>914</i>&nbsp;                }
+<i>915</i>&nbsp;            }
+<i>916</i>&nbsp;
+<b class="nc"><i>917</i>&nbsp;        } catch (NamingException e) {</b>
+<i>918</i>&nbsp;            // ignore
+<b class="nc"><i>919</i>&nbsp;        }</b>
+<i>920</i>&nbsp;
+<b class="nc"><i>921</i>&nbsp;        if (userDN.equals(&quot;&quot;)) {</b>
+<b class="nc"><i>922</i>&nbsp;            throw (LoginException)</b>
+<i>923</i>&nbsp;                new FailedLoginException(&quot;Cannot find user&#39;s LDAP entry&quot;);
+<i>924</i>&nbsp;        } else {
+<b class="nc"><i>925</i>&nbsp;            return userDN;</b>
+<i>926</i>&nbsp;        }
+<i>927</i>&nbsp;    }
+<i>928</i>&nbsp;
+<i>929</i>&nbsp;    /**
+<i>930</i>&nbsp;     * Replace the username token
+<i>931</i>&nbsp;     *
+<i>932</i>&nbsp;     * @param string the target string
+<i>933</i>&nbsp;     * @return the modified string
+<i>934</i>&nbsp;     */
+<i>935</i>&nbsp;    private String replaceUsernameToken(Matcher matcher, String string) {
+<b class="nc"><i>936</i>&nbsp;        return matcher != null ? matcher.replaceAll(username) : string;</b>
+<i>937</i>&nbsp;    }
+<i>938</i>&nbsp;
+<i>939</i>&nbsp;    /**
+<i>940</i>&nbsp;     * Get the username and password.
+<i>941</i>&nbsp;     * This method does not return any value.
+<i>942</i>&nbsp;     * Instead, it sets global name and password variables.
+<i>943</i>&nbsp;     *
+<i>944</i>&nbsp;     * &lt;p&gt; Also note that this method will set the username and password
+<i>945</i>&nbsp;     * values in the shared state in case subsequent LoginModules
+<i>946</i>&nbsp;     * want to use them via use/tryFirstPass.
+<i>947</i>&nbsp;     *
+<i>948</i>&nbsp;     * @param getPasswdFromSharedState boolean that tells this method whether
+<i>949</i>&nbsp;     *          to retrieve the password from the sharedState.
+<i>950</i>&nbsp;     * @exception LoginException if the username/password cannot be acquired.
+<i>951</i>&nbsp;     */
+<i>952</i>&nbsp;    private void getUsernamePassword(boolean getPasswdFromSharedState)
+<i>953</i>&nbsp;        throws LoginException {
+<i>954</i>&nbsp;
+<b class="nc"><i>955</i>&nbsp;        if (getPasswdFromSharedState) {</b>
+<i>956</i>&nbsp;            // use the password saved by the first module in the stack
+<b class="nc"><i>957</i>&nbsp;            username = (String)sharedState.get(USERNAME_KEY);</b>
+<b class="nc"><i>958</i>&nbsp;            password = (char[])sharedState.get(PASSWORD_KEY);</b>
+<i>959</i>&nbsp;            return;
+<i>960</i>&nbsp;        }
+<i>961</i>&nbsp;
+<i>962</i>&nbsp;        // prompt for a username and password
+<b class="nc"><i>963</i>&nbsp;        if (callbackHandler == null)</b>
+<b class="nc"><i>964</i>&nbsp;            throw new LoginException(&quot;No CallbackHandler available &quot; +</b>
+<i>965</i>&nbsp;                &quot;to acquire authentication information from the user&quot;);
+<i>966</i>&nbsp;
+<b class="nc"><i>967</i>&nbsp;        Callback[] callbacks = new Callback[2];</b>
+<b class="nc"><i>968</i>&nbsp;        callbacks[0] = new NameCallback(rb.getString(&quot;username.&quot;));</b>
+<b class="nc"><i>969</i>&nbsp;        callbacks[1] = new PasswordCallback(rb.getString(&quot;password.&quot;), false);</b>
+<i>970</i>&nbsp;
+<i>971</i>&nbsp;        try {
+<b class="nc"><i>972</i>&nbsp;            callbackHandler.handle(callbacks);</b>
+<b class="nc"><i>973</i>&nbsp;            username = ((NameCallback)callbacks[0]).getName();</b>
+<b class="nc"><i>974</i>&nbsp;            char[] tmpPassword = ((PasswordCallback)callbacks[1]).getPassword();</b>
+<b class="nc"><i>975</i>&nbsp;            password = new char[tmpPassword.length];</b>
+<b class="nc"><i>976</i>&nbsp;            System.arraycopy(tmpPassword, 0,</b>
+<i>977</i>&nbsp;                                password, 0, tmpPassword.length);
+<b class="nc"><i>978</i>&nbsp;            ((PasswordCallback)callbacks[1]).clearPassword();</b>
+<i>979</i>&nbsp;
+<b class="nc"><i>980</i>&nbsp;        } catch (java.io.IOException ioe) {</b>
+<b class="nc"><i>981</i>&nbsp;            throw new LoginException(ioe.toString());</b>
+<i>982</i>&nbsp;
+<b class="nc"><i>983</i>&nbsp;        } catch (UnsupportedCallbackException uce) {</b>
+<b class="nc"><i>984</i>&nbsp;            throw new LoginException(&quot;Error: &quot; + uce.getCallback().toString() +</b>
+<i>985</i>&nbsp;                        &quot; not available to acquire authentication information&quot; +
+<i>986</i>&nbsp;                        &quot; from the user&quot;);
+<b class="nc"><i>987</i>&nbsp;        }</b>
+<i>988</i>&nbsp;    }
+<i>989</i>&nbsp;
+<i>990</i>&nbsp;    /**
+<i>991</i>&nbsp;     * Clean out state because of a failed authentication attempt
+<i>992</i>&nbsp;     */
+<i>993</i>&nbsp;    private void cleanState() {
+<b class="nc"><i>994</i>&nbsp;        username = null;</b>
+<b class="nc"><i>995</i>&nbsp;        if (password != null) {</b>
+<b class="nc"><i>996</i>&nbsp;            Arrays.fill(password, &#39; &#39;);</b>
+<b class="nc"><i>997</i>&nbsp;            password = null;</b>
+<i>998</i>&nbsp;        }
+<i>999</i>&nbsp;        try {
+<b class="nc"><i>1000</i>&nbsp;            if (ctx != null) {</b>
+<b class="nc"><i>1001</i>&nbsp;                ctx.close();</b>
+<i>1002</i>&nbsp;            }
+<b class="nc"><i>1003</i>&nbsp;        } catch (NamingException e) {</b>
+<i>1004</i>&nbsp;            // ignore
+<b class="nc"><i>1005</i>&nbsp;        }</b>
+<b class="nc"><i>1006</i>&nbsp;        ctx = null;</b>
+<i>1007</i>&nbsp;
+<b class="nc"><i>1008</i>&nbsp;        if (clearPass) {</b>
+<b class="nc"><i>1009</i>&nbsp;            sharedState.remove(USERNAME_KEY);</b>
+<b class="nc"><i>1010</i>&nbsp;            sharedState.remove(PASSWORD_KEY);</b>
+<i>1011</i>&nbsp;        }
+<i>1012</i>&nbsp;    }
+<i>1013</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

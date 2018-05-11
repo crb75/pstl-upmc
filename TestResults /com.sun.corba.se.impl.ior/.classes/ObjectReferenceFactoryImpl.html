@@ -1,0 +1,225 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ObjectReferenceFactoryImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.ior</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ObjectReferenceFactoryImpl (com.sun.corba.se.impl.ior)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ObjectReferenceFactoryImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.ior ;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.util.Iterator ;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import org.omg.CORBA.portable.InputStream ;
+<i>31</i>&nbsp;import org.omg.CORBA.portable.OutputStream ;
+<i>32</i>&nbsp;import org.omg.CORBA.portable.StreamableValue ;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import org.omg.CORBA.TypeCode ;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import org.omg.PortableInterceptor.ObjectReferenceFactory ;
+<i>37</i>&nbsp;import org.omg.PortableInterceptor.ObjectReferenceFactoryHelper ;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;import com.sun.corba.se.spi.oa.ObjectAdapter ;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectId ;
+<i>42</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectKeyTemplate ;
+<i>43</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectAdapterId ;
+<i>44</i>&nbsp;import com.sun.corba.se.spi.ior.IOR;
+<i>45</i>&nbsp;import com.sun.corba.se.spi.ior.IORFactory;
+<i>46</i>&nbsp;import com.sun.corba.se.spi.ior.IORTemplateList;
+<i>47</i>&nbsp;import com.sun.corba.se.spi.ior.IORFactories;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBUtility ;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;import com.sun.corba.se.spi.orb.ORB ;
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;/** This is an implementation of the ObjectReferenceFactory abstract value
+<i>54</i>&nbsp;* type defined by the portable interceptors IDL.
+<i>55</i>&nbsp;* Note that this is a direct Java implementation
+<i>56</i>&nbsp;* of the abstract value type: there is no stateful value type defined in IDL,
+<i>57</i>&nbsp;* since defining the state in IDL is awkward and inefficient.  The best way
+<i>58</i>&nbsp;* to define the state is to use internal data structures that can be written
+<i>59</i>&nbsp;* to and read from CORBA streams.
+<i>60</i>&nbsp;*/
+<i>61</i>&nbsp;public class ObjectReferenceFactoryImpl extends ObjectReferenceProducerBase
+<i>62</i>&nbsp;    implements ObjectReferenceFactory, StreamableValue
+<i>63</i>&nbsp;{
+<i>64</i>&nbsp;    transient private IORTemplateList iorTemplates ;
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    public ObjectReferenceFactoryImpl( InputStream is )
+<i>67</i>&nbsp;    {
+<b class="nc"><i>68</i>&nbsp;        super( (ORB)(is.orb()) ) ;</b>
+<b class="nc"><i>69</i>&nbsp;        _read( is ) ;</b>
+<i>70</i>&nbsp;    }
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;    public ObjectReferenceFactoryImpl( ORB orb, IORTemplateList iortemps )
+<i>73</i>&nbsp;    {
+<b class="nc"><i>74</i>&nbsp;        super( orb ) ;</b>
+<b class="nc"><i>75</i>&nbsp;        iorTemplates = iortemps ;</b>
+<i>76</i>&nbsp;    }
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    public boolean equals( Object obj )
+<i>79</i>&nbsp;    {
+<b class="nc"><i>80</i>&nbsp;        if (!(obj instanceof ObjectReferenceFactoryImpl))</b>
+<b class="nc"><i>81</i>&nbsp;            return false ;</b>
+<i>82</i>&nbsp;
+<b class="nc"><i>83</i>&nbsp;        ObjectReferenceFactoryImpl other = (ObjectReferenceFactoryImpl)obj ;</b>
+<i>84</i>&nbsp;
+<b class="nc"><i>85</i>&nbsp;        return (iorTemplates != null) &amp;&amp;</b>
+<b class="nc"><i>86</i>&nbsp;            iorTemplates.equals( other.iorTemplates ) ;</b>
+<i>87</i>&nbsp;    }
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    public int hashCode()
+<i>90</i>&nbsp;    {
+<b class="nc"><i>91</i>&nbsp;        return iorTemplates.hashCode() ;</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    // Note that this repository ID must reflect the implementation
+<i>95</i>&nbsp;    // of the abstract valuetype (that is, this class), not the
+<i>96</i>&nbsp;    // repository ID of the org.omg.PortableInterceptor.ObjectReferenceFactory
+<i>97</i>&nbsp;    // class.  This allows for multiple independent implementations
+<i>98</i>&nbsp;    // of the abstract valuetype, should that become necessary.
+<i>99</i>&nbsp;    public static final String repositoryId =
+<i>100</i>&nbsp;        &quot;IDL:com/sun/corba/se/impl/ior/ObjectReferenceFactoryImpl:1.0&quot; ;
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;    public String[] _truncatable_ids()
+<i>103</i>&nbsp;    {
+<b class="nc"><i>104</i>&nbsp;        return new String[] { repositoryId } ;</b>
+<i>105</i>&nbsp;    }
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    public TypeCode _type()
+<i>108</i>&nbsp;    {
+<b class="nc"><i>109</i>&nbsp;        return ObjectReferenceFactoryHelper.type() ;</b>
+<i>110</i>&nbsp;    }
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;    /** Read the data into a (presumably) empty ObjectReferenceFactoryImpl.
+<i>113</i>&nbsp;    * This sets the orb to the ORB of the InputStream.
+<i>114</i>&nbsp;    */
+<i>115</i>&nbsp;    public void _read( InputStream is )
+<i>116</i>&nbsp;    {
+<b class="nc"><i>117</i>&nbsp;        org.omg.CORBA_2_3.portable.InputStream istr =</b>
+<i>118</i>&nbsp;            (org.omg.CORBA_2_3.portable.InputStream)is ;
+<i>119</i>&nbsp;
+<b class="nc"><i>120</i>&nbsp;        iorTemplates = IORFactories.makeIORTemplateList( istr ) ;</b>
+<i>121</i>&nbsp;    }
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;    /** Write the state to the OutputStream.
+<i>124</i>&nbsp;     */
+<i>125</i>&nbsp;    public void _write( OutputStream os )
+<i>126</i>&nbsp;    {
+<b class="nc"><i>127</i>&nbsp;        org.omg.CORBA_2_3.portable.OutputStream ostr =</b>
+<i>128</i>&nbsp;            (org.omg.CORBA_2_3.portable.OutputStream)os ;
+<i>129</i>&nbsp;
+<b class="nc"><i>130</i>&nbsp;        iorTemplates.write( ostr ) ;</b>
+<i>131</i>&nbsp;    }
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;    public IORFactory getIORFactory()
+<i>134</i>&nbsp;    {
+<b class="nc"><i>135</i>&nbsp;        return iorTemplates ;</b>
+<i>136</i>&nbsp;    }
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;    public IORTemplateList getIORTemplateList()
+<i>139</i>&nbsp;    {
+<b class="nc"><i>140</i>&nbsp;        return iorTemplates ;</b>
+<i>141</i>&nbsp;    }
+<i>142</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

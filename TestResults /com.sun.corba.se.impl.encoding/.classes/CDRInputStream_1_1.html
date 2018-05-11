@@ -1,0 +1,298 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CDRInputStream_1_1</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.encoding</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CDRInputStream_1_1 (com.sun.corba.se.impl.encoding)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CDRInputStream_1_1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 39)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CDRInputStream_1_1$FragmentableStreamMemento</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 43)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;package com.sun.corba.se.impl.encoding;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.GIOPVersion;
+<i>28</i>&nbsp;
+<b class="nc"><i>29</i>&nbsp;public class CDRInputStream_1_1 extends CDRInputStream_1_0</b>
+<i>30</i>&nbsp;{
+<i>31</i>&nbsp;    // See notes in CDROutputStream
+<b class="nc"><i>32</i>&nbsp;    protected int fragmentOffset = 0;</b>
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;    public GIOPVersion getGIOPVersion() {
+<b class="nc"><i>35</i>&nbsp;        return GIOPVersion.V1_1;</b>
+<i>36</i>&nbsp;    }
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;    // Template method
+<i>39</i>&nbsp;    public CDRInputStreamBase dup() {
+<b class="nc"><i>40</i>&nbsp;        CDRInputStreamBase result = super.dup();</b>
+<i>41</i>&nbsp;
+<b class="nc"><i>42</i>&nbsp;        ((CDRInputStream_1_1)result).fragmentOffset = this.fragmentOffset;</b>
+<i>43</i>&nbsp;
+<b class="nc"><i>44</i>&nbsp;        return result;</b>
+<i>45</i>&nbsp;    }
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    protected int get_offset() {
+<b class="nc"><i>48</i>&nbsp;        return bbwi.position() + fragmentOffset;</b>
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    protected void alignAndCheck(int align, int n) {
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;
+<b class="nc"><i>54</i>&nbsp;        checkBlockLength(align, n);</b>
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;        // WARNING: Must compute real alignment after calling
+<i>57</i>&nbsp;        // checkBlockLength since it may move the position
+<b class="nc"><i>58</i>&nbsp;        int alignment = computeAlignment(bbwi.position(), align);</b>
+<i>59</i>&nbsp;
+<b class="nc"><i>60</i>&nbsp;        if (bbwi.position() + n + alignment  &gt; bbwi.buflen) {</b>
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;            // Some other ORBs may have found a way to send 1.1
+<i>63</i>&nbsp;            // fragments which put alignment bytes at the end
+<i>64</i>&nbsp;            // of a fragment
+<b class="nc"><i>65</i>&nbsp;            if (bbwi.position() + alignment == bbwi.buflen)</b>
+<i>66</i>&nbsp;            {
+<b class="nc"><i>67</i>&nbsp;                bbwi.position(bbwi.position() + alignment);</b>
+<i>68</i>&nbsp;            }
+<i>69</i>&nbsp;
+<b class="nc"><i>70</i>&nbsp;            grow(align, n);</b>
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;            // We must recalculate the alignment after a possible
+<i>73</i>&nbsp;            // fragmentation since the new bbwi.position() (after the header)
+<i>74</i>&nbsp;            // may require a different alignment.
+<i>75</i>&nbsp;
+<b class="nc"><i>76</i>&nbsp;            alignment = computeAlignment(bbwi.position(), align);</b>
+<i>77</i>&nbsp;        }
+<i>78</i>&nbsp;
+<b class="nc"><i>79</i>&nbsp;        bbwi.position(bbwi.position() + alignment);</b>
+<i>80</i>&nbsp;    }
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    //
+<i>83</i>&nbsp;    // This can be overridden....
+<i>84</i>&nbsp;    //
+<i>85</i>&nbsp;    protected void grow(int align, int n) {
+<i>86</i>&nbsp;
+<b class="nc"><i>87</i>&nbsp;        bbwi.needed = n;</b>
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;        // Save the size of the current buffer for
+<i>90</i>&nbsp;        // possible fragmentOffset calculation
+<b class="nc"><i>91</i>&nbsp;        int oldSize = bbwi.position();</b>
+<i>92</i>&nbsp;
+<b class="nc"><i>93</i>&nbsp;        bbwi = bufferManagerRead.underflow(bbwi);</b>
+<i>94</i>&nbsp;
+<b class="nc"><i>95</i>&nbsp;        if (bbwi.fragmented) {</b>
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;            // By this point we should be guaranteed to have
+<i>98</i>&nbsp;            // a new fragment whose header has already been
+<i>99</i>&nbsp;            // unmarshalled.  bbwi.position() should point to the
+<i>100</i>&nbsp;            // end of the header.
+<b class="nc"><i>101</i>&nbsp;            fragmentOffset += (oldSize - bbwi.position());</b>
+<i>102</i>&nbsp;
+<b class="nc"><i>103</i>&nbsp;            markAndResetHandler.fragmentationOccured(bbwi);</b>
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;            // Clear the flag
+<b class="nc"><i>106</i>&nbsp;            bbwi.fragmented = false;</b>
+<i>107</i>&nbsp;        }
+<i>108</i>&nbsp;    }
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;    // Mark/reset ---------------------------------------
+<i>111</i>&nbsp;
+<b class="nc"><i>112</i>&nbsp;    private class FragmentableStreamMemento extends StreamMemento</b>
+<i>113</i>&nbsp;    {
+<i>114</i>&nbsp;        private int fragmentOffset_;
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;        public FragmentableStreamMemento()
+<b class="nc"><i>117</i>&nbsp;        {</b>
+<b class="nc"><i>118</i>&nbsp;            super();</b>
+<i>119</i>&nbsp;
+<b class="nc"><i>120</i>&nbsp;            fragmentOffset_ = fragmentOffset;</b>
+<i>121</i>&nbsp;        }
+<i>122</i>&nbsp;    }
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;    public java.lang.Object createStreamMemento() {
+<b class="nc"><i>125</i>&nbsp;        return new FragmentableStreamMemento();</b>
+<i>126</i>&nbsp;    }
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;    public void restoreInternalState(java.lang.Object streamMemento)
+<i>129</i>&nbsp;    {
+<b class="nc"><i>130</i>&nbsp;        super.restoreInternalState(streamMemento);</b>
+<i>131</i>&nbsp;
+<b class="nc"><i>132</i>&nbsp;        fragmentOffset</b>
+<b class="nc"><i>133</i>&nbsp;            = ((FragmentableStreamMemento)streamMemento).fragmentOffset_;</b>
+<i>134</i>&nbsp;    }
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;    // --------------------------------------------------
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;    public char read_wchar() {
+<i>139</i>&nbsp;        // In GIOP 1.1, interoperability with wchar is limited
+<i>140</i>&nbsp;        // to 2 byte fixed width encodings.  CORBA formal 99-10-07 15.3.1.6.
+<i>141</i>&nbsp;        // WARNING:  For UTF-16, this means that there can be no
+<i>142</i>&nbsp;        // byte order marker, so it must default to big endian!
+<b class="nc"><i>143</i>&nbsp;        alignAndCheck(2, 2);</b>
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;        // Because of the alignAndCheck, we should be guaranteed
+<i>146</i>&nbsp;        // 2 bytes of real data.
+<b class="nc"><i>147</i>&nbsp;        char[] result = getConvertedChars(2, getWCharConverter());</b>
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;        // Did the provided bytes convert to more than one
+<i>150</i>&nbsp;        // character?  This may come up as more unicode values are
+<i>151</i>&nbsp;        // assigned, and a single 16 bit Java char isn&#39;t enough.
+<i>152</i>&nbsp;        // Better to use strings for i18n purposes.
+<b class="nc"><i>153</i>&nbsp;        if (getWCharConverter().getNumChars() &gt; 1)</b>
+<b class="nc"><i>154</i>&nbsp;            throw wrapper.btcResultMoreThanOneChar() ;</b>
+<i>155</i>&nbsp;
+<b class="nc"><i>156</i>&nbsp;        return result[0];</b>
+<i>157</i>&nbsp;    }
+<i>158</i>&nbsp;
+<i>159</i>&nbsp;    public String read_wstring() {
+<i>160</i>&nbsp;        // In GIOP 1.1, interoperability with wchar is limited
+<i>161</i>&nbsp;        // to 2 byte fixed width encodings.  CORBA formal 99-10-07 15.3.1.6.
+<b class="nc"><i>162</i>&nbsp;        int len = read_long();</b>
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;        // Workaround for ORBs which send string lengths of
+<i>165</i>&nbsp;        // zero to mean empty string.
+<i>166</i>&nbsp;        //
+<i>167</i>&nbsp;        // IMPORTANT: Do not replace &#39;new String(&quot;&quot;)&#39; with &quot;&quot;, it may result
+<i>168</i>&nbsp;        // in a Serialization bug (See serialization.zerolengthstring) and
+<i>169</i>&nbsp;        // bug id: 4728756 for details
+<b class="nc"><i>170</i>&nbsp;        if (len == 0)</b>
+<b class="nc"><i>171</i>&nbsp;            return new String(&quot;&quot;);</b>
+<i>172</i>&nbsp;
+<b class="nc"><i>173</i>&nbsp;        checkForNegativeLength(len);</b>
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;        // Don&#39;t include the two byte null for the
+<i>176</i>&nbsp;        // following computations.  Remember that since we&#39;re limited
+<i>177</i>&nbsp;        // to a 2 byte fixed width code set, the &quot;length&quot; was the
+<i>178</i>&nbsp;        // number of such 2 byte code points plus a 2 byte null.
+<b class="nc"><i>179</i>&nbsp;        len = len - 1;</b>
+<i>180</i>&nbsp;
+<b class="nc"><i>181</i>&nbsp;        char[] result = getConvertedChars(len * 2, getWCharConverter());</b>
+<i>182</i>&nbsp;
+<i>183</i>&nbsp;        // Skip over the 2 byte null
+<b class="nc"><i>184</i>&nbsp;        read_short();</b>
+<i>185</i>&nbsp;
+<b class="nc"><i>186</i>&nbsp;        return new String(result, 0, getWCharConverter().getNumChars());</b>
+<i>187</i>&nbsp;    }
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

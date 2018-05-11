@@ -1,0 +1,782 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: GTKEngine</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.java.swing.plaf.gtk</a> ]
+</div>
+
+<h1>Coverage Summary for Class: GTKEngine (com.sun.java.swing.plaf.gtk)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GTKEngine</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 218)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">GTKEngine$CustomRegion</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">GTKEngine$Settings</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">GTKEngine$WidgetType</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 22)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 30)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 246)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, 2007, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.java.swing.plaf.gtk;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.awt.*;
+<i>29</i>&nbsp;import java.awt.image.*;
+<i>30</i>&nbsp;import java.util.HashMap;
+<i>31</i>&nbsp;import javax.swing.*;
+<i>32</i>&nbsp;import javax.swing.plaf.synth.*;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import com.sun.java.swing.plaf.gtk.GTKConstants.ArrowType;
+<i>35</i>&nbsp;import com.sun.java.swing.plaf.gtk.GTKConstants.ExpanderStyle;
+<i>36</i>&nbsp;import com.sun.java.swing.plaf.gtk.GTKConstants.Orientation;
+<i>37</i>&nbsp;import com.sun.java.swing.plaf.gtk.GTKConstants.PositionType;
+<i>38</i>&nbsp;import com.sun.java.swing.plaf.gtk.GTKConstants.ShadowType;
+<i>39</i>&nbsp;import com.sun.java.swing.plaf.gtk.GTKConstants.TextDirection;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import sun.awt.image.SunWritableRaster;
+<i>42</i>&nbsp;import sun.swing.ImageCache;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;/**
+<i>45</i>&nbsp; * GTKEngine delegates all painting job to native GTK libraries.
+<i>46</i>&nbsp; *
+<i>47</i>&nbsp; * Painting with GTKEngine looks like this:
+<i>48</i>&nbsp; * First, startPainting() is called. It prepares an offscreen buffer of the
+<i>49</i>&nbsp; *   required size.
+<i>50</i>&nbsp; * Then, any number of paintXXX() methods can be called. They effectively ignore
+<i>51</i>&nbsp; *   the Graphics parameter and draw to the offscreen buffer.
+<i>52</i>&nbsp; * Finally, finishPainting() should be called. It fills the data buffer passed
+<i>53</i>&nbsp; *   in with the image data.
+<i>54</i>&nbsp; *
+<i>55</i>&nbsp; * @author Josh Outwater
+<i>56</i>&nbsp; */
+<b class="nc"><i>57</i>&nbsp;class GTKEngine {</b>
+<i>58</i>&nbsp;
+<b class="nc"><i>59</i>&nbsp;    final static GTKEngine INSTANCE = new GTKEngine();</b>
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    /** Size of the image cache */
+<i>62</i>&nbsp;    private static final int CACHE_SIZE = 50;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    /** This enum mirrors that in gtk2_interface.h */
+<b class="nc"><i>65</i>&nbsp;    static enum WidgetType {</b>
+<b class="nc"><i>66</i>&nbsp;        BUTTON, CHECK_BOX, CHECK_BOX_MENU_ITEM, COLOR_CHOOSER,</b>
+<b class="nc"><i>67</i>&nbsp;        COMBO_BOX, COMBO_BOX_ARROW_BUTTON, COMBO_BOX_TEXT_FIELD,</b>
+<b class="nc"><i>68</i>&nbsp;        DESKTOP_ICON, DESKTOP_PANE, EDITOR_PANE, FORMATTED_TEXT_FIELD,</b>
+<b class="nc"><i>69</i>&nbsp;        HANDLE_BOX, HPROGRESS_BAR,</b>
+<b class="nc"><i>70</i>&nbsp;        HSCROLL_BAR, HSCROLL_BAR_BUTTON_LEFT, HSCROLL_BAR_BUTTON_RIGHT,</b>
+<b class="nc"><i>71</i>&nbsp;        HSCROLL_BAR_TRACK, HSCROLL_BAR_THUMB,</b>
+<b class="nc"><i>72</i>&nbsp;        HSEPARATOR, HSLIDER, HSLIDER_TRACK, HSLIDER_THUMB, HSPLIT_PANE_DIVIDER,</b>
+<b class="nc"><i>73</i>&nbsp;        INTERNAL_FRAME, INTERNAL_FRAME_TITLE_PANE, IMAGE, LABEL, LIST, MENU,</b>
+<b class="nc"><i>74</i>&nbsp;        MENU_BAR, MENU_ITEM, MENU_ITEM_ACCELERATOR, OPTION_PANE, PANEL,</b>
+<b class="nc"><i>75</i>&nbsp;        PASSWORD_FIELD, POPUP_MENU, POPUP_MENU_SEPARATOR,</b>
+<b class="nc"><i>76</i>&nbsp;        RADIO_BUTTON, RADIO_BUTTON_MENU_ITEM, ROOT_PANE, SCROLL_PANE,</b>
+<b class="nc"><i>77</i>&nbsp;        SPINNER, SPINNER_ARROW_BUTTON, SPINNER_TEXT_FIELD,</b>
+<b class="nc"><i>78</i>&nbsp;        SPLIT_PANE, TABBED_PANE, TABBED_PANE_TAB_AREA, TABBED_PANE_CONTENT,</b>
+<b class="nc"><i>79</i>&nbsp;        TABBED_PANE_TAB, TABLE, TABLE_HEADER, TEXT_AREA, TEXT_FIELD, TEXT_PANE,</b>
+<b class="nc"><i>80</i>&nbsp;        TITLED_BORDER,</b>
+<b class="nc"><i>81</i>&nbsp;        TOGGLE_BUTTON, TOOL_BAR, TOOL_BAR_DRAG_WINDOW, TOOL_BAR_SEPARATOR,</b>
+<b class="nc"><i>82</i>&nbsp;        TOOL_TIP, TREE, TREE_CELL, VIEWPORT, VPROGRESS_BAR,</b>
+<b class="nc"><i>83</i>&nbsp;        VSCROLL_BAR, VSCROLL_BAR_BUTTON_UP, VSCROLL_BAR_BUTTON_DOWN,</b>
+<b class="nc"><i>84</i>&nbsp;        VSCROLL_BAR_TRACK, VSCROLL_BAR_THUMB,</b>
+<b class="nc"><i>85</i>&nbsp;        VSEPARATOR, VSLIDER, VSLIDER_TRACK, VSLIDER_THUMB,</b>
+<b class="nc"><i>86</i>&nbsp;        VSPLIT_PANE_DIVIDER</b>
+<i>87</i>&nbsp;    }
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    /**
+<i>90</i>&nbsp;     * Representation of GtkSettings properties.
+<i>91</i>&nbsp;     * When we need more settings we can add them here and
+<i>92</i>&nbsp;     * to all implementations of getGTKSetting().
+<i>93</i>&nbsp;     */
+<b class="nc"><i>94</i>&nbsp;    static enum Settings {</b>
+<b class="nc"><i>95</i>&nbsp;        GTK_FONT_NAME,</b>
+<b class="nc"><i>96</i>&nbsp;        GTK_ICON_SIZES</b>
+<b class="nc"><i>97</i>&nbsp;    }</b>
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    /* Custom regions are needed for representing regions that don&#39;t exist
+<i>100</i>&nbsp;     * in the original Region class.
+<i>101</i>&nbsp;     */
+<i>102</i>&nbsp;    static class CustomRegion extends Region {
+<i>103</i>&nbsp;        /*
+<i>104</i>&nbsp;         * TITLED_BORDER Region is mapped to GtkFrame class which can draw
+<i>105</i>&nbsp;         * titled borders around components.
+<i>106</i>&nbsp;         */
+<i>107</i>&nbsp;        static Region TITLED_BORDER = new CustomRegion(&quot;TitledBorder&quot;);
+<b class="nc"><i>108</i>&nbsp;</b>
+<i>109</i>&nbsp;        private CustomRegion(String name) {
+<i>110</i>&nbsp;            super(name, null, false);
+<b class="nc"><i>111</i>&nbsp;        }</b>
+<i>112</i>&nbsp;    }
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;    private static HashMap&lt;Region, Object&gt; regionToWidgetTypeMap;
+<i>116</i>&nbsp;    private ImageCache cache = new ImageCache(CACHE_SIZE);
+<b class="nc"><i>117</i>&nbsp;    private int x0, y0, w0, h0;</b>
+<i>118</i>&nbsp;    private Graphics graphics;
+<i>119</i>&nbsp;    private Object[] cacheArgs;
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;    private native void native_paint_arrow(
+<i>122</i>&nbsp;            int widgetType, int state, int shadowType, String detail,
+<i>123</i>&nbsp;            int x, int y, int width, int height, int arrowType);
+<i>124</i>&nbsp;    private native void native_paint_box(
+<i>125</i>&nbsp;            int widgetType, int state, int shadowType, String detail,
+<i>126</i>&nbsp;            int x, int y, int width, int height, int synthState, int dir);
+<i>127</i>&nbsp;    private native void native_paint_box_gap(
+<i>128</i>&nbsp;            int widgetType, int state, int shadowType, String detail,
+<i>129</i>&nbsp;            int x, int y, int width, int height,
+<i>130</i>&nbsp;            int gapSide, int gapX, int gapWidth);
+<i>131</i>&nbsp;    private native void native_paint_check(
+<i>132</i>&nbsp;            int widgetType, int synthState, String detail,
+<i>133</i>&nbsp;            int x, int y, int width, int height);
+<i>134</i>&nbsp;    private native void native_paint_expander(
+<i>135</i>&nbsp;            int widgetType, int state, String detail,
+<i>136</i>&nbsp;            int x, int y, int width, int height, int expanderStyle);
+<i>137</i>&nbsp;    private native void native_paint_extension(
+<i>138</i>&nbsp;            int widgetType, int state, int shadowType, String detail,
+<i>139</i>&nbsp;            int x, int y, int width, int height, int placement);
+<i>140</i>&nbsp;    private native void native_paint_flat_box(
+<i>141</i>&nbsp;            int widgetType, int state, int shadowType, String detail,
+<i>142</i>&nbsp;            int x, int y, int width, int height, boolean hasFocus);
+<i>143</i>&nbsp;    private native void native_paint_focus(
+<i>144</i>&nbsp;            int widgetType, int state, String detail,
+<i>145</i>&nbsp;            int x, int y, int width, int height);
+<i>146</i>&nbsp;    private native void native_paint_handle(
+<i>147</i>&nbsp;            int widgetType, int state, int shadowType, String detail,
+<i>148</i>&nbsp;            int x, int y, int width, int height, int orientation);
+<i>149</i>&nbsp;    private native void native_paint_hline(
+<i>150</i>&nbsp;            int widgetType, int state, String detail,
+<i>151</i>&nbsp;            int x, int y, int width, int height);
+<i>152</i>&nbsp;    private native void native_paint_option(
+<i>153</i>&nbsp;            int widgetType, int synthState, String detail,
+<i>154</i>&nbsp;            int x, int y, int width, int height);
+<i>155</i>&nbsp;    private native void native_paint_shadow(
+<i>156</i>&nbsp;            int widgetType, int state, int shadowType, String detail,
+<i>157</i>&nbsp;            int x, int y, int width, int height, int synthState, int dir);
+<i>158</i>&nbsp;    private native void native_paint_slider(
+<i>159</i>&nbsp;            int widgetType, int state, int shadowType, String detail,
+<i>160</i>&nbsp;            int x, int y, int width, int height, int orientation);
+<i>161</i>&nbsp;    private native void native_paint_vline(
+<i>162</i>&nbsp;            int widgetType, int state, String detail,
+<i>163</i>&nbsp;            int x, int y, int width, int height);
+<i>164</i>&nbsp;    private native void native_paint_background(
+<i>165</i>&nbsp;            int widgetType, int state, int x, int y, int width, int height);
+<i>166</i>&nbsp;    private native Object native_get_gtk_setting(int property);
+<i>167</i>&nbsp;    private native void nativeSetRangeValue(int widgetType, double value,
+<i>168</i>&nbsp;                                            double min, double max,
+<i>169</i>&nbsp;                                            double visible);
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;    private native void nativeStartPainting(int w, int h);
+<i>172</i>&nbsp;    private native int nativeFinishPainting(int[] buffer, int width, int height);
+<i>173</i>&nbsp;    private native void native_switch_theme();
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;    static {
+<i>176</i>&nbsp;        // Make sure the awt toolkit is loaded so we have access to native
+<i>177</i>&nbsp;        // methods.
+<i>178</i>&nbsp;        Toolkit.getDefaultToolkit();
+<b class="nc"><i>179</i>&nbsp;</b>
+<i>180</i>&nbsp;        // Initialize regionToWidgetTypeMap
+<i>181</i>&nbsp;        regionToWidgetTypeMap = new HashMap&lt;Region, Object&gt;(50);
+<b class="nc"><i>182</i>&nbsp;        regionToWidgetTypeMap.put(Region.ARROW_BUTTON, new WidgetType[] {</b>
+<b class="nc"><i>183</i>&nbsp;            WidgetType.SPINNER_ARROW_BUTTON,</b>
+<i>184</i>&nbsp;            WidgetType.COMBO_BOX_ARROW_BUTTON,
+<i>185</i>&nbsp;            WidgetType.HSCROLL_BAR_BUTTON_LEFT,
+<i>186</i>&nbsp;            WidgetType.HSCROLL_BAR_BUTTON_RIGHT,
+<i>187</i>&nbsp;            WidgetType.VSCROLL_BAR_BUTTON_UP,
+<i>188</i>&nbsp;            WidgetType.VSCROLL_BAR_BUTTON_DOWN});
+<i>189</i>&nbsp;        regionToWidgetTypeMap.put(Region.BUTTON, WidgetType.BUTTON);
+<b class="nc"><i>190</i>&nbsp;        regionToWidgetTypeMap.put(Region.CHECK_BOX, WidgetType.CHECK_BOX);</b>
+<b class="nc"><i>191</i>&nbsp;        regionToWidgetTypeMap.put(Region.CHECK_BOX_MENU_ITEM,</b>
+<b class="nc"><i>192</i>&nbsp;                                  WidgetType.CHECK_BOX_MENU_ITEM);</b>
+<i>193</i>&nbsp;        regionToWidgetTypeMap.put(Region.COLOR_CHOOSER, WidgetType.COLOR_CHOOSER);
+<b class="nc"><i>194</i>&nbsp;        regionToWidgetTypeMap.put(Region.FILE_CHOOSER, WidgetType.OPTION_PANE);</b>
+<b class="nc"><i>195</i>&nbsp;        regionToWidgetTypeMap.put(Region.COMBO_BOX, WidgetType.COMBO_BOX);</b>
+<b class="nc"><i>196</i>&nbsp;        regionToWidgetTypeMap.put(Region.DESKTOP_ICON, WidgetType.DESKTOP_ICON);</b>
+<b class="nc"><i>197</i>&nbsp;        regionToWidgetTypeMap.put(Region.DESKTOP_PANE, WidgetType.DESKTOP_PANE);</b>
+<b class="nc"><i>198</i>&nbsp;        regionToWidgetTypeMap.put(Region.EDITOR_PANE, WidgetType.EDITOR_PANE);</b>
+<b class="nc"><i>199</i>&nbsp;        regionToWidgetTypeMap.put(Region.FORMATTED_TEXT_FIELD, new WidgetType[] {</b>
+<b class="nc"><i>200</i>&nbsp;            WidgetType.FORMATTED_TEXT_FIELD, WidgetType.SPINNER_TEXT_FIELD});</b>
+<i>201</i>&nbsp;        regionToWidgetTypeMap.put(GTKRegion.HANDLE_BOX, WidgetType.HANDLE_BOX);
+<b class="nc"><i>202</i>&nbsp;        regionToWidgetTypeMap.put(Region.INTERNAL_FRAME,</b>
+<b class="nc"><i>203</i>&nbsp;                                  WidgetType.INTERNAL_FRAME);</b>
+<i>204</i>&nbsp;        regionToWidgetTypeMap.put(Region.INTERNAL_FRAME_TITLE_PANE,
+<b class="nc"><i>205</i>&nbsp;                                  WidgetType.INTERNAL_FRAME_TITLE_PANE);</b>
+<i>206</i>&nbsp;        regionToWidgetTypeMap.put(Region.LABEL, new WidgetType[] {
+<b class="nc"><i>207</i>&nbsp;            WidgetType.LABEL, WidgetType.COMBO_BOX_TEXT_FIELD});</b>
+<i>208</i>&nbsp;        regionToWidgetTypeMap.put(Region.LIST, WidgetType.LIST);
+<b class="nc"><i>209</i>&nbsp;        regionToWidgetTypeMap.put(Region.MENU, WidgetType.MENU);</b>
+<b class="nc"><i>210</i>&nbsp;        regionToWidgetTypeMap.put(Region.MENU_BAR, WidgetType.MENU_BAR);</b>
+<b class="nc"><i>211</i>&nbsp;        regionToWidgetTypeMap.put(Region.MENU_ITEM, WidgetType.MENU_ITEM);</b>
+<b class="nc"><i>212</i>&nbsp;        regionToWidgetTypeMap.put(Region.MENU_ITEM_ACCELERATOR,</b>
+<b class="nc"><i>213</i>&nbsp;                                  WidgetType.MENU_ITEM_ACCELERATOR);</b>
+<i>214</i>&nbsp;        regionToWidgetTypeMap.put(Region.OPTION_PANE, WidgetType.OPTION_PANE);
+<b class="nc"><i>215</i>&nbsp;        regionToWidgetTypeMap.put(Region.PANEL, WidgetType.PANEL);</b>
+<b class="nc"><i>216</i>&nbsp;        regionToWidgetTypeMap.put(Region.PASSWORD_FIELD,</b>
+<b class="nc"><i>217</i>&nbsp;                                  WidgetType.PASSWORD_FIELD);</b>
+<i>218</i>&nbsp;        regionToWidgetTypeMap.put(Region.POPUP_MENU, WidgetType.POPUP_MENU);
+<b class="nc"><i>219</i>&nbsp;        regionToWidgetTypeMap.put(Region.POPUP_MENU_SEPARATOR,</b>
+<b class="nc"><i>220</i>&nbsp;                                  WidgetType.POPUP_MENU_SEPARATOR);</b>
+<i>221</i>&nbsp;        regionToWidgetTypeMap.put(Region.PROGRESS_BAR, new WidgetType[] {
+<b class="nc"><i>222</i>&nbsp;            WidgetType.HPROGRESS_BAR, WidgetType.VPROGRESS_BAR});</b>
+<i>223</i>&nbsp;        regionToWidgetTypeMap.put(Region.RADIO_BUTTON, WidgetType.RADIO_BUTTON);
+<b class="nc"><i>224</i>&nbsp;        regionToWidgetTypeMap.put(Region.RADIO_BUTTON_MENU_ITEM,</b>
+<b class="nc"><i>225</i>&nbsp;                                  WidgetType.RADIO_BUTTON_MENU_ITEM);</b>
+<i>226</i>&nbsp;        regionToWidgetTypeMap.put(Region.ROOT_PANE, WidgetType.ROOT_PANE);
+<b class="nc"><i>227</i>&nbsp;        regionToWidgetTypeMap.put(Region.SCROLL_BAR, new WidgetType[] {</b>
+<b class="nc"><i>228</i>&nbsp;            WidgetType.HSCROLL_BAR, WidgetType.VSCROLL_BAR});</b>
+<i>229</i>&nbsp;        regionToWidgetTypeMap.put(Region.SCROLL_BAR_THUMB, new WidgetType[] {
+<b class="nc"><i>230</i>&nbsp;            WidgetType.HSCROLL_BAR_THUMB, WidgetType.VSCROLL_BAR_THUMB});</b>
+<i>231</i>&nbsp;        regionToWidgetTypeMap.put(Region.SCROLL_BAR_TRACK, new WidgetType[] {
+<b class="nc"><i>232</i>&nbsp;            WidgetType.HSCROLL_BAR_TRACK, WidgetType.VSCROLL_BAR_TRACK});</b>
+<i>233</i>&nbsp;        regionToWidgetTypeMap.put(Region.SCROLL_PANE, WidgetType.SCROLL_PANE);
+<b class="nc"><i>234</i>&nbsp;        regionToWidgetTypeMap.put(Region.SEPARATOR, new WidgetType[] {</b>
+<b class="nc"><i>235</i>&nbsp;            WidgetType.HSEPARATOR, WidgetType.VSEPARATOR});</b>
+<i>236</i>&nbsp;        regionToWidgetTypeMap.put(Region.SLIDER, new WidgetType[] {
+<b class="nc"><i>237</i>&nbsp;            WidgetType.HSLIDER, WidgetType.VSLIDER});</b>
+<i>238</i>&nbsp;        regionToWidgetTypeMap.put(Region.SLIDER_THUMB, new WidgetType[] {
+<b class="nc"><i>239</i>&nbsp;            WidgetType.HSLIDER_THUMB, WidgetType.VSLIDER_THUMB});</b>
+<i>240</i>&nbsp;        regionToWidgetTypeMap.put(Region.SLIDER_TRACK, new WidgetType[] {
+<b class="nc"><i>241</i>&nbsp;            WidgetType.HSLIDER_TRACK, WidgetType.VSLIDER_TRACK});</b>
+<i>242</i>&nbsp;        regionToWidgetTypeMap.put(Region.SPINNER, WidgetType.SPINNER);
+<b class="nc"><i>243</i>&nbsp;        regionToWidgetTypeMap.put(Region.SPLIT_PANE, WidgetType.SPLIT_PANE);</b>
+<b class="nc"><i>244</i>&nbsp;        regionToWidgetTypeMap.put(Region.SPLIT_PANE_DIVIDER, new WidgetType[] {</b>
+<b class="nc"><i>245</i>&nbsp;            WidgetType.HSPLIT_PANE_DIVIDER, WidgetType.VSPLIT_PANE_DIVIDER});</b>
+<i>246</i>&nbsp;        regionToWidgetTypeMap.put(Region.TABBED_PANE, WidgetType.TABBED_PANE);
+<b class="nc"><i>247</i>&nbsp;        regionToWidgetTypeMap.put(Region.TABBED_PANE_CONTENT,</b>
+<b class="nc"><i>248</i>&nbsp;                                  WidgetType.TABBED_PANE_CONTENT);</b>
+<i>249</i>&nbsp;        regionToWidgetTypeMap.put(Region.TABBED_PANE_TAB,
+<b class="nc"><i>250</i>&nbsp;                                  WidgetType.TABBED_PANE_TAB);</b>
+<i>251</i>&nbsp;        regionToWidgetTypeMap.put(Region.TABBED_PANE_TAB_AREA,
+<b class="nc"><i>252</i>&nbsp;                                  WidgetType.TABBED_PANE_TAB_AREA);</b>
+<i>253</i>&nbsp;        regionToWidgetTypeMap.put(Region.TABLE, WidgetType.TABLE);
+<b class="nc"><i>254</i>&nbsp;        regionToWidgetTypeMap.put(Region.TABLE_HEADER, WidgetType.TABLE_HEADER);</b>
+<b class="nc"><i>255</i>&nbsp;        regionToWidgetTypeMap.put(Region.TEXT_AREA, WidgetType.TEXT_AREA);</b>
+<b class="nc"><i>256</i>&nbsp;        regionToWidgetTypeMap.put(Region.TEXT_FIELD, new WidgetType[] {</b>
+<b class="nc"><i>257</i>&nbsp;            WidgetType.TEXT_FIELD, WidgetType.COMBO_BOX_TEXT_FIELD});</b>
+<i>258</i>&nbsp;        regionToWidgetTypeMap.put(Region.TEXT_PANE, WidgetType.TEXT_PANE);
+<b class="nc"><i>259</i>&nbsp;        regionToWidgetTypeMap.put(CustomRegion.TITLED_BORDER, WidgetType.TITLED_BORDER);</b>
+<b class="nc"><i>260</i>&nbsp;        regionToWidgetTypeMap.put(Region.TOGGLE_BUTTON, WidgetType.TOGGLE_BUTTON);</b>
+<b class="nc"><i>261</i>&nbsp;        regionToWidgetTypeMap.put(Region.TOOL_BAR, WidgetType.TOOL_BAR);</b>
+<b class="nc"><i>262</i>&nbsp;        regionToWidgetTypeMap.put(Region.TOOL_BAR_CONTENT, WidgetType.TOOL_BAR);</b>
+<b class="nc"><i>263</i>&nbsp;        regionToWidgetTypeMap.put(Region.TOOL_BAR_DRAG_WINDOW,</b>
+<b class="nc"><i>264</i>&nbsp;                                  WidgetType.TOOL_BAR_DRAG_WINDOW);</b>
+<i>265</i>&nbsp;        regionToWidgetTypeMap.put(Region.TOOL_BAR_SEPARATOR,
+<b class="nc"><i>266</i>&nbsp;                                  WidgetType.TOOL_BAR_SEPARATOR);</b>
+<i>267</i>&nbsp;        regionToWidgetTypeMap.put(Region.TOOL_TIP, WidgetType.TOOL_TIP);
+<b class="nc"><i>268</i>&nbsp;        regionToWidgetTypeMap.put(Region.TREE, WidgetType.TREE);</b>
+<b class="nc"><i>269</i>&nbsp;        regionToWidgetTypeMap.put(Region.TREE_CELL, WidgetType.TREE_CELL);</b>
+<b class="nc"><i>270</i>&nbsp;        regionToWidgetTypeMap.put(Region.VIEWPORT, WidgetType.VIEWPORT);</b>
+<b class="nc"><i>271</i>&nbsp;    }</b>
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;    /** Translate Region and JComponent into WidgetType ordinals */
+<i>274</i>&nbsp;    static WidgetType getWidgetType(JComponent c, Region id) {
+<i>275</i>&nbsp;        Object value = regionToWidgetTypeMap.get(id);
+<b class="nc"><i>276</i>&nbsp;</b>
+<i>277</i>&nbsp;        if (value instanceof WidgetType) {
+<b class="nc"><i>278</i>&nbsp;            return (WidgetType)value;</b>
+<b class="nc"><i>279</i>&nbsp;        }</b>
+<i>280</i>&nbsp;
+<i>281</i>&nbsp;        WidgetType[] widgets = (WidgetType[])value;
+<b class="nc"><i>282</i>&nbsp;        if (c == null ) {</b>
+<b class="nc"><i>283</i>&nbsp;            return widgets[0];</b>
+<b class="nc"><i>284</i>&nbsp;        }</b>
+<i>285</i>&nbsp;
+<i>286</i>&nbsp;        if (c instanceof JScrollBar) {
+<b class="nc"><i>287</i>&nbsp;            return (((JScrollBar)c).getOrientation() == JScrollBar.HORIZONTAL) ?</b>
+<b class="nc"><i>288</i>&nbsp;                widgets[0] : widgets[1];</b>
+<i>289</i>&nbsp;        } else if (c instanceof JSeparator) {
+<b class="nc"><i>290</i>&nbsp;            JSeparator separator = (JSeparator)c;</b>
+<b class="nc"><i>291</i>&nbsp;</b>
+<i>292</i>&nbsp;            /* We should return correrct WidgetType if the seperator is inserted
+<i>293</i>&nbsp;             * in Menu/PopupMenu/ToolBar. BugID: 6465603
+<i>294</i>&nbsp;             */
+<i>295</i>&nbsp;            if (separator.getParent() instanceof JPopupMenu) {
+<b class="nc"><i>296</i>&nbsp;                return WidgetType.POPUP_MENU_SEPARATOR;</b>
+<b class="nc"><i>297</i>&nbsp;            } else if (separator.getParent() instanceof JToolBar) {</b>
+<b class="nc"><i>298</i>&nbsp;                return WidgetType.TOOL_BAR_SEPARATOR;</b>
+<b class="nc"><i>299</i>&nbsp;            }</b>
+<i>300</i>&nbsp;
+<i>301</i>&nbsp;            return (separator.getOrientation() == JSeparator.HORIZONTAL) ?
+<b class="nc"><i>302</i>&nbsp;                widgets[0] : widgets[1];</b>
+<i>303</i>&nbsp;        } else if (c instanceof JSlider) {
+<b class="nc"><i>304</i>&nbsp;            return (((JSlider)c).getOrientation() == JSlider.HORIZONTAL) ?</b>
+<b class="nc"><i>305</i>&nbsp;                widgets[0] : widgets[1];</b>
+<i>306</i>&nbsp;        } else if (c instanceof JProgressBar) {
+<b class="nc"><i>307</i>&nbsp;            return (((JProgressBar)c).getOrientation() == JProgressBar.HORIZONTAL) ?</b>
+<b class="nc"><i>308</i>&nbsp;                widgets[0] : widgets[1];</b>
+<i>309</i>&nbsp;        } else if (c instanceof JSplitPane) {
+<b class="nc"><i>310</i>&nbsp;            return (((JSplitPane)c).getOrientation() == JSplitPane.HORIZONTAL_SPLIT) ?</b>
+<b class="nc"><i>311</i>&nbsp;                widgets[1] : widgets[0];</b>
+<i>312</i>&nbsp;        } else if (id == Region.LABEL) {
+<b class="nc"><i>313</i>&nbsp;            /*</b>
+<i>314</i>&nbsp;             * For all ListCellRenderers we will use COMBO_BOX_TEXT_FIELD widget
+<i>315</i>&nbsp;             * type because we can get correct insets. List items however won&#39;t be
+<i>316</i>&nbsp;             * drawn as a text entry (see GTKPainter.paintLabelBackground).
+<i>317</i>&nbsp;             */
+<i>318</i>&nbsp;            if (c instanceof ListCellRenderer) {
+<b class="nc"><i>319</i>&nbsp;                return widgets[1];</b>
+<b class="nc"><i>320</i>&nbsp;            } else {</b>
+<i>321</i>&nbsp;                return widgets[0];
+<b class="nc"><i>322</i>&nbsp;            }</b>
+<i>323</i>&nbsp;        } else if (id == Region.TEXT_FIELD) {
+<b class="nc"><i>324</i>&nbsp;            String name = c.getName();</b>
+<b class="nc"><i>325</i>&nbsp;            if (name != null &amp;&amp; name.startsWith(&quot;ComboBox&quot;)) {</b>
+<b class="nc"><i>326</i>&nbsp;                return widgets[1];</b>
+<b class="nc"><i>327</i>&nbsp;            } else {</b>
+<i>328</i>&nbsp;                return widgets[0];
+<b class="nc"><i>329</i>&nbsp;            }</b>
+<i>330</i>&nbsp;        } else if (id == Region.FORMATTED_TEXT_FIELD) {
+<b class="nc"><i>331</i>&nbsp;            String name = c.getName();</b>
+<b class="nc"><i>332</i>&nbsp;            if (name != null &amp;&amp; name.startsWith(&quot;Spinner&quot;)) {</b>
+<b class="nc"><i>333</i>&nbsp;                return widgets[1];</b>
+<b class="nc"><i>334</i>&nbsp;            } else {</b>
+<i>335</i>&nbsp;                return widgets[0];
+<b class="nc"><i>336</i>&nbsp;            }</b>
+<i>337</i>&nbsp;        } else if (id == Region.ARROW_BUTTON) {
+<b class="nc"><i>338</i>&nbsp;            if (c.getParent() instanceof JScrollBar) {</b>
+<b class="nc"><i>339</i>&nbsp;                Integer prop = (Integer)</b>
+<b class="nc"><i>340</i>&nbsp;                    c.getClientProperty(&quot;__arrow_direction__&quot;);</b>
+<b class="nc"><i>341</i>&nbsp;                int dir = (prop != null) ?</b>
+<b class="nc"><i>342</i>&nbsp;                    prop.intValue() : SwingConstants.WEST;</b>
+<b class="nc"><i>343</i>&nbsp;                switch (dir) {</b>
+<b class="nc"><i>344</i>&nbsp;                case SwingConstants.WEST:</b>
+<i>345</i>&nbsp;                    return WidgetType.HSCROLL_BAR_BUTTON_LEFT;
+<b class="nc"><i>346</i>&nbsp;                case SwingConstants.EAST:</b>
+<i>347</i>&nbsp;                    return WidgetType.HSCROLL_BAR_BUTTON_RIGHT;
+<b class="nc"><i>348</i>&nbsp;                case SwingConstants.NORTH:</b>
+<i>349</i>&nbsp;                    return WidgetType.VSCROLL_BAR_BUTTON_UP;
+<b class="nc"><i>350</i>&nbsp;                case SwingConstants.SOUTH:</b>
+<i>351</i>&nbsp;                    return WidgetType.VSCROLL_BAR_BUTTON_DOWN;
+<b class="nc"><i>352</i>&nbsp;                default:</b>
+<i>353</i>&nbsp;                    return null;
+<b class="nc"><i>354</i>&nbsp;                }</b>
+<i>355</i>&nbsp;            } else if (c.getParent() instanceof JComboBox) {
+<b class="nc"><i>356</i>&nbsp;                return WidgetType.COMBO_BOX_ARROW_BUTTON;</b>
+<b class="nc"><i>357</i>&nbsp;            } else {</b>
+<i>358</i>&nbsp;                return WidgetType.SPINNER_ARROW_BUTTON;
+<b class="nc"><i>359</i>&nbsp;            }</b>
+<i>360</i>&nbsp;        }
+<i>361</i>&nbsp;
+<i>362</i>&nbsp;        return null;
+<b class="nc"><i>363</i>&nbsp;    }</b>
+<i>364</i>&nbsp;
+<i>365</i>&nbsp;    private static int getTextDirection(SynthContext context) {
+<i>366</i>&nbsp;        TextDirection dir = TextDirection.NONE;
+<b class="nc"><i>367</i>&nbsp;        JComponent comp = context.getComponent();</b>
+<b class="nc"><i>368</i>&nbsp;        if (comp != null) {</b>
+<b class="nc"><i>369</i>&nbsp;            ComponentOrientation co = comp.getComponentOrientation();</b>
+<b class="nc"><i>370</i>&nbsp;            if (co != null) {</b>
+<b class="nc"><i>371</i>&nbsp;                dir = co.isLeftToRight() ?</b>
+<b class="nc"><i>372</i>&nbsp;                    TextDirection.LTR : TextDirection.RTL;</b>
+<i>373</i>&nbsp;            }
+<i>374</i>&nbsp;        }
+<i>375</i>&nbsp;        return dir.ordinal();
+<b class="nc"><i>376</i>&nbsp;    }</b>
+<i>377</i>&nbsp;
+<i>378</i>&nbsp;    public void paintArrow(Graphics g, SynthContext context,
+<i>379</i>&nbsp;            Region id, int state, ShadowType shadowType, ArrowType direction,
+<i>380</i>&nbsp;            String detail, int x, int y, int w, int h) {
+<i>381</i>&nbsp;
+<i>382</i>&nbsp;        state = GTKLookAndFeel.synthStateToGTKStateType(state).ordinal();
+<b class="nc"><i>383</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>384</i>&nbsp;        native_paint_arrow(widget, state, shadowType.ordinal(),</b>
+<b class="nc"><i>385</i>&nbsp;                detail, x - x0, y - y0, w, h, direction.ordinal());</b>
+<b class="nc"><i>386</i>&nbsp;    }</b>
+<i>387</i>&nbsp;
+<i>388</i>&nbsp;    public void paintBox(Graphics g, SynthContext context,
+<i>389</i>&nbsp;            Region id, int state, ShadowType shadowType,
+<i>390</i>&nbsp;            String detail, int x, int y, int w, int h) {
+<i>391</i>&nbsp;
+<i>392</i>&nbsp;        int gtkState =
+<b class="nc"><i>393</i>&nbsp;            GTKLookAndFeel.synthStateToGTKStateType(state).ordinal();</b>
+<b class="nc"><i>394</i>&nbsp;        int synthState = context.getComponentState();</b>
+<b class="nc"><i>395</i>&nbsp;        int dir = getTextDirection(context);</b>
+<b class="nc"><i>396</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>397</i>&nbsp;        native_paint_box(widget, gtkState, shadowType.ordinal(),</b>
+<b class="nc"><i>398</i>&nbsp;                         detail, x - x0, y - y0, w, h, synthState, dir);</b>
+<i>399</i>&nbsp;    }
+<i>400</i>&nbsp;
+<i>401</i>&nbsp;    public void paintBoxGap(Graphics g, SynthContext context,
+<i>402</i>&nbsp;            Region id, int state, ShadowType shadowType,
+<i>403</i>&nbsp;            String detail, int x, int y, int w, int h,
+<i>404</i>&nbsp;            PositionType boxGapType, int tabBegin, int size) {
+<i>405</i>&nbsp;
+<i>406</i>&nbsp;        state = GTKLookAndFeel.synthStateToGTKStateType(state).ordinal();
+<b class="nc"><i>407</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>408</i>&nbsp;        native_paint_box_gap(widget, state, shadowType.ordinal(), detail,</b>
+<b class="nc"><i>409</i>&nbsp;                x - x0, y - y0, w, h, boxGapType.ordinal(), tabBegin, size);</b>
+<b class="nc"><i>410</i>&nbsp;    }</b>
+<i>411</i>&nbsp;
+<i>412</i>&nbsp;    public void paintCheck(Graphics g, SynthContext context,
+<i>413</i>&nbsp;            Region id, String detail, int x, int y, int w, int h) {
+<i>414</i>&nbsp;
+<i>415</i>&nbsp;        int synthState = context.getComponentState();
+<b class="nc"><i>416</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>417</i>&nbsp;        native_paint_check(widget, synthState, detail, x - x0, y - y0, w, h);</b>
+<b class="nc"><i>418</i>&nbsp;    }</b>
+<i>419</i>&nbsp;
+<i>420</i>&nbsp;    public void paintExpander(Graphics g, SynthContext context,
+<i>421</i>&nbsp;            Region id, int state, ExpanderStyle expanderStyle, String detail,
+<i>422</i>&nbsp;            int x, int y, int w, int h) {
+<i>423</i>&nbsp;
+<i>424</i>&nbsp;        state = GTKLookAndFeel.synthStateToGTKStateType(state).ordinal();
+<b class="nc"><i>425</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>426</i>&nbsp;        native_paint_expander(widget, state, detail, x - x0, y - y0, w, h,</b>
+<b class="nc"><i>427</i>&nbsp;                              expanderStyle.ordinal());</b>
+<b class="nc"><i>428</i>&nbsp;    }</b>
+<i>429</i>&nbsp;
+<i>430</i>&nbsp;    public void paintExtension(Graphics g, SynthContext context,
+<i>431</i>&nbsp;            Region id, int state, ShadowType shadowType, String detail,
+<i>432</i>&nbsp;            int x, int y, int w, int h, PositionType placement, int tabIndex) {
+<i>433</i>&nbsp;
+<i>434</i>&nbsp;        state = GTKLookAndFeel.synthStateToGTKStateType(state).ordinal();
+<b class="nc"><i>435</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>436</i>&nbsp;        native_paint_extension(widget, state, shadowType.ordinal(), detail,</b>
+<b class="nc"><i>437</i>&nbsp;                               x - x0, y - y0, w, h, placement.ordinal());</b>
+<b class="nc"><i>438</i>&nbsp;    }</b>
+<i>439</i>&nbsp;
+<i>440</i>&nbsp;    public void paintFlatBox(Graphics g, SynthContext context,
+<i>441</i>&nbsp;            Region id, int state, ShadowType shadowType, String detail,
+<i>442</i>&nbsp;            int x, int y, int w, int h, ColorType colorType) {
+<i>443</i>&nbsp;
+<i>444</i>&nbsp;        state = GTKLookAndFeel.synthStateToGTKStateType(state).ordinal();
+<b class="nc"><i>445</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>446</i>&nbsp;        native_paint_flat_box(widget, state, shadowType.ordinal(), detail,</b>
+<b class="nc"><i>447</i>&nbsp;                              x - x0, y - y0, w, h,</b>
+<i>448</i>&nbsp;                              context.getComponent().hasFocus());
+<b class="nc"><i>449</i>&nbsp;    }</b>
+<i>450</i>&nbsp;
+<i>451</i>&nbsp;    public void paintFocus(Graphics g, SynthContext context,
+<i>452</i>&nbsp;            Region id, int state, String detail, int x, int y, int w, int h) {
+<i>453</i>&nbsp;
+<i>454</i>&nbsp;        state = GTKLookAndFeel.synthStateToGTKStateType(state).ordinal();
+<b class="nc"><i>455</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>456</i>&nbsp;        native_paint_focus(widget, state, detail, x - x0, y - y0, w, h);</b>
+<b class="nc"><i>457</i>&nbsp;    }</b>
+<i>458</i>&nbsp;
+<i>459</i>&nbsp;    public void paintHandle(Graphics g, SynthContext context,
+<i>460</i>&nbsp;            Region id, int state, ShadowType shadowType, String detail,
+<i>461</i>&nbsp;            int x, int y, int w, int h, Orientation orientation) {
+<i>462</i>&nbsp;
+<i>463</i>&nbsp;        state = GTKLookAndFeel.synthStateToGTKStateType(state).ordinal();
+<b class="nc"><i>464</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>465</i>&nbsp;        native_paint_handle(widget, state, shadowType.ordinal(), detail,</b>
+<b class="nc"><i>466</i>&nbsp;                            x - x0, y - y0, w, h, orientation.ordinal());</b>
+<b class="nc"><i>467</i>&nbsp;    }</b>
+<i>468</i>&nbsp;
+<i>469</i>&nbsp;    public void paintHline(Graphics g, SynthContext context,
+<i>470</i>&nbsp;            Region id, int state, String detail, int x, int y, int w, int h) {
+<i>471</i>&nbsp;
+<i>472</i>&nbsp;        state = GTKLookAndFeel.synthStateToGTKStateType(state).ordinal();
+<b class="nc"><i>473</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>474</i>&nbsp;        native_paint_hline(widget, state, detail, x - x0, y - y0, w, h);</b>
+<b class="nc"><i>475</i>&nbsp;    }</b>
+<i>476</i>&nbsp;
+<i>477</i>&nbsp;    public void paintOption(Graphics g, SynthContext context,
+<i>478</i>&nbsp;            Region id, String detail, int x, int y, int w, int h) {
+<i>479</i>&nbsp;
+<i>480</i>&nbsp;        int synthState = context.getComponentState();
+<b class="nc"><i>481</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>482</i>&nbsp;        native_paint_option(widget, synthState, detail, x - x0, y - y0, w, h);</b>
+<b class="nc"><i>483</i>&nbsp;    }</b>
+<i>484</i>&nbsp;
+<i>485</i>&nbsp;    public void paintShadow(Graphics g, SynthContext context,
+<i>486</i>&nbsp;            Region id, int state, ShadowType shadowType, String detail,
+<i>487</i>&nbsp;            int x, int y, int w, int h) {
+<i>488</i>&nbsp;
+<i>489</i>&nbsp;        int gtkState =
+<b class="nc"><i>490</i>&nbsp;            GTKLookAndFeel.synthStateToGTKStateType(state).ordinal();</b>
+<b class="nc"><i>491</i>&nbsp;        int synthState = context.getComponentState();</b>
+<b class="nc"><i>492</i>&nbsp;        int dir = getTextDirection(context);</b>
+<b class="nc"><i>493</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>494</i>&nbsp;        native_paint_shadow(widget, gtkState, shadowType.ordinal(), detail,</b>
+<b class="nc"><i>495</i>&nbsp;                            x - x0, y - y0, w, h, synthState, dir);</b>
+<i>496</i>&nbsp;    }
+<i>497</i>&nbsp;
+<i>498</i>&nbsp;    public void paintSlider(Graphics g, SynthContext context,
+<i>499</i>&nbsp;            Region id, int state, ShadowType shadowType, String detail,
+<i>500</i>&nbsp;            int x, int y, int w, int h, Orientation orientation) {
+<i>501</i>&nbsp;
+<i>502</i>&nbsp;        state = GTKLookAndFeel.synthStateToGTKStateType(state).ordinal();
+<b class="nc"><i>503</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>504</i>&nbsp;        native_paint_slider(widget, state, shadowType.ordinal(), detail,</b>
+<b class="nc"><i>505</i>&nbsp;                            x - x0, y - y0, w, h, orientation.ordinal());</b>
+<b class="nc"><i>506</i>&nbsp;    }</b>
+<i>507</i>&nbsp;
+<i>508</i>&nbsp;    public void paintVline(Graphics g, SynthContext context,
+<i>509</i>&nbsp;            Region id, int state, String detail, int x, int y, int w, int h) {
+<i>510</i>&nbsp;
+<i>511</i>&nbsp;        state = GTKLookAndFeel.synthStateToGTKStateType(state).ordinal();
+<b class="nc"><i>512</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>513</i>&nbsp;        native_paint_vline(widget, state, detail, x - x0, y - y0, w, h);</b>
+<b class="nc"><i>514</i>&nbsp;    }</b>
+<i>515</i>&nbsp;
+<i>516</i>&nbsp;    public void paintBackground(Graphics g, SynthContext context,
+<i>517</i>&nbsp;            Region id, int state, Color color, int x, int y, int w, int h) {
+<i>518</i>&nbsp;
+<i>519</i>&nbsp;        state = GTKLookAndFeel.synthStateToGTKStateType(state).ordinal();
+<b class="nc"><i>520</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();</b>
+<b class="nc"><i>521</i>&nbsp;        native_paint_background(widget, state, x - x0, y - y0, w, h);</b>
+<b class="nc"><i>522</i>&nbsp;    }</b>
+<i>523</i>&nbsp;
+<i>524</i>&nbsp;    private final static ColorModel[] COLOR_MODELS = {
+<b class="nc"><i>525</i>&nbsp;        // Transparency.OPAQUE</b>
+<i>526</i>&nbsp;        new DirectColorModel(24, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000),
+<i>527</i>&nbsp;        // Transparency.BITMASK
+<i>528</i>&nbsp;        new DirectColorModel(25, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x01000000),
+<i>529</i>&nbsp;        // Transparency.TRANSLUCENT
+<i>530</i>&nbsp;        ColorModel.getRGBdefault(),
+<b class="nc"><i>531</i>&nbsp;    };</b>
+<i>532</i>&nbsp;
+<i>533</i>&nbsp;    private final static int[][] BAND_OFFSETS = {
+<b class="nc"><i>534</i>&nbsp;        { 0x00ff0000, 0x0000ff00, 0x000000ff },             // OPAQUE</b>
+<i>535</i>&nbsp;        { 0x00ff0000, 0x0000ff00, 0x000000ff, 0x01000000 }, // BITMASK
+<i>536</i>&nbsp;        { 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 }  // TRANSLUCENT
+<i>537</i>&nbsp;    };
+<i>538</i>&nbsp;
+<i>539</i>&nbsp;
+<i>540</i>&nbsp;    /**
+<i>541</i>&nbsp;     * Paint a cached image identified by its size and a set of additional
+<i>542</i>&nbsp;     * arguments, if there&#39;s one.
+<i>543</i>&nbsp;     *
+<i>544</i>&nbsp;     * @return true if a cached image has been painted, false otherwise
+<i>545</i>&nbsp;     */
+<i>546</i>&nbsp;    public boolean paintCachedImage(Graphics g,
+<i>547</i>&nbsp;            int x, int y, int w, int h, Object... args) {
+<i>548</i>&nbsp;        if (w &lt;= 0 || h &lt;= 0) {
+<b class="nc"><i>549</i>&nbsp;            return true;</b>
+<b class="nc"><i>550</i>&nbsp;        }</b>
+<i>551</i>&nbsp;
+<i>552</i>&nbsp;        // look for cached image
+<i>553</i>&nbsp;        Image img = cache.getImage(getClass(), null, w, h, args);
+<b class="nc"><i>554</i>&nbsp;        if (img != null) {</b>
+<b class="nc"><i>555</i>&nbsp;            g.drawImage(img, x, y, null);</b>
+<b class="nc"><i>556</i>&nbsp;            return true;</b>
+<b class="nc"><i>557</i>&nbsp;        }</b>
+<i>558</i>&nbsp;        return false;
+<b class="nc"><i>559</i>&nbsp;    }</b>
+<i>560</i>&nbsp;
+<i>561</i>&nbsp;    /*
+<i>562</i>&nbsp;     * Allocate a native offscreen buffer of the specified size.
+<i>563</i>&nbsp;     */
+<i>564</i>&nbsp;    public void startPainting(Graphics g,
+<i>565</i>&nbsp;            int x, int y, int w, int h, Object... args) {
+<i>566</i>&nbsp;        nativeStartPainting(w, h);
+<b class="nc"><i>567</i>&nbsp;        x0 = x;</b>
+<b class="nc"><i>568</i>&nbsp;        y0 = y;</b>
+<b class="nc"><i>569</i>&nbsp;        w0 = w;</b>
+<b class="nc"><i>570</i>&nbsp;        h0 = h;</b>
+<b class="nc"><i>571</i>&nbsp;        graphics = g;</b>
+<b class="nc"><i>572</i>&nbsp;        cacheArgs = args;</b>
+<b class="nc"><i>573</i>&nbsp;    }</b>
+<i>574</i>&nbsp;
+<i>575</i>&nbsp;    /**
+<i>576</i>&nbsp;     * Convenience method that delegates to finishPainting() with
+<i>577</i>&nbsp;     * caching enabled.
+<i>578</i>&nbsp;     */
+<i>579</i>&nbsp;    public void finishPainting() {
+<i>580</i>&nbsp;        finishPainting(true);
+<b class="nc"><i>581</i>&nbsp;    }</b>
+<i>582</i>&nbsp;
+<i>583</i>&nbsp;    /**
+<i>584</i>&nbsp;     * Called to indicate that painting is finished. We create a new
+<i>585</i>&nbsp;     * BufferedImage from the offscreen buffer, (optionally) cache it,
+<i>586</i>&nbsp;     * and paint it.
+<i>587</i>&nbsp;     */
+<i>588</i>&nbsp;    public void finishPainting(boolean useCache) {
+<i>589</i>&nbsp;        DataBufferInt dataBuffer = new DataBufferInt(w0 * h0);
+<b class="nc"><i>590</i>&nbsp;        // Note that stealData() requires a markDirty() afterwards</b>
+<i>591</i>&nbsp;        // since we modify the data in it.
+<i>592</i>&nbsp;        int transparency =
+<b class="nc"><i>593</i>&nbsp;            nativeFinishPainting(SunWritableRaster.stealData(dataBuffer, 0),</b>
+<b class="nc"><i>594</i>&nbsp;                                 w0, h0);</b>
+<i>595</i>&nbsp;        SunWritableRaster.markDirty(dataBuffer);
+<b class="nc"><i>596</i>&nbsp;</b>
+<i>597</i>&nbsp;        int[] bands = BAND_OFFSETS[transparency - 1];
+<b class="nc"><i>598</i>&nbsp;        WritableRaster raster = Raster.createPackedRaster(</b>
+<b class="nc"><i>599</i>&nbsp;                dataBuffer, w0, h0, w0, bands, null);</b>
+<i>600</i>&nbsp;
+<i>601</i>&nbsp;        ColorModel cm = COLOR_MODELS[transparency - 1];
+<b class="nc"><i>602</i>&nbsp;        Image img = new BufferedImage(cm, raster, false, null);</b>
+<b class="nc"><i>603</i>&nbsp;        if (useCache) {</b>
+<b class="nc"><i>604</i>&nbsp;            cache.setImage(getClass(), null, w0, h0, cacheArgs, img);</b>
+<b class="nc"><i>605</i>&nbsp;        }</b>
+<i>606</i>&nbsp;        graphics.drawImage(img, x0, y0, null);
+<b class="nc"><i>607</i>&nbsp;    }</b>
+<i>608</i>&nbsp;
+<i>609</i>&nbsp;    /**
+<i>610</i>&nbsp;     * Notify native layer of theme change, and flush cache
+<i>611</i>&nbsp;     */
+<i>612</i>&nbsp;    public void themeChanged() {
+<i>613</i>&nbsp;        synchronized(sun.awt.UNIXToolkit.GTK_LOCK) {
+<b class="nc"><i>614</i>&nbsp;            native_switch_theme();</b>
+<b class="nc"><i>615</i>&nbsp;        }</b>
+<b class="nc"><i>616</i>&nbsp;        cache.flush();</b>
+<b class="nc"><i>617</i>&nbsp;    }</b>
+<i>618</i>&nbsp;
+<i>619</i>&nbsp;    /* GtkSettings enum mirrors that in gtk2_interface.h */
+<i>620</i>&nbsp;    public Object getSetting(Settings property) {
+<i>621</i>&nbsp;        synchronized(sun.awt.UNIXToolkit.GTK_LOCK) {
+<b class="nc"><i>622</i>&nbsp;            return native_get_gtk_setting(property.ordinal());</b>
+<b class="nc"><i>623</i>&nbsp;        }</b>
+<b class="nc"><i>624</i>&nbsp;    }</b>
+<i>625</i>&nbsp;
+<i>626</i>&nbsp;    /**
+<i>627</i>&nbsp;     * Sets up the GtkAdjustment values for the native GtkRange widget
+<i>628</i>&nbsp;     * associated with the given region (e.g. SLIDER, SCROLL_BAR).
+<i>629</i>&nbsp;     */
+<i>630</i>&nbsp;    void setRangeValue(SynthContext context, Region id,
+<i>631</i>&nbsp;                       double value, double min, double max, double visible) {
+<i>632</i>&nbsp;        int widget = getWidgetType(context.getComponent(), id).ordinal();
+<b class="nc"><i>633</i>&nbsp;        nativeSetRangeValue(widget, value, min, max, visible);</b>
+<b class="nc"><i>634</i>&nbsp;    }</b>
+<i>635</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

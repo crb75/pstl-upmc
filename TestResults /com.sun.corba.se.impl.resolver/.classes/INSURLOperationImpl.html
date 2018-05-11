@@ -1,0 +1,438 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: INSURLOperationImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.resolver</a> ]
+</div>
+
+<h1>Coverage Summary for Class: INSURLOperationImpl (com.sun.corba.se.impl.resolver)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">INSURLOperationImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 109)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">INSURLOperationImpl$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 113)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 1998, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.resolver;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.util.List ;
+<i>29</i>&nbsp;import java.util.Map ;
+<i>30</i>&nbsp;import java.util.Comparator ;
+<i>31</i>&nbsp;import java.util.Iterator ;
+<i>32</i>&nbsp;import java.util.HashMap ;
+<i>33</i>&nbsp;import java.util.ArrayList ;
+<i>34</i>&nbsp;import java.util.Collections ;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import org.omg.CosNaming.NamingContextExt ;
+<i>37</i>&nbsp;import org.omg.CosNaming.NamingContextExtHelper ;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;import sun.corba.EncapsInputStreamFactory;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import com.sun.corba.se.spi.ior.IOR;
+<i>42</i>&nbsp;import com.sun.corba.se.spi.ior.IORTemplate;
+<i>43</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectKey;
+<i>44</i>&nbsp;import com.sun.corba.se.spi.ior.IORFactories;
+<i>45</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectKeyFactory ;
+<i>46</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.IIOPAddress;
+<i>47</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.IIOPProfile ;
+<i>48</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.IIOPProfileTemplate ;
+<i>49</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.IIOPFactories ;
+<i>50</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.GIOPVersion;
+<i>51</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.AlternateIIOPAddressComponent;
+<i>52</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains ;
+<i>53</i>&nbsp;import com.sun.corba.se.spi.orb.Operation;
+<i>54</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>55</i>&nbsp;import com.sun.corba.se.spi.resolver.Resolver;
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;import com.sun.corba.se.impl.encoding.EncapsInputStream;
+<i>58</i>&nbsp;import com.sun.corba.se.impl.logging.ORBUtilSystemException;
+<i>59</i>&nbsp;import com.sun.corba.se.impl.logging.OMGSystemException;
+<i>60</i>&nbsp;import com.sun.corba.se.impl.naming.namingutil.INSURLHandler;
+<i>61</i>&nbsp;import com.sun.corba.se.impl.naming.namingutil.IIOPEndpointInfo;
+<i>62</i>&nbsp;import com.sun.corba.se.impl.naming.namingutil.INSURL;
+<i>63</i>&nbsp;import com.sun.corba.se.impl.naming.namingutil.CorbalocURL;
+<i>64</i>&nbsp;import com.sun.corba.se.impl.naming.namingutil.CorbanameURL;
+<i>65</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBConstants;
+<i>66</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBUtility;
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;/**
+<i>69</i>&nbsp; * This class provides an Operation that converts from CORBA INS URL strings into
+<i>70</i>&nbsp; * CORBA object references.  It will eventually become extensible, but for now it
+<i>71</i>&nbsp; * simply encapsulates the existing implementation.  Once the full extensibility
+<i>72</i>&nbsp; * is in place, we want this operation to convert string to INSURL, which has mainly
+<i>73</i>&nbsp; * a public resolver method that returns an object reference.
+<i>74</i>&nbsp; *
+<i>75</i>&nbsp; * @author  Hemanth
+<i>76</i>&nbsp; * @author  Ken
+<i>77</i>&nbsp; */
+<i>78</i>&nbsp;public class INSURLOperationImpl implements Operation
+<i>79</i>&nbsp;{
+<i>80</i>&nbsp;    ORB orb;
+<i>81</i>&nbsp;    ORBUtilSystemException wrapper ;
+<i>82</i>&nbsp;    OMGSystemException omgWrapper ;
+<i>83</i>&nbsp;    Resolver bootstrapResolver ;
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    // Root Naming Context for default resolution of names.
+<i>86</i>&nbsp;    private NamingContextExt rootNamingContextExt;
+<b class="nc"><i>87</i>&nbsp;    private Object rootContextCacheLock = new Object() ;</b>
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    // The URLHandler to parse INS URL&#39;s
+<b class="nc"><i>90</i>&nbsp;    private INSURLHandler insURLHandler = INSURLHandler.getINSURLHandler() ;</b>
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;    public INSURLOperationImpl( ORB orb, Resolver bootstrapResolver )
+<b class="nc"><i>93</i>&nbsp;    {</b>
+<b class="nc"><i>94</i>&nbsp;        this.orb = orb ;</b>
+<b class="nc"><i>95</i>&nbsp;        wrapper = ORBUtilSystemException.get( orb,</b>
+<i>96</i>&nbsp;            CORBALogDomains.ORB_RESOLVER ) ;
+<b class="nc"><i>97</i>&nbsp;        omgWrapper = OMGSystemException.get( orb,</b>
+<i>98</i>&nbsp;            CORBALogDomains.ORB_RESOLVER ) ;
+<b class="nc"><i>99</i>&nbsp;        this.bootstrapResolver = bootstrapResolver ;</b>
+<i>100</i>&nbsp;    }
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;    private static final int NIBBLES_PER_BYTE = 2 ;
+<i>103</i>&nbsp;    private static final int UN_SHIFT = 4 ; // &quot;UPPER NIBBLE&quot; shift factor for &lt;&lt;
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;    /** This static method takes a Stringified IOR and converts it into IOR object.
+<i>106</i>&nbsp;      * It is the caller&#39;s responsibility to only pass strings that start with &quot;IOR:&quot;.
+<i>107</i>&nbsp;      */
+<i>108</i>&nbsp;    private org.omg.CORBA.Object getIORFromString( String str )
+<i>109</i>&nbsp;    {
+<i>110</i>&nbsp;        // Length must be even for str to be valid
+<b class="nc"><i>111</i>&nbsp;        if ( (str.length() &amp; 1) == 1 )</b>
+<b class="nc"><i>112</i>&nbsp;            throw wrapper.badStringifiedIorLen() ;</b>
+<i>113</i>&nbsp;
+<b class="nc"><i>114</i>&nbsp;        byte[] buf = new byte[(str.length() - ORBConstants.STRINGIFY_PREFIX.length()) / NIBBLES_PER_BYTE];</b>
+<b class="nc"><i>115</i>&nbsp;        for (int i=ORBConstants.STRINGIFY_PREFIX.length(), j=0; i &lt; str.length(); i +=NIBBLES_PER_BYTE, j++) {</b>
+<b class="nc"><i>116</i>&nbsp;             buf[j] = (byte)((ORBUtility.hexOf(str.charAt(i)) &lt;&lt; UN_SHIFT) &amp; 0xF0);</b>
+<b class="nc"><i>117</i>&nbsp;             buf[j] |= (byte)(ORBUtility.hexOf(str.charAt(i+1)) &amp; 0x0F);</b>
+<i>118</i>&nbsp;        }
+<b class="nc"><i>119</i>&nbsp;        EncapsInputStream s = EncapsInputStreamFactory.newEncapsInputStream(orb, buf, buf.length,</b>
+<b class="nc"><i>120</i>&nbsp;                orb.getORBData().getGIOPVersion());</b>
+<b class="nc"><i>121</i>&nbsp;        s.consumeEndian();</b>
+<b class="nc"><i>122</i>&nbsp;        return s.read_Object() ;</b>
+<i>123</i>&nbsp;    }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    public Object operate( Object arg )
+<i>126</i>&nbsp;    {
+<b class="nc"><i>127</i>&nbsp;        if (arg instanceof String) {</b>
+<b class="nc"><i>128</i>&nbsp;            String str = (String)arg ;</b>
+<i>129</i>&nbsp;
+<b class="nc"><i>130</i>&nbsp;            if (str.startsWith( ORBConstants.STRINGIFY_PREFIX ))</b>
+<i>131</i>&nbsp;                // XXX handle this as just another URL scheme
+<b class="nc"><i>132</i>&nbsp;                return getIORFromString( str ) ;</b>
+<i>133</i>&nbsp;            else {
+<b class="nc"><i>134</i>&nbsp;                INSURL insURL = insURLHandler.parseURL( str ) ;</b>
+<b class="nc"><i>135</i>&nbsp;                if (insURL == null)</b>
+<b class="nc"><i>136</i>&nbsp;                    throw omgWrapper.soBadSchemeName() ;</b>
+<b class="nc"><i>137</i>&nbsp;                return resolveINSURL( insURL ) ;</b>
+<i>138</i>&nbsp;            }
+<i>139</i>&nbsp;        }
+<i>140</i>&nbsp;
+<b class="nc"><i>141</i>&nbsp;        throw wrapper.stringExpected() ;</b>
+<i>142</i>&nbsp;    }
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;    private org.omg.CORBA.Object resolveINSURL( INSURL theURLObject ) {
+<i>145</i>&nbsp;        // XXX resolve should be a method on INSURL
+<b class="nc"><i>146</i>&nbsp;        if( theURLObject.isCorbanameURL() ) {</b>
+<b class="nc"><i>147</i>&nbsp;            return resolveCorbaname( (CorbanameURL)theURLObject );</b>
+<i>148</i>&nbsp;        } else {
+<b class="nc"><i>149</i>&nbsp;            return resolveCorbaloc( (CorbalocURL)theURLObject );</b>
+<i>150</i>&nbsp;        }
+<i>151</i>&nbsp;    }
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;    /**
+<i>154</i>&nbsp;     *  resolves a corbaloc: url that is encapsulated in a CorbalocURL object.
+<i>155</i>&nbsp;     *
+<i>156</i>&nbsp;     *  @return the CORBA.Object if resolution is successful
+<i>157</i>&nbsp;     */
+<i>158</i>&nbsp;    private org.omg.CORBA.Object resolveCorbaloc(
+<i>159</i>&nbsp;        CorbalocURL theCorbaLocObject )
+<i>160</i>&nbsp;    {
+<b class="nc"><i>161</i>&nbsp;        org.omg.CORBA.Object result = null;</b>
+<i>162</i>&nbsp;        // If RIR flag is true use the Bootstrap protocol
+<b class="nc"><i>163</i>&nbsp;        if( theCorbaLocObject.getRIRFlag( ) )  {</b>
+<b class="nc"><i>164</i>&nbsp;            result = bootstrapResolver.resolve(theCorbaLocObject.getKeyString());</b>
+<i>165</i>&nbsp;        } else {
+<b class="nc"><i>166</i>&nbsp;            result = getIORUsingCorbaloc( theCorbaLocObject );</b>
+<i>167</i>&nbsp;        }
+<i>168</i>&nbsp;
+<b class="nc"><i>169</i>&nbsp;        return result;</b>
+<i>170</i>&nbsp;    }
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;    /**
+<i>173</i>&nbsp;     *  resolves a corbaname: url that is encapsulated in a CorbanameURL object.
+<i>174</i>&nbsp;     *
+<i>175</i>&nbsp;     *  @return the CORBA.Object if resolution is successful
+<i>176</i>&nbsp;     */
+<i>177</i>&nbsp;    private org.omg.CORBA.Object resolveCorbaname( CorbanameURL theCorbaName ) {
+<b class="nc"><i>178</i>&nbsp;        org.omg.CORBA.Object result = null;</b>
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;        try {
+<b class="nc"><i>181</i>&nbsp;            NamingContextExt theNamingContext = null;</b>
+<i>182</i>&nbsp;
+<b class="nc"><i>183</i>&nbsp;            if( theCorbaName.getRIRFlag( ) ) {</b>
+<i>184</i>&nbsp;                // Case 1 of corbaname: rir#
+<b class="nc"><i>185</i>&nbsp;                theNamingContext = getDefaultRootNamingContext( );</b>
+<i>186</i>&nbsp;            } else {
+<i>187</i>&nbsp;                // Case 2 of corbaname: ::hostname#
+<b class="nc"><i>188</i>&nbsp;                org.omg.CORBA.Object corbalocResult =</b>
+<b class="nc"><i>189</i>&nbsp;                    getIORUsingCorbaloc( theCorbaName );</b>
+<b class="nc"><i>190</i>&nbsp;                if( corbalocResult == null ) {</b>
+<b class="nc"><i>191</i>&nbsp;                    return null;</b>
+<i>192</i>&nbsp;                }
+<i>193</i>&nbsp;
+<b class="nc"><i>194</i>&nbsp;                theNamingContext =</b>
+<b class="nc"><i>195</i>&nbsp;                    NamingContextExtHelper.narrow( corbalocResult );</b>
+<i>196</i>&nbsp;            }
+<i>197</i>&nbsp;
+<b class="nc"><i>198</i>&nbsp;            String StringifiedName = theCorbaName.getStringifiedName( );</b>
+<i>199</i>&nbsp;
+<b class="nc"><i>200</i>&nbsp;            if( StringifiedName == null ) {</b>
+<i>201</i>&nbsp;                // This means return the Root Naming context
+<b class="nc"><i>202</i>&nbsp;                return theNamingContext;</b>
+<i>203</i>&nbsp;            } else {
+<b class="nc"><i>204</i>&nbsp;                return theNamingContext.resolve_str( StringifiedName );</b>
+<i>205</i>&nbsp;            }
+<b class="nc"><i>206</i>&nbsp;        } catch( Exception e ) {</b>
+<b class="nc"><i>207</i>&nbsp;            clearRootNamingContextCache( );</b>
+<b class="nc"><i>208</i>&nbsp;            return null;</b>
+<i>209</i>&nbsp;        }
+<i>210</i>&nbsp;     }
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;    /**
+<i>213</i>&nbsp;     *  This is an internal method to get the IOR from the CorbalocURL object.
+<i>214</i>&nbsp;     *
+<i>215</i>&nbsp;     *  @return the CORBA.Object if resolution is successful
+<i>216</i>&nbsp;     */
+<i>217</i>&nbsp;     private org.omg.CORBA.Object getIORUsingCorbaloc( INSURL corbalocObject )
+<i>218</i>&nbsp;     {
+<b class="nc"><i>219</i>&nbsp;        Map     profileMap = new HashMap();</b>
+<b class="nc"><i>220</i>&nbsp;        List    profileList1_0 = new ArrayList();</b>
+<i>221</i>&nbsp;
+<i>222</i>&nbsp;        // corbalocObject cannot be null, because it&#39;s validated during
+<i>223</i>&nbsp;        // parsing. So no null check is required.
+<b class="nc"><i>224</i>&nbsp;        java.util.List theEndpointInfo = corbalocObject.getEndpointInfo();</b>
+<b class="nc"><i>225</i>&nbsp;        String theKeyString = corbalocObject.getKeyString();</b>
+<i>226</i>&nbsp;        // If there is no KeyString then it&#39;s invalid
+<b class="nc"><i>227</i>&nbsp;        if( theKeyString == null ) {</b>
+<b class="nc"><i>228</i>&nbsp;            return null;</b>
+<i>229</i>&nbsp;        }
+<i>230</i>&nbsp;
+<b class="nc"><i>231</i>&nbsp;        ObjectKey key = orb.getObjectKeyFactory().create(</b>
+<b class="nc"><i>232</i>&nbsp;            theKeyString.getBytes() );</b>
+<b class="nc"><i>233</i>&nbsp;        IORTemplate iortemp = IORFactories.makeIORTemplate( key.getTemplate() );</b>
+<b class="nc"><i>234</i>&nbsp;        java.util.Iterator iterator = theEndpointInfo.iterator( );</b>
+<b class="nc"><i>235</i>&nbsp;        while( iterator.hasNext( ) ) {</b>
+<b class="nc"><i>236</i>&nbsp;            IIOPEndpointInfo element =</b>
+<b class="nc"><i>237</i>&nbsp;                (IIOPEndpointInfo) iterator.next( );</b>
+<b class="nc"><i>238</i>&nbsp;            IIOPAddress addr = IIOPFactories.makeIIOPAddress( orb, element.getHost(),</b>
+<b class="nc"><i>239</i>&nbsp;                element.getPort() );</b>
+<b class="nc"><i>240</i>&nbsp;            GIOPVersion giopVersion = GIOPVersion.getInstance( (byte)element.getMajor(),</b>
+<b class="nc"><i>241</i>&nbsp;                                             (byte)element.getMinor());</b>
+<b class="nc"><i>242</i>&nbsp;            IIOPProfileTemplate profileTemplate = null;</b>
+<b class="nc"><i>243</i>&nbsp;            if (giopVersion.equals(GIOPVersion.V1_0)) {</b>
+<b class="nc"><i>244</i>&nbsp;                profileTemplate = IIOPFactories.makeIIOPProfileTemplate(</b>
+<i>245</i>&nbsp;                    orb, giopVersion, addr);
+<b class="nc"><i>246</i>&nbsp;                profileList1_0.add(profileTemplate);</b>
+<i>247</i>&nbsp;            } else {
+<b class="nc"><i>248</i>&nbsp;                if (profileMap.get(giopVersion) == null) {</b>
+<b class="nc"><i>249</i>&nbsp;                    profileTemplate = IIOPFactories.makeIIOPProfileTemplate(</b>
+<i>250</i>&nbsp;                        orb, giopVersion, addr);
+<b class="nc"><i>251</i>&nbsp;                    profileMap.put(giopVersion, profileTemplate);</b>
+<i>252</i>&nbsp;                } else {
+<b class="nc"><i>253</i>&nbsp;                    profileTemplate = (IIOPProfileTemplate)profileMap.get(giopVersion);</b>
+<b class="nc"><i>254</i>&nbsp;                    AlternateIIOPAddressComponent iiopAddressComponent =</b>
+<b class="nc"><i>255</i>&nbsp;                                IIOPFactories.makeAlternateIIOPAddressComponent(addr);</b>
+<b class="nc"><i>256</i>&nbsp;                    profileTemplate.add(iiopAddressComponent);</b>
+<i>257</i>&nbsp;                }
+<i>258</i>&nbsp;            }
+<b class="nc"><i>259</i>&nbsp;        }</b>
+<i>260</i>&nbsp;
+<b class="nc"><i>261</i>&nbsp;        GIOPVersion giopVersion = orb.getORBData().getGIOPVersion();</b>
+<b class="nc"><i>262</i>&nbsp;        IIOPProfileTemplate pTemplate = (IIOPProfileTemplate)profileMap.get(giopVersion);</b>
+<b class="nc"><i>263</i>&nbsp;        if (pTemplate != null) {</b>
+<b class="nc"><i>264</i>&nbsp;            iortemp.add(pTemplate); // Add profile for GIOP version used by this ORB</b>
+<b class="nc"><i>265</i>&nbsp;            profileMap.remove(giopVersion); // Now remove this value from the map</b>
+<i>266</i>&nbsp;        }
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;        // Create a comparator that can sort in decending order (1.2, 1.1, ...)
+<b class="nc"><i>269</i>&nbsp;        Comparator comp = new Comparator() {</b>
+<i>270</i>&nbsp;            public int compare(Object o1, Object o2) {
+<b class="nc"><i>271</i>&nbsp;                GIOPVersion gv1 = (GIOPVersion)o1;</b>
+<b class="nc"><i>272</i>&nbsp;                GIOPVersion gv2 = (GIOPVersion)o2;</b>
+<b class="nc"><i>273</i>&nbsp;                return (gv1.lessThan(gv2) ? 1 : (gv1.equals(gv2) ? 0 : -1));</b>
+<i>274</i>&nbsp;            };
+<i>275</i>&nbsp;        };
+<i>276</i>&nbsp;
+<i>277</i>&nbsp;        // Now sort using the above comparator
+<b class="nc"><i>278</i>&nbsp;        List list = new ArrayList(profileMap.keySet());</b>
+<b class="nc"><i>279</i>&nbsp;        Collections.sort(list, comp);</b>
+<i>280</i>&nbsp;
+<i>281</i>&nbsp;        // Add the profiles in the sorted order
+<b class="nc"><i>282</i>&nbsp;        Iterator iter = list.iterator();</b>
+<b class="nc"><i>283</i>&nbsp;        while (iter.hasNext()) {</b>
+<b class="nc"><i>284</i>&nbsp;            IIOPProfileTemplate pt = (IIOPProfileTemplate)profileMap.get(iter.next());</b>
+<b class="nc"><i>285</i>&nbsp;            iortemp.add(pt);</b>
+<b class="nc"><i>286</i>&nbsp;        }</b>
+<i>287</i>&nbsp;
+<i>288</i>&nbsp;        // Finally add the 1.0 profiles
+<b class="nc"><i>289</i>&nbsp;        iortemp.addAll(profileList1_0);</b>
+<i>290</i>&nbsp;
+<b class="nc"><i>291</i>&nbsp;        IOR ior = iortemp.makeIOR( orb, &quot;&quot;, key.getId() ) ;</b>
+<b class="nc"><i>292</i>&nbsp;        return ORBUtility.makeObjectReference( ior ) ;</b>
+<i>293</i>&nbsp;    }
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;    /**
+<i>296</i>&nbsp;     *  This is required for corbaname: resolution. Currently we
+<i>297</i>&nbsp;     *  are not caching RootNamingContext as the reference to rootNamingContext
+<i>298</i>&nbsp;     *  may not be Persistent in all the implementations.
+<i>299</i>&nbsp;     *  _REVISIT_ to clear the rootNamingContext in case of COMM_FAILURE.
+<i>300</i>&nbsp;     *
+<i>301</i>&nbsp;     *  @return the org.omg.COSNaming.NamingContextExt if resolution is
+<i>302</i>&nbsp;     *   successful
+<i>303</i>&nbsp;     *
+<i>304</i>&nbsp;     */
+<i>305</i>&nbsp;    private NamingContextExt getDefaultRootNamingContext( ) {
+<b class="nc"><i>306</i>&nbsp;        synchronized( rootContextCacheLock ) {</b>
+<b class="nc"><i>307</i>&nbsp;            if( rootNamingContextExt == null ) {</b>
+<i>308</i>&nbsp;                try {
+<b class="nc"><i>309</i>&nbsp;                    rootNamingContextExt =</b>
+<b class="nc"><i>310</i>&nbsp;                        NamingContextExtHelper.narrow(</b>
+<b class="nc"><i>311</i>&nbsp;                        orb.getLocalResolver().resolve( &quot;NameService&quot; ) );</b>
+<b class="nc"><i>312</i>&nbsp;                } catch( Exception e ) {</b>
+<b class="nc"><i>313</i>&nbsp;                    rootNamingContextExt = null;</b>
+<b class="nc"><i>314</i>&nbsp;                }</b>
+<i>315</i>&nbsp;            }
+<b class="nc"><i>316</i>&nbsp;        }</b>
+<b class="nc"><i>317</i>&nbsp;        return rootNamingContextExt;</b>
+<i>318</i>&nbsp;    }
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;    /**
+<i>321</i>&nbsp;     *  A utility method to clear the RootNamingContext, if there is an
+<i>322</i>&nbsp;     *  exception in resolving CosNaming:Name from the RootNamingContext,
+<i>323</i>&nbsp;     */
+<i>324</i>&nbsp;    private void clearRootNamingContextCache( ) {
+<b class="nc"><i>325</i>&nbsp;        synchronized( rootContextCacheLock ) {</b>
+<b class="nc"><i>326</i>&nbsp;            rootNamingContextExt = null;</b>
+<b class="nc"><i>327</i>&nbsp;        }</b>
+<i>328</i>&nbsp;    }
+<i>329</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

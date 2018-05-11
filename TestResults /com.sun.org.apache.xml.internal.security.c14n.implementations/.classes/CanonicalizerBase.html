@@ -1,0 +1,975 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CanonicalizerBase</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.security.c14n.implementations</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CanonicalizerBase (com.sun.org.apache.xml.internal.security.c14n.implementations)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CanonicalizerBase</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 381)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one
+<i>7</i>&nbsp; * or more contributor license agreements. See the NOTICE file
+<i>8</i>&nbsp; * distributed with this work for additional information
+<i>9</i>&nbsp; * regarding copyright ownership. The ASF licenses this file
+<i>10</i>&nbsp; * to you under the Apache License, Version 2.0 (the
+<i>11</i>&nbsp; * &quot;License&quot;); you may not use this file except in compliance
+<i>12</i>&nbsp; * with the License. You may obtain a copy of the License at
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * http://www.apache.org/licenses/LICENSE-2.0
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; * Unless required by applicable law or agreed to in writing,
+<i>17</i>&nbsp; * software distributed under the License is distributed on an
+<i>18</i>&nbsp; * &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+<i>19</i>&nbsp; * KIND, either express or implied. See the License for the
+<i>20</i>&nbsp; * specific language governing permissions and limitations
+<i>21</i>&nbsp; * under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.security.c14n.implementations;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.io.ByteArrayOutputStream;
+<i>26</i>&nbsp;import java.io.IOException;
+<i>27</i>&nbsp;import java.io.OutputStream;
+<i>28</i>&nbsp;import java.io.UnsupportedEncodingException;
+<i>29</i>&nbsp;import java.util.ArrayList;
+<i>30</i>&nbsp;import java.util.HashMap;
+<i>31</i>&nbsp;import java.util.Iterator;
+<i>32</i>&nbsp;import java.util.List;
+<i>33</i>&nbsp;import java.util.ListIterator;
+<i>34</i>&nbsp;import java.util.Map;
+<i>35</i>&nbsp;import java.util.Set;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import javax.xml.parsers.ParserConfigurationException;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;import com.sun.org.apache.xml.internal.security.c14n.CanonicalizationException;
+<i>40</i>&nbsp;import com.sun.org.apache.xml.internal.security.c14n.CanonicalizerSpi;
+<i>41</i>&nbsp;import com.sun.org.apache.xml.internal.security.c14n.helper.AttrCompare;
+<i>42</i>&nbsp;import com.sun.org.apache.xml.internal.security.signature.NodeFilter;
+<i>43</i>&nbsp;import com.sun.org.apache.xml.internal.security.signature.XMLSignatureInput;
+<i>44</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.Constants;
+<i>45</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream;
+<i>46</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.XMLUtils;
+<i>47</i>&nbsp;import org.w3c.dom.Attr;
+<i>48</i>&nbsp;import org.w3c.dom.Comment;
+<i>49</i>&nbsp;import org.w3c.dom.Element;
+<i>50</i>&nbsp;import org.w3c.dom.Document;
+<i>51</i>&nbsp;import org.w3c.dom.NamedNodeMap;
+<i>52</i>&nbsp;import org.w3c.dom.Node;
+<i>53</i>&nbsp;import org.w3c.dom.ProcessingInstruction;
+<i>54</i>&nbsp;import org.xml.sax.SAXException;
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;/**
+<i>57</i>&nbsp; * Abstract base class for canonicalization algorithms.
+<i>58</i>&nbsp; *
+<i>59</i>&nbsp; * @author Christian Geuer-Pollmann &lt;geuerp@apache.org&gt;
+<i>60</i>&nbsp; */
+<i>61</i>&nbsp;public abstract class CanonicalizerBase extends CanonicalizerSpi {
+<i>62</i>&nbsp;    public static final String XML = &quot;xml&quot;;
+<i>63</i>&nbsp;    public static final String XMLNS = &quot;xmlns&quot;;
+<i>64</i>&nbsp;
+<b class="nc"><i>65</i>&nbsp;    protected static final AttrCompare COMPARE = new AttrCompare();</b>
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    // Make sure you clone the following mutable arrays before passing to
+<i>68</i>&nbsp;    // potentially untrusted objects such as OutputStreams.
+<b class="nc"><i>69</i>&nbsp;    private static final byte[] END_PI = {&#39;?&#39;,&#39;&gt;&#39;};</b>
+<b class="nc"><i>70</i>&nbsp;    private static final byte[] BEGIN_PI = {&#39;&lt;&#39;,&#39;?&#39;};</b>
+<b class="nc"><i>71</i>&nbsp;    private static final byte[] END_COMM = {&#39;-&#39;,&#39;-&#39;,&#39;&gt;&#39;};</b>
+<b class="nc"><i>72</i>&nbsp;    private static final byte[] BEGIN_COMM = {&#39;&lt;&#39;,&#39;!&#39;,&#39;-&#39;,&#39;-&#39;};</b>
+<b class="nc"><i>73</i>&nbsp;    private static final byte[] XA = {&#39;&amp;&#39;,&#39;#&#39;,&#39;x&#39;,&#39;A&#39;,&#39;;&#39;};</b>
+<b class="nc"><i>74</i>&nbsp;    private static final byte[] X9 = {&#39;&amp;&#39;,&#39;#&#39;,&#39;x&#39;,&#39;9&#39;,&#39;;&#39;};</b>
+<b class="nc"><i>75</i>&nbsp;    private static final byte[] QUOT = {&#39;&amp;&#39;,&#39;q&#39;,&#39;u&#39;,&#39;o&#39;,&#39;t&#39;,&#39;;&#39;};</b>
+<b class="nc"><i>76</i>&nbsp;    private static final byte[] XD = {&#39;&amp;&#39;,&#39;#&#39;,&#39;x&#39;,&#39;D&#39;,&#39;;&#39;};</b>
+<b class="nc"><i>77</i>&nbsp;    private static final byte[] GT = {&#39;&amp;&#39;,&#39;g&#39;,&#39;t&#39;,&#39;;&#39;};</b>
+<b class="nc"><i>78</i>&nbsp;    private static final byte[] LT = {&#39;&amp;&#39;,&#39;l&#39;,&#39;t&#39;,&#39;;&#39;};</b>
+<b class="nc"><i>79</i>&nbsp;    private static final byte[] END_TAG = {&#39;&lt;&#39;,&#39;/&#39;};</b>
+<b class="nc"><i>80</i>&nbsp;    private static final byte[] AMP = {&#39;&amp;&#39;,&#39;a&#39;,&#39;m&#39;,&#39;p&#39;,&#39;;&#39;};</b>
+<b class="nc"><i>81</i>&nbsp;    private static final byte[] EQUALS_STR = {&#39;=&#39;,&#39;\&quot;&#39;};</b>
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    protected static final int NODE_BEFORE_DOCUMENT_ELEMENT = -1;
+<i>84</i>&nbsp;    protected static final int NODE_NOT_BEFORE_OR_AFTER_DOCUMENT_ELEMENT = 0;
+<i>85</i>&nbsp;    protected static final int NODE_AFTER_DOCUMENT_ELEMENT = 1;
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    private List&lt;NodeFilter&gt; nodeFilter;
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    private boolean includeComments;
+<i>90</i>&nbsp;    private Set&lt;Node&gt; xpathNodeSet;
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;    /**
+<i>93</i>&nbsp;     * The node to be skipped/excluded from the DOM tree
+<i>94</i>&nbsp;     * in subtree canonicalizations.
+<i>95</i>&nbsp;     */
+<i>96</i>&nbsp;    private Node excludeNode;
+<b class="nc"><i>97</i>&nbsp;    private OutputStream writer = new ByteArrayOutputStream();</b>
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    /**
+<i>100</i>&nbsp;     * The null xmlns definition.
+<i>101</i>&nbsp;     */
+<i>102</i>&nbsp;    private Attr nullNode;
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    /**
+<i>105</i>&nbsp;     * Constructor CanonicalizerBase
+<i>106</i>&nbsp;     *
+<i>107</i>&nbsp;     * @param includeComments
+<i>108</i>&nbsp;     */
+<b class="nc"><i>109</i>&nbsp;    public CanonicalizerBase(boolean includeComments) {</b>
+<b class="nc"><i>110</i>&nbsp;        this.includeComments = includeComments;</b>
+<i>111</i>&nbsp;    }
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    /**
+<i>114</i>&nbsp;     * Method engineCanonicalizeSubTree
+<i>115</i>&nbsp;     * @inheritDoc
+<i>116</i>&nbsp;     * @param rootNode
+<i>117</i>&nbsp;     * @throws CanonicalizationException
+<i>118</i>&nbsp;     */
+<i>119</i>&nbsp;    public byte[] engineCanonicalizeSubTree(Node rootNode)
+<i>120</i>&nbsp;        throws CanonicalizationException {
+<b class="nc"><i>121</i>&nbsp;        return engineCanonicalizeSubTree(rootNode, (Node)null);</b>
+<i>122</i>&nbsp;    }
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;    /**
+<i>125</i>&nbsp;     * Method engineCanonicalizeXPathNodeSet
+<i>126</i>&nbsp;     * @inheritDoc
+<i>127</i>&nbsp;     * @param xpathNodeSet
+<i>128</i>&nbsp;     * @throws CanonicalizationException
+<i>129</i>&nbsp;     */
+<i>130</i>&nbsp;    public byte[] engineCanonicalizeXPathNodeSet(Set&lt;Node&gt; xpathNodeSet)
+<i>131</i>&nbsp;        throws CanonicalizationException {
+<b class="nc"><i>132</i>&nbsp;        this.xpathNodeSet = xpathNodeSet;</b>
+<b class="nc"><i>133</i>&nbsp;        return engineCanonicalizeXPathNodeSetInternal(XMLUtils.getOwnerDocument(this.xpathNodeSet));</b>
+<i>134</i>&nbsp;    }
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;    /**
+<i>137</i>&nbsp;     * Canonicalizes a Subtree node.
+<i>138</i>&nbsp;     * @param input the root of the subtree to canicalize
+<i>139</i>&nbsp;     * @return The canonicalize stream.
+<i>140</i>&nbsp;     * @throws CanonicalizationException
+<i>141</i>&nbsp;     */
+<i>142</i>&nbsp;    public byte[] engineCanonicalize(XMLSignatureInput input) throws CanonicalizationException {
+<i>143</i>&nbsp;        try {
+<b class="nc"><i>144</i>&nbsp;            if (input.isExcludeComments()) {</b>
+<b class="nc"><i>145</i>&nbsp;                includeComments = false;</b>
+<i>146</i>&nbsp;            }
+<b class="nc"><i>147</i>&nbsp;            if (input.isOctetStream()) {</b>
+<b class="nc"><i>148</i>&nbsp;                return engineCanonicalize(input.getBytes());</b>
+<i>149</i>&nbsp;            }
+<b class="nc"><i>150</i>&nbsp;            if (input.isElement()) {</b>
+<b class="nc"><i>151</i>&nbsp;                return engineCanonicalizeSubTree(input.getSubNode(), input.getExcludeNode());</b>
+<b class="nc"><i>152</i>&nbsp;            } else if (input.isNodeSet()) {</b>
+<b class="nc"><i>153</i>&nbsp;                nodeFilter = input.getNodeFilters();</b>
+<i>154</i>&nbsp;
+<b class="nc"><i>155</i>&nbsp;                circumventBugIfNeeded(input);</b>
+<i>156</i>&nbsp;
+<b class="nc"><i>157</i>&nbsp;                if (input.getSubNode() != null) {</b>
+<b class="nc"><i>158</i>&nbsp;                    return engineCanonicalizeXPathNodeSetInternal(input.getSubNode());</b>
+<i>159</i>&nbsp;                } else {
+<b class="nc"><i>160</i>&nbsp;                    return engineCanonicalizeXPathNodeSet(input.getNodeSet());</b>
+<i>161</i>&nbsp;                }
+<i>162</i>&nbsp;            }
+<b class="nc"><i>163</i>&nbsp;            return null;</b>
+<b class="nc"><i>164</i>&nbsp;        } catch (CanonicalizationException ex) {</b>
+<b class="nc"><i>165</i>&nbsp;            throw new CanonicalizationException(&quot;empty&quot;, ex);</b>
+<b class="nc"><i>166</i>&nbsp;        } catch (ParserConfigurationException ex) {</b>
+<b class="nc"><i>167</i>&nbsp;            throw new CanonicalizationException(&quot;empty&quot;, ex);</b>
+<b class="nc"><i>168</i>&nbsp;        } catch (IOException ex) {</b>
+<b class="nc"><i>169</i>&nbsp;            throw new CanonicalizationException(&quot;empty&quot;, ex);</b>
+<b class="nc"><i>170</i>&nbsp;        } catch (SAXException ex) {</b>
+<b class="nc"><i>171</i>&nbsp;            throw new CanonicalizationException(&quot;empty&quot;, ex);</b>
+<i>172</i>&nbsp;        }
+<i>173</i>&nbsp;    }
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;    /**
+<i>176</i>&nbsp;     * @param writer The writer to set.
+<i>177</i>&nbsp;     */
+<i>178</i>&nbsp;    public void setWriter(OutputStream writer) {
+<b class="nc"><i>179</i>&nbsp;        this.writer = writer;</b>
+<i>180</i>&nbsp;    }
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;    /**
+<i>183</i>&nbsp;     * Canonicalizes a Subtree node.
+<i>184</i>&nbsp;     *
+<i>185</i>&nbsp;     * @param rootNode
+<i>186</i>&nbsp;     *            the root of the subtree to canonicalize
+<i>187</i>&nbsp;     * @param excludeNode
+<i>188</i>&nbsp;     *            a node to be excluded from the canonicalize operation
+<i>189</i>&nbsp;     * @return The canonicalize stream.
+<i>190</i>&nbsp;     * @throws CanonicalizationException
+<i>191</i>&nbsp;     */
+<i>192</i>&nbsp;    protected byte[] engineCanonicalizeSubTree(Node rootNode, Node excludeNode)
+<i>193</i>&nbsp;        throws CanonicalizationException {
+<b class="nc"><i>194</i>&nbsp;        this.excludeNode = excludeNode;</b>
+<i>195</i>&nbsp;        try {
+<b class="nc"><i>196</i>&nbsp;            NameSpaceSymbTable ns = new NameSpaceSymbTable();</b>
+<b class="nc"><i>197</i>&nbsp;            int nodeLevel = NODE_BEFORE_DOCUMENT_ELEMENT;</b>
+<b class="nc"><i>198</i>&nbsp;            if (rootNode != null &amp;&amp; Node.ELEMENT_NODE == rootNode.getNodeType()) {</b>
+<i>199</i>&nbsp;                //Fills the nssymbtable with the definitions of the parent of the root subnode
+<b class="nc"><i>200</i>&nbsp;                getParentNameSpaces((Element)rootNode, ns);</b>
+<b class="nc"><i>201</i>&nbsp;                nodeLevel = NODE_NOT_BEFORE_OR_AFTER_DOCUMENT_ELEMENT;</b>
+<i>202</i>&nbsp;            }
+<b class="nc"><i>203</i>&nbsp;            this.canonicalizeSubTree(rootNode, ns, rootNode, nodeLevel);</b>
+<b class="nc"><i>204</i>&nbsp;            this.writer.flush();</b>
+<b class="nc"><i>205</i>&nbsp;            if (this.writer instanceof ByteArrayOutputStream) {</b>
+<b class="nc"><i>206</i>&nbsp;                byte[] result = ((ByteArrayOutputStream)this.writer).toByteArray();</b>
+<b class="nc"><i>207</i>&nbsp;                if (reset) {</b>
+<b class="nc"><i>208</i>&nbsp;                    ((ByteArrayOutputStream)this.writer).reset();</b>
+<i>209</i>&nbsp;                } else {
+<b class="nc"><i>210</i>&nbsp;                    this.writer.close();</b>
+<i>211</i>&nbsp;                }
+<b class="nc"><i>212</i>&nbsp;                return result;</b>
+<b class="nc"><i>213</i>&nbsp;            } else if (this.writer instanceof UnsyncByteArrayOutputStream) {</b>
+<b class="nc"><i>214</i>&nbsp;                byte[] result = ((UnsyncByteArrayOutputStream)this.writer).toByteArray();</b>
+<b class="nc"><i>215</i>&nbsp;                if (reset) {</b>
+<b class="nc"><i>216</i>&nbsp;                    ((UnsyncByteArrayOutputStream)this.writer).reset();</b>
+<i>217</i>&nbsp;                } else {
+<b class="nc"><i>218</i>&nbsp;                    this.writer.close();</b>
+<i>219</i>&nbsp;                }
+<b class="nc"><i>220</i>&nbsp;                return result;</b>
+<i>221</i>&nbsp;            } else {
+<b class="nc"><i>222</i>&nbsp;                this.writer.close();</b>
+<i>223</i>&nbsp;            }
+<b class="nc"><i>224</i>&nbsp;            return null;</b>
+<i>225</i>&nbsp;
+<b class="nc"><i>226</i>&nbsp;        } catch (UnsupportedEncodingException ex) {</b>
+<b class="nc"><i>227</i>&nbsp;            throw new CanonicalizationException(&quot;empty&quot;, ex);</b>
+<b class="nc"><i>228</i>&nbsp;        } catch (IOException ex) {</b>
+<b class="nc"><i>229</i>&nbsp;            throw new CanonicalizationException(&quot;empty&quot;, ex);</b>
+<i>230</i>&nbsp;        }
+<i>231</i>&nbsp;    }
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;    /**
+<i>235</i>&nbsp;     * Method canonicalizeSubTree, this function is a recursive one.
+<i>236</i>&nbsp;     *
+<i>237</i>&nbsp;     * @param currentNode
+<i>238</i>&nbsp;     * @param ns
+<i>239</i>&nbsp;     * @param endnode
+<i>240</i>&nbsp;     * @throws CanonicalizationException
+<i>241</i>&nbsp;     * @throws IOException
+<i>242</i>&nbsp;     */
+<i>243</i>&nbsp;    protected final void canonicalizeSubTree(
+<i>244</i>&nbsp;        Node currentNode, NameSpaceSymbTable ns, Node endnode, int documentLevel
+<i>245</i>&nbsp;    ) throws CanonicalizationException, IOException {
+<b class="nc"><i>246</i>&nbsp;        if (isVisibleInt(currentNode) == -1) {</b>
+<i>247</i>&nbsp;            return;
+<i>248</i>&nbsp;        }
+<b class="nc"><i>249</i>&nbsp;        Node sibling = null;</b>
+<b class="nc"><i>250</i>&nbsp;        Node parentNode = null;</b>
+<b class="nc"><i>251</i>&nbsp;        final OutputStream writer = this.writer;</b>
+<b class="nc"><i>252</i>&nbsp;        final Node excludeNode = this.excludeNode;</b>
+<b class="nc"><i>253</i>&nbsp;        final boolean includeComments = this.includeComments;</b>
+<b class="nc"><i>254</i>&nbsp;        Map&lt;String, byte[]&gt; cache = new HashMap&lt;String, byte[]&gt;();</b>
+<i>255</i>&nbsp;        do {
+<b class="nc"><i>256</i>&nbsp;            switch (currentNode.getNodeType()) {</b>
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;            case Node.ENTITY_NODE :
+<i>259</i>&nbsp;            case Node.NOTATION_NODE :
+<i>260</i>&nbsp;            case Node.ATTRIBUTE_NODE :
+<i>261</i>&nbsp;                // illegal node type during traversal
+<b class="nc"><i>262</i>&nbsp;                throw new CanonicalizationException(&quot;empty&quot;);</b>
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;            case Node.DOCUMENT_FRAGMENT_NODE :
+<i>265</i>&nbsp;            case Node.DOCUMENT_NODE :
+<b class="nc"><i>266</i>&nbsp;                ns.outputNodePush();</b>
+<b class="nc"><i>267</i>&nbsp;                sibling = currentNode.getFirstChild();</b>
+<b class="nc"><i>268</i>&nbsp;                break;</b>
+<i>269</i>&nbsp;
+<i>270</i>&nbsp;            case Node.COMMENT_NODE :
+<b class="nc"><i>271</i>&nbsp;                if (includeComments) {</b>
+<b class="nc"><i>272</i>&nbsp;                    outputCommentToWriter((Comment) currentNode, writer, documentLevel);</b>
+<i>273</i>&nbsp;                }
+<i>274</i>&nbsp;                break;
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;            case Node.PROCESSING_INSTRUCTION_NODE :
+<b class="nc"><i>277</i>&nbsp;                outputPItoWriter((ProcessingInstruction) currentNode, writer, documentLevel);</b>
+<b class="nc"><i>278</i>&nbsp;                break;</b>
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;            case Node.TEXT_NODE :
+<i>281</i>&nbsp;            case Node.CDATA_SECTION_NODE :
+<b class="nc"><i>282</i>&nbsp;                outputTextToWriter(currentNode.getNodeValue(), writer);</b>
+<b class="nc"><i>283</i>&nbsp;                break;</b>
+<i>284</i>&nbsp;
+<i>285</i>&nbsp;            case Node.ELEMENT_NODE :
+<b class="nc"><i>286</i>&nbsp;                documentLevel = NODE_NOT_BEFORE_OR_AFTER_DOCUMENT_ELEMENT;</b>
+<b class="nc"><i>287</i>&nbsp;                if (currentNode == excludeNode) {</b>
+<b class="nc"><i>288</i>&nbsp;                    break;</b>
+<i>289</i>&nbsp;                }
+<b class="nc"><i>290</i>&nbsp;                Element currentElement = (Element)currentNode;</b>
+<i>291</i>&nbsp;                //Add a level to the nssymbtable. So latter can be pop-back.
+<b class="nc"><i>292</i>&nbsp;                ns.outputNodePush();</b>
+<b class="nc"><i>293</i>&nbsp;                writer.write(&#39;&lt;&#39;);</b>
+<b class="nc"><i>294</i>&nbsp;                String name = currentElement.getTagName();</b>
+<b class="nc"><i>295</i>&nbsp;                UtfHelpper.writeByte(name, writer, cache);</b>
+<i>296</i>&nbsp;
+<b class="nc"><i>297</i>&nbsp;                Iterator&lt;Attr&gt; attrs = this.handleAttributesSubtree(currentElement, ns);</b>
+<b class="nc"><i>298</i>&nbsp;                if (attrs != null) {</b>
+<i>299</i>&nbsp;                    //we output all Attrs which are available
+<b class="nc"><i>300</i>&nbsp;                    while (attrs.hasNext()) {</b>
+<b class="nc"><i>301</i>&nbsp;                        Attr attr = attrs.next();</b>
+<b class="nc"><i>302</i>&nbsp;                        outputAttrToWriter(attr.getNodeName(), attr.getNodeValue(), writer, cache);</b>
+<b class="nc"><i>303</i>&nbsp;                    }</b>
+<i>304</i>&nbsp;                }
+<b class="nc"><i>305</i>&nbsp;                writer.write(&#39;&gt;&#39;);</b>
+<b class="nc"><i>306</i>&nbsp;                sibling = currentNode.getFirstChild();</b>
+<b class="nc"><i>307</i>&nbsp;                if (sibling == null) {</b>
+<b class="nc"><i>308</i>&nbsp;                    writer.write(END_TAG.clone());</b>
+<b class="nc"><i>309</i>&nbsp;                    UtfHelpper.writeStringToUtf8(name, writer);</b>
+<b class="nc"><i>310</i>&nbsp;                    writer.write(&#39;&gt;&#39;);</b>
+<i>311</i>&nbsp;                    //We finished with this level, pop to the previous definitions.
+<b class="nc"><i>312</i>&nbsp;                    ns.outputNodePop();</b>
+<b class="nc"><i>313</i>&nbsp;                    if (parentNode != null) {</b>
+<b class="nc"><i>314</i>&nbsp;                        sibling = currentNode.getNextSibling();</b>
+<i>315</i>&nbsp;                    }
+<i>316</i>&nbsp;                } else {
+<b class="nc"><i>317</i>&nbsp;                    parentNode = currentElement;</b>
+<i>318</i>&nbsp;                }
+<b class="nc"><i>319</i>&nbsp;                break;</b>
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;            case Node.DOCUMENT_TYPE_NODE :
+<i>322</i>&nbsp;            default :
+<i>323</i>&nbsp;                break;
+<i>324</i>&nbsp;            }
+<b class="nc"><i>325</i>&nbsp;            while (sibling == null &amp;&amp; parentNode != null) {</b>
+<b class="nc"><i>326</i>&nbsp;                writer.write(END_TAG.clone());</b>
+<b class="nc"><i>327</i>&nbsp;                UtfHelpper.writeByte(((Element)parentNode).getTagName(), writer, cache);</b>
+<b class="nc"><i>328</i>&nbsp;                writer.write(&#39;&gt;&#39;);</b>
+<i>329</i>&nbsp;                //We finished with this level, pop to the previous definitions.
+<b class="nc"><i>330</i>&nbsp;                ns.outputNodePop();</b>
+<b class="nc"><i>331</i>&nbsp;                if (parentNode == endnode) {</b>
+<i>332</i>&nbsp;                    return;
+<i>333</i>&nbsp;                }
+<b class="nc"><i>334</i>&nbsp;                sibling = parentNode.getNextSibling();</b>
+<b class="nc"><i>335</i>&nbsp;                parentNode = parentNode.getParentNode();</b>
+<b class="nc"><i>336</i>&nbsp;                if (parentNode == null || Node.ELEMENT_NODE != parentNode.getNodeType()) {</b>
+<b class="nc"><i>337</i>&nbsp;                    documentLevel = NODE_AFTER_DOCUMENT_ELEMENT;</b>
+<b class="nc"><i>338</i>&nbsp;                    parentNode = null;</b>
+<i>339</i>&nbsp;                }
+<i>340</i>&nbsp;            }
+<b class="nc"><i>341</i>&nbsp;            if (sibling == null) {</b>
+<i>342</i>&nbsp;                return;
+<i>343</i>&nbsp;            }
+<b class="nc"><i>344</i>&nbsp;            currentNode = sibling;</b>
+<b class="nc"><i>345</i>&nbsp;            sibling = currentNode.getNextSibling();</b>
+<b class="nc"><i>346</i>&nbsp;        } while(true);</b>
+<i>347</i>&nbsp;    }
+<i>348</i>&nbsp;
+<i>349</i>&nbsp;
+<i>350</i>&nbsp;    private byte[] engineCanonicalizeXPathNodeSetInternal(Node doc)
+<i>351</i>&nbsp;        throws CanonicalizationException {
+<i>352</i>&nbsp;        try {
+<b class="nc"><i>353</i>&nbsp;            this.canonicalizeXPathNodeSet(doc, doc);</b>
+<b class="nc"><i>354</i>&nbsp;            this.writer.flush();</b>
+<b class="nc"><i>355</i>&nbsp;            if (this.writer instanceof ByteArrayOutputStream) {</b>
+<b class="nc"><i>356</i>&nbsp;                byte[] sol = ((ByteArrayOutputStream)this.writer).toByteArray();</b>
+<b class="nc"><i>357</i>&nbsp;                if (reset) {</b>
+<b class="nc"><i>358</i>&nbsp;                    ((ByteArrayOutputStream)this.writer).reset();</b>
+<i>359</i>&nbsp;                } else {
+<b class="nc"><i>360</i>&nbsp;                    this.writer.close();</b>
+<i>361</i>&nbsp;                }
+<b class="nc"><i>362</i>&nbsp;                return sol;</b>
+<b class="nc"><i>363</i>&nbsp;            } else if (this.writer instanceof UnsyncByteArrayOutputStream) {</b>
+<b class="nc"><i>364</i>&nbsp;                byte[] result = ((UnsyncByteArrayOutputStream)this.writer).toByteArray();</b>
+<b class="nc"><i>365</i>&nbsp;                if (reset) {</b>
+<b class="nc"><i>366</i>&nbsp;                    ((UnsyncByteArrayOutputStream)this.writer).reset();</b>
+<i>367</i>&nbsp;                } else {
+<b class="nc"><i>368</i>&nbsp;                    this.writer.close();</b>
+<i>369</i>&nbsp;                }
+<b class="nc"><i>370</i>&nbsp;                return result;</b>
+<i>371</i>&nbsp;            } else {
+<b class="nc"><i>372</i>&nbsp;                this.writer.close();</b>
+<i>373</i>&nbsp;            }
+<b class="nc"><i>374</i>&nbsp;            return null;</b>
+<b class="nc"><i>375</i>&nbsp;        } catch (UnsupportedEncodingException ex) {</b>
+<b class="nc"><i>376</i>&nbsp;            throw new CanonicalizationException(&quot;empty&quot;, ex);</b>
+<b class="nc"><i>377</i>&nbsp;        } catch (IOException ex) {</b>
+<b class="nc"><i>378</i>&nbsp;            throw new CanonicalizationException(&quot;empty&quot;, ex);</b>
+<i>379</i>&nbsp;        }
+<i>380</i>&nbsp;    }
+<i>381</i>&nbsp;
+<i>382</i>&nbsp;    /**
+<i>383</i>&nbsp;     * Canonicalizes all the nodes included in the currentNode and contained in the
+<i>384</i>&nbsp;     * xpathNodeSet field.
+<i>385</i>&nbsp;     *
+<i>386</i>&nbsp;     * @param currentNode
+<i>387</i>&nbsp;     * @param endnode
+<i>388</i>&nbsp;     * @throws CanonicalizationException
+<i>389</i>&nbsp;     * @throws IOException
+<i>390</i>&nbsp;     */
+<i>391</i>&nbsp;    protected final void canonicalizeXPathNodeSet(Node currentNode, Node endnode)
+<i>392</i>&nbsp;        throws CanonicalizationException, IOException {
+<b class="nc"><i>393</i>&nbsp;        if (isVisibleInt(currentNode) == -1) {</b>
+<i>394</i>&nbsp;            return;
+<i>395</i>&nbsp;        }
+<b class="nc"><i>396</i>&nbsp;        boolean currentNodeIsVisible = false;</b>
+<b class="nc"><i>397</i>&nbsp;        NameSpaceSymbTable ns = new NameSpaceSymbTable();</b>
+<b class="nc"><i>398</i>&nbsp;        if (currentNode != null &amp;&amp; Node.ELEMENT_NODE == currentNode.getNodeType()) {</b>
+<b class="nc"><i>399</i>&nbsp;            getParentNameSpaces((Element)currentNode, ns);</b>
+<i>400</i>&nbsp;        }
+<b class="nc"><i>401</i>&nbsp;        if (currentNode == null) {</b>
+<i>402</i>&nbsp;            return;
+<i>403</i>&nbsp;        }
+<b class="nc"><i>404</i>&nbsp;        Node sibling = null;</b>
+<b class="nc"><i>405</i>&nbsp;        Node parentNode = null;</b>
+<b class="nc"><i>406</i>&nbsp;        OutputStream writer = this.writer;</b>
+<b class="nc"><i>407</i>&nbsp;        int documentLevel = NODE_BEFORE_DOCUMENT_ELEMENT;</b>
+<b class="nc"><i>408</i>&nbsp;        Map&lt;String, byte[]&gt; cache = new HashMap&lt;String, byte[]&gt;();</b>
+<i>409</i>&nbsp;        do {
+<b class="nc"><i>410</i>&nbsp;            switch (currentNode.getNodeType()) {</b>
+<i>411</i>&nbsp;
+<i>412</i>&nbsp;            case Node.ENTITY_NODE :
+<i>413</i>&nbsp;            case Node.NOTATION_NODE :
+<i>414</i>&nbsp;            case Node.ATTRIBUTE_NODE :
+<i>415</i>&nbsp;                // illegal node type during traversal
+<b class="nc"><i>416</i>&nbsp;                throw new CanonicalizationException(&quot;empty&quot;);</b>
+<i>417</i>&nbsp;
+<i>418</i>&nbsp;            case Node.DOCUMENT_FRAGMENT_NODE :
+<i>419</i>&nbsp;            case Node.DOCUMENT_NODE :
+<b class="nc"><i>420</i>&nbsp;                ns.outputNodePush();</b>
+<b class="nc"><i>421</i>&nbsp;                sibling = currentNode.getFirstChild();</b>
+<b class="nc"><i>422</i>&nbsp;                break;</b>
+<i>423</i>&nbsp;
+<i>424</i>&nbsp;            case Node.COMMENT_NODE :
+<b class="nc"><i>425</i>&nbsp;                if (this.includeComments &amp;&amp; (isVisibleDO(currentNode, ns.getLevel()) == 1)) {</b>
+<b class="nc"><i>426</i>&nbsp;                    outputCommentToWriter((Comment) currentNode, writer, documentLevel);</b>
+<i>427</i>&nbsp;                }
+<i>428</i>&nbsp;                break;
+<i>429</i>&nbsp;
+<i>430</i>&nbsp;            case Node.PROCESSING_INSTRUCTION_NODE :
+<b class="nc"><i>431</i>&nbsp;                if (isVisible(currentNode)) {</b>
+<b class="nc"><i>432</i>&nbsp;                    outputPItoWriter((ProcessingInstruction) currentNode, writer, documentLevel);</b>
+<i>433</i>&nbsp;                }
+<i>434</i>&nbsp;                break;
+<i>435</i>&nbsp;
+<i>436</i>&nbsp;            case Node.TEXT_NODE :
+<i>437</i>&nbsp;            case Node.CDATA_SECTION_NODE :
+<b class="nc"><i>438</i>&nbsp;                if (isVisible(currentNode)) {</b>
+<b class="nc"><i>439</i>&nbsp;                    outputTextToWriter(currentNode.getNodeValue(), writer);</b>
+<b class="nc"><i>440</i>&nbsp;                    for (Node nextSibling = currentNode.getNextSibling();</b>
+<b class="nc"><i>441</i>&nbsp;                        (nextSibling != null) &amp;&amp; ((nextSibling.getNodeType() == Node.TEXT_NODE)</b>
+<b class="nc"><i>442</i>&nbsp;                            || (nextSibling.getNodeType() == Node.CDATA_SECTION_NODE));</b>
+<b class="nc"><i>443</i>&nbsp;                        nextSibling = nextSibling.getNextSibling()) {</b>
+<b class="nc"><i>444</i>&nbsp;                        outputTextToWriter(nextSibling.getNodeValue(), writer);</b>
+<b class="nc"><i>445</i>&nbsp;                        currentNode = nextSibling;</b>
+<b class="nc"><i>446</i>&nbsp;                        sibling = currentNode.getNextSibling();</b>
+<i>447</i>&nbsp;                    }
+<i>448</i>&nbsp;                }
+<i>449</i>&nbsp;                break;
+<i>450</i>&nbsp;
+<i>451</i>&nbsp;            case Node.ELEMENT_NODE :
+<b class="nc"><i>452</i>&nbsp;                documentLevel = NODE_NOT_BEFORE_OR_AFTER_DOCUMENT_ELEMENT;</b>
+<b class="nc"><i>453</i>&nbsp;                Element currentElement = (Element) currentNode;</b>
+<i>454</i>&nbsp;                //Add a level to the nssymbtable. So latter can be pop-back.
+<b class="nc"><i>455</i>&nbsp;                String name = null;</b>
+<b class="nc"><i>456</i>&nbsp;                int i = isVisibleDO(currentNode, ns.getLevel());</b>
+<b class="nc"><i>457</i>&nbsp;                if (i == -1) {</b>
+<b class="nc"><i>458</i>&nbsp;                    sibling = currentNode.getNextSibling();</b>
+<b class="nc"><i>459</i>&nbsp;                    break;</b>
+<i>460</i>&nbsp;                }
+<b class="nc"><i>461</i>&nbsp;                currentNodeIsVisible = (i == 1);</b>
+<b class="nc"><i>462</i>&nbsp;                if (currentNodeIsVisible) {</b>
+<b class="nc"><i>463</i>&nbsp;                    ns.outputNodePush();</b>
+<b class="nc"><i>464</i>&nbsp;                    writer.write(&#39;&lt;&#39;);</b>
+<b class="nc"><i>465</i>&nbsp;                    name = currentElement.getTagName();</b>
+<b class="nc"><i>466</i>&nbsp;                    UtfHelpper.writeByte(name, writer, cache);</b>
+<i>467</i>&nbsp;                } else {
+<b class="nc"><i>468</i>&nbsp;                    ns.push();</b>
+<i>469</i>&nbsp;                }
+<i>470</i>&nbsp;
+<b class="nc"><i>471</i>&nbsp;                Iterator&lt;Attr&gt; attrs = handleAttributes(currentElement,ns);</b>
+<b class="nc"><i>472</i>&nbsp;                if (attrs != null) {</b>
+<i>473</i>&nbsp;                    //we output all Attrs which are available
+<b class="nc"><i>474</i>&nbsp;                    while (attrs.hasNext()) {</b>
+<b class="nc"><i>475</i>&nbsp;                        Attr attr = attrs.next();</b>
+<b class="nc"><i>476</i>&nbsp;                        outputAttrToWriter(attr.getNodeName(), attr.getNodeValue(), writer, cache);</b>
+<b class="nc"><i>477</i>&nbsp;                    }</b>
+<i>478</i>&nbsp;                }
+<b class="nc"><i>479</i>&nbsp;                if (currentNodeIsVisible) {</b>
+<b class="nc"><i>480</i>&nbsp;                    writer.write(&#39;&gt;&#39;);</b>
+<i>481</i>&nbsp;                }
+<b class="nc"><i>482</i>&nbsp;                sibling = currentNode.getFirstChild();</b>
+<i>483</i>&nbsp;
+<b class="nc"><i>484</i>&nbsp;                if (sibling == null) {</b>
+<b class="nc"><i>485</i>&nbsp;                    if (currentNodeIsVisible) {</b>
+<b class="nc"><i>486</i>&nbsp;                        writer.write(END_TAG.clone());</b>
+<b class="nc"><i>487</i>&nbsp;                        UtfHelpper.writeByte(name, writer, cache);</b>
+<b class="nc"><i>488</i>&nbsp;                        writer.write(&#39;&gt;&#39;);</b>
+<i>489</i>&nbsp;                        //We finished with this level, pop to the previous definitions.
+<b class="nc"><i>490</i>&nbsp;                        ns.outputNodePop();</b>
+<i>491</i>&nbsp;                    } else {
+<b class="nc"><i>492</i>&nbsp;                        ns.pop();</b>
+<i>493</i>&nbsp;                    }
+<b class="nc"><i>494</i>&nbsp;                    if (parentNode != null) {</b>
+<b class="nc"><i>495</i>&nbsp;                        sibling = currentNode.getNextSibling();</b>
+<i>496</i>&nbsp;                    }
+<i>497</i>&nbsp;                } else {
+<b class="nc"><i>498</i>&nbsp;                    parentNode = currentElement;</b>
+<i>499</i>&nbsp;                }
+<b class="nc"><i>500</i>&nbsp;                break;</b>
+<i>501</i>&nbsp;
+<i>502</i>&nbsp;            case Node.DOCUMENT_TYPE_NODE :
+<i>503</i>&nbsp;            default :
+<i>504</i>&nbsp;                break;
+<i>505</i>&nbsp;            }
+<b class="nc"><i>506</i>&nbsp;            while (sibling == null &amp;&amp; parentNode != null) {</b>
+<b class="nc"><i>507</i>&nbsp;                if (isVisible(parentNode)) {</b>
+<b class="nc"><i>508</i>&nbsp;                    writer.write(END_TAG.clone());</b>
+<b class="nc"><i>509</i>&nbsp;                    UtfHelpper.writeByte(((Element)parentNode).getTagName(), writer, cache);</b>
+<b class="nc"><i>510</i>&nbsp;                    writer.write(&#39;&gt;&#39;);</b>
+<i>511</i>&nbsp;                    //We finished with this level, pop to the previous definitions.
+<b class="nc"><i>512</i>&nbsp;                    ns.outputNodePop();</b>
+<i>513</i>&nbsp;                } else {
+<b class="nc"><i>514</i>&nbsp;                    ns.pop();</b>
+<i>515</i>&nbsp;                }
+<b class="nc"><i>516</i>&nbsp;                if (parentNode == endnode) {</b>
+<i>517</i>&nbsp;                    return;
+<i>518</i>&nbsp;                }
+<b class="nc"><i>519</i>&nbsp;                sibling = parentNode.getNextSibling();</b>
+<b class="nc"><i>520</i>&nbsp;                parentNode = parentNode.getParentNode();</b>
+<b class="nc"><i>521</i>&nbsp;                if (parentNode == null || Node.ELEMENT_NODE != parentNode.getNodeType()) {</b>
+<b class="nc"><i>522</i>&nbsp;                    parentNode = null;</b>
+<b class="nc"><i>523</i>&nbsp;                    documentLevel = NODE_AFTER_DOCUMENT_ELEMENT;</b>
+<i>524</i>&nbsp;                }
+<i>525</i>&nbsp;            }
+<b class="nc"><i>526</i>&nbsp;            if (sibling == null) {</b>
+<i>527</i>&nbsp;                return;
+<i>528</i>&nbsp;            }
+<b class="nc"><i>529</i>&nbsp;            currentNode = sibling;</b>
+<b class="nc"><i>530</i>&nbsp;            sibling = currentNode.getNextSibling();</b>
+<b class="nc"><i>531</i>&nbsp;        } while(true);</b>
+<i>532</i>&nbsp;    }
+<i>533</i>&nbsp;
+<i>534</i>&nbsp;    protected int isVisibleDO(Node currentNode, int level) {
+<b class="nc"><i>535</i>&nbsp;        if (nodeFilter != null) {</b>
+<b class="nc"><i>536</i>&nbsp;            Iterator&lt;NodeFilter&gt; it = nodeFilter.iterator();</b>
+<b class="nc"><i>537</i>&nbsp;            while (it.hasNext()) {</b>
+<b class="nc"><i>538</i>&nbsp;                int i = (it.next()).isNodeIncludeDO(currentNode, level);</b>
+<b class="nc"><i>539</i>&nbsp;                if (i != 1) {</b>
+<b class="nc"><i>540</i>&nbsp;                    return i;</b>
+<i>541</i>&nbsp;                }
+<b class="nc"><i>542</i>&nbsp;            }</b>
+<i>543</i>&nbsp;        }
+<b class="nc"><i>544</i>&nbsp;        if ((this.xpathNodeSet != null) &amp;&amp; !this.xpathNodeSet.contains(currentNode)) {</b>
+<b class="nc"><i>545</i>&nbsp;            return 0;</b>
+<i>546</i>&nbsp;        }
+<b class="nc"><i>547</i>&nbsp;        return 1;</b>
+<i>548</i>&nbsp;    }
+<i>549</i>&nbsp;
+<i>550</i>&nbsp;    protected int isVisibleInt(Node currentNode) {
+<b class="nc"><i>551</i>&nbsp;        if (nodeFilter != null) {</b>
+<b class="nc"><i>552</i>&nbsp;            Iterator&lt;NodeFilter&gt; it = nodeFilter.iterator();</b>
+<b class="nc"><i>553</i>&nbsp;            while (it.hasNext()) {</b>
+<b class="nc"><i>554</i>&nbsp;                int i = (it.next()).isNodeInclude(currentNode);</b>
+<b class="nc"><i>555</i>&nbsp;                if (i != 1) {</b>
+<b class="nc"><i>556</i>&nbsp;                    return i;</b>
+<i>557</i>&nbsp;                }
+<b class="nc"><i>558</i>&nbsp;            }</b>
+<i>559</i>&nbsp;        }
+<b class="nc"><i>560</i>&nbsp;        if ((this.xpathNodeSet != null) &amp;&amp; !this.xpathNodeSet.contains(currentNode)) {</b>
+<b class="nc"><i>561</i>&nbsp;            return 0;</b>
+<i>562</i>&nbsp;        }
+<b class="nc"><i>563</i>&nbsp;        return 1;</b>
+<i>564</i>&nbsp;    }
+<i>565</i>&nbsp;
+<i>566</i>&nbsp;    protected boolean isVisible(Node currentNode) {
+<b class="nc"><i>567</i>&nbsp;        if (nodeFilter != null) {</b>
+<b class="nc"><i>568</i>&nbsp;            Iterator&lt;NodeFilter&gt; it = nodeFilter.iterator();</b>
+<b class="nc"><i>569</i>&nbsp;            while (it.hasNext()) {</b>
+<b class="nc"><i>570</i>&nbsp;                if (it.next().isNodeInclude(currentNode) != 1) {</b>
+<b class="nc"><i>571</i>&nbsp;                    return false;</b>
+<i>572</i>&nbsp;                }
+<i>573</i>&nbsp;            }
+<i>574</i>&nbsp;        }
+<b class="nc"><i>575</i>&nbsp;        if ((this.xpathNodeSet != null) &amp;&amp; !this.xpathNodeSet.contains(currentNode)) {</b>
+<b class="nc"><i>576</i>&nbsp;            return false;</b>
+<i>577</i>&nbsp;        }
+<b class="nc"><i>578</i>&nbsp;        return true;</b>
+<i>579</i>&nbsp;    }
+<i>580</i>&nbsp;
+<i>581</i>&nbsp;    protected void handleParent(Element e, NameSpaceSymbTable ns) {
+<b class="nc"><i>582</i>&nbsp;        if (!e.hasAttributes() &amp;&amp; e.getNamespaceURI() == null) {</b>
+<i>583</i>&nbsp;            return;
+<i>584</i>&nbsp;        }
+<b class="nc"><i>585</i>&nbsp;        NamedNodeMap attrs = e.getAttributes();</b>
+<b class="nc"><i>586</i>&nbsp;        int attrsLength = attrs.getLength();</b>
+<b class="nc"><i>587</i>&nbsp;        for (int i = 0; i &lt; attrsLength; i++) {</b>
+<b class="nc"><i>588</i>&nbsp;            Attr attribute = (Attr) attrs.item(i);</b>
+<b class="nc"><i>589</i>&nbsp;            String NName = attribute.getLocalName();</b>
+<b class="nc"><i>590</i>&nbsp;            String NValue = attribute.getNodeValue();</b>
+<i>591</i>&nbsp;
+<b class="nc"><i>592</i>&nbsp;            if (Constants.NamespaceSpecNS.equals(attribute.getNamespaceURI())</b>
+<b class="nc"><i>593</i>&nbsp;                &amp;&amp; (!XML.equals(NName) || !Constants.XML_LANG_SPACE_SpecNS.equals(NValue))) {</b>
+<b class="nc"><i>594</i>&nbsp;                ns.addMapping(NName, NValue, attribute);</b>
+<i>595</i>&nbsp;            }
+<i>596</i>&nbsp;        }
+<b class="nc"><i>597</i>&nbsp;        if (e.getNamespaceURI() != null) {</b>
+<b class="nc"><i>598</i>&nbsp;            String NName = e.getPrefix();</b>
+<b class="nc"><i>599</i>&nbsp;            String NValue = e.getNamespaceURI();</b>
+<i>600</i>&nbsp;            String Name;
+<b class="nc"><i>601</i>&nbsp;            if (NName == null || NName.equals(&quot;&quot;)) {</b>
+<b class="nc"><i>602</i>&nbsp;                NName = XMLNS;</b>
+<b class="nc"><i>603</i>&nbsp;                Name = XMLNS;</b>
+<i>604</i>&nbsp;            } else {
+<b class="nc"><i>605</i>&nbsp;                Name = XMLNS + &quot;:&quot; + NName;</b>
+<i>606</i>&nbsp;            }
+<b class="nc"><i>607</i>&nbsp;            Attr n = e.getOwnerDocument().createAttributeNS(&quot;http://www.w3.org/2000/xmlns/&quot;, Name);</b>
+<b class="nc"><i>608</i>&nbsp;            n.setValue(NValue);</b>
+<b class="nc"><i>609</i>&nbsp;            ns.addMapping(NName, NValue, n);</b>
+<i>610</i>&nbsp;        }
+<i>611</i>&nbsp;    }
+<i>612</i>&nbsp;
+<i>613</i>&nbsp;    /**
+<i>614</i>&nbsp;     * Adds to ns the definitions from the parent elements of el
+<i>615</i>&nbsp;     * @param el
+<i>616</i>&nbsp;     * @param ns
+<i>617</i>&nbsp;     */
+<i>618</i>&nbsp;    protected final void getParentNameSpaces(Element el, NameSpaceSymbTable ns)  {
+<b class="nc"><i>619</i>&nbsp;        Node n1 = el.getParentNode();</b>
+<b class="nc"><i>620</i>&nbsp;        if (n1 == null || Node.ELEMENT_NODE != n1.getNodeType()) {</b>
+<i>621</i>&nbsp;            return;
+<i>622</i>&nbsp;        }
+<i>623</i>&nbsp;        //Obtain all the parents of the element
+<b class="nc"><i>624</i>&nbsp;        List&lt;Element&gt; parents = new ArrayList&lt;Element&gt;();</b>
+<b class="nc"><i>625</i>&nbsp;        Node parent = n1;</b>
+<b class="nc"><i>626</i>&nbsp;        while (parent != null &amp;&amp; Node.ELEMENT_NODE == parent.getNodeType()) {</b>
+<b class="nc"><i>627</i>&nbsp;            parents.add((Element)parent);</b>
+<b class="nc"><i>628</i>&nbsp;            parent = parent.getParentNode();</b>
+<i>629</i>&nbsp;        }
+<i>630</i>&nbsp;        //Visit them in reverse order.
+<b class="nc"><i>631</i>&nbsp;        ListIterator&lt;Element&gt; it = parents.listIterator(parents.size());</b>
+<b class="nc"><i>632</i>&nbsp;        while (it.hasPrevious()) {</b>
+<b class="nc"><i>633</i>&nbsp;            Element ele = it.previous();</b>
+<b class="nc"><i>634</i>&nbsp;            handleParent(ele, ns);</b>
+<b class="nc"><i>635</i>&nbsp;        }</b>
+<b class="nc"><i>636</i>&nbsp;        parents.clear();</b>
+<i>637</i>&nbsp;        Attr nsprefix;
+<b class="nc"><i>638</i>&nbsp;        if (((nsprefix = ns.getMappingWithoutRendered(XMLNS)) != null)</b>
+<b class="nc"><i>639</i>&nbsp;                &amp;&amp; &quot;&quot;.equals(nsprefix.getValue())) {</b>
+<b class="nc"><i>640</i>&nbsp;            ns.addMappingAndRender(</b>
+<b class="nc"><i>641</i>&nbsp;                    XMLNS, &quot;&quot;, getNullNode(nsprefix.getOwnerDocument()));</b>
+<i>642</i>&nbsp;        }
+<i>643</i>&nbsp;    }
+<i>644</i>&nbsp;
+<i>645</i>&nbsp;    /**
+<i>646</i>&nbsp;     * Obtain the attributes to output for this node in XPathNodeSet c14n.
+<i>647</i>&nbsp;     *
+<i>648</i>&nbsp;     * @param element
+<i>649</i>&nbsp;     * @param ns
+<i>650</i>&nbsp;     * @return the attributes nodes to output.
+<i>651</i>&nbsp;     * @throws CanonicalizationException
+<i>652</i>&nbsp;     */
+<i>653</i>&nbsp;    abstract Iterator&lt;Attr&gt; handleAttributes(Element element, NameSpaceSymbTable ns)
+<i>654</i>&nbsp;        throws CanonicalizationException;
+<i>655</i>&nbsp;
+<i>656</i>&nbsp;    /**
+<i>657</i>&nbsp;     * Obtain the attributes to output for this node in a Subtree c14n.
+<i>658</i>&nbsp;     *
+<i>659</i>&nbsp;     * @param element
+<i>660</i>&nbsp;     * @param ns
+<i>661</i>&nbsp;     * @return the attributes nodes to output.
+<i>662</i>&nbsp;     * @throws CanonicalizationException
+<i>663</i>&nbsp;     */
+<i>664</i>&nbsp;    abstract Iterator&lt;Attr&gt; handleAttributesSubtree(Element element, NameSpaceSymbTable ns)
+<i>665</i>&nbsp;        throws CanonicalizationException;
+<i>666</i>&nbsp;
+<i>667</i>&nbsp;    abstract void circumventBugIfNeeded(XMLSignatureInput input)
+<i>668</i>&nbsp;        throws CanonicalizationException, ParserConfigurationException, IOException, SAXException;
+<i>669</i>&nbsp;
+<i>670</i>&nbsp;    /**
+<i>671</i>&nbsp;     * Outputs an Attribute to the internal Writer.
+<i>672</i>&nbsp;     *
+<i>673</i>&nbsp;     * The string value of the node is modified by replacing
+<i>674</i>&nbsp;     * &lt;UL&gt;
+<i>675</i>&nbsp;     * &lt;LI&gt;all ampersands (&amp;) with &lt;CODE&gt;&amp;amp;amp;&lt;/CODE&gt;&lt;/LI&gt;
+<i>676</i>&nbsp;     * &lt;LI&gt;all open angle brackets (&lt;) with &lt;CODE&gt;&amp;amp;lt;&lt;/CODE&gt;&lt;/LI&gt;
+<i>677</i>&nbsp;     * &lt;LI&gt;all quotation mark characters with &lt;CODE&gt;&amp;amp;quot;&lt;/CODE&gt;&lt;/LI&gt;
+<i>678</i>&nbsp;     * &lt;LI&gt;and the whitespace characters &lt;CODE&gt;#x9&lt;/CODE&gt;, #xA, and #xD, with character
+<i>679</i>&nbsp;     * references. The character references are written in uppercase
+<i>680</i>&nbsp;     * hexadecimal with no leading zeroes (for example, &lt;CODE&gt;#xD&lt;/CODE&gt; is represented
+<i>681</i>&nbsp;     * by the character reference &lt;CODE&gt;&amp;amp;#xD;&lt;/CODE&gt;)&lt;/LI&gt;
+<i>682</i>&nbsp;     * &lt;/UL&gt;
+<i>683</i>&nbsp;     *
+<i>684</i>&nbsp;     * @param name
+<i>685</i>&nbsp;     * @param value
+<i>686</i>&nbsp;     * @param writer
+<i>687</i>&nbsp;     * @throws IOException
+<i>688</i>&nbsp;     */
+<i>689</i>&nbsp;    protected static final void outputAttrToWriter(
+<i>690</i>&nbsp;        final String name, final String value,
+<i>691</i>&nbsp;        final OutputStream writer, final Map&lt;String, byte[]&gt; cache
+<i>692</i>&nbsp;    ) throws IOException {
+<b class="nc"><i>693</i>&nbsp;        writer.write(&#39; &#39;);</b>
+<b class="nc"><i>694</i>&nbsp;        UtfHelpper.writeByte(name, writer, cache);</b>
+<b class="nc"><i>695</i>&nbsp;        writer.write(EQUALS_STR.clone());</b>
+<i>696</i>&nbsp;        byte[] toWrite;
+<b class="nc"><i>697</i>&nbsp;        final int length = value.length();</b>
+<b class="nc"><i>698</i>&nbsp;        int i = 0;</b>
+<b class="nc"><i>699</i>&nbsp;        while (i &lt; length) {</b>
+<b class="nc"><i>700</i>&nbsp;            char c = value.charAt(i++);</b>
+<i>701</i>&nbsp;
+<b class="nc"><i>702</i>&nbsp;            switch (c) {</b>
+<i>703</i>&nbsp;
+<i>704</i>&nbsp;            case &#39;&amp;&#39; :
+<b class="nc"><i>705</i>&nbsp;                toWrite = AMP.clone();</b>
+<b class="nc"><i>706</i>&nbsp;                break;</b>
+<i>707</i>&nbsp;
+<i>708</i>&nbsp;            case &#39;&lt;&#39; :
+<b class="nc"><i>709</i>&nbsp;                toWrite = LT.clone();</b>
+<b class="nc"><i>710</i>&nbsp;                break;</b>
+<i>711</i>&nbsp;
+<i>712</i>&nbsp;            case &#39;&quot;&#39; :
+<b class="nc"><i>713</i>&nbsp;                toWrite = QUOT.clone();</b>
+<b class="nc"><i>714</i>&nbsp;                break;</b>
+<i>715</i>&nbsp;
+<i>716</i>&nbsp;            case 0x09 :    // &#39;\t&#39;
+<b class="nc"><i>717</i>&nbsp;                toWrite = X9.clone();</b>
+<b class="nc"><i>718</i>&nbsp;                break;</b>
+<i>719</i>&nbsp;
+<i>720</i>&nbsp;            case 0x0A :    // &#39;\n&#39;
+<b class="nc"><i>721</i>&nbsp;                toWrite = XA.clone();</b>
+<b class="nc"><i>722</i>&nbsp;                break;</b>
+<i>723</i>&nbsp;
+<i>724</i>&nbsp;            case 0x0D :    // &#39;\r&#39;
+<b class="nc"><i>725</i>&nbsp;                toWrite = XD.clone();</b>
+<b class="nc"><i>726</i>&nbsp;                break;</b>
+<i>727</i>&nbsp;
+<i>728</i>&nbsp;            default :
+<b class="nc"><i>729</i>&nbsp;                if (c &lt; 0x80) {</b>
+<b class="nc"><i>730</i>&nbsp;                    writer.write(c);</b>
+<i>731</i>&nbsp;                } else {
+<b class="nc"><i>732</i>&nbsp;                    UtfHelpper.writeCharToUtf8(c, writer);</b>
+<i>733</i>&nbsp;                }
+<b class="nc"><i>734</i>&nbsp;                continue;</b>
+<i>735</i>&nbsp;            }
+<b class="nc"><i>736</i>&nbsp;            writer.write(toWrite);</b>
+<b class="nc"><i>737</i>&nbsp;        }</b>
+<i>738</i>&nbsp;
+<b class="nc"><i>739</i>&nbsp;        writer.write(&#39;\&quot;&#39;);</b>
+<i>740</i>&nbsp;    }
+<i>741</i>&nbsp;
+<i>742</i>&nbsp;    /**
+<i>743</i>&nbsp;     * Outputs a PI to the internal Writer.
+<i>744</i>&nbsp;     *
+<i>745</i>&nbsp;     * @param currentPI
+<i>746</i>&nbsp;     * @param writer where to write the things
+<i>747</i>&nbsp;     * @throws IOException
+<i>748</i>&nbsp;     */
+<i>749</i>&nbsp;    protected void outputPItoWriter(
+<i>750</i>&nbsp;        ProcessingInstruction currentPI, OutputStream writer, int position
+<i>751</i>&nbsp;    ) throws IOException {
+<b class="nc"><i>752</i>&nbsp;        if (position == NODE_AFTER_DOCUMENT_ELEMENT) {</b>
+<b class="nc"><i>753</i>&nbsp;            writer.write(&#39;\n&#39;);</b>
+<i>754</i>&nbsp;        }
+<b class="nc"><i>755</i>&nbsp;        writer.write(BEGIN_PI.clone());</b>
+<i>756</i>&nbsp;
+<b class="nc"><i>757</i>&nbsp;        final String target = currentPI.getTarget();</b>
+<b class="nc"><i>758</i>&nbsp;        int length = target.length();</b>
+<i>759</i>&nbsp;
+<b class="nc"><i>760</i>&nbsp;        for (int i = 0; i &lt; length; i++) {</b>
+<b class="nc"><i>761</i>&nbsp;            char c = target.charAt(i);</b>
+<b class="nc"><i>762</i>&nbsp;            if (c == 0x0D) {</b>
+<b class="nc"><i>763</i>&nbsp;                writer.write(XD.clone());</b>
+<i>764</i>&nbsp;            } else {
+<b class="nc"><i>765</i>&nbsp;                if (c &lt; 0x80) {</b>
+<b class="nc"><i>766</i>&nbsp;                    writer.write(c);</b>
+<i>767</i>&nbsp;                } else {
+<b class="nc"><i>768</i>&nbsp;                    UtfHelpper.writeCharToUtf8(c, writer);</b>
+<i>769</i>&nbsp;                }
+<i>770</i>&nbsp;            }
+<i>771</i>&nbsp;        }
+<i>772</i>&nbsp;
+<b class="nc"><i>773</i>&nbsp;        final String data = currentPI.getData();</b>
+<i>774</i>&nbsp;
+<b class="nc"><i>775</i>&nbsp;        length = data.length();</b>
+<i>776</i>&nbsp;
+<b class="nc"><i>777</i>&nbsp;        if (length &gt; 0) {</b>
+<b class="nc"><i>778</i>&nbsp;            writer.write(&#39; &#39;);</b>
+<i>779</i>&nbsp;
+<b class="nc"><i>780</i>&nbsp;            for (int i = 0; i &lt; length; i++) {</b>
+<b class="nc"><i>781</i>&nbsp;                char c = data.charAt(i);</b>
+<b class="nc"><i>782</i>&nbsp;                if (c == 0x0D) {</b>
+<b class="nc"><i>783</i>&nbsp;                    writer.write(XD.clone());</b>
+<i>784</i>&nbsp;                } else {
+<b class="nc"><i>785</i>&nbsp;                    UtfHelpper.writeCharToUtf8(c, writer);</b>
+<i>786</i>&nbsp;                }
+<i>787</i>&nbsp;            }
+<i>788</i>&nbsp;        }
+<i>789</i>&nbsp;
+<b class="nc"><i>790</i>&nbsp;        writer.write(END_PI.clone());</b>
+<b class="nc"><i>791</i>&nbsp;        if (position == NODE_BEFORE_DOCUMENT_ELEMENT) {</b>
+<b class="nc"><i>792</i>&nbsp;            writer.write(&#39;\n&#39;);</b>
+<i>793</i>&nbsp;        }
+<i>794</i>&nbsp;    }
+<i>795</i>&nbsp;
+<i>796</i>&nbsp;    /**
+<i>797</i>&nbsp;     * Method outputCommentToWriter
+<i>798</i>&nbsp;     *
+<i>799</i>&nbsp;     * @param currentComment
+<i>800</i>&nbsp;     * @param writer writer where to write the things
+<i>801</i>&nbsp;     * @throws IOException
+<i>802</i>&nbsp;     */
+<i>803</i>&nbsp;    protected void outputCommentToWriter(
+<i>804</i>&nbsp;        Comment currentComment, OutputStream writer, int position
+<i>805</i>&nbsp;    ) throws IOException {
+<b class="nc"><i>806</i>&nbsp;        if (position == NODE_AFTER_DOCUMENT_ELEMENT) {</b>
+<b class="nc"><i>807</i>&nbsp;            writer.write(&#39;\n&#39;);</b>
+<i>808</i>&nbsp;        }
+<b class="nc"><i>809</i>&nbsp;        writer.write(BEGIN_COMM.clone());</b>
+<i>810</i>&nbsp;
+<b class="nc"><i>811</i>&nbsp;        final String data = currentComment.getData();</b>
+<b class="nc"><i>812</i>&nbsp;        final int length = data.length();</b>
+<i>813</i>&nbsp;
+<b class="nc"><i>814</i>&nbsp;        for (int i = 0; i &lt; length; i++) {</b>
+<b class="nc"><i>815</i>&nbsp;            char c = data.charAt(i);</b>
+<b class="nc"><i>816</i>&nbsp;            if (c == 0x0D) {</b>
+<b class="nc"><i>817</i>&nbsp;                writer.write(XD.clone());</b>
+<i>818</i>&nbsp;            } else {
+<b class="nc"><i>819</i>&nbsp;                if (c &lt; 0x80) {</b>
+<b class="nc"><i>820</i>&nbsp;                    writer.write(c);</b>
+<i>821</i>&nbsp;                } else {
+<b class="nc"><i>822</i>&nbsp;                    UtfHelpper.writeCharToUtf8(c, writer);</b>
+<i>823</i>&nbsp;                }
+<i>824</i>&nbsp;            }
+<i>825</i>&nbsp;        }
+<i>826</i>&nbsp;
+<b class="nc"><i>827</i>&nbsp;        writer.write(END_COMM.clone());</b>
+<b class="nc"><i>828</i>&nbsp;        if (position == NODE_BEFORE_DOCUMENT_ELEMENT) {</b>
+<b class="nc"><i>829</i>&nbsp;            writer.write(&#39;\n&#39;);</b>
+<i>830</i>&nbsp;        }
+<i>831</i>&nbsp;    }
+<i>832</i>&nbsp;
+<i>833</i>&nbsp;    /**
+<i>834</i>&nbsp;     * Outputs a Text of CDATA section to the internal Writer.
+<i>835</i>&nbsp;     *
+<i>836</i>&nbsp;     * @param text
+<i>837</i>&nbsp;     * @param writer writer where to write the things
+<i>838</i>&nbsp;     * @throws IOException
+<i>839</i>&nbsp;     */
+<i>840</i>&nbsp;    protected static final void outputTextToWriter(
+<i>841</i>&nbsp;        final String text, final OutputStream writer
+<i>842</i>&nbsp;    ) throws IOException {
+<b class="nc"><i>843</i>&nbsp;        final int length = text.length();</b>
+<i>844</i>&nbsp;        byte[] toWrite;
+<b class="nc"><i>845</i>&nbsp;        for (int i = 0; i &lt; length; i++) {</b>
+<b class="nc"><i>846</i>&nbsp;            char c = text.charAt(i);</b>
+<i>847</i>&nbsp;
+<b class="nc"><i>848</i>&nbsp;            switch (c) {</b>
+<i>849</i>&nbsp;
+<i>850</i>&nbsp;            case &#39;&amp;&#39; :
+<b class="nc"><i>851</i>&nbsp;                toWrite = AMP.clone();</b>
+<b class="nc"><i>852</i>&nbsp;                break;</b>
+<i>853</i>&nbsp;
+<i>854</i>&nbsp;            case &#39;&lt;&#39; :
+<b class="nc"><i>855</i>&nbsp;                toWrite = LT.clone();</b>
+<b class="nc"><i>856</i>&nbsp;                break;</b>
+<i>857</i>&nbsp;
+<i>858</i>&nbsp;            case &#39;&gt;&#39; :
+<b class="nc"><i>859</i>&nbsp;                toWrite = GT.clone();</b>
+<b class="nc"><i>860</i>&nbsp;                break;</b>
+<i>861</i>&nbsp;
+<i>862</i>&nbsp;            case 0xD :
+<b class="nc"><i>863</i>&nbsp;                toWrite = XD.clone();</b>
+<b class="nc"><i>864</i>&nbsp;                break;</b>
+<i>865</i>&nbsp;
+<i>866</i>&nbsp;            default :
+<b class="nc"><i>867</i>&nbsp;                if (c &lt; 0x80) {</b>
+<b class="nc"><i>868</i>&nbsp;                    writer.write(c);</b>
+<i>869</i>&nbsp;                } else {
+<b class="nc"><i>870</i>&nbsp;                    UtfHelpper.writeCharToUtf8(c, writer);</b>
+<i>871</i>&nbsp;                }
+<b class="nc"><i>872</i>&nbsp;                continue;</b>
+<i>873</i>&nbsp;            }
+<b class="nc"><i>874</i>&nbsp;            writer.write(toWrite);</b>
+<i>875</i>&nbsp;        }
+<i>876</i>&nbsp;    }
+<i>877</i>&nbsp;
+<i>878</i>&nbsp;    // The null xmlns definition.
+<i>879</i>&nbsp;    protected Attr getNullNode(Document ownerDocument) {
+<b class="nc"><i>880</i>&nbsp;        if (nullNode == null) {</b>
+<i>881</i>&nbsp;            try {
+<b class="nc"><i>882</i>&nbsp;                nullNode = ownerDocument.createAttributeNS(</b>
+<i>883</i>&nbsp;                                    Constants.NamespaceSpecNS, XMLNS);
+<b class="nc"><i>884</i>&nbsp;                nullNode.setValue(&quot;&quot;);</b>
+<b class="nc"><i>885</i>&nbsp;            } catch (Exception e) {</b>
+<b class="nc"><i>886</i>&nbsp;                throw new RuntimeException(&quot;Unable to create nullNode: &quot; + e);</b>
+<b class="nc"><i>887</i>&nbsp;            }</b>
+<i>888</i>&nbsp;        }
+<b class="nc"><i>889</i>&nbsp;        return nullNode;</b>
+<i>890</i>&nbsp;    }
+<i>891</i>&nbsp;
+<i>892</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

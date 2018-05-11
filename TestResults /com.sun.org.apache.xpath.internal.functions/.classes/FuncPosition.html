@@ -1,0 +1,219 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: FuncPosition</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xpath.internal.functions</a> ]
+</div>
+
+<h1>Coverage Summary for Class: FuncPosition (com.sun.org.apache.xpath.internal.functions)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FuncPosition</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 24)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: FuncPosition.java,v 1.2.4.1 2005/09/14 20:18:45 jeffsuttor Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xpath.internal.functions;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTM;
+<i>26</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTMIterator;
+<i>27</i>&nbsp;import com.sun.org.apache.xpath.internal.XPathContext;
+<i>28</i>&nbsp;import com.sun.org.apache.xpath.internal.axes.SubContextList;
+<i>29</i>&nbsp;import com.sun.org.apache.xpath.internal.compiler.Compiler;
+<i>30</i>&nbsp;import com.sun.org.apache.xpath.internal.objects.XNumber;
+<i>31</i>&nbsp;import com.sun.org.apache.xpath.internal.objects.XObject;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;/**
+<i>34</i>&nbsp; * Execute the Position() function.
+<i>35</i>&nbsp; * @xsl.usage advanced
+<i>36</i>&nbsp; */
+<b class="nc"><i>37</i>&nbsp;public class FuncPosition extends Function</b>
+<i>38</i>&nbsp;{
+<i>39</i>&nbsp;    static final long serialVersionUID = -9092846348197271582L;
+<i>40</i>&nbsp;  private boolean m_isTopLevel;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;  /**
+<i>43</i>&nbsp;   * Figure out if we&#39;re executing a toplevel expression.
+<i>44</i>&nbsp;   * If so, we can&#39;t be inside of a predicate.
+<i>45</i>&nbsp;   */
+<i>46</i>&nbsp;  public void postCompileStep(Compiler compiler)
+<i>47</i>&nbsp;  {
+<b class="nc"><i>48</i>&nbsp;    m_isTopLevel = compiler.getLocationPathDepth() == -1;</b>
+<i>49</i>&nbsp;  }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;  /**
+<i>52</i>&nbsp;   * Get the position in the current context node list.
+<i>53</i>&nbsp;   *
+<i>54</i>&nbsp;   * @param xctxt Runtime XPath context.
+<i>55</i>&nbsp;   *
+<i>56</i>&nbsp;   * @return The current position of the itteration in the context node list,
+<i>57</i>&nbsp;   *         or -1 if there is no active context node list.
+<i>58</i>&nbsp;   */
+<i>59</i>&nbsp;  public int getPositionInContextNodeList(XPathContext xctxt)
+<i>60</i>&nbsp;  {
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    // System.out.println(&quot;FuncPosition- entry&quot;);
+<i>63</i>&nbsp;    // If we&#39;re in a predicate, then this will return non-null.
+<b class="nc"><i>64</i>&nbsp;    SubContextList iter = m_isTopLevel ? null : xctxt.getSubContextList();</b>
+<i>65</i>&nbsp;
+<b class="nc"><i>66</i>&nbsp;    if (null != iter)</b>
+<i>67</i>&nbsp;    {
+<b class="nc"><i>68</i>&nbsp;      int prox = iter.getProximityPosition(xctxt);</b>
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;      // System.out.println(&quot;FuncPosition- prox: &quot;+prox);
+<b class="nc"><i>71</i>&nbsp;      return prox;</b>
+<i>72</i>&nbsp;    }
+<i>73</i>&nbsp;
+<b class="nc"><i>74</i>&nbsp;    DTMIterator cnl = xctxt.getContextNodeList();</b>
+<i>75</i>&nbsp;
+<b class="nc"><i>76</i>&nbsp;    if (null != cnl)</b>
+<i>77</i>&nbsp;    {
+<b class="nc"><i>78</i>&nbsp;      int n = cnl.getCurrentNode();</b>
+<b class="nc"><i>79</i>&nbsp;      if(n == DTM.NULL)</b>
+<i>80</i>&nbsp;      {
+<b class="nc"><i>81</i>&nbsp;        if(cnl.getCurrentPos() == 0)</b>
+<b class="nc"><i>82</i>&nbsp;          return 0;</b>
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;        // Then I think we&#39;re in a sort.  See sort21.xsl. So the iterator has
+<i>85</i>&nbsp;        // already been spent, and is not on the node we&#39;re processing.
+<i>86</i>&nbsp;        // It&#39;s highly possible that this is an issue for other context-list
+<i>87</i>&nbsp;        // functions.  Shouldn&#39;t be a problem for last(), and it shouldn&#39;t be
+<i>88</i>&nbsp;        // a problem for current().
+<i>89</i>&nbsp;        try
+<i>90</i>&nbsp;        {
+<b class="nc"><i>91</i>&nbsp;          cnl = cnl.cloneWithReset();</b>
+<i>92</i>&nbsp;        }
+<b class="nc"><i>93</i>&nbsp;        catch(CloneNotSupportedException cnse)</b>
+<i>94</i>&nbsp;        {
+<b class="nc"><i>95</i>&nbsp;          throw new com.sun.org.apache.xml.internal.utils.WrappedRuntimeException(cnse);</b>
+<b class="nc"><i>96</i>&nbsp;        }</b>
+<b class="nc"><i>97</i>&nbsp;        int currentNode = xctxt.getContextNode();</b>
+<i>98</i>&nbsp;        // System.out.println(&quot;currentNode: &quot;+currentNode);
+<b class="nc"><i>99</i>&nbsp;        while(DTM.NULL != (n = cnl.nextNode()))</b>
+<i>100</i>&nbsp;        {
+<b class="nc"><i>101</i>&nbsp;          if(n == currentNode)</b>
+<b class="nc"><i>102</i>&nbsp;            break;</b>
+<i>103</i>&nbsp;        }
+<i>104</i>&nbsp;      }
+<i>105</i>&nbsp;      // System.out.println(&quot;n: &quot;+n);
+<i>106</i>&nbsp;      // System.out.println(&quot;FuncPosition- cnl.getCurrentPos(): &quot;+cnl.getCurrentPos());
+<b class="nc"><i>107</i>&nbsp;      return cnl.getCurrentPos();</b>
+<i>108</i>&nbsp;    }
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;    // System.out.println(&quot;FuncPosition - out of guesses: -1&quot;);
+<b class="nc"><i>111</i>&nbsp;    return -1;</b>
+<i>112</i>&nbsp;  }
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;  /**
+<i>115</i>&nbsp;   * Execute the function.  The function must return
+<i>116</i>&nbsp;   * a valid object.
+<i>117</i>&nbsp;   * @param xctxt The current execution context.
+<i>118</i>&nbsp;   * @return A valid XObject.
+<i>119</i>&nbsp;   *
+<i>120</i>&nbsp;   * @throws javax.xml.transform.TransformerException
+<i>121</i>&nbsp;   */
+<i>122</i>&nbsp;  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException
+<i>123</i>&nbsp;  {
+<b class="nc"><i>124</i>&nbsp;    double pos = (double) getPositionInContextNodeList(xctxt);</b>
+<i>125</i>&nbsp;
+<b class="nc"><i>126</i>&nbsp;    return new XNumber(pos);</b>
+<i>127</i>&nbsp;  }
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;  /**
+<i>130</i>&nbsp;   * No arguments to process, so this does nothing.
+<i>131</i>&nbsp;   */
+<i>132</i>&nbsp;  public void fixupVariables(java.util.Vector vars, int globalsSize)
+<i>133</i>&nbsp;  {
+<i>134</i>&nbsp;    // no-op
+<i>135</i>&nbsp;  }
+<i>136</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

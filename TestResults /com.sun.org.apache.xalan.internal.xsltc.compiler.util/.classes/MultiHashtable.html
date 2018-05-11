@@ -1,0 +1,177 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MultiHashtable</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MultiHashtable (com.sun.org.apache.xalan.internal.xsltc.compiler.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MultiHashtable</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 20)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: MultiHashtable.java,v 1.2.4.1 2005/09/05 11:18:51 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler.util;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.HashMap;
+<i>27</i>&nbsp;import java.util.HashSet;
+<i>28</i>&nbsp;import java.util.Map;
+<i>29</i>&nbsp;import java.util.Set;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;/**
+<i>32</i>&nbsp; * @author Jacek Ambroziak
+<i>33</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>34</i>&nbsp; * @param &lt;K&gt;
+<i>35</i>&nbsp; * @param &lt;V&gt;
+<i>36</i>&nbsp; */
+<b class="nc"><i>37</i>&nbsp;public final class MultiHashtable&lt;K,V&gt; {</b>
+<i>38</i>&nbsp;    static final long serialVersionUID = -6151608290510033572L;
+<i>39</i>&nbsp;
+<b class="nc"><i>40</i>&nbsp;    private final Map&lt;K, Set&lt;V&gt;&gt; map = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>41</i>&nbsp;    private boolean modifiable = true;</b>
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    /**
+<i>44</i>&nbsp;     * Associates the specified key with a set of values. If the map previously
+<i>45</i>&nbsp;     * contained a mapping for the key, the value is added to the set.
+<i>46</i>&nbsp;     * @param key key with which the specified value is to be associated
+<i>47</i>&nbsp;     * @param value value to be added to a set that is associated with the specified key
+<i>48</i>&nbsp;     * @return the set that is associated with the specified key.
+<i>49</i>&nbsp;     * @throw UnsupportedOperationException is the MultiHashtable is not modifiable.
+<i>50</i>&nbsp;     */
+<i>51</i>&nbsp;    public Set&lt;V&gt; put(K key, V value) {
+<b class="nc"><i>52</i>&nbsp;        if (modifiable) {</b>
+<b class="nc"><i>53</i>&nbsp;            Set&lt;V&gt; set = map.get(key);</b>
+<b class="nc"><i>54</i>&nbsp;            if (set == null) {</b>
+<b class="nc"><i>55</i>&nbsp;                set = new HashSet&lt;&gt;();</b>
+<b class="nc"><i>56</i>&nbsp;                map.put(key, set);</b>
+<i>57</i>&nbsp;            }
+<b class="nc"><i>58</i>&nbsp;            set.add(value);</b>
+<b class="nc"><i>59</i>&nbsp;            return set;</b>
+<i>60</i>&nbsp;        }
+<b class="nc"><i>61</i>&nbsp;        throw new UnsupportedOperationException(&quot;The MultiHashtable instance is not modifiable.&quot;);</b>
+<i>62</i>&nbsp;    }
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    /**
+<i>65</i>&nbsp;     * Maps a key to a value in a set that is associated with the specified key.
+<i>66</i>&nbsp;     * The mapping is performed by evaluating whether an item in the set equals
+<i>67</i>&nbsp;     * the specified value.
+<i>68</i>&nbsp;     *
+<i>69</i>&nbsp;     * @param key key with which the specified value is to be associated
+<i>70</i>&nbsp;     * @param value value in a set that is associated with the specified key
+<i>71</i>&nbsp;     * @return the item in the set if a match is found.
+<i>72</i>&nbsp;     */
+<i>73</i>&nbsp;    public V maps(K key, V value) {
+<b class="nc"><i>74</i>&nbsp;        if (key == null) return null;</b>
+<b class="nc"><i>75</i>&nbsp;        final Set&lt;V&gt; set = map.get(key);</b>
+<b class="nc"><i>76</i>&nbsp;        if (set != null) {</b>
+<b class="nc"><i>77</i>&nbsp;            for (V v : set) {</b>
+<b class="nc"><i>78</i>&nbsp;                if (v.equals(value)) {</b>
+<b class="nc"><i>79</i>&nbsp;                    return v;</b>
+<i>80</i>&nbsp;                }
+<b class="nc"><i>81</i>&nbsp;            }</b>
+<i>82</i>&nbsp;        }
+<b class="nc"><i>83</i>&nbsp;        return null;</b>
+<i>84</i>&nbsp;    }
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    /**
+<i>87</i>&nbsp;     * Makes the MultiHashtable unmodifiable.  This method allows modules to set the table
+<i>88</i>&nbsp;     * as &quot;read-only&quot; so that only query operation, that is maps, is allowed. Any attempts
+<i>89</i>&nbsp;     * to modify the returned map result in an UnsupportedOperationException.
+<i>90</i>&nbsp;     */
+<i>91</i>&nbsp;    public void makeUnmodifiable() {
+<b class="nc"><i>92</i>&nbsp;        modifiable = false;</b>
+<i>93</i>&nbsp;    }
+<i>94</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

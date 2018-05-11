@@ -1,0 +1,229 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: LZWCompressor</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.imageio.plugins.common</a> ]
+</div>
+
+<h1>Coverage Summary for Class: LZWCompressor (com.sun.imageio.plugins.common)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LZWCompressor</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 35)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.imageio.plugins.common;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.io.IOException;
+<i>29</i>&nbsp;import java.io.PrintStream;
+<i>30</i>&nbsp;import javax.imageio.stream.ImageOutputStream;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;/*
+<i>33</i>&nbsp; * Modified from original LZWCompressor to change interface to passing a
+<i>34</i>&nbsp; * buffer of data to be compressed.
+<i>35</i>&nbsp; */
+<i>36</i>&nbsp;public class LZWCompressor {
+<i>37</i>&nbsp;    /** base underlying code size of data being compressed 8 for TIFF, 1 to 8 for GIF **/
+<i>38</i>&nbsp;    int codeSize;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;    /** reserved clear code based on code size **/
+<i>41</i>&nbsp;    int clearCode;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    /** reserved end of data code based on code size **/
+<i>44</i>&nbsp;    int endOfInfo;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    /** current number bits output for each code **/
+<i>47</i>&nbsp;    int numBits;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    /** limit at which current number of bits code size has to be increased **/
+<i>50</i>&nbsp;    int limit;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    /** the prefix code which represents the predecessor string to current input point **/
+<i>53</i>&nbsp;    short prefix;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    /** output destination for bit codes **/
+<i>56</i>&nbsp;    BitFile bf;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    /** general purpose LZW string table **/
+<i>59</i>&nbsp;    LZWStringTable lzss;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    /** modify the limits of the code values in LZW encoding due to TIFF bug / feature **/
+<i>62</i>&nbsp;    boolean tiffFudge;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    /**
+<i>65</i>&nbsp;     * @param out destination for compressed data
+<i>66</i>&nbsp;     * @param codeSize the initial code size for the LZW compressor
+<i>67</i>&nbsp;     * @param TIFF flag indicating that TIFF lzw fudge needs to be applied
+<i>68</i>&nbsp;     * @exception IOException if underlying output stream error
+<i>69</i>&nbsp;     **/
+<i>70</i>&nbsp;    public LZWCompressor(ImageOutputStream out, int codeSize, boolean TIFF)
+<i>71</i>&nbsp;        throws IOException
+<b class="nc"><i>72</i>&nbsp;    {</b>
+<b class="nc"><i>73</i>&nbsp;        bf = new BitFile(out, !TIFF); // set flag for GIF as NOT tiff</b>
+<b class="nc"><i>74</i>&nbsp;        this.codeSize = codeSize;</b>
+<b class="nc"><i>75</i>&nbsp;        tiffFudge = TIFF;</b>
+<b class="nc"><i>76</i>&nbsp;        clearCode = 1 &lt;&lt; codeSize;</b>
+<b class="nc"><i>77</i>&nbsp;        endOfInfo = clearCode + 1;</b>
+<b class="nc"><i>78</i>&nbsp;        numBits = codeSize + 1;</b>
+<i>79</i>&nbsp;
+<b class="nc"><i>80</i>&nbsp;        limit = (1 &lt;&lt; numBits) - 1;</b>
+<b class="nc"><i>81</i>&nbsp;        if (tiffFudge) {</b>
+<b class="nc"><i>82</i>&nbsp;            --limit;</b>
+<i>83</i>&nbsp;        }
+<i>84</i>&nbsp;
+<b class="nc"><i>85</i>&nbsp;        prefix = (short)0xFFFF;</b>
+<b class="nc"><i>86</i>&nbsp;        lzss = new LZWStringTable();</b>
+<b class="nc"><i>87</i>&nbsp;        lzss.clearTable(codeSize);</b>
+<b class="nc"><i>88</i>&nbsp;        bf.writeBits(clearCode, numBits);</b>
+<i>89</i>&nbsp;    }
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    /**
+<i>92</i>&nbsp;     * @param buf data to be compressed to output stream
+<i>93</i>&nbsp;     * @exception IOException if underlying output stream error
+<i>94</i>&nbsp;     **/
+<i>95</i>&nbsp;    public void compress(byte[] buf, int offset, int length)
+<i>96</i>&nbsp;        throws IOException
+<i>97</i>&nbsp;    {
+<i>98</i>&nbsp;        int idx;
+<i>99</i>&nbsp;        byte c;
+<i>100</i>&nbsp;        short index;
+<i>101</i>&nbsp;
+<b class="nc"><i>102</i>&nbsp;        int maxOffset = offset + length;</b>
+<b class="nc"><i>103</i>&nbsp;        for (idx = offset; idx &lt; maxOffset; ++idx) {</b>
+<b class="nc"><i>104</i>&nbsp;            c = buf[idx];</b>
+<b class="nc"><i>105</i>&nbsp;            if ((index = lzss.findCharString(prefix, c)) != -1) {</b>
+<b class="nc"><i>106</i>&nbsp;                prefix = index;</b>
+<i>107</i>&nbsp;            } else {
+<b class="nc"><i>108</i>&nbsp;                bf.writeBits(prefix, numBits);</b>
+<b class="nc"><i>109</i>&nbsp;                if (lzss.addCharString(prefix, c) &gt; limit) {</b>
+<b class="nc"><i>110</i>&nbsp;                    if (numBits == 12) {</b>
+<b class="nc"><i>111</i>&nbsp;                        bf.writeBits(clearCode, numBits);</b>
+<b class="nc"><i>112</i>&nbsp;                        lzss.clearTable(codeSize);</b>
+<b class="nc"><i>113</i>&nbsp;                        numBits = codeSize + 1;</b>
+<i>114</i>&nbsp;                    } else {
+<b class="nc"><i>115</i>&nbsp;                        ++numBits;</b>
+<i>116</i>&nbsp;                    }
+<i>117</i>&nbsp;
+<b class="nc"><i>118</i>&nbsp;                    limit = (1 &lt;&lt; numBits) - 1;</b>
+<b class="nc"><i>119</i>&nbsp;                    if (tiffFudge) {</b>
+<b class="nc"><i>120</i>&nbsp;                        --limit;</b>
+<i>121</i>&nbsp;                    }
+<i>122</i>&nbsp;                }
+<b class="nc"><i>123</i>&nbsp;                prefix = (short)((short)c &amp; 0xFF);</b>
+<i>124</i>&nbsp;            }
+<i>125</i>&nbsp;        }
+<i>126</i>&nbsp;    }
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;    /*
+<i>129</i>&nbsp;     * Indicate to compressor that no more data to go so write out
+<i>130</i>&nbsp;     * any remaining buffered data.
+<i>131</i>&nbsp;     *
+<i>132</i>&nbsp;     * @exception IOException if underlying output stream error
+<i>133</i>&nbsp;     */
+<i>134</i>&nbsp;    public void flush() throws IOException {
+<b class="nc"><i>135</i>&nbsp;        if (prefix != -1) {</b>
+<b class="nc"><i>136</i>&nbsp;            bf.writeBits(prefix, numBits);</b>
+<i>137</i>&nbsp;        }
+<i>138</i>&nbsp;
+<b class="nc"><i>139</i>&nbsp;        bf.writeBits(endOfInfo, numBits);</b>
+<b class="nc"><i>140</i>&nbsp;        bf.flush();</b>
+<i>141</i>&nbsp;    }
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;    public void dump(PrintStream out) {
+<b class="nc"><i>144</i>&nbsp;        lzss.dump(out);</b>
+<i>145</i>&nbsp;    }
+<i>146</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

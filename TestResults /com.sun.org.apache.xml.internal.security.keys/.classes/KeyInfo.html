@@ -1,0 +1,1370 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: KeyInfo</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.security.keys</a> ]
+</div>
+
+<h1>Coverage Summary for Class: KeyInfo (com.sun.org.apache.xml.internal.security.keys)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">KeyInfo</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 77)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 366)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one
+<i>7</i>&nbsp; * or more contributor license agreements. See the NOTICE file
+<i>8</i>&nbsp; * distributed with this work for additional information
+<i>9</i>&nbsp; * regarding copyright ownership. The ASF licenses this file
+<i>10</i>&nbsp; * to you under the Apache License, Version 2.0 (the
+<i>11</i>&nbsp; * &quot;License&quot;); you may not use this file except in compliance
+<i>12</i>&nbsp; * with the License. You may obtain a copy of the License at
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * http://www.apache.org/licenses/LICENSE-2.0
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; * Unless required by applicable law or agreed to in writing,
+<i>17</i>&nbsp; * software distributed under the License is distributed on an
+<i>18</i>&nbsp; * &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+<i>19</i>&nbsp; * KIND, either express or implied. See the License for the
+<i>20</i>&nbsp; * specific language governing permissions and limitations
+<i>21</i>&nbsp; * under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.security.keys;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.security.PrivateKey;
+<i>26</i>&nbsp;import java.security.PublicKey;
+<i>27</i>&nbsp;import java.security.cert.X509Certificate;
+<i>28</i>&nbsp;import java.util.ArrayList;
+<i>29</i>&nbsp;import java.util.Iterator;
+<i>30</i>&nbsp;import java.util.List;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import javax.crypto.SecretKey;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import com.sun.org.apache.xml.internal.security.encryption.EncryptedKey;
+<i>35</i>&nbsp;import com.sun.org.apache.xml.internal.security.encryption.XMLCipher;
+<i>36</i>&nbsp;import com.sun.org.apache.xml.internal.security.encryption.XMLEncryptionException;
+<i>37</i>&nbsp;import com.sun.org.apache.xml.internal.security.exceptions.XMLSecurityException;
+<i>38</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.DEREncodedKeyValue;
+<i>39</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.KeyInfoReference;
+<i>40</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.KeyName;
+<i>41</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.KeyValue;
+<i>42</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.MgmtData;
+<i>43</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.PGPData;
+<i>44</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.RetrievalMethod;
+<i>45</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.SPKIData;
+<i>46</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.X509Data;
+<i>47</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.keyvalues.DSAKeyValue;
+<i>48</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.keyvalues.RSAKeyValue;
+<i>49</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.KeyResolver;
+<i>50</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.KeyResolverException;
+<i>51</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.KeyResolverSpi;
+<i>52</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.storage.StorageResolver;
+<i>53</i>&nbsp;import com.sun.org.apache.xml.internal.security.transforms.Transforms;
+<i>54</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.Constants;
+<i>55</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.EncryptionConstants;
+<i>56</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.SignatureElementProxy;
+<i>57</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.XMLUtils;
+<i>58</i>&nbsp;import org.w3c.dom.Attr;
+<i>59</i>&nbsp;import org.w3c.dom.Document;
+<i>60</i>&nbsp;import org.w3c.dom.Element;
+<i>61</i>&nbsp;import org.w3c.dom.Node;
+<i>62</i>&nbsp;import org.w3c.dom.NodeList;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;/**
+<i>65</i>&nbsp; * This class stand for KeyInfo Element that may contain keys, names,
+<i>66</i>&nbsp; * certificates and other public key management information,
+<i>67</i>&nbsp; * such as in-band key distribution or key agreement data.
+<i>68</i>&nbsp; * &lt;BR /&gt;
+<i>69</i>&nbsp; * KeyInfo Element has two basic functions:
+<i>70</i>&nbsp; * One is KeyResolve for getting the public key in signature validation processing.
+<i>71</i>&nbsp; * the other one is toElement for getting the element in signature generation processing.
+<i>72</i>&nbsp; * &lt;BR /&gt;
+<i>73</i>&nbsp; * The &lt;CODE&gt;lengthXXX()&lt;/CODE&gt; methods provide access to the internal Key
+<i>74</i>&nbsp; * objects:
+<i>75</i>&nbsp; * &lt;UL&gt;
+<i>76</i>&nbsp; * &lt;LI&gt;If the &lt;CODE&gt;KeyInfo&lt;/CODE&gt; was constructed from an Element
+<i>77</i>&nbsp; * (Signature verification), the &lt;CODE&gt;lengthXXX()&lt;/CODE&gt; methods searches
+<i>78</i>&nbsp; * for child elements of &lt;CODE&gt;ds:KeyInfo&lt;/CODE&gt; for known types. &lt;/LI&gt;
+<i>79</i>&nbsp; * &lt;LI&gt;If the &lt;CODE&gt;KeyInfo&lt;/CODE&gt; was constructed from scratch (during
+<i>80</i>&nbsp; * Signature generation), the &lt;CODE&gt;lengthXXX()&lt;/CODE&gt; methods return the number
+<i>81</i>&nbsp; * of &lt;CODE&gt;XXXs&lt;/CODE&gt; objects already passed to the KeyInfo&lt;/LI&gt;
+<i>82</i>&nbsp; * &lt;/UL&gt;
+<i>83</i>&nbsp; * &lt;BR /&gt;
+<i>84</i>&nbsp; * The &lt;CODE&gt;addXXX()&lt;/CODE&gt; methods are used for adding Objects of the
+<i>85</i>&nbsp; * appropriate type to the &lt;CODE&gt;KeyInfo&lt;/CODE&gt;. This is used during signature
+<i>86</i>&nbsp; * generation.
+<i>87</i>&nbsp; * &lt;BR /&gt;
+<i>88</i>&nbsp; * The &lt;CODE&gt;itemXXX(int i)&lt;/CODE&gt; methods return the i&#39;th object of the
+<i>89</i>&nbsp; * corresponding type.
+<i>90</i>&nbsp; * &lt;BR /&gt;
+<i>91</i>&nbsp; * The &lt;CODE&gt;containsXXX()&lt;/CODE&gt; methods return &lt;I&gt;whether&lt;/I&gt; the KeyInfo
+<i>92</i>&nbsp; * contains the corresponding type.
+<i>93</i>&nbsp; *
+<i>94</i>&nbsp; */
+<i>95</i>&nbsp;public class KeyInfo extends SignatureElementProxy {
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    /** {@link org.apache.commons.logging} logging facility */
+<b class="nc"><i>98</i>&nbsp;    private static java.util.logging.Logger log =</b>
+<b class="nc"><i>99</i>&nbsp;        java.util.logging.Logger.getLogger(KeyInfo.class.getName());</b>
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;    // We need at least one StorageResolver otherwise
+<i>102</i>&nbsp;    // the KeyResolvers would not be called.
+<i>103</i>&nbsp;    // The default StorageResolver is null.
+<i>104</i>&nbsp;
+<b class="nc"><i>105</i>&nbsp;    private List&lt;X509Data&gt; x509Datas = null;</b>
+<b class="nc"><i>106</i>&nbsp;    private List&lt;EncryptedKey&gt; encryptedKeys = null;</b>
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;    private static final List&lt;StorageResolver&gt; nullList;
+<i>109</i>&nbsp;    static {
+<b class="nc"><i>110</i>&nbsp;        List&lt;StorageResolver&gt; list = new ArrayList&lt;StorageResolver&gt;(1);</b>
+<b class="nc"><i>111</i>&nbsp;        list.add(null);</b>
+<b class="nc"><i>112</i>&nbsp;        nullList = java.util.Collections.unmodifiableList(list);</b>
+<i>113</i>&nbsp;    }
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;    /** Field storageResolvers */
+<b class="nc"><i>116</i>&nbsp;    private List&lt;StorageResolver&gt; storageResolvers = nullList;</b>
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;    /**
+<i>119</i>&nbsp;     * Stores the individual (per-KeyInfo) {@link KeyResolverSpi}s
+<i>120</i>&nbsp;     */
+<b class="nc"><i>121</i>&nbsp;    private List&lt;KeyResolverSpi&gt; internalKeyResolvers = new ArrayList&lt;KeyResolverSpi&gt;();</b>
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;    private boolean secureValidation;
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    /**
+<i>126</i>&nbsp;     * Constructor KeyInfo
+<i>127</i>&nbsp;     * @param doc
+<i>128</i>&nbsp;     */
+<i>129</i>&nbsp;    public KeyInfo(Document doc) {
+<b class="nc"><i>130</i>&nbsp;        super(doc);</b>
+<i>131</i>&nbsp;
+<b class="nc"><i>132</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>133</i>&nbsp;    }
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;    /**
+<i>136</i>&nbsp;     * Constructor KeyInfo
+<i>137</i>&nbsp;     *
+<i>138</i>&nbsp;     * @param element
+<i>139</i>&nbsp;     * @param baseURI
+<i>140</i>&nbsp;     * @throws XMLSecurityException
+<i>141</i>&nbsp;     */
+<i>142</i>&nbsp;    public KeyInfo(Element element, String baseURI) throws XMLSecurityException {
+<b class="nc"><i>143</i>&nbsp;        super(element, baseURI);</b>
+<i>144</i>&nbsp;
+<b class="nc"><i>145</i>&nbsp;        Attr attr = element.getAttributeNodeNS(null, &quot;Id&quot;);</b>
+<b class="nc"><i>146</i>&nbsp;        if (attr != null) {</b>
+<b class="nc"><i>147</i>&nbsp;            element.setIdAttributeNode(attr, true);</b>
+<i>148</i>&nbsp;        }
+<i>149</i>&nbsp;    }
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;    /**
+<i>152</i>&nbsp;     * Set whether secure processing is enabled or not. The default is false.
+<i>153</i>&nbsp;     */
+<i>154</i>&nbsp;    public void setSecureValidation(boolean secureValidation) {
+<b class="nc"><i>155</i>&nbsp;        this.secureValidation = secureValidation;</b>
+<i>156</i>&nbsp;    }
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;    /**
+<i>159</i>&nbsp;     * Sets the &lt;code&gt;Id&lt;/code&gt; attribute
+<i>160</i>&nbsp;     *
+<i>161</i>&nbsp;     * @param Id ID
+<i>162</i>&nbsp;     */
+<i>163</i>&nbsp;    public void setId(String id) {
+<b class="nc"><i>164</i>&nbsp;        if (id != null) {</b>
+<b class="nc"><i>165</i>&nbsp;            this.constructionElement.setAttributeNS(null, Constants._ATT_ID, id);</b>
+<b class="nc"><i>166</i>&nbsp;            this.constructionElement.setIdAttributeNS(null, Constants._ATT_ID, true);</b>
+<i>167</i>&nbsp;        }
+<i>168</i>&nbsp;    }
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;    /**
+<i>171</i>&nbsp;     * Returns the &lt;code&gt;Id&lt;/code&gt; attribute
+<i>172</i>&nbsp;     *
+<i>173</i>&nbsp;     * @return the &lt;code&gt;Id&lt;/code&gt; attribute
+<i>174</i>&nbsp;     */
+<i>175</i>&nbsp;    public String getId() {
+<b class="nc"><i>176</i>&nbsp;        return this.constructionElement.getAttributeNS(null, Constants._ATT_ID);</b>
+<i>177</i>&nbsp;    }
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;    /**
+<i>180</i>&nbsp;     * Method addKeyName
+<i>181</i>&nbsp;     *
+<i>182</i>&nbsp;     * @param keynameString
+<i>183</i>&nbsp;     */
+<i>184</i>&nbsp;    public void addKeyName(String keynameString) {
+<b class="nc"><i>185</i>&nbsp;        this.add(new KeyName(this.doc, keynameString));</b>
+<i>186</i>&nbsp;    }
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;    /**
+<i>189</i>&nbsp;     * Method add
+<i>190</i>&nbsp;     *
+<i>191</i>&nbsp;     * @param keyname
+<i>192</i>&nbsp;     */
+<i>193</i>&nbsp;    public void add(KeyName keyname) {
+<b class="nc"><i>194</i>&nbsp;        this.constructionElement.appendChild(keyname.getElement());</b>
+<b class="nc"><i>195</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>196</i>&nbsp;    }
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;    /**
+<i>199</i>&nbsp;     * Method addKeyValue
+<i>200</i>&nbsp;     *
+<i>201</i>&nbsp;     * @param pk
+<i>202</i>&nbsp;     */
+<i>203</i>&nbsp;    public void addKeyValue(PublicKey pk) {
+<b class="nc"><i>204</i>&nbsp;        this.add(new KeyValue(this.doc, pk));</b>
+<i>205</i>&nbsp;    }
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;    /**
+<i>208</i>&nbsp;     * Method addKeyValue
+<i>209</i>&nbsp;     *
+<i>210</i>&nbsp;     * @param unknownKeyValueElement
+<i>211</i>&nbsp;     */
+<i>212</i>&nbsp;    public void addKeyValue(Element unknownKeyValueElement) {
+<b class="nc"><i>213</i>&nbsp;        this.add(new KeyValue(this.doc, unknownKeyValueElement));</b>
+<i>214</i>&nbsp;    }
+<i>215</i>&nbsp;
+<i>216</i>&nbsp;    /**
+<i>217</i>&nbsp;     * Method add
+<i>218</i>&nbsp;     *
+<i>219</i>&nbsp;     * @param dsakeyvalue
+<i>220</i>&nbsp;     */
+<i>221</i>&nbsp;    public void add(DSAKeyValue dsakeyvalue) {
+<b class="nc"><i>222</i>&nbsp;        this.add(new KeyValue(this.doc, dsakeyvalue));</b>
+<i>223</i>&nbsp;    }
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;    /**
+<i>226</i>&nbsp;     * Method add
+<i>227</i>&nbsp;     *
+<i>228</i>&nbsp;     * @param rsakeyvalue
+<i>229</i>&nbsp;     */
+<i>230</i>&nbsp;    public void add(RSAKeyValue rsakeyvalue) {
+<b class="nc"><i>231</i>&nbsp;        this.add(new KeyValue(this.doc, rsakeyvalue));</b>
+<i>232</i>&nbsp;    }
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;    /**
+<i>235</i>&nbsp;     * Method add
+<i>236</i>&nbsp;     *
+<i>237</i>&nbsp;     * @param pk
+<i>238</i>&nbsp;     */
+<i>239</i>&nbsp;    public void add(PublicKey pk) {
+<b class="nc"><i>240</i>&nbsp;        this.add(new KeyValue(this.doc, pk));</b>
+<i>241</i>&nbsp;    }
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;    /**
+<i>244</i>&nbsp;     * Method add
+<i>245</i>&nbsp;     *
+<i>246</i>&nbsp;     * @param keyvalue
+<i>247</i>&nbsp;     */
+<i>248</i>&nbsp;    public void add(KeyValue keyvalue) {
+<b class="nc"><i>249</i>&nbsp;        this.constructionElement.appendChild(keyvalue.getElement());</b>
+<b class="nc"><i>250</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>251</i>&nbsp;    }
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;    /**
+<i>254</i>&nbsp;     * Method addMgmtData
+<i>255</i>&nbsp;     *
+<i>256</i>&nbsp;     * @param mgmtdata
+<i>257</i>&nbsp;     */
+<i>258</i>&nbsp;    public void addMgmtData(String mgmtdata) {
+<b class="nc"><i>259</i>&nbsp;        this.add(new MgmtData(this.doc, mgmtdata));</b>
+<i>260</i>&nbsp;    }
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;    /**
+<i>263</i>&nbsp;     * Method add
+<i>264</i>&nbsp;     *
+<i>265</i>&nbsp;     * @param mgmtdata
+<i>266</i>&nbsp;     */
+<i>267</i>&nbsp;    public void add(MgmtData mgmtdata) {
+<b class="nc"><i>268</i>&nbsp;        this.constructionElement.appendChild(mgmtdata.getElement());</b>
+<b class="nc"><i>269</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>270</i>&nbsp;    }
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;    /**
+<i>273</i>&nbsp;     * Method addPGPData
+<i>274</i>&nbsp;     *
+<i>275</i>&nbsp;     * @param pgpdata
+<i>276</i>&nbsp;     */
+<i>277</i>&nbsp;    public void add(PGPData pgpdata) {
+<b class="nc"><i>278</i>&nbsp;        this.constructionElement.appendChild(pgpdata.getElement());</b>
+<b class="nc"><i>279</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>280</i>&nbsp;    }
+<i>281</i>&nbsp;
+<i>282</i>&nbsp;    /**
+<i>283</i>&nbsp;     * Method addRetrievalMethod
+<i>284</i>&nbsp;     *
+<i>285</i>&nbsp;     * @param uri
+<i>286</i>&nbsp;     * @param transforms
+<i>287</i>&nbsp;     * @param Type
+<i>288</i>&nbsp;     */
+<i>289</i>&nbsp;    public void addRetrievalMethod(String uri, Transforms transforms, String Type) {
+<b class="nc"><i>290</i>&nbsp;        this.add(new RetrievalMethod(this.doc, uri, transforms, Type));</b>
+<i>291</i>&nbsp;    }
+<i>292</i>&nbsp;
+<i>293</i>&nbsp;    /**
+<i>294</i>&nbsp;     * Method add
+<i>295</i>&nbsp;     *
+<i>296</i>&nbsp;     * @param retrievalmethod
+<i>297</i>&nbsp;     */
+<i>298</i>&nbsp;    public void add(RetrievalMethod retrievalmethod) {
+<b class="nc"><i>299</i>&nbsp;        this.constructionElement.appendChild(retrievalmethod.getElement());</b>
+<b class="nc"><i>300</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>301</i>&nbsp;    }
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;    /**
+<i>304</i>&nbsp;     * Method add
+<i>305</i>&nbsp;     *
+<i>306</i>&nbsp;     * @param spkidata
+<i>307</i>&nbsp;     */
+<i>308</i>&nbsp;    public void add(SPKIData spkidata) {
+<b class="nc"><i>309</i>&nbsp;        this.constructionElement.appendChild(spkidata.getElement());</b>
+<b class="nc"><i>310</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>311</i>&nbsp;    }
+<i>312</i>&nbsp;
+<i>313</i>&nbsp;    /**
+<i>314</i>&nbsp;     * Method addX509Data
+<i>315</i>&nbsp;     *
+<i>316</i>&nbsp;     * @param x509data
+<i>317</i>&nbsp;     */
+<i>318</i>&nbsp;    public void add(X509Data x509data) {
+<b class="nc"><i>319</i>&nbsp;        if (x509Datas == null) {</b>
+<b class="nc"><i>320</i>&nbsp;            x509Datas = new ArrayList&lt;X509Data&gt;();</b>
+<i>321</i>&nbsp;        }
+<b class="nc"><i>322</i>&nbsp;        x509Datas.add(x509data);</b>
+<b class="nc"><i>323</i>&nbsp;        this.constructionElement.appendChild(x509data.getElement());</b>
+<b class="nc"><i>324</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>325</i>&nbsp;    }
+<i>326</i>&nbsp;
+<i>327</i>&nbsp;    /**
+<i>328</i>&nbsp;     * Method addEncryptedKey
+<i>329</i>&nbsp;     *
+<i>330</i>&nbsp;     * @param encryptedKey
+<i>331</i>&nbsp;     * @throws XMLEncryptionException
+<i>332</i>&nbsp;     */
+<i>333</i>&nbsp;
+<i>334</i>&nbsp;    public void add(EncryptedKey encryptedKey) throws XMLEncryptionException {
+<b class="nc"><i>335</i>&nbsp;        if (encryptedKeys == null) {</b>
+<b class="nc"><i>336</i>&nbsp;            encryptedKeys = new ArrayList&lt;EncryptedKey&gt;();</b>
+<i>337</i>&nbsp;        }
+<b class="nc"><i>338</i>&nbsp;        encryptedKeys.add(encryptedKey);</b>
+<b class="nc"><i>339</i>&nbsp;        XMLCipher cipher = XMLCipher.getInstance();</b>
+<b class="nc"><i>340</i>&nbsp;        this.constructionElement.appendChild(cipher.martial(encryptedKey));</b>
+<i>341</i>&nbsp;    }
+<i>342</i>&nbsp;
+<i>343</i>&nbsp;    /**
+<i>344</i>&nbsp;     * Method addDEREncodedKeyValue
+<i>345</i>&nbsp;     *
+<i>346</i>&nbsp;     * @param pk
+<i>347</i>&nbsp;     * @throws XMLSecurityException
+<i>348</i>&nbsp;     */
+<i>349</i>&nbsp;    public void addDEREncodedKeyValue(PublicKey pk) throws XMLSecurityException {
+<b class="nc"><i>350</i>&nbsp;        this.add(new DEREncodedKeyValue(this.doc, pk));</b>
+<i>351</i>&nbsp;    }
+<i>352</i>&nbsp;
+<i>353</i>&nbsp;    /**
+<i>354</i>&nbsp;     * Method add
+<i>355</i>&nbsp;     *
+<i>356</i>&nbsp;     * @param derEncodedKeyValue
+<i>357</i>&nbsp;     */
+<i>358</i>&nbsp;    public void add(DEREncodedKeyValue derEncodedKeyValue) {
+<b class="nc"><i>359</i>&nbsp;        this.constructionElement.appendChild(derEncodedKeyValue.getElement());</b>
+<b class="nc"><i>360</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>361</i>&nbsp;    }
+<i>362</i>&nbsp;
+<i>363</i>&nbsp;    /**
+<i>364</i>&nbsp;     * Method addKeyInfoReference
+<i>365</i>&nbsp;     *
+<i>366</i>&nbsp;     * @param URI
+<i>367</i>&nbsp;     * @throws XMLSecurityException
+<i>368</i>&nbsp;     */
+<i>369</i>&nbsp;    public void addKeyInfoReference(String URI) throws XMLSecurityException {
+<b class="nc"><i>370</i>&nbsp;        this.add(new KeyInfoReference(this.doc, URI));</b>
+<i>371</i>&nbsp;    }
+<i>372</i>&nbsp;
+<i>373</i>&nbsp;    /**
+<i>374</i>&nbsp;     * Method add
+<i>375</i>&nbsp;     *
+<i>376</i>&nbsp;     * @param keyInfoReference
+<i>377</i>&nbsp;     */
+<i>378</i>&nbsp;    public void add(KeyInfoReference keyInfoReference) {
+<b class="nc"><i>379</i>&nbsp;        this.constructionElement.appendChild(keyInfoReference.getElement());</b>
+<b class="nc"><i>380</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>381</i>&nbsp;    }
+<i>382</i>&nbsp;
+<i>383</i>&nbsp;    /**
+<i>384</i>&nbsp;     * Method addUnknownElement
+<i>385</i>&nbsp;     *
+<i>386</i>&nbsp;     * @param element
+<i>387</i>&nbsp;     */
+<i>388</i>&nbsp;    public void addUnknownElement(Element element) {
+<b class="nc"><i>389</i>&nbsp;        this.constructionElement.appendChild(element);</b>
+<b class="nc"><i>390</i>&nbsp;        XMLUtils.addReturnToElement(this.constructionElement);</b>
+<i>391</i>&nbsp;    }
+<i>392</i>&nbsp;
+<i>393</i>&nbsp;    /**
+<i>394</i>&nbsp;     * Method lengthKeyName
+<i>395</i>&nbsp;     *
+<i>396</i>&nbsp;     * @return the number of the KeyName tags
+<i>397</i>&nbsp;     */
+<i>398</i>&nbsp;    public int lengthKeyName() {
+<b class="nc"><i>399</i>&nbsp;        return this.length(Constants.SignatureSpecNS, Constants._TAG_KEYNAME);</b>
+<i>400</i>&nbsp;    }
+<i>401</i>&nbsp;
+<i>402</i>&nbsp;    /**
+<i>403</i>&nbsp;     * Method lengthKeyValue
+<i>404</i>&nbsp;     *
+<i>405</i>&nbsp;     *@return the number of the KeyValue tags
+<i>406</i>&nbsp;     */
+<i>407</i>&nbsp;    public int lengthKeyValue() {
+<b class="nc"><i>408</i>&nbsp;        return this.length(Constants.SignatureSpecNS, Constants._TAG_KEYVALUE);</b>
+<i>409</i>&nbsp;    }
+<i>410</i>&nbsp;
+<i>411</i>&nbsp;    /**
+<i>412</i>&nbsp;     * Method lengthMgmtData
+<i>413</i>&nbsp;     *
+<i>414</i>&nbsp;     *@return the number of the MgmtData tags
+<i>415</i>&nbsp;     */
+<i>416</i>&nbsp;    public int lengthMgmtData() {
+<b class="nc"><i>417</i>&nbsp;        return this.length(Constants.SignatureSpecNS, Constants._TAG_MGMTDATA);</b>
+<i>418</i>&nbsp;    }
+<i>419</i>&nbsp;
+<i>420</i>&nbsp;    /**
+<i>421</i>&nbsp;     * Method lengthPGPData
+<i>422</i>&nbsp;     *
+<i>423</i>&nbsp;     *@return the number of the PGPDat. tags
+<i>424</i>&nbsp;     */
+<i>425</i>&nbsp;    public int lengthPGPData() {
+<b class="nc"><i>426</i>&nbsp;        return this.length(Constants.SignatureSpecNS, Constants._TAG_PGPDATA);</b>
+<i>427</i>&nbsp;    }
+<i>428</i>&nbsp;
+<i>429</i>&nbsp;    /**
+<i>430</i>&nbsp;     * Method lengthRetrievalMethod
+<i>431</i>&nbsp;     *
+<i>432</i>&nbsp;     *@return the number of the RetrievalMethod tags
+<i>433</i>&nbsp;     */
+<i>434</i>&nbsp;    public int lengthRetrievalMethod() {
+<b class="nc"><i>435</i>&nbsp;        return this.length(Constants.SignatureSpecNS, Constants._TAG_RETRIEVALMETHOD);</b>
+<i>436</i>&nbsp;    }
+<i>437</i>&nbsp;
+<i>438</i>&nbsp;    /**
+<i>439</i>&nbsp;     * Method lengthSPKIData
+<i>440</i>&nbsp;     *
+<i>441</i>&nbsp;     *@return the number of the SPKIData tags
+<i>442</i>&nbsp;     */
+<i>443</i>&nbsp;    public int lengthSPKIData() {
+<b class="nc"><i>444</i>&nbsp;        return this.length(Constants.SignatureSpecNS, Constants._TAG_SPKIDATA);</b>
+<i>445</i>&nbsp;    }
+<i>446</i>&nbsp;
+<i>447</i>&nbsp;    /**
+<i>448</i>&nbsp;     * Method lengthX509Data
+<i>449</i>&nbsp;     *
+<i>450</i>&nbsp;     *@return the number of the X509Data tags
+<i>451</i>&nbsp;     */
+<i>452</i>&nbsp;    public int lengthX509Data() {
+<b class="nc"><i>453</i>&nbsp;        if (x509Datas != null) {</b>
+<b class="nc"><i>454</i>&nbsp;            return x509Datas.size();</b>
+<i>455</i>&nbsp;        }
+<b class="nc"><i>456</i>&nbsp;        return this.length(Constants.SignatureSpecNS, Constants._TAG_X509DATA);</b>
+<i>457</i>&nbsp;    }
+<i>458</i>&nbsp;
+<i>459</i>&nbsp;    /**
+<i>460</i>&nbsp;     * Method lengthDEREncodedKeyValue
+<i>461</i>&nbsp;     *
+<i>462</i>&nbsp;     *@return the number of the DEREncodedKeyValue tags
+<i>463</i>&nbsp;     */
+<i>464</i>&nbsp;    public int lengthDEREncodedKeyValue() {
+<b class="nc"><i>465</i>&nbsp;        return this.length(Constants.SignatureSpec11NS, Constants._TAG_DERENCODEDKEYVALUE);</b>
+<i>466</i>&nbsp;    }
+<i>467</i>&nbsp;
+<i>468</i>&nbsp;    /**
+<i>469</i>&nbsp;     * Method lengthKeyInfoReference
+<i>470</i>&nbsp;     *
+<i>471</i>&nbsp;     *@return the number of the KeyInfoReference tags
+<i>472</i>&nbsp;     */
+<i>473</i>&nbsp;    public int lengthKeyInfoReference() {
+<b class="nc"><i>474</i>&nbsp;        return this.length(Constants.SignatureSpec11NS, Constants._TAG_KEYINFOREFERENCE);</b>
+<i>475</i>&nbsp;    }
+<i>476</i>&nbsp;
+<i>477</i>&nbsp;    /**
+<i>478</i>&nbsp;     * Method lengthUnknownElement
+<i>479</i>&nbsp;     * NOTE possibly buggy.
+<i>480</i>&nbsp;     * @return the number of the UnknownElement tags
+<i>481</i>&nbsp;     */
+<i>482</i>&nbsp;    public int lengthUnknownElement() {
+<b class="nc"><i>483</i>&nbsp;        int res = 0;</b>
+<b class="nc"><i>484</i>&nbsp;        NodeList nl = this.constructionElement.getChildNodes();</b>
+<i>485</i>&nbsp;
+<b class="nc"><i>486</i>&nbsp;        for (int i = 0; i &lt; nl.getLength(); i++) {</b>
+<b class="nc"><i>487</i>&nbsp;            Node current = nl.item(i);</b>
+<i>488</i>&nbsp;
+<i>489</i>&nbsp;            /**
+<i>490</i>&nbsp;             * $todo$ using this method, we don&#39;t see unknown Elements
+<i>491</i>&nbsp;             *  from Signature NS; revisit
+<i>492</i>&nbsp;             */
+<b class="nc"><i>493</i>&nbsp;            if ((current.getNodeType() == Node.ELEMENT_NODE)</b>
+<b class="nc"><i>494</i>&nbsp;                &amp;&amp; current.getNamespaceURI().equals(Constants.SignatureSpecNS)) {</b>
+<b class="nc"><i>495</i>&nbsp;                res++;</b>
+<i>496</i>&nbsp;            }
+<i>497</i>&nbsp;        }
+<i>498</i>&nbsp;
+<b class="nc"><i>499</i>&nbsp;        return res;</b>
+<i>500</i>&nbsp;    }
+<i>501</i>&nbsp;
+<i>502</i>&nbsp;    /**
+<i>503</i>&nbsp;     * Method itemKeyName
+<i>504</i>&nbsp;     *
+<i>505</i>&nbsp;     * @param i
+<i>506</i>&nbsp;     * @return the asked KeyName element, null if the index is too big
+<i>507</i>&nbsp;     * @throws XMLSecurityException
+<i>508</i>&nbsp;     */
+<i>509</i>&nbsp;    public KeyName itemKeyName(int i) throws XMLSecurityException {
+<b class="nc"><i>510</i>&nbsp;        Element e =</b>
+<b class="nc"><i>511</i>&nbsp;            XMLUtils.selectDsNode(</b>
+<b class="nc"><i>512</i>&nbsp;                this.constructionElement.getFirstChild(), Constants._TAG_KEYNAME, i);</b>
+<i>513</i>&nbsp;
+<b class="nc"><i>514</i>&nbsp;        if (e != null) {</b>
+<b class="nc"><i>515</i>&nbsp;            return new KeyName(e, this.baseURI);</b>
+<i>516</i>&nbsp;        }
+<b class="nc"><i>517</i>&nbsp;        return null;</b>
+<i>518</i>&nbsp;    }
+<i>519</i>&nbsp;
+<i>520</i>&nbsp;    /**
+<i>521</i>&nbsp;     * Method itemKeyValue
+<i>522</i>&nbsp;     *
+<i>523</i>&nbsp;     * @param i
+<i>524</i>&nbsp;     * @return the asked KeyValue element, null if the index is too big
+<i>525</i>&nbsp;     * @throws XMLSecurityException
+<i>526</i>&nbsp;     */
+<i>527</i>&nbsp;    public KeyValue itemKeyValue(int i) throws XMLSecurityException {
+<b class="nc"><i>528</i>&nbsp;        Element e =</b>
+<b class="nc"><i>529</i>&nbsp;            XMLUtils.selectDsNode(</b>
+<b class="nc"><i>530</i>&nbsp;                this.constructionElement.getFirstChild(), Constants._TAG_KEYVALUE, i);</b>
+<i>531</i>&nbsp;
+<b class="nc"><i>532</i>&nbsp;        if (e != null) {</b>
+<b class="nc"><i>533</i>&nbsp;            return new KeyValue(e, this.baseURI);</b>
+<i>534</i>&nbsp;        }
+<b class="nc"><i>535</i>&nbsp;        return null;</b>
+<i>536</i>&nbsp;    }
+<i>537</i>&nbsp;
+<i>538</i>&nbsp;    /**
+<i>539</i>&nbsp;     * Method itemMgmtData
+<i>540</i>&nbsp;     *
+<i>541</i>&nbsp;     * @param i
+<i>542</i>&nbsp;     * @return the asked MgmtData element, null if the index is too big
+<i>543</i>&nbsp;     * @throws XMLSecurityException
+<i>544</i>&nbsp;     */
+<i>545</i>&nbsp;    public MgmtData itemMgmtData(int i) throws XMLSecurityException {
+<b class="nc"><i>546</i>&nbsp;        Element e =</b>
+<b class="nc"><i>547</i>&nbsp;            XMLUtils.selectDsNode(</b>
+<b class="nc"><i>548</i>&nbsp;                this.constructionElement.getFirstChild(), Constants._TAG_MGMTDATA, i);</b>
+<i>549</i>&nbsp;
+<b class="nc"><i>550</i>&nbsp;        if (e != null) {</b>
+<b class="nc"><i>551</i>&nbsp;            return new MgmtData(e, this.baseURI);</b>
+<i>552</i>&nbsp;        }
+<b class="nc"><i>553</i>&nbsp;        return null;</b>
+<i>554</i>&nbsp;    }
+<i>555</i>&nbsp;
+<i>556</i>&nbsp;    /**
+<i>557</i>&nbsp;     * Method itemPGPData
+<i>558</i>&nbsp;     *
+<i>559</i>&nbsp;     * @param i
+<i>560</i>&nbsp;     * @return the asked PGPData element, null if the index is too big
+<i>561</i>&nbsp;     * @throws XMLSecurityException
+<i>562</i>&nbsp;     */
+<i>563</i>&nbsp;    public PGPData itemPGPData(int i) throws XMLSecurityException {
+<b class="nc"><i>564</i>&nbsp;        Element e =</b>
+<b class="nc"><i>565</i>&nbsp;            XMLUtils.selectDsNode(</b>
+<b class="nc"><i>566</i>&nbsp;                this.constructionElement.getFirstChild(), Constants._TAG_PGPDATA, i);</b>
+<i>567</i>&nbsp;
+<b class="nc"><i>568</i>&nbsp;        if (e != null) {</b>
+<b class="nc"><i>569</i>&nbsp;            return new PGPData(e, this.baseURI);</b>
+<i>570</i>&nbsp;        }
+<b class="nc"><i>571</i>&nbsp;        return null;</b>
+<i>572</i>&nbsp;    }
+<i>573</i>&nbsp;
+<i>574</i>&nbsp;    /**
+<i>575</i>&nbsp;     * Method itemRetrievalMethod
+<i>576</i>&nbsp;     *
+<i>577</i>&nbsp;     * @param i
+<i>578</i>&nbsp;     *@return the asked RetrievalMethod element, null if the index is too big
+<i>579</i>&nbsp;     * @throws XMLSecurityException
+<i>580</i>&nbsp;     */
+<i>581</i>&nbsp;    public RetrievalMethod itemRetrievalMethod(int i) throws XMLSecurityException {
+<b class="nc"><i>582</i>&nbsp;        Element e =</b>
+<b class="nc"><i>583</i>&nbsp;            XMLUtils.selectDsNode(</b>
+<b class="nc"><i>584</i>&nbsp;                this.constructionElement.getFirstChild(), Constants._TAG_RETRIEVALMETHOD, i);</b>
+<i>585</i>&nbsp;
+<b class="nc"><i>586</i>&nbsp;        if (e != null) {</b>
+<b class="nc"><i>587</i>&nbsp;            return new RetrievalMethod(e, this.baseURI);</b>
+<i>588</i>&nbsp;        }
+<b class="nc"><i>589</i>&nbsp;        return null;</b>
+<i>590</i>&nbsp;    }
+<i>591</i>&nbsp;
+<i>592</i>&nbsp;    /**
+<i>593</i>&nbsp;     * Method itemSPKIData
+<i>594</i>&nbsp;     *
+<i>595</i>&nbsp;     * @param i
+<i>596</i>&nbsp;     * @return the asked SPKIData element, null if the index is too big
+<i>597</i>&nbsp;     * @throws XMLSecurityException
+<i>598</i>&nbsp;     */
+<i>599</i>&nbsp;    public SPKIData itemSPKIData(int i) throws XMLSecurityException {
+<b class="nc"><i>600</i>&nbsp;        Element e =</b>
+<b class="nc"><i>601</i>&nbsp;            XMLUtils.selectDsNode(</b>
+<b class="nc"><i>602</i>&nbsp;                this.constructionElement.getFirstChild(), Constants._TAG_SPKIDATA, i);</b>
+<i>603</i>&nbsp;
+<b class="nc"><i>604</i>&nbsp;        if (e != null) {</b>
+<b class="nc"><i>605</i>&nbsp;            return new SPKIData(e, this.baseURI);</b>
+<i>606</i>&nbsp;        }
+<b class="nc"><i>607</i>&nbsp;        return null;</b>
+<i>608</i>&nbsp;    }
+<i>609</i>&nbsp;
+<i>610</i>&nbsp;    /**
+<i>611</i>&nbsp;     * Method itemX509Data
+<i>612</i>&nbsp;     *
+<i>613</i>&nbsp;     * @param i
+<i>614</i>&nbsp;     * @return the asked X509Data element, null if the index is too big
+<i>615</i>&nbsp;     * @throws XMLSecurityException
+<i>616</i>&nbsp;     */
+<i>617</i>&nbsp;    public X509Data itemX509Data(int i) throws XMLSecurityException {
+<b class="nc"><i>618</i>&nbsp;        if (x509Datas != null) {</b>
+<b class="nc"><i>619</i>&nbsp;            return x509Datas.get(i);</b>
+<i>620</i>&nbsp;        }
+<b class="nc"><i>621</i>&nbsp;        Element e =</b>
+<b class="nc"><i>622</i>&nbsp;            XMLUtils.selectDsNode(</b>
+<b class="nc"><i>623</i>&nbsp;                this.constructionElement.getFirstChild(), Constants._TAG_X509DATA, i);</b>
+<i>624</i>&nbsp;
+<b class="nc"><i>625</i>&nbsp;        if (e != null) {</b>
+<b class="nc"><i>626</i>&nbsp;            return new X509Data(e, this.baseURI);</b>
+<i>627</i>&nbsp;        }
+<b class="nc"><i>628</i>&nbsp;        return null;</b>
+<i>629</i>&nbsp;    }
+<i>630</i>&nbsp;
+<i>631</i>&nbsp;    /**
+<i>632</i>&nbsp;     * Method itemEncryptedKey
+<i>633</i>&nbsp;     *
+<i>634</i>&nbsp;     * @param i
+<i>635</i>&nbsp;     * @return the asked EncryptedKey element, null if the index is too big
+<i>636</i>&nbsp;     * @throws XMLSecurityException
+<i>637</i>&nbsp;     */
+<i>638</i>&nbsp;    public EncryptedKey itemEncryptedKey(int i) throws XMLSecurityException {
+<b class="nc"><i>639</i>&nbsp;        if (encryptedKeys != null) {</b>
+<b class="nc"><i>640</i>&nbsp;            return encryptedKeys.get(i);</b>
+<i>641</i>&nbsp;        }
+<b class="nc"><i>642</i>&nbsp;        Element e =</b>
+<b class="nc"><i>643</i>&nbsp;            XMLUtils.selectXencNode(</b>
+<b class="nc"><i>644</i>&nbsp;                this.constructionElement.getFirstChild(), EncryptionConstants._TAG_ENCRYPTEDKEY, i);</b>
+<i>645</i>&nbsp;
+<b class="nc"><i>646</i>&nbsp;        if (e != null) {</b>
+<b class="nc"><i>647</i>&nbsp;            XMLCipher cipher = XMLCipher.getInstance();</b>
+<b class="nc"><i>648</i>&nbsp;            cipher.init(XMLCipher.UNWRAP_MODE, null);</b>
+<b class="nc"><i>649</i>&nbsp;            return cipher.loadEncryptedKey(e);</b>
+<i>650</i>&nbsp;        }
+<b class="nc"><i>651</i>&nbsp;        return null;</b>
+<i>652</i>&nbsp;    }
+<i>653</i>&nbsp;
+<i>654</i>&nbsp;    /**
+<i>655</i>&nbsp;     * Method itemDEREncodedKeyValue
+<i>656</i>&nbsp;     *
+<i>657</i>&nbsp;     * @param i
+<i>658</i>&nbsp;     * @return the asked DEREncodedKeyValue element, null if the index is too big
+<i>659</i>&nbsp;     * @throws XMLSecurityException
+<i>660</i>&nbsp;     */
+<i>661</i>&nbsp;    public DEREncodedKeyValue itemDEREncodedKeyValue(int i) throws XMLSecurityException {
+<b class="nc"><i>662</i>&nbsp;        Element e =</b>
+<b class="nc"><i>663</i>&nbsp;            XMLUtils.selectDs11Node(</b>
+<b class="nc"><i>664</i>&nbsp;                this.constructionElement.getFirstChild(), Constants._TAG_DERENCODEDKEYVALUE, i);</b>
+<i>665</i>&nbsp;
+<b class="nc"><i>666</i>&nbsp;        if (e != null) {</b>
+<b class="nc"><i>667</i>&nbsp;            return new DEREncodedKeyValue(e, this.baseURI);</b>
+<i>668</i>&nbsp;        }
+<b class="nc"><i>669</i>&nbsp;        return null;</b>
+<i>670</i>&nbsp;    }
+<i>671</i>&nbsp;
+<i>672</i>&nbsp;    /**
+<i>673</i>&nbsp;     * Method itemKeyInfoReference
+<i>674</i>&nbsp;     *
+<i>675</i>&nbsp;     * @param i
+<i>676</i>&nbsp;     * @return the asked KeyInfoReference element, null if the index is too big
+<i>677</i>&nbsp;     * @throws XMLSecurityException
+<i>678</i>&nbsp;     */
+<i>679</i>&nbsp;    public KeyInfoReference itemKeyInfoReference(int i) throws XMLSecurityException {
+<b class="nc"><i>680</i>&nbsp;        Element e =</b>
+<b class="nc"><i>681</i>&nbsp;            XMLUtils.selectDs11Node(</b>
+<b class="nc"><i>682</i>&nbsp;                this.constructionElement.getFirstChild(), Constants._TAG_KEYINFOREFERENCE, i);</b>
+<i>683</i>&nbsp;
+<b class="nc"><i>684</i>&nbsp;        if (e != null) {</b>
+<b class="nc"><i>685</i>&nbsp;            return new KeyInfoReference(e, this.baseURI);</b>
+<i>686</i>&nbsp;        }
+<b class="nc"><i>687</i>&nbsp;        return null;</b>
+<i>688</i>&nbsp;    }
+<i>689</i>&nbsp;
+<i>690</i>&nbsp;    /**
+<i>691</i>&nbsp;     * Method itemUnknownElement
+<i>692</i>&nbsp;     *
+<i>693</i>&nbsp;     * @param i index
+<i>694</i>&nbsp;     * @return the element number of the unknown elements
+<i>695</i>&nbsp;     */
+<i>696</i>&nbsp;    public Element itemUnknownElement(int i) {
+<b class="nc"><i>697</i>&nbsp;        NodeList nl = this.constructionElement.getChildNodes();</b>
+<b class="nc"><i>698</i>&nbsp;        int res = 0;</b>
+<i>699</i>&nbsp;
+<b class="nc"><i>700</i>&nbsp;        for (int j = 0; j &lt; nl.getLength(); j++) {</b>
+<b class="nc"><i>701</i>&nbsp;            Node current = nl.item(j);</b>
+<i>702</i>&nbsp;
+<i>703</i>&nbsp;            /**
+<i>704</i>&nbsp;             * $todo$ using this method, we don&#39;t see unknown Elements
+<i>705</i>&nbsp;             *  from Signature NS; revisit
+<i>706</i>&nbsp;             */
+<b class="nc"><i>707</i>&nbsp;            if ((current.getNodeType() == Node.ELEMENT_NODE)</b>
+<b class="nc"><i>708</i>&nbsp;                &amp;&amp; current.getNamespaceURI().equals(Constants.SignatureSpecNS)) {</b>
+<b class="nc"><i>709</i>&nbsp;                res++;</b>
+<i>710</i>&nbsp;
+<b class="nc"><i>711</i>&nbsp;                if (res == i) {</b>
+<b class="nc"><i>712</i>&nbsp;                    return (Element) current;</b>
+<i>713</i>&nbsp;                }
+<i>714</i>&nbsp;            }
+<i>715</i>&nbsp;        }
+<i>716</i>&nbsp;
+<b class="nc"><i>717</i>&nbsp;        return null;</b>
+<i>718</i>&nbsp;    }
+<i>719</i>&nbsp;
+<i>720</i>&nbsp;    /**
+<i>721</i>&nbsp;     * Method isEmpty
+<i>722</i>&nbsp;     *
+<i>723</i>&nbsp;     * @return true if the element has no descendants.
+<i>724</i>&nbsp;     */
+<i>725</i>&nbsp;    public boolean isEmpty() {
+<b class="nc"><i>726</i>&nbsp;        return this.constructionElement.getFirstChild() == null;</b>
+<i>727</i>&nbsp;    }
+<i>728</i>&nbsp;
+<i>729</i>&nbsp;    /**
+<i>730</i>&nbsp;     * Method containsKeyName
+<i>731</i>&nbsp;     *
+<i>732</i>&nbsp;     * @return If the KeyInfo contains a KeyName node
+<i>733</i>&nbsp;     */
+<i>734</i>&nbsp;    public boolean containsKeyName() {
+<b class="nc"><i>735</i>&nbsp;        return this.lengthKeyName() &gt; 0;</b>
+<i>736</i>&nbsp;    }
+<i>737</i>&nbsp;
+<i>738</i>&nbsp;    /**
+<i>739</i>&nbsp;     * Method containsKeyValue
+<i>740</i>&nbsp;     *
+<i>741</i>&nbsp;     * @return If the KeyInfo contains a KeyValue node
+<i>742</i>&nbsp;     */
+<i>743</i>&nbsp;    public boolean containsKeyValue() {
+<b class="nc"><i>744</i>&nbsp;        return this.lengthKeyValue() &gt; 0;</b>
+<i>745</i>&nbsp;    }
+<i>746</i>&nbsp;
+<i>747</i>&nbsp;    /**
+<i>748</i>&nbsp;     * Method containsMgmtData
+<i>749</i>&nbsp;     *
+<i>750</i>&nbsp;     * @return If the KeyInfo contains a MgmtData node
+<i>751</i>&nbsp;     */
+<i>752</i>&nbsp;    public boolean containsMgmtData() {
+<b class="nc"><i>753</i>&nbsp;        return this.lengthMgmtData() &gt; 0;</b>
+<i>754</i>&nbsp;    }
+<i>755</i>&nbsp;
+<i>756</i>&nbsp;    /**
+<i>757</i>&nbsp;     * Method containsPGPData
+<i>758</i>&nbsp;     *
+<i>759</i>&nbsp;     * @return If the KeyInfo contains a PGPData node
+<i>760</i>&nbsp;     */
+<i>761</i>&nbsp;    public boolean containsPGPData() {
+<b class="nc"><i>762</i>&nbsp;        return this.lengthPGPData() &gt; 0;</b>
+<i>763</i>&nbsp;    }
+<i>764</i>&nbsp;
+<i>765</i>&nbsp;    /**
+<i>766</i>&nbsp;     * Method containsRetrievalMethod
+<i>767</i>&nbsp;     *
+<i>768</i>&nbsp;     * @return If the KeyInfo contains a RetrievalMethod node
+<i>769</i>&nbsp;     */
+<i>770</i>&nbsp;    public boolean containsRetrievalMethod() {
+<b class="nc"><i>771</i>&nbsp;        return this.lengthRetrievalMethod() &gt; 0;</b>
+<i>772</i>&nbsp;    }
+<i>773</i>&nbsp;
+<i>774</i>&nbsp;    /**
+<i>775</i>&nbsp;     * Method containsSPKIData
+<i>776</i>&nbsp;     *
+<i>777</i>&nbsp;     * @return If the KeyInfo contains a SPKIData node
+<i>778</i>&nbsp;     */
+<i>779</i>&nbsp;    public boolean containsSPKIData() {
+<b class="nc"><i>780</i>&nbsp;        return this.lengthSPKIData() &gt; 0;</b>
+<i>781</i>&nbsp;    }
+<i>782</i>&nbsp;
+<i>783</i>&nbsp;    /**
+<i>784</i>&nbsp;     * Method containsUnknownElement
+<i>785</i>&nbsp;     *
+<i>786</i>&nbsp;     * @return If the KeyInfo contains a UnknownElement node
+<i>787</i>&nbsp;     */
+<i>788</i>&nbsp;    public boolean containsUnknownElement() {
+<b class="nc"><i>789</i>&nbsp;        return this.lengthUnknownElement() &gt; 0;</b>
+<i>790</i>&nbsp;    }
+<i>791</i>&nbsp;
+<i>792</i>&nbsp;    /**
+<i>793</i>&nbsp;     * Method containsX509Data
+<i>794</i>&nbsp;     *
+<i>795</i>&nbsp;     * @return If the KeyInfo contains a X509Data node
+<i>796</i>&nbsp;     */
+<i>797</i>&nbsp;    public boolean containsX509Data() {
+<b class="nc"><i>798</i>&nbsp;        return this.lengthX509Data() &gt; 0;</b>
+<i>799</i>&nbsp;    }
+<i>800</i>&nbsp;
+<i>801</i>&nbsp;    /**
+<i>802</i>&nbsp;     * Method containsDEREncodedKeyValue
+<i>803</i>&nbsp;     *
+<i>804</i>&nbsp;     * @return If the KeyInfo contains a DEREncodedKeyValue node
+<i>805</i>&nbsp;     */
+<i>806</i>&nbsp;    public boolean containsDEREncodedKeyValue() {
+<b class="nc"><i>807</i>&nbsp;        return this.lengthDEREncodedKeyValue() &gt; 0;</b>
+<i>808</i>&nbsp;    }
+<i>809</i>&nbsp;
+<i>810</i>&nbsp;    /**
+<i>811</i>&nbsp;     * Method containsKeyInfoReference
+<i>812</i>&nbsp;     *
+<i>813</i>&nbsp;     * @return If the KeyInfo contains a KeyInfoReference node
+<i>814</i>&nbsp;     */
+<i>815</i>&nbsp;    public boolean containsKeyInfoReference() {
+<b class="nc"><i>816</i>&nbsp;        return this.lengthKeyInfoReference() &gt; 0;</b>
+<i>817</i>&nbsp;    }
+<i>818</i>&nbsp;
+<i>819</i>&nbsp;    /**
+<i>820</i>&nbsp;     * This method returns the public key.
+<i>821</i>&nbsp;     *
+<i>822</i>&nbsp;     * @return If the KeyInfo contains a PublicKey node
+<i>823</i>&nbsp;     * @throws KeyResolverException
+<i>824</i>&nbsp;     */
+<i>825</i>&nbsp;    public PublicKey getPublicKey() throws KeyResolverException {
+<b class="nc"><i>826</i>&nbsp;        PublicKey pk = this.getPublicKeyFromInternalResolvers();</b>
+<i>827</i>&nbsp;
+<b class="nc"><i>828</i>&nbsp;        if (pk != null) {</b>
+<b class="nc"><i>829</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>830</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;I could find a key using the per-KeyInfo key resolvers&quot;);</b>
+<i>831</i>&nbsp;            }
+<i>832</i>&nbsp;
+<b class="nc"><i>833</i>&nbsp;            return pk;</b>
+<i>834</i>&nbsp;        }
+<b class="nc"><i>835</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>836</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;I couldn&#39;t find a key using the per-KeyInfo key resolvers&quot;);</b>
+<i>837</i>&nbsp;        }
+<i>838</i>&nbsp;
+<b class="nc"><i>839</i>&nbsp;        pk = this.getPublicKeyFromStaticResolvers();</b>
+<i>840</i>&nbsp;
+<b class="nc"><i>841</i>&nbsp;        if (pk != null) {</b>
+<b class="nc"><i>842</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>843</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;I could find a key using the system-wide key resolvers&quot;);</b>
+<i>844</i>&nbsp;            }
+<i>845</i>&nbsp;
+<b class="nc"><i>846</i>&nbsp;            return pk;</b>
+<i>847</i>&nbsp;        }
+<b class="nc"><i>848</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>849</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;I couldn&#39;t find a key using the system-wide key resolvers&quot;);</b>
+<i>850</i>&nbsp;        }
+<i>851</i>&nbsp;
+<b class="nc"><i>852</i>&nbsp;        return null;</b>
+<i>853</i>&nbsp;    }
+<i>854</i>&nbsp;
+<i>855</i>&nbsp;    /**
+<i>856</i>&nbsp;     * Searches the library wide KeyResolvers for public keys
+<i>857</i>&nbsp;     *
+<i>858</i>&nbsp;     * @return The public key contained in this Node.
+<i>859</i>&nbsp;     * @throws KeyResolverException
+<i>860</i>&nbsp;     */
+<i>861</i>&nbsp;    PublicKey getPublicKeyFromStaticResolvers() throws KeyResolverException {
+<b class="nc"><i>862</i>&nbsp;        Iterator&lt;KeyResolverSpi&gt; it = KeyResolver.iterator();</b>
+<b class="nc"><i>863</i>&nbsp;        while (it.hasNext()) {</b>
+<b class="nc"><i>864</i>&nbsp;            KeyResolverSpi keyResolver = it.next();</b>
+<b class="nc"><i>865</i>&nbsp;            keyResolver.setSecureValidation(secureValidation);</b>
+<b class="nc"><i>866</i>&nbsp;            Node currentChild = this.constructionElement.getFirstChild();</b>
+<b class="nc"><i>867</i>&nbsp;            String uri = this.getBaseURI();</b>
+<b class="nc"><i>868</i>&nbsp;            while (currentChild != null) {</b>
+<b class="nc"><i>869</i>&nbsp;                if (currentChild.getNodeType() == Node.ELEMENT_NODE) {</b>
+<b class="nc"><i>870</i>&nbsp;                    for (StorageResolver storage : storageResolvers) {</b>
+<b class="nc"><i>871</i>&nbsp;                        PublicKey pk =</b>
+<b class="nc"><i>872</i>&nbsp;                            keyResolver.engineLookupAndResolvePublicKey(</b>
+<i>873</i>&nbsp;                                (Element) currentChild, uri, storage
+<i>874</i>&nbsp;                            );
+<i>875</i>&nbsp;
+<b class="nc"><i>876</i>&nbsp;                        if (pk != null) {</b>
+<b class="nc"><i>877</i>&nbsp;                            return pk;</b>
+<i>878</i>&nbsp;                        }
+<b class="nc"><i>879</i>&nbsp;                    }</b>
+<i>880</i>&nbsp;                }
+<b class="nc"><i>881</i>&nbsp;                currentChild = currentChild.getNextSibling();</b>
+<i>882</i>&nbsp;            }
+<b class="nc"><i>883</i>&nbsp;        }</b>
+<b class="nc"><i>884</i>&nbsp;        return null;</b>
+<i>885</i>&nbsp;    }
+<i>886</i>&nbsp;
+<i>887</i>&nbsp;    /**
+<i>888</i>&nbsp;     * Searches the per-KeyInfo KeyResolvers for public keys
+<i>889</i>&nbsp;     *
+<i>890</i>&nbsp;     * @return The public key contained in this Node.
+<i>891</i>&nbsp;     * @throws KeyResolverException
+<i>892</i>&nbsp;     */
+<i>893</i>&nbsp;    PublicKey getPublicKeyFromInternalResolvers() throws KeyResolverException {
+<b class="nc"><i>894</i>&nbsp;        for (KeyResolverSpi keyResolver : internalKeyResolvers) {</b>
+<b class="nc"><i>895</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>896</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;Try &quot; + keyResolver.getClass().getName());</b>
+<i>897</i>&nbsp;            }
+<b class="nc"><i>898</i>&nbsp;            keyResolver.setSecureValidation(secureValidation);</b>
+<b class="nc"><i>899</i>&nbsp;            Node currentChild = this.constructionElement.getFirstChild();</b>
+<b class="nc"><i>900</i>&nbsp;            String uri = this.getBaseURI();</b>
+<b class="nc"><i>901</i>&nbsp;            while (currentChild != null)      {</b>
+<b class="nc"><i>902</i>&nbsp;                if (currentChild.getNodeType() == Node.ELEMENT_NODE) {</b>
+<b class="nc"><i>903</i>&nbsp;                    for (StorageResolver storage : storageResolvers) {</b>
+<b class="nc"><i>904</i>&nbsp;                        PublicKey pk =</b>
+<b class="nc"><i>905</i>&nbsp;                            keyResolver.engineLookupAndResolvePublicKey(</b>
+<i>906</i>&nbsp;                                (Element) currentChild, uri, storage
+<i>907</i>&nbsp;                            );
+<i>908</i>&nbsp;
+<b class="nc"><i>909</i>&nbsp;                        if (pk != null) {</b>
+<b class="nc"><i>910</i>&nbsp;                            return pk;</b>
+<i>911</i>&nbsp;                        }
+<b class="nc"><i>912</i>&nbsp;                    }</b>
+<i>913</i>&nbsp;                }
+<b class="nc"><i>914</i>&nbsp;                currentChild = currentChild.getNextSibling();</b>
+<i>915</i>&nbsp;            }
+<b class="nc"><i>916</i>&nbsp;        }</b>
+<i>917</i>&nbsp;
+<b class="nc"><i>918</i>&nbsp;        return null;</b>
+<i>919</i>&nbsp;    }
+<i>920</i>&nbsp;
+<i>921</i>&nbsp;    /**
+<i>922</i>&nbsp;     * Method getX509Certificate
+<i>923</i>&nbsp;     *
+<i>924</i>&nbsp;     * @return The certificate contained in this KeyInfo
+<i>925</i>&nbsp;     * @throws KeyResolverException
+<i>926</i>&nbsp;     */
+<i>927</i>&nbsp;    public X509Certificate getX509Certificate() throws KeyResolverException {
+<i>928</i>&nbsp;        // First search using the individual resolvers from the user
+<b class="nc"><i>929</i>&nbsp;        X509Certificate cert = this.getX509CertificateFromInternalResolvers();</b>
+<i>930</i>&nbsp;
+<b class="nc"><i>931</i>&nbsp;        if (cert != null) {</b>
+<b class="nc"><i>932</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>933</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;I could find a X509Certificate using the per-KeyInfo key resolvers&quot;);</b>
+<i>934</i>&nbsp;            }
+<i>935</i>&nbsp;
+<b class="nc"><i>936</i>&nbsp;            return cert;</b>
+<i>937</i>&nbsp;        }
+<b class="nc"><i>938</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>939</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;I couldn&#39;t find a X509Certificate using the per-KeyInfo key resolvers&quot;);</b>
+<i>940</i>&nbsp;        }
+<i>941</i>&nbsp;
+<i>942</i>&nbsp;        // Then use the system-wide Resolvers
+<b class="nc"><i>943</i>&nbsp;        cert = this.getX509CertificateFromStaticResolvers();</b>
+<i>944</i>&nbsp;
+<b class="nc"><i>945</i>&nbsp;        if (cert != null) {</b>
+<b class="nc"><i>946</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>947</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;I could find a X509Certificate using the system-wide key resolvers&quot;);</b>
+<i>948</i>&nbsp;            }
+<i>949</i>&nbsp;
+<b class="nc"><i>950</i>&nbsp;            return cert;</b>
+<i>951</i>&nbsp;        }
+<b class="nc"><i>952</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>953</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;I couldn&#39;t find a X509Certificate using the system-wide key resolvers&quot;);</b>
+<i>954</i>&nbsp;        }
+<i>955</i>&nbsp;
+<b class="nc"><i>956</i>&nbsp;        return null;</b>
+<i>957</i>&nbsp;    }
+<i>958</i>&nbsp;
+<i>959</i>&nbsp;    /**
+<i>960</i>&nbsp;     * This method uses each System-wide {@link KeyResolver} to search the
+<i>961</i>&nbsp;     * child elements. Each combination of {@link KeyResolver} and child element
+<i>962</i>&nbsp;     * is checked against all {@link StorageResolver}s.
+<i>963</i>&nbsp;     *
+<i>964</i>&nbsp;     * @return The certificate contained in this KeyInfo
+<i>965</i>&nbsp;     * @throws KeyResolverException
+<i>966</i>&nbsp;     */
+<i>967</i>&nbsp;    X509Certificate getX509CertificateFromStaticResolvers()
+<i>968</i>&nbsp;        throws KeyResolverException {
+<b class="nc"><i>969</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>970</i>&nbsp;            log.log(java.util.logging.Level.FINE,</b>
+<b class="nc"><i>971</i>&nbsp;                &quot;Start getX509CertificateFromStaticResolvers() with &quot; + KeyResolver.length()</b>
+<i>972</i>&nbsp;                + &quot; resolvers&quot;
+<i>973</i>&nbsp;            );
+<i>974</i>&nbsp;        }
+<b class="nc"><i>975</i>&nbsp;        String uri = this.getBaseURI();</b>
+<b class="nc"><i>976</i>&nbsp;        Iterator&lt;KeyResolverSpi&gt; it = KeyResolver.iterator();</b>
+<b class="nc"><i>977</i>&nbsp;        while (it.hasNext()) {</b>
+<b class="nc"><i>978</i>&nbsp;            KeyResolverSpi keyResolver = it.next();</b>
+<b class="nc"><i>979</i>&nbsp;            keyResolver.setSecureValidation(secureValidation);</b>
+<b class="nc"><i>980</i>&nbsp;            X509Certificate cert = applyCurrentResolver(uri, keyResolver);</b>
+<b class="nc"><i>981</i>&nbsp;            if (cert != null) {</b>
+<b class="nc"><i>982</i>&nbsp;                return cert;</b>
+<i>983</i>&nbsp;            }
+<b class="nc"><i>984</i>&nbsp;        }</b>
+<b class="nc"><i>985</i>&nbsp;        return null;</b>
+<i>986</i>&nbsp;    }
+<i>987</i>&nbsp;
+<i>988</i>&nbsp;    private X509Certificate applyCurrentResolver(
+<i>989</i>&nbsp;        String uri, KeyResolverSpi keyResolver
+<i>990</i>&nbsp;    ) throws KeyResolverException {
+<b class="nc"><i>991</i>&nbsp;        Node currentChild = this.constructionElement.getFirstChild();</b>
+<b class="nc"><i>992</i>&nbsp;        while (currentChild != null)      {</b>
+<b class="nc"><i>993</i>&nbsp;            if (currentChild.getNodeType() == Node.ELEMENT_NODE) {</b>
+<b class="nc"><i>994</i>&nbsp;                for (StorageResolver storage : storageResolvers) {</b>
+<b class="nc"><i>995</i>&nbsp;                    X509Certificate cert =</b>
+<b class="nc"><i>996</i>&nbsp;                        keyResolver.engineLookupResolveX509Certificate(</b>
+<i>997</i>&nbsp;                            (Element) currentChild, uri, storage
+<i>998</i>&nbsp;                        );
+<i>999</i>&nbsp;
+<b class="nc"><i>1000</i>&nbsp;                    if (cert != null) {</b>
+<b class="nc"><i>1001</i>&nbsp;                        return cert;</b>
+<i>1002</i>&nbsp;                    }
+<b class="nc"><i>1003</i>&nbsp;                }</b>
+<i>1004</i>&nbsp;            }
+<b class="nc"><i>1005</i>&nbsp;            currentChild = currentChild.getNextSibling();</b>
+<i>1006</i>&nbsp;        }
+<b class="nc"><i>1007</i>&nbsp;        return null;</b>
+<i>1008</i>&nbsp;    }
+<i>1009</i>&nbsp;
+<i>1010</i>&nbsp;    /**
+<i>1011</i>&nbsp;     * Method getX509CertificateFromInternalResolvers
+<i>1012</i>&nbsp;     *
+<i>1013</i>&nbsp;     * @return The certificate contained in this KeyInfo
+<i>1014</i>&nbsp;     * @throws KeyResolverException
+<i>1015</i>&nbsp;     */
+<i>1016</i>&nbsp;    X509Certificate getX509CertificateFromInternalResolvers()
+<i>1017</i>&nbsp;        throws KeyResolverException {
+<b class="nc"><i>1018</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>1019</i>&nbsp;            log.log(java.util.logging.Level.FINE,</b>
+<i>1020</i>&nbsp;                &quot;Start getX509CertificateFromInternalResolvers() with &quot;
+<b class="nc"><i>1021</i>&nbsp;                + this.lengthInternalKeyResolver() + &quot; resolvers&quot;</b>
+<i>1022</i>&nbsp;            );
+<i>1023</i>&nbsp;        }
+<b class="nc"><i>1024</i>&nbsp;        String uri = this.getBaseURI();</b>
+<b class="nc"><i>1025</i>&nbsp;        for (KeyResolverSpi keyResolver : internalKeyResolvers) {</b>
+<b class="nc"><i>1026</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>1027</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;Try &quot; + keyResolver.getClass().getName());</b>
+<i>1028</i>&nbsp;            }
+<b class="nc"><i>1029</i>&nbsp;            keyResolver.setSecureValidation(secureValidation);</b>
+<b class="nc"><i>1030</i>&nbsp;            X509Certificate cert = applyCurrentResolver(uri, keyResolver);</b>
+<b class="nc"><i>1031</i>&nbsp;            if (cert != null) {</b>
+<b class="nc"><i>1032</i>&nbsp;                return cert;</b>
+<i>1033</i>&nbsp;            }
+<b class="nc"><i>1034</i>&nbsp;        }</b>
+<i>1035</i>&nbsp;
+<b class="nc"><i>1036</i>&nbsp;        return null;</b>
+<i>1037</i>&nbsp;    }
+<i>1038</i>&nbsp;
+<i>1039</i>&nbsp;    /**
+<i>1040</i>&nbsp;     * This method returns a secret (symmetric) key. This is for XML Encryption.
+<i>1041</i>&nbsp;     * @return the secret key contained in this KeyInfo
+<i>1042</i>&nbsp;     * @throws KeyResolverException
+<i>1043</i>&nbsp;     */
+<i>1044</i>&nbsp;    public SecretKey getSecretKey() throws KeyResolverException {
+<b class="nc"><i>1045</i>&nbsp;        SecretKey sk = this.getSecretKeyFromInternalResolvers();</b>
+<i>1046</i>&nbsp;
+<b class="nc"><i>1047</i>&nbsp;        if (sk != null) {</b>
+<b class="nc"><i>1048</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>1049</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;I could find a secret key using the per-KeyInfo key resolvers&quot;);</b>
+<i>1050</i>&nbsp;            }
+<i>1051</i>&nbsp;
+<b class="nc"><i>1052</i>&nbsp;            return sk;</b>
+<i>1053</i>&nbsp;        }
+<b class="nc"><i>1054</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>1055</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;I couldn&#39;t find a secret key using the per-KeyInfo key resolvers&quot;);</b>
+<i>1056</i>&nbsp;        }
+<i>1057</i>&nbsp;
+<b class="nc"><i>1058</i>&nbsp;        sk = this.getSecretKeyFromStaticResolvers();</b>
+<i>1059</i>&nbsp;
+<b class="nc"><i>1060</i>&nbsp;        if (sk != null) {</b>
+<b class="nc"><i>1061</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>1062</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;I could find a secret key using the system-wide key resolvers&quot;);</b>
+<i>1063</i>&nbsp;            }
+<i>1064</i>&nbsp;
+<b class="nc"><i>1065</i>&nbsp;            return sk;</b>
+<i>1066</i>&nbsp;        }
+<b class="nc"><i>1067</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>1068</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;I couldn&#39;t find a secret key using the system-wide key resolvers&quot;);</b>
+<i>1069</i>&nbsp;        }
+<i>1070</i>&nbsp;
+<b class="nc"><i>1071</i>&nbsp;        return null;</b>
+<i>1072</i>&nbsp;    }
+<i>1073</i>&nbsp;
+<i>1074</i>&nbsp;    /**
+<i>1075</i>&nbsp;     * Searches the library wide KeyResolvers for Secret keys
+<i>1076</i>&nbsp;     *
+<i>1077</i>&nbsp;     * @return the secret key contained in this KeyInfo
+<i>1078</i>&nbsp;     * @throws KeyResolverException
+<i>1079</i>&nbsp;     */
+<i>1080</i>&nbsp;    SecretKey getSecretKeyFromStaticResolvers() throws KeyResolverException {
+<b class="nc"><i>1081</i>&nbsp;        Iterator&lt;KeyResolverSpi&gt; it = KeyResolver.iterator();</b>
+<b class="nc"><i>1082</i>&nbsp;        while (it.hasNext()) {</b>
+<b class="nc"><i>1083</i>&nbsp;            KeyResolverSpi keyResolver = it.next();</b>
+<b class="nc"><i>1084</i>&nbsp;            keyResolver.setSecureValidation(secureValidation);</b>
+<i>1085</i>&nbsp;
+<b class="nc"><i>1086</i>&nbsp;            Node currentChild = this.constructionElement.getFirstChild();</b>
+<b class="nc"><i>1087</i>&nbsp;            String uri = this.getBaseURI();</b>
+<b class="nc"><i>1088</i>&nbsp;            while (currentChild != null)      {</b>
+<b class="nc"><i>1089</i>&nbsp;                if (currentChild.getNodeType() == Node.ELEMENT_NODE) {</b>
+<b class="nc"><i>1090</i>&nbsp;                    for (StorageResolver storage : storageResolvers) {</b>
+<b class="nc"><i>1091</i>&nbsp;                        SecretKey sk =</b>
+<b class="nc"><i>1092</i>&nbsp;                            keyResolver.engineLookupAndResolveSecretKey(</b>
+<i>1093</i>&nbsp;                                (Element) currentChild, uri, storage
+<i>1094</i>&nbsp;                            );
+<i>1095</i>&nbsp;
+<b class="nc"><i>1096</i>&nbsp;                        if (sk != null) {</b>
+<b class="nc"><i>1097</i>&nbsp;                            return sk;</b>
+<i>1098</i>&nbsp;                        }
+<b class="nc"><i>1099</i>&nbsp;                    }</b>
+<i>1100</i>&nbsp;                }
+<b class="nc"><i>1101</i>&nbsp;                currentChild = currentChild.getNextSibling();</b>
+<i>1102</i>&nbsp;            }
+<b class="nc"><i>1103</i>&nbsp;        }</b>
+<b class="nc"><i>1104</i>&nbsp;        return null;</b>
+<i>1105</i>&nbsp;    }
+<i>1106</i>&nbsp;
+<i>1107</i>&nbsp;    /**
+<i>1108</i>&nbsp;     * Searches the per-KeyInfo KeyResolvers for secret keys
+<i>1109</i>&nbsp;     *
+<i>1110</i>&nbsp;     * @return the secret key contained in this KeyInfo
+<i>1111</i>&nbsp;     * @throws KeyResolverException
+<i>1112</i>&nbsp;     */
+<i>1113</i>&nbsp;
+<i>1114</i>&nbsp;    SecretKey getSecretKeyFromInternalResolvers() throws KeyResolverException {
+<b class="nc"><i>1115</i>&nbsp;        for (KeyResolverSpi keyResolver : internalKeyResolvers) {</b>
+<b class="nc"><i>1116</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>1117</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;Try &quot; + keyResolver.getClass().getName());</b>
+<i>1118</i>&nbsp;            }
+<b class="nc"><i>1119</i>&nbsp;            keyResolver.setSecureValidation(secureValidation);</b>
+<b class="nc"><i>1120</i>&nbsp;            Node currentChild = this.constructionElement.getFirstChild();</b>
+<b class="nc"><i>1121</i>&nbsp;            String uri = this.getBaseURI();</b>
+<b class="nc"><i>1122</i>&nbsp;            while (currentChild != null)      {</b>
+<b class="nc"><i>1123</i>&nbsp;                if (currentChild.getNodeType() == Node.ELEMENT_NODE) {</b>
+<b class="nc"><i>1124</i>&nbsp;                    for (StorageResolver storage : storageResolvers) {</b>
+<b class="nc"><i>1125</i>&nbsp;                        SecretKey sk =</b>
+<b class="nc"><i>1126</i>&nbsp;                            keyResolver.engineLookupAndResolveSecretKey(</b>
+<i>1127</i>&nbsp;                                (Element) currentChild, uri, storage
+<i>1128</i>&nbsp;                            );
+<i>1129</i>&nbsp;
+<b class="nc"><i>1130</i>&nbsp;                        if (sk != null) {</b>
+<b class="nc"><i>1131</i>&nbsp;                            return sk;</b>
+<i>1132</i>&nbsp;                        }
+<b class="nc"><i>1133</i>&nbsp;                    }</b>
+<i>1134</i>&nbsp;                }
+<b class="nc"><i>1135</i>&nbsp;                currentChild = currentChild.getNextSibling();</b>
+<i>1136</i>&nbsp;            }
+<b class="nc"><i>1137</i>&nbsp;        }</b>
+<i>1138</i>&nbsp;
+<b class="nc"><i>1139</i>&nbsp;        return null;</b>
+<i>1140</i>&nbsp;    }
+<i>1141</i>&nbsp;
+<i>1142</i>&nbsp;    /**
+<i>1143</i>&nbsp;     * This method returns a private key. This is for Key Transport in XML Encryption.
+<i>1144</i>&nbsp;     * @return the private key contained in this KeyInfo
+<i>1145</i>&nbsp;     * @throws KeyResolverException
+<i>1146</i>&nbsp;     */
+<i>1147</i>&nbsp;    public PrivateKey getPrivateKey() throws KeyResolverException {
+<b class="nc"><i>1148</i>&nbsp;        PrivateKey pk = this.getPrivateKeyFromInternalResolvers();</b>
+<i>1149</i>&nbsp;
+<b class="nc"><i>1150</i>&nbsp;        if (pk != null) {</b>
+<b class="nc"><i>1151</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>1152</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;I could find a private key using the per-KeyInfo key resolvers&quot;);</b>
+<i>1153</i>&nbsp;            }
+<b class="nc"><i>1154</i>&nbsp;            return pk;</b>
+<i>1155</i>&nbsp;        }
+<b class="nc"><i>1156</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>1157</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;I couldn&#39;t find a secret key using the per-KeyInfo key resolvers&quot;);</b>
+<i>1158</i>&nbsp;        }
+<i>1159</i>&nbsp;
+<b class="nc"><i>1160</i>&nbsp;        pk = this.getPrivateKeyFromStaticResolvers();</b>
+<b class="nc"><i>1161</i>&nbsp;        if (pk != null) {</b>
+<b class="nc"><i>1162</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>1163</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;I could find a private key using the system-wide key resolvers&quot;);</b>
+<i>1164</i>&nbsp;            }
+<b class="nc"><i>1165</i>&nbsp;            return pk;</b>
+<i>1166</i>&nbsp;        }
+<b class="nc"><i>1167</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>1168</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;I couldn&#39;t find a private key using the system-wide key resolvers&quot;);</b>
+<i>1169</i>&nbsp;        }
+<i>1170</i>&nbsp;
+<b class="nc"><i>1171</i>&nbsp;        return null;</b>
+<i>1172</i>&nbsp;    }
+<i>1173</i>&nbsp;
+<i>1174</i>&nbsp;    /**
+<i>1175</i>&nbsp;     * Searches the library wide KeyResolvers for Private keys
+<i>1176</i>&nbsp;     *
+<i>1177</i>&nbsp;     * @return the private key contained in this KeyInfo
+<i>1178</i>&nbsp;     * @throws KeyResolverException
+<i>1179</i>&nbsp;     */
+<i>1180</i>&nbsp;    PrivateKey getPrivateKeyFromStaticResolvers() throws KeyResolverException {
+<b class="nc"><i>1181</i>&nbsp;        Iterator&lt;KeyResolverSpi&gt; it = KeyResolver.iterator();</b>
+<b class="nc"><i>1182</i>&nbsp;        while (it.hasNext()) {</b>
+<b class="nc"><i>1183</i>&nbsp;            KeyResolverSpi keyResolver = it.next();</b>
+<b class="nc"><i>1184</i>&nbsp;            keyResolver.setSecureValidation(secureValidation);</b>
+<i>1185</i>&nbsp;
+<b class="nc"><i>1186</i>&nbsp;            Node currentChild = this.constructionElement.getFirstChild();</b>
+<b class="nc"><i>1187</i>&nbsp;            String uri = this.getBaseURI();</b>
+<b class="nc"><i>1188</i>&nbsp;            while (currentChild != null)      {</b>
+<b class="nc"><i>1189</i>&nbsp;                if (currentChild.getNodeType() == Node.ELEMENT_NODE) {</b>
+<i>1190</i>&nbsp;                    // not using StorageResolvers at the moment
+<i>1191</i>&nbsp;                    // since they cannot return private keys
+<b class="nc"><i>1192</i>&nbsp;                    PrivateKey pk =</b>
+<b class="nc"><i>1193</i>&nbsp;                        keyResolver.engineLookupAndResolvePrivateKey(</b>
+<i>1194</i>&nbsp;                            (Element) currentChild, uri, null
+<i>1195</i>&nbsp;                        );
+<i>1196</i>&nbsp;
+<b class="nc"><i>1197</i>&nbsp;                    if (pk != null) {</b>
+<b class="nc"><i>1198</i>&nbsp;                        return pk;</b>
+<i>1199</i>&nbsp;                    }
+<i>1200</i>&nbsp;                }
+<b class="nc"><i>1201</i>&nbsp;                currentChild = currentChild.getNextSibling();</b>
+<i>1202</i>&nbsp;            }
+<b class="nc"><i>1203</i>&nbsp;        }</b>
+<b class="nc"><i>1204</i>&nbsp;        return null;</b>
+<i>1205</i>&nbsp;    }
+<i>1206</i>&nbsp;
+<i>1207</i>&nbsp;    /**
+<i>1208</i>&nbsp;     * Searches the per-KeyInfo KeyResolvers for private keys
+<i>1209</i>&nbsp;     *
+<i>1210</i>&nbsp;     * @return the private key contained in this KeyInfo
+<i>1211</i>&nbsp;     * @throws KeyResolverException
+<i>1212</i>&nbsp;     */
+<i>1213</i>&nbsp;    PrivateKey getPrivateKeyFromInternalResolvers() throws KeyResolverException {
+<b class="nc"><i>1214</i>&nbsp;        for (KeyResolverSpi keyResolver : internalKeyResolvers) {</b>
+<b class="nc"><i>1215</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>1216</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;Try &quot; + keyResolver.getClass().getName());</b>
+<i>1217</i>&nbsp;            }
+<b class="nc"><i>1218</i>&nbsp;            keyResolver.setSecureValidation(secureValidation);</b>
+<b class="nc"><i>1219</i>&nbsp;            Node currentChild = this.constructionElement.getFirstChild();</b>
+<b class="nc"><i>1220</i>&nbsp;            String uri = this.getBaseURI();</b>
+<b class="nc"><i>1221</i>&nbsp;            while (currentChild != null) {</b>
+<b class="nc"><i>1222</i>&nbsp;                if (currentChild.getNodeType() == Node.ELEMENT_NODE) {</b>
+<i>1223</i>&nbsp;                    // not using StorageResolvers at the moment
+<i>1224</i>&nbsp;                    // since they cannot return private keys
+<b class="nc"><i>1225</i>&nbsp;                    PrivateKey pk =</b>
+<b class="nc"><i>1226</i>&nbsp;                        keyResolver.engineLookupAndResolvePrivateKey(</b>
+<i>1227</i>&nbsp;                            (Element) currentChild, uri, null
+<i>1228</i>&nbsp;                        );
+<i>1229</i>&nbsp;
+<b class="nc"><i>1230</i>&nbsp;                    if (pk != null) {</b>
+<b class="nc"><i>1231</i>&nbsp;                        return pk;</b>
+<i>1232</i>&nbsp;                    }
+<i>1233</i>&nbsp;                }
+<b class="nc"><i>1234</i>&nbsp;                currentChild = currentChild.getNextSibling();</b>
+<i>1235</i>&nbsp;            }
+<b class="nc"><i>1236</i>&nbsp;        }</b>
+<i>1237</i>&nbsp;
+<b class="nc"><i>1238</i>&nbsp;        return null;</b>
+<i>1239</i>&nbsp;    }
+<i>1240</i>&nbsp;
+<i>1241</i>&nbsp;    /**
+<i>1242</i>&nbsp;     * This method is used to add a custom {@link KeyResolverSpi} to a KeyInfo
+<i>1243</i>&nbsp;     * object.
+<i>1244</i>&nbsp;     *
+<i>1245</i>&nbsp;     * @param realKeyResolver
+<i>1246</i>&nbsp;     */
+<i>1247</i>&nbsp;    public void registerInternalKeyResolver(KeyResolverSpi realKeyResolver) {
+<b class="nc"><i>1248</i>&nbsp;        this.internalKeyResolvers.add(realKeyResolver);</b>
+<i>1249</i>&nbsp;    }
+<i>1250</i>&nbsp;
+<i>1251</i>&nbsp;    /**
+<i>1252</i>&nbsp;     * Method lengthInternalKeyResolver
+<i>1253</i>&nbsp;     * @return the length of the key
+<i>1254</i>&nbsp;     */
+<i>1255</i>&nbsp;    int lengthInternalKeyResolver() {
+<b class="nc"><i>1256</i>&nbsp;        return this.internalKeyResolvers.size();</b>
+<i>1257</i>&nbsp;    }
+<i>1258</i>&nbsp;
+<i>1259</i>&nbsp;    /**
+<i>1260</i>&nbsp;     * Method itemInternalKeyResolver
+<i>1261</i>&nbsp;     *
+<i>1262</i>&nbsp;     * @param i the index
+<i>1263</i>&nbsp;     * @return the KeyResolverSpi for the index.
+<i>1264</i>&nbsp;     */
+<i>1265</i>&nbsp;    KeyResolverSpi itemInternalKeyResolver(int i) {
+<b class="nc"><i>1266</i>&nbsp;        return this.internalKeyResolvers.get(i);</b>
+<i>1267</i>&nbsp;    }
+<i>1268</i>&nbsp;
+<i>1269</i>&nbsp;    /**
+<i>1270</i>&nbsp;     * Method addStorageResolver
+<i>1271</i>&nbsp;     *
+<i>1272</i>&nbsp;     * @param storageResolver
+<i>1273</i>&nbsp;     */
+<i>1274</i>&nbsp;    public void addStorageResolver(StorageResolver storageResolver) {
+<b class="nc"><i>1275</i>&nbsp;        if (storageResolvers == nullList) {</b>
+<i>1276</i>&nbsp;            // Replace the default null StorageResolver
+<b class="nc"><i>1277</i>&nbsp;            storageResolvers = new ArrayList&lt;StorageResolver&gt;();</b>
+<i>1278</i>&nbsp;        }
+<b class="nc"><i>1279</i>&nbsp;        this.storageResolvers.add(storageResolver);</b>
+<i>1280</i>&nbsp;    }
+<i>1281</i>&nbsp;
+<i>1282</i>&nbsp;
+<i>1283</i>&nbsp;    /** @inheritDoc */
+<i>1284</i>&nbsp;    public String getBaseLocalName() {
+<b class="nc"><i>1285</i>&nbsp;        return Constants._TAG_KEYINFO;</b>
+<i>1286</i>&nbsp;    }
+<i>1287</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

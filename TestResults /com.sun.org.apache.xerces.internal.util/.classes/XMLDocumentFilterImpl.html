@@ -1,0 +1,265 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XMLDocumentFilterImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XMLDocumentFilterImpl (com.sun.org.apache.xerces.internal.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XMLDocumentFilterImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * The Apache Software License, Version 1.1
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; * Copyright (c) 2000-2002 The Apache Software Foundation.  All rights
+<i>10</i>&nbsp; * reserved.
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; * Redistribution and use in source and binary forms, with or without
+<i>13</i>&nbsp; * modification, are permitted provided that the following conditions
+<i>14</i>&nbsp; * are met:
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; * 1. Redistributions of source code must retain the above copyright
+<i>17</i>&nbsp; *    notice, this list of conditions and the following disclaimer.
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; * 2. Redistributions in binary form must reproduce the above copyright
+<i>20</i>&nbsp; *    notice, this list of conditions and the following disclaimer in
+<i>21</i>&nbsp; *    the documentation and/or other materials provided with the
+<i>22</i>&nbsp; *    distribution.
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; * 3. The end-user documentation included with the redistribution,
+<i>25</i>&nbsp; *    if any, must include the following acknowledgment:
+<i>26</i>&nbsp; *       &quot;This product includes software developed by the
+<i>27</i>&nbsp; *        Apache Software Foundation (http://www.apache.org/).&quot;
+<i>28</i>&nbsp; *    Alternately, this acknowledgment may appear in the software itself,
+<i>29</i>&nbsp; *    if and wherever such third-party acknowledgments normally appear.
+<i>30</i>&nbsp; *
+<i>31</i>&nbsp; * 4. The names &quot;Xerces&quot; and &quot;Apache Software Foundation&quot; must
+<i>32</i>&nbsp; *    not be used to endorse or promote products derived from this
+<i>33</i>&nbsp; *    software without prior written permission. For written
+<i>34</i>&nbsp; *    permission, please contact apache@apache.org.
+<i>35</i>&nbsp; *
+<i>36</i>&nbsp; * 5. Products derived from this software may not be called &quot;Apache&quot;,
+<i>37</i>&nbsp; *    nor may &quot;Apache&quot; appear in their name, without prior written
+<i>38</i>&nbsp; *    permission of the Apache Software Foundation.
+<i>39</i>&nbsp; *
+<i>40</i>&nbsp; * THIS SOFTWARE IS PROVIDED ``AS IS&#39;&#39; AND ANY EXPRESSED OR IMPLIED
+<i>41</i>&nbsp; * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+<i>42</i>&nbsp; * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+<i>43</i>&nbsp; * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+<i>44</i>&nbsp; * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+<i>45</i>&nbsp; * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+<i>46</i>&nbsp; * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+<i>47</i>&nbsp; * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+<i>48</i>&nbsp; * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+<i>49</i>&nbsp; * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+<i>50</i>&nbsp; * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+<i>51</i>&nbsp; * SUCH DAMAGE.
+<i>52</i>&nbsp; * ====================================================================
+<i>53</i>&nbsp; *
+<i>54</i>&nbsp; * This software consists of voluntary contributions made by many
+<i>55</i>&nbsp; * individuals on behalf of the Apache Software Foundation and was
+<i>56</i>&nbsp; * originally based on software copyright (c) 1999, International
+<i>57</i>&nbsp; * Business Machines, Inc., http://www.apache.org.  For more
+<i>58</i>&nbsp; * information on the Apache Software Foundation, please see
+<i>59</i>&nbsp; * &lt;http://www.apache.org/&gt;.
+<i>60</i>&nbsp; */
+<i>61</i>&nbsp;package com.sun.org.apache.xerces.internal.util;
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.Augmentations;
+<i>64</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.NamespaceContext;
+<i>65</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.QName;
+<i>66</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLAttributes;
+<i>67</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLDocumentHandler;
+<i>68</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLLocator;
+<i>69</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
+<i>70</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLString;
+<i>71</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XNIException;
+<i>72</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentFilter;
+<i>73</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentSource;
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;/**
+<i>76</i>&nbsp; * Default implementation of {@link XMLDocumentFilter}
+<i>77</i>&nbsp; * that simply passes through events to the next component.
+<i>78</i>&nbsp; *
+<i>79</i>&nbsp; * &lt;p&gt;
+<i>80</i>&nbsp; * Can be used as a base implementation of other more sophisticated
+<i>81</i>&nbsp; * {@link XMLDocumentFilter}s.
+<i>82</i>&nbsp; *
+<i>83</i>&nbsp; * @author
+<i>84</i>&nbsp; *     Kohsuke Kawaguchi (kohsuke.kawaguchi@sun.com)
+<i>85</i>&nbsp; */
+<b class="nc"><i>86</i>&nbsp;public class XMLDocumentFilterImpl implements XMLDocumentFilter {</b>
+<i>87</i>&nbsp;    private XMLDocumentHandler next;
+<i>88</i>&nbsp;    private XMLDocumentSource source;
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    public void setDocumentHandler(XMLDocumentHandler handler) {
+<b class="nc"><i>92</i>&nbsp;        this.next = handler;</b>
+<i>93</i>&nbsp;    }
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    public XMLDocumentHandler getDocumentHandler() {
+<b class="nc"><i>96</i>&nbsp;        return next;</b>
+<i>97</i>&nbsp;    }
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    public void setDocumentSource(XMLDocumentSource source) {
+<b class="nc"><i>100</i>&nbsp;        this.source = source;</b>
+<i>101</i>&nbsp;    }
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    public XMLDocumentSource getDocumentSource() {
+<b class="nc"><i>104</i>&nbsp;        return source;</b>
+<i>105</i>&nbsp;    }
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;    public void characters(XMLString text, Augmentations augs) throws XNIException {
+<b class="nc"><i>113</i>&nbsp;        next.characters(text, augs);</b>
+<i>114</i>&nbsp;    }
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;    public void comment(XMLString text, Augmentations augs) throws XNIException {
+<b class="nc"><i>117</i>&nbsp;        next.comment(text, augs);</b>
+<i>118</i>&nbsp;    }
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    public void doctypeDecl(String rootElement, String publicId, String systemId, Augmentations augs)
+<i>121</i>&nbsp;        throws XNIException {
+<b class="nc"><i>122</i>&nbsp;        next.doctypeDecl(rootElement, publicId, systemId, augs);</b>
+<i>123</i>&nbsp;    }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    public void emptyElement(QName element, XMLAttributes attributes, Augmentations augs) throws XNIException {
+<b class="nc"><i>126</i>&nbsp;        next.emptyElement(element, attributes, augs);</b>
+<i>127</i>&nbsp;    }
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;    public void endCDATA(Augmentations augs) throws XNIException {
+<b class="nc"><i>130</i>&nbsp;        next.endCDATA(augs);</b>
+<i>131</i>&nbsp;    }
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;    public void endDocument(Augmentations augs) throws XNIException {
+<b class="nc"><i>134</i>&nbsp;        next.endDocument(augs);</b>
+<i>135</i>&nbsp;    }
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;    public void endElement(QName element, Augmentations augs) throws XNIException {
+<b class="nc"><i>138</i>&nbsp;        next.endElement(element, augs);</b>
+<i>139</i>&nbsp;    }
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;    public void endGeneralEntity(String name, Augmentations augs) throws XNIException {
+<b class="nc"><i>142</i>&nbsp;        next.endGeneralEntity(name, augs);</b>
+<i>143</i>&nbsp;    }
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;    public void ignorableWhitespace(XMLString text, Augmentations augs) throws XNIException {
+<b class="nc"><i>146</i>&nbsp;        next.ignorableWhitespace(text, augs);</b>
+<i>147</i>&nbsp;    }
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    public void processingInstruction(String target, XMLString data, Augmentations augs) throws XNIException {
+<b class="nc"><i>150</i>&nbsp;        next.processingInstruction(target, data, augs);</b>
+<i>151</i>&nbsp;    }
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;    public void startCDATA(Augmentations augs) throws XNIException {
+<b class="nc"><i>154</i>&nbsp;        next.startCDATA(augs);</b>
+<i>155</i>&nbsp;    }
+<i>156</i>&nbsp;
+<i>157</i>&nbsp;    public void startDocument(
+<i>158</i>&nbsp;        XMLLocator locator,
+<i>159</i>&nbsp;        String encoding,
+<i>160</i>&nbsp;        NamespaceContext namespaceContext,
+<i>161</i>&nbsp;        Augmentations augs)
+<i>162</i>&nbsp;        throws XNIException {
+<b class="nc"><i>163</i>&nbsp;        next.startDocument(locator, encoding, namespaceContext, augs);</b>
+<i>164</i>&nbsp;    }
+<i>165</i>&nbsp;
+<i>166</i>&nbsp;    public void startElement(QName element, XMLAttributes attributes, Augmentations augs) throws XNIException {
+<b class="nc"><i>167</i>&nbsp;        next.startElement(element, attributes, augs);</b>
+<i>168</i>&nbsp;    }
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;    public void startGeneralEntity(String name, XMLResourceIdentifier identifier, String encoding, Augmentations augs)
+<i>171</i>&nbsp;        throws XNIException {
+<b class="nc"><i>172</i>&nbsp;        next.startGeneralEntity(name, identifier, encoding, augs);</b>
+<i>173</i>&nbsp;    }
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;    public void textDecl(String version, String encoding, Augmentations augs) throws XNIException {
+<b class="nc"><i>176</i>&nbsp;        next.textDecl(version, encoding, augs);</b>
+<i>177</i>&nbsp;    }
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;    public void xmlDecl(String version, String encoding, String standalone, Augmentations augs) throws XNIException {
+<b class="nc"><i>180</i>&nbsp;        next.xmlDecl(version, encoding, standalone, augs);</b>
+<i>181</i>&nbsp;    }
+<i>182</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

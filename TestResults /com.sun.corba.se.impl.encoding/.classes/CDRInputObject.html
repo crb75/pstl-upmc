@@ -1,0 +1,350 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CDRInputObject</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.encoding</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CDRInputObject (com.sun.corba.se.impl.encoding)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CDRInputObject</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 60)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2001, 2004, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.encoding;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.nio.ByteBuffer;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import com.sun.org.omg.SendingContext.CodeBase;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import com.sun.corba.se.pept.encoding.InputObject;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaConnection;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.GIOPVersion;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import com.sun.corba.se.impl.encoding.BufferManagerFactory;
+<i>43</i>&nbsp;import com.sun.corba.se.impl.encoding.CodeSetComponentInfo;
+<i>44</i>&nbsp;import com.sun.corba.se.impl.encoding.CodeSetConversion;
+<i>45</i>&nbsp;import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
+<i>46</i>&nbsp;import com.sun.corba.se.impl.encoding.CDRInputStream;
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;import com.sun.corba.se.impl.logging.ORBUtilSystemException;
+<i>51</i>&nbsp;import com.sun.corba.se.impl.logging.OMGSystemException;
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBUtility;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;/**
+<i>56</i>&nbsp; * @author Harold Carr
+<i>57</i>&nbsp; */
+<i>58</i>&nbsp;public class CDRInputObject extends CDRInputStream
+<i>59</i>&nbsp;    implements
+<i>60</i>&nbsp;        InputObject
+<i>61</i>&nbsp;{
+<i>62</i>&nbsp;    private CorbaConnection corbaConnection;
+<i>63</i>&nbsp;    private Message header;
+<i>64</i>&nbsp;    private boolean unmarshaledHeader;
+<i>65</i>&nbsp;    private ORB orb ;
+<i>66</i>&nbsp;    private ORBUtilSystemException wrapper ;
+<i>67</i>&nbsp;    private OMGSystemException omgWrapper ;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    public CDRInputObject(ORB orb,
+<i>70</i>&nbsp;                          CorbaConnection corbaConnection,
+<i>71</i>&nbsp;                          ByteBuffer byteBuffer,
+<i>72</i>&nbsp;                          Message header)
+<i>73</i>&nbsp;    {
+<b class="nc"><i>74</i>&nbsp;        super(orb, byteBuffer, header.getSize(), header.isLittleEndian(),</b>
+<b class="nc"><i>75</i>&nbsp;              header.getGIOPVersion(), header.getEncodingVersion(),</b>
+<b class="nc"><i>76</i>&nbsp;              BufferManagerFactory.newBufferManagerRead(</b>
+<b class="nc"><i>77</i>&nbsp;                                          header.getGIOPVersion(),</b>
+<b class="nc"><i>78</i>&nbsp;                                          header.getEncodingVersion(),</b>
+<i>79</i>&nbsp;                                          orb));
+<i>80</i>&nbsp;
+<b class="nc"><i>81</i>&nbsp;        this.corbaConnection = corbaConnection;</b>
+<b class="nc"><i>82</i>&nbsp;        this.orb = orb ;</b>
+<b class="nc"><i>83</i>&nbsp;        this.wrapper = ORBUtilSystemException.get( orb,</b>
+<i>84</i>&nbsp;            CORBALogDomains.RPC_ENCODING ) ;
+<b class="nc"><i>85</i>&nbsp;        this.omgWrapper = OMGSystemException.get( orb,</b>
+<i>86</i>&nbsp;            CORBALogDomains.RPC_ENCODING ) ;
+<i>87</i>&nbsp;
+<b class="nc"><i>88</i>&nbsp;        if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>89</i>&nbsp;            dprint(&quot;.CDRInputObject constructor:&quot;);</b>
+<i>90</i>&nbsp;        }
+<i>91</i>&nbsp;
+<b class="nc"><i>92</i>&nbsp;        getBufferManager().init(header);</b>
+<i>93</i>&nbsp;
+<b class="nc"><i>94</i>&nbsp;        this.header = header;</b>
+<i>95</i>&nbsp;
+<b class="nc"><i>96</i>&nbsp;        unmarshaledHeader = false;</b>
+<i>97</i>&nbsp;
+<b class="nc"><i>98</i>&nbsp;        setIndex(Message.GIOPMessageHeaderLength);</b>
+<i>99</i>&nbsp;
+<b class="nc"><i>100</i>&nbsp;        setBufferLength(header.getSize());</b>
+<i>101</i>&nbsp;    }
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    // REVISIT - think about this some more.
+<i>104</i>&nbsp;    // This connection normally is accessed from the message mediator.
+<i>105</i>&nbsp;    // However, giop input needs to get code set info from the connetion
+<i>106</i>&nbsp;    // *before* the message mediator is available.
+<i>107</i>&nbsp;    public final CorbaConnection getConnection()
+<i>108</i>&nbsp;    {
+<b class="nc"><i>109</i>&nbsp;        return corbaConnection;</b>
+<i>110</i>&nbsp;    }
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;    // XREVISIT - Should the header be kept in the stream or the
+<i>113</i>&nbsp;    // message mediator?  Or should we not have a header and
+<i>114</i>&nbsp;    // have the information stored in the message mediator
+<i>115</i>&nbsp;    // directly?
+<i>116</i>&nbsp;    public Message getMessageHeader()
+<i>117</i>&nbsp;    {
+<b class="nc"><i>118</i>&nbsp;        return header;</b>
+<i>119</i>&nbsp;    }
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;    /**
+<i>122</i>&nbsp;     * Unmarshal the extended GIOP header
+<i>123</i>&nbsp;     * NOTE: May be fragmented, so should not be called by the ReaderThread.
+<i>124</i>&nbsp;     * See CorbaResponseWaitingRoomImpl.waitForResponse.  It is done
+<i>125</i>&nbsp;     * there in the client thread.
+<i>126</i>&nbsp;     */
+<i>127</i>&nbsp;    public void unmarshalHeader()
+<i>128</i>&nbsp;    {
+<i>129</i>&nbsp;        // Unmarshal the extended GIOP message from the buffer.
+<i>130</i>&nbsp;
+<b class="nc"><i>131</i>&nbsp;        if (!unmarshaledHeader) {</b>
+<i>132</i>&nbsp;            try {
+<b class="nc"><i>133</i>&nbsp;                if (((ORB)orb()).transportDebugFlag) {</b>
+<b class="nc"><i>134</i>&nbsp;                    dprint(&quot;.unmarshalHeader-&gt;: &quot; + getMessageHeader());</b>
+<i>135</i>&nbsp;                }
+<b class="nc"><i>136</i>&nbsp;                getMessageHeader().read(this);</b>
+<b class="nc"><i>137</i>&nbsp;                unmarshaledHeader= true;</b>
+<b class="nc"><i>138</i>&nbsp;            } catch (RuntimeException e) {</b>
+<b class="nc"><i>139</i>&nbsp;                if (((ORB)orb()).transportDebugFlag) {</b>
+<b class="nc"><i>140</i>&nbsp;                    dprint(&quot;.unmarshalHeader: !!ERROR!!: &quot;</b>
+<b class="nc"><i>141</i>&nbsp;                           + getMessageHeader()</b>
+<i>142</i>&nbsp;                           + &quot;: &quot; + e);
+<i>143</i>&nbsp;                }
+<b class="nc"><i>144</i>&nbsp;                throw e;</b>
+<i>145</i>&nbsp;            } finally {
+<b class="nc"><i>146</i>&nbsp;                if (((ORB)orb()).transportDebugFlag) {</b>
+<b class="nc"><i>147</i>&nbsp;                    dprint(&quot;.unmarshalHeader&lt;-: &quot; + getMessageHeader());</b>
+<i>148</i>&nbsp;                }
+<i>149</i>&nbsp;            }
+<i>150</i>&nbsp;        }
+<i>151</i>&nbsp;    }
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;    public final boolean unmarshaledHeader()
+<i>154</i>&nbsp;    {
+<b class="nc"><i>155</i>&nbsp;        return unmarshaledHeader;</b>
+<i>156</i>&nbsp;    }
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;    /**
+<i>159</i>&nbsp;     * Override the default CDR factory behavior to get the
+<i>160</i>&nbsp;     * negotiated code sets from the connection.
+<i>161</i>&nbsp;     *
+<i>162</i>&nbsp;     * These are only called once per message, the first time needed.
+<i>163</i>&nbsp;     *
+<i>164</i>&nbsp;     * In the local case, there is no Connection, so use the
+<i>165</i>&nbsp;     * local code sets.
+<i>166</i>&nbsp;     */
+<i>167</i>&nbsp;    protected CodeSetConversion.BTCConverter createCharBTCConverter() {
+<b class="nc"><i>168</i>&nbsp;        CodeSetComponentInfo.CodeSetContext codesets = getCodeSets();</b>
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;        // If the connection doesn&#39;t have its negotiated
+<i>171</i>&nbsp;        // code sets by now, fall back on the defaults defined
+<i>172</i>&nbsp;        // in CDRInputStream.
+<b class="nc"><i>173</i>&nbsp;        if (codesets == null)</b>
+<b class="nc"><i>174</i>&nbsp;            return super.createCharBTCConverter();</b>
+<i>175</i>&nbsp;
+<b class="nc"><i>176</i>&nbsp;        OSFCodeSetRegistry.Entry charSet</b>
+<b class="nc"><i>177</i>&nbsp;            = OSFCodeSetRegistry.lookupEntry(codesets.getCharCodeSet());</b>
+<i>178</i>&nbsp;
+<b class="nc"><i>179</i>&nbsp;        if (charSet == null)</b>
+<b class="nc"><i>180</i>&nbsp;            throw wrapper.unknownCodeset( charSet ) ;</b>
+<i>181</i>&nbsp;
+<b class="nc"><i>182</i>&nbsp;        return CodeSetConversion.impl().getBTCConverter(charSet, isLittleEndian());</b>
+<i>183</i>&nbsp;    }
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;    protected CodeSetConversion.BTCConverter createWCharBTCConverter() {
+<i>186</i>&nbsp;
+<b class="nc"><i>187</i>&nbsp;        CodeSetComponentInfo.CodeSetContext codesets = getCodeSets();</b>
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;        // If the connection doesn&#39;t have its negotiated
+<i>190</i>&nbsp;        // code sets by now, we have to throw an exception.
+<i>191</i>&nbsp;        // See CORBA formal 00-11-03 13.9.2.6.
+<b class="nc"><i>192</i>&nbsp;        if (codesets == null) {</b>
+<b class="nc"><i>193</i>&nbsp;            if (getConnection().isServer())</b>
+<b class="nc"><i>194</i>&nbsp;                throw omgWrapper.noClientWcharCodesetCtx() ;</b>
+<i>195</i>&nbsp;            else
+<b class="nc"><i>196</i>&nbsp;                throw omgWrapper.noServerWcharCodesetCmp() ;</b>
+<i>197</i>&nbsp;        }
+<i>198</i>&nbsp;
+<b class="nc"><i>199</i>&nbsp;        OSFCodeSetRegistry.Entry wcharSet</b>
+<b class="nc"><i>200</i>&nbsp;            = OSFCodeSetRegistry.lookupEntry(codesets.getWCharCodeSet());</b>
+<i>201</i>&nbsp;
+<b class="nc"><i>202</i>&nbsp;        if (wcharSet == null)</b>
+<b class="nc"><i>203</i>&nbsp;            throw wrapper.unknownCodeset( wcharSet ) ;</b>
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;        // For GIOP 1.2 and UTF-16, use big endian if there is no byte
+<i>206</i>&nbsp;        // order marker.  (See issue 3405b)
+<i>207</i>&nbsp;        //
+<i>208</i>&nbsp;        // For GIOP 1.1 and UTF-16, use the byte order the stream if
+<i>209</i>&nbsp;        // there isn&#39;t (and there shouldn&#39;t be) a byte order marker.
+<i>210</i>&nbsp;        //
+<i>211</i>&nbsp;        // GIOP 1.0 doesn&#39;t have wchars.  If we&#39;re talking to a legacy ORB,
+<i>212</i>&nbsp;        // we do what our old ORBs did.
+<b class="nc"><i>213</i>&nbsp;        if (wcharSet == OSFCodeSetRegistry.UTF_16) {</b>
+<b class="nc"><i>214</i>&nbsp;            if (getGIOPVersion().equals(GIOPVersion.V1_2))</b>
+<b class="nc"><i>215</i>&nbsp;                return CodeSetConversion.impl().getBTCConverter(wcharSet, false);</b>
+<i>216</i>&nbsp;        }
+<i>217</i>&nbsp;
+<b class="nc"><i>218</i>&nbsp;        return CodeSetConversion.impl().getBTCConverter(wcharSet, isLittleEndian());</b>
+<i>219</i>&nbsp;    }
+<i>220</i>&nbsp;
+<i>221</i>&nbsp;    // If we&#39;re local and don&#39;t have a Connection, use the
+<i>222</i>&nbsp;    // local code sets, otherwise get them from the connection.
+<i>223</i>&nbsp;    // If the connection doesn&#39;t have negotiated code sets
+<i>224</i>&nbsp;    // yet, then we use ISO8859-1 for char/string and wchar/wstring
+<i>225</i>&nbsp;    // are illegal.
+<i>226</i>&nbsp;    private CodeSetComponentInfo.CodeSetContext getCodeSets() {
+<b class="nc"><i>227</i>&nbsp;        if (getConnection() == null)</b>
+<b class="nc"><i>228</i>&nbsp;            return CodeSetComponentInfo.LOCAL_CODE_SETS;</b>
+<i>229</i>&nbsp;        else
+<b class="nc"><i>230</i>&nbsp;            return getConnection().getCodeSetContext();</b>
+<i>231</i>&nbsp;    }
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;    public final CodeBase getCodeBase() {
+<b class="nc"><i>234</i>&nbsp;        if (getConnection() == null)</b>
+<b class="nc"><i>235</i>&nbsp;            return null;</b>
+<i>236</i>&nbsp;        else
+<b class="nc"><i>237</i>&nbsp;            return getConnection().getCodeBase();</b>
+<i>238</i>&nbsp;    }
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;    // -----------------------------------------------------------
+<i>241</i>&nbsp;    // Below this point are commented out methods with features
+<i>242</i>&nbsp;    // from the old stream.  We must find ways to address
+<i>243</i>&nbsp;    // these issues in the future.
+<i>244</i>&nbsp;    // -----------------------------------------------------------
+<i>245</i>&nbsp;
+<i>246</i>&nbsp;    // XREVISIT
+<i>247</i>&nbsp;//     private XIIOPInputStream(XIIOPInputStream stream) {
+<i>248</i>&nbsp;//         super(stream);
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;//         this.conn = stream.conn;
+<i>251</i>&nbsp;//         this.msg = stream.msg;
+<i>252</i>&nbsp;//         this.unmarshaledHeader = stream.unmarshaledHeader;
+<i>253</i>&nbsp;//     }
+<i>254</i>&nbsp;
+<i>255</i>&nbsp;    public CDRInputStream dup() {
+<i>256</i>&nbsp;        // XREVISIT
+<b class="nc"><i>257</i>&nbsp;        return null;</b>
+<i>258</i>&nbsp;        // return new XIIOPInputStream(this);
+<i>259</i>&nbsp;    }
+<i>260</i>&nbsp;
+<i>261</i>&nbsp;    protected void dprint(String msg)
+<i>262</i>&nbsp;    {
+<b class="nc"><i>263</i>&nbsp;        ORBUtility.dprint(&quot;CDRInputObject&quot;, msg);</b>
+<i>264</i>&nbsp;    }
+<i>265</i>&nbsp;}
+<i>266</i>&nbsp;
+<i>267</i>&nbsp;// End of file.
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

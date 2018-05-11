@@ -1,0 +1,415 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ParserConfigurationSettings</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ParserConfigurationSettings (com.sun.org.apache.xerces.internal.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ParserConfigurationSettings</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 63)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001, 2002,2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.util;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import java.util.Arrays;
+<i>24</i>&nbsp;import java.util.HashMap;
+<i>25</i>&nbsp;import java.util.HashSet;
+<i>26</i>&nbsp;import java.util.Map;
+<i>27</i>&nbsp;import java.util.Set;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.Constants;
+<i>30</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLComponentManager;
+<i>31</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;/**
+<i>34</i>&nbsp; * This class implements the basic operations for managing parser
+<i>35</i>&nbsp; * configuration features and properties. This utility class can
+<i>36</i>&nbsp; * be used as a base class for parser configurations or separately
+<i>37</i>&nbsp; * to encapsulate a number of parser settings as a component
+<i>38</i>&nbsp; * manager.
+<i>39</i>&nbsp; * &lt;p&gt;
+<i>40</i>&nbsp; * This class can be constructed with a &quot;parent&quot; settings object
+<i>41</i>&nbsp; * (in the form of an &lt;code&gt;XMLComponentManager&lt;/code&gt;) that allows
+<i>42</i>&nbsp; * parser configuration settings to be &quot;chained&quot; together.
+<i>43</i>&nbsp; *
+<i>44</i>&nbsp; * @author Andy Clark, IBM
+<i>45</i>&nbsp; *
+<i>46</i>&nbsp; * @version $Id: ParserConfigurationSettings.java,v 1.6 2010-11-01 04:40:14 joehw Exp $
+<i>47</i>&nbsp; */
+<i>48</i>&nbsp;public class ParserConfigurationSettings
+<i>49</i>&nbsp;    implements XMLComponentManager {
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;        protected static final String PARSER_SETTINGS =
+<i>52</i>&nbsp;                        Constants.XERCES_FEATURE_PREFIX + Constants.PARSER_SETTINGS;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    //
+<i>55</i>&nbsp;    // Data
+<i>56</i>&nbsp;    //
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    // data
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    /** Recognized properties. */
+<i>61</i>&nbsp;    protected Set&lt;String&gt; fRecognizedProperties;
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    /** Properties. */
+<i>64</i>&nbsp;    protected Map&lt;String, Object&gt; fProperties;
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    /** Recognized features. */
+<i>67</i>&nbsp;    protected Set&lt;String&gt; fRecognizedFeatures;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    /** Features. */
+<i>70</i>&nbsp;    protected Map&lt;String, Boolean&gt; fFeatures;
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;    /** Parent parser configuration settings. */
+<i>73</i>&nbsp;    protected XMLComponentManager fParentSettings;
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    //
+<i>76</i>&nbsp;    // Constructors
+<i>77</i>&nbsp;    //
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    /** Default Constructor. */
+<i>80</i>&nbsp;    public ParserConfigurationSettings() {
+<b class="nc"><i>81</i>&nbsp;        this(null);</b>
+<i>82</i>&nbsp;    } // &lt;init&gt;()
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    /**
+<i>85</i>&nbsp;     * Constructs a parser configuration settings object with a
+<i>86</i>&nbsp;     * parent settings object.
+<i>87</i>&nbsp;     */
+<b class="nc"><i>88</i>&nbsp;    public ParserConfigurationSettings(XMLComponentManager parent) {</b>
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;        // create storage for recognized features and properties
+<b class="nc"><i>91</i>&nbsp;        fRecognizedFeatures = new HashSet&lt;String&gt;();</b>
+<b class="nc"><i>92</i>&nbsp;        fRecognizedProperties = new HashSet&lt;String&gt;();</b>
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;        // create table for features and properties
+<b class="nc"><i>95</i>&nbsp;        fFeatures = new HashMap&lt;String, Boolean&gt;();</b>
+<b class="nc"><i>96</i>&nbsp;        fProperties = new HashMap&lt;String, Object&gt;();</b>
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;        // save parent
+<b class="nc"><i>99</i>&nbsp;        fParentSettings = parent;</b>
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;    } // &lt;init&gt;(XMLComponentManager)
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    //
+<i>104</i>&nbsp;    // XMLParserConfiguration methods
+<i>105</i>&nbsp;    //
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    /**
+<i>108</i>&nbsp;     * Allows a parser to add parser specific features to be recognized
+<i>109</i>&nbsp;     * and managed by the parser configuration.
+<i>110</i>&nbsp;     *
+<i>111</i>&nbsp;     * @param featureIds An array of the additional feature identifiers
+<i>112</i>&nbsp;     *                   to be recognized.
+<i>113</i>&nbsp;     */
+<i>114</i>&nbsp;    public void addRecognizedFeatures(String[] featureIds) {
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;        // add recognized features
+<b class="nc"><i>117</i>&nbsp;        int featureIdsCount = featureIds != null ? featureIds.length : 0;</b>
+<b class="nc"><i>118</i>&nbsp;        for (int i = 0; i &lt; featureIdsCount; i++) {</b>
+<b class="nc"><i>119</i>&nbsp;            String featureId = featureIds[i];</b>
+<b class="nc"><i>120</i>&nbsp;            if (!fRecognizedFeatures.contains(featureId)) {</b>
+<b class="nc"><i>121</i>&nbsp;                fRecognizedFeatures.add(featureId);</b>
+<i>122</i>&nbsp;            }
+<i>123</i>&nbsp;        }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    } // addRecognizedFeatures(String[])
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;    /**
+<i>128</i>&nbsp;     * Set the state of a feature.
+<i>129</i>&nbsp;     *
+<i>130</i>&nbsp;     * Set the state of any feature in a SAX2 parser.  The parser
+<i>131</i>&nbsp;     * might not recognize the feature, and if it does recognize
+<i>132</i>&nbsp;     * it, it might not be able to fulfill the request.
+<i>133</i>&nbsp;     *
+<i>134</i>&nbsp;     * @param featureId The unique identifier (URI) of the feature.
+<i>135</i>&nbsp;     * @param state The requested state of the feature (true or false).
+<i>136</i>&nbsp;     *
+<i>137</i>&nbsp;     * @exception com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException If the
+<i>138</i>&nbsp;     *            requested feature is not known.
+<i>139</i>&nbsp;     */
+<i>140</i>&nbsp;    public void setFeature(String featureId, boolean state)
+<i>141</i>&nbsp;        throws XMLConfigurationException {
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;        // check and store
+<b class="nc"><i>144</i>&nbsp;        FeatureState checkState = checkFeature(featureId);</b>
+<b class="nc"><i>145</i>&nbsp;        if (checkState.isExceptional()) {</b>
+<b class="nc"><i>146</i>&nbsp;            throw new XMLConfigurationException(checkState.status, featureId);</b>
+<i>147</i>&nbsp;        }
+<i>148</i>&nbsp;
+<b class="nc"><i>149</i>&nbsp;        fFeatures.put(featureId, state);</b>
+<i>150</i>&nbsp;    } // setFeature(String,boolean)
+<i>151</i>&nbsp;
+<i>152</i>&nbsp;    /**
+<i>153</i>&nbsp;     * Allows a parser to add parser specific properties to be recognized
+<i>154</i>&nbsp;     * and managed by the parser configuration.
+<i>155</i>&nbsp;     *
+<i>156</i>&nbsp;     * @param propertyIds An array of the additional property identifiers
+<i>157</i>&nbsp;     *                    to be recognized.
+<i>158</i>&nbsp;     */
+<i>159</i>&nbsp;    public void addRecognizedProperties(String[] propertyIds) {
+<b class="nc"><i>160</i>&nbsp;        fRecognizedProperties.addAll(Arrays.asList(propertyIds));</b>
+<i>161</i>&nbsp;    } // addRecognizedProperties(String[])
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;    /**
+<i>164</i>&nbsp;     * setProperty
+<i>165</i>&nbsp;     *
+<i>166</i>&nbsp;     * @param propertyId
+<i>167</i>&nbsp;     * @param value
+<i>168</i>&nbsp;     * @exception com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException If the
+<i>169</i>&nbsp;     *            requested feature is not known.
+<i>170</i>&nbsp;     */
+<i>171</i>&nbsp;    public void setProperty(String propertyId, Object value)
+<i>172</i>&nbsp;        throws XMLConfigurationException {
+<i>173</i>&nbsp;
+<i>174</i>&nbsp;        // check and store
+<b class="nc"><i>175</i>&nbsp;        PropertyState checkState = checkProperty(propertyId);</b>
+<b class="nc"><i>176</i>&nbsp;        if (checkState.isExceptional()) {</b>
+<b class="nc"><i>177</i>&nbsp;            throw new XMLConfigurationException(checkState.status, propertyId);</b>
+<i>178</i>&nbsp;        }
+<b class="nc"><i>179</i>&nbsp;        fProperties.put(propertyId, value);</b>
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;    } // setProperty(String,Object)
+<i>182</i>&nbsp;
+<i>183</i>&nbsp;    //
+<i>184</i>&nbsp;    // XMLComponentManager methods
+<i>185</i>&nbsp;    //
+<i>186</i>&nbsp;
+<i>187</i>&nbsp;    /**
+<i>188</i>&nbsp;     * Returns the state of a feature.
+<i>189</i>&nbsp;     *
+<i>190</i>&nbsp;     * @param featureId The feature identifier.
+<i>191</i>&nbsp;                 * @return true if the feature is supported
+<i>192</i>&nbsp;     *
+<i>193</i>&nbsp;     * @throws XMLConfigurationException Thrown for configuration error.
+<i>194</i>&nbsp;     *                                   In general, components should
+<i>195</i>&nbsp;     *                                   only throw this exception if
+<i>196</i>&nbsp;     *                                   it is &lt;strong&gt;really&lt;/strong&gt;
+<i>197</i>&nbsp;     *                                   a critical error.
+<i>198</i>&nbsp;     */
+<i>199</i>&nbsp;    public final boolean getFeature(String featureId)
+<i>200</i>&nbsp;        throws XMLConfigurationException {
+<i>201</i>&nbsp;
+<b class="nc"><i>202</i>&nbsp;        FeatureState state = getFeatureState(featureId);</b>
+<b class="nc"><i>203</i>&nbsp;        if (state.isExceptional()) {</b>
+<b class="nc"><i>204</i>&nbsp;            throw new XMLConfigurationException(state.status, featureId);</b>
+<i>205</i>&nbsp;        }
+<b class="nc"><i>206</i>&nbsp;        return state.state;</b>
+<i>207</i>&nbsp;    } // getFeature(String):boolean
+<i>208</i>&nbsp;
+<i>209</i>&nbsp;    public final boolean getFeature(String featureId, boolean defaultValue) {
+<b class="nc"><i>210</i>&nbsp;        FeatureState state = getFeatureState(featureId);</b>
+<b class="nc"><i>211</i>&nbsp;        if (state.isExceptional()) {</b>
+<b class="nc"><i>212</i>&nbsp;            return defaultValue;</b>
+<i>213</i>&nbsp;        }
+<b class="nc"><i>214</i>&nbsp;        return state.state;</b>
+<i>215</i>&nbsp;    }
+<i>216</i>&nbsp;
+<i>217</i>&nbsp;    public FeatureState getFeatureState(String featureId) {
+<b class="nc"><i>218</i>&nbsp;        Boolean state = (Boolean) fFeatures.get(featureId);</b>
+<i>219</i>&nbsp;
+<b class="nc"><i>220</i>&nbsp;        if (state == null) {</b>
+<b class="nc"><i>221</i>&nbsp;            FeatureState checkState = checkFeature(featureId);</b>
+<b class="nc"><i>222</i>&nbsp;            if (checkState.isExceptional()) {</b>
+<b class="nc"><i>223</i>&nbsp;                return checkState;</b>
+<i>224</i>&nbsp;            }
+<b class="nc"><i>225</i>&nbsp;            return FeatureState.is(false);</b>
+<i>226</i>&nbsp;        }
+<b class="nc"><i>227</i>&nbsp;        return FeatureState.is(state);</b>
+<i>228</i>&nbsp;    }
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;    /**
+<i>231</i>&nbsp;     * Returns the value of a property.
+<i>232</i>&nbsp;     *
+<i>233</i>&nbsp;     * @param propertyId The property identifier.
+<i>234</i>&nbsp;                 * @return the value of the property
+<i>235</i>&nbsp;     *
+<i>236</i>&nbsp;     * @throws XMLConfigurationException Thrown for configuration error.
+<i>237</i>&nbsp;     *                                   In general, components should
+<i>238</i>&nbsp;     *                                   only throw this exception if
+<i>239</i>&nbsp;     *                                   it is &lt;strong&gt;really&lt;/strong&gt;
+<i>240</i>&nbsp;     *                                   a critical error.
+<i>241</i>&nbsp;     */
+<i>242</i>&nbsp;    public final Object getProperty(String propertyId)
+<i>243</i>&nbsp;        throws XMLConfigurationException {
+<i>244</i>&nbsp;
+<b class="nc"><i>245</i>&nbsp;        PropertyState state = getPropertyState(propertyId);</b>
+<b class="nc"><i>246</i>&nbsp;        if (state.isExceptional()) {</b>
+<b class="nc"><i>247</i>&nbsp;            throw new XMLConfigurationException(state.status, propertyId);</b>
+<i>248</i>&nbsp;        }
+<i>249</i>&nbsp;
+<b class="nc"><i>250</i>&nbsp;        return state.state;</b>
+<i>251</i>&nbsp;    } // getProperty(String):Object
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;    public final Object getProperty(String propertyId, Object defaultValue) {
+<b class="nc"><i>254</i>&nbsp;        PropertyState state = getPropertyState(propertyId);</b>
+<b class="nc"><i>255</i>&nbsp;        if (state.isExceptional()) {</b>
+<b class="nc"><i>256</i>&nbsp;            return defaultValue;</b>
+<i>257</i>&nbsp;        }
+<i>258</i>&nbsp;
+<b class="nc"><i>259</i>&nbsp;        return state.state;</b>
+<i>260</i>&nbsp;    }
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;    public PropertyState getPropertyState(String propertyId) {
+<b class="nc"><i>263</i>&nbsp;        Object propertyValue = fProperties.get(propertyId);</b>
+<i>264</i>&nbsp;
+<b class="nc"><i>265</i>&nbsp;        if (propertyValue == null) {</b>
+<b class="nc"><i>266</i>&nbsp;            PropertyState state = checkProperty(propertyId);</b>
+<b class="nc"><i>267</i>&nbsp;            if (state.isExceptional()) {</b>
+<b class="nc"><i>268</i>&nbsp;                return state;</b>
+<i>269</i>&nbsp;            }
+<i>270</i>&nbsp;        }
+<i>271</i>&nbsp;
+<b class="nc"><i>272</i>&nbsp;        return PropertyState.is(propertyValue);</b>
+<i>273</i>&nbsp;    }
+<i>274</i>&nbsp;
+<i>275</i>&nbsp;    //
+<i>276</i>&nbsp;    // Protected methods
+<i>277</i>&nbsp;    //
+<i>278</i>&nbsp;
+<i>279</i>&nbsp;    /**
+<i>280</i>&nbsp;     * Check a feature. If feature is known and supported, this method simply
+<i>281</i>&nbsp;     * returns. Otherwise, the appropriate exception is thrown.
+<i>282</i>&nbsp;     *
+<i>283</i>&nbsp;     * @param featureId The unique identifier (URI) of the feature.
+<i>284</i>&nbsp;     *
+<i>285</i>&nbsp;     * @exception com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException If the
+<i>286</i>&nbsp;     *            requested feature is not known.
+<i>287</i>&nbsp;     */
+<i>288</i>&nbsp;    protected FeatureState checkFeature(String featureId)
+<i>289</i>&nbsp;        throws XMLConfigurationException {
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;        // check feature
+<b class="nc"><i>292</i>&nbsp;        if (!fRecognizedFeatures.contains(featureId)) {</b>
+<b class="nc"><i>293</i>&nbsp;            if (fParentSettings != null) {</b>
+<b class="nc"><i>294</i>&nbsp;                return fParentSettings.getFeatureState(featureId);</b>
+<i>295</i>&nbsp;            }
+<i>296</i>&nbsp;            else {
+<b class="nc"><i>297</i>&nbsp;                return FeatureState.NOT_RECOGNIZED;</b>
+<i>298</i>&nbsp;            }
+<i>299</i>&nbsp;        }
+<i>300</i>&nbsp;
+<i>301</i>&nbsp;        // TODO: reasonable default?
+<b class="nc"><i>302</i>&nbsp;        return FeatureState.RECOGNIZED;</b>
+<i>303</i>&nbsp;    } // checkFeature(String)
+<i>304</i>&nbsp;
+<i>305</i>&nbsp;    /**
+<i>306</i>&nbsp;     * Check a property. If the property is known and supported, this method
+<i>307</i>&nbsp;     * simply returns. Otherwise, the appropriate exception is thrown.
+<i>308</i>&nbsp;     *
+<i>309</i>&nbsp;     * @param propertyId The unique identifier (URI) of the property
+<i>310</i>&nbsp;     *                   being set.
+<i>311</i>&nbsp;     * @exception com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException If the
+<i>312</i>&nbsp;     *            requested feature is not known.
+<i>313</i>&nbsp;     */
+<i>314</i>&nbsp;    protected PropertyState checkProperty(String propertyId)
+<i>315</i>&nbsp;        throws XMLConfigurationException {
+<i>316</i>&nbsp;
+<i>317</i>&nbsp;        // check property
+<b class="nc"><i>318</i>&nbsp;        if (!fRecognizedProperties.contains(propertyId)) {</b>
+<b class="nc"><i>319</i>&nbsp;            if (fParentSettings != null) {</b>
+<b class="nc"><i>320</i>&nbsp;                PropertyState state = fParentSettings.getPropertyState(propertyId);</b>
+<b class="nc"><i>321</i>&nbsp;                if (state.isExceptional()) {</b>
+<b class="nc"><i>322</i>&nbsp;                    return state;</b>
+<i>323</i>&nbsp;                }
+<b class="nc"><i>324</i>&nbsp;            }</b>
+<i>325</i>&nbsp;            else {
+<b class="nc"><i>326</i>&nbsp;                return PropertyState.NOT_RECOGNIZED;</b>
+<i>327</i>&nbsp;            }
+<i>328</i>&nbsp;        }
+<b class="nc"><i>329</i>&nbsp;        return PropertyState.RECOGNIZED;</b>
+<i>330</i>&nbsp;    } // checkProperty(String)
+<i>331</i>&nbsp;
+<i>332</i>&nbsp;} // class ParserConfigurationSettings
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

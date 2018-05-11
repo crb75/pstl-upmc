@@ -1,0 +1,163 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: HexOutputStream</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.orbutil</a> ]
+</div>
+
+<h1>Coverage Summary for Class: HexOutputStream (com.sun.corba.se.impl.orbutil)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HexOutputStream</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 1996, 2002, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.orbutil;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.io.StringWriter;
+<i>29</i>&nbsp;import java.io.OutputStream;
+<i>30</i>&nbsp;import java.io.IOException;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;/**
+<i>33</i>&nbsp; * Writes each input byte as a 2 byte hexidecimal output pair making it
+<i>34</i>&nbsp; * possible to turn arbitrary binary data into an ASCII format.
+<i>35</i>&nbsp; * The high 4 bits of the byte is translated into the first byte.
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; * @author      Jeff Nisewanger
+<i>38</i>&nbsp; */
+<i>39</i>&nbsp;public class HexOutputStream extends OutputStream
+<i>40</i>&nbsp;{
+<b class="nc"><i>41</i>&nbsp;    static private final char hex[] = {</b>
+<i>42</i>&nbsp;        &#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;6&#39;, &#39;7&#39;,
+<i>43</i>&nbsp;        &#39;8&#39;, &#39;9&#39;, &#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;
+<i>44</i>&nbsp;    };
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    private StringWriter writer;
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    /**
+<i>49</i>&nbsp;     * Creates a new HexOutputStream.
+<i>50</i>&nbsp;     * @param w The underlying StringWriter.
+<i>51</i>&nbsp;     */
+<i>52</i>&nbsp;    public
+<b class="nc"><i>53</i>&nbsp;        HexOutputStream(StringWriter w) {</b>
+<b class="nc"><i>54</i>&nbsp;        writer = w;</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    /**
+<i>59</i>&nbsp;     * Writes a byte. Will block until the byte is actually
+<i>60</i>&nbsp;     * written.
+<i>61</i>&nbsp;     * param b The byte to write out.
+<i>62</i>&nbsp;     * @exception java.io.IOException I/O error occurred.
+<i>63</i>&nbsp;     */
+<i>64</i>&nbsp;    public synchronized void write(int b) throws IOException {
+<b class="nc"><i>65</i>&nbsp;        writer.write(hex[((b &gt;&gt; 4) &amp; 0xF)]);</b>
+<b class="nc"><i>66</i>&nbsp;        writer.write(hex[((b &gt;&gt; 0) &amp; 0xF)]);</b>
+<i>67</i>&nbsp;    }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    public synchronized void write(byte[] b) throws IOException {
+<b class="nc"><i>70</i>&nbsp;        write(b, 0, b.length);</b>
+<i>71</i>&nbsp;    }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    public synchronized void write(byte[] b, int off, int len)
+<i>74</i>&nbsp;        throws IOException
+<i>75</i>&nbsp;    {
+<b class="nc"><i>76</i>&nbsp;        for(int i=0; i &lt; len; i++) {</b>
+<b class="nc"><i>77</i>&nbsp;            write(b[off + i]);</b>
+<i>78</i>&nbsp;        }
+<i>79</i>&nbsp;    }
+<i>80</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:55</div>
+</div>
+</body>
+</html>

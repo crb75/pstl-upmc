@@ -1,0 +1,304 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XIncludeParserConfiguration</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.parsers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XIncludeParserConfiguration (com.sun.org.apache.xerces.internal.parsers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XIncludeParserConfiguration</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 58)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;package com.sun.org.apache.xerces.internal.parsers;
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.Constants;
+<i>23</i>&nbsp;import com.sun.org.apache.xerces.internal.util.SymbolTable;
+<i>24</i>&nbsp;import com.sun.org.apache.xerces.internal.xinclude.XIncludeHandler;
+<i>25</i>&nbsp;import com.sun.org.apache.xerces.internal.xinclude.XIncludeNamespaceSupport;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLDocumentHandler;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarPool;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLComponentManager;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException;
+<i>30</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentSource;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;/**
+<i>33</i>&nbsp; * This parser configuration includes an &lt;code&gt;XIncludeHandler&lt;/code&gt; in the pipeline
+<i>34</i>&nbsp; * before the schema validator, or as the last component in the pipeline if there is
+<i>35</i>&nbsp; * no schema validator.  Using this pipeline will enable processing according to the
+<i>36</i>&nbsp; * XML Inclusions specification, to the conformance level described in
+<i>37</i>&nbsp; * &lt;code&gt;XIncludeHandler&lt;/code&gt;.
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; * @author Peter McCracken, IBM
+<i>40</i>&nbsp; * @see com.sun.org.apache.xerces.internal.xinclude.XIncludeHandler
+<i>41</i>&nbsp; */
+<i>42</i>&nbsp;public class XIncludeParserConfiguration extends XML11Configuration {
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    private XIncludeHandler fXIncludeHandler;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    /** Feature identifier: allow notation and unparsed entity events to be sent out of order. */
+<i>47</i>&nbsp;    protected static final String ALLOW_UE_AND_NOTATION_EVENTS =
+<i>48</i>&nbsp;        Constants.SAX_FEATURE_PREFIX + Constants.ALLOW_DTD_EVENTS_AFTER_ENDDTD_FEATURE;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    /** Feature identifier: fixup base URIs. */
+<i>51</i>&nbsp;    protected static final String XINCLUDE_FIXUP_BASE_URIS =
+<i>52</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FIXUP_BASE_URIS_FEATURE;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /** Feature identifier: fixup language. */
+<i>55</i>&nbsp;    protected static final String XINCLUDE_FIXUP_LANGUAGE =
+<i>56</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FIXUP_LANGUAGE_FEATURE;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    /** Property identifier: error reporter. */
+<i>59</i>&nbsp;    protected static final String XINCLUDE_HANDLER =
+<i>60</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.XINCLUDE_HANDLER_PROPERTY;
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    /** Property identifier: error reporter. */
+<i>63</i>&nbsp;    protected static final String NAMESPACE_CONTEXT =
+<i>64</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.NAMESPACE_CONTEXT_PROPERTY;
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    /** Default constructor. */
+<i>67</i>&nbsp;    public XIncludeParserConfiguration() {
+<b class="nc"><i>68</i>&nbsp;        this(null, null, null);</b>
+<i>69</i>&nbsp;    } // &lt;init&gt;()
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    /**
+<i>72</i>&nbsp;     * Constructs a parser configuration using the specified symbol table.
+<i>73</i>&nbsp;     *
+<i>74</i>&nbsp;     * @param symbolTable The symbol table to use.
+<i>75</i>&nbsp;     */
+<i>76</i>&nbsp;    public XIncludeParserConfiguration(SymbolTable symbolTable) {
+<b class="nc"><i>77</i>&nbsp;        this(symbolTable, null, null);</b>
+<i>78</i>&nbsp;    } // &lt;init&gt;(SymbolTable)
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    /**
+<i>81</i>&nbsp;     * Constructs a parser configuration using the specified symbol table and
+<i>82</i>&nbsp;     * grammar pool.
+<i>83</i>&nbsp;     * &lt;p&gt;
+<i>84</i>&nbsp;     *
+<i>85</i>&nbsp;     * @param symbolTable The symbol table to use.
+<i>86</i>&nbsp;     * @param grammarPool The grammar pool to use.
+<i>87</i>&nbsp;     */
+<i>88</i>&nbsp;    public XIncludeParserConfiguration(
+<i>89</i>&nbsp;        SymbolTable symbolTable,
+<i>90</i>&nbsp;        XMLGrammarPool grammarPool) {
+<b class="nc"><i>91</i>&nbsp;        this(symbolTable, grammarPool, null);</b>
+<i>92</i>&nbsp;    } // &lt;init&gt;(SymbolTable,XMLGrammarPool)
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    /**
+<i>95</i>&nbsp;     * Constructs a parser configuration using the specified symbol table,
+<i>96</i>&nbsp;     * grammar pool, and parent settings.
+<i>97</i>&nbsp;     * &lt;p&gt;
+<i>98</i>&nbsp;     *
+<i>99</i>&nbsp;     * @param symbolTable    The symbol table to use.
+<i>100</i>&nbsp;     * @param grammarPool    The grammar pool to use.
+<i>101</i>&nbsp;     * @param parentSettings The parent settings.
+<i>102</i>&nbsp;     */
+<i>103</i>&nbsp;    public XIncludeParserConfiguration(
+<i>104</i>&nbsp;        SymbolTable symbolTable,
+<i>105</i>&nbsp;        XMLGrammarPool grammarPool,
+<i>106</i>&nbsp;        XMLComponentManager parentSettings) {
+<b class="nc"><i>107</i>&nbsp;        super(symbolTable, grammarPool, parentSettings);</b>
+<i>108</i>&nbsp;
+<b class="nc"><i>109</i>&nbsp;        fXIncludeHandler = new XIncludeHandler();</b>
+<b class="nc"><i>110</i>&nbsp;        addCommonComponent(fXIncludeHandler);</b>
+<i>111</i>&nbsp;
+<b class="nc"><i>112</i>&nbsp;        final String[] recognizedFeatures = {</b>
+<i>113</i>&nbsp;            ALLOW_UE_AND_NOTATION_EVENTS,
+<i>114</i>&nbsp;            XINCLUDE_FIXUP_BASE_URIS,
+<i>115</i>&nbsp;            XINCLUDE_FIXUP_LANGUAGE
+<i>116</i>&nbsp;        };
+<b class="nc"><i>117</i>&nbsp;        addRecognizedFeatures(recognizedFeatures);</b>
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;        // add default recognized properties
+<b class="nc"><i>120</i>&nbsp;        final String[] recognizedProperties =</b>
+<i>121</i>&nbsp;            { XINCLUDE_HANDLER, NAMESPACE_CONTEXT };
+<b class="nc"><i>122</i>&nbsp;        addRecognizedProperties(recognizedProperties);</b>
+<i>123</i>&nbsp;
+<b class="nc"><i>124</i>&nbsp;        setFeature(ALLOW_UE_AND_NOTATION_EVENTS, true);</b>
+<b class="nc"><i>125</i>&nbsp;        setFeature(XINCLUDE_FIXUP_BASE_URIS, true);</b>
+<b class="nc"><i>126</i>&nbsp;        setFeature(XINCLUDE_FIXUP_LANGUAGE, true);</b>
+<i>127</i>&nbsp;
+<b class="nc"><i>128</i>&nbsp;        setProperty(XINCLUDE_HANDLER, fXIncludeHandler);</b>
+<b class="nc"><i>129</i>&nbsp;        setProperty(NAMESPACE_CONTEXT, new XIncludeNamespaceSupport());</b>
+<i>130</i>&nbsp;    } // &lt;init&gt;(SymbolTable,XMLGrammarPool)}
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;        /** Configures the pipeline. */
+<i>134</i>&nbsp;    protected void configurePipeline() {
+<b class="nc"><i>135</i>&nbsp;        super.configurePipeline();</b>
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;        //configure DTD pipeline
+<b class="nc"><i>138</i>&nbsp;        fDTDScanner.setDTDHandler(fDTDProcessor);</b>
+<b class="nc"><i>139</i>&nbsp;        fDTDProcessor.setDTDSource(fDTDScanner);</b>
+<b class="nc"><i>140</i>&nbsp;        fDTDProcessor.setDTDHandler(fXIncludeHandler);</b>
+<b class="nc"><i>141</i>&nbsp;        fXIncludeHandler.setDTDSource(fDTDProcessor);</b>
+<b class="nc"><i>142</i>&nbsp;                fXIncludeHandler.setDTDHandler(fDTDHandler);</b>
+<b class="nc"><i>143</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>144</i>&nbsp;            fDTDHandler.setDTDSource(fXIncludeHandler);</b>
+<i>145</i>&nbsp;        }
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;        // configure XML document pipeline: insert after DTDValidator and
+<i>148</i>&nbsp;        // before XML Schema validator
+<b class="nc"><i>149</i>&nbsp;        XMLDocumentSource prev = null;</b>
+<b class="nc"><i>150</i>&nbsp;        if (fFeatures.get(XMLSCHEMA_VALIDATION) == Boolean.TRUE) {</b>
+<i>151</i>&nbsp;            // we don&#39;t have to worry about fSchemaValidator being null, since
+<i>152</i>&nbsp;            // super.configurePipeline() instantiated it if the feature was set
+<b class="nc"><i>153</i>&nbsp;            prev = fSchemaValidator.getDocumentSource();</b>
+<i>154</i>&nbsp;        }
+<i>155</i>&nbsp;        // Otherwise, insert after the last component in the pipeline
+<i>156</i>&nbsp;        else {
+<b class="nc"><i>157</i>&nbsp;            prev = fLastComponent;</b>
+<b class="nc"><i>158</i>&nbsp;            fLastComponent = fXIncludeHandler;</b>
+<i>159</i>&nbsp;        }
+<i>160</i>&nbsp;
+<b class="nc"><i>161</i>&nbsp;         if (prev != null) {</b>
+<b class="nc"><i>162</i>&nbsp;            XMLDocumentHandler next = prev.getDocumentHandler();</b>
+<b class="nc"><i>163</i>&nbsp;            prev.setDocumentHandler(fXIncludeHandler);</b>
+<b class="nc"><i>164</i>&nbsp;            fXIncludeHandler.setDocumentSource(prev);</b>
+<b class="nc"><i>165</i>&nbsp;            if (next != null) {</b>
+<b class="nc"><i>166</i>&nbsp;                fXIncludeHandler.setDocumentHandler(next);</b>
+<b class="nc"><i>167</i>&nbsp;                next.setDocumentSource(fXIncludeHandler);</b>
+<i>168</i>&nbsp;            }
+<b class="nc"><i>169</i>&nbsp;         }</b>
+<i>170</i>&nbsp;         else {
+<b class="nc"><i>171</i>&nbsp;            setDocumentHandler(fXIncludeHandler);</b>
+<i>172</i>&nbsp;         }
+<i>173</i>&nbsp;
+<i>174</i>&nbsp;    } // configurePipeline()
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;        protected void configureXML11Pipeline() {
+<b class="nc"><i>177</i>&nbsp;                super.configureXML11Pipeline();</b>
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;        // configure XML 1.1. DTD pipeline
+<b class="nc"><i>180</i>&nbsp;                fXML11DTDScanner.setDTDHandler(fXML11DTDProcessor);</b>
+<b class="nc"><i>181</i>&nbsp;                fXML11DTDProcessor.setDTDSource(fXML11DTDScanner);</b>
+<b class="nc"><i>182</i>&nbsp;                fXML11DTDProcessor.setDTDHandler(fXIncludeHandler);</b>
+<b class="nc"><i>183</i>&nbsp;                fXIncludeHandler.setDTDSource(fXML11DTDProcessor);</b>
+<b class="nc"><i>184</i>&nbsp;                fXIncludeHandler.setDTDHandler(fDTDHandler);</b>
+<b class="nc"><i>185</i>&nbsp;                if (fDTDHandler != null) {</b>
+<b class="nc"><i>186</i>&nbsp;                        fDTDHandler.setDTDSource(fXIncludeHandler);</b>
+<i>187</i>&nbsp;                }
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;                // configure XML document pipeline: insert after DTDValidator and
+<i>190</i>&nbsp;                // before XML Schema validator
+<b class="nc"><i>191</i>&nbsp;                XMLDocumentSource prev = null;</b>
+<b class="nc"><i>192</i>&nbsp;                if (fFeatures.get(XMLSCHEMA_VALIDATION) == Boolean.TRUE) {</b>
+<i>193</i>&nbsp;                        // we don&#39;t have to worry about fSchemaValidator being null, since
+<i>194</i>&nbsp;                        // super.configurePipeline() instantiated it if the feature was set
+<b class="nc"><i>195</i>&nbsp;                        prev = fSchemaValidator.getDocumentSource();</b>
+<i>196</i>&nbsp;                }
+<i>197</i>&nbsp;                // Otherwise, insert after the last component in the pipeline
+<i>198</i>&nbsp;                else {
+<b class="nc"><i>199</i>&nbsp;                        prev = fLastComponent;</b>
+<b class="nc"><i>200</i>&nbsp;                        fLastComponent = fXIncludeHandler;</b>
+<i>201</i>&nbsp;                }
+<i>202</i>&nbsp;
+<b class="nc"><i>203</i>&nbsp;                XMLDocumentHandler next = prev.getDocumentHandler();</b>
+<b class="nc"><i>204</i>&nbsp;                prev.setDocumentHandler(fXIncludeHandler);</b>
+<b class="nc"><i>205</i>&nbsp;                fXIncludeHandler.setDocumentSource(prev);</b>
+<b class="nc"><i>206</i>&nbsp;                if (next != null) {</b>
+<b class="nc"><i>207</i>&nbsp;                        fXIncludeHandler.setDocumentHandler(next);</b>
+<b class="nc"><i>208</i>&nbsp;                        next.setDocumentSource(fXIncludeHandler);</b>
+<i>209</i>&nbsp;                }
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;        } // configureXML11Pipeline()
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;    public void setProperty(String propertyId, Object value)
+<i>214</i>&nbsp;        throws XMLConfigurationException {
+<i>215</i>&nbsp;
+<b class="nc"><i>216</i>&nbsp;        if (propertyId.equals(XINCLUDE_HANDLER)) {</b>
+<i>217</i>&nbsp;        }
+<i>218</i>&nbsp;
+<b class="nc"><i>219</i>&nbsp;        super.setProperty(propertyId, value);</b>
+<i>220</i>&nbsp;    } // setProperty(String,Object)
+<i>221</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

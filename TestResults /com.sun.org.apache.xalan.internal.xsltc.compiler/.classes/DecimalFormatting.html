@@ -1,0 +1,341 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DecimalFormatting</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DecimalFormatting (com.sun.org.apache.xalan.internal.xsltc.compiler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DecimalFormatting</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 97)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: DecimalFormatting.java,v 1.2.4.1 2005/09/12 10:14:32 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+<i>27</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
+<i>28</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKESPECIAL;
+<i>29</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL;
+<i>30</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>31</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.NEW;
+<i>32</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.PUSH;
+<i>33</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
+<i>34</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg;
+<i>35</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+<i>36</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
+<i>37</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+<i>38</i>&nbsp;import com.sun.org.apache.xml.internal.utils.XML11Char;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;/**
+<i>41</i>&nbsp; * @author Jacek Ambroziak
+<i>42</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>43</i>&nbsp; * @author Morten Jorgensen
+<i>44</i>&nbsp; */
+<b class="nc"><i>45</i>&nbsp;final class DecimalFormatting extends TopLevelElement {</b>
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    private static final String DFS_CLASS = &quot;java.text.DecimalFormatSymbols&quot;;
+<i>48</i>&nbsp;    private static final String DFS_SIG   = &quot;Ljava/text/DecimalFormatSymbols;&quot;;
+<i>49</i>&nbsp;
+<b class="nc"><i>50</i>&nbsp;    private QName _name = null;</b>
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    /**
+<i>53</i>&nbsp;     * No type check needed for the &lt;xsl:decimal-formatting/&gt; element
+<i>54</i>&nbsp;     */
+<i>55</i>&nbsp;    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+<b class="nc"><i>56</i>&nbsp;        return Type.Void;</b>
+<i>57</i>&nbsp;    }
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    /**
+<i>60</i>&nbsp;     * Parse the name of the &lt;xsl:decimal-formatting/&gt; element
+<i>61</i>&nbsp;     */
+<i>62</i>&nbsp;    public void parseContents(Parser parser) {
+<i>63</i>&nbsp;        // Get the name of these decimal formatting symbols
+<b class="nc"><i>64</i>&nbsp;        final String name = getAttribute(&quot;name&quot;);</b>
+<b class="nc"><i>65</i>&nbsp;        if (name.length() &gt; 0) {</b>
+<b class="nc"><i>66</i>&nbsp;            if (!XML11Char.isXML11ValidQName(name)){</b>
+<b class="nc"><i>67</i>&nbsp;                ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, name, this);</b>
+<b class="nc"><i>68</i>&nbsp;                parser.reportError(Constants.ERROR, err);</b>
+<i>69</i>&nbsp;            }
+<i>70</i>&nbsp;        }
+<b class="nc"><i>71</i>&nbsp;        _name = parser.getQNameIgnoreDefaultNs(name);</b>
+<b class="nc"><i>72</i>&nbsp;        if (_name == null) {</b>
+<b class="nc"><i>73</i>&nbsp;            _name = parser.getQNameIgnoreDefaultNs(EMPTYSTRING);</b>
+<i>74</i>&nbsp;        }
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;        // Check if a set of symbols has already been registered under this name
+<b class="nc"><i>77</i>&nbsp;        SymbolTable stable = parser.getSymbolTable();</b>
+<b class="nc"><i>78</i>&nbsp;        if (stable.getDecimalFormatting(_name) != null) {</b>
+<b class="nc"><i>79</i>&nbsp;            reportWarning(this, parser, ErrorMsg.SYMBOLS_REDEF_ERR,</b>
+<b class="nc"><i>80</i>&nbsp;                _name.toString());</b>
+<i>81</i>&nbsp;        }
+<i>82</i>&nbsp;        else {
+<b class="nc"><i>83</i>&nbsp;            stable.addDecimalFormatting(_name, this);</b>
+<i>84</i>&nbsp;        }
+<i>85</i>&nbsp;    }
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    /**
+<i>88</i>&nbsp;     * This method is called when the constructor is compiled in
+<i>89</i>&nbsp;     * Stylesheet.compileConstructor() and not as the syntax tree is traversed.
+<i>90</i>&nbsp;     */
+<i>91</i>&nbsp;    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+<i>92</i>&nbsp;
+<b class="nc"><i>93</i>&nbsp;        ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>94</i>&nbsp;        InstructionList il = methodGen.getInstructionList();</b>
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;        // DecimalFormatSymbols.&lt;init&gt;(Locale);
+<i>97</i>&nbsp;        // xsl:decimal-format - except for the NaN and infinity attributes.
+<b class="nc"><i>98</i>&nbsp;        final int init = cpg.addMethodref(DFS_CLASS, &quot;&lt;init&gt;&quot;,</b>
+<i>99</i>&nbsp;                                          &quot;(&quot;+LOCALE_SIG+&quot;)V&quot;);
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;        // Push the format name on the stack for call to addDecimalFormat()
+<b class="nc"><i>102</i>&nbsp;        il.append(classGen.loadTranslet());</b>
+<b class="nc"><i>103</i>&nbsp;        il.append(new PUSH(cpg, _name.toString()));</b>
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;        // Manufacture a DecimalFormatSymbols on the stack
+<i>106</i>&nbsp;        // for call to addDecimalFormat()
+<i>107</i>&nbsp;        // Use the US Locale as the default, as most of its settings
+<i>108</i>&nbsp;        // are equivalent to the default settings required of
+<b class="nc"><i>109</i>&nbsp;        il.append(new NEW(cpg.addClass(DFS_CLASS)));</b>
+<b class="nc"><i>110</i>&nbsp;        il.append(DUP);</b>
+<b class="nc"><i>111</i>&nbsp;        il.append(new GETSTATIC(cpg.addFieldref(LOCALE_CLASS, &quot;US&quot;,</b>
+<i>112</i>&nbsp;                                                LOCALE_SIG)));
+<b class="nc"><i>113</i>&nbsp;        il.append(new INVOKESPECIAL(init));</b>
+<i>114</i>&nbsp;
+<b class="nc"><i>115</i>&nbsp;        String tmp = getAttribute(&quot;NaN&quot;);</b>
+<b class="nc"><i>116</i>&nbsp;        if ((tmp == null) || (tmp.equals(EMPTYSTRING))) {</b>
+<b class="nc"><i>117</i>&nbsp;            int nan = cpg.addMethodref(DFS_CLASS,</b>
+<i>118</i>&nbsp;                                       &quot;setNaN&quot;, &quot;(Ljava/lang/String;)V&quot;);
+<b class="nc"><i>119</i>&nbsp;            il.append(DUP);</b>
+<b class="nc"><i>120</i>&nbsp;            il.append(new PUSH(cpg, &quot;NaN&quot;));</b>
+<b class="nc"><i>121</i>&nbsp;            il.append(new INVOKEVIRTUAL(nan));</b>
+<i>122</i>&nbsp;        }
+<i>123</i>&nbsp;
+<b class="nc"><i>124</i>&nbsp;        tmp = getAttribute(&quot;infinity&quot;);</b>
+<b class="nc"><i>125</i>&nbsp;        if ((tmp == null) || (tmp.equals(EMPTYSTRING))) {</b>
+<b class="nc"><i>126</i>&nbsp;            int inf = cpg.addMethodref(DFS_CLASS,</b>
+<i>127</i>&nbsp;                                       &quot;setInfinity&quot;,
+<i>128</i>&nbsp;                                       &quot;(Ljava/lang/String;)V&quot;);
+<b class="nc"><i>129</i>&nbsp;            il.append(DUP);</b>
+<b class="nc"><i>130</i>&nbsp;            il.append(new PUSH(cpg, &quot;Infinity&quot;));</b>
+<b class="nc"><i>131</i>&nbsp;            il.append(new INVOKEVIRTUAL(inf));</b>
+<i>132</i>&nbsp;        }
+<i>133</i>&nbsp;
+<b class="nc"><i>134</i>&nbsp;        final int nAttributes = _attributes.getLength();</b>
+<b class="nc"><i>135</i>&nbsp;        for (int i = 0; i &lt; nAttributes; i++) {</b>
+<b class="nc"><i>136</i>&nbsp;            final String name = _attributes.getQName(i);</b>
+<b class="nc"><i>137</i>&nbsp;            final String value = _attributes.getValue(i);</b>
+<i>138</i>&nbsp;
+<b class="nc"><i>139</i>&nbsp;            boolean valid = true;</b>
+<b class="nc"><i>140</i>&nbsp;            int method = 0;</b>
+<i>141</i>&nbsp;
+<b class="nc"><i>142</i>&nbsp;            if (name.equals(&quot;decimal-separator&quot;)) {</b>
+<i>143</i>&nbsp;                // DecimalFormatSymbols.setDecimalSeparator();
+<b class="nc"><i>144</i>&nbsp;                method = cpg.addMethodref(DFS_CLASS,</b>
+<i>145</i>&nbsp;                                          &quot;setDecimalSeparator&quot;, &quot;(C)V&quot;);
+<i>146</i>&nbsp;            }
+<b class="nc"><i>147</i>&nbsp;            else if (name.equals(&quot;grouping-separator&quot;)) {</b>
+<b class="nc"><i>148</i>&nbsp;                method =  cpg.addMethodref(DFS_CLASS,</b>
+<i>149</i>&nbsp;                                           &quot;setGroupingSeparator&quot;, &quot;(C)V&quot;);
+<i>150</i>&nbsp;            }
+<b class="nc"><i>151</i>&nbsp;            else if (name.equals(&quot;minus-sign&quot;)) {</b>
+<b class="nc"><i>152</i>&nbsp;                method = cpg.addMethodref(DFS_CLASS,</b>
+<i>153</i>&nbsp;                                          &quot;setMinusSign&quot;, &quot;(C)V&quot;);
+<i>154</i>&nbsp;            }
+<b class="nc"><i>155</i>&nbsp;            else if (name.equals(&quot;percent&quot;)) {</b>
+<b class="nc"><i>156</i>&nbsp;                method = cpg.addMethodref(DFS_CLASS,</b>
+<i>157</i>&nbsp;                                          &quot;setPercent&quot;, &quot;(C)V&quot;);
+<i>158</i>&nbsp;            }
+<b class="nc"><i>159</i>&nbsp;            else if (name.equals(&quot;per-mille&quot;)) {</b>
+<b class="nc"><i>160</i>&nbsp;                method = cpg.addMethodref(DFS_CLASS,</b>
+<i>161</i>&nbsp;                                          &quot;setPerMill&quot;, &quot;(C)V&quot;);
+<i>162</i>&nbsp;            }
+<b class="nc"><i>163</i>&nbsp;            else if (name.equals(&quot;zero-digit&quot;)) {</b>
+<b class="nc"><i>164</i>&nbsp;                method = cpg.addMethodref(DFS_CLASS,</b>
+<i>165</i>&nbsp;                                          &quot;setZeroDigit&quot;, &quot;(C)V&quot;);
+<i>166</i>&nbsp;            }
+<b class="nc"><i>167</i>&nbsp;            else if (name.equals(&quot;digit&quot;)) {</b>
+<b class="nc"><i>168</i>&nbsp;                method = cpg.addMethodref(DFS_CLASS,</b>
+<i>169</i>&nbsp;                                          &quot;setDigit&quot;, &quot;(C)V&quot;);
+<i>170</i>&nbsp;            }
+<b class="nc"><i>171</i>&nbsp;            else if (name.equals(&quot;pattern-separator&quot;)) {</b>
+<b class="nc"><i>172</i>&nbsp;                method = cpg.addMethodref(DFS_CLASS,</b>
+<i>173</i>&nbsp;                                          &quot;setPatternSeparator&quot;, &quot;(C)V&quot;);
+<i>174</i>&nbsp;            }
+<b class="nc"><i>175</i>&nbsp;            else if (name.equals(&quot;NaN&quot;)) {</b>
+<b class="nc"><i>176</i>&nbsp;                method = cpg.addMethodref(DFS_CLASS,</b>
+<i>177</i>&nbsp;                                          &quot;setNaN&quot;, &quot;(Ljava/lang/String;)V&quot;);
+<b class="nc"><i>178</i>&nbsp;                il.append(DUP);</b>
+<b class="nc"><i>179</i>&nbsp;                il.append(new PUSH(cpg, value));</b>
+<b class="nc"><i>180</i>&nbsp;                il.append(new INVOKEVIRTUAL(method));</b>
+<b class="nc"><i>181</i>&nbsp;                valid = false;</b>
+<i>182</i>&nbsp;            }
+<b class="nc"><i>183</i>&nbsp;            else if (name.equals(&quot;infinity&quot;)) {</b>
+<b class="nc"><i>184</i>&nbsp;                method = cpg.addMethodref(DFS_CLASS,</b>
+<i>185</i>&nbsp;                                          &quot;setInfinity&quot;,
+<i>186</i>&nbsp;                                          &quot;(Ljava/lang/String;)V&quot;);
+<b class="nc"><i>187</i>&nbsp;                il.append(DUP);</b>
+<b class="nc"><i>188</i>&nbsp;                il.append(new PUSH(cpg, value));</b>
+<b class="nc"><i>189</i>&nbsp;                il.append(new INVOKEVIRTUAL(method));</b>
+<b class="nc"><i>190</i>&nbsp;                valid = false;</b>
+<i>191</i>&nbsp;            }
+<i>192</i>&nbsp;            else {
+<b class="nc"><i>193</i>&nbsp;                valid = false;</b>
+<i>194</i>&nbsp;            }
+<i>195</i>&nbsp;
+<b class="nc"><i>196</i>&nbsp;            if (valid) {</b>
+<b class="nc"><i>197</i>&nbsp;                il.append(DUP);</b>
+<b class="nc"><i>198</i>&nbsp;                il.append(new PUSH(cpg, value.charAt(0)));</b>
+<b class="nc"><i>199</i>&nbsp;                il.append(new INVOKEVIRTUAL(method));</b>
+<i>200</i>&nbsp;            }
+<i>201</i>&nbsp;
+<i>202</i>&nbsp;        }
+<i>203</i>&nbsp;
+<b class="nc"><i>204</i>&nbsp;        final int put = cpg.addMethodref(TRANSLET_CLASS,</b>
+<i>205</i>&nbsp;                                         &quot;addDecimalFormat&quot;,
+<i>206</i>&nbsp;                                         &quot;(&quot;+STRING_SIG+DFS_SIG+&quot;)V&quot;);
+<b class="nc"><i>207</i>&nbsp;        il.append(new INVOKEVIRTUAL(put));</b>
+<i>208</i>&nbsp;    }
+<i>209</i>&nbsp;
+<i>210</i>&nbsp;    /**
+<i>211</i>&nbsp;     * Creates the default, nameless, DecimalFormat object in
+<i>212</i>&nbsp;     * AbstractTranslet&#39;s format_symbols hashtable.
+<i>213</i>&nbsp;     * This should be called for every stylesheet, and the entry
+<i>214</i>&nbsp;     * may be overridden by later nameless xsl:decimal-format instructions.
+<i>215</i>&nbsp;     */
+<i>216</i>&nbsp;    public static void translateDefaultDFS(ClassGenerator classGen,
+<i>217</i>&nbsp;                                           MethodGenerator methodGen) {
+<i>218</i>&nbsp;
+<b class="nc"><i>219</i>&nbsp;        ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>220</i>&nbsp;        InstructionList il = methodGen.getInstructionList();</b>
+<b class="nc"><i>221</i>&nbsp;        final int init = cpg.addMethodref(DFS_CLASS, &quot;&lt;init&gt;&quot;,</b>
+<i>222</i>&nbsp;                                          &quot;(&quot;+LOCALE_SIG+&quot;)V&quot;);
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;        // Push the format name, which is empty, on the stack
+<i>225</i>&nbsp;        // for call to addDecimalFormat()
+<b class="nc"><i>226</i>&nbsp;        il.append(classGen.loadTranslet());</b>
+<b class="nc"><i>227</i>&nbsp;        il.append(new PUSH(cpg, EMPTYSTRING));</b>
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;        // Manufacture a DecimalFormatSymbols on the stack for
+<i>230</i>&nbsp;        // call to addDecimalFormat().  Use the US Locale as the
+<i>231</i>&nbsp;        // default, as most of its settings are equivalent to
+<i>232</i>&nbsp;        // the default settings required of xsl:decimal-format -
+<i>233</i>&nbsp;        // except for the NaN and infinity attributes.
+<b class="nc"><i>234</i>&nbsp;        il.append(new NEW(cpg.addClass(DFS_CLASS)));</b>
+<b class="nc"><i>235</i>&nbsp;        il.append(DUP);</b>
+<b class="nc"><i>236</i>&nbsp;        il.append(new GETSTATIC(cpg.addFieldref(LOCALE_CLASS, &quot;US&quot;,</b>
+<i>237</i>&nbsp;                                                LOCALE_SIG)));
+<b class="nc"><i>238</i>&nbsp;        il.append(new INVOKESPECIAL(init));</b>
+<i>239</i>&nbsp;
+<b class="nc"><i>240</i>&nbsp;        int nan = cpg.addMethodref(DFS_CLASS,</b>
+<i>241</i>&nbsp;                                   &quot;setNaN&quot;, &quot;(Ljava/lang/String;)V&quot;);
+<b class="nc"><i>242</i>&nbsp;        il.append(DUP);</b>
+<b class="nc"><i>243</i>&nbsp;        il.append(new PUSH(cpg, &quot;NaN&quot;));</b>
+<b class="nc"><i>244</i>&nbsp;        il.append(new INVOKEVIRTUAL(nan));</b>
+<i>245</i>&nbsp;
+<b class="nc"><i>246</i>&nbsp;        int inf = cpg.addMethodref(DFS_CLASS,</b>
+<i>247</i>&nbsp;                                   &quot;setInfinity&quot;,
+<i>248</i>&nbsp;                                   &quot;(Ljava/lang/String;)V&quot;);
+<b class="nc"><i>249</i>&nbsp;        il.append(DUP);</b>
+<b class="nc"><i>250</i>&nbsp;        il.append(new PUSH(cpg, &quot;Infinity&quot;));</b>
+<b class="nc"><i>251</i>&nbsp;        il.append(new INVOKEVIRTUAL(inf));</b>
+<i>252</i>&nbsp;
+<b class="nc"><i>253</i>&nbsp;        final int put = cpg.addMethodref(TRANSLET_CLASS,</b>
+<i>254</i>&nbsp;                                         &quot;addDecimalFormat&quot;,
+<i>255</i>&nbsp;                                         &quot;(&quot;+STRING_SIG+DFS_SIG+&quot;)V&quot;);
+<b class="nc"><i>256</i>&nbsp;        il.append(new INVOKEVIRTUAL(put));</b>
+<i>257</i>&nbsp;    }
+<i>258</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

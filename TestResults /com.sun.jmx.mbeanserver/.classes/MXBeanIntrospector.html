@@ -1,0 +1,448 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MXBeanIntrospector</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.jmx.mbeanserver</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MXBeanIntrospector (com.sun.jmx.mbeanserver)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MXBeanIntrospector</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 23)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 115)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, 2008, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.jmx.mbeanserver;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import com.sun.jmx.mbeanserver.MBeanIntrospector.MBeanInfoMap;
+<i>29</i>&nbsp;import com.sun.jmx.mbeanserver.MBeanIntrospector.PerInterfaceMap;
+<i>30</i>&nbsp;import java.lang.annotation.Annotation;
+<i>31</i>&nbsp;import java.lang.reflect.GenericArrayType;
+<i>32</i>&nbsp;import java.lang.reflect.InvocationTargetException;
+<i>33</i>&nbsp;import java.lang.reflect.Method;
+<i>34</i>&nbsp;import java.lang.reflect.ParameterizedType;
+<i>35</i>&nbsp;import java.lang.reflect.Type;
+<i>36</i>&nbsp;import javax.management.Descriptor;
+<i>37</i>&nbsp;import javax.management.ImmutableDescriptor;
+<i>38</i>&nbsp;import javax.management.MBeanAttributeInfo;
+<i>39</i>&nbsp;import javax.management.MBeanException;
+<i>40</i>&nbsp;import javax.management.MBeanOperationInfo;
+<i>41</i>&nbsp;import javax.management.MBeanParameterInfo;
+<i>42</i>&nbsp;import javax.management.NotCompliantMBeanException;
+<i>43</i>&nbsp;import javax.management.openmbean.OpenMBeanAttributeInfoSupport;
+<i>44</i>&nbsp;import javax.management.openmbean.OpenMBeanOperationInfoSupport;
+<i>45</i>&nbsp;import javax.management.openmbean.OpenMBeanParameterInfo;
+<i>46</i>&nbsp;import javax.management.openmbean.OpenMBeanParameterInfoSupport;
+<i>47</i>&nbsp;import javax.management.openmbean.OpenType;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;/**
+<i>50</i>&nbsp; * Introspector for MXBeans.  There is exactly one instance of this class.
+<i>51</i>&nbsp; *
+<i>52</i>&nbsp; * @since 1.6
+<i>53</i>&nbsp; */
+<b class="nc"><i>54</i>&nbsp;class MXBeanIntrospector extends MBeanIntrospector&lt;ConvertingMethod&gt; {</b>
+<b class="nc"><i>55</i>&nbsp;    private static final MXBeanIntrospector instance = new MXBeanIntrospector();</b>
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    static MXBeanIntrospector getInstance() {
+<b class="nc"><i>58</i>&nbsp;        return instance;</b>
+<i>59</i>&nbsp;    }
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    @Override
+<i>62</i>&nbsp;    PerInterfaceMap&lt;ConvertingMethod&gt; getPerInterfaceMap() {
+<b class="nc"><i>63</i>&nbsp;        return perInterfaceMap;</b>
+<i>64</i>&nbsp;    }
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    @Override
+<i>67</i>&nbsp;    MBeanInfoMap getMBeanInfoMap() {
+<b class="nc"><i>68</i>&nbsp;        return mbeanInfoMap;</b>
+<i>69</i>&nbsp;    }
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    @Override
+<i>72</i>&nbsp;    MBeanAnalyzer&lt;ConvertingMethod&gt; getAnalyzer(Class&lt;?&gt; mbeanInterface)
+<i>73</i>&nbsp;            throws NotCompliantMBeanException {
+<b class="nc"><i>74</i>&nbsp;        return MBeanAnalyzer.analyzer(mbeanInterface, this);</b>
+<i>75</i>&nbsp;    }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    @Override
+<i>78</i>&nbsp;    boolean isMXBean() {
+<b class="nc"><i>79</i>&nbsp;        return true;</b>
+<i>80</i>&nbsp;    }
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    @Override
+<i>83</i>&nbsp;    ConvertingMethod mFrom(Method m) {
+<b class="nc"><i>84</i>&nbsp;        return ConvertingMethod.from(m);</b>
+<i>85</i>&nbsp;    }
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    @Override
+<i>88</i>&nbsp;    String getName(ConvertingMethod m) {
+<b class="nc"><i>89</i>&nbsp;        return m.getName();</b>
+<i>90</i>&nbsp;    }
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;    @Override
+<i>93</i>&nbsp;    Type getGenericReturnType(ConvertingMethod m) {
+<b class="nc"><i>94</i>&nbsp;        return m.getGenericReturnType();</b>
+<i>95</i>&nbsp;    }
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    @Override
+<i>98</i>&nbsp;    Type[] getGenericParameterTypes(ConvertingMethod m) {
+<b class="nc"><i>99</i>&nbsp;        return m.getGenericParameterTypes();</b>
+<i>100</i>&nbsp;    }
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;    @Override
+<i>103</i>&nbsp;    String[] getSignature(ConvertingMethod m) {
+<b class="nc"><i>104</i>&nbsp;        return m.getOpenSignature();</b>
+<i>105</i>&nbsp;    }
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    @Override
+<i>108</i>&nbsp;    void checkMethod(ConvertingMethod m) {
+<b class="nc"><i>109</i>&nbsp;        m.checkCallFromOpen();</b>
+<i>110</i>&nbsp;    }
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;    @Override
+<i>113</i>&nbsp;    Object invokeM2(ConvertingMethod m, Object target, Object[] args,
+<i>114</i>&nbsp;                    Object cookie)
+<i>115</i>&nbsp;            throws InvocationTargetException, IllegalAccessException,
+<i>116</i>&nbsp;                   MBeanException {
+<b class="nc"><i>117</i>&nbsp;        return m.invokeWithOpenReturn((MXBeanLookup) cookie, target, args);</b>
+<i>118</i>&nbsp;    }
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    @Override
+<i>121</i>&nbsp;    boolean validParameter(ConvertingMethod m, Object value, int paramNo,
+<i>122</i>&nbsp;                           Object cookie) {
+<b class="nc"><i>123</i>&nbsp;        if (value == null) {</b>
+<i>124</i>&nbsp;            // Null is a valid value for all OpenTypes, even though
+<i>125</i>&nbsp;            // OpenType.isValue(null) will return false.  It can always be
+<i>126</i>&nbsp;            // matched to the corresponding Java type, except when that
+<i>127</i>&nbsp;            // type is primitive.
+<b class="nc"><i>128</i>&nbsp;            Type t = m.getGenericParameterTypes()[paramNo];</b>
+<b class="nc"><i>129</i>&nbsp;            return (!(t instanceof Class&lt;?&gt;) || !((Class&lt;?&gt;) t).isPrimitive());</b>
+<i>130</i>&nbsp;        } else {
+<i>131</i>&nbsp;            Object v;
+<i>132</i>&nbsp;            try {
+<b class="nc"><i>133</i>&nbsp;                v = m.fromOpenParameter((MXBeanLookup) cookie, value, paramNo);</b>
+<b class="nc"><i>134</i>&nbsp;            } catch (Exception e) {</b>
+<i>135</i>&nbsp;                // Ignore the exception and let MBeanIntrospector.invokeSetter()
+<i>136</i>&nbsp;                // throw the initial exception.
+<b class="nc"><i>137</i>&nbsp;                return true;</b>
+<b class="nc"><i>138</i>&nbsp;            }</b>
+<b class="nc"><i>139</i>&nbsp;            return isValidParameter(m.getMethod(), v, paramNo);</b>
+<i>140</i>&nbsp;        }
+<i>141</i>&nbsp;    }
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;    @Override
+<i>144</i>&nbsp;    MBeanAttributeInfo getMBeanAttributeInfo(String attributeName,
+<i>145</i>&nbsp;            ConvertingMethod getter, ConvertingMethod setter) {
+<i>146</i>&nbsp;
+<b class="nc"><i>147</i>&nbsp;        final boolean isReadable = (getter != null);</b>
+<b class="nc"><i>148</i>&nbsp;        final boolean isWritable = (setter != null);</b>
+<b class="nc"><i>149</i>&nbsp;        final boolean isIs = isReadable &amp;&amp; getName(getter).startsWith(&quot;is&quot;);</b>
+<i>150</i>&nbsp;
+<b class="nc"><i>151</i>&nbsp;        final String description = attributeName;</b>
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;        final OpenType&lt;?&gt; openType;
+<i>154</i>&nbsp;        final Type originalType;
+<b class="nc"><i>155</i>&nbsp;        if (isReadable) {</b>
+<b class="nc"><i>156</i>&nbsp;            openType = getter.getOpenReturnType();</b>
+<b class="nc"><i>157</i>&nbsp;            originalType = getter.getGenericReturnType();</b>
+<i>158</i>&nbsp;        } else {
+<b class="nc"><i>159</i>&nbsp;            openType = setter.getOpenParameterTypes()[0];</b>
+<b class="nc"><i>160</i>&nbsp;            originalType = setter.getGenericParameterTypes()[0];</b>
+<i>161</i>&nbsp;        }
+<b class="nc"><i>162</i>&nbsp;        Descriptor descriptor = typeDescriptor(openType, originalType);</b>
+<b class="nc"><i>163</i>&nbsp;        if (isReadable) {</b>
+<b class="nc"><i>164</i>&nbsp;            descriptor = ImmutableDescriptor.union(descriptor,</b>
+<b class="nc"><i>165</i>&nbsp;                    getter.getDescriptor());</b>
+<i>166</i>&nbsp;        }
+<b class="nc"><i>167</i>&nbsp;        if (isWritable) {</b>
+<b class="nc"><i>168</i>&nbsp;            descriptor = ImmutableDescriptor.union(descriptor,</b>
+<b class="nc"><i>169</i>&nbsp;                    setter.getDescriptor());</b>
+<i>170</i>&nbsp;        }
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;        final MBeanAttributeInfo ai;
+<b class="nc"><i>173</i>&nbsp;        if (canUseOpenInfo(originalType)) {</b>
+<b class="nc"><i>174</i>&nbsp;            ai = new OpenMBeanAttributeInfoSupport(attributeName,</b>
+<i>175</i>&nbsp;                                                   description,
+<i>176</i>&nbsp;                                                   openType,
+<i>177</i>&nbsp;                                                   isReadable,
+<i>178</i>&nbsp;                                                   isWritable,
+<i>179</i>&nbsp;                                                   isIs,
+<i>180</i>&nbsp;                                                   descriptor);
+<i>181</i>&nbsp;        } else {
+<b class="nc"><i>182</i>&nbsp;            ai = new MBeanAttributeInfo(attributeName,</b>
+<b class="nc"><i>183</i>&nbsp;                                        originalTypeString(originalType),</b>
+<i>184</i>&nbsp;                                        description,
+<i>185</i>&nbsp;                                        isReadable,
+<i>186</i>&nbsp;                                        isWritable,
+<i>187</i>&nbsp;                                        isIs,
+<i>188</i>&nbsp;                                        descriptor);
+<i>189</i>&nbsp;        }
+<i>190</i>&nbsp;        // could also consult annotations for defaultValue,
+<i>191</i>&nbsp;        // minValue, maxValue, legalValues
+<i>192</i>&nbsp;
+<b class="nc"><i>193</i>&nbsp;        return ai;</b>
+<i>194</i>&nbsp;    }
+<i>195</i>&nbsp;
+<i>196</i>&nbsp;    @Override
+<i>197</i>&nbsp;    MBeanOperationInfo getMBeanOperationInfo(String operationName,
+<i>198</i>&nbsp;            ConvertingMethod operation) {
+<b class="nc"><i>199</i>&nbsp;        final Method method = operation.getMethod();</b>
+<b class="nc"><i>200</i>&nbsp;        final String description = operationName;</b>
+<i>201</i>&nbsp;        /* Ideally this would be an empty string, but
+<i>202</i>&nbsp;           OMBOperationInfo constructor forbids that.  Also, we
+<i>203</i>&nbsp;           could consult an annotation to get a useful
+<i>204</i>&nbsp;           description.  */
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;        final int impact = MBeanOperationInfo.UNKNOWN;
+<i>207</i>&nbsp;
+<b class="nc"><i>208</i>&nbsp;        final OpenType&lt;?&gt; returnType = operation.getOpenReturnType();</b>
+<b class="nc"><i>209</i>&nbsp;        final Type originalReturnType = operation.getGenericReturnType();</b>
+<b class="nc"><i>210</i>&nbsp;        final OpenType&lt;?&gt;[] paramTypes = operation.getOpenParameterTypes();</b>
+<b class="nc"><i>211</i>&nbsp;        final Type[] originalParamTypes = operation.getGenericParameterTypes();</b>
+<b class="nc"><i>212</i>&nbsp;        final MBeanParameterInfo[] params =</b>
+<i>213</i>&nbsp;            new MBeanParameterInfo[paramTypes.length];
+<b class="nc"><i>214</i>&nbsp;        boolean openReturnType = canUseOpenInfo(originalReturnType);</b>
+<b class="nc"><i>215</i>&nbsp;        boolean openParameterTypes = true;</b>
+<b class="nc"><i>216</i>&nbsp;        Annotation[][] annots = method.getParameterAnnotations();</b>
+<b class="nc"><i>217</i>&nbsp;        for (int i = 0; i &lt; paramTypes.length; i++) {</b>
+<b class="nc"><i>218</i>&nbsp;            final String paramName = &quot;p&quot; + i;</b>
+<b class="nc"><i>219</i>&nbsp;            final String paramDescription = paramName;</b>
+<b class="nc"><i>220</i>&nbsp;            final OpenType&lt;?&gt; openType = paramTypes[i];</b>
+<b class="nc"><i>221</i>&nbsp;            final Type originalType = originalParamTypes[i];</b>
+<b class="nc"><i>222</i>&nbsp;            Descriptor descriptor =</b>
+<b class="nc"><i>223</i>&nbsp;                typeDescriptor(openType, originalType);</b>
+<b class="nc"><i>224</i>&nbsp;            descriptor = ImmutableDescriptor.union(descriptor,</b>
+<b class="nc"><i>225</i>&nbsp;                    Introspector.descriptorForAnnotations(annots[i]));</b>
+<i>226</i>&nbsp;            final MBeanParameterInfo pi;
+<b class="nc"><i>227</i>&nbsp;            if (canUseOpenInfo(originalType)) {</b>
+<b class="nc"><i>228</i>&nbsp;                pi = new OpenMBeanParameterInfoSupport(paramName,</b>
+<i>229</i>&nbsp;                                                       paramDescription,
+<i>230</i>&nbsp;                                                       openType,
+<i>231</i>&nbsp;                                                       descriptor);
+<i>232</i>&nbsp;            } else {
+<b class="nc"><i>233</i>&nbsp;                openParameterTypes = false;</b>
+<b class="nc"><i>234</i>&nbsp;                pi = new MBeanParameterInfo(</b>
+<i>235</i>&nbsp;                    paramName,
+<b class="nc"><i>236</i>&nbsp;                    originalTypeString(originalType),</b>
+<i>237</i>&nbsp;                    paramDescription,
+<i>238</i>&nbsp;                    descriptor);
+<i>239</i>&nbsp;            }
+<b class="nc"><i>240</i>&nbsp;            params[i] = pi;</b>
+<i>241</i>&nbsp;        }
+<i>242</i>&nbsp;
+<b class="nc"><i>243</i>&nbsp;        Descriptor descriptor =</b>
+<b class="nc"><i>244</i>&nbsp;            typeDescriptor(returnType, originalReturnType);</b>
+<b class="nc"><i>245</i>&nbsp;        descriptor = ImmutableDescriptor.union(descriptor,</b>
+<b class="nc"><i>246</i>&nbsp;                Introspector.descriptorForElement(method));</b>
+<i>247</i>&nbsp;        final MBeanOperationInfo oi;
+<b class="nc"><i>248</i>&nbsp;        if (openReturnType &amp;&amp; openParameterTypes) {</b>
+<i>249</i>&nbsp;            /* If the return value and all the parameters can be faithfully
+<i>250</i>&nbsp;             * represented as OpenType then we return an OpenMBeanOperationInfo.
+<i>251</i>&nbsp;             * If any of them is a primitive type, we can&#39;t.  Compatibility
+<i>252</i>&nbsp;             * with JSR 174 means that we must return an MBean*Info where
+<i>253</i>&nbsp;             * the getType() is the primitive type, not its wrapped type as
+<i>254</i>&nbsp;             * we would get with an OpenMBean*Info.  The OpenType is available
+<i>255</i>&nbsp;             * in the Descriptor in either case.
+<i>256</i>&nbsp;             */
+<b class="nc"><i>257</i>&nbsp;            final OpenMBeanParameterInfo[] oparams =</b>
+<i>258</i>&nbsp;                new OpenMBeanParameterInfo[params.length];
+<b class="nc"><i>259</i>&nbsp;            System.arraycopy(params, 0, oparams, 0, params.length);</b>
+<b class="nc"><i>260</i>&nbsp;            oi = new OpenMBeanOperationInfoSupport(operationName,</b>
+<i>261</i>&nbsp;                                                   description,
+<i>262</i>&nbsp;                                                   oparams,
+<i>263</i>&nbsp;                                                   returnType,
+<i>264</i>&nbsp;                                                   impact,
+<i>265</i>&nbsp;                                                   descriptor);
+<b class="nc"><i>266</i>&nbsp;        } else {</b>
+<b class="nc"><i>267</i>&nbsp;            oi = new MBeanOperationInfo(operationName,</b>
+<i>268</i>&nbsp;                                        description,
+<i>269</i>&nbsp;                                        params,
+<i>270</i>&nbsp;                                        openReturnType ?
+<b class="nc"><i>271</i>&nbsp;                                        returnType.getClassName() :</b>
+<b class="nc"><i>272</i>&nbsp;                                        originalTypeString(originalReturnType),</b>
+<i>273</i>&nbsp;                                        impact,
+<i>274</i>&nbsp;                                        descriptor);
+<i>275</i>&nbsp;        }
+<i>276</i>&nbsp;
+<b class="nc"><i>277</i>&nbsp;        return oi;</b>
+<i>278</i>&nbsp;    }
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;    @Override
+<i>281</i>&nbsp;    Descriptor getBasicMBeanDescriptor() {
+<b class="nc"><i>282</i>&nbsp;        return new ImmutableDescriptor(&quot;mxbean=true&quot;,</b>
+<i>283</i>&nbsp;                                       &quot;immutableInfo=true&quot;);
+<i>284</i>&nbsp;    }
+<i>285</i>&nbsp;
+<i>286</i>&nbsp;    @Override
+<i>287</i>&nbsp;    Descriptor getMBeanDescriptor(Class&lt;?&gt; resourceClass) {
+<i>288</i>&nbsp;        /* We already have immutableInfo=true in the Descriptor
+<i>289</i>&nbsp;         * included in the MBeanInfo for the MXBean interface.  This
+<i>290</i>&nbsp;         * method is being called for the MXBean *class* to add any
+<i>291</i>&nbsp;         * new items beyond those in the interface Descriptor, which
+<i>292</i>&nbsp;         * currently it does not.
+<i>293</i>&nbsp;         */
+<b class="nc"><i>294</i>&nbsp;        return ImmutableDescriptor.EMPTY_DESCRIPTOR;</b>
+<i>295</i>&nbsp;    }
+<i>296</i>&nbsp;
+<i>297</i>&nbsp;    private static Descriptor typeDescriptor(OpenType&lt;?&gt; openType,
+<i>298</i>&nbsp;                                             Type originalType) {
+<b class="nc"><i>299</i>&nbsp;        return new ImmutableDescriptor(</b>
+<i>300</i>&nbsp;            new String[] {&quot;openType&quot;,
+<i>301</i>&nbsp;                          &quot;originalType&quot;},
+<i>302</i>&nbsp;            new Object[] {openType,
+<b class="nc"><i>303</i>&nbsp;                          originalTypeString(originalType)});</b>
+<i>304</i>&nbsp;    }
+<i>305</i>&nbsp;
+<i>306</i>&nbsp;    /**
+<i>307</i>&nbsp;     * &lt;p&gt;True if this type can be faithfully represented in an
+<i>308</i>&nbsp;     * OpenMBean*Info.&lt;/p&gt;
+<i>309</i>&nbsp;     *
+<i>310</i>&nbsp;     * &lt;p&gt;Compatibility with JSR 174 means that primitive types must be
+<i>311</i>&nbsp;     * represented by an MBean*Info whose getType() is the primitive type
+<i>312</i>&nbsp;     * string, e.g. &quot;int&quot;.  If we used an OpenMBean*Info then this string
+<i>313</i>&nbsp;     * would be the wrapped type, e.g. &quot;java.lang.Integer&quot;.&lt;/p&gt;
+<i>314</i>&nbsp;     *
+<i>315</i>&nbsp;     * &lt;p&gt;Compatibility with JMX 1.2 (including J2SE 5.0) means that arrays
+<i>316</i>&nbsp;     * of primitive types cannot use an ArrayType representing an array of
+<i>317</i>&nbsp;     * primitives, because that didn&#39;t exist in JMX 1.2.&lt;/p&gt;
+<i>318</i>&nbsp;     */
+<i>319</i>&nbsp;    private static boolean canUseOpenInfo(Type type) {
+<b class="nc"><i>320</i>&nbsp;        if (type instanceof GenericArrayType) {</b>
+<b class="nc"><i>321</i>&nbsp;            return canUseOpenInfo(</b>
+<b class="nc"><i>322</i>&nbsp;                ((GenericArrayType) type).getGenericComponentType());</b>
+<b class="nc"><i>323</i>&nbsp;        } else if (type instanceof Class&lt;?&gt; &amp;&amp; ((Class&lt;?&gt;) type).isArray()) {</b>
+<b class="nc"><i>324</i>&nbsp;            return canUseOpenInfo(</b>
+<b class="nc"><i>325</i>&nbsp;                ((Class&lt;?&gt;) type).getComponentType());</b>
+<i>326</i>&nbsp;        }
+<b class="nc"><i>327</i>&nbsp;        return (!(type instanceof Class&lt;?&gt; &amp;&amp; ((Class&lt;?&gt;) type).isPrimitive()));</b>
+<i>328</i>&nbsp;    }
+<i>329</i>&nbsp;
+<i>330</i>&nbsp;    private static String originalTypeString(Type type) {
+<b class="nc"><i>331</i>&nbsp;        if (type instanceof Class&lt;?&gt;)</b>
+<b class="nc"><i>332</i>&nbsp;            return ((Class&lt;?&gt;) type).getName();</b>
+<i>333</i>&nbsp;        else
+<b class="nc"><i>334</i>&nbsp;            return typeName(type);</b>
+<i>335</i>&nbsp;    }
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;    static String typeName(Type type) {
+<b class="nc"><i>338</i>&nbsp;        if (type instanceof Class&lt;?&gt;) {</b>
+<b class="nc"><i>339</i>&nbsp;            Class&lt;?&gt; c = (Class&lt;?&gt;) type;</b>
+<b class="nc"><i>340</i>&nbsp;            if (c.isArray())</b>
+<b class="nc"><i>341</i>&nbsp;                return typeName(c.getComponentType()) + &quot;[]&quot;;</b>
+<i>342</i>&nbsp;            else
+<b class="nc"><i>343</i>&nbsp;                return c.getName();</b>
+<b class="nc"><i>344</i>&nbsp;        } else if (type instanceof GenericArrayType) {</b>
+<b class="nc"><i>345</i>&nbsp;            GenericArrayType gat = (GenericArrayType) type;</b>
+<b class="nc"><i>346</i>&nbsp;            return typeName(gat.getGenericComponentType()) + &quot;[]&quot;;</b>
+<b class="nc"><i>347</i>&nbsp;        } else if (type instanceof ParameterizedType) {</b>
+<b class="nc"><i>348</i>&nbsp;            ParameterizedType pt = (ParameterizedType) type;</b>
+<b class="nc"><i>349</i>&nbsp;            StringBuilder sb = new StringBuilder();</b>
+<b class="nc"><i>350</i>&nbsp;            sb.append(typeName(pt.getRawType())).append(&quot;&lt;&quot;);</b>
+<b class="nc"><i>351</i>&nbsp;            String sep = &quot;&quot;;</b>
+<b class="nc"><i>352</i>&nbsp;            for (Type t : pt.getActualTypeArguments()) {</b>
+<b class="nc"><i>353</i>&nbsp;                sb.append(sep).append(typeName(t));</b>
+<b class="nc"><i>354</i>&nbsp;                sep = &quot;, &quot;;</b>
+<i>355</i>&nbsp;            }
+<b class="nc"><i>356</i>&nbsp;            return sb.append(&quot;&gt;&quot;).toString();</b>
+<i>357</i>&nbsp;        } else
+<b class="nc"><i>358</i>&nbsp;            return &quot;???&quot;;</b>
+<i>359</i>&nbsp;    }
+<i>360</i>&nbsp;
+<b class="nc"><i>361</i>&nbsp;    private final PerInterfaceMap&lt;ConvertingMethod&gt;</b>
+<i>362</i>&nbsp;        perInterfaceMap = new PerInterfaceMap&lt;ConvertingMethod&gt;();
+<i>363</i>&nbsp;
+<b class="nc"><i>364</i>&nbsp;    private static final MBeanInfoMap mbeanInfoMap = new MBeanInfoMap();</b>
+<i>365</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

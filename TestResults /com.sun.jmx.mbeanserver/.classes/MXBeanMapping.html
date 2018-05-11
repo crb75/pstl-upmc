@@ -1,0 +1,293 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MXBeanMapping</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.jmx.mbeanserver</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MXBeanMapping (com.sun.jmx.mbeanserver)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MXBeanMapping</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2012, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.jmx.mbeanserver;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.io.InvalidObjectException;
+<i>29</i>&nbsp;import java.lang.reflect.Type;
+<i>30</i>&nbsp;import javax.management.openmbean.OpenDataException;
+<i>31</i>&nbsp;import javax.management.openmbean.OpenType;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;/**
+<i>34</i>&nbsp; * &lt;p&gt;A custom mapping between Java types and Open types for use in MXBeans.
+<i>35</i>&nbsp; * To define such a mapping, subclass this class and define at least the
+<i>36</i>&nbsp; * {@link #fromOpenValue fromOpenValue} and {@link #toOpenValue toOpenValue}
+<i>37</i>&nbsp; * methods, and optionally the {@link #checkReconstructible} method.
+<i>38</i>&nbsp; * Then either use an {@link MXBeanMappingClass} annotation on your custom
+<i>39</i>&nbsp; * Java types, or include this MXBeanMapping in an
+<i>40</i>&nbsp; * {@link MXBeanMappingFactory}.&lt;/p&gt;
+<i>41</i>&nbsp; *
+<i>42</i>&nbsp; * &lt;p&gt;For example, suppose we have a class {@code MyLinkedList}, which looks
+<i>43</i>&nbsp; * like this:&lt;/p&gt;
+<i>44</i>&nbsp; *
+<i>45</i>&nbsp; * &lt;pre&gt;
+<i>46</i>&nbsp; * public class MyLinkedList {
+<i>47</i>&nbsp; *     public MyLinkedList(String name, MyLinkedList next) {...}
+<i>48</i>&nbsp; *     public String getName() {...}
+<i>49</i>&nbsp; *     public MyLinkedList getNext() {...}
+<i>50</i>&nbsp; * }
+<i>51</i>&nbsp; * &lt;/pre&gt;
+<i>52</i>&nbsp; *
+<i>53</i>&nbsp; * &lt;p&gt;This is not a valid type for MXBeans, because it contains a
+<i>54</i>&nbsp; * self-referential property &quot;next&quot; defined by the {@code getNext()}
+<i>55</i>&nbsp; * method.  MXBeans do not support recursive types.  So we would like
+<i>56</i>&nbsp; * to specify a mapping for {@code MyLinkedList} explicitly. When an
+<i>57</i>&nbsp; * MXBean interface contains {@code MyLinkedList}, that will be mapped
+<i>58</i>&nbsp; * into a {@code String[]}, which is a valid Open Type.&lt;/p&gt;
+<i>59</i>&nbsp; *
+<i>60</i>&nbsp; * &lt;p&gt;To define this mapping, we first subclass {@code MXBeanMapping}:&lt;/p&gt;
+<i>61</i>&nbsp; *
+<i>62</i>&nbsp; * &lt;pre&gt;
+<i>63</i>&nbsp; * public class MyLinkedListMapping extends MXBeanMapping {
+<i>64</i>&nbsp; *     public MyLinkedListMapping(Type type) throws OpenDataException {
+<i>65</i>&nbsp; *         super(MyLinkedList.class, ArrayType.getArrayType(SimpleType.STRING));
+<i>66</i>&nbsp; *         if (type != MyLinkedList.class)
+<i>67</i>&nbsp; *             throw new OpenDataException(&quot;Mapping only valid for MyLinkedList&quot;);
+<i>68</i>&nbsp; *     }
+<i>69</i>&nbsp; *
+<i>70</i>&nbsp; *     {@literal @Override}
+<i>71</i>&nbsp; *     public Object fromOpenValue(Object openValue) throws InvalidObjectException {
+<i>72</i>&nbsp; *         String[] array = (String[]) openValue;
+<i>73</i>&nbsp; *         MyLinkedList list = null;
+<i>74</i>&nbsp; *         for (int i = array.length - 1; i &amp;gt;= 0; i--)
+<i>75</i>&nbsp; *             list = new MyLinkedList(array[i], list);
+<i>76</i>&nbsp; *         return list;
+<i>77</i>&nbsp; *     }
+<i>78</i>&nbsp; *
+<i>79</i>&nbsp; *     {@literal @Override}
+<i>80</i>&nbsp; *     public Object toOpenValue(Object javaValue) throws OpenDataException {
+<i>81</i>&nbsp; *         ArrayList&amp;lt;String&amp;gt; array = new ArrayList&amp;lt;String&amp;gt;();
+<i>82</i>&nbsp; *         for (MyLinkedList list = (MyLinkedList) javaValue; list != null;
+<i>83</i>&nbsp; *              list = list.getNext())
+<i>84</i>&nbsp; *             array.add(list.getName());
+<i>85</i>&nbsp; *         return array.toArray(new String[0]);
+<i>86</i>&nbsp; *     }
+<i>87</i>&nbsp; * }
+<i>88</i>&nbsp; * &lt;/pre&gt;
+<i>89</i>&nbsp; *
+<i>90</i>&nbsp; * &lt;p&gt;The call to the superclass constructor specifies what the
+<i>91</i>&nbsp; * original Java type is ({@code MyLinkedList.class}) and what Open
+<i>92</i>&nbsp; * Type it is mapped to ({@code
+<i>93</i>&nbsp; * ArrayType.getArrayType(SimpleType.STRING)}). The {@code
+<i>94</i>&nbsp; * fromOpenValue} method says how we go from the Open Type ({@code
+<i>95</i>&nbsp; * String[]}) to the Java type ({@code MyLinkedList}), and the {@code
+<i>96</i>&nbsp; * toOpenValue} method says how we go from the Java type to the Open
+<i>97</i>&nbsp; * Type.&lt;/p&gt;
+<i>98</i>&nbsp; *
+<i>99</i>&nbsp; * &lt;p&gt;With this mapping defined, we can annotate the {@code MyLinkedList}
+<i>100</i>&nbsp; * class appropriately:&lt;/p&gt;
+<i>101</i>&nbsp; *
+<i>102</i>&nbsp; * &lt;pre&gt;
+<i>103</i>&nbsp; * {@literal @MXBeanMappingClass}(MyLinkedListMapping.class)
+<i>104</i>&nbsp; * public class MyLinkedList {...}
+<i>105</i>&nbsp; * &lt;/pre&gt;
+<i>106</i>&nbsp; *
+<i>107</i>&nbsp; * &lt;p&gt;Now we can use {@code MyLinkedList} in an MXBean interface and it
+<i>108</i>&nbsp; * will work.&lt;/p&gt;
+<i>109</i>&nbsp; *
+<i>110</i>&nbsp; * &lt;p&gt;If we are unable to modify the {@code MyLinkedList} class,
+<i>111</i>&nbsp; * we can define an {@link MXBeanMappingFactory}.  See the documentation
+<i>112</i>&nbsp; * of that class for further details.&lt;/p&gt;
+<i>113</i>&nbsp; *
+<i>114</i>&nbsp; * @see &lt;a href=&quot;../MXBean.html#custom&quot;&gt;MXBean specification, section
+<i>115</i>&nbsp; * &quot;Custom MXBean type mappings&quot;&lt;/a&gt;
+<i>116</i>&nbsp; */
+<i>117</i>&nbsp;public abstract class MXBeanMapping {
+<i>118</i>&nbsp;    private final Type javaType;
+<i>119</i>&nbsp;    private final OpenType&lt;?&gt; openType;
+<i>120</i>&nbsp;    private final Class&lt;?&gt; openClass;
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;    /**
+<i>123</i>&nbsp;     * &lt;p&gt;Construct a mapping between the given Java type and the given
+<i>124</i>&nbsp;     * Open Type.&lt;/p&gt;
+<i>125</i>&nbsp;     *
+<i>126</i>&nbsp;     * @param javaType the Java type (for example, {@code MyLinkedList}).
+<i>127</i>&nbsp;     * @param openType the Open Type (for example, {@code
+<i>128</i>&nbsp;     * ArrayType.getArrayType(SimpleType.STRING)})
+<i>129</i>&nbsp;     *
+<i>130</i>&nbsp;     * @throws NullPointerException if either argument is null.
+<i>131</i>&nbsp;     */
+<b class="nc"><i>132</i>&nbsp;    protected MXBeanMapping(Type javaType, OpenType&lt;?&gt; openType) {</b>
+<b class="nc"><i>133</i>&nbsp;        if (javaType == null || openType == null)</b>
+<b class="nc"><i>134</i>&nbsp;            throw new NullPointerException(&quot;Null argument&quot;);</b>
+<b class="nc"><i>135</i>&nbsp;        this.javaType = javaType;</b>
+<b class="nc"><i>136</i>&nbsp;        this.openType = openType;</b>
+<b class="nc"><i>137</i>&nbsp;        this.openClass = makeOpenClass(javaType, openType);</b>
+<i>138</i>&nbsp;    }
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;    /**
+<i>141</i>&nbsp;     * &lt;p&gt;The Java type that was supplied to the constructor.&lt;/p&gt;
+<i>142</i>&nbsp;     * @return the Java type that was supplied to the constructor.
+<i>143</i>&nbsp;     */
+<i>144</i>&nbsp;    public final Type getJavaType() {
+<b class="nc"><i>145</i>&nbsp;        return javaType;</b>
+<i>146</i>&nbsp;    }
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;    /**
+<i>149</i>&nbsp;     * &lt;p&gt;The Open Type that was supplied to the constructor.&lt;/p&gt;
+<i>150</i>&nbsp;     * @return the Open Type that was supplied to the constructor.
+<i>151</i>&nbsp;     */
+<i>152</i>&nbsp;    public final OpenType&lt;?&gt; getOpenType() {
+<b class="nc"><i>153</i>&nbsp;        return openType;</b>
+<i>154</i>&nbsp;    }
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;    /**
+<i>157</i>&nbsp;     * &lt;p&gt;The Java class that corresponds to instances of the
+<i>158</i>&nbsp;     * {@linkplain #getOpenType() Open Type} for this mapping.&lt;/p&gt;
+<i>159</i>&nbsp;     * @return the Java class that corresponds to instances of the
+<i>160</i>&nbsp;     * Open Type for this mapping.
+<i>161</i>&nbsp;     * @see OpenType#getClassName
+<i>162</i>&nbsp;     */
+<i>163</i>&nbsp;    public final Class&lt;?&gt; getOpenClass() {
+<b class="nc"><i>164</i>&nbsp;        return openClass;</b>
+<i>165</i>&nbsp;    }
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;    private static Class&lt;?&gt; makeOpenClass(Type javaType, OpenType&lt;?&gt; openType) {
+<b class="nc"><i>168</i>&nbsp;        if (javaType instanceof Class&lt;?&gt; &amp;&amp; ((Class&lt;?&gt;) javaType).isPrimitive())</b>
+<b class="nc"><i>169</i>&nbsp;            return (Class&lt;?&gt;) javaType;</b>
+<i>170</i>&nbsp;        try {
+<b class="nc"><i>171</i>&nbsp;            String className = openType.getClassName();</b>
+<b class="nc"><i>172</i>&nbsp;            return Class.forName(className, false, MXBeanMapping.class.getClassLoader());</b>
+<b class="nc"><i>173</i>&nbsp;        } catch (ClassNotFoundException e) {</b>
+<b class="nc"><i>174</i>&nbsp;            throw new RuntimeException(e);  // should not happen</b>
+<i>175</i>&nbsp;        }
+<i>176</i>&nbsp;    }
+<i>177</i>&nbsp;
+<i>178</i>&nbsp;    /**
+<i>179</i>&nbsp;     * &lt;p&gt;Convert an instance of the Open Type into the Java type.
+<i>180</i>&nbsp;     * @param openValue the value to be converted.
+<i>181</i>&nbsp;     * @return the converted value.
+<i>182</i>&nbsp;     * @throws InvalidObjectException if the value cannot be converted.
+<i>183</i>&nbsp;     */
+<i>184</i>&nbsp;    public abstract Object fromOpenValue(Object openValue)
+<i>185</i>&nbsp;    throws InvalidObjectException;
+<i>186</i>&nbsp;
+<i>187</i>&nbsp;    /**
+<i>188</i>&nbsp;     * &lt;p&gt;Convert an instance of the Java type into the Open Type.
+<i>189</i>&nbsp;     * @param javaValue the value to be converted.
+<i>190</i>&nbsp;     * @return the converted value.
+<i>191</i>&nbsp;     * @throws OpenDataException if the value cannot be converted.
+<i>192</i>&nbsp;     */
+<i>193</i>&nbsp;    public abstract Object toOpenValue(Object javaValue)
+<i>194</i>&nbsp;    throws OpenDataException;
+<i>195</i>&nbsp;
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;    /**
+<i>198</i>&nbsp;     * &lt;p&gt;Throw an appropriate InvalidObjectException if we will not
+<i>199</i>&nbsp;     * be able to convert back from the open data to the original Java
+<i>200</i>&nbsp;     * object.  The {@link #fromOpenValue fromOpenValue} throws an
+<i>201</i>&nbsp;     * exception if a given open data value cannot be converted.  This
+<i>202</i>&nbsp;     * method throws an exception if &lt;em&gt;no&lt;/em&gt; open data values can
+<i>203</i>&nbsp;     * be converted.  The default implementation of this method never
+<i>204</i>&nbsp;     * throws an exception.  Subclasses can override it as
+<i>205</i>&nbsp;     * appropriate.&lt;/p&gt;
+<i>206</i>&nbsp;     * @throws InvalidObjectException if {@code fromOpenValue} will throw
+<i>207</i>&nbsp;     * an exception no matter what its argument is.
+<i>208</i>&nbsp;     */
+<i>209</i>&nbsp;    public void checkReconstructible() throws InvalidObjectException {}
+<i>210</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

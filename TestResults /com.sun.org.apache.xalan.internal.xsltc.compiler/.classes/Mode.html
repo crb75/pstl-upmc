@@ -1,0 +1,1601 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Mode</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Mode (com.sun.org.apache.xalan.internal.xsltc.compiler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Mode</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 635)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: Mode.java,v 1.2.4.1 2005/09/19 05:18:11 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.BranchHandle;
+<i>27</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+<i>28</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.DUP;
+<i>29</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.GOTO_W;
+<i>30</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.IFLT;
+<i>31</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ILOAD;
+<i>32</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKEINTERFACE;
+<i>33</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL;
+<i>34</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ISTORE;
+<i>35</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.Instruction;
+<i>36</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
+<i>37</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>38</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.LocalVariableGen;
+<i>39</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.SWITCH;
+<i>40</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.TargetLostException;
+<i>41</i>&nbsp;import com.sun.org.apache.bcel.internal.util.InstructionFinder;
+<i>42</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.DOM;
+<i>43</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
+<i>44</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+<i>45</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.NamedMethodGenerator;
+<i>46</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
+<i>47</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.Axis;
+<i>48</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTM;
+<i>49</i>&nbsp;import java.util.Enumeration;
+<i>50</i>&nbsp;import java.util.HashMap;
+<i>51</i>&nbsp;import java.util.Iterator;
+<i>52</i>&nbsp;import java.util.Map;
+<i>53</i>&nbsp;import java.util.Set;
+<i>54</i>&nbsp;import java.util.Vector;
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;/**
+<i>57</i>&nbsp; * Mode gathers all the templates belonging to a given mode;
+<i>58</i>&nbsp; * it is responsible for generating an appropriate
+<i>59</i>&nbsp; * applyTemplates + (mode name) method in the translet.
+<i>60</i>&nbsp; * @author Jacek Ambroziak
+<i>61</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>62</i>&nbsp; * @author Morten Jorgensen
+<i>63</i>&nbsp; * @author Erwin Bolwidt &lt;ejb@klomp.org&gt;
+<i>64</i>&nbsp; * @author G. Todd Miller
+<i>65</i>&nbsp; */
+<i>66</i>&nbsp;final class Mode implements Constants {
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    /**
+<i>69</i>&nbsp;     * The name of this mode as defined in the stylesheet.
+<i>70</i>&nbsp;     */
+<i>71</i>&nbsp;    private final QName _name;
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    /**
+<i>74</i>&nbsp;     * A reference to the stylesheet object that owns this mode.
+<i>75</i>&nbsp;     */
+<i>76</i>&nbsp;    private final Stylesheet _stylesheet;
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    /**
+<i>79</i>&nbsp;     * The name of the method in which this mode is compiled.
+<i>80</i>&nbsp;     */
+<i>81</i>&nbsp;    private final String _methodName;
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    /**
+<i>84</i>&nbsp;     * A vector of all the templates in this mode.
+<i>85</i>&nbsp;     */
+<i>86</i>&nbsp;    private Vector _templates;
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    /**
+<i>89</i>&nbsp;     * Group for patterns with node()-type kernel and child axis.
+<i>90</i>&nbsp;     */
+<b class="nc"><i>91</i>&nbsp;    private Vector _childNodeGroup = null;</b>
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    /**
+<i>94</i>&nbsp;     * Test sequence for patterns with node()-type kernel and child axis.
+<i>95</i>&nbsp;     */
+<b class="nc"><i>96</i>&nbsp;    private TestSeq _childNodeTestSeq = null;</b>
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;    /**
+<i>99</i>&nbsp;     * Group for patterns with node()-type kernel and attribute axis.
+<i>100</i>&nbsp;     */
+<b class="nc"><i>101</i>&nbsp;    private Vector _attribNodeGroup = null;</b>
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    /**
+<i>104</i>&nbsp;     * Test sequence for patterns with node()-type kernel and attribute axis.
+<i>105</i>&nbsp;     */
+<b class="nc"><i>106</i>&nbsp;    private TestSeq _attribNodeTestSeq = null;</b>
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;    /**
+<i>109</i>&nbsp;     * Group for patterns with id() or key()-type kernel.
+<i>110</i>&nbsp;     */
+<b class="nc"><i>111</i>&nbsp;    private Vector _idxGroup = null;</b>
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    /**
+<i>114</i>&nbsp;     * Test sequence for patterns with id() or key()-type kernel.
+<i>115</i>&nbsp;     */
+<b class="nc"><i>116</i>&nbsp;    private TestSeq _idxTestSeq = null;</b>
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;    /**
+<i>119</i>&nbsp;     * Group for patterns with any other kernel type.
+<i>120</i>&nbsp;     */
+<i>121</i>&nbsp;    private Vector[] _patternGroups;
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;    /**
+<i>124</i>&nbsp;     * Test sequence for patterns with any other kernel type.
+<i>125</i>&nbsp;     */
+<i>126</i>&nbsp;    private TestSeq[] _testSeq;
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;    /**
+<i>130</i>&nbsp;     * A mapping between templates and test sequences.
+<i>131</i>&nbsp;     */
+<b class="nc"><i>132</i>&nbsp;    private Map&lt;Template, Object&gt; _neededTemplates = new HashMap&lt;&gt;();</b>
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;    /**
+<i>135</i>&nbsp;     * A mapping between named templates and Mode objects.
+<i>136</i>&nbsp;     */
+<b class="nc"><i>137</i>&nbsp;    private Map&lt;Template, Mode&gt; _namedTemplates = new HashMap&lt;&gt;();</b>
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;    /**
+<i>140</i>&nbsp;     * A mapping between templates and instruction handles.
+<i>141</i>&nbsp;     */
+<b class="nc"><i>142</i>&nbsp;    private Map&lt;Template, InstructionHandle&gt; _templateIHs = new HashMap&lt;&gt;();</b>
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;    /**
+<i>145</i>&nbsp;     * A mapping between templates and instruction lists.
+<i>146</i>&nbsp;     */
+<b class="nc"><i>147</i>&nbsp;    private Map&lt;Template, InstructionList&gt; _templateILs = new HashMap&lt;&gt;();</b>
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    /**
+<i>150</i>&nbsp;     * A reference to the pattern matching the root node.
+<i>151</i>&nbsp;     */
+<b class="nc"><i>152</i>&nbsp;    private LocationPathPattern _rootPattern = null;</b>
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;    /**
+<i>155</i>&nbsp;     * Stores ranges of template precendences for the compilation
+<i>156</i>&nbsp;     * of apply-imports.
+<i>157</i>&nbsp;     */
+<b class="nc"><i>158</i>&nbsp;    private Map&lt;Integer, Integer&gt; _importLevels = null;</b>
+<i>159</i>&nbsp;
+<i>160</i>&nbsp;    /**
+<i>161</i>&nbsp;     * A mapping between key names and keys.
+<i>162</i>&nbsp;     */
+<b class="nc"><i>163</i>&nbsp;    private Map&lt;String, Key&gt; _keys = null;</b>
+<i>164</i>&nbsp;
+<i>165</i>&nbsp;    /**
+<i>166</i>&nbsp;     * Variable index for the current node used in code generation.
+<i>167</i>&nbsp;     */
+<i>168</i>&nbsp;    private int _currentIndex;
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;    /**
+<i>171</i>&nbsp;     * Creates a new Mode.
+<i>172</i>&nbsp;     *
+<i>173</i>&nbsp;     * @param name A textual representation of the mode&#39;s QName
+<i>174</i>&nbsp;     * @param stylesheet The Stylesheet in which the mode occured
+<i>175</i>&nbsp;     * @param suffix A suffix to append to the method name for this mode
+<i>176</i>&nbsp;     *               (normally a sequence number - still in a String).
+<i>177</i>&nbsp;     */
+<b class="nc"><i>178</i>&nbsp;    public Mode(QName name, Stylesheet stylesheet, String suffix) {</b>
+<b class="nc"><i>179</i>&nbsp;        _name = name;</b>
+<b class="nc"><i>180</i>&nbsp;        _stylesheet = stylesheet;</b>
+<b class="nc"><i>181</i>&nbsp;        _methodName = APPLY_TEMPLATES + suffix;</b>
+<b class="nc"><i>182</i>&nbsp;        _templates = new Vector();</b>
+<b class="nc"><i>183</i>&nbsp;        _patternGroups = new Vector[32];</b>
+<i>184</i>&nbsp;    }
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;    /**
+<i>187</i>&nbsp;     * Returns the name of the method (_not_ function) that will be
+<i>188</i>&nbsp;     * compiled for this mode. Normally takes the form &#39;applyTemplates()&#39;
+<i>189</i>&nbsp;     * or * &#39;applyTemplates2()&#39;.
+<i>190</i>&nbsp;     *
+<i>191</i>&nbsp;     * @return Method name for this mode
+<i>192</i>&nbsp;     */
+<i>193</i>&nbsp;    public String functionName() {
+<b class="nc"><i>194</i>&nbsp;        return _methodName;</b>
+<i>195</i>&nbsp;    }
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;    public String functionName(int min, int max) {
+<b class="nc"><i>198</i>&nbsp;        if (_importLevels == null) {</b>
+<b class="nc"><i>199</i>&nbsp;            _importLevels = new HashMap&lt;&gt;();</b>
+<i>200</i>&nbsp;        }
+<b class="nc"><i>201</i>&nbsp;        _importLevels.put(max, min);</b>
+<b class="nc"><i>202</i>&nbsp;        return _methodName + &#39;_&#39; + max;</b>
+<i>203</i>&nbsp;    }
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;    /**
+<i>206</i>&nbsp;     * Shortcut to get the class compiled for this mode (will be inlined).
+<i>207</i>&nbsp;     */
+<i>208</i>&nbsp;    private String getClassName() {
+<b class="nc"><i>209</i>&nbsp;        return _stylesheet.getClassName();</b>
+<i>210</i>&nbsp;    }
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;    public Stylesheet getStylesheet() {
+<b class="nc"><i>213</i>&nbsp;        return _stylesheet;</b>
+<i>214</i>&nbsp;    }
+<i>215</i>&nbsp;
+<i>216</i>&nbsp;    public void addTemplate(Template template) {
+<b class="nc"><i>217</i>&nbsp;        _templates.addElement(template);</b>
+<i>218</i>&nbsp;    }
+<i>219</i>&nbsp;
+<i>220</i>&nbsp;    private Vector quicksort(Vector templates, int p, int r) {
+<b class="nc"><i>221</i>&nbsp;        if (p &lt; r) {</b>
+<b class="nc"><i>222</i>&nbsp;            final int q = partition(templates, p, r);</b>
+<b class="nc"><i>223</i>&nbsp;            quicksort(templates, p, q);</b>
+<b class="nc"><i>224</i>&nbsp;            quicksort(templates, q + 1, r);</b>
+<i>225</i>&nbsp;        }
+<b class="nc"><i>226</i>&nbsp;        return templates;</b>
+<i>227</i>&nbsp;    }
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;    private int partition(Vector templates, int p, int r) {
+<b class="nc"><i>230</i>&nbsp;        final Template x = (Template)templates.elementAt(p);</b>
+<b class="nc"><i>231</i>&nbsp;        int i = p - 1;</b>
+<b class="nc"><i>232</i>&nbsp;        int j = r + 1;</b>
+<i>233</i>&nbsp;        while (true) {
+<b class="nc"><i>234</i>&nbsp;            while (x.compareTo((Template)templates.elementAt(--j)) &gt; 0);</b>
+<b class="nc"><i>235</i>&nbsp;            while (x.compareTo((Template)templates.elementAt(++i)) &lt; 0);</b>
+<b class="nc"><i>236</i>&nbsp;            if (i &lt; j) {</b>
+<b class="nc"><i>237</i>&nbsp;                templates.set(j, templates.set(i, templates.elementAt(j)));</b>
+<i>238</i>&nbsp;            }
+<i>239</i>&nbsp;            else {
+<b class="nc"><i>240</i>&nbsp;                return j;</b>
+<i>241</i>&nbsp;            }
+<i>242</i>&nbsp;        }
+<i>243</i>&nbsp;    }
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;    /**
+<i>246</i>&nbsp;     * Process all the test patterns in this mode
+<i>247</i>&nbsp;     */
+<i>248</i>&nbsp;    public void processPatterns(Map&lt;String, Key&gt; keys) {
+<b class="nc"><i>249</i>&nbsp;        _keys = keys;</b>
+<i>250</i>&nbsp;
+<i>251</i>&nbsp;/*
+<i>252</i>&nbsp;System.out.println(&quot;Before Sort &quot; + _name);
+<i>253</i>&nbsp;for (int i = 0; i &lt; _templates.size(); i++) {
+<i>254</i>&nbsp;    System.out.println(&quot;name = &quot; + ((Template)_templates.elementAt(i)).getName());
+<i>255</i>&nbsp;    System.out.println(&quot;pattern = &quot; + ((Template)_templates.elementAt(i)).getPattern());
+<i>256</i>&nbsp;    System.out.println(&quot;priority = &quot; + ((Template)_templates.elementAt(i)).getPriority());
+<i>257</i>&nbsp;    System.out.println(&quot;position = &quot; + ((Template)_templates.elementAt(i)).getPosition());
+<i>258</i>&nbsp;}
+<i>259</i>&nbsp;*/
+<i>260</i>&nbsp;
+<b class="nc"><i>261</i>&nbsp;        _templates = quicksort(_templates, 0, _templates.size() - 1);</b>
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;/*
+<i>264</i>&nbsp;System.out.println(&quot;\n After Sort &quot; + _name);
+<i>265</i>&nbsp;for (int i = 0; i &lt; _templates.size(); i++) {
+<i>266</i>&nbsp;    System.out.println(&quot;name = &quot; + ((Template)_templates.elementAt(i)).getName());
+<i>267</i>&nbsp;    System.out.println(&quot;pattern = &quot; + ((Template)_templates.elementAt(i)).getPattern());
+<i>268</i>&nbsp;    System.out.println(&quot;priority = &quot; + ((Template)_templates.elementAt(i)).getPriority());
+<i>269</i>&nbsp;    System.out.println(&quot;position = &quot; + ((Template)_templates.elementAt(i)).getPosition());
+<i>270</i>&nbsp;}
+<i>271</i>&nbsp;*/
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;        // Traverse all templates
+<b class="nc"><i>274</i>&nbsp;        final Enumeration templates = _templates.elements();</b>
+<b class="nc"><i>275</i>&nbsp;        while (templates.hasMoreElements()) {</b>
+<i>276</i>&nbsp;            // Get the next template
+<b class="nc"><i>277</i>&nbsp;            final Template template = (Template)templates.nextElement();</b>
+<i>278</i>&nbsp;
+<i>279</i>&nbsp;            /*
+<i>280</i>&nbsp;             * Add this template to a table of named templates if it has a name.
+<i>281</i>&nbsp;             * If there are multiple templates with the same name, all but one
+<i>282</i>&nbsp;             * (the one with highest priority) will be disabled.
+<i>283</i>&nbsp;             */
+<b class="nc"><i>284</i>&nbsp;            if (template.isNamed() &amp;&amp; !template.disabled()) {</b>
+<b class="nc"><i>285</i>&nbsp;                _namedTemplates.put(template, this);</b>
+<i>286</i>&nbsp;            }
+<i>287</i>&nbsp;
+<i>288</i>&nbsp;            // Add this template to a test sequence if it has a pattern
+<b class="nc"><i>289</i>&nbsp;            final Pattern pattern = template.getPattern();</b>
+<b class="nc"><i>290</i>&nbsp;            if (pattern != null) {</b>
+<b class="nc"><i>291</i>&nbsp;                flattenAlternative(pattern, template, keys);</b>
+<i>292</i>&nbsp;            }
+<b class="nc"><i>293</i>&nbsp;        }</b>
+<b class="nc"><i>294</i>&nbsp;        prepareTestSequences();</b>
+<i>295</i>&nbsp;    }
+<i>296</i>&nbsp;
+<i>297</i>&nbsp;    /**
+<i>298</i>&nbsp;     * This method will break up alternative patterns (ie. unions of patterns,
+<i>299</i>&nbsp;     * such as match=&quot;A/B | C/B&quot;) and add the basic patterns to their
+<i>300</i>&nbsp;     * respective pattern groups.
+<i>301</i>&nbsp;     */
+<i>302</i>&nbsp;    private void flattenAlternative(Pattern pattern,
+<i>303</i>&nbsp;                                    Template template,
+<i>304</i>&nbsp;                                    Map&lt;String, Key&gt; keys) {
+<i>305</i>&nbsp;        // Patterns on type id() and key() are special since they do not have
+<i>306</i>&nbsp;        // any kernel node type (it can be anything as long as the node is in
+<i>307</i>&nbsp;        // the id&#39;s or key&#39;s index).
+<b class="nc"><i>308</i>&nbsp;        if (pattern instanceof IdKeyPattern) {</b>
+<b class="nc"><i>309</i>&nbsp;            final IdKeyPattern idkey = (IdKeyPattern)pattern;</b>
+<b class="nc"><i>310</i>&nbsp;            idkey.setTemplate(template);</b>
+<b class="nc"><i>311</i>&nbsp;            if (_idxGroup == null) _idxGroup = new Vector();</b>
+<b class="nc"><i>312</i>&nbsp;            _idxGroup.add(pattern);</b>
+<b class="nc"><i>313</i>&nbsp;        }</b>
+<i>314</i>&nbsp;        // Alternative patterns are broken up and re-processed recursively
+<b class="nc"><i>315</i>&nbsp;        else if (pattern instanceof AlternativePattern) {</b>
+<b class="nc"><i>316</i>&nbsp;            final AlternativePattern alt = (AlternativePattern)pattern;</b>
+<b class="nc"><i>317</i>&nbsp;            flattenAlternative(alt.getLeft(), template, keys);</b>
+<b class="nc"><i>318</i>&nbsp;            flattenAlternative(alt.getRight(), template, keys);</b>
+<b class="nc"><i>319</i>&nbsp;        }</b>
+<i>320</i>&nbsp;        // Finally we have a pattern that can be added to a test sequence!
+<b class="nc"><i>321</i>&nbsp;        else if (pattern instanceof LocationPathPattern) {</b>
+<b class="nc"><i>322</i>&nbsp;            final LocationPathPattern lpp = (LocationPathPattern)pattern;</b>
+<b class="nc"><i>323</i>&nbsp;            lpp.setTemplate(template);</b>
+<b class="nc"><i>324</i>&nbsp;            addPatternToGroup(lpp);</b>
+<i>325</i>&nbsp;        }
+<i>326</i>&nbsp;    }
+<i>327</i>&nbsp;
+<i>328</i>&nbsp;    /**
+<i>329</i>&nbsp;     * Group patterns by NodeTests of their last Step
+<i>330</i>&nbsp;     * Keep them sorted by priority within group
+<i>331</i>&nbsp;     */
+<i>332</i>&nbsp;    private void addPatternToGroup(final LocationPathPattern lpp) {
+<i>333</i>&nbsp;        // id() and key()-type patterns do not have a kernel type
+<b class="nc"><i>334</i>&nbsp;        if (lpp instanceof IdKeyPattern) {</b>
+<b class="nc"><i>335</i>&nbsp;            addPattern(-1, lpp);</b>
+<i>336</i>&nbsp;        }
+<i>337</i>&nbsp;        // Otherwise get the kernel pattern from the LPP
+<i>338</i>&nbsp;        else {
+<i>339</i>&nbsp;            // kernel pattern is the last (maybe only) Step
+<b class="nc"><i>340</i>&nbsp;            final StepPattern kernel = lpp.getKernelPattern();</b>
+<b class="nc"><i>341</i>&nbsp;            if (kernel != null) {</b>
+<b class="nc"><i>342</i>&nbsp;                addPattern(kernel.getNodeType(), lpp);</b>
+<i>343</i>&nbsp;            }
+<b class="nc"><i>344</i>&nbsp;            else if (_rootPattern == null ||</b>
+<b class="nc"><i>345</i>&nbsp;                     lpp.noSmallerThan(_rootPattern)) {</b>
+<b class="nc"><i>346</i>&nbsp;                _rootPattern = lpp;</b>
+<i>347</i>&nbsp;            }
+<i>348</i>&nbsp;        }
+<i>349</i>&nbsp;    }
+<i>350</i>&nbsp;
+<i>351</i>&nbsp;    /**
+<i>352</i>&nbsp;     * Adds a pattern to a pattern group
+<i>353</i>&nbsp;     */
+<i>354</i>&nbsp;    private void addPattern(int kernelType, LocationPathPattern pattern) {
+<i>355</i>&nbsp;        // Make sure the array of pattern groups is long enough
+<b class="nc"><i>356</i>&nbsp;        final int oldLength = _patternGroups.length;</b>
+<b class="nc"><i>357</i>&nbsp;        if (kernelType &gt;= oldLength) {</b>
+<b class="nc"><i>358</i>&nbsp;            Vector[] newGroups = new Vector[kernelType * 2];</b>
+<b class="nc"><i>359</i>&nbsp;            System.arraycopy(_patternGroups, 0, newGroups, 0, oldLength);</b>
+<b class="nc"><i>360</i>&nbsp;            _patternGroups = newGroups;</b>
+<i>361</i>&nbsp;        }
+<i>362</i>&nbsp;
+<i>363</i>&nbsp;        // Find the vector to put this pattern into
+<i>364</i>&nbsp;        Vector patterns;
+<i>365</i>&nbsp;
+<b class="nc"><i>366</i>&nbsp;        if (kernelType == DOM.NO_TYPE) {</b>
+<b class="nc"><i>367</i>&nbsp;            if (pattern.getAxis() == Axis.ATTRIBUTE) {</b>
+<b class="nc"><i>368</i>&nbsp;                patterns = (_attribNodeGroup == null) ?</b>
+<i>369</i>&nbsp;                    (_attribNodeGroup = new Vector(2)) : _attribNodeGroup;
+<i>370</i>&nbsp;            }
+<i>371</i>&nbsp;            else {
+<b class="nc"><i>372</i>&nbsp;                patterns = (_childNodeGroup == null) ?</b>
+<i>373</i>&nbsp;                    (_childNodeGroup = new Vector(2)) : _childNodeGroup;
+<i>374</i>&nbsp;            }
+<i>375</i>&nbsp;        }
+<i>376</i>&nbsp;        else {
+<b class="nc"><i>377</i>&nbsp;            patterns = (_patternGroups[kernelType] == null) ?</b>
+<i>378</i>&nbsp;                (_patternGroups[kernelType] = new Vector(2)) :
+<i>379</i>&nbsp;                _patternGroups[kernelType];
+<i>380</i>&nbsp;        }
+<i>381</i>&nbsp;
+<b class="nc"><i>382</i>&nbsp;        if (patterns.size() == 0) {</b>
+<b class="nc"><i>383</i>&nbsp;            patterns.addElement(pattern);</b>
+<i>384</i>&nbsp;        }
+<i>385</i>&nbsp;        else {
+<b class="nc"><i>386</i>&nbsp;            boolean inserted = false;</b>
+<b class="nc"><i>387</i>&nbsp;            for (int i = 0; i &lt; patterns.size(); i++) {</b>
+<b class="nc"><i>388</i>&nbsp;                final LocationPathPattern lppToCompare =</b>
+<b class="nc"><i>389</i>&nbsp;                    (LocationPathPattern)patterns.elementAt(i);</b>
+<i>390</i>&nbsp;
+<b class="nc"><i>391</i>&nbsp;                if (pattern.noSmallerThan(lppToCompare)) {</b>
+<b class="nc"><i>392</i>&nbsp;                    inserted = true;</b>
+<b class="nc"><i>393</i>&nbsp;                    patterns.insertElementAt(pattern, i);</b>
+<b class="nc"><i>394</i>&nbsp;                    break;</b>
+<i>395</i>&nbsp;                }
+<i>396</i>&nbsp;            }
+<b class="nc"><i>397</i>&nbsp;            if (inserted == false) {</b>
+<b class="nc"><i>398</i>&nbsp;                patterns.addElement(pattern);</b>
+<i>399</i>&nbsp;            }
+<i>400</i>&nbsp;        }
+<i>401</i>&nbsp;    }
+<i>402</i>&nbsp;
+<i>403</i>&nbsp;    /**
+<i>404</i>&nbsp;     * Complete test sequences of a given type by adding all patterns
+<i>405</i>&nbsp;     * from a given group.
+<i>406</i>&nbsp;     */
+<i>407</i>&nbsp;    private void completeTestSequences(int nodeType, Vector patterns) {
+<b class="nc"><i>408</i>&nbsp;        if (patterns != null) {</b>
+<b class="nc"><i>409</i>&nbsp;            if (_patternGroups[nodeType] == null) {</b>
+<b class="nc"><i>410</i>&nbsp;                _patternGroups[nodeType] = patterns;</b>
+<i>411</i>&nbsp;            }
+<i>412</i>&nbsp;            else {
+<b class="nc"><i>413</i>&nbsp;                final int m = patterns.size();</b>
+<b class="nc"><i>414</i>&nbsp;                for (int j = 0; j &lt; m; j++) {</b>
+<b class="nc"><i>415</i>&nbsp;                    addPattern(nodeType,</b>
+<b class="nc"><i>416</i>&nbsp;                        (LocationPathPattern) patterns.elementAt(j));</b>
+<i>417</i>&nbsp;                }
+<i>418</i>&nbsp;            }
+<i>419</i>&nbsp;        }
+<i>420</i>&nbsp;    }
+<i>421</i>&nbsp;
+<i>422</i>&nbsp;    /**
+<i>423</i>&nbsp;     * Build test sequences. The first step is to complete the test sequences
+<i>424</i>&nbsp;     * by including patterns of &quot;*&quot; and &quot;node()&quot; kernel to all element test
+<i>425</i>&nbsp;     * sequences, and of &quot;@*&quot; to all attribute test sequences.
+<i>426</i>&nbsp;     */
+<i>427</i>&nbsp;    private void prepareTestSequences() {
+<b class="nc"><i>428</i>&nbsp;        final Vector starGroup = _patternGroups[DTM.ELEMENT_NODE];</b>
+<b class="nc"><i>429</i>&nbsp;        final Vector atStarGroup = _patternGroups[DTM.ATTRIBUTE_NODE];</b>
+<i>430</i>&nbsp;
+<i>431</i>&nbsp;        // Complete test sequence for &quot;text()&quot; with &quot;child::node()&quot;
+<b class="nc"><i>432</i>&nbsp;        completeTestSequences(DTM.TEXT_NODE, _childNodeGroup);</b>
+<i>433</i>&nbsp;
+<i>434</i>&nbsp;        // Complete test sequence for &quot;*&quot; with &quot;child::node()&quot;
+<b class="nc"><i>435</i>&nbsp;        completeTestSequences(DTM.ELEMENT_NODE, _childNodeGroup);</b>
+<i>436</i>&nbsp;
+<i>437</i>&nbsp;        // Complete test sequence for &quot;pi()&quot; with &quot;child::node()&quot;
+<b class="nc"><i>438</i>&nbsp;        completeTestSequences(DTM.PROCESSING_INSTRUCTION_NODE, _childNodeGroup);</b>
+<i>439</i>&nbsp;
+<i>440</i>&nbsp;        // Complete test sequence for &quot;comment()&quot; with &quot;child::node()&quot;
+<b class="nc"><i>441</i>&nbsp;        completeTestSequences(DTM.COMMENT_NODE, _childNodeGroup);</b>
+<i>442</i>&nbsp;
+<i>443</i>&nbsp;        // Complete test sequence for &quot;@*&quot; with &quot;attribute::node()&quot;
+<b class="nc"><i>444</i>&nbsp;        completeTestSequences(DTM.ATTRIBUTE_NODE, _attribNodeGroup);</b>
+<i>445</i>&nbsp;
+<b class="nc"><i>446</i>&nbsp;        final Vector names = _stylesheet.getXSLTC().getNamesIndex();</b>
+<b class="nc"><i>447</i>&nbsp;        if (starGroup != null || atStarGroup != null ||</b>
+<i>448</i>&nbsp;            _childNodeGroup != null || _attribNodeGroup != null)
+<i>449</i>&nbsp;        {
+<b class="nc"><i>450</i>&nbsp;            final int n = _patternGroups.length;</b>
+<i>451</i>&nbsp;
+<i>452</i>&nbsp;            // Complete test sequence for user-defined types
+<b class="nc"><i>453</i>&nbsp;            for (int i = DTM.NTYPES; i &lt; n; i++) {</b>
+<b class="nc"><i>454</i>&nbsp;                if (_patternGroups[i] == null) continue;</b>
+<i>455</i>&nbsp;
+<b class="nc"><i>456</i>&nbsp;                final String name = (String) names.elementAt(i - DTM.NTYPES);</b>
+<i>457</i>&nbsp;
+<b class="nc"><i>458</i>&nbsp;                if (isAttributeName(name)) {</b>
+<i>459</i>&nbsp;                    // If an attribute then copy &quot;@*&quot; to its test sequence
+<b class="nc"><i>460</i>&nbsp;                    completeTestSequences(i, atStarGroup);</b>
+<i>461</i>&nbsp;
+<i>462</i>&nbsp;                    // And also copy &quot;attribute::node()&quot; to its test sequence
+<b class="nc"><i>463</i>&nbsp;                    completeTestSequences(i, _attribNodeGroup);</b>
+<i>464</i>&nbsp;                }
+<i>465</i>&nbsp;                else {
+<i>466</i>&nbsp;                    // If an element then copy &quot;*&quot; to its test sequence
+<b class="nc"><i>467</i>&nbsp;                    completeTestSequences(i, starGroup);</b>
+<i>468</i>&nbsp;
+<i>469</i>&nbsp;                    // And also copy &quot;child::node()&quot; to its test sequence
+<b class="nc"><i>470</i>&nbsp;                    completeTestSequences(i, _childNodeGroup);</b>
+<i>471</i>&nbsp;                }
+<i>472</i>&nbsp;            }
+<i>473</i>&nbsp;        }
+<i>474</i>&nbsp;
+<b class="nc"><i>475</i>&nbsp;        _testSeq = new TestSeq[DTM.NTYPES + names.size()];</b>
+<i>476</i>&nbsp;
+<b class="nc"><i>477</i>&nbsp;        final int n = _patternGroups.length;</b>
+<b class="nc"><i>478</i>&nbsp;        for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>479</i>&nbsp;            final Vector patterns = _patternGroups[i];</b>
+<b class="nc"><i>480</i>&nbsp;            if (patterns != null) {</b>
+<b class="nc"><i>481</i>&nbsp;                final TestSeq testSeq = new TestSeq(patterns, i, this);</b>
+<i>482</i>&nbsp;// System.out.println(&quot;testSeq[&quot; + i + &quot;] = &quot; + testSeq);
+<b class="nc"><i>483</i>&nbsp;                testSeq.reduce();</b>
+<b class="nc"><i>484</i>&nbsp;                _testSeq[i] = testSeq;</b>
+<b class="nc"><i>485</i>&nbsp;                testSeq.findTemplates(_neededTemplates);</b>
+<i>486</i>&nbsp;            }
+<i>487</i>&nbsp;        }
+<i>488</i>&nbsp;
+<b class="nc"><i>489</i>&nbsp;        if (_childNodeGroup != null &amp;&amp; _childNodeGroup.size() &gt; 0) {</b>
+<b class="nc"><i>490</i>&nbsp;            _childNodeTestSeq = new TestSeq(_childNodeGroup, -1, this);</b>
+<b class="nc"><i>491</i>&nbsp;            _childNodeTestSeq.reduce();</b>
+<b class="nc"><i>492</i>&nbsp;            _childNodeTestSeq.findTemplates(_neededTemplates);</b>
+<i>493</i>&nbsp;        }
+<i>494</i>&nbsp;
+<i>495</i>&nbsp;/*
+<i>496</i>&nbsp;        if (_attribNodeGroup != null &amp;&amp; _attribNodeGroup.size() &gt; 0) {
+<i>497</i>&nbsp;            _attribNodeTestSeq = new TestSeq(_attribNodeGroup, -1, this);
+<i>498</i>&nbsp;            _attribNodeTestSeq.reduce();
+<i>499</i>&nbsp;            _attribNodeTestSeq.findTemplates(_neededTemplates);
+<i>500</i>&nbsp;        }
+<i>501</i>&nbsp;*/
+<i>502</i>&nbsp;
+<b class="nc"><i>503</i>&nbsp;        if (_idxGroup != null &amp;&amp; _idxGroup.size() &gt; 0) {</b>
+<b class="nc"><i>504</i>&nbsp;            _idxTestSeq = new TestSeq(_idxGroup, this);</b>
+<b class="nc"><i>505</i>&nbsp;            _idxTestSeq.reduce();</b>
+<b class="nc"><i>506</i>&nbsp;            _idxTestSeq.findTemplates(_neededTemplates);</b>
+<i>507</i>&nbsp;        }
+<i>508</i>&nbsp;
+<b class="nc"><i>509</i>&nbsp;        if (_rootPattern != null) {</b>
+<i>510</i>&nbsp;            // doesn&#39;t matter what is &#39;put&#39;, only key matters
+<b class="nc"><i>511</i>&nbsp;            _neededTemplates.put(_rootPattern.getTemplate(), this);</b>
+<i>512</i>&nbsp;        }
+<i>513</i>&nbsp;    }
+<i>514</i>&nbsp;
+<i>515</i>&nbsp;    private void compileNamedTemplate(Template template,
+<i>516</i>&nbsp;                                      ClassGenerator classGen) {
+<b class="nc"><i>517</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>518</i>&nbsp;        final InstructionList il = new InstructionList();</b>
+<b class="nc"><i>519</i>&nbsp;        String methodName = Util.escape(template.getName().toString());</b>
+<i>520</i>&nbsp;
+<b class="nc"><i>521</i>&nbsp;        int numParams = 0;</b>
+<b class="nc"><i>522</i>&nbsp;        if (template.isSimpleNamedTemplate()) {</b>
+<b class="nc"><i>523</i>&nbsp;            Vector parameters = template.getParameters();</b>
+<b class="nc"><i>524</i>&nbsp;            numParams = parameters.size();</b>
+<i>525</i>&nbsp;        }
+<i>526</i>&nbsp;
+<i>527</i>&nbsp;        // Initialize the types and names arrays for the NamedMethodGenerator.
+<b class="nc"><i>528</i>&nbsp;        com.sun.org.apache.bcel.internal.generic.Type[] types =</b>
+<i>529</i>&nbsp;            new com.sun.org.apache.bcel.internal.generic.Type[4 + numParams];
+<b class="nc"><i>530</i>&nbsp;        String[] names = new String[4 + numParams];</b>
+<b class="nc"><i>531</i>&nbsp;        types[0] = Util.getJCRefType(DOM_INTF_SIG);</b>
+<b class="nc"><i>532</i>&nbsp;        types[1] = Util.getJCRefType(NODE_ITERATOR_SIG);</b>
+<b class="nc"><i>533</i>&nbsp;        types[2] = Util.getJCRefType(TRANSLET_OUTPUT_SIG);</b>
+<b class="nc"><i>534</i>&nbsp;        types[3] = com.sun.org.apache.bcel.internal.generic.Type.INT;</b>
+<b class="nc"><i>535</i>&nbsp;        names[0] = DOCUMENT_PNAME;</b>
+<b class="nc"><i>536</i>&nbsp;        names[1] = ITERATOR_PNAME;</b>
+<b class="nc"><i>537</i>&nbsp;        names[2] = TRANSLET_OUTPUT_PNAME;</b>
+<b class="nc"><i>538</i>&nbsp;        names[3] = NODE_PNAME;</b>
+<i>539</i>&nbsp;
+<i>540</i>&nbsp;        // For simple named templates, the signature of the generated method
+<i>541</i>&nbsp;        // is not fixed. It depends on the number of parameters declared in the
+<i>542</i>&nbsp;        // template.
+<b class="nc"><i>543</i>&nbsp;        for (int i = 4; i &lt; 4 + numParams; i++) {</b>
+<b class="nc"><i>544</i>&nbsp;            types[i] = Util.getJCRefType(OBJECT_SIG);</b>
+<b class="nc"><i>545</i>&nbsp;            names[i] = &quot;param&quot; + String.valueOf(i-4);</b>
+<i>546</i>&nbsp;        }
+<i>547</i>&nbsp;
+<b class="nc"><i>548</i>&nbsp;        NamedMethodGenerator methodGen =</b>
+<i>549</i>&nbsp;                new NamedMethodGenerator(ACC_PUBLIC,
+<i>550</i>&nbsp;                                     com.sun.org.apache.bcel.internal.generic.Type.VOID,
+<i>551</i>&nbsp;                                     types, names, methodName,
+<b class="nc"><i>552</i>&nbsp;                                     getClassName(), il, cpg);</b>
+<i>553</i>&nbsp;
+<b class="nc"><i>554</i>&nbsp;        il.append(template.compile(classGen, methodGen));</b>
+<b class="nc"><i>555</i>&nbsp;        il.append(RETURN);</b>
+<i>556</i>&nbsp;
+<b class="nc"><i>557</i>&nbsp;        classGen.addMethod(methodGen);</b>
+<i>558</i>&nbsp;    }
+<i>559</i>&nbsp;
+<i>560</i>&nbsp;    private void compileTemplates(ClassGenerator classGen,
+<i>561</i>&nbsp;                                  MethodGenerator methodGen,
+<i>562</i>&nbsp;                                  InstructionHandle next)
+<i>563</i>&nbsp;    {
+<b class="nc"><i>564</i>&nbsp;        Set&lt;Template&gt; templates = _namedTemplates.keySet();</b>
+<b class="nc"><i>565</i>&nbsp;        for (Template template : templates) {</b>
+<b class="nc"><i>566</i>&nbsp;            compileNamedTemplate(template, classGen);</b>
+<b class="nc"><i>567</i>&nbsp;        }</b>
+<i>568</i>&nbsp;
+<b class="nc"><i>569</i>&nbsp;        templates = _neededTemplates.keySet();</b>
+<b class="nc"><i>570</i>&nbsp;        for (Template template : templates) {</b>
+<b class="nc"><i>571</i>&nbsp;            if (template.hasContents()) {</b>
+<i>572</i>&nbsp;                // !!! TODO templates both named and matched
+<b class="nc"><i>573</i>&nbsp;                InstructionList til = template.compile(classGen, methodGen);</b>
+<b class="nc"><i>574</i>&nbsp;                til.append(new GOTO_W(next));</b>
+<b class="nc"><i>575</i>&nbsp;                _templateILs.put(template, til);</b>
+<b class="nc"><i>576</i>&nbsp;                _templateIHs.put(template, til.getStart());</b>
+<b class="nc"><i>577</i>&nbsp;            }</b>
+<i>578</i>&nbsp;            else {
+<i>579</i>&nbsp;                // empty template
+<b class="nc"><i>580</i>&nbsp;                _templateIHs.put(template, next);</b>
+<i>581</i>&nbsp;            }
+<b class="nc"><i>582</i>&nbsp;        }</b>
+<i>583</i>&nbsp;    }
+<i>584</i>&nbsp;
+<i>585</i>&nbsp;    private void appendTemplateCode(InstructionList body) {
+<b class="nc"><i>586</i>&nbsp;        for (Template template : _neededTemplates.keySet()) {</b>
+<b class="nc"><i>587</i>&nbsp;            final InstructionList iList = _templateILs.get(template);</b>
+<b class="nc"><i>588</i>&nbsp;            if (iList != null) {</b>
+<b class="nc"><i>589</i>&nbsp;                body.append(iList);</b>
+<i>590</i>&nbsp;            }
+<i>591</i>&nbsp;
+<b class="nc"><i>592</i>&nbsp;        }</b>
+<i>593</i>&nbsp;    }
+<i>594</i>&nbsp;
+<i>595</i>&nbsp;    private void appendTestSequences(InstructionList body) {
+<b class="nc"><i>596</i>&nbsp;        final int n = _testSeq.length;</b>
+<b class="nc"><i>597</i>&nbsp;        for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>598</i>&nbsp;            final TestSeq testSeq = _testSeq[i];</b>
+<b class="nc"><i>599</i>&nbsp;            if (testSeq != null) {</b>
+<b class="nc"><i>600</i>&nbsp;                InstructionList il = testSeq.getInstructionList();</b>
+<b class="nc"><i>601</i>&nbsp;                if (il != null)</b>
+<b class="nc"><i>602</i>&nbsp;                    body.append(il);</b>
+<i>603</i>&nbsp;                // else trivial TestSeq
+<i>604</i>&nbsp;            }
+<i>605</i>&nbsp;        }
+<i>606</i>&nbsp;    }
+<i>607</i>&nbsp;
+<i>608</i>&nbsp;    public static void compileGetChildren(ClassGenerator classGen,
+<i>609</i>&nbsp;                                          MethodGenerator methodGen,
+<i>610</i>&nbsp;                                          int node) {
+<b class="nc"><i>611</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>612</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<b class="nc"><i>613</i>&nbsp;        final int git = cpg.addInterfaceMethodref(DOM_INTF,</b>
+<i>614</i>&nbsp;                                                  GET_CHILDREN,
+<i>615</i>&nbsp;                                                  GET_CHILDREN_SIG);
+<b class="nc"><i>616</i>&nbsp;        il.append(methodGen.loadDOM());</b>
+<b class="nc"><i>617</i>&nbsp;        il.append(new ILOAD(node));</b>
+<b class="nc"><i>618</i>&nbsp;        il.append(new INVOKEINTERFACE(git, 2));</b>
+<i>619</i>&nbsp;    }
+<i>620</i>&nbsp;
+<i>621</i>&nbsp;    /**
+<i>622</i>&nbsp;     * Compiles the default handling for DOM elements: traverse all children
+<i>623</i>&nbsp;     */
+<i>624</i>&nbsp;    private InstructionList compileDefaultRecursion(ClassGenerator classGen,
+<i>625</i>&nbsp;                                                    MethodGenerator methodGen,
+<i>626</i>&nbsp;                                                    InstructionHandle next) {
+<b class="nc"><i>627</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>628</i>&nbsp;        final InstructionList il = new InstructionList();</b>
+<b class="nc"><i>629</i>&nbsp;        final String applyTemplatesSig = classGen.getApplyTemplatesSig();</b>
+<b class="nc"><i>630</i>&nbsp;        final int git = cpg.addInterfaceMethodref(DOM_INTF,</b>
+<i>631</i>&nbsp;                                                  GET_CHILDREN,
+<i>632</i>&nbsp;                                                  GET_CHILDREN_SIG);
+<b class="nc"><i>633</i>&nbsp;        final int applyTemplates = cpg.addMethodref(getClassName(),</b>
+<b class="nc"><i>634</i>&nbsp;                                                    functionName(),</b>
+<i>635</i>&nbsp;                                                    applyTemplatesSig);
+<b class="nc"><i>636</i>&nbsp;        il.append(classGen.loadTranslet());</b>
+<b class="nc"><i>637</i>&nbsp;        il.append(methodGen.loadDOM());</b>
+<i>638</i>&nbsp;
+<b class="nc"><i>639</i>&nbsp;        il.append(methodGen.loadDOM());</b>
+<b class="nc"><i>640</i>&nbsp;        il.append(new ILOAD(_currentIndex));</b>
+<b class="nc"><i>641</i>&nbsp;        il.append(new INVOKEINTERFACE(git, 2));</b>
+<b class="nc"><i>642</i>&nbsp;        il.append(methodGen.loadHandler());</b>
+<b class="nc"><i>643</i>&nbsp;        il.append(new INVOKEVIRTUAL(applyTemplates));</b>
+<b class="nc"><i>644</i>&nbsp;        il.append(new GOTO_W(next));</b>
+<b class="nc"><i>645</i>&nbsp;        return il;</b>
+<i>646</i>&nbsp;    }
+<i>647</i>&nbsp;
+<i>648</i>&nbsp;    /**
+<i>649</i>&nbsp;     * Compiles the default action for DOM text nodes and attribute nodes:
+<i>650</i>&nbsp;     * output the node&#39;s text value
+<i>651</i>&nbsp;     */
+<i>652</i>&nbsp;    private InstructionList compileDefaultText(ClassGenerator classGen,
+<i>653</i>&nbsp;                                               MethodGenerator methodGen,
+<i>654</i>&nbsp;                                               InstructionHandle next) {
+<b class="nc"><i>655</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>656</i>&nbsp;        final InstructionList il = new InstructionList();</b>
+<i>657</i>&nbsp;
+<b class="nc"><i>658</i>&nbsp;        final int chars = cpg.addInterfaceMethodref(DOM_INTF,</b>
+<i>659</i>&nbsp;                                                    CHARACTERS,
+<i>660</i>&nbsp;                                                    CHARACTERS_SIG);
+<b class="nc"><i>661</i>&nbsp;        il.append(methodGen.loadDOM());</b>
+<b class="nc"><i>662</i>&nbsp;        il.append(new ILOAD(_currentIndex));</b>
+<b class="nc"><i>663</i>&nbsp;        il.append(methodGen.loadHandler());</b>
+<b class="nc"><i>664</i>&nbsp;        il.append(new INVOKEINTERFACE(chars, 3));</b>
+<b class="nc"><i>665</i>&nbsp;        il.append(new GOTO_W(next));</b>
+<b class="nc"><i>666</i>&nbsp;        return il;</b>
+<i>667</i>&nbsp;    }
+<i>668</i>&nbsp;
+<i>669</i>&nbsp;    private InstructionList compileNamespaces(ClassGenerator classGen,
+<i>670</i>&nbsp;                                              MethodGenerator methodGen,
+<i>671</i>&nbsp;                                              boolean[] isNamespace,
+<i>672</i>&nbsp;                                              boolean[] isAttribute,
+<i>673</i>&nbsp;                                              boolean attrFlag,
+<i>674</i>&nbsp;                                              InstructionHandle defaultTarget) {
+<b class="nc"><i>675</i>&nbsp;        final XSLTC xsltc = classGen.getParser().getXSLTC();</b>
+<b class="nc"><i>676</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<i>677</i>&nbsp;
+<i>678</i>&nbsp;        // Append switch() statement - namespace test dispatch loop
+<b class="nc"><i>679</i>&nbsp;        final Vector namespaces = xsltc.getNamespaceIndex();</b>
+<b class="nc"><i>680</i>&nbsp;        final Vector names = xsltc.getNamesIndex();</b>
+<b class="nc"><i>681</i>&nbsp;        final int namespaceCount = namespaces.size() + 1;</b>
+<b class="nc"><i>682</i>&nbsp;        final int namesCount = names.size();</b>
+<i>683</i>&nbsp;
+<b class="nc"><i>684</i>&nbsp;        final InstructionList il = new InstructionList();</b>
+<b class="nc"><i>685</i>&nbsp;        final int[] types = new int[namespaceCount];</b>
+<b class="nc"><i>686</i>&nbsp;        final InstructionHandle[] targets = new InstructionHandle[types.length];</b>
+<i>687</i>&nbsp;
+<b class="nc"><i>688</i>&nbsp;        if (namespaceCount &gt; 0) {</b>
+<b class="nc"><i>689</i>&nbsp;            boolean compiled = false;</b>
+<i>690</i>&nbsp;
+<i>691</i>&nbsp;            // Initialize targets for namespace() switch statement
+<b class="nc"><i>692</i>&nbsp;            for (int i = 0; i &lt; namespaceCount; i++) {</b>
+<b class="nc"><i>693</i>&nbsp;                targets[i] = defaultTarget;</b>
+<b class="nc"><i>694</i>&nbsp;                types[i] = i;</b>
+<i>695</i>&nbsp;            }
+<i>696</i>&nbsp;
+<i>697</i>&nbsp;            // Add test sequences for known namespace types
+<b class="nc"><i>698</i>&nbsp;            for (int i = DTM.NTYPES; i &lt; (DTM.NTYPES+namesCount); i++) {</b>
+<b class="nc"><i>699</i>&nbsp;                if ((isNamespace[i]) &amp;&amp; (isAttribute[i] == attrFlag)) {</b>
+<b class="nc"><i>700</i>&nbsp;                    String name = (String)names.elementAt(i-DTM.NTYPES);</b>
+<b class="nc"><i>701</i>&nbsp;                    String namespace = name.substring(0,name.lastIndexOf(&#39;:&#39;));</b>
+<b class="nc"><i>702</i>&nbsp;                    final int type = xsltc.registerNamespace(namespace);</b>
+<i>703</i>&nbsp;
+<b class="nc"><i>704</i>&nbsp;                    if ((i &lt; _testSeq.length) &amp;&amp;</b>
+<i>705</i>&nbsp;                        (_testSeq[i] != null)) {
+<b class="nc"><i>706</i>&nbsp;                        targets[type] =</b>
+<b class="nc"><i>707</i>&nbsp;                            (_testSeq[i]).compile(classGen,</b>
+<i>708</i>&nbsp;                                                       methodGen,
+<i>709</i>&nbsp;                                                       defaultTarget);
+<b class="nc"><i>710</i>&nbsp;                        compiled = true;</b>
+<i>711</i>&nbsp;                    }
+<i>712</i>&nbsp;                }
+<i>713</i>&nbsp;            }
+<i>714</i>&nbsp;
+<i>715</i>&nbsp;            // Return &quot;null&quot; if no test sequences were compiled
+<b class="nc"><i>716</i>&nbsp;            if (!compiled) return(null);</b>
+<i>717</i>&nbsp;
+<i>718</i>&nbsp;            // Append first code in applyTemplates() - get type of current node
+<b class="nc"><i>719</i>&nbsp;            final int getNS = cpg.addInterfaceMethodref(DOM_INTF,</b>
+<i>720</i>&nbsp;                                                        &quot;getNamespaceType&quot;,
+<i>721</i>&nbsp;                                                        &quot;(I)I&quot;);
+<b class="nc"><i>722</i>&nbsp;            il.append(methodGen.loadDOM());</b>
+<b class="nc"><i>723</i>&nbsp;            il.append(new ILOAD(_currentIndex));</b>
+<b class="nc"><i>724</i>&nbsp;            il.append(new INVOKEINTERFACE(getNS, 2));</b>
+<b class="nc"><i>725</i>&nbsp;            il.append(new SWITCH(types, targets, defaultTarget));</b>
+<b class="nc"><i>726</i>&nbsp;            return(il);</b>
+<i>727</i>&nbsp;        }
+<i>728</i>&nbsp;        else {
+<b class="nc"><i>729</i>&nbsp;            return(null);</b>
+<i>730</i>&nbsp;        }
+<i>731</i>&nbsp;    }
+<i>732</i>&nbsp;
+<i>733</i>&nbsp;   /**
+<i>734</i>&nbsp;     * Compiles the applyTemplates() method and adds it to the translet.
+<i>735</i>&nbsp;     * This is the main dispatch method.
+<i>736</i>&nbsp;     */
+<i>737</i>&nbsp;    public void compileApplyTemplates(ClassGenerator classGen) {
+<b class="nc"><i>738</i>&nbsp;        final XSLTC xsltc = classGen.getParser().getXSLTC();</b>
+<b class="nc"><i>739</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>740</i>&nbsp;        final Vector names = xsltc.getNamesIndex();</b>
+<i>741</i>&nbsp;
+<i>742</i>&nbsp;        // Create the applyTemplates() method
+<b class="nc"><i>743</i>&nbsp;        final com.sun.org.apache.bcel.internal.generic.Type[] argTypes =</b>
+<i>744</i>&nbsp;            new com.sun.org.apache.bcel.internal.generic.Type[3];
+<b class="nc"><i>745</i>&nbsp;        argTypes[0] = Util.getJCRefType(DOM_INTF_SIG);</b>
+<b class="nc"><i>746</i>&nbsp;        argTypes[1] = Util.getJCRefType(NODE_ITERATOR_SIG);</b>
+<b class="nc"><i>747</i>&nbsp;        argTypes[2] = Util.getJCRefType(TRANSLET_OUTPUT_SIG);</b>
+<i>748</i>&nbsp;
+<b class="nc"><i>749</i>&nbsp;        final String[] argNames = new String[3];</b>
+<b class="nc"><i>750</i>&nbsp;        argNames[0] = DOCUMENT_PNAME;</b>
+<b class="nc"><i>751</i>&nbsp;        argNames[1] = ITERATOR_PNAME;</b>
+<b class="nc"><i>752</i>&nbsp;        argNames[2] = TRANSLET_OUTPUT_PNAME;</b>
+<i>753</i>&nbsp;
+<b class="nc"><i>754</i>&nbsp;        final InstructionList mainIL = new InstructionList();</b>
+<b class="nc"><i>755</i>&nbsp;        final MethodGenerator methodGen =</b>
+<i>756</i>&nbsp;            new MethodGenerator(ACC_PUBLIC | ACC_FINAL,
+<i>757</i>&nbsp;                                com.sun.org.apache.bcel.internal.generic.Type.VOID,
+<b class="nc"><i>758</i>&nbsp;                                argTypes, argNames, functionName(),</b>
+<b class="nc"><i>759</i>&nbsp;                                getClassName(), mainIL,</b>
+<b class="nc"><i>760</i>&nbsp;                                classGen.getConstantPool());</b>
+<b class="nc"><i>761</i>&nbsp;        methodGen.addException(&quot;com.sun.org.apache.xalan.internal.xsltc.TransletException&quot;);</b>
+<i>762</i>&nbsp;        // Insert an extra NOP just to keep &quot;current&quot; from appearing as if it
+<i>763</i>&nbsp;        // has a value before the start of the loop.
+<b class="nc"><i>764</i>&nbsp;        mainIL.append(NOP);</b>
+<i>765</i>&nbsp;
+<i>766</i>&nbsp;
+<i>767</i>&nbsp;        // Create a local variable to hold the current node
+<i>768</i>&nbsp;        final LocalVariableGen current;
+<b class="nc"><i>769</i>&nbsp;        current = methodGen.addLocalVariable2(&quot;current&quot;,</b>
+<i>770</i>&nbsp;                                              com.sun.org.apache.bcel.internal.generic.Type.INT,
+<i>771</i>&nbsp;                                              null);
+<b class="nc"><i>772</i>&nbsp;        _currentIndex = current.getIndex();</b>
+<i>773</i>&nbsp;
+<i>774</i>&nbsp;        // Create the &quot;body&quot; instruction list that will eventually hold the
+<i>775</i>&nbsp;        // code for the entire method (other ILs will be appended).
+<b class="nc"><i>776</i>&nbsp;        final InstructionList body = new InstructionList();</b>
+<b class="nc"><i>777</i>&nbsp;        body.append(NOP);</b>
+<i>778</i>&nbsp;
+<i>779</i>&nbsp;        // Create an instruction list that contains the default next-node
+<i>780</i>&nbsp;        // iteration
+<b class="nc"><i>781</i>&nbsp;        final InstructionList ilLoop = new InstructionList();</b>
+<b class="nc"><i>782</i>&nbsp;        ilLoop.append(methodGen.loadIterator());</b>
+<b class="nc"><i>783</i>&nbsp;        ilLoop.append(methodGen.nextNode());</b>
+<b class="nc"><i>784</i>&nbsp;        ilLoop.append(DUP);</b>
+<b class="nc"><i>785</i>&nbsp;        ilLoop.append(new ISTORE(_currentIndex));</b>
+<i>786</i>&nbsp;
+<i>787</i>&nbsp;        // The body of this code can get very large - large than can be handled
+<i>788</i>&nbsp;        // by a single IFNE(body.getStart()) instruction - need workaround:
+<b class="nc"><i>789</i>&nbsp;        final BranchHandle ifeq = ilLoop.append(new IFLT(null));</b>
+<b class="nc"><i>790</i>&nbsp;        final BranchHandle loop = ilLoop.append(new GOTO_W(null));</b>
+<b class="nc"><i>791</i>&nbsp;        ifeq.setTarget(ilLoop.append(RETURN));  // applyTemplates() ends here!</b>
+<b class="nc"><i>792</i>&nbsp;        final InstructionHandle ihLoop = ilLoop.getStart();</b>
+<i>793</i>&nbsp;
+<b class="nc"><i>794</i>&nbsp;        current.setStart(mainIL.append(new GOTO_W(ihLoop)));</b>
+<i>795</i>&nbsp;
+<i>796</i>&nbsp;        // Live range of &quot;current&quot; ends at end of loop
+<b class="nc"><i>797</i>&nbsp;        current.setEnd(loop);</b>
+<i>798</i>&nbsp;
+<i>799</i>&nbsp;        // Compile default handling of elements (traverse children)
+<b class="nc"><i>800</i>&nbsp;        InstructionList ilRecurse =</b>
+<b class="nc"><i>801</i>&nbsp;            compileDefaultRecursion(classGen, methodGen, ihLoop);</b>
+<b class="nc"><i>802</i>&nbsp;        InstructionHandle ihRecurse = ilRecurse.getStart();</b>
+<i>803</i>&nbsp;
+<i>804</i>&nbsp;        // Compile default handling of text/attribute nodes (output text)
+<b class="nc"><i>805</i>&nbsp;        InstructionList ilText =</b>
+<b class="nc"><i>806</i>&nbsp;            compileDefaultText(classGen, methodGen, ihLoop);</b>
+<b class="nc"><i>807</i>&nbsp;        InstructionHandle ihText = ilText.getStart();</b>
+<i>808</i>&nbsp;
+<i>809</i>&nbsp;        // Distinguish attribute/element/namespace tests for further processing
+<b class="nc"><i>810</i>&nbsp;        final int[] types = new int[DTM.NTYPES + names.size()];</b>
+<b class="nc"><i>811</i>&nbsp;        for (int i = 0; i &lt; types.length; i++) {</b>
+<b class="nc"><i>812</i>&nbsp;            types[i] = i;</b>
+<i>813</i>&nbsp;        }
+<i>814</i>&nbsp;
+<i>815</i>&nbsp;        // Initialize isAttribute[] and isNamespace[] arrays
+<b class="nc"><i>816</i>&nbsp;        final boolean[] isAttribute = new boolean[types.length];</b>
+<b class="nc"><i>817</i>&nbsp;        final boolean[] isNamespace = new boolean[types.length];</b>
+<b class="nc"><i>818</i>&nbsp;        for (int i = 0; i &lt; names.size(); i++) {</b>
+<b class="nc"><i>819</i>&nbsp;            final String name = (String)names.elementAt(i);</b>
+<b class="nc"><i>820</i>&nbsp;            isAttribute[i + DTM.NTYPES] = isAttributeName(name);</b>
+<b class="nc"><i>821</i>&nbsp;            isNamespace[i + DTM.NTYPES] = isNamespaceName(name);</b>
+<i>822</i>&nbsp;        }
+<i>823</i>&nbsp;
+<i>824</i>&nbsp;        // Compile all templates - regardless of pattern type
+<b class="nc"><i>825</i>&nbsp;        compileTemplates(classGen, methodGen, ihLoop);</b>
+<i>826</i>&nbsp;
+<i>827</i>&nbsp;        // Handle template with explicit &quot;*&quot; pattern
+<b class="nc"><i>828</i>&nbsp;        final TestSeq elemTest = _testSeq[DTM.ELEMENT_NODE];</b>
+<b class="nc"><i>829</i>&nbsp;        InstructionHandle ihElem = ihRecurse;</b>
+<b class="nc"><i>830</i>&nbsp;        if (elemTest != null)</b>
+<b class="nc"><i>831</i>&nbsp;            ihElem = elemTest.compile(classGen, methodGen, ihRecurse);</b>
+<i>832</i>&nbsp;
+<i>833</i>&nbsp;        // Handle template with explicit &quot;@*&quot; pattern
+<b class="nc"><i>834</i>&nbsp;        final TestSeq attrTest = _testSeq[DTM.ATTRIBUTE_NODE];</b>
+<b class="nc"><i>835</i>&nbsp;        InstructionHandle ihAttr = ihText;</b>
+<b class="nc"><i>836</i>&nbsp;        if (attrTest != null)</b>
+<b class="nc"><i>837</i>&nbsp;            ihAttr = attrTest.compile(classGen, methodGen, ihAttr);</b>
+<i>838</i>&nbsp;
+<i>839</i>&nbsp;        // Do tests for id() and key() patterns first
+<b class="nc"><i>840</i>&nbsp;        InstructionList ilKey = null;</b>
+<b class="nc"><i>841</i>&nbsp;        if (_idxTestSeq != null) {</b>
+<b class="nc"><i>842</i>&nbsp;            loop.setTarget(_idxTestSeq.compile(classGen, methodGen, body.getStart()));</b>
+<b class="nc"><i>843</i>&nbsp;            ilKey = _idxTestSeq.getInstructionList();</b>
+<i>844</i>&nbsp;        }
+<i>845</i>&nbsp;        else {
+<b class="nc"><i>846</i>&nbsp;            loop.setTarget(body.getStart());</b>
+<i>847</i>&nbsp;        }
+<i>848</i>&nbsp;
+<i>849</i>&nbsp;        // If there is a match on node() we need to replace ihElem
+<i>850</i>&nbsp;        // and ihText if the priority of node() is higher
+<b class="nc"><i>851</i>&nbsp;        if (_childNodeTestSeq != null) {</b>
+<i>852</i>&nbsp;            // Compare priorities of node() and &quot;*&quot;
+<b class="nc"><i>853</i>&nbsp;            double nodePrio = _childNodeTestSeq.getPriority();</b>
+<b class="nc"><i>854</i>&nbsp;            int    nodePos  = _childNodeTestSeq.getPosition();</b>
+<b class="nc"><i>855</i>&nbsp;            double elemPrio = (0 - Double.MAX_VALUE);</b>
+<b class="nc"><i>856</i>&nbsp;            int    elemPos  = Integer.MIN_VALUE;</b>
+<i>857</i>&nbsp;
+<b class="nc"><i>858</i>&nbsp;            if (elemTest != null) {</b>
+<b class="nc"><i>859</i>&nbsp;                elemPrio = elemTest.getPriority();</b>
+<b class="nc"><i>860</i>&nbsp;                elemPos  = elemTest.getPosition();</b>
+<i>861</i>&nbsp;            }
+<b class="nc"><i>862</i>&nbsp;            if (elemPrio == Double.NaN || elemPrio &lt; nodePrio ||</b>
+<i>863</i>&nbsp;                (elemPrio == nodePrio &amp;&amp; elemPos &lt; nodePos))
+<i>864</i>&nbsp;            {
+<b class="nc"><i>865</i>&nbsp;                ihElem = _childNodeTestSeq.compile(classGen, methodGen, ihLoop);</b>
+<i>866</i>&nbsp;            }
+<i>867</i>&nbsp;
+<i>868</i>&nbsp;            // Compare priorities of node() and text()
+<b class="nc"><i>869</i>&nbsp;            final TestSeq textTest = _testSeq[DTM.TEXT_NODE];</b>
+<b class="nc"><i>870</i>&nbsp;            double textPrio = (0 - Double.MAX_VALUE);</b>
+<b class="nc"><i>871</i>&nbsp;            int    textPos  = Integer.MIN_VALUE;</b>
+<i>872</i>&nbsp;
+<b class="nc"><i>873</i>&nbsp;            if (textTest != null) {</b>
+<b class="nc"><i>874</i>&nbsp;                textPrio = textTest.getPriority();</b>
+<b class="nc"><i>875</i>&nbsp;                textPos  = textTest.getPosition();</b>
+<i>876</i>&nbsp;            }
+<b class="nc"><i>877</i>&nbsp;            if (textPrio == Double.NaN || textPrio &lt; nodePrio ||</b>
+<i>878</i>&nbsp;                (textPrio == nodePrio &amp;&amp; textPos &lt; nodePos))
+<i>879</i>&nbsp;            {
+<b class="nc"><i>880</i>&nbsp;                ihText = _childNodeTestSeq.compile(classGen, methodGen, ihLoop);</b>
+<b class="nc"><i>881</i>&nbsp;                _testSeq[DTM.TEXT_NODE] = _childNodeTestSeq;</b>
+<i>882</i>&nbsp;            }
+<i>883</i>&nbsp;        }
+<i>884</i>&nbsp;
+<i>885</i>&nbsp;        // Handle templates with &quot;ns:*&quot; pattern
+<b class="nc"><i>886</i>&nbsp;        InstructionHandle elemNamespaceHandle = ihElem;</b>
+<b class="nc"><i>887</i>&nbsp;        InstructionList nsElem = compileNamespaces(classGen, methodGen,</b>
+<i>888</i>&nbsp;                                                   isNamespace, isAttribute,
+<i>889</i>&nbsp;                                                   false, ihElem);
+<b class="nc"><i>890</i>&nbsp;        if (nsElem != null) elemNamespaceHandle = nsElem.getStart();</b>
+<i>891</i>&nbsp;
+<i>892</i>&nbsp;        // Handle templates with &quot;ns:@*&quot; pattern
+<b class="nc"><i>893</i>&nbsp;        InstructionHandle attrNamespaceHandle = ihAttr;</b>
+<b class="nc"><i>894</i>&nbsp;        InstructionList nsAttr = compileNamespaces(classGen, methodGen,</b>
+<i>895</i>&nbsp;                                                   isNamespace, isAttribute,
+<i>896</i>&nbsp;                                                   true, ihAttr);
+<b class="nc"><i>897</i>&nbsp;        if (nsAttr != null) attrNamespaceHandle = nsAttr.getStart();</b>
+<i>898</i>&nbsp;
+<i>899</i>&nbsp;        // Handle templates with &quot;ns:elem&quot; or &quot;ns:@attr&quot; pattern
+<b class="nc"><i>900</i>&nbsp;        final InstructionHandle[] targets = new InstructionHandle[types.length];</b>
+<b class="nc"><i>901</i>&nbsp;        for (int i = DTM.NTYPES; i &lt; targets.length; i++) {</b>
+<b class="nc"><i>902</i>&nbsp;            final TestSeq testSeq = _testSeq[i];</b>
+<i>903</i>&nbsp;            // Jump straight to namespace tests ?
+<b class="nc"><i>904</i>&nbsp;            if (isNamespace[i]) {</b>
+<b class="nc"><i>905</i>&nbsp;                if (isAttribute[i])</b>
+<b class="nc"><i>906</i>&nbsp;                    targets[i] = attrNamespaceHandle;</b>
+<i>907</i>&nbsp;                else
+<b class="nc"><i>908</i>&nbsp;                    targets[i] = elemNamespaceHandle;</b>
+<i>909</i>&nbsp;            }
+<i>910</i>&nbsp;            // Test first, then jump to namespace tests
+<b class="nc"><i>911</i>&nbsp;            else if (testSeq != null) {</b>
+<b class="nc"><i>912</i>&nbsp;                if (isAttribute[i])</b>
+<b class="nc"><i>913</i>&nbsp;                    targets[i] = testSeq.compile(classGen, methodGen,</b>
+<i>914</i>&nbsp;                                                 attrNamespaceHandle);
+<i>915</i>&nbsp;                else
+<b class="nc"><i>916</i>&nbsp;                    targets[i] = testSeq.compile(classGen, methodGen,</b>
+<i>917</i>&nbsp;                                                 elemNamespaceHandle);
+<i>918</i>&nbsp;            }
+<i>919</i>&nbsp;            else {
+<b class="nc"><i>920</i>&nbsp;                targets[i] = ihLoop;</b>
+<i>921</i>&nbsp;            }
+<i>922</i>&nbsp;        }
+<i>923</i>&nbsp;
+<i>924</i>&nbsp;
+<i>925</i>&nbsp;        // Handle pattern with match on root node - default: traverse children
+<b class="nc"><i>926</i>&nbsp;        targets[DTM.ROOT_NODE] = _rootPattern != null</b>
+<b class="nc"><i>927</i>&nbsp;            ? getTemplateInstructionHandle(_rootPattern.getTemplate())</b>
+<i>928</i>&nbsp;            : ihRecurse;
+<i>929</i>&nbsp;
+<i>930</i>&nbsp;        // Handle pattern with match on root node - default: traverse children
+<b class="nc"><i>931</i>&nbsp;        targets[DTM.DOCUMENT_NODE] = _rootPattern != null</b>
+<b class="nc"><i>932</i>&nbsp;            ? getTemplateInstructionHandle(_rootPattern.getTemplate())</b>
+<i>933</i>&nbsp;            : ihRecurse;
+<i>934</i>&nbsp;
+<i>935</i>&nbsp;        // Handle any pattern with match on text nodes - default: output text
+<b class="nc"><i>936</i>&nbsp;        targets[DTM.TEXT_NODE] = _testSeq[DTM.TEXT_NODE] != null</b>
+<b class="nc"><i>937</i>&nbsp;            ? _testSeq[DTM.TEXT_NODE].compile(classGen, methodGen, ihText)</b>
+<i>938</i>&nbsp;            : ihText;
+<i>939</i>&nbsp;
+<i>940</i>&nbsp;        // This DOM-type is not in use - default: process next node
+<b class="nc"><i>941</i>&nbsp;        targets[DTM.NAMESPACE_NODE] = ihLoop;</b>
+<i>942</i>&nbsp;
+<i>943</i>&nbsp;        // Match unknown element in DOM - default: check for namespace match
+<b class="nc"><i>944</i>&nbsp;        targets[DTM.ELEMENT_NODE] = elemNamespaceHandle;</b>
+<i>945</i>&nbsp;
+<i>946</i>&nbsp;        // Match unknown attribute in DOM - default: check for namespace match
+<b class="nc"><i>947</i>&nbsp;        targets[DTM.ATTRIBUTE_NODE] = attrNamespaceHandle;</b>
+<i>948</i>&nbsp;
+<i>949</i>&nbsp;        // Match on processing instruction - default: process next node
+<b class="nc"><i>950</i>&nbsp;        InstructionHandle ihPI = ihLoop;</b>
+<b class="nc"><i>951</i>&nbsp;        if (_childNodeTestSeq != null) ihPI = ihElem;</b>
+<b class="nc"><i>952</i>&nbsp;        if (_testSeq[DTM.PROCESSING_INSTRUCTION_NODE] != null)</b>
+<b class="nc"><i>953</i>&nbsp;            targets[DTM.PROCESSING_INSTRUCTION_NODE] =</b>
+<i>954</i>&nbsp;                _testSeq[DTM.PROCESSING_INSTRUCTION_NODE].
+<b class="nc"><i>955</i>&nbsp;                compile(classGen, methodGen, ihPI);</b>
+<i>956</i>&nbsp;        else
+<b class="nc"><i>957</i>&nbsp;            targets[DTM.PROCESSING_INSTRUCTION_NODE] = ihPI;</b>
+<i>958</i>&nbsp;
+<i>959</i>&nbsp;        // Match on comments - default: process next node
+<b class="nc"><i>960</i>&nbsp;        InstructionHandle ihComment = ihLoop;</b>
+<b class="nc"><i>961</i>&nbsp;        if (_childNodeTestSeq != null) ihComment = ihElem;</b>
+<b class="nc"><i>962</i>&nbsp;        targets[DTM.COMMENT_NODE] = _testSeq[DTM.COMMENT_NODE] != null</b>
+<b class="nc"><i>963</i>&nbsp;            ? _testSeq[DTM.COMMENT_NODE].compile(classGen, methodGen, ihComment)</b>
+<i>964</i>&nbsp;            : ihComment;
+<i>965</i>&nbsp;
+<i>966</i>&nbsp;            // This DOM-type is not in use - default: process next node
+<b class="nc"><i>967</i>&nbsp;        targets[DTM.CDATA_SECTION_NODE] = ihLoop;</b>
+<i>968</i>&nbsp;
+<i>969</i>&nbsp;        // This DOM-type is not in use - default: process next node
+<b class="nc"><i>970</i>&nbsp;        targets[DTM.DOCUMENT_FRAGMENT_NODE] = ihLoop;</b>
+<i>971</i>&nbsp;
+<i>972</i>&nbsp;        // This DOM-type is not in use - default: process next node
+<b class="nc"><i>973</i>&nbsp;        targets[DTM.DOCUMENT_TYPE_NODE] = ihLoop;</b>
+<i>974</i>&nbsp;
+<i>975</i>&nbsp;        // This DOM-type is not in use - default: process next node
+<b class="nc"><i>976</i>&nbsp;        targets[DTM.ENTITY_NODE] = ihLoop;</b>
+<i>977</i>&nbsp;
+<i>978</i>&nbsp;        // This DOM-type is not in use - default: process next node
+<b class="nc"><i>979</i>&nbsp;        targets[DTM.ENTITY_REFERENCE_NODE] = ihLoop;</b>
+<i>980</i>&nbsp;
+<i>981</i>&nbsp;        // This DOM-type is not in use - default: process next node
+<b class="nc"><i>982</i>&nbsp;        targets[DTM.NOTATION_NODE] = ihLoop;</b>
+<i>983</i>&nbsp;
+<i>984</i>&nbsp;
+<i>985</i>&nbsp;        // Now compile test sequences for various match patterns:
+<b class="nc"><i>986</i>&nbsp;        for (int i = DTM.NTYPES; i &lt; targets.length; i++) {</b>
+<b class="nc"><i>987</i>&nbsp;            final TestSeq testSeq = _testSeq[i];</b>
+<i>988</i>&nbsp;            // Jump straight to namespace tests ?
+<b class="nc"><i>989</i>&nbsp;            if ((testSeq == null) || (isNamespace[i])) {</b>
+<b class="nc"><i>990</i>&nbsp;                if (isAttribute[i])</b>
+<b class="nc"><i>991</i>&nbsp;                    targets[i] = attrNamespaceHandle;</b>
+<i>992</i>&nbsp;                else
+<b class="nc"><i>993</i>&nbsp;                    targets[i] = elemNamespaceHandle;</b>
+<i>994</i>&nbsp;            }
+<i>995</i>&nbsp;            // Match on node type
+<i>996</i>&nbsp;            else {
+<b class="nc"><i>997</i>&nbsp;                if (isAttribute[i])</b>
+<b class="nc"><i>998</i>&nbsp;                    targets[i] = testSeq.compile(classGen, methodGen,</b>
+<i>999</i>&nbsp;                                                 attrNamespaceHandle);
+<i>1000</i>&nbsp;                else
+<b class="nc"><i>1001</i>&nbsp;                    targets[i] = testSeq.compile(classGen, methodGen,</b>
+<i>1002</i>&nbsp;                                                 elemNamespaceHandle);
+<i>1003</i>&nbsp;            }
+<i>1004</i>&nbsp;        }
+<i>1005</i>&nbsp;
+<b class="nc"><i>1006</i>&nbsp;        if (ilKey != null) body.insert(ilKey);</b>
+<i>1007</i>&nbsp;
+<i>1008</i>&nbsp;        // Append first code in applyTemplates() - get type of current node
+<b class="nc"><i>1009</i>&nbsp;        final int getType = cpg.addInterfaceMethodref(DOM_INTF,</b>
+<i>1010</i>&nbsp;                                                      &quot;getExpandedTypeID&quot;,
+<i>1011</i>&nbsp;                                                      &quot;(I)I&quot;);
+<b class="nc"><i>1012</i>&nbsp;        body.append(methodGen.loadDOM());</b>
+<b class="nc"><i>1013</i>&nbsp;        body.append(new ILOAD(_currentIndex));</b>
+<b class="nc"><i>1014</i>&nbsp;        body.append(new INVOKEINTERFACE(getType, 2));</b>
+<i>1015</i>&nbsp;
+<i>1016</i>&nbsp;        // Append switch() statement - main dispatch loop in applyTemplates()
+<b class="nc"><i>1017</i>&nbsp;        InstructionHandle disp = body.append(new SWITCH(types, targets, ihLoop));</b>
+<i>1018</i>&nbsp;
+<i>1019</i>&nbsp;        // Append all the &quot;case:&quot; statements
+<b class="nc"><i>1020</i>&nbsp;        appendTestSequences(body);</b>
+<i>1021</i>&nbsp;        // Append the actual template code
+<b class="nc"><i>1022</i>&nbsp;        appendTemplateCode(body);</b>
+<i>1023</i>&nbsp;
+<i>1024</i>&nbsp;        // Append NS:* node tests (if any)
+<b class="nc"><i>1025</i>&nbsp;        if (nsElem != null) body.append(nsElem);</b>
+<i>1026</i>&nbsp;        // Append NS:@* node tests (if any)
+<b class="nc"><i>1027</i>&nbsp;        if (nsAttr != null) body.append(nsAttr);</b>
+<i>1028</i>&nbsp;
+<i>1029</i>&nbsp;        // Append default action for element and root nodes
+<b class="nc"><i>1030</i>&nbsp;        body.append(ilRecurse);</b>
+<i>1031</i>&nbsp;        // Append default action for text and attribute nodes
+<b class="nc"><i>1032</i>&nbsp;        body.append(ilText);</b>
+<i>1033</i>&nbsp;
+<i>1034</i>&nbsp;        // putting together constituent instruction lists
+<b class="nc"><i>1035</i>&nbsp;        mainIL.append(body);</b>
+<i>1036</i>&nbsp;        // fall through to ilLoop
+<b class="nc"><i>1037</i>&nbsp;        mainIL.append(ilLoop);</b>
+<i>1038</i>&nbsp;
+<b class="nc"><i>1039</i>&nbsp;        peepHoleOptimization(methodGen);</b>
+<b class="nc"><i>1040</i>&nbsp;        classGen.addMethod(methodGen);</b>
+<i>1041</i>&nbsp;
+<i>1042</i>&nbsp;        // Compile method(s) for &lt;xsl:apply-imports/&gt; for this mode
+<b class="nc"><i>1043</i>&nbsp;        if (_importLevels != null) {</b>
+<b class="nc"><i>1044</i>&nbsp;            for (Map.Entry&lt;Integer, Integer&gt; entry : _importLevels.entrySet()) {</b>
+<b class="nc"><i>1045</i>&nbsp;                compileApplyImports(classGen, entry.getValue(), entry.getKey());</b>
+<b class="nc"><i>1046</i>&nbsp;            }</b>
+<i>1047</i>&nbsp;        }
+<i>1048</i>&nbsp;    }
+<i>1049</i>&nbsp;
+<i>1050</i>&nbsp;    private void compileTemplateCalls(ClassGenerator classGen,
+<i>1051</i>&nbsp;                                      MethodGenerator methodGen,
+<i>1052</i>&nbsp;                                      InstructionHandle next, int min, int max){
+<b class="nc"><i>1053</i>&nbsp;        for (Template template : _neededTemplates.keySet()) {</b>
+<b class="nc"><i>1054</i>&nbsp;            final int prec = template.getImportPrecedence();</b>
+<b class="nc"><i>1055</i>&nbsp;            if ((prec &gt;= min) &amp;&amp; (prec &lt; max)) {</b>
+<b class="nc"><i>1056</i>&nbsp;                if (template.hasContents()) {</b>
+<b class="nc"><i>1057</i>&nbsp;                    InstructionList til = template.compile(classGen, methodGen);</b>
+<b class="nc"><i>1058</i>&nbsp;                    til.append(new GOTO_W(next));</b>
+<b class="nc"><i>1059</i>&nbsp;                    _templateILs.put(template, til);</b>
+<b class="nc"><i>1060</i>&nbsp;                    _templateIHs.put(template, til.getStart());</b>
+<b class="nc"><i>1061</i>&nbsp;                }</b>
+<i>1062</i>&nbsp;                else {
+<i>1063</i>&nbsp;                    // empty template
+<b class="nc"><i>1064</i>&nbsp;                    _templateIHs.put(template, next);</b>
+<i>1065</i>&nbsp;                }
+<i>1066</i>&nbsp;            }
+<b class="nc"><i>1067</i>&nbsp;        }</b>
+<i>1068</i>&nbsp;    }
+<i>1069</i>&nbsp;
+<i>1070</i>&nbsp;
+<i>1071</i>&nbsp;    public void compileApplyImports(ClassGenerator classGen, int min, int max) {
+<b class="nc"><i>1072</i>&nbsp;        final XSLTC xsltc = classGen.getParser().getXSLTC();</b>
+<b class="nc"><i>1073</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>1074</i>&nbsp;        final Vector names      = xsltc.getNamesIndex();</b>
+<i>1075</i>&nbsp;
+<i>1076</i>&nbsp;        // Clear some datastructures
+<b class="nc"><i>1077</i>&nbsp;        _namedTemplates = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>1078</i>&nbsp;        _neededTemplates = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>1079</i>&nbsp;        _templateIHs = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>1080</i>&nbsp;        _templateILs = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>1081</i>&nbsp;        _patternGroups = new Vector[32];</b>
+<b class="nc"><i>1082</i>&nbsp;        _rootPattern = null;</b>
+<i>1083</i>&nbsp;
+<i>1084</i>&nbsp;        // IMPORTANT: Save orignal &amp; complete set of templates!!!!
+<b class="nc"><i>1085</i>&nbsp;        Vector oldTemplates = _templates;</b>
+<i>1086</i>&nbsp;
+<i>1087</i>&nbsp;        // Gather templates that are within the scope of this import
+<b class="nc"><i>1088</i>&nbsp;        _templates = new Vector();</b>
+<b class="nc"><i>1089</i>&nbsp;        final Enumeration templates = oldTemplates.elements();</b>
+<b class="nc"><i>1090</i>&nbsp;        while (templates.hasMoreElements()) {</b>
+<b class="nc"><i>1091</i>&nbsp;            final Template template = (Template)templates.nextElement();</b>
+<b class="nc"><i>1092</i>&nbsp;            final int prec = template.getImportPrecedence();</b>
+<b class="nc"><i>1093</i>&nbsp;            if ((prec &gt;= min) &amp;&amp; (prec &lt; max)) addTemplate(template);</b>
+<b class="nc"><i>1094</i>&nbsp;        }</b>
+<i>1095</i>&nbsp;
+<i>1096</i>&nbsp;        // Process all patterns from those templates
+<b class="nc"><i>1097</i>&nbsp;        processPatterns(_keys);</b>
+<i>1098</i>&nbsp;
+<i>1099</i>&nbsp;        // Create the applyTemplates() method
+<b class="nc"><i>1100</i>&nbsp;        final com.sun.org.apache.bcel.internal.generic.Type[] argTypes =</b>
+<i>1101</i>&nbsp;            new com.sun.org.apache.bcel.internal.generic.Type[4];
+<b class="nc"><i>1102</i>&nbsp;        argTypes[0] = Util.getJCRefType(DOM_INTF_SIG);</b>
+<b class="nc"><i>1103</i>&nbsp;        argTypes[1] = Util.getJCRefType(NODE_ITERATOR_SIG);</b>
+<b class="nc"><i>1104</i>&nbsp;        argTypes[2] = Util.getJCRefType(TRANSLET_OUTPUT_SIG);</b>
+<b class="nc"><i>1105</i>&nbsp;        argTypes[3] = com.sun.org.apache.bcel.internal.generic.Type.INT;</b>
+<i>1106</i>&nbsp;
+<b class="nc"><i>1107</i>&nbsp;        final String[] argNames = new String[4];</b>
+<b class="nc"><i>1108</i>&nbsp;        argNames[0] = DOCUMENT_PNAME;</b>
+<b class="nc"><i>1109</i>&nbsp;        argNames[1] = ITERATOR_PNAME;</b>
+<b class="nc"><i>1110</i>&nbsp;        argNames[2] = TRANSLET_OUTPUT_PNAME;</b>
+<b class="nc"><i>1111</i>&nbsp;        argNames[3] = NODE_PNAME;</b>
+<i>1112</i>&nbsp;
+<b class="nc"><i>1113</i>&nbsp;        final InstructionList mainIL = new InstructionList();</b>
+<b class="nc"><i>1114</i>&nbsp;        final MethodGenerator methodGen =</b>
+<i>1115</i>&nbsp;            new MethodGenerator(ACC_PUBLIC | ACC_FINAL,
+<i>1116</i>&nbsp;                                com.sun.org.apache.bcel.internal.generic.Type.VOID,
+<b class="nc"><i>1117</i>&nbsp;                                argTypes, argNames, functionName()+&#39;_&#39;+max,</b>
+<b class="nc"><i>1118</i>&nbsp;                                getClassName(), mainIL,</b>
+<b class="nc"><i>1119</i>&nbsp;                                classGen.getConstantPool());</b>
+<b class="nc"><i>1120</i>&nbsp;        methodGen.addException(&quot;com.sun.org.apache.xalan.internal.xsltc.TransletException&quot;);</b>
+<i>1121</i>&nbsp;
+<i>1122</i>&nbsp;        // Create the local variable to hold the current node
+<i>1123</i>&nbsp;        final LocalVariableGen current;
+<b class="nc"><i>1124</i>&nbsp;        current = methodGen.addLocalVariable2(&quot;current&quot;,</b>
+<i>1125</i>&nbsp;                                              com.sun.org.apache.bcel.internal.generic.Type.INT,
+<i>1126</i>&nbsp;                                              null);
+<b class="nc"><i>1127</i>&nbsp;        _currentIndex = current.getIndex();</b>
+<i>1128</i>&nbsp;
+<b class="nc"><i>1129</i>&nbsp;        mainIL.append(new ILOAD(methodGen.getLocalIndex(NODE_PNAME)));</b>
+<b class="nc"><i>1130</i>&nbsp;        current.setStart(mainIL.append(new ISTORE(_currentIndex)));</b>
+<i>1131</i>&nbsp;
+<i>1132</i>&nbsp;        // Create the &quot;body&quot; instruction list that will eventually hold the
+<i>1133</i>&nbsp;        // code for the entire method (other ILs will be appended).
+<b class="nc"><i>1134</i>&nbsp;        final InstructionList body = new InstructionList();</b>
+<b class="nc"><i>1135</i>&nbsp;        body.append(NOP);</b>
+<i>1136</i>&nbsp;
+<i>1137</i>&nbsp;        // Create an instruction list that contains the default next-node
+<i>1138</i>&nbsp;        // iteration
+<b class="nc"><i>1139</i>&nbsp;        final InstructionList ilLoop = new InstructionList();</b>
+<b class="nc"><i>1140</i>&nbsp;        ilLoop.append(RETURN);</b>
+<b class="nc"><i>1141</i>&nbsp;        final InstructionHandle ihLoop = ilLoop.getStart();</b>
+<i>1142</i>&nbsp;
+<i>1143</i>&nbsp;        // Compile default handling of elements (traverse children)
+<b class="nc"><i>1144</i>&nbsp;        InstructionList ilRecurse =</b>
+<b class="nc"><i>1145</i>&nbsp;            compileDefaultRecursion(classGen, methodGen, ihLoop);</b>
+<b class="nc"><i>1146</i>&nbsp;        InstructionHandle ihRecurse = ilRecurse.getStart();</b>
+<i>1147</i>&nbsp;
+<i>1148</i>&nbsp;        // Compile default handling of text/attribute nodes (output text)
+<b class="nc"><i>1149</i>&nbsp;        InstructionList ilText =</b>
+<b class="nc"><i>1150</i>&nbsp;            compileDefaultText(classGen, methodGen, ihLoop);</b>
+<b class="nc"><i>1151</i>&nbsp;        InstructionHandle ihText = ilText.getStart();</b>
+<i>1152</i>&nbsp;
+<i>1153</i>&nbsp;        // Distinguish attribute/element/namespace tests for further processing
+<b class="nc"><i>1154</i>&nbsp;        final int[] types = new int[DTM.NTYPES + names.size()];</b>
+<b class="nc"><i>1155</i>&nbsp;        for (int i = 0; i &lt; types.length; i++) {</b>
+<b class="nc"><i>1156</i>&nbsp;            types[i] = i;</b>
+<i>1157</i>&nbsp;        }
+<i>1158</i>&nbsp;
+<b class="nc"><i>1159</i>&nbsp;        final boolean[] isAttribute = new boolean[types.length];</b>
+<b class="nc"><i>1160</i>&nbsp;        final boolean[] isNamespace = new boolean[types.length];</b>
+<b class="nc"><i>1161</i>&nbsp;        for (int i = 0; i &lt; names.size(); i++) {</b>
+<b class="nc"><i>1162</i>&nbsp;            final String name = (String)names.elementAt(i);</b>
+<b class="nc"><i>1163</i>&nbsp;            isAttribute[i+DTM.NTYPES] = isAttributeName(name);</b>
+<b class="nc"><i>1164</i>&nbsp;            isNamespace[i+DTM.NTYPES] = isNamespaceName(name);</b>
+<i>1165</i>&nbsp;        }
+<i>1166</i>&nbsp;
+<i>1167</i>&nbsp;        // Compile all templates - regardless of pattern type
+<b class="nc"><i>1168</i>&nbsp;        compileTemplateCalls(classGen, methodGen, ihLoop, min, max);</b>
+<i>1169</i>&nbsp;
+<i>1170</i>&nbsp;        // Handle template with explicit &quot;*&quot; pattern
+<b class="nc"><i>1171</i>&nbsp;        final TestSeq elemTest = _testSeq[DTM.ELEMENT_NODE];</b>
+<b class="nc"><i>1172</i>&nbsp;        InstructionHandle ihElem = ihRecurse;</b>
+<b class="nc"><i>1173</i>&nbsp;        if (elemTest != null) {</b>
+<b class="nc"><i>1174</i>&nbsp;            ihElem = elemTest.compile(classGen, methodGen, ihLoop);</b>
+<i>1175</i>&nbsp;        }
+<i>1176</i>&nbsp;
+<i>1177</i>&nbsp;        // Handle template with explicit &quot;@*&quot; pattern
+<b class="nc"><i>1178</i>&nbsp;        final TestSeq attrTest = _testSeq[DTM.ATTRIBUTE_NODE];</b>
+<b class="nc"><i>1179</i>&nbsp;        InstructionHandle ihAttr = ihLoop;</b>
+<b class="nc"><i>1180</i>&nbsp;        if (attrTest != null) {</b>
+<b class="nc"><i>1181</i>&nbsp;            ihAttr = attrTest.compile(classGen, methodGen, ihAttr);</b>
+<i>1182</i>&nbsp;        }
+<i>1183</i>&nbsp;
+<i>1184</i>&nbsp;        // Do tests for id() and key() patterns first
+<b class="nc"><i>1185</i>&nbsp;        InstructionList ilKey = null;</b>
+<b class="nc"><i>1186</i>&nbsp;        if (_idxTestSeq != null) {</b>
+<b class="nc"><i>1187</i>&nbsp;            ilKey = _idxTestSeq.getInstructionList();</b>
+<i>1188</i>&nbsp;        }
+<i>1189</i>&nbsp;
+<i>1190</i>&nbsp;        // If there is a match on node() we need to replace ihElem
+<i>1191</i>&nbsp;        // and ihText if the priority of node() is higher
+<b class="nc"><i>1192</i>&nbsp;        if (_childNodeTestSeq != null) {</b>
+<i>1193</i>&nbsp;            // Compare priorities of node() and &quot;*&quot;
+<b class="nc"><i>1194</i>&nbsp;            double nodePrio = _childNodeTestSeq.getPriority();</b>
+<b class="nc"><i>1195</i>&nbsp;            int    nodePos  = _childNodeTestSeq.getPosition();</b>
+<b class="nc"><i>1196</i>&nbsp;            double elemPrio = (0 - Double.MAX_VALUE);</b>
+<b class="nc"><i>1197</i>&nbsp;            int    elemPos  = Integer.MIN_VALUE;</b>
+<i>1198</i>&nbsp;
+<b class="nc"><i>1199</i>&nbsp;            if (elemTest != null) {</b>
+<b class="nc"><i>1200</i>&nbsp;                elemPrio = elemTest.getPriority();</b>
+<b class="nc"><i>1201</i>&nbsp;                elemPos  = elemTest.getPosition();</b>
+<i>1202</i>&nbsp;            }
+<i>1203</i>&nbsp;
+<b class="nc"><i>1204</i>&nbsp;            if (elemPrio == Double.NaN || elemPrio &lt; nodePrio ||</b>
+<i>1205</i>&nbsp;                (elemPrio == nodePrio &amp;&amp; elemPos &lt; nodePos))
+<i>1206</i>&nbsp;            {
+<b class="nc"><i>1207</i>&nbsp;                ihElem = _childNodeTestSeq.compile(classGen, methodGen, ihLoop);</b>
+<i>1208</i>&nbsp;            }
+<i>1209</i>&nbsp;
+<i>1210</i>&nbsp;            // Compare priorities of node() and text()
+<b class="nc"><i>1211</i>&nbsp;            final TestSeq textTest = _testSeq[DTM.TEXT_NODE];</b>
+<b class="nc"><i>1212</i>&nbsp;            double textPrio = (0 - Double.MAX_VALUE);</b>
+<b class="nc"><i>1213</i>&nbsp;            int    textPos  = Integer.MIN_VALUE;</b>
+<i>1214</i>&nbsp;
+<b class="nc"><i>1215</i>&nbsp;            if (textTest != null) {</b>
+<b class="nc"><i>1216</i>&nbsp;                textPrio = textTest.getPriority();</b>
+<b class="nc"><i>1217</i>&nbsp;                textPos  = textTest.getPosition();</b>
+<i>1218</i>&nbsp;            }
+<i>1219</i>&nbsp;
+<b class="nc"><i>1220</i>&nbsp;            if (textPrio == Double.NaN || textPrio &lt; nodePrio ||</b>
+<i>1221</i>&nbsp;                (textPrio == nodePrio &amp;&amp; textPos &lt; nodePos))
+<i>1222</i>&nbsp;            {
+<b class="nc"><i>1223</i>&nbsp;                ihText = _childNodeTestSeq.compile(classGen, methodGen, ihLoop);</b>
+<b class="nc"><i>1224</i>&nbsp;                _testSeq[DTM.TEXT_NODE] = _childNodeTestSeq;</b>
+<i>1225</i>&nbsp;            }
+<i>1226</i>&nbsp;        }
+<i>1227</i>&nbsp;
+<i>1228</i>&nbsp;        // Handle templates with &quot;ns:*&quot; pattern
+<b class="nc"><i>1229</i>&nbsp;        InstructionHandle elemNamespaceHandle = ihElem;</b>
+<b class="nc"><i>1230</i>&nbsp;        InstructionList nsElem = compileNamespaces(classGen, methodGen,</b>
+<i>1231</i>&nbsp;                                                   isNamespace, isAttribute,
+<i>1232</i>&nbsp;                                                   false, ihElem);
+<b class="nc"><i>1233</i>&nbsp;        if (nsElem != null) elemNamespaceHandle = nsElem.getStart();</b>
+<i>1234</i>&nbsp;
+<i>1235</i>&nbsp;        // Handle templates with &quot;ns:@*&quot; pattern
+<b class="nc"><i>1236</i>&nbsp;        InstructionList nsAttr = compileNamespaces(classGen, methodGen,</b>
+<i>1237</i>&nbsp;                                                   isNamespace, isAttribute,
+<i>1238</i>&nbsp;                                                   true, ihAttr);
+<b class="nc"><i>1239</i>&nbsp;        InstructionHandle attrNamespaceHandle = ihAttr;</b>
+<b class="nc"><i>1240</i>&nbsp;        if (nsAttr != null) attrNamespaceHandle = nsAttr.getStart();</b>
+<i>1241</i>&nbsp;
+<i>1242</i>&nbsp;        // Handle templates with &quot;ns:elem&quot; or &quot;ns:@attr&quot; pattern
+<b class="nc"><i>1243</i>&nbsp;        final InstructionHandle[] targets = new InstructionHandle[types.length];</b>
+<b class="nc"><i>1244</i>&nbsp;        for (int i = DTM.NTYPES; i &lt; targets.length; i++) {</b>
+<b class="nc"><i>1245</i>&nbsp;            final TestSeq testSeq = _testSeq[i];</b>
+<i>1246</i>&nbsp;            // Jump straight to namespace tests ?
+<b class="nc"><i>1247</i>&nbsp;            if (isNamespace[i]) {</b>
+<b class="nc"><i>1248</i>&nbsp;                if (isAttribute[i])</b>
+<b class="nc"><i>1249</i>&nbsp;                    targets[i] = attrNamespaceHandle;</b>
+<i>1250</i>&nbsp;                else
+<b class="nc"><i>1251</i>&nbsp;                    targets[i] = elemNamespaceHandle;</b>
+<i>1252</i>&nbsp;            }
+<i>1253</i>&nbsp;            // Test first, then jump to namespace tests
+<b class="nc"><i>1254</i>&nbsp;            else if (testSeq != null) {</b>
+<b class="nc"><i>1255</i>&nbsp;                if (isAttribute[i])</b>
+<b class="nc"><i>1256</i>&nbsp;                    targets[i] = testSeq.compile(classGen, methodGen,</b>
+<i>1257</i>&nbsp;                                                 attrNamespaceHandle);
+<i>1258</i>&nbsp;                else
+<b class="nc"><i>1259</i>&nbsp;                    targets[i] = testSeq.compile(classGen, methodGen,</b>
+<i>1260</i>&nbsp;                                                 elemNamespaceHandle);
+<i>1261</i>&nbsp;            }
+<i>1262</i>&nbsp;            else {
+<b class="nc"><i>1263</i>&nbsp;                targets[i] = ihLoop;</b>
+<i>1264</i>&nbsp;            }
+<i>1265</i>&nbsp;        }
+<i>1266</i>&nbsp;
+<i>1267</i>&nbsp;        // Handle pattern with match on root node - default: traverse children
+<b class="nc"><i>1268</i>&nbsp;        targets[DTM.ROOT_NODE] = _rootPattern != null</b>
+<b class="nc"><i>1269</i>&nbsp;            ? getTemplateInstructionHandle(_rootPattern.getTemplate())</b>
+<i>1270</i>&nbsp;            : ihRecurse;
+<i>1271</i>&nbsp;        // Handle pattern with match on root node - default: traverse children
+<b class="nc"><i>1272</i>&nbsp;        targets[DTM.DOCUMENT_NODE] = _rootPattern != null</b>
+<b class="nc"><i>1273</i>&nbsp;            ? getTemplateInstructionHandle(_rootPattern.getTemplate())</b>
+<i>1274</i>&nbsp;            : ihRecurse;    // %HZ%:  Was ihLoop in XSLTC_DTM branch
+<i>1275</i>&nbsp;
+<i>1276</i>&nbsp;        // Handle any pattern with match on text nodes - default: loop
+<b class="nc"><i>1277</i>&nbsp;        targets[DTM.TEXT_NODE] = _testSeq[DTM.TEXT_NODE] != null</b>
+<b class="nc"><i>1278</i>&nbsp;            ? _testSeq[DTM.TEXT_NODE].compile(classGen, methodGen, ihText)</b>
+<i>1279</i>&nbsp;            : ihText;
+<i>1280</i>&nbsp;
+<i>1281</i>&nbsp;        // This DOM-type is not in use - default: process next node
+<b class="nc"><i>1282</i>&nbsp;        targets[DTM.NAMESPACE_NODE] = ihLoop;</b>
+<i>1283</i>&nbsp;
+<i>1284</i>&nbsp;        // Match unknown element in DOM - default: check for namespace match
+<b class="nc"><i>1285</i>&nbsp;        targets[DTM.ELEMENT_NODE] = elemNamespaceHandle;</b>
+<i>1286</i>&nbsp;
+<i>1287</i>&nbsp;        // Match unknown attribute in DOM - default: check for namespace match
+<b class="nc"><i>1288</i>&nbsp;        targets[DTM.ATTRIBUTE_NODE] = attrNamespaceHandle;</b>
+<i>1289</i>&nbsp;
+<i>1290</i>&nbsp;        // Match on processing instruction - default: loop
+<b class="nc"><i>1291</i>&nbsp;        InstructionHandle ihPI = ihLoop;</b>
+<b class="nc"><i>1292</i>&nbsp;        if (_childNodeTestSeq != null) ihPI = ihElem;</b>
+<b class="nc"><i>1293</i>&nbsp;        if (_testSeq[DTM.PROCESSING_INSTRUCTION_NODE] != null) {</b>
+<b class="nc"><i>1294</i>&nbsp;            targets[DTM.PROCESSING_INSTRUCTION_NODE] =</b>
+<i>1295</i>&nbsp;                _testSeq[DTM.PROCESSING_INSTRUCTION_NODE].
+<b class="nc"><i>1296</i>&nbsp;                compile(classGen, methodGen, ihPI);</b>
+<i>1297</i>&nbsp;        }
+<i>1298</i>&nbsp;        else {
+<b class="nc"><i>1299</i>&nbsp;            targets[DTM.PROCESSING_INSTRUCTION_NODE] = ihPI;</b>
+<i>1300</i>&nbsp;        }
+<i>1301</i>&nbsp;
+<i>1302</i>&nbsp;        // Match on comments - default: process next node
+<b class="nc"><i>1303</i>&nbsp;        InstructionHandle ihComment = ihLoop;</b>
+<b class="nc"><i>1304</i>&nbsp;        if (_childNodeTestSeq != null) ihComment = ihElem;</b>
+<b class="nc"><i>1305</i>&nbsp;        targets[DTM.COMMENT_NODE] = _testSeq[DTM.COMMENT_NODE] != null</b>
+<b class="nc"><i>1306</i>&nbsp;            ? _testSeq[DTM.COMMENT_NODE].compile(classGen, methodGen, ihComment)</b>
+<i>1307</i>&nbsp;            : ihComment;
+<i>1308</i>&nbsp;
+<i>1309</i>&nbsp;                // This DOM-type is not in use - default: process next node
+<b class="nc"><i>1310</i>&nbsp;        targets[DTM.CDATA_SECTION_NODE] = ihLoop;</b>
+<i>1311</i>&nbsp;
+<i>1312</i>&nbsp;        // This DOM-type is not in use - default: process next node
+<b class="nc"><i>1313</i>&nbsp;        targets[DTM.DOCUMENT_FRAGMENT_NODE] = ihLoop;</b>
+<i>1314</i>&nbsp;
+<i>1315</i>&nbsp;        // This DOM-type is not in use - default: process next node
+<b class="nc"><i>1316</i>&nbsp;        targets[DTM.DOCUMENT_TYPE_NODE] = ihLoop;</b>
+<i>1317</i>&nbsp;
+<i>1318</i>&nbsp;        // This DOM-type is not in use - default: process next node
+<b class="nc"><i>1319</i>&nbsp;        targets[DTM.ENTITY_NODE] = ihLoop;</b>
+<i>1320</i>&nbsp;
+<i>1321</i>&nbsp;        // This DOM-type is not in use - default: process next node
+<b class="nc"><i>1322</i>&nbsp;        targets[DTM.ENTITY_REFERENCE_NODE] = ihLoop;</b>
+<i>1323</i>&nbsp;
+<i>1324</i>&nbsp;        // This DOM-type is not in use - default: process next node
+<b class="nc"><i>1325</i>&nbsp;        targets[DTM.NOTATION_NODE] = ihLoop;</b>
+<i>1326</i>&nbsp;
+<i>1327</i>&nbsp;
+<i>1328</i>&nbsp;
+<i>1329</i>&nbsp;        // Now compile test sequences for various match patterns:
+<b class="nc"><i>1330</i>&nbsp;        for (int i = DTM.NTYPES; i &lt; targets.length; i++) {</b>
+<b class="nc"><i>1331</i>&nbsp;            final TestSeq testSeq = _testSeq[i];</b>
+<i>1332</i>&nbsp;            // Jump straight to namespace tests ?
+<b class="nc"><i>1333</i>&nbsp;            if ((testSeq == null) || (isNamespace[i])) {</b>
+<b class="nc"><i>1334</i>&nbsp;                if (isAttribute[i])</b>
+<b class="nc"><i>1335</i>&nbsp;                    targets[i] = attrNamespaceHandle;</b>
+<i>1336</i>&nbsp;                else
+<b class="nc"><i>1337</i>&nbsp;                    targets[i] = elemNamespaceHandle;</b>
+<i>1338</i>&nbsp;            }
+<i>1339</i>&nbsp;            // Match on node type
+<i>1340</i>&nbsp;            else {
+<b class="nc"><i>1341</i>&nbsp;                if (isAttribute[i])</b>
+<b class="nc"><i>1342</i>&nbsp;                    targets[i] = testSeq.compile(classGen, methodGen,</b>
+<i>1343</i>&nbsp;                                                 attrNamespaceHandle);
+<i>1344</i>&nbsp;                else
+<b class="nc"><i>1345</i>&nbsp;                    targets[i] = testSeq.compile(classGen, methodGen,</b>
+<i>1346</i>&nbsp;                                                 elemNamespaceHandle);
+<i>1347</i>&nbsp;            }
+<i>1348</i>&nbsp;        }
+<i>1349</i>&nbsp;
+<b class="nc"><i>1350</i>&nbsp;        if (ilKey != null) body.insert(ilKey);</b>
+<i>1351</i>&nbsp;
+<i>1352</i>&nbsp;        // Append first code in applyTemplates() - get type of current node
+<b class="nc"><i>1353</i>&nbsp;        final int getType = cpg.addInterfaceMethodref(DOM_INTF,</b>
+<i>1354</i>&nbsp;                                                      &quot;getExpandedTypeID&quot;,
+<i>1355</i>&nbsp;                                                      &quot;(I)I&quot;);
+<b class="nc"><i>1356</i>&nbsp;        body.append(methodGen.loadDOM());</b>
+<b class="nc"><i>1357</i>&nbsp;        body.append(new ILOAD(_currentIndex));</b>
+<b class="nc"><i>1358</i>&nbsp;        body.append(new INVOKEINTERFACE(getType, 2));</b>
+<i>1359</i>&nbsp;
+<i>1360</i>&nbsp;        // Append switch() statement - main dispatch loop in applyTemplates()
+<b class="nc"><i>1361</i>&nbsp;        InstructionHandle disp = body.append(new SWITCH(types,targets,ihLoop));</b>
+<i>1362</i>&nbsp;
+<i>1363</i>&nbsp;        // Append all the &quot;case:&quot; statements
+<b class="nc"><i>1364</i>&nbsp;        appendTestSequences(body);</b>
+<i>1365</i>&nbsp;        // Append the actual template code
+<b class="nc"><i>1366</i>&nbsp;        appendTemplateCode(body);</b>
+<i>1367</i>&nbsp;
+<i>1368</i>&nbsp;        // Append NS:* node tests (if any)
+<b class="nc"><i>1369</i>&nbsp;        if (nsElem != null) body.append(nsElem);</b>
+<i>1370</i>&nbsp;        // Append NS:@* node tests (if any)
+<b class="nc"><i>1371</i>&nbsp;        if (nsAttr != null) body.append(nsAttr);</b>
+<i>1372</i>&nbsp;
+<i>1373</i>&nbsp;        // Append default action for element and root nodes
+<b class="nc"><i>1374</i>&nbsp;        body.append(ilRecurse);</b>
+<i>1375</i>&nbsp;        // Append default action for text and attribute nodes
+<b class="nc"><i>1376</i>&nbsp;        body.append(ilText);</b>
+<i>1377</i>&nbsp;
+<i>1378</i>&nbsp;        // putting together constituent instruction lists
+<b class="nc"><i>1379</i>&nbsp;        mainIL.append(body);</b>
+<i>1380</i>&nbsp;
+<i>1381</i>&nbsp;        // Mark the end of the live range for the &quot;current&quot; variable
+<b class="nc"><i>1382</i>&nbsp;        current.setEnd(body.getEnd());</b>
+<i>1383</i>&nbsp;
+<i>1384</i>&nbsp;        // fall through to ilLoop
+<b class="nc"><i>1385</i>&nbsp;        mainIL.append(ilLoop);</b>
+<i>1386</i>&nbsp;
+<b class="nc"><i>1387</i>&nbsp;        peepHoleOptimization(methodGen);</b>
+<b class="nc"><i>1388</i>&nbsp;        classGen.addMethod(methodGen);</b>
+<i>1389</i>&nbsp;
+<i>1390</i>&nbsp;        // Restore original (complete) set of templates for this transformation
+<b class="nc"><i>1391</i>&nbsp;        _templates = oldTemplates;</b>
+<i>1392</i>&nbsp;    }
+<i>1393</i>&nbsp;
+<i>1394</i>&nbsp;    /**
+<i>1395</i>&nbsp;      * Peephole optimization.
+<i>1396</i>&nbsp;      */
+<i>1397</i>&nbsp;    private void peepHoleOptimization(MethodGenerator methodGen) {
+<b class="nc"><i>1398</i>&nbsp;        InstructionList il = methodGen.getInstructionList();</b>
+<b class="nc"><i>1399</i>&nbsp;        InstructionFinder find = new InstructionFinder(il);</b>
+<i>1400</i>&nbsp;        InstructionHandle ih;
+<i>1401</i>&nbsp;        String pattern;
+<i>1402</i>&nbsp;
+<i>1403</i>&nbsp;        // LoadInstruction, POP =&gt; (removed)
+<i>1404</i>&nbsp;        // pattern = &quot;LoadInstruction POP&quot;;
+<i>1405</i>&nbsp;        // changed to lower case - changing to all lower case although only the instruction with capital I
+<i>1406</i>&nbsp;        // is creating a problem in the Turkish locale
+<b class="nc"><i>1407</i>&nbsp;        pattern = &quot;loadinstruction pop&quot;;</b>
+<i>1408</i>&nbsp;
+<b class="nc"><i>1409</i>&nbsp;        for (Iterator iter = find.search(pattern); iter.hasNext();) {</b>
+<b class="nc"><i>1410</i>&nbsp;            InstructionHandle[] match = (InstructionHandle[]) iter.next();</b>
+<i>1411</i>&nbsp;            try {
+<b class="nc"><i>1412</i>&nbsp;                if (!match[0].hasTargeters() &amp;&amp; !match[1].hasTargeters()) {</b>
+<b class="nc"><i>1413</i>&nbsp;                    il.delete(match[0], match[1]);</b>
+<i>1414</i>&nbsp;                }
+<i>1415</i>&nbsp;            }
+<b class="nc"><i>1416</i>&nbsp;            catch (TargetLostException e) {</b>
+<i>1417</i>&nbsp;                // TODO: move target down into the list
+<b class="nc"><i>1418</i>&nbsp;            }</b>
+<b class="nc"><i>1419</i>&nbsp;        }</b>
+<i>1420</i>&nbsp;
+<i>1421</i>&nbsp;        // ILOAD_N, ILOAD_N, SWAP, ISTORE_N =&gt; ILOAD_N
+<i>1422</i>&nbsp;        // pattern = &quot;ILOAD ILOAD SWAP ISTORE&quot;;
+<i>1423</i>&nbsp;        // changed to lower case - changing to all lower case although only the instruction with capital I
+<i>1424</i>&nbsp;        // is creating a problem in the Turkish locale
+<b class="nc"><i>1425</i>&nbsp;        pattern = &quot;iload iload swap istore&quot;;</b>
+<b class="nc"><i>1426</i>&nbsp;        for (Iterator iter = find.search(pattern); iter.hasNext();) {</b>
+<b class="nc"><i>1427</i>&nbsp;            InstructionHandle[] match = (InstructionHandle[]) iter.next();</b>
+<i>1428</i>&nbsp;            try {
+<b class="nc"><i>1429</i>&nbsp;                com.sun.org.apache.bcel.internal.generic.ILOAD iload1 =</b>
+<b class="nc"><i>1430</i>&nbsp;                    (com.sun.org.apache.bcel.internal.generic.ILOAD) match[0].getInstruction();</b>
+<b class="nc"><i>1431</i>&nbsp;                com.sun.org.apache.bcel.internal.generic.ILOAD iload2 =</b>
+<b class="nc"><i>1432</i>&nbsp;                    (com.sun.org.apache.bcel.internal.generic.ILOAD) match[1].getInstruction();</b>
+<b class="nc"><i>1433</i>&nbsp;                com.sun.org.apache.bcel.internal.generic.ISTORE istore =</b>
+<b class="nc"><i>1434</i>&nbsp;                    (com.sun.org.apache.bcel.internal.generic.ISTORE) match[3].getInstruction();</b>
+<i>1435</i>&nbsp;
+<b class="nc"><i>1436</i>&nbsp;                if (!match[1].hasTargeters() &amp;&amp;</b>
+<b class="nc"><i>1437</i>&nbsp;                    !match[2].hasTargeters() &amp;&amp;</b>
+<b class="nc"><i>1438</i>&nbsp;                    !match[3].hasTargeters() &amp;&amp;</b>
+<b class="nc"><i>1439</i>&nbsp;                    iload1.getIndex() == iload2.getIndex() &amp;&amp;</b>
+<b class="nc"><i>1440</i>&nbsp;                    iload2.getIndex() == istore.getIndex())</b>
+<i>1441</i>&nbsp;                {
+<b class="nc"><i>1442</i>&nbsp;                    il.delete(match[1], match[3]);</b>
+<i>1443</i>&nbsp;                }
+<i>1444</i>&nbsp;            }
+<b class="nc"><i>1445</i>&nbsp;            catch (TargetLostException e) {</b>
+<i>1446</i>&nbsp;                // TODO: move target down into the list
+<b class="nc"><i>1447</i>&nbsp;            }</b>
+<b class="nc"><i>1448</i>&nbsp;        }</b>
+<i>1449</i>&nbsp;
+<i>1450</i>&nbsp;        // LoadInstruction_N, LoadInstruction_M, SWAP =&gt; LoadInstruction_M, LoadInstruction_N
+<i>1451</i>&nbsp;        // pattern = &quot;LoadInstruction LoadInstruction SWAP&quot;;
+<i>1452</i>&nbsp;        // changed to lower case - changing to all lower case although only the instruction with capital I
+<i>1453</i>&nbsp;        // is creating a problem in the Turkish locale
+<b class="nc"><i>1454</i>&nbsp;        pattern = &quot;loadinstruction loadinstruction swap&quot;;</b>
+<b class="nc"><i>1455</i>&nbsp;        for (Iterator iter = find.search(pattern); iter.hasNext();) {</b>
+<b class="nc"><i>1456</i>&nbsp;            InstructionHandle[] match = (InstructionHandle[])iter.next();</b>
+<i>1457</i>&nbsp;            try {
+<b class="nc"><i>1458</i>&nbsp;                if (!match[0].hasTargeters() &amp;&amp;</b>
+<b class="nc"><i>1459</i>&nbsp;                    !match[1].hasTargeters() &amp;&amp;</b>
+<b class="nc"><i>1460</i>&nbsp;                    !match[2].hasTargeters())</b>
+<i>1461</i>&nbsp;                {
+<b class="nc"><i>1462</i>&nbsp;                    Instruction load_m = match[1].getInstruction();</b>
+<b class="nc"><i>1463</i>&nbsp;                    il.insert(match[0], load_m);</b>
+<b class="nc"><i>1464</i>&nbsp;                    il.delete(match[1], match[2]);</b>
+<i>1465</i>&nbsp;                }
+<i>1466</i>&nbsp;            }
+<b class="nc"><i>1467</i>&nbsp;            catch (TargetLostException e) {</b>
+<i>1468</i>&nbsp;                // TODO: move target down into the list
+<b class="nc"><i>1469</i>&nbsp;            }</b>
+<b class="nc"><i>1470</i>&nbsp;        }</b>
+<i>1471</i>&nbsp;
+<i>1472</i>&nbsp;        // ALOAD_N ALOAD_N =&gt; ALOAD_N DUP
+<i>1473</i>&nbsp;        // pattern = &quot;ALOAD ALOAD&quot;;
+<i>1474</i>&nbsp;        // changed to lower case - changing to all lower case although only the instruction with capital I
+<i>1475</i>&nbsp;        // is creating a problem in the Turkish locale
+<b class="nc"><i>1476</i>&nbsp;        pattern = &quot;aload aload&quot;;</b>
+<b class="nc"><i>1477</i>&nbsp;        for (Iterator iter = find.search(pattern); iter.hasNext();) {</b>
+<b class="nc"><i>1478</i>&nbsp;            InstructionHandle[] match = (InstructionHandle[])iter.next();</b>
+<i>1479</i>&nbsp;            try {
+<b class="nc"><i>1480</i>&nbsp;                if (!match[1].hasTargeters()) {</b>
+<b class="nc"><i>1481</i>&nbsp;                    com.sun.org.apache.bcel.internal.generic.ALOAD aload1 =</b>
+<b class="nc"><i>1482</i>&nbsp;                        (com.sun.org.apache.bcel.internal.generic.ALOAD) match[0].getInstruction();</b>
+<b class="nc"><i>1483</i>&nbsp;                    com.sun.org.apache.bcel.internal.generic.ALOAD aload2 =</b>
+<b class="nc"><i>1484</i>&nbsp;                        (com.sun.org.apache.bcel.internal.generic.ALOAD) match[1].getInstruction();</b>
+<i>1485</i>&nbsp;
+<b class="nc"><i>1486</i>&nbsp;                    if (aload1.getIndex() == aload2.getIndex()) {</b>
+<b class="nc"><i>1487</i>&nbsp;                        il.insert(match[1], new DUP());</b>
+<b class="nc"><i>1488</i>&nbsp;                        il.delete(match[1]);</b>
+<i>1489</i>&nbsp;                    }
+<i>1490</i>&nbsp;                }
+<i>1491</i>&nbsp;            }
+<b class="nc"><i>1492</i>&nbsp;            catch (TargetLostException e) {</b>
+<i>1493</i>&nbsp;                // TODO: move target down into the list
+<b class="nc"><i>1494</i>&nbsp;            }</b>
+<b class="nc"><i>1495</i>&nbsp;        }</b>
+<i>1496</i>&nbsp;    }
+<i>1497</i>&nbsp;
+<i>1498</i>&nbsp;    public InstructionHandle getTemplateInstructionHandle(Template template) {
+<b class="nc"><i>1499</i>&nbsp;        return _templateIHs.get(template);</b>
+<i>1500</i>&nbsp;    }
+<i>1501</i>&nbsp;
+<i>1502</i>&nbsp;    /**
+<i>1503</i>&nbsp;     * Auxiliary method to determine if a qname is an attribute.
+<i>1504</i>&nbsp;     */
+<i>1505</i>&nbsp;    private static boolean isAttributeName(String qname) {
+<b class="nc"><i>1506</i>&nbsp;        final int col = qname.lastIndexOf(&#39;:&#39;) + 1;</b>
+<b class="nc"><i>1507</i>&nbsp;        return (qname.charAt(col) == &#39;@&#39;);</b>
+<i>1508</i>&nbsp;    }
+<i>1509</i>&nbsp;
+<i>1510</i>&nbsp;    /**
+<i>1511</i>&nbsp;     * Auxiliary method to determine if a qname is a namespace
+<i>1512</i>&nbsp;     * qualified &quot;*&quot;.
+<i>1513</i>&nbsp;     */
+<i>1514</i>&nbsp;    private static boolean isNamespaceName(String qname) {
+<b class="nc"><i>1515</i>&nbsp;        final int col = qname.lastIndexOf(&#39;:&#39;);</b>
+<b class="nc"><i>1516</i>&nbsp;        return (col &gt; -1 &amp;&amp; qname.charAt(qname.length()-1) == &#39;*&#39;);</b>
+<i>1517</i>&nbsp;    }
+<i>1518</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

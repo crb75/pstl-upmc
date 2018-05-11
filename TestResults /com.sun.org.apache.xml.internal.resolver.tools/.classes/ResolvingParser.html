@@ -1,0 +1,529 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ResolvingParser</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.resolver.tools</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ResolvingParser (com.sun.org.apache.xml.internal.resolver.tools)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ResolvingParser</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 140)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;// ResolvingParser.java - An interface for reading catalog files
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;/*
+<i>8</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation or its licensors,
+<i>9</i>&nbsp; * as applicable.
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>12</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>13</i>&nbsp; * You may obtain a copy of the License at
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>18</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>19</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>20</i>&nbsp; * See the License for the specific language governing permissions and
+<i>21</i>&nbsp; * limitations under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xml.internal.resolver.tools;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.IOException;
+<i>27</i>&nbsp;import java.io.InputStream;
+<i>28</i>&nbsp;import java.net.URL;
+<i>29</i>&nbsp;import java.net.MalformedURLException;
+<i>30</i>&nbsp;import java.util.Locale;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import org.xml.sax.Parser;
+<i>33</i>&nbsp;import org.xml.sax.InputSource;
+<i>34</i>&nbsp;import org.xml.sax.Locator;
+<i>35</i>&nbsp;import org.xml.sax.ErrorHandler;
+<i>36</i>&nbsp;import org.xml.sax.DTDHandler;
+<i>37</i>&nbsp;import org.xml.sax.DocumentHandler;
+<i>38</i>&nbsp;import org.xml.sax.AttributeList;
+<i>39</i>&nbsp;import org.xml.sax.EntityResolver;
+<i>40</i>&nbsp;import org.xml.sax.SAXException;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import javax.xml.parsers.SAXParserFactory;
+<i>43</i>&nbsp;import javax.xml.parsers.SAXParser;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;import com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl;
+<i>46</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.Catalog;
+<i>47</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.CatalogManager;
+<i>48</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.helpers.FileURL;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;/**
+<i>51</i>&nbsp; * A SAX Parser that performs catalog-based entity resolution.
+<i>52</i>&nbsp; *
+<i>53</i>&nbsp; * &lt;p&gt;This class implements a SAX Parser that performs entity resolution
+<i>54</i>&nbsp; * using the CatalogResolver. The actual, underlying parser is obtained
+<i>55</i>&nbsp; * from a SAXParserFactory.&lt;/p&gt;
+<i>56</i>&nbsp; * &lt;/p&gt;
+<i>57</i>&nbsp; *
+<i>58</i>&nbsp; * @deprecated This interface has been replaced by the
+<i>59</i>&nbsp; *             {@link com.sun.org.apache.xml.internal.resolver.tools.ResolvingXMLReader} for SAX2.
+<i>60</i>&nbsp; * @see CatalogResolver
+<i>61</i>&nbsp; * @see org.xml.sax.Parser
+<i>62</i>&nbsp; *
+<i>63</i>&nbsp; * @author Norman Walsh
+<i>64</i>&nbsp; * &lt;a href=&quot;mailto:Norman.Walsh@Sun.COM&quot;&gt;Norman.Walsh@Sun.COM&lt;/a&gt;
+<i>65</i>&nbsp; *
+<i>66</i>&nbsp; * @version 1.0
+<i>67</i>&nbsp; */
+<i>68</i>&nbsp;public class ResolvingParser
+<i>69</i>&nbsp;  implements Parser, DTDHandler, DocumentHandler, EntityResolver {
+<i>70</i>&nbsp;  /** Make the parser Namespace aware? */
+<b class="nc"><i>71</i>&nbsp;  public static boolean namespaceAware = true;</b>
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;  /** Make the parser validating? */
+<b class="nc"><i>74</i>&nbsp;  public static boolean validating = false;</b>
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;  /** Suppress explanatory message?
+<i>77</i>&nbsp;   *
+<i>78</i>&nbsp;   * @see #parse(InputSource)
+<i>79</i>&nbsp;   */
+<b class="nc"><i>80</i>&nbsp;  public static boolean suppressExplanation = false;</b>
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;  /** The underlying parser. */
+<b class="nc"><i>83</i>&nbsp;  private SAXParser saxParser = null;</b>
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;  /** The underlying reader. */
+<b class="nc"><i>86</i>&nbsp;  private Parser parser = null;</b>
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;  /** The underlying DocumentHandler. */
+<b class="nc"><i>89</i>&nbsp;  private DocumentHandler documentHandler = null;</b>
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;  /** The underlying DTDHandler. */
+<b class="nc"><i>92</i>&nbsp;  private DTDHandler dtdHandler = null;</b>
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;  /** The manager for the underlying resolver. */
+<b class="nc"><i>95</i>&nbsp;  private CatalogManager catalogManager = CatalogManager.getStaticManager();</b>
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;  /** The underlying catalog resolver. */
+<b class="nc"><i>98</i>&nbsp;  private CatalogResolver catalogResolver = null;</b>
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;  /** A separate resolver for oasis-xml-pi catalogs. */
+<b class="nc"><i>101</i>&nbsp;  private CatalogResolver piCatalogResolver = null;</b>
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;  /** Are we in the prolog? Is an oasis-xml-catalog PI valid now? */
+<b class="nc"><i>104</i>&nbsp;  private boolean allowXMLCatalogPI = false;</b>
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;  /** Has an oasis-xml-catalog PI been seen? */
+<b class="nc"><i>107</i>&nbsp;  private boolean oasisXMLCatalogPI = false;</b>
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;  /** The base URI of the input document, if known. */
+<b class="nc"><i>110</i>&nbsp;  private URL baseURL = null;</b>
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;  /** Constructor. */
+<b class="nc"><i>113</i>&nbsp;  public ResolvingParser() {</b>
+<b class="nc"><i>114</i>&nbsp;    initParser();</b>
+<i>115</i>&nbsp;  }
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;  /** Constructor. */
+<b class="nc"><i>118</i>&nbsp;  public ResolvingParser(CatalogManager manager) {</b>
+<b class="nc"><i>119</i>&nbsp;    catalogManager = manager;</b>
+<b class="nc"><i>120</i>&nbsp;    initParser();</b>
+<i>121</i>&nbsp;  }
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;  /** Initialize the parser. */
+<i>124</i>&nbsp;  private void initParser() {
+<b class="nc"><i>125</i>&nbsp;    catalogResolver = new CatalogResolver(catalogManager);</b>
+<b class="nc"><i>126</i>&nbsp;    SAXParserFactory spf = catalogManager.useServicesMechanism() ?</b>
+<b class="nc"><i>127</i>&nbsp;                    SAXParserFactory.newInstance() : new SAXParserFactoryImpl();</b>
+<b class="nc"><i>128</i>&nbsp;    spf.setNamespaceAware(namespaceAware);</b>
+<b class="nc"><i>129</i>&nbsp;    spf.setValidating(validating);</b>
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;    try {
+<b class="nc"><i>132</i>&nbsp;      saxParser = spf.newSAXParser();</b>
+<b class="nc"><i>133</i>&nbsp;      parser = saxParser.getParser();</b>
+<b class="nc"><i>134</i>&nbsp;      documentHandler = null;</b>
+<b class="nc"><i>135</i>&nbsp;      dtdHandler = null;</b>
+<b class="nc"><i>136</i>&nbsp;    } catch (Exception ex) {</b>
+<b class="nc"><i>137</i>&nbsp;      ex.printStackTrace();</b>
+<b class="nc"><i>138</i>&nbsp;    }</b>
+<i>139</i>&nbsp;  }
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;  /** Return the Catalog being used. */
+<i>142</i>&nbsp;  public Catalog getCatalog() {
+<b class="nc"><i>143</i>&nbsp;    return catalogResolver.getCatalog();</b>
+<i>144</i>&nbsp;  }
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;  /**
+<i>147</i>&nbsp;   * SAX Parser API.
+<i>148</i>&nbsp;   *
+<i>149</i>&nbsp;   * &lt;p&gt;Note that the JAXP 1.1ea2 parser crashes with an InternalError if
+<i>150</i>&nbsp;   * it encounters a system identifier that appears to be a relative URI
+<i>151</i>&nbsp;   * that begins with a slash. For example, the declaration:&lt;/p&gt;
+<i>152</i>&nbsp;   *
+<i>153</i>&nbsp;   * &lt;pre&gt;
+<i>154</i>&nbsp;   * &amp;lt;!DOCTYPE book SYSTEM &quot;/path/to/dtd/on/my/system/docbookx.dtd&quot;&gt;
+<i>155</i>&nbsp;   * &lt;/pre&gt;
+<i>156</i>&nbsp;   *
+<i>157</i>&nbsp;   * &lt;p&gt;would cause such an error. As a convenience, this method catches
+<i>158</i>&nbsp;   * that error and prints an explanation. (Unfortunately, it&#39;s not possible
+<i>159</i>&nbsp;   * to identify the particular system identifier that causes the problem.)
+<i>160</i>&nbsp;   * &lt;/p&gt;
+<i>161</i>&nbsp;   *
+<i>162</i>&nbsp;   * &lt;p&gt;The underlying error is forwarded after printing the explanatory
+<i>163</i>&nbsp;   * message. The message is only every printed once and if
+<i>164</i>&nbsp;   * &lt;code&gt;suppressExplanation&lt;/code&gt; is set to &lt;code&gt;false&lt;/code&gt; before
+<i>165</i>&nbsp;   * parsing, it will never be printed.&lt;/p&gt;
+<i>166</i>&nbsp;   */
+<i>167</i>&nbsp;  public void parse(InputSource input)
+<i>168</i>&nbsp;    throws IOException,
+<i>169</i>&nbsp;           SAXException {
+<b class="nc"><i>170</i>&nbsp;    setupParse(input.getSystemId());</b>
+<i>171</i>&nbsp;    try {
+<b class="nc"><i>172</i>&nbsp;      parser.parse(input);</b>
+<b class="nc"><i>173</i>&nbsp;    } catch (InternalError ie) {</b>
+<b class="nc"><i>174</i>&nbsp;      explain(input.getSystemId());</b>
+<b class="nc"><i>175</i>&nbsp;      throw ie;</b>
+<b class="nc"><i>176</i>&nbsp;    }</b>
+<i>177</i>&nbsp;  }
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;  /** SAX Parser API.
+<i>180</i>&nbsp;   *
+<i>181</i>&nbsp;   * @see #parse(InputSource)
+<i>182</i>&nbsp;   */
+<i>183</i>&nbsp;  public void parse(String systemId)
+<i>184</i>&nbsp;    throws IOException,
+<i>185</i>&nbsp;           SAXException {
+<b class="nc"><i>186</i>&nbsp;    setupParse(systemId);</b>
+<i>187</i>&nbsp;    try {
+<b class="nc"><i>188</i>&nbsp;      parser.parse(systemId);</b>
+<b class="nc"><i>189</i>&nbsp;    } catch (InternalError ie) {</b>
+<b class="nc"><i>190</i>&nbsp;      explain(systemId);</b>
+<b class="nc"><i>191</i>&nbsp;      throw ie;</b>
+<b class="nc"><i>192</i>&nbsp;    }</b>
+<i>193</i>&nbsp;  }
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;  /** SAX Parser API. */
+<i>196</i>&nbsp;  public void setDocumentHandler(DocumentHandler handler) {
+<b class="nc"><i>197</i>&nbsp;    documentHandler = handler;</b>
+<i>198</i>&nbsp;  }
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;  /** SAX Parser API. */
+<i>201</i>&nbsp;  public void setDTDHandler(DTDHandler handler) {
+<b class="nc"><i>202</i>&nbsp;    dtdHandler = handler;</b>
+<i>203</i>&nbsp;  }
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;  /**
+<i>206</i>&nbsp;   * SAX Parser API.
+<i>207</i>&nbsp;   *
+<i>208</i>&nbsp;   * &lt;p&gt;The purpose of this class is to implement an entity resolver.
+<i>209</i>&nbsp;   * Attempting to set a different one is pointless (and ignored).&lt;/p&gt;
+<i>210</i>&nbsp;   */
+<i>211</i>&nbsp;  public void setEntityResolver(EntityResolver resolver) {
+<i>212</i>&nbsp;    // nop
+<i>213</i>&nbsp;  }
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;  /** SAX Parser API. */
+<i>216</i>&nbsp;  public void setErrorHandler(ErrorHandler handler) {
+<b class="nc"><i>217</i>&nbsp;    parser.setErrorHandler(handler);</b>
+<i>218</i>&nbsp;  }
+<i>219</i>&nbsp;
+<i>220</i>&nbsp;  /** SAX Parser API. */
+<i>221</i>&nbsp;  public void setLocale(Locale locale) throws SAXException {
+<b class="nc"><i>222</i>&nbsp;    parser.setLocale(locale);</b>
+<i>223</i>&nbsp;  }
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;  /** SAX DocumentHandler API. */
+<i>226</i>&nbsp;  public void characters(char[] ch, int start, int length)
+<i>227</i>&nbsp;    throws SAXException {
+<b class="nc"><i>228</i>&nbsp;    if (documentHandler != null) {</b>
+<b class="nc"><i>229</i>&nbsp;      documentHandler.characters(ch,start,length);</b>
+<i>230</i>&nbsp;    }
+<i>231</i>&nbsp;  }
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;  /** SAX DocumentHandler API. */
+<i>234</i>&nbsp;  public void endDocument() throws SAXException {
+<b class="nc"><i>235</i>&nbsp;    if (documentHandler != null) {</b>
+<b class="nc"><i>236</i>&nbsp;      documentHandler.endDocument();</b>
+<i>237</i>&nbsp;    }
+<i>238</i>&nbsp;  }
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;  /** SAX DocumentHandler API. */
+<i>241</i>&nbsp;  public void endElement(String name) throws SAXException {
+<b class="nc"><i>242</i>&nbsp;    if (documentHandler != null) {</b>
+<b class="nc"><i>243</i>&nbsp;      documentHandler.endElement(name);</b>
+<i>244</i>&nbsp;    }
+<i>245</i>&nbsp;  }
+<i>246</i>&nbsp;
+<i>247</i>&nbsp;  /** SAX DocumentHandler API. */
+<i>248</i>&nbsp;  public void ignorableWhitespace(char[] ch, int start, int length)
+<i>249</i>&nbsp;    throws SAXException {
+<b class="nc"><i>250</i>&nbsp;    if (documentHandler != null) {</b>
+<b class="nc"><i>251</i>&nbsp;      documentHandler.ignorableWhitespace(ch,start,length);</b>
+<i>252</i>&nbsp;    }
+<i>253</i>&nbsp;  }
+<i>254</i>&nbsp;
+<i>255</i>&nbsp;  /** SAX DocumentHandler API. */
+<i>256</i>&nbsp;  public void processingInstruction(String target, String pidata)
+<i>257</i>&nbsp;    throws SAXException {
+<i>258</i>&nbsp;
+<b class="nc"><i>259</i>&nbsp;    if (target.equals(&quot;oasis-xml-catalog&quot;)) {</b>
+<b class="nc"><i>260</i>&nbsp;      URL catalog = null;</b>
+<b class="nc"><i>261</i>&nbsp;      String data = pidata;</b>
+<i>262</i>&nbsp;
+<b class="nc"><i>263</i>&nbsp;      int pos = data.indexOf(&quot;catalog=&quot;);</b>
+<b class="nc"><i>264</i>&nbsp;      if (pos &gt;= 0) {</b>
+<b class="nc"><i>265</i>&nbsp;        data = data.substring(pos+8);</b>
+<b class="nc"><i>266</i>&nbsp;        if (data.length() &gt; 1) {</b>
+<b class="nc"><i>267</i>&nbsp;          String quote = data.substring(0,1);</b>
+<b class="nc"><i>268</i>&nbsp;          data = data.substring(1);</b>
+<b class="nc"><i>269</i>&nbsp;          pos = data.indexOf(quote);</b>
+<b class="nc"><i>270</i>&nbsp;          if (pos &gt;= 0) {</b>
+<b class="nc"><i>271</i>&nbsp;            data = data.substring(0, pos);</b>
+<i>272</i>&nbsp;            try {
+<b class="nc"><i>273</i>&nbsp;              if (baseURL != null) {</b>
+<b class="nc"><i>274</i>&nbsp;                catalog = new URL(baseURL, data);</b>
+<i>275</i>&nbsp;              } else {
+<b class="nc"><i>276</i>&nbsp;                catalog = new URL(data);</b>
+<i>277</i>&nbsp;              }
+<b class="nc"><i>278</i>&nbsp;            } catch (MalformedURLException mue) {</b>
+<i>279</i>&nbsp;              // nevermind
+<b class="nc"><i>280</i>&nbsp;            }</b>
+<i>281</i>&nbsp;          }
+<i>282</i>&nbsp;        }
+<i>283</i>&nbsp;      }
+<i>284</i>&nbsp;
+<b class="nc"><i>285</i>&nbsp;      if (allowXMLCatalogPI) {</b>
+<b class="nc"><i>286</i>&nbsp;        if (catalogManager.getAllowOasisXMLCatalogPI()) {</b>
+<b class="nc"><i>287</i>&nbsp;          catalogManager.debug.message(4,&quot;oasis-xml-catalog PI&quot;, pidata);</b>
+<i>288</i>&nbsp;
+<b class="nc"><i>289</i>&nbsp;          if (catalog != null) {</b>
+<i>290</i>&nbsp;            try {
+<b class="nc"><i>291</i>&nbsp;              catalogManager.debug.message(4,&quot;oasis-xml-catalog&quot;, catalog.toString());</b>
+<b class="nc"><i>292</i>&nbsp;              oasisXMLCatalogPI = true;</b>
+<i>293</i>&nbsp;
+<b class="nc"><i>294</i>&nbsp;              if (piCatalogResolver == null) {</b>
+<b class="nc"><i>295</i>&nbsp;                piCatalogResolver = new CatalogResolver(true);</b>
+<i>296</i>&nbsp;              }
+<i>297</i>&nbsp;
+<b class="nc"><i>298</i>&nbsp;              piCatalogResolver.getCatalog().parseCatalog(catalog.toString());</b>
+<b class="nc"><i>299</i>&nbsp;            } catch (Exception e) {</b>
+<b class="nc"><i>300</i>&nbsp;              catalogManager.debug.message(3, &quot;Exception parsing oasis-xml-catalog: &quot;</b>
+<b class="nc"><i>301</i>&nbsp;                            + catalog.toString());</b>
+<b class="nc"><i>302</i>&nbsp;            }</b>
+<i>303</i>&nbsp;          } else {
+<b class="nc"><i>304</i>&nbsp;            catalogManager.debug.message(3, &quot;PI oasis-xml-catalog unparseable: &quot; + pidata);</b>
+<i>305</i>&nbsp;          }
+<i>306</i>&nbsp;        } else {
+<b class="nc"><i>307</i>&nbsp;          catalogManager.debug.message(4,&quot;PI oasis-xml-catalog ignored: &quot; + pidata);</b>
+<i>308</i>&nbsp;        }
+<i>309</i>&nbsp;      } else {
+<b class="nc"><i>310</i>&nbsp;        catalogManager.debug.message(3, &quot;PI oasis-xml-catalog occurred in an invalid place: &quot;</b>
+<i>311</i>&nbsp;                      + pidata);
+<i>312</i>&nbsp;      }
+<b class="nc"><i>313</i>&nbsp;    } else {</b>
+<b class="nc"><i>314</i>&nbsp;      if (documentHandler != null) {</b>
+<b class="nc"><i>315</i>&nbsp;        documentHandler.processingInstruction(target, pidata);</b>
+<i>316</i>&nbsp;      }
+<i>317</i>&nbsp;    }
+<i>318</i>&nbsp;  }
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;  /** SAX DocumentHandler API. */
+<i>321</i>&nbsp;  public void setDocumentLocator(Locator locator) {
+<b class="nc"><i>322</i>&nbsp;    if (documentHandler != null) {</b>
+<b class="nc"><i>323</i>&nbsp;      documentHandler.setDocumentLocator(locator);</b>
+<i>324</i>&nbsp;    }
+<i>325</i>&nbsp;  }
+<i>326</i>&nbsp;
+<i>327</i>&nbsp;  /** SAX DocumentHandler API. */
+<i>328</i>&nbsp;  public void startDocument() throws SAXException {
+<b class="nc"><i>329</i>&nbsp;    if (documentHandler != null) {</b>
+<b class="nc"><i>330</i>&nbsp;      documentHandler.startDocument();</b>
+<i>331</i>&nbsp;    }
+<i>332</i>&nbsp;  }
+<i>333</i>&nbsp;
+<i>334</i>&nbsp;  /** SAX DocumentHandler API. */
+<i>335</i>&nbsp;  public void startElement(String name, AttributeList atts)
+<i>336</i>&nbsp;    throws SAXException {
+<b class="nc"><i>337</i>&nbsp;    allowXMLCatalogPI = false;</b>
+<b class="nc"><i>338</i>&nbsp;    if (documentHandler != null) {</b>
+<b class="nc"><i>339</i>&nbsp;      documentHandler.startElement(name,atts);</b>
+<i>340</i>&nbsp;    }
+<i>341</i>&nbsp;  }
+<i>342</i>&nbsp;
+<i>343</i>&nbsp;  /** SAX DTDHandler API. */
+<i>344</i>&nbsp;  public void notationDecl (String name, String publicId, String systemId)
+<i>345</i>&nbsp;    throws SAXException {
+<b class="nc"><i>346</i>&nbsp;    allowXMLCatalogPI = false;</b>
+<b class="nc"><i>347</i>&nbsp;    if (dtdHandler != null) {</b>
+<b class="nc"><i>348</i>&nbsp;      dtdHandler.notationDecl(name,publicId,systemId);</b>
+<i>349</i>&nbsp;    }
+<i>350</i>&nbsp;  }
+<i>351</i>&nbsp;
+<i>352</i>&nbsp;  /** SAX DTDHandler API. */
+<i>353</i>&nbsp;  public void unparsedEntityDecl (String name,
+<i>354</i>&nbsp;                                  String publicId,
+<i>355</i>&nbsp;                                  String systemId,
+<i>356</i>&nbsp;                                  String notationName)
+<i>357</i>&nbsp;    throws SAXException {
+<b class="nc"><i>358</i>&nbsp;    allowXMLCatalogPI = false;</b>
+<b class="nc"><i>359</i>&nbsp;    if (dtdHandler != null) {</b>
+<b class="nc"><i>360</i>&nbsp;      dtdHandler.unparsedEntityDecl (name, publicId, systemId, notationName);</b>
+<i>361</i>&nbsp;    }
+<i>362</i>&nbsp;  }
+<i>363</i>&nbsp;
+<i>364</i>&nbsp;  /**
+<i>365</i>&nbsp;   * Implements the &lt;code&gt;resolveEntity&lt;/code&gt; method
+<i>366</i>&nbsp;   * for the SAX interface, using an underlying CatalogResolver
+<i>367</i>&nbsp;   * to do the real work.
+<i>368</i>&nbsp;   */
+<i>369</i>&nbsp;  public InputSource resolveEntity (String publicId, String systemId) {
+<b class="nc"><i>370</i>&nbsp;    allowXMLCatalogPI = false;</b>
+<b class="nc"><i>371</i>&nbsp;    String resolved = catalogResolver.getResolvedEntity(publicId, systemId);</b>
+<i>372</i>&nbsp;
+<b class="nc"><i>373</i>&nbsp;    if (resolved == null &amp;&amp; piCatalogResolver != null) {</b>
+<b class="nc"><i>374</i>&nbsp;      resolved = piCatalogResolver.getResolvedEntity(publicId, systemId);</b>
+<i>375</i>&nbsp;    }
+<i>376</i>&nbsp;
+<b class="nc"><i>377</i>&nbsp;    if (resolved != null) {</b>
+<i>378</i>&nbsp;      try {
+<b class="nc"><i>379</i>&nbsp;        InputSource iSource = new InputSource(resolved);</b>
+<b class="nc"><i>380</i>&nbsp;        iSource.setPublicId(publicId);</b>
+<i>381</i>&nbsp;
+<i>382</i>&nbsp;        // Ideally this method would not attempt to open the
+<i>383</i>&nbsp;        // InputStream, but there is a bug (in Xerces, at least)
+<i>384</i>&nbsp;        // that causes the parser to mistakenly open the wrong
+<i>385</i>&nbsp;        // system identifier if the returned InputSource does
+<i>386</i>&nbsp;        // not have a byteStream.
+<i>387</i>&nbsp;        //
+<i>388</i>&nbsp;        // It could be argued that we still shouldn&#39;t do this here,
+<i>389</i>&nbsp;        // but since the purpose of calling the entityResolver is
+<i>390</i>&nbsp;        // almost certainly to open the input stream, it seems to
+<i>391</i>&nbsp;        // do little harm.
+<i>392</i>&nbsp;        //
+<b class="nc"><i>393</i>&nbsp;        URL url = new URL(resolved);</b>
+<b class="nc"><i>394</i>&nbsp;        InputStream iStream = url.openStream();</b>
+<b class="nc"><i>395</i>&nbsp;        iSource.setByteStream(iStream);</b>
+<i>396</i>&nbsp;
+<b class="nc"><i>397</i>&nbsp;        return iSource;</b>
+<b class="nc"><i>398</i>&nbsp;      } catch (Exception e) {</b>
+<b class="nc"><i>399</i>&nbsp;        catalogManager.debug.message(1, &quot;Failed to create InputSource&quot;, resolved);</b>
+<b class="nc"><i>400</i>&nbsp;        return null;</b>
+<i>401</i>&nbsp;      }
+<i>402</i>&nbsp;    } else {
+<b class="nc"><i>403</i>&nbsp;      return null;</b>
+<i>404</i>&nbsp;    }
+<i>405</i>&nbsp;  }
+<i>406</i>&nbsp;
+<i>407</i>&nbsp;  /** Setup for parsing. */
+<i>408</i>&nbsp;  private void setupParse(String systemId) {
+<b class="nc"><i>409</i>&nbsp;    allowXMLCatalogPI = true;</b>
+<b class="nc"><i>410</i>&nbsp;    parser.setEntityResolver(this);</b>
+<b class="nc"><i>411</i>&nbsp;    parser.setDocumentHandler(this);</b>
+<b class="nc"><i>412</i>&nbsp;    parser.setDTDHandler(this);</b>
+<i>413</i>&nbsp;
+<b class="nc"><i>414</i>&nbsp;    URL cwd = null;</b>
+<i>415</i>&nbsp;
+<i>416</i>&nbsp;    try {
+<b class="nc"><i>417</i>&nbsp;      cwd = FileURL.makeURL(&quot;basename&quot;);</b>
+<b class="nc"><i>418</i>&nbsp;    } catch (MalformedURLException mue) {</b>
+<b class="nc"><i>419</i>&nbsp;      cwd = null;</b>
+<b class="nc"><i>420</i>&nbsp;    }</b>
+<i>421</i>&nbsp;
+<i>422</i>&nbsp;    try {
+<b class="nc"><i>423</i>&nbsp;      baseURL = new URL(systemId);</b>
+<b class="nc"><i>424</i>&nbsp;    } catch (MalformedURLException mue) {</b>
+<b class="nc"><i>425</i>&nbsp;      if (cwd != null) {</b>
+<i>426</i>&nbsp;        try {
+<b class="nc"><i>427</i>&nbsp;          baseURL = new URL(cwd, systemId);</b>
+<b class="nc"><i>428</i>&nbsp;        } catch (MalformedURLException mue2) {</b>
+<i>429</i>&nbsp;          // give up
+<b class="nc"><i>430</i>&nbsp;          baseURL = null;</b>
+<b class="nc"><i>431</i>&nbsp;        }</b>
+<i>432</i>&nbsp;      } else {
+<i>433</i>&nbsp;        // give up
+<b class="nc"><i>434</i>&nbsp;        baseURL = null;</b>
+<i>435</i>&nbsp;      }
+<b class="nc"><i>436</i>&nbsp;    }</b>
+<i>437</i>&nbsp;  }
+<i>438</i>&nbsp;
+<i>439</i>&nbsp;  /** Provide one possible explanation for an InternalError. */
+<i>440</i>&nbsp;  private void explain(String systemId) {
+<b class="nc"><i>441</i>&nbsp;    if (!suppressExplanation) {</b>
+<b class="nc"><i>442</i>&nbsp;      System.out.println(&quot;Parser probably encountered bad URI in &quot; + systemId);</b>
+<b class="nc"><i>443</i>&nbsp;      System.out.println(&quot;For example, replace &#39;/some/uri&#39; with &#39;file:/some/uri&#39;.&quot;);</b>
+<i>444</i>&nbsp;    }
+<i>445</i>&nbsp;  }
+<i>446</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

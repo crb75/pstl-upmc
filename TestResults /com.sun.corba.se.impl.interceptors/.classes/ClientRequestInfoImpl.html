@@ -1,0 +1,1061 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ClientRequestInfoImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.interceptors</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ClientRequestInfoImpl (com.sun.corba.se.impl.interceptors)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ClientRequestInfoImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 41)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 225)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2012, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.interceptors;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.util.HashMap ;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import org.omg.CORBA.Any;
+<i>31</i>&nbsp;import org.omg.CORBA.BAD_INV_ORDER;
+<i>32</i>&nbsp;import org.omg.CORBA.BAD_PARAM;
+<i>33</i>&nbsp;import org.omg.CORBA.CompletionStatus;
+<i>34</i>&nbsp;import org.omg.CORBA.Context;
+<i>35</i>&nbsp;import org.omg.CORBA.ContextList;
+<i>36</i>&nbsp;import org.omg.CORBA.CTX_RESTRICT_SCOPE;
+<i>37</i>&nbsp;import org.omg.CORBA.ExceptionList;
+<i>38</i>&nbsp;import org.omg.CORBA.LocalObject;
+<i>39</i>&nbsp;import org.omg.CORBA.NamedValue;
+<i>40</i>&nbsp;import org.omg.CORBA.NO_IMPLEMENT;
+<i>41</i>&nbsp;import org.omg.CORBA.NO_RESOURCES;
+<i>42</i>&nbsp;import org.omg.CORBA.NVList;
+<i>43</i>&nbsp;import org.omg.CORBA.Object;
+<i>44</i>&nbsp;import org.omg.CORBA.ParameterMode;
+<i>45</i>&nbsp;import org.omg.CORBA.Policy;
+<i>46</i>&nbsp;import org.omg.CORBA.SystemException;
+<i>47</i>&nbsp;import org.omg.CORBA.TypeCode;
+<i>48</i>&nbsp;import org.omg.CORBA.INTERNAL;
+<i>49</i>&nbsp;import org.omg.CORBA.UserException;
+<i>50</i>&nbsp;import org.omg.CORBA.portable.ApplicationException;
+<i>51</i>&nbsp;import org.omg.CORBA.portable.InputStream;
+<i>52</i>&nbsp;import com.sun.corba.se.spi.servicecontext.ServiceContexts;
+<i>53</i>&nbsp;import com.sun.corba.se.spi.servicecontext.UnknownServiceContext;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;import org.omg.IOP.ServiceContext;
+<i>56</i>&nbsp;import org.omg.IOP.ServiceContextHelper;
+<i>57</i>&nbsp;import org.omg.IOP.TaggedProfile;
+<i>58</i>&nbsp;import org.omg.IOP.TaggedProfileHelper;
+<i>59</i>&nbsp;import org.omg.IOP.TaggedComponent;
+<i>60</i>&nbsp;import org.omg.IOP.TaggedComponentHelper;
+<i>61</i>&nbsp;import org.omg.IOP.TAG_INTERNET_IOP;
+<i>62</i>&nbsp;import org.omg.Dynamic.Parameter;
+<i>63</i>&nbsp;import org.omg.PortableInterceptor.ClientRequestInfo;
+<i>64</i>&nbsp;import org.omg.PortableInterceptor.LOCATION_FORWARD;
+<i>65</i>&nbsp;import org.omg.PortableInterceptor.SUCCESSFUL;
+<i>66</i>&nbsp;import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+<i>67</i>&nbsp;import org.omg.PortableInterceptor.TRANSPORT_RETRY;
+<i>68</i>&nbsp;import org.omg.PortableInterceptor.USER_EXCEPTION;
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;import com.sun.corba.se.pept.protocol.MessageMediator;
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;import com.sun.corba.se.spi.ior.IOR;
+<i>73</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.IIOPProfileTemplate;
+<i>74</i>&nbsp;import com.sun.corba.se.spi.ior.iiop.GIOPVersion;
+<i>75</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>76</i>&nbsp;import com.sun.corba.se.spi.protocol.CorbaMessageMediator;
+<i>77</i>&nbsp;import com.sun.corba.se.spi.protocol.RetryType;
+<i>78</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaContactInfo;
+<i>79</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaContactInfoList;
+<i>80</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaContactInfoListIterator;
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;import com.sun.corba.se.impl.encoding.CDROutputStream;
+<i>83</i>&nbsp;import com.sun.corba.se.impl.encoding.CDRInputStream_1_0;
+<i>84</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBUtility;
+<i>85</i>&nbsp;import com.sun.corba.se.impl.protocol.CorbaInvocationInfo;
+<i>86</i>&nbsp;import com.sun.corba.se.impl.util.RepositoryId;
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;/**
+<i>89</i>&nbsp; * Implementation of the ClientRequestInfo interface as specified in
+<i>90</i>&nbsp; * orbos/99-12-02 section 5.4.2.
+<i>91</i>&nbsp; */
+<i>92</i>&nbsp;public final class ClientRequestInfoImpl
+<i>93</i>&nbsp;    extends RequestInfoImpl
+<i>94</i>&nbsp;    implements ClientRequestInfo
+<i>95</i>&nbsp;{
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    // The available constants for startingPointCall
+<i>98</i>&nbsp;    static final int CALL_SEND_REQUEST = 0;
+<i>99</i>&nbsp;    static final int CALL_SEND_POLL = 1;
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;    // The available constants for endingPointCall
+<i>102</i>&nbsp;    static final int CALL_RECEIVE_REPLY = 0;
+<i>103</i>&nbsp;    static final int CALL_RECEIVE_EXCEPTION = 1;
+<i>104</i>&nbsp;    static final int CALL_RECEIVE_OTHER = 2;
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;    //////////////////////////////////////////////////////////////////////
+<i>107</i>&nbsp;    //
+<i>108</i>&nbsp;    // NOTE: IF AN ATTRIBUTE IS ADDED, PLEASE UPDATE RESET();
+<i>109</i>&nbsp;    //
+<i>110</i>&nbsp;    //////////////////////////////////////////////////////////////////////
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;    // The current retry request status.  True if this request is being
+<i>113</i>&nbsp;    // retried and this info object is to be reused, or false otherwise.
+<i>114</i>&nbsp;    private RetryType retryRequest;
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;    // The number of times this info object has been (re)used.  This is
+<i>117</i>&nbsp;    // incremented every time a request is retried, and decremented every
+<i>118</i>&nbsp;    // time a request is complete.  When this reaches zero, the info object
+<i>119</i>&nbsp;    // is popped from the ClientRequestInfoImpl ThreadLocal stack in the ORB.
+<b class="nc"><i>120</i>&nbsp;    private int entryCount = 0;</b>
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;    // The RequestImpl is set when the call is DII based.
+<i>123</i>&nbsp;    // The DII query calls like ParameterList, ExceptionList,
+<i>124</i>&nbsp;    // ContextList will be delegated to RequestImpl.
+<i>125</i>&nbsp;    private org.omg.CORBA.Request request;
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;    // Sources of client request information
+<i>128</i>&nbsp;    private boolean diiInitiate;
+<i>129</i>&nbsp;    private CorbaMessageMediator messageMediator;
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;    // Cached information:
+<i>132</i>&nbsp;    private org.omg.CORBA.Object cachedTargetObject;
+<i>133</i>&nbsp;    private org.omg.CORBA.Object cachedEffectiveTargetObject;
+<i>134</i>&nbsp;    private Parameter[] cachedArguments;
+<i>135</i>&nbsp;    private TypeCode[] cachedExceptions;
+<i>136</i>&nbsp;    private String[] cachedContexts;
+<i>137</i>&nbsp;    private String[] cachedOperationContext;
+<i>138</i>&nbsp;    private String cachedReceivedExceptionId;
+<i>139</i>&nbsp;    private Any cachedResult;
+<i>140</i>&nbsp;    private Any cachedReceivedException;
+<i>141</i>&nbsp;    private TaggedProfile cachedEffectiveProfile;
+<i>142</i>&nbsp;    // key = Integer, value = IOP.ServiceContext.
+<i>143</i>&nbsp;    private HashMap cachedRequestServiceContexts;
+<i>144</i>&nbsp;    // key = Integer, value = IOP.ServiceContext.
+<i>145</i>&nbsp;    private HashMap cachedReplyServiceContexts;
+<i>146</i>&nbsp;    // key = Integer, value = TaggedComponent
+<i>147</i>&nbsp;    private HashMap cachedEffectiveComponents;
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;    protected boolean piCurrentPushed;
+<i>151</i>&nbsp;
+<i>152</i>&nbsp;    //////////////////////////////////////////////////////////////////////
+<i>153</i>&nbsp;    //
+<i>154</i>&nbsp;    // NOTE: IF AN ATTRIBUTE IS ADDED, PLEASE UPDATE RESET();
+<i>155</i>&nbsp;    //
+<i>156</i>&nbsp;    //////////////////////////////////////////////////////////////////////
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;    /**
+<i>159</i>&nbsp;     * Reset the info object so that it can be reused for a retry,
+<i>160</i>&nbsp;     * for example.
+<i>161</i>&nbsp;     */
+<i>162</i>&nbsp;    void reset() {
+<b class="nc"><i>163</i>&nbsp;        super.reset();</b>
+<i>164</i>&nbsp;
+<i>165</i>&nbsp;        // Please keep these in the same order that they&#39;re declared above.
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;        // 6763340
+<b class="nc"><i>168</i>&nbsp;        retryRequest = RetryType.NONE;</b>
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;        // Do not reset entryCount because we need to know when to pop this
+<i>171</i>&nbsp;        // from the stack.
+<i>172</i>&nbsp;
+<b class="nc"><i>173</i>&nbsp;        request = null;</b>
+<b class="nc"><i>174</i>&nbsp;        diiInitiate = false;</b>
+<b class="nc"><i>175</i>&nbsp;        messageMediator = null;</b>
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;        // Clear cached attributes:
+<b class="nc"><i>178</i>&nbsp;        cachedTargetObject = null;</b>
+<b class="nc"><i>179</i>&nbsp;        cachedEffectiveTargetObject = null;</b>
+<b class="nc"><i>180</i>&nbsp;        cachedArguments = null;</b>
+<b class="nc"><i>181</i>&nbsp;        cachedExceptions = null;</b>
+<b class="nc"><i>182</i>&nbsp;        cachedContexts = null;</b>
+<b class="nc"><i>183</i>&nbsp;        cachedOperationContext = null;</b>
+<b class="nc"><i>184</i>&nbsp;        cachedReceivedExceptionId = null;</b>
+<b class="nc"><i>185</i>&nbsp;        cachedResult = null;</b>
+<b class="nc"><i>186</i>&nbsp;        cachedReceivedException = null;</b>
+<b class="nc"><i>187</i>&nbsp;        cachedEffectiveProfile = null;</b>
+<b class="nc"><i>188</i>&nbsp;        cachedRequestServiceContexts = null;</b>
+<b class="nc"><i>189</i>&nbsp;        cachedReplyServiceContexts = null;</b>
+<b class="nc"><i>190</i>&nbsp;        cachedEffectiveComponents = null;</b>
+<i>191</i>&nbsp;
+<b class="nc"><i>192</i>&nbsp;        piCurrentPushed = false;</b>
+<i>193</i>&nbsp;
+<b class="nc"><i>194</i>&nbsp;        startingPointCall = CALL_SEND_REQUEST;</b>
+<b class="nc"><i>195</i>&nbsp;        endingPointCall = CALL_RECEIVE_REPLY;</b>
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;    }
+<i>198</i>&nbsp;
+<i>199</i>&nbsp;    /*
+<i>200</i>&nbsp;     **********************************************************************
+<i>201</i>&nbsp;     * Access protection
+<i>202</i>&nbsp;     **********************************************************************/
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;    // Method IDs for all methods in ClientRequestInfo.  This allows for a
+<i>205</i>&nbsp;    // convenient O(1) lookup for checkAccess().
+<i>206</i>&nbsp;    protected static final int MID_TARGET                  = MID_RI_LAST + 1;
+<i>207</i>&nbsp;    protected static final int MID_EFFECTIVE_TARGET        = MID_RI_LAST + 2;
+<i>208</i>&nbsp;    protected static final int MID_EFFECTIVE_PROFILE       = MID_RI_LAST + 3;
+<i>209</i>&nbsp;    protected static final int MID_RECEIVED_EXCEPTION      = MID_RI_LAST + 4;
+<i>210</i>&nbsp;    protected static final int MID_RECEIVED_EXCEPTION_ID   = MID_RI_LAST + 5;
+<i>211</i>&nbsp;    protected static final int MID_GET_EFFECTIVE_COMPONENT = MID_RI_LAST + 6;
+<i>212</i>&nbsp;    protected static final int MID_GET_EFFECTIVE_COMPONENTS
+<i>213</i>&nbsp;                                                           = MID_RI_LAST + 7;
+<i>214</i>&nbsp;    protected static final int MID_GET_REQUEST_POLICY      = MID_RI_LAST + 8;
+<i>215</i>&nbsp;    protected static final int MID_ADD_REQUEST_SERVICE_CONTEXT
+<i>216</i>&nbsp;                                                           = MID_RI_LAST + 9;
+<i>217</i>&nbsp;
+<i>218</i>&nbsp;    // ClientRequestInfo validity table (see ptc/00-08-06 table 21-1).
+<i>219</i>&nbsp;    // Note: These must be in the same order as specified in contants.
+<b class="nc"><i>220</i>&nbsp;    private static final boolean validCall[][] = {</b>
+<i>221</i>&nbsp;        // LEGEND:
+<i>222</i>&nbsp;        // s_req = send_request     r_rep = receive_reply
+<i>223</i>&nbsp;        // s_pol = send_poll        r_exc = receive_exception
+<i>224</i>&nbsp;        //                          r_oth = receive_other
+<i>225</i>&nbsp;        //
+<i>226</i>&nbsp;        // A true value indicates call is valid at specified point.
+<i>227</i>&nbsp;        // A false value indicates the call is invalid.
+<i>228</i>&nbsp;        //
+<i>229</i>&nbsp;        //
+<i>230</i>&nbsp;        // NOTE: If the order or number of columns change, update
+<i>231</i>&nbsp;        // checkAccess() accordingly.
+<i>232</i>&nbsp;        //
+<i>233</i>&nbsp;        //                              { s_req, s_pol, r_rep, r_exc, r_oth }
+<i>234</i>&nbsp;        // RequestInfo methods:
+<i>235</i>&nbsp;        /*request_id*/                  { true , true , true , true , true  },
+<i>236</i>&nbsp;        /*operation*/                   { true , true , true , true , true  },
+<i>237</i>&nbsp;        /*arguments*/                   { true , false, true , false, false },
+<i>238</i>&nbsp;        /*exceptions*/                  { true , false, true , true , true  },
+<i>239</i>&nbsp;        /*contexts*/                    { true , false, true , true , true  },
+<i>240</i>&nbsp;        /*operation_context*/           { true , false, true , true , true  },
+<i>241</i>&nbsp;        /*result*/                      { false, false, true , false, false },
+<i>242</i>&nbsp;        /*response_expected*/           { true , true , true , true , true  },
+<i>243</i>&nbsp;        /*sync_scope*/                  { true , false, true , true , true  },
+<i>244</i>&nbsp;        /*reply_status*/                { false, false, true , true , true  },
+<i>245</i>&nbsp;        /*forward_reference*/           { false, false, false, false, true  },
+<i>246</i>&nbsp;        /*get_slot*/                    { true , true , true , true , true  },
+<i>247</i>&nbsp;        /*get_request_service_context*/ { true , false, true , true , true  },
+<i>248</i>&nbsp;        /*get_reply_service_context*/   { false, false, true , true , true  },
+<i>249</i>&nbsp;        //
+<i>250</i>&nbsp;        // ClientRequestInfo methods::
+<i>251</i>&nbsp;        /*target*/                      { true , true , true , true , true  },
+<i>252</i>&nbsp;        /*effective_target*/            { true , true , true , true , true  },
+<i>253</i>&nbsp;        /*effective_profile*/           { true , true , true , true , true  },
+<i>254</i>&nbsp;        /*received_exception*/          { false, false, false, true , false },
+<i>255</i>&nbsp;        /*received_exception_id*/       { false, false, false, true , false },
+<i>256</i>&nbsp;        /*get_effective_component*/     { true , false, true , true , true  },
+<i>257</i>&nbsp;        /*get_effective_components*/    { true , false, true , true , true  },
+<i>258</i>&nbsp;        /*get_request_policy*/          { true , false, true , true , true  },
+<i>259</i>&nbsp;        /*add_request_service_context*/ { true , false, false, false, false }
+<i>260</i>&nbsp;    };
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;    /*
+<i>264</i>&nbsp;     **********************************************************************
+<i>265</i>&nbsp;     * Public ClientRequestInfo interfaces
+<i>266</i>&nbsp;     **********************************************************************/
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;    /**
+<i>269</i>&nbsp;     * Creates a new ClientRequestInfo implementation.
+<i>270</i>&nbsp;     * The constructor is package scope since no other package need create
+<i>271</i>&nbsp;     * an instance of this class.
+<i>272</i>&nbsp;     */
+<i>273</i>&nbsp;    protected ClientRequestInfoImpl( ORB myORB ) {
+<b class="nc"><i>274</i>&nbsp;        super( myORB );</b>
+<b class="nc"><i>275</i>&nbsp;        startingPointCall = CALL_SEND_REQUEST;</b>
+<b class="nc"><i>276</i>&nbsp;        endingPointCall = CALL_RECEIVE_REPLY;</b>
+<i>277</i>&nbsp;    }
+<i>278</i>&nbsp;
+<i>279</i>&nbsp;    /**
+<i>280</i>&nbsp;     * The object which the client called to perform the operation.
+<i>281</i>&nbsp;     */
+<i>282</i>&nbsp;    public org.omg.CORBA.Object target (){
+<i>283</i>&nbsp;        // access is currently valid for all states:
+<i>284</i>&nbsp;        //checkAccess( MID_TARGET );
+<b class="nc"><i>285</i>&nbsp;        if (cachedTargetObject == null) {</b>
+<b class="nc"><i>286</i>&nbsp;            CorbaContactInfo corbaContactInfo = (CorbaContactInfo)</b>
+<b class="nc"><i>287</i>&nbsp;                messageMediator.getContactInfo();</b>
+<b class="nc"><i>288</i>&nbsp;            cachedTargetObject =</b>
+<b class="nc"><i>289</i>&nbsp;                iorToObject(corbaContactInfo.getTargetIOR());</b>
+<i>290</i>&nbsp;        }
+<b class="nc"><i>291</i>&nbsp;        return cachedTargetObject;</b>
+<i>292</i>&nbsp;    }
+<i>293</i>&nbsp;
+<i>294</i>&nbsp;    /**
+<i>295</i>&nbsp;     * The actual object on which the operation will be invoked.  If the
+<i>296</i>&nbsp;     * reply_status is LOCATION_FORWARD, then on subsequent requests,
+<i>297</i>&nbsp;     * effective_target will contain the forwarded IOR while target will
+<i>298</i>&nbsp;     * remain unchanged.
+<i>299</i>&nbsp;     */
+<i>300</i>&nbsp;    public org.omg.CORBA.Object effective_target() {
+<i>301</i>&nbsp;        // access is currently valid for all states:
+<i>302</i>&nbsp;        //checkAccess( MID_EFFECTIVE_TARGET );
+<i>303</i>&nbsp;
+<i>304</i>&nbsp;        // Note: This is not necessarily the same as locatedIOR.
+<i>305</i>&nbsp;        // Reason: See the way we handle COMM_FAILURES in
+<i>306</i>&nbsp;        // ClientRequestDispatcher.createRequest, v1.32
+<i>307</i>&nbsp;
+<b class="nc"><i>308</i>&nbsp;        if (cachedEffectiveTargetObject == null) {</b>
+<b class="nc"><i>309</i>&nbsp;            CorbaContactInfo corbaContactInfo = (CorbaContactInfo)</b>
+<b class="nc"><i>310</i>&nbsp;                messageMediator.getContactInfo();</b>
+<i>311</i>&nbsp;            // REVISIT - get through chain like getLocatedIOR helper below.
+<b class="nc"><i>312</i>&nbsp;            cachedEffectiveTargetObject =</b>
+<b class="nc"><i>313</i>&nbsp;                iorToObject(corbaContactInfo.getEffectiveTargetIOR());</b>
+<i>314</i>&nbsp;        }
+<b class="nc"><i>315</i>&nbsp;        return cachedEffectiveTargetObject;</b>
+<i>316</i>&nbsp;    }
+<i>317</i>&nbsp;
+<i>318</i>&nbsp;    /**
+<i>319</i>&nbsp;     * The profile that will be used to send the request.  If a location
+<i>320</i>&nbsp;     * forward has occurred for this operation&#39;s object and that object&#39;s
+<i>321</i>&nbsp;     * profile change accordingly, then this profile will be that located
+<i>322</i>&nbsp;     * profile.
+<i>323</i>&nbsp;     */
+<i>324</i>&nbsp;    public TaggedProfile effective_profile (){
+<i>325</i>&nbsp;        // access is currently valid for all states:
+<i>326</i>&nbsp;        //checkAccess( MID_EFFECTIVE_PROFILE );
+<i>327</i>&nbsp;
+<b class="nc"><i>328</i>&nbsp;        if( cachedEffectiveProfile == null ) {</b>
+<b class="nc"><i>329</i>&nbsp;            CorbaContactInfo corbaContactInfo = (CorbaContactInfo)</b>
+<b class="nc"><i>330</i>&nbsp;                messageMediator.getContactInfo();</b>
+<b class="nc"><i>331</i>&nbsp;            cachedEffectiveProfile =</b>
+<b class="nc"><i>332</i>&nbsp;                corbaContactInfo.getEffectiveProfile().getIOPProfile();</b>
+<i>333</i>&nbsp;        }
+<i>334</i>&nbsp;
+<i>335</i>&nbsp;        // Good citizen: In the interest of efficiency, we assume interceptors
+<i>336</i>&nbsp;        // will not modify the returned TaggedProfile in any way so we need
+<i>337</i>&nbsp;        // not make a deep copy of it.
+<i>338</i>&nbsp;
+<b class="nc"><i>339</i>&nbsp;        return cachedEffectiveProfile;</b>
+<i>340</i>&nbsp;    }
+<i>341</i>&nbsp;
+<i>342</i>&nbsp;    /**
+<i>343</i>&nbsp;     * Contains the exception to be returned to the client.
+<i>344</i>&nbsp;     */
+<i>345</i>&nbsp;    public Any received_exception (){
+<b class="nc"><i>346</i>&nbsp;        checkAccess( MID_RECEIVED_EXCEPTION );</b>
+<i>347</i>&nbsp;
+<b class="nc"><i>348</i>&nbsp;        if( cachedReceivedException == null ) {</b>
+<b class="nc"><i>349</i>&nbsp;            cachedReceivedException = exceptionToAny( exception );</b>
+<i>350</i>&nbsp;        }
+<i>351</i>&nbsp;
+<i>352</i>&nbsp;        // Good citizen: In the interest of efficiency, we assume interceptors
+<i>353</i>&nbsp;        // will not modify the returned Any in any way so we need
+<i>354</i>&nbsp;        // not make a deep copy of it.
+<i>355</i>&nbsp;
+<b class="nc"><i>356</i>&nbsp;        return cachedReceivedException;</b>
+<i>357</i>&nbsp;    }
+<i>358</i>&nbsp;
+<i>359</i>&nbsp;    /**
+<i>360</i>&nbsp;     * The CORBA::RepositoryId of the exception to be returned to the client.
+<i>361</i>&nbsp;     */
+<i>362</i>&nbsp;    public String received_exception_id (){
+<b class="nc"><i>363</i>&nbsp;        checkAccess( MID_RECEIVED_EXCEPTION_ID );</b>
+<i>364</i>&nbsp;
+<b class="nc"><i>365</i>&nbsp;        if( cachedReceivedExceptionId == null ) {</b>
+<b class="nc"><i>366</i>&nbsp;            String result = null;</b>
+<i>367</i>&nbsp;
+<b class="nc"><i>368</i>&nbsp;            if( exception == null ) {</b>
+<i>369</i>&nbsp;                // Note: exception should never be null here since we will
+<i>370</i>&nbsp;                // throw a BAD_INV_ORDER if this is not called from
+<i>371</i>&nbsp;                // receive_exception.
+<b class="nc"><i>372</i>&nbsp;                throw wrapper.exceptionWasNull() ;</b>
+<b class="nc"><i>373</i>&nbsp;            } else if( exception instanceof SystemException ) {</b>
+<b class="nc"><i>374</i>&nbsp;                String name = exception.getClass().getName();</b>
+<b class="nc"><i>375</i>&nbsp;                result = ORBUtility.repositoryIdOf(name);</b>
+<b class="nc"><i>376</i>&nbsp;            } else if( exception instanceof ApplicationException ) {</b>
+<b class="nc"><i>377</i>&nbsp;                result = ((ApplicationException)exception).getId();</b>
+<i>378</i>&nbsp;            }
+<i>379</i>&nbsp;
+<i>380</i>&nbsp;            // _REVISIT_ We need to be able to handle a UserException in the
+<i>381</i>&nbsp;            // DII case.  How do we extract the ID from a UserException?
+<i>382</i>&nbsp;
+<b class="nc"><i>383</i>&nbsp;            cachedReceivedExceptionId = result;</b>
+<i>384</i>&nbsp;        }
+<i>385</i>&nbsp;
+<b class="nc"><i>386</i>&nbsp;        return cachedReceivedExceptionId;</b>
+<i>387</i>&nbsp;    }
+<i>388</i>&nbsp;
+<i>389</i>&nbsp;    /**
+<i>390</i>&nbsp;     * Returns the IOP::TaggedComponent with the given ID from the profile
+<i>391</i>&nbsp;     * selected for this request.  IF there is more than one component for a
+<i>392</i>&nbsp;     * given component ID, it is undefined which component this operation
+<i>393</i>&nbsp;     * returns (get_effective_component should be called instead).
+<i>394</i>&nbsp;     */
+<i>395</i>&nbsp;    public TaggedComponent get_effective_component (int id){
+<b class="nc"><i>396</i>&nbsp;        checkAccess( MID_GET_EFFECTIVE_COMPONENT );</b>
+<i>397</i>&nbsp;
+<b class="nc"><i>398</i>&nbsp;        return get_effective_components( id )[0];</b>
+<i>399</i>&nbsp;    }
+<i>400</i>&nbsp;
+<i>401</i>&nbsp;    /**
+<i>402</i>&nbsp;     * Returns all the tagged components with the given ID from the profile
+<i>403</i>&nbsp;     * selected for this request.
+<i>404</i>&nbsp;     */
+<i>405</i>&nbsp;    public TaggedComponent[] get_effective_components (int id){
+<b class="nc"><i>406</i>&nbsp;        checkAccess( MID_GET_EFFECTIVE_COMPONENTS );</b>
+<b class="nc"><i>407</i>&nbsp;        Integer integerId = new Integer( id );</b>
+<b class="nc"><i>408</i>&nbsp;        TaggedComponent[] result = null;</b>
+<b class="nc"><i>409</i>&nbsp;        boolean justCreatedCache = false;</b>
+<i>410</i>&nbsp;
+<b class="nc"><i>411</i>&nbsp;        if( cachedEffectiveComponents == null ) {</b>
+<b class="nc"><i>412</i>&nbsp;            cachedEffectiveComponents = new HashMap();</b>
+<b class="nc"><i>413</i>&nbsp;            justCreatedCache = true;</b>
+<i>414</i>&nbsp;        }
+<i>415</i>&nbsp;        else {
+<i>416</i>&nbsp;            // Look in cache:
+<b class="nc"><i>417</i>&nbsp;            result = (TaggedComponent[])cachedEffectiveComponents.get(</b>
+<i>418</i>&nbsp;                integerId );
+<i>419</i>&nbsp;        }
+<i>420</i>&nbsp;
+<i>421</i>&nbsp;        // null could mean we cached null or not in cache.
+<b class="nc"><i>422</i>&nbsp;        if( (result == null) &amp;&amp;</b>
+<i>423</i>&nbsp;            (justCreatedCache ||
+<b class="nc"><i>424</i>&nbsp;            !cachedEffectiveComponents.containsKey( integerId ) ) )</b>
+<i>425</i>&nbsp;        {
+<i>426</i>&nbsp;            // Not in cache.  Get it from the profile:
+<b class="nc"><i>427</i>&nbsp;            CorbaContactInfo corbaContactInfo = (CorbaContactInfo)</b>
+<b class="nc"><i>428</i>&nbsp;                messageMediator.getContactInfo();</b>
+<b class="nc"><i>429</i>&nbsp;            IIOPProfileTemplate ptemp =</b>
+<b class="nc"><i>430</i>&nbsp;                (IIOPProfileTemplate)corbaContactInfo.getEffectiveProfile().</b>
+<b class="nc"><i>431</i>&nbsp;                getTaggedProfileTemplate();</b>
+<b class="nc"><i>432</i>&nbsp;            result = ptemp.getIOPComponents(myORB, id);</b>
+<b class="nc"><i>433</i>&nbsp;            cachedEffectiveComponents.put( integerId, result );</b>
+<i>434</i>&nbsp;        }
+<i>435</i>&nbsp;
+<i>436</i>&nbsp;        // As per ptc/00-08-06, section 21.3.13.6., If not found, raise
+<i>437</i>&nbsp;        // BAD_PARAM with minor code INVALID_COMPONENT_ID.
+<b class="nc"><i>438</i>&nbsp;        if( (result == null) || (result.length == 0) ) {</b>
+<b class="nc"><i>439</i>&nbsp;            throw stdWrapper.invalidComponentId( integerId ) ;</b>
+<i>440</i>&nbsp;        }
+<i>441</i>&nbsp;
+<i>442</i>&nbsp;        // Good citizen: In the interest of efficiency, we will assume
+<i>443</i>&nbsp;        // interceptors will not modify the returned TaggedCompoent[], or
+<i>444</i>&nbsp;        // the TaggedComponents inside of it.  Otherwise, we would need to
+<i>445</i>&nbsp;        // clone the array and make a deep copy of its contents.
+<i>446</i>&nbsp;
+<b class="nc"><i>447</i>&nbsp;        return result;</b>
+<i>448</i>&nbsp;    }
+<i>449</i>&nbsp;
+<i>450</i>&nbsp;    /**
+<i>451</i>&nbsp;     * Returns the given policy in effect for this operation.
+<i>452</i>&nbsp;     */
+<i>453</i>&nbsp;    public Policy get_request_policy (int type){
+<b class="nc"><i>454</i>&nbsp;        checkAccess( MID_GET_REQUEST_POLICY );</b>
+<i>455</i>&nbsp;        // _REVISIT_ Our ORB is not policy-based at this time.
+<b class="nc"><i>456</i>&nbsp;        throw wrapper.piOrbNotPolicyBased() ;</b>
+<i>457</i>&nbsp;    }
+<i>458</i>&nbsp;
+<i>459</i>&nbsp;    /**
+<i>460</i>&nbsp;     * Allows interceptors to add service contexts to the request.
+<i>461</i>&nbsp;     * &lt;p&gt;
+<i>462</i>&nbsp;     * There is no declaration of the order of the service contexts.  They
+<i>463</i>&nbsp;     * may or may not appear in the order they are added.
+<i>464</i>&nbsp;     */
+<i>465</i>&nbsp;    public void add_request_service_context (ServiceContext service_context,
+<i>466</i>&nbsp;                                             boolean replace)
+<i>467</i>&nbsp;    {
+<b class="nc"><i>468</i>&nbsp;        checkAccess( MID_ADD_REQUEST_SERVICE_CONTEXT );</b>
+<i>469</i>&nbsp;
+<b class="nc"><i>470</i>&nbsp;        if( cachedRequestServiceContexts == null ) {</b>
+<b class="nc"><i>471</i>&nbsp;            cachedRequestServiceContexts = new HashMap();</b>
+<i>472</i>&nbsp;        }
+<i>473</i>&nbsp;
+<b class="nc"><i>474</i>&nbsp;        addServiceContext( cachedRequestServiceContexts,</b>
+<b class="nc"><i>475</i>&nbsp;                           messageMediator.getRequestServiceContexts(),</b>
+<i>476</i>&nbsp;                           service_context, replace );
+<i>477</i>&nbsp;    }
+<i>478</i>&nbsp;
+<i>479</i>&nbsp;    // NOTE: When adding a method, be sure to:
+<i>480</i>&nbsp;    // 1. Add a MID_* constant for that method
+<i>481</i>&nbsp;    // 2. Call checkAccess at the start of the method
+<i>482</i>&nbsp;    // 3. Define entries in the validCall[][] table for interception points.
+<i>483</i>&nbsp;
+<i>484</i>&nbsp;    /*
+<i>485</i>&nbsp;     **********************************************************************
+<i>486</i>&nbsp;     * Public RequestInfo interfaces
+<i>487</i>&nbsp;     *
+<i>488</i>&nbsp;     * These are implemented here because they have differing
+<i>489</i>&nbsp;     * implementations depending on whether this is a client or a server
+<i>490</i>&nbsp;     * request info object.
+<i>491</i>&nbsp;     **********************************************************************/
+<i>492</i>&nbsp;
+<i>493</i>&nbsp;    /**
+<i>494</i>&nbsp;     * See RequestInfoImpl for javadoc.
+<i>495</i>&nbsp;     */
+<i>496</i>&nbsp;    public int request_id (){
+<i>497</i>&nbsp;        // access is currently valid for all states:
+<i>498</i>&nbsp;        //checkAccess( MID_REQUEST_ID );
+<i>499</i>&nbsp;        /*
+<i>500</i>&nbsp;         * NOTE: The requestId in client interceptors is the same as the
+<i>501</i>&nbsp;         * GIOP request id.  This works because both interceptors and
+<i>502</i>&nbsp;         * request ids are scoped by the ORB on the client side.
+<i>503</i>&nbsp;         */
+<b class="nc"><i>504</i>&nbsp;        return messageMediator.getRequestId();</b>
+<i>505</i>&nbsp;    }
+<i>506</i>&nbsp;
+<i>507</i>&nbsp;    /**
+<i>508</i>&nbsp;     * See RequestInfoImpl for javadoc.
+<i>509</i>&nbsp;     */
+<i>510</i>&nbsp;    public String operation (){
+<i>511</i>&nbsp;        // access is currently valid for all states:
+<i>512</i>&nbsp;        //checkAccess( MID_OPERATION );
+<b class="nc"><i>513</i>&nbsp;        return messageMediator.getOperationName();</b>
+<i>514</i>&nbsp;    }
+<i>515</i>&nbsp;
+<i>516</i>&nbsp;    /**
+<i>517</i>&nbsp;     * See RequestInfoImpl for javadoc.
+<i>518</i>&nbsp;     */
+<i>519</i>&nbsp;    public Parameter[] arguments (){
+<b class="nc"><i>520</i>&nbsp;        checkAccess( MID_ARGUMENTS );</b>
+<i>521</i>&nbsp;
+<b class="nc"><i>522</i>&nbsp;        if( cachedArguments == null ) {</b>
+<b class="nc"><i>523</i>&nbsp;            if( request == null ) {</b>
+<b class="nc"><i>524</i>&nbsp;                throw stdWrapper.piOperationNotSupported1() ;</b>
+<i>525</i>&nbsp;            }
+<i>526</i>&nbsp;
+<i>527</i>&nbsp;            // If it is DII request then get the arguments from the DII req
+<i>528</i>&nbsp;            // and convert that into parameters.
+<b class="nc"><i>529</i>&nbsp;            cachedArguments = nvListToParameterArray( request.arguments() );</b>
+<i>530</i>&nbsp;        }
+<i>531</i>&nbsp;
+<i>532</i>&nbsp;        // Good citizen: In the interest of efficiency, we assume
+<i>533</i>&nbsp;        // interceptors will be &quot;good citizens&quot; in that they will not
+<i>534</i>&nbsp;        // modify the contents of the Parameter[] array.  We also assume
+<i>535</i>&nbsp;        // they will not change the values of the containing Anys.
+<i>536</i>&nbsp;
+<b class="nc"><i>537</i>&nbsp;        return cachedArguments;</b>
+<i>538</i>&nbsp;    }
+<i>539</i>&nbsp;
+<i>540</i>&nbsp;    /**
+<i>541</i>&nbsp;     * See RequestInfoImpl for javadoc.
+<i>542</i>&nbsp;     */
+<i>543</i>&nbsp;    public TypeCode[] exceptions (){
+<b class="nc"><i>544</i>&nbsp;        checkAccess( MID_EXCEPTIONS );</b>
+<i>545</i>&nbsp;
+<b class="nc"><i>546</i>&nbsp;        if( cachedExceptions == null ) {</b>
+<b class="nc"><i>547</i>&nbsp;            if( request == null ) {</b>
+<b class="nc"><i>548</i>&nbsp;               throw stdWrapper.piOperationNotSupported2() ;</b>
+<i>549</i>&nbsp;            }
+<i>550</i>&nbsp;
+<i>551</i>&nbsp;            // Get the list of exceptions from DII request data, If there are
+<i>552</i>&nbsp;            // no exceptions raised then this method will return null.
+<b class="nc"><i>553</i>&nbsp;            ExceptionList excList = request.exceptions( );</b>
+<b class="nc"><i>554</i>&nbsp;            int count = excList.count();</b>
+<b class="nc"><i>555</i>&nbsp;            TypeCode[] excTCList = new TypeCode[count];</b>
+<i>556</i>&nbsp;            try {
+<b class="nc"><i>557</i>&nbsp;                for( int i = 0; i &lt; count; i++ ) {</b>
+<b class="nc"><i>558</i>&nbsp;                    excTCList[i] = excList.item( i );</b>
+<i>559</i>&nbsp;                }
+<b class="nc"><i>560</i>&nbsp;            } catch( Exception e ) {</b>
+<b class="nc"><i>561</i>&nbsp;                throw wrapper.exceptionInExceptions( e ) ;</b>
+<b class="nc"><i>562</i>&nbsp;            }</b>
+<i>563</i>&nbsp;
+<b class="nc"><i>564</i>&nbsp;            cachedExceptions = excTCList;</b>
+<i>565</i>&nbsp;        }
+<i>566</i>&nbsp;
+<i>567</i>&nbsp;        // Good citizen: In the interest of efficiency, we assume
+<i>568</i>&nbsp;        // interceptors will be &quot;good citizens&quot; in that they will not
+<i>569</i>&nbsp;        // modify the contents of the TypeCode[] array.  We also assume
+<i>570</i>&nbsp;        // they will not change the values of the containing TypeCodes.
+<i>571</i>&nbsp;
+<b class="nc"><i>572</i>&nbsp;        return cachedExceptions;</b>
+<i>573</i>&nbsp;    }
+<i>574</i>&nbsp;
+<i>575</i>&nbsp;    /**
+<i>576</i>&nbsp;     * See RequestInfoImpl for javadoc.
+<i>577</i>&nbsp;     */
+<i>578</i>&nbsp;    public String[] contexts (){
+<b class="nc"><i>579</i>&nbsp;        checkAccess( MID_CONTEXTS );</b>
+<i>580</i>&nbsp;
+<b class="nc"><i>581</i>&nbsp;        if( cachedContexts == null ) {</b>
+<b class="nc"><i>582</i>&nbsp;            if( request == null ) {</b>
+<b class="nc"><i>583</i>&nbsp;                throw stdWrapper.piOperationNotSupported3() ;</b>
+<i>584</i>&nbsp;            }
+<i>585</i>&nbsp;
+<i>586</i>&nbsp;            // Get the list of contexts from DII request data, If there are
+<i>587</i>&nbsp;            // no contexts then this method will return null.
+<b class="nc"><i>588</i>&nbsp;            ContextList ctxList = request.contexts( );</b>
+<b class="nc"><i>589</i>&nbsp;            int count = ctxList.count();</b>
+<b class="nc"><i>590</i>&nbsp;            String[] ctxListToReturn = new String[count];</b>
+<i>591</i>&nbsp;            try {
+<b class="nc"><i>592</i>&nbsp;                for( int i = 0; i &lt; count; i++ ) {</b>
+<b class="nc"><i>593</i>&nbsp;                    ctxListToReturn[i] = ctxList.item( i );</b>
+<i>594</i>&nbsp;                }
+<b class="nc"><i>595</i>&nbsp;            } catch( Exception e ) {</b>
+<b class="nc"><i>596</i>&nbsp;                throw wrapper.exceptionInContexts( e ) ;</b>
+<b class="nc"><i>597</i>&nbsp;            }</b>
+<i>598</i>&nbsp;
+<b class="nc"><i>599</i>&nbsp;            cachedContexts = ctxListToReturn;</b>
+<i>600</i>&nbsp;        }
+<i>601</i>&nbsp;
+<i>602</i>&nbsp;        // Good citizen: In the interest of efficiency, we assume
+<i>603</i>&nbsp;        // interceptors will be &quot;good citizens&quot; in that they will not
+<i>604</i>&nbsp;        // modify the contents of the String[] array.
+<i>605</i>&nbsp;
+<b class="nc"><i>606</i>&nbsp;        return cachedContexts;</b>
+<i>607</i>&nbsp;    }
+<i>608</i>&nbsp;
+<i>609</i>&nbsp;    /**
+<i>610</i>&nbsp;     * See RequestInfoImpl for javadoc.
+<i>611</i>&nbsp;     */
+<i>612</i>&nbsp;    public String[] operation_context (){
+<b class="nc"><i>613</i>&nbsp;        checkAccess( MID_OPERATION_CONTEXT );</b>
+<i>614</i>&nbsp;
+<b class="nc"><i>615</i>&nbsp;        if( cachedOperationContext == null ) {</b>
+<b class="nc"><i>616</i>&nbsp;            if( request == null ) {</b>
+<b class="nc"><i>617</i>&nbsp;                throw stdWrapper.piOperationNotSupported4() ;</b>
+<i>618</i>&nbsp;            }
+<i>619</i>&nbsp;
+<i>620</i>&nbsp;            // Get the list of contexts from DII request data, If there are
+<i>621</i>&nbsp;            // no contexts then this method will return null.
+<b class="nc"><i>622</i>&nbsp;            Context ctx = request.ctx( );</b>
+<i>623</i>&nbsp;            // _REVISIT_ The API for get_values is not compliant with the spec,
+<i>624</i>&nbsp;            // Revisit this code once it&#39;s fixed.
+<i>625</i>&nbsp;            // _REVISIT_ Our ORB doesn&#39;t support Operation Context, This code
+<i>626</i>&nbsp;            // will not be excerscised until it&#39;s supported.
+<i>627</i>&nbsp;            // The first parameter in get_values is the start_scope which
+<i>628</i>&nbsp;            // if blank makes it as a global scope.
+<i>629</i>&nbsp;            // The second parameter is op_flags which is set to RESTRICT_SCOPE
+<i>630</i>&nbsp;            // As there is only one defined in the spec.
+<i>631</i>&nbsp;            // The Third param is the pattern which is &#39;*&#39; requiring it to
+<i>632</i>&nbsp;            // get all the contexts.
+<b class="nc"><i>633</i>&nbsp;            NVList nvList = ctx.get_values( &quot;&quot;, CTX_RESTRICT_SCOPE.value,&quot;*&quot; );</b>
+<b class="nc"><i>634</i>&nbsp;            String[] context = new String[(nvList.count() * 2) ];</b>
+<b class="nc"><i>635</i>&nbsp;            if( ( nvList != null ) &amp;&amp;( nvList.count() != 0 ) ) {</b>
+<i>636</i>&nbsp;                // The String[] array will contain Name and Value for each
+<i>637</i>&nbsp;                // context and hence double the size in the array.
+<b class="nc"><i>638</i>&nbsp;                int index = 0;</b>
+<b class="nc"><i>639</i>&nbsp;                for( int i = 0; i &lt; nvList.count(); i++ ) {</b>
+<i>640</i>&nbsp;                    NamedValue nv;
+<i>641</i>&nbsp;                    try {
+<b class="nc"><i>642</i>&nbsp;                        nv = nvList.item( i );</b>
+<i>643</i>&nbsp;                    }
+<b class="nc"><i>644</i>&nbsp;                    catch (Exception e ) {</b>
+<b class="nc"><i>645</i>&nbsp;                        return (String[]) null;</b>
+<b class="nc"><i>646</i>&nbsp;                    }</b>
+<b class="nc"><i>647</i>&nbsp;                    context[index] = nv.name();</b>
+<b class="nc"><i>648</i>&nbsp;                    index++;</b>
+<b class="nc"><i>649</i>&nbsp;                    context[index] = nv.value().extract_string();</b>
+<b class="nc"><i>650</i>&nbsp;                    index++;</b>
+<i>651</i>&nbsp;                }
+<i>652</i>&nbsp;            }
+<i>653</i>&nbsp;
+<b class="nc"><i>654</i>&nbsp;            cachedOperationContext = context;</b>
+<i>655</i>&nbsp;        }
+<i>656</i>&nbsp;
+<i>657</i>&nbsp;        // Good citizen: In the interest of efficiency, we assume
+<i>658</i>&nbsp;        // interceptors will be &quot;good citizens&quot; in that they will not
+<i>659</i>&nbsp;        // modify the contents of the String[] array.
+<i>660</i>&nbsp;
+<b class="nc"><i>661</i>&nbsp;        return cachedOperationContext;</b>
+<i>662</i>&nbsp;    }
+<i>663</i>&nbsp;
+<i>664</i>&nbsp;    /**
+<i>665</i>&nbsp;     * See RequestInfoImpl for javadoc.
+<i>666</i>&nbsp;     */
+<i>667</i>&nbsp;    public Any result (){
+<b class="nc"><i>668</i>&nbsp;        checkAccess( MID_RESULT );</b>
+<i>669</i>&nbsp;
+<b class="nc"><i>670</i>&nbsp;        if( cachedResult == null ) {</b>
+<b class="nc"><i>671</i>&nbsp;            if( request == null ) {</b>
+<b class="nc"><i>672</i>&nbsp;                throw stdWrapper.piOperationNotSupported5() ;</b>
+<i>673</i>&nbsp;            }
+<i>674</i>&nbsp;            // Get the result from the DII request data.
+<b class="nc"><i>675</i>&nbsp;            NamedValue nvResult = request.result( );</b>
+<i>676</i>&nbsp;
+<b class="nc"><i>677</i>&nbsp;            if( nvResult == null ) {</b>
+<b class="nc"><i>678</i>&nbsp;                throw wrapper.piDiiResultIsNull() ;</b>
+<i>679</i>&nbsp;            }
+<i>680</i>&nbsp;
+<b class="nc"><i>681</i>&nbsp;            cachedResult = nvResult.value();</b>
+<i>682</i>&nbsp;        }
+<i>683</i>&nbsp;
+<i>684</i>&nbsp;        // Good citizen: In the interest of efficiency, we assume that
+<i>685</i>&nbsp;        // interceptors will not modify the contents of the result Any.
+<i>686</i>&nbsp;        // Otherwise, we would need to create a deep copy of the Any.
+<i>687</i>&nbsp;
+<b class="nc"><i>688</i>&nbsp;        return cachedResult;</b>
+<i>689</i>&nbsp;    }
+<i>690</i>&nbsp;
+<i>691</i>&nbsp;    /**
+<i>692</i>&nbsp;     * See RequestInfoImpl for javadoc.
+<i>693</i>&nbsp;     */
+<i>694</i>&nbsp;    public boolean response_expected (){
+<i>695</i>&nbsp;        // access is currently valid for all states:
+<i>696</i>&nbsp;        //checkAccess( MID_RESPONSE_EXPECTED );
+<b class="nc"><i>697</i>&nbsp;        return ! messageMediator.isOneWay();</b>
+<i>698</i>&nbsp;    }
+<i>699</i>&nbsp;
+<i>700</i>&nbsp;    /**
+<i>701</i>&nbsp;     * See RequestInfoImpl for javadoc.
+<i>702</i>&nbsp;     */
+<i>703</i>&nbsp;    public Object forward_reference (){
+<b class="nc"><i>704</i>&nbsp;        checkAccess( MID_FORWARD_REFERENCE );</b>
+<i>705</i>&nbsp;        // Check to make sure we are in LOCATION_FORWARD
+<i>706</i>&nbsp;        // state as per ptc/00-08-06, table 21-1
+<i>707</i>&nbsp;        // footnote 2.
+<b class="nc"><i>708</i>&nbsp;        if( replyStatus != LOCATION_FORWARD.value ) {</b>
+<b class="nc"><i>709</i>&nbsp;            throw stdWrapper.invalidPiCall1() ;</b>
+<i>710</i>&nbsp;        }
+<i>711</i>&nbsp;
+<i>712</i>&nbsp;        // Do not cache this value since if an interceptor raises
+<i>713</i>&nbsp;        // forward request then the next interceptor in the
+<i>714</i>&nbsp;        // list should see the new value.
+<b class="nc"><i>715</i>&nbsp;        IOR ior = getLocatedIOR();</b>
+<b class="nc"><i>716</i>&nbsp;        return iorToObject(ior);</b>
+<i>717</i>&nbsp;    }
+<i>718</i>&nbsp;
+<i>719</i>&nbsp;    private IOR getLocatedIOR()
+<i>720</i>&nbsp;    {
+<i>721</i>&nbsp;        IOR ior;
+<b class="nc"><i>722</i>&nbsp;        CorbaContactInfoList contactInfoList = (CorbaContactInfoList)</b>
+<b class="nc"><i>723</i>&nbsp;            messageMediator.getContactInfo().getContactInfoList();</b>
+<b class="nc"><i>724</i>&nbsp;        ior = contactInfoList.getEffectiveTargetIOR();</b>
+<b class="nc"><i>725</i>&nbsp;        return ior;</b>
+<i>726</i>&nbsp;    }
+<i>727</i>&nbsp;
+<i>728</i>&nbsp;    protected void setLocatedIOR(IOR ior)
+<i>729</i>&nbsp;    {
+<b class="nc"><i>730</i>&nbsp;        ORB orb = (ORB) messageMediator.getBroker();</b>
+<i>731</i>&nbsp;
+<b class="nc"><i>732</i>&nbsp;        CorbaContactInfoListIterator iterator = (CorbaContactInfoListIterator)</b>
+<b class="nc"><i>733</i>&nbsp;            ((CorbaInvocationInfo)orb.getInvocationInfo())</b>
+<b class="nc"><i>734</i>&nbsp;            .getContactInfoListIterator();</b>
+<i>735</i>&nbsp;
+<i>736</i>&nbsp;        // REVISIT - this most likely causes reportRedirect to happen twice.
+<i>737</i>&nbsp;        // Once here and once inside the request dispatcher.
+<b class="nc"><i>738</i>&nbsp;        iterator.reportRedirect(</b>
+<b class="nc"><i>739</i>&nbsp;            (CorbaContactInfo)messageMediator.getContactInfo(),</b>
+<i>740</i>&nbsp;            ior);
+<i>741</i>&nbsp;    }
+<i>742</i>&nbsp;
+<i>743</i>&nbsp;    /**
+<i>744</i>&nbsp;     * See RequestInfoImpl for javadoc.
+<i>745</i>&nbsp;     */
+<i>746</i>&nbsp;    public org.omg.IOP.ServiceContext get_request_service_context( int id ) {
+<b class="nc"><i>747</i>&nbsp;        checkAccess( MID_GET_REQUEST_SERVICE_CONTEXT );</b>
+<i>748</i>&nbsp;
+<b class="nc"><i>749</i>&nbsp;        if( cachedRequestServiceContexts == null ) {</b>
+<b class="nc"><i>750</i>&nbsp;            cachedRequestServiceContexts = new HashMap();</b>
+<i>751</i>&nbsp;        }
+<i>752</i>&nbsp;
+<b class="nc"><i>753</i>&nbsp;        return  getServiceContext(cachedRequestServiceContexts,</b>
+<b class="nc"><i>754</i>&nbsp;                                  messageMediator.getRequestServiceContexts(),</b>
+<i>755</i>&nbsp;                                  id);
+<i>756</i>&nbsp;    }
+<i>757</i>&nbsp;
+<i>758</i>&nbsp;    /**
+<i>759</i>&nbsp;     * does not contain an etry for that ID, BAD_PARAM with a minor code of
+<i>760</i>&nbsp;     * TBD_BP is raised.
+<i>761</i>&nbsp;     */
+<i>762</i>&nbsp;    public org.omg.IOP.ServiceContext get_reply_service_context( int id ) {
+<b class="nc"><i>763</i>&nbsp;        checkAccess( MID_GET_REPLY_SERVICE_CONTEXT );</b>
+<i>764</i>&nbsp;
+<b class="nc"><i>765</i>&nbsp;        if( cachedReplyServiceContexts == null ) {</b>
+<b class="nc"><i>766</i>&nbsp;            cachedReplyServiceContexts = new HashMap();</b>
+<i>767</i>&nbsp;        }
+<i>768</i>&nbsp;
+<i>769</i>&nbsp;        // In the event this is called from a oneway, we will have no
+<i>770</i>&nbsp;        // response object.
+<i>771</i>&nbsp;        //
+<i>772</i>&nbsp;        // In the event this is called after a IIOPConnection.purgeCalls,
+<i>773</i>&nbsp;        // we will have a response object, but that object will
+<i>774</i>&nbsp;        // not contain a header (which would hold the service context
+<i>775</i>&nbsp;        // container).  See bug 4624102.
+<i>776</i>&nbsp;        //
+<i>777</i>&nbsp;        // REVISIT: this is the only thing used
+<i>778</i>&nbsp;        // from response at this time.  However, a more general solution
+<i>779</i>&nbsp;        // would avoid accessing other parts of response&#39;s header.
+<i>780</i>&nbsp;        //
+<i>781</i>&nbsp;        // Instead of throwing a NullPointer, we will
+<i>782</i>&nbsp;        // &quot;gracefully&quot; handle these with a BAD_PARAM with minor code 25.
+<i>783</i>&nbsp;
+<i>784</i>&nbsp;        try {
+<b class="nc"><i>785</i>&nbsp;            ServiceContexts serviceContexts =</b>
+<b class="nc"><i>786</i>&nbsp;                messageMediator.getReplyServiceContexts();</b>
+<b class="nc"><i>787</i>&nbsp;            if (serviceContexts == null) {</b>
+<b class="nc"><i>788</i>&nbsp;                throw new NullPointerException();</b>
+<i>789</i>&nbsp;            }
+<b class="nc"><i>790</i>&nbsp;            return getServiceContext(cachedReplyServiceContexts,</b>
+<i>791</i>&nbsp;                                     serviceContexts, id);
+<b class="nc"><i>792</i>&nbsp;        } catch (NullPointerException e) {</b>
+<i>793</i>&nbsp;            // REVISIT how this is programmed - not what it does.
+<i>794</i>&nbsp;            // See purge calls test.  The waiter is woken up by the
+<i>795</i>&nbsp;            // call to purge calls - but there is no reply containing
+<i>796</i>&nbsp;            // service contexts.
+<b class="nc"><i>797</i>&nbsp;            throw stdWrapper.invalidServiceContextId( e ) ;</b>
+<i>798</i>&nbsp;        }
+<i>799</i>&nbsp;    }
+<i>800</i>&nbsp;
+<i>801</i>&nbsp;    //
+<i>802</i>&nbsp;    // REVISIT
+<i>803</i>&nbsp;    // Override RequestInfoImpl connection to work in framework.
+<i>804</i>&nbsp;    //
+<i>805</i>&nbsp;
+<i>806</i>&nbsp;    public com.sun.corba.se.spi.legacy.connection.Connection connection()
+<i>807</i>&nbsp;    {
+<b class="nc"><i>808</i>&nbsp;        return (com.sun.corba.se.spi.legacy.connection.Connection)</b>
+<b class="nc"><i>809</i>&nbsp;            messageMediator.getConnection();</b>
+<i>810</i>&nbsp;    }
+<i>811</i>&nbsp;
+<i>812</i>&nbsp;
+<i>813</i>&nbsp;
+<i>814</i>&nbsp;    /*
+<i>815</i>&nbsp;     **********************************************************************
+<i>816</i>&nbsp;     * Package-scope interfaces
+<i>817</i>&nbsp;     **********************************************************************/
+<i>818</i>&nbsp;
+<i>819</i>&nbsp;    protected void setInfo(MessageMediator messageMediator)
+<i>820</i>&nbsp;    {
+<b class="nc"><i>821</i>&nbsp;        this.messageMediator = (CorbaMessageMediator)messageMediator;</b>
+<i>822</i>&nbsp;        // REVISIT - so mediator can handle DII in subcontract.
+<b class="nc"><i>823</i>&nbsp;        this.messageMediator.setDIIInfo(request);</b>
+<i>824</i>&nbsp;    }
+<i>825</i>&nbsp;
+<i>826</i>&nbsp;    /**
+<i>827</i>&nbsp;     * Set or reset the retry request flag.
+<i>828</i>&nbsp;     */
+<i>829</i>&nbsp;    void setRetryRequest( RetryType retryRequest ) {
+<b class="nc"><i>830</i>&nbsp;        this.retryRequest = retryRequest;</b>
+<i>831</i>&nbsp;    }
+<i>832</i>&nbsp;
+<i>833</i>&nbsp;    /**
+<i>834</i>&nbsp;     * Retrieve the current retry request status.
+<i>835</i>&nbsp;     */
+<i>836</i>&nbsp;    RetryType getRetryRequest() {
+<i>837</i>&nbsp;        // 6763340
+<b class="nc"><i>838</i>&nbsp;        return this.retryRequest;</b>
+<i>839</i>&nbsp;    }
+<i>840</i>&nbsp;
+<i>841</i>&nbsp;    /**
+<i>842</i>&nbsp;     * Increases the entry count by 1.
+<i>843</i>&nbsp;     */
+<i>844</i>&nbsp;    void incrementEntryCount() {
+<b class="nc"><i>845</i>&nbsp;        this.entryCount++;</b>
+<i>846</i>&nbsp;    }
+<i>847</i>&nbsp;
+<i>848</i>&nbsp;    /**
+<i>849</i>&nbsp;     * Decreases the entry count by 1.
+<i>850</i>&nbsp;     */
+<i>851</i>&nbsp;    void decrementEntryCount() {
+<b class="nc"><i>852</i>&nbsp;        this.entryCount--;</b>
+<i>853</i>&nbsp;    }
+<i>854</i>&nbsp;
+<i>855</i>&nbsp;    /**
+<i>856</i>&nbsp;     * Retrieve the current entry count
+<i>857</i>&nbsp;     */
+<i>858</i>&nbsp;    int getEntryCount() {
+<b class="nc"><i>859</i>&nbsp;        return this.entryCount;</b>
+<i>860</i>&nbsp;    }
+<i>861</i>&nbsp;
+<i>862</i>&nbsp;    /**
+<i>863</i>&nbsp;     * Overridden from RequestInfoImpl.  Calls the super class, then
+<i>864</i>&nbsp;     * sets the ending point call depending on the reply status.
+<i>865</i>&nbsp;     */
+<i>866</i>&nbsp;    protected void setReplyStatus( short replyStatus ) {
+<b class="nc"><i>867</i>&nbsp;        super.setReplyStatus( replyStatus );</b>
+<b class="nc"><i>868</i>&nbsp;        switch( replyStatus ) {</b>
+<i>869</i>&nbsp;        case SUCCESSFUL.value:
+<b class="nc"><i>870</i>&nbsp;            endingPointCall = CALL_RECEIVE_REPLY;</b>
+<b class="nc"><i>871</i>&nbsp;            break;</b>
+<i>872</i>&nbsp;        case SYSTEM_EXCEPTION.value:
+<i>873</i>&nbsp;        case USER_EXCEPTION.value:
+<b class="nc"><i>874</i>&nbsp;            endingPointCall = CALL_RECEIVE_EXCEPTION;</b>
+<b class="nc"><i>875</i>&nbsp;            break;</b>
+<i>876</i>&nbsp;        case LOCATION_FORWARD.value:
+<i>877</i>&nbsp;        case TRANSPORT_RETRY.value:
+<b class="nc"><i>878</i>&nbsp;            endingPointCall = CALL_RECEIVE_OTHER;</b>
+<i>879</i>&nbsp;            break;
+<i>880</i>&nbsp;        }
+<i>881</i>&nbsp;    }
+<i>882</i>&nbsp;
+<i>883</i>&nbsp;    /**
+<i>884</i>&nbsp;     * Sets DII request object in the RequestInfoObject.
+<i>885</i>&nbsp;     */
+<i>886</i>&nbsp;    protected void setDIIRequest(org.omg.CORBA.Request req) {
+<b class="nc"><i>887</i>&nbsp;         request = req;</b>
+<i>888</i>&nbsp;    }
+<i>889</i>&nbsp;
+<i>890</i>&nbsp;    /**
+<i>891</i>&nbsp;     * Keeps track of whether initiate was called for a DII request.  The ORB
+<i>892</i>&nbsp;     * needs to know this so it knows whether to ignore a second call to
+<i>893</i>&nbsp;     * initiateClientPIRequest or not.
+<i>894</i>&nbsp;     */
+<i>895</i>&nbsp;    protected void setDIIInitiate( boolean diiInitiate ) {
+<b class="nc"><i>896</i>&nbsp;        this.diiInitiate = diiInitiate;</b>
+<i>897</i>&nbsp;    }
+<i>898</i>&nbsp;
+<i>899</i>&nbsp;    /**
+<i>900</i>&nbsp;     * See comment for setDIIInitiate
+<i>901</i>&nbsp;     */
+<i>902</i>&nbsp;    protected boolean isDIIInitiate() {
+<b class="nc"><i>903</i>&nbsp;        return this.diiInitiate;</b>
+<i>904</i>&nbsp;    }
+<i>905</i>&nbsp;
+<i>906</i>&nbsp;    /**
+<i>907</i>&nbsp;     * The PICurrent stack should only be popped if it was pushed.
+<i>908</i>&nbsp;     * This is generally the case.  But exceptions which occur
+<i>909</i>&nbsp;     * after the stub&#39;s entry to _request but before the push
+<i>910</i>&nbsp;     * end up in _releaseReply which will try to pop unless told not to.
+<i>911</i>&nbsp;     */
+<i>912</i>&nbsp;    protected void setPICurrentPushed( boolean piCurrentPushed ) {
+<b class="nc"><i>913</i>&nbsp;        this.piCurrentPushed = piCurrentPushed;</b>
+<i>914</i>&nbsp;    }
+<i>915</i>&nbsp;
+<i>916</i>&nbsp;    protected boolean isPICurrentPushed() {
+<b class="nc"><i>917</i>&nbsp;        return this.piCurrentPushed;</b>
+<i>918</i>&nbsp;    }
+<i>919</i>&nbsp;
+<i>920</i>&nbsp;    /**
+<i>921</i>&nbsp;     * Overridden from RequestInfoImpl.
+<i>922</i>&nbsp;     */
+<i>923</i>&nbsp;    protected void setException( Exception exception ) {
+<b class="nc"><i>924</i>&nbsp;        super.setException( exception );</b>
+<i>925</i>&nbsp;
+<i>926</i>&nbsp;        // Clear cached values:
+<b class="nc"><i>927</i>&nbsp;        cachedReceivedException = null;</b>
+<b class="nc"><i>928</i>&nbsp;        cachedReceivedExceptionId = null;</b>
+<i>929</i>&nbsp;    }
+<i>930</i>&nbsp;
+<i>931</i>&nbsp;    protected boolean getIsOneWay() {
+<b class="nc"><i>932</i>&nbsp;        return ! response_expected();</b>
+<i>933</i>&nbsp;    }
+<i>934</i>&nbsp;
+<i>935</i>&nbsp;    /**
+<i>936</i>&nbsp;     * See description for RequestInfoImpl.checkAccess
+<i>937</i>&nbsp;     */
+<i>938</i>&nbsp;    protected void checkAccess( int methodID )
+<i>939</i>&nbsp;        throws BAD_INV_ORDER
+<i>940</i>&nbsp;    {
+<i>941</i>&nbsp;        // Make sure currentPoint matches the appropriate index in the
+<i>942</i>&nbsp;        // validCall table:
+<b class="nc"><i>943</i>&nbsp;        int validCallIndex = 0;</b>
+<b class="nc"><i>944</i>&nbsp;        switch( currentExecutionPoint ) {</b>
+<i>945</i>&nbsp;        case EXECUTION_POINT_STARTING:
+<b class="nc"><i>946</i>&nbsp;            switch( startingPointCall ) {</b>
+<i>947</i>&nbsp;            case CALL_SEND_REQUEST:
+<b class="nc"><i>948</i>&nbsp;                validCallIndex = 0;</b>
+<b class="nc"><i>949</i>&nbsp;                break;</b>
+<i>950</i>&nbsp;            case CALL_SEND_POLL:
+<b class="nc"><i>951</i>&nbsp;                validCallIndex = 1;</b>
+<i>952</i>&nbsp;                break;
+<i>953</i>&nbsp;            }
+<b class="nc"><i>954</i>&nbsp;            break;</b>
+<i>955</i>&nbsp;        case EXECUTION_POINT_ENDING:
+<b class="nc"><i>956</i>&nbsp;            switch( endingPointCall ) {</b>
+<i>957</i>&nbsp;            case CALL_RECEIVE_REPLY:
+<b class="nc"><i>958</i>&nbsp;                validCallIndex = 2;</b>
+<b class="nc"><i>959</i>&nbsp;                break;</b>
+<i>960</i>&nbsp;            case CALL_RECEIVE_EXCEPTION:
+<b class="nc"><i>961</i>&nbsp;                validCallIndex = 3;</b>
+<b class="nc"><i>962</i>&nbsp;                break;</b>
+<i>963</i>&nbsp;            case CALL_RECEIVE_OTHER:
+<b class="nc"><i>964</i>&nbsp;                validCallIndex = 4;</b>
+<i>965</i>&nbsp;                break;
+<i>966</i>&nbsp;            }
+<i>967</i>&nbsp;            break;
+<i>968</i>&nbsp;        }
+<i>969</i>&nbsp;
+<i>970</i>&nbsp;        // Check the validCall table:
+<b class="nc"><i>971</i>&nbsp;        if( !validCall[methodID][validCallIndex] ) {</b>
+<b class="nc"><i>972</i>&nbsp;            throw stdWrapper.invalidPiCall2() ;</b>
+<i>973</i>&nbsp;        }
+<i>974</i>&nbsp;    }
+<i>975</i>&nbsp;
+<i>976</i>&nbsp;}
+<i>977</i>&nbsp;
+<i>978</i>&nbsp;// End of file.
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

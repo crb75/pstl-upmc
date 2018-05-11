@@ -1,0 +1,748 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MBeanServerAccessController</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.jmx.remote.security</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MBeanServerAccessController (com.sun.jmx.remote.security)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MBeanServerAccessController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 43)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 116)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2003, 2006, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.jmx.remote.security;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import com.sun.jmx.mbeanserver.GetPropertyAction;
+<i>29</i>&nbsp;import java.io.ObjectInputStream;
+<i>30</i>&nbsp;import java.security.AccessController;
+<i>31</i>&nbsp;import java.util.Set;
+<i>32</i>&nbsp;import javax.management.Attribute;
+<i>33</i>&nbsp;import javax.management.AttributeList;
+<i>34</i>&nbsp;import javax.management.AttributeNotFoundException;
+<i>35</i>&nbsp;import javax.management.InstanceNotFoundException;
+<i>36</i>&nbsp;import javax.management.InstanceAlreadyExistsException;
+<i>37</i>&nbsp;import javax.management.IntrospectionException;
+<i>38</i>&nbsp;import javax.management.InvalidAttributeValueException;
+<i>39</i>&nbsp;import javax.management.ListenerNotFoundException;
+<i>40</i>&nbsp;import javax.management.MBeanException;
+<i>41</i>&nbsp;import javax.management.MBeanInfo;
+<i>42</i>&nbsp;import javax.management.MBeanRegistrationException;
+<i>43</i>&nbsp;import javax.management.MBeanServer;
+<i>44</i>&nbsp;import javax.management.NotCompliantMBeanException;
+<i>45</i>&nbsp;import javax.management.NotificationFilter;
+<i>46</i>&nbsp;import javax.management.NotificationListener;
+<i>47</i>&nbsp;import javax.management.ObjectInstance;
+<i>48</i>&nbsp;import javax.management.ObjectName;
+<i>49</i>&nbsp;import javax.management.OperationsException;
+<i>50</i>&nbsp;import javax.management.QueryExp;
+<i>51</i>&nbsp;import javax.management.ReflectionException;
+<i>52</i>&nbsp;import javax.management.loading.ClassLoaderRepository;
+<i>53</i>&nbsp;import javax.management.remote.MBeanServerForwarder;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;/**
+<i>56</i>&nbsp; * &lt;p&gt;An object of this class implements the MBeanServer interface
+<i>57</i>&nbsp; * and, for each of its methods, calls an appropriate checking method
+<i>58</i>&nbsp; * and then forwards the request to a wrapped MBeanServer object.  The
+<i>59</i>&nbsp; * checking method may throw a RuntimeException if the operation is
+<i>60</i>&nbsp; * not allowed; in this case the request is not forwarded to the
+<i>61</i>&nbsp; * wrapped object.&lt;/p&gt;
+<i>62</i>&nbsp; *
+<i>63</i>&nbsp; * &lt;p&gt;A typical use of this class is to insert it between a connector server
+<i>64</i>&nbsp; * such as the RMI connector and the MBeanServer with which the connector
+<i>65</i>&nbsp; * is associated.  Requests from the connector client can then be filtered
+<i>66</i>&nbsp; * and those operations that are not allowed, or not allowed in a particular
+<i>67</i>&nbsp; * context, can be rejected by throwing a &lt;code&gt;SecurityException&lt;/code&gt;
+<i>68</i>&nbsp; * in the corresponding &lt;code&gt;check*&lt;/code&gt; method.&lt;/p&gt;
+<i>69</i>&nbsp; *
+<i>70</i>&nbsp; * &lt;p&gt;This is an abstract class, because in its implementation none of
+<i>71</i>&nbsp; * the checking methods does anything.  To be useful, it must be
+<i>72</i>&nbsp; * subclassed and at least one of the checking methods overridden to
+<i>73</i>&nbsp; * do some checking.  Some or all of the MBeanServer methods may also
+<i>74</i>&nbsp; * be overridden, for instance if the default checking behavior is
+<i>75</i>&nbsp; * inappropriate.&lt;/p&gt;
+<i>76</i>&nbsp; *
+<i>77</i>&nbsp; * &lt;p&gt;If there is no SecurityManager, then the access controller will refuse
+<i>78</i>&nbsp; * to create an MBean that is a ClassLoader, which includes MLets, or to
+<i>79</i>&nbsp; * execute the method addURL on an MBean that is an MLet. This prevents
+<i>80</i>&nbsp; * people from opening security holes unintentionally. Otherwise, it
+<i>81</i>&nbsp; * would not be obvious that granting write access grants the ability to
+<i>82</i>&nbsp; * download and execute arbitrary code in the target MBean server. Advanced
+<i>83</i>&nbsp; * users who do want the ability to use MLets are presumably advanced enough
+<i>84</i>&nbsp; * to handle policy files and security managers.&lt;/p&gt;
+<i>85</i>&nbsp; */
+<b class="nc"><i>86</i>&nbsp;public abstract class MBeanServerAccessController</b>
+<i>87</i>&nbsp;        implements MBeanServerForwarder {
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    public MBeanServer getMBeanServer() {
+<b class="nc"><i>90</i>&nbsp;        return mbs;</b>
+<i>91</i>&nbsp;    }
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    public void setMBeanServer(MBeanServer mbs) {
+<b class="nc"><i>94</i>&nbsp;        if (mbs == null)</b>
+<b class="nc"><i>95</i>&nbsp;            throw new IllegalArgumentException(&quot;Null MBeanServer&quot;);</b>
+<b class="nc"><i>96</i>&nbsp;        if (this.mbs != null)</b>
+<b class="nc"><i>97</i>&nbsp;            throw new IllegalArgumentException(&quot;MBeanServer object already &quot; +</b>
+<i>98</i>&nbsp;                                               &quot;initialized&quot;);
+<b class="nc"><i>99</i>&nbsp;        this.mbs = mbs;</b>
+<i>100</i>&nbsp;    }
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;    /**
+<i>103</i>&nbsp;     * Check if the caller can do read operations. This method does
+<i>104</i>&nbsp;     * nothing if so, otherwise throws SecurityException.
+<i>105</i>&nbsp;     */
+<i>106</i>&nbsp;    protected abstract void checkRead();
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;    /**
+<i>109</i>&nbsp;     * Check if the caller can do write operations.  This method does
+<i>110</i>&nbsp;     * nothing if so, otherwise throws SecurityException.
+<i>111</i>&nbsp;     */
+<i>112</i>&nbsp;    protected abstract void checkWrite();
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;    /**
+<i>115</i>&nbsp;     * Check if the caller can create the named class.  The default
+<i>116</i>&nbsp;     * implementation of this method calls {@link #checkWrite()}.
+<i>117</i>&nbsp;     */
+<i>118</i>&nbsp;    protected void checkCreate(String className) {
+<b class="nc"><i>119</i>&nbsp;        checkWrite();</b>
+<i>120</i>&nbsp;    }
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;    /**
+<i>123</i>&nbsp;     * Check if the caller can unregister the named MBean.  The default
+<i>124</i>&nbsp;     * implementation of this method calls {@link #checkWrite()}.
+<i>125</i>&nbsp;     */
+<i>126</i>&nbsp;    protected void checkUnregister(ObjectName name) {
+<b class="nc"><i>127</i>&nbsp;        checkWrite();</b>
+<i>128</i>&nbsp;    }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    //--------------------------------------------
+<i>131</i>&nbsp;    //--------------------------------------------
+<i>132</i>&nbsp;    //
+<i>133</i>&nbsp;    // Implementation of the MBeanServer interface
+<i>134</i>&nbsp;    //
+<i>135</i>&nbsp;    //--------------------------------------------
+<i>136</i>&nbsp;    //--------------------------------------------
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;    /**
+<i>139</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>140</i>&nbsp;     * wrapped object.
+<i>141</i>&nbsp;     */
+<i>142</i>&nbsp;    public void addNotificationListener(ObjectName name,
+<i>143</i>&nbsp;                                        NotificationListener listener,
+<i>144</i>&nbsp;                                        NotificationFilter filter,
+<i>145</i>&nbsp;                                        Object handback)
+<i>146</i>&nbsp;        throws InstanceNotFoundException {
+<b class="nc"><i>147</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>148</i>&nbsp;        getMBeanServer().addNotificationListener(name, listener,</b>
+<i>149</i>&nbsp;                                                 filter, handback);
+<i>150</i>&nbsp;    }
+<i>151</i>&nbsp;
+<i>152</i>&nbsp;    /**
+<i>153</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>154</i>&nbsp;     * wrapped object.
+<i>155</i>&nbsp;     */
+<i>156</i>&nbsp;    public void addNotificationListener(ObjectName name,
+<i>157</i>&nbsp;                                        ObjectName listener,
+<i>158</i>&nbsp;                                        NotificationFilter filter,
+<i>159</i>&nbsp;                                        Object handback)
+<i>160</i>&nbsp;        throws InstanceNotFoundException {
+<b class="nc"><i>161</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>162</i>&nbsp;        getMBeanServer().addNotificationListener(name, listener,</b>
+<i>163</i>&nbsp;                                                 filter, handback);
+<i>164</i>&nbsp;    }
+<i>165</i>&nbsp;
+<i>166</i>&nbsp;    /**
+<i>167</i>&nbsp;     * Call &lt;code&gt;checkCreate(className)&lt;/code&gt;, then forward this method to the
+<i>168</i>&nbsp;     * wrapped object.
+<i>169</i>&nbsp;     */
+<i>170</i>&nbsp;    public ObjectInstance createMBean(String className, ObjectName name)
+<i>171</i>&nbsp;        throws
+<i>172</i>&nbsp;        ReflectionException,
+<i>173</i>&nbsp;        InstanceAlreadyExistsException,
+<i>174</i>&nbsp;        MBeanRegistrationException,
+<i>175</i>&nbsp;        MBeanException,
+<i>176</i>&nbsp;        NotCompliantMBeanException {
+<b class="nc"><i>177</i>&nbsp;        checkCreate(className);</b>
+<b class="nc"><i>178</i>&nbsp;        SecurityManager sm = System.getSecurityManager();</b>
+<b class="nc"><i>179</i>&nbsp;        if (sm == null) {</b>
+<b class="nc"><i>180</i>&nbsp;            Object object = getMBeanServer().instantiate(className);</b>
+<b class="nc"><i>181</i>&nbsp;            checkClassLoader(object);</b>
+<b class="nc"><i>182</i>&nbsp;            return getMBeanServer().registerMBean(object, name);</b>
+<i>183</i>&nbsp;        } else {
+<b class="nc"><i>184</i>&nbsp;            return getMBeanServer().createMBean(className, name);</b>
+<i>185</i>&nbsp;        }
+<i>186</i>&nbsp;    }
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;    /**
+<i>189</i>&nbsp;     * Call &lt;code&gt;checkCreate(className)&lt;/code&gt;, then forward this method to the
+<i>190</i>&nbsp;     * wrapped object.
+<i>191</i>&nbsp;     */
+<i>192</i>&nbsp;    public ObjectInstance createMBean(String className, ObjectName name,
+<i>193</i>&nbsp;                                      Object params[], String signature[])
+<i>194</i>&nbsp;        throws
+<i>195</i>&nbsp;        ReflectionException,
+<i>196</i>&nbsp;        InstanceAlreadyExistsException,
+<i>197</i>&nbsp;        MBeanRegistrationException,
+<i>198</i>&nbsp;        MBeanException,
+<i>199</i>&nbsp;        NotCompliantMBeanException {
+<b class="nc"><i>200</i>&nbsp;        checkCreate(className);</b>
+<b class="nc"><i>201</i>&nbsp;        SecurityManager sm = System.getSecurityManager();</b>
+<b class="nc"><i>202</i>&nbsp;        if (sm == null) {</b>
+<b class="nc"><i>203</i>&nbsp;            Object object = getMBeanServer().instantiate(className,</b>
+<i>204</i>&nbsp;                                                         params,
+<i>205</i>&nbsp;                                                         signature);
+<b class="nc"><i>206</i>&nbsp;            checkClassLoader(object);</b>
+<b class="nc"><i>207</i>&nbsp;            return getMBeanServer().registerMBean(object, name);</b>
+<i>208</i>&nbsp;        } else {
+<b class="nc"><i>209</i>&nbsp;            return getMBeanServer().createMBean(className, name,</b>
+<i>210</i>&nbsp;                                                params, signature);
+<i>211</i>&nbsp;        }
+<i>212</i>&nbsp;    }
+<i>213</i>&nbsp;
+<i>214</i>&nbsp;    /**
+<i>215</i>&nbsp;     * Call &lt;code&gt;checkCreate(className)&lt;/code&gt;, then forward this method to the
+<i>216</i>&nbsp;     * wrapped object.
+<i>217</i>&nbsp;     */
+<i>218</i>&nbsp;    public ObjectInstance createMBean(String className,
+<i>219</i>&nbsp;                                      ObjectName name,
+<i>220</i>&nbsp;                                      ObjectName loaderName)
+<i>221</i>&nbsp;        throws
+<i>222</i>&nbsp;        ReflectionException,
+<i>223</i>&nbsp;        InstanceAlreadyExistsException,
+<i>224</i>&nbsp;        MBeanRegistrationException,
+<i>225</i>&nbsp;        MBeanException,
+<i>226</i>&nbsp;        NotCompliantMBeanException,
+<i>227</i>&nbsp;        InstanceNotFoundException {
+<b class="nc"><i>228</i>&nbsp;        checkCreate(className);</b>
+<b class="nc"><i>229</i>&nbsp;        SecurityManager sm = System.getSecurityManager();</b>
+<b class="nc"><i>230</i>&nbsp;        if (sm == null) {</b>
+<b class="nc"><i>231</i>&nbsp;            Object object = getMBeanServer().instantiate(className,</b>
+<i>232</i>&nbsp;                                                         loaderName);
+<b class="nc"><i>233</i>&nbsp;            checkClassLoader(object);</b>
+<b class="nc"><i>234</i>&nbsp;            return getMBeanServer().registerMBean(object, name);</b>
+<i>235</i>&nbsp;        } else {
+<b class="nc"><i>236</i>&nbsp;            return getMBeanServer().createMBean(className, name, loaderName);</b>
+<i>237</i>&nbsp;        }
+<i>238</i>&nbsp;    }
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;    /**
+<i>241</i>&nbsp;     * Call &lt;code&gt;checkCreate(className)&lt;/code&gt;, then forward this method to the
+<i>242</i>&nbsp;     * wrapped object.
+<i>243</i>&nbsp;     */
+<i>244</i>&nbsp;    public ObjectInstance createMBean(String className,
+<i>245</i>&nbsp;                                      ObjectName name,
+<i>246</i>&nbsp;                                      ObjectName loaderName,
+<i>247</i>&nbsp;                                      Object params[],
+<i>248</i>&nbsp;                                      String signature[])
+<i>249</i>&nbsp;        throws
+<i>250</i>&nbsp;        ReflectionException,
+<i>251</i>&nbsp;        InstanceAlreadyExistsException,
+<i>252</i>&nbsp;        MBeanRegistrationException,
+<i>253</i>&nbsp;        MBeanException,
+<i>254</i>&nbsp;        NotCompliantMBeanException,
+<i>255</i>&nbsp;        InstanceNotFoundException {
+<b class="nc"><i>256</i>&nbsp;        checkCreate(className);</b>
+<b class="nc"><i>257</i>&nbsp;        SecurityManager sm = System.getSecurityManager();</b>
+<b class="nc"><i>258</i>&nbsp;        if (sm == null) {</b>
+<b class="nc"><i>259</i>&nbsp;            Object object = getMBeanServer().instantiate(className,</b>
+<i>260</i>&nbsp;                                                         loaderName,
+<i>261</i>&nbsp;                                                         params,
+<i>262</i>&nbsp;                                                         signature);
+<b class="nc"><i>263</i>&nbsp;            checkClassLoader(object);</b>
+<b class="nc"><i>264</i>&nbsp;            return getMBeanServer().registerMBean(object, name);</b>
+<i>265</i>&nbsp;        } else {
+<b class="nc"><i>266</i>&nbsp;            return getMBeanServer().createMBean(className, name, loaderName,</b>
+<i>267</i>&nbsp;                                                params, signature);
+<i>268</i>&nbsp;        }
+<i>269</i>&nbsp;    }
+<i>270</i>&nbsp;
+<i>271</i>&nbsp;    /**
+<i>272</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>273</i>&nbsp;     * wrapped object.
+<i>274</i>&nbsp;     */
+<i>275</i>&nbsp;    @Deprecated
+<i>276</i>&nbsp;    public ObjectInputStream deserialize(ObjectName name, byte[] data)
+<i>277</i>&nbsp;        throws InstanceNotFoundException, OperationsException {
+<b class="nc"><i>278</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>279</i>&nbsp;        return getMBeanServer().deserialize(name, data);</b>
+<i>280</i>&nbsp;    }
+<i>281</i>&nbsp;
+<i>282</i>&nbsp;    /**
+<i>283</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>284</i>&nbsp;     * wrapped object.
+<i>285</i>&nbsp;     */
+<i>286</i>&nbsp;    @Deprecated
+<i>287</i>&nbsp;    public ObjectInputStream deserialize(String className, byte[] data)
+<i>288</i>&nbsp;        throws OperationsException, ReflectionException {
+<b class="nc"><i>289</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>290</i>&nbsp;        return getMBeanServer().deserialize(className, data);</b>
+<i>291</i>&nbsp;    }
+<i>292</i>&nbsp;
+<i>293</i>&nbsp;    /**
+<i>294</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>295</i>&nbsp;     * wrapped object.
+<i>296</i>&nbsp;     */
+<i>297</i>&nbsp;    @Deprecated
+<i>298</i>&nbsp;    public ObjectInputStream deserialize(String className,
+<i>299</i>&nbsp;                                         ObjectName loaderName,
+<i>300</i>&nbsp;                                         byte[] data)
+<i>301</i>&nbsp;        throws
+<i>302</i>&nbsp;        InstanceNotFoundException,
+<i>303</i>&nbsp;        OperationsException,
+<i>304</i>&nbsp;        ReflectionException {
+<b class="nc"><i>305</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>306</i>&nbsp;        return getMBeanServer().deserialize(className, loaderName, data);</b>
+<i>307</i>&nbsp;    }
+<i>308</i>&nbsp;
+<i>309</i>&nbsp;    /**
+<i>310</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>311</i>&nbsp;     * wrapped object.
+<i>312</i>&nbsp;     */
+<i>313</i>&nbsp;    public Object getAttribute(ObjectName name, String attribute)
+<i>314</i>&nbsp;        throws
+<i>315</i>&nbsp;        MBeanException,
+<i>316</i>&nbsp;        AttributeNotFoundException,
+<i>317</i>&nbsp;        InstanceNotFoundException,
+<i>318</i>&nbsp;        ReflectionException {
+<b class="nc"><i>319</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>320</i>&nbsp;        return getMBeanServer().getAttribute(name, attribute);</b>
+<i>321</i>&nbsp;    }
+<i>322</i>&nbsp;
+<i>323</i>&nbsp;    /**
+<i>324</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>325</i>&nbsp;     * wrapped object.
+<i>326</i>&nbsp;     */
+<i>327</i>&nbsp;    public AttributeList getAttributes(ObjectName name, String[] attributes)
+<i>328</i>&nbsp;        throws InstanceNotFoundException, ReflectionException {
+<b class="nc"><i>329</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>330</i>&nbsp;        return getMBeanServer().getAttributes(name, attributes);</b>
+<i>331</i>&nbsp;    }
+<i>332</i>&nbsp;
+<i>333</i>&nbsp;    /**
+<i>334</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>335</i>&nbsp;     * wrapped object.
+<i>336</i>&nbsp;     */
+<i>337</i>&nbsp;    public ClassLoader getClassLoader(ObjectName loaderName)
+<i>338</i>&nbsp;        throws InstanceNotFoundException {
+<b class="nc"><i>339</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>340</i>&nbsp;        return getMBeanServer().getClassLoader(loaderName);</b>
+<i>341</i>&nbsp;    }
+<i>342</i>&nbsp;
+<i>343</i>&nbsp;    /**
+<i>344</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>345</i>&nbsp;     * wrapped object.
+<i>346</i>&nbsp;     */
+<i>347</i>&nbsp;    public ClassLoader getClassLoaderFor(ObjectName mbeanName)
+<i>348</i>&nbsp;        throws InstanceNotFoundException {
+<b class="nc"><i>349</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>350</i>&nbsp;        return getMBeanServer().getClassLoaderFor(mbeanName);</b>
+<i>351</i>&nbsp;    }
+<i>352</i>&nbsp;
+<i>353</i>&nbsp;    /**
+<i>354</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>355</i>&nbsp;     * wrapped object.
+<i>356</i>&nbsp;     */
+<i>357</i>&nbsp;    public ClassLoaderRepository getClassLoaderRepository() {
+<b class="nc"><i>358</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>359</i>&nbsp;        return getMBeanServer().getClassLoaderRepository();</b>
+<i>360</i>&nbsp;    }
+<i>361</i>&nbsp;
+<i>362</i>&nbsp;    /**
+<i>363</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>364</i>&nbsp;     * wrapped object.
+<i>365</i>&nbsp;     */
+<i>366</i>&nbsp;    public String getDefaultDomain() {
+<b class="nc"><i>367</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>368</i>&nbsp;        return getMBeanServer().getDefaultDomain();</b>
+<i>369</i>&nbsp;    }
+<i>370</i>&nbsp;
+<i>371</i>&nbsp;    /**
+<i>372</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>373</i>&nbsp;     * wrapped object.
+<i>374</i>&nbsp;     */
+<i>375</i>&nbsp;    public String[] getDomains() {
+<b class="nc"><i>376</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>377</i>&nbsp;        return getMBeanServer().getDomains();</b>
+<i>378</i>&nbsp;    }
+<i>379</i>&nbsp;
+<i>380</i>&nbsp;    /**
+<i>381</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>382</i>&nbsp;     * wrapped object.
+<i>383</i>&nbsp;     */
+<i>384</i>&nbsp;    public Integer getMBeanCount() {
+<b class="nc"><i>385</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>386</i>&nbsp;        return getMBeanServer().getMBeanCount();</b>
+<i>387</i>&nbsp;    }
+<i>388</i>&nbsp;
+<i>389</i>&nbsp;    /**
+<i>390</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>391</i>&nbsp;     * wrapped object.
+<i>392</i>&nbsp;     */
+<i>393</i>&nbsp;    public MBeanInfo getMBeanInfo(ObjectName name)
+<i>394</i>&nbsp;        throws
+<i>395</i>&nbsp;        InstanceNotFoundException,
+<i>396</i>&nbsp;        IntrospectionException,
+<i>397</i>&nbsp;        ReflectionException {
+<b class="nc"><i>398</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>399</i>&nbsp;        return getMBeanServer().getMBeanInfo(name);</b>
+<i>400</i>&nbsp;    }
+<i>401</i>&nbsp;
+<i>402</i>&nbsp;    /**
+<i>403</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>404</i>&nbsp;     * wrapped object.
+<i>405</i>&nbsp;     */
+<i>406</i>&nbsp;    public ObjectInstance getObjectInstance(ObjectName name)
+<i>407</i>&nbsp;        throws InstanceNotFoundException {
+<b class="nc"><i>408</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>409</i>&nbsp;        return getMBeanServer().getObjectInstance(name);</b>
+<i>410</i>&nbsp;    }
+<i>411</i>&nbsp;
+<i>412</i>&nbsp;    /**
+<i>413</i>&nbsp;     * Call &lt;code&gt;checkCreate(className)&lt;/code&gt;, then forward this method to the
+<i>414</i>&nbsp;     * wrapped object.
+<i>415</i>&nbsp;     */
+<i>416</i>&nbsp;    public Object instantiate(String className)
+<i>417</i>&nbsp;        throws ReflectionException, MBeanException {
+<b class="nc"><i>418</i>&nbsp;        checkCreate(className);</b>
+<b class="nc"><i>419</i>&nbsp;        return getMBeanServer().instantiate(className);</b>
+<i>420</i>&nbsp;    }
+<i>421</i>&nbsp;
+<i>422</i>&nbsp;    /**
+<i>423</i>&nbsp;     * Call &lt;code&gt;checkCreate(className)&lt;/code&gt;, then forward this method to the
+<i>424</i>&nbsp;     * wrapped object.
+<i>425</i>&nbsp;     */
+<i>426</i>&nbsp;    public Object instantiate(String className,
+<i>427</i>&nbsp;                              Object params[],
+<i>428</i>&nbsp;                              String signature[])
+<i>429</i>&nbsp;        throws ReflectionException, MBeanException {
+<b class="nc"><i>430</i>&nbsp;        checkCreate(className);</b>
+<b class="nc"><i>431</i>&nbsp;        return getMBeanServer().instantiate(className, params, signature);</b>
+<i>432</i>&nbsp;    }
+<i>433</i>&nbsp;
+<i>434</i>&nbsp;    /**
+<i>435</i>&nbsp;     * Call &lt;code&gt;checkCreate(className)&lt;/code&gt;, then forward this method to the
+<i>436</i>&nbsp;     * wrapped object.
+<i>437</i>&nbsp;     */
+<i>438</i>&nbsp;    public Object instantiate(String className, ObjectName loaderName)
+<i>439</i>&nbsp;        throws ReflectionException, MBeanException, InstanceNotFoundException {
+<b class="nc"><i>440</i>&nbsp;        checkCreate(className);</b>
+<b class="nc"><i>441</i>&nbsp;        return getMBeanServer().instantiate(className, loaderName);</b>
+<i>442</i>&nbsp;    }
+<i>443</i>&nbsp;
+<i>444</i>&nbsp;    /**
+<i>445</i>&nbsp;     * Call &lt;code&gt;checkCreate(className)&lt;/code&gt;, then forward this method to the
+<i>446</i>&nbsp;     * wrapped object.
+<i>447</i>&nbsp;     */
+<i>448</i>&nbsp;    public Object instantiate(String className, ObjectName loaderName,
+<i>449</i>&nbsp;                              Object params[], String signature[])
+<i>450</i>&nbsp;        throws ReflectionException, MBeanException, InstanceNotFoundException {
+<b class="nc"><i>451</i>&nbsp;        checkCreate(className);</b>
+<b class="nc"><i>452</i>&nbsp;        return getMBeanServer().instantiate(className, loaderName,</b>
+<i>453</i>&nbsp;                                            params, signature);
+<i>454</i>&nbsp;    }
+<i>455</i>&nbsp;
+<i>456</i>&nbsp;    /**
+<i>457</i>&nbsp;     * Call &lt;code&gt;checkWrite()&lt;/code&gt;, then forward this method to the
+<i>458</i>&nbsp;     * wrapped object.
+<i>459</i>&nbsp;     */
+<i>460</i>&nbsp;    public Object invoke(ObjectName name, String operationName,
+<i>461</i>&nbsp;                         Object params[], String signature[])
+<i>462</i>&nbsp;        throws
+<i>463</i>&nbsp;        InstanceNotFoundException,
+<i>464</i>&nbsp;        MBeanException,
+<i>465</i>&nbsp;        ReflectionException {
+<b class="nc"><i>466</i>&nbsp;        checkWrite();</b>
+<b class="nc"><i>467</i>&nbsp;        checkMLetMethods(name, operationName);</b>
+<b class="nc"><i>468</i>&nbsp;        return getMBeanServer().invoke(name, operationName, params, signature);</b>
+<i>469</i>&nbsp;    }
+<i>470</i>&nbsp;
+<i>471</i>&nbsp;    /**
+<i>472</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>473</i>&nbsp;     * wrapped object.
+<i>474</i>&nbsp;     */
+<i>475</i>&nbsp;    public boolean isInstanceOf(ObjectName name, String className)
+<i>476</i>&nbsp;        throws InstanceNotFoundException {
+<b class="nc"><i>477</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>478</i>&nbsp;        return getMBeanServer().isInstanceOf(name, className);</b>
+<i>479</i>&nbsp;    }
+<i>480</i>&nbsp;
+<i>481</i>&nbsp;    /**
+<i>482</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>483</i>&nbsp;     * wrapped object.
+<i>484</i>&nbsp;     */
+<i>485</i>&nbsp;    public boolean isRegistered(ObjectName name) {
+<b class="nc"><i>486</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>487</i>&nbsp;        return getMBeanServer().isRegistered(name);</b>
+<i>488</i>&nbsp;    }
+<i>489</i>&nbsp;
+<i>490</i>&nbsp;    /**
+<i>491</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>492</i>&nbsp;     * wrapped object.
+<i>493</i>&nbsp;     */
+<i>494</i>&nbsp;    public Set&lt;ObjectInstance&gt; queryMBeans(ObjectName name, QueryExp query) {
+<b class="nc"><i>495</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>496</i>&nbsp;        return getMBeanServer().queryMBeans(name, query);</b>
+<i>497</i>&nbsp;    }
+<i>498</i>&nbsp;
+<i>499</i>&nbsp;    /**
+<i>500</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>501</i>&nbsp;     * wrapped object.
+<i>502</i>&nbsp;     */
+<i>503</i>&nbsp;    public Set&lt;ObjectName&gt; queryNames(ObjectName name, QueryExp query) {
+<b class="nc"><i>504</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>505</i>&nbsp;        return getMBeanServer().queryNames(name, query);</b>
+<i>506</i>&nbsp;    }
+<i>507</i>&nbsp;
+<i>508</i>&nbsp;    /**
+<i>509</i>&nbsp;     * Call &lt;code&gt;checkWrite()&lt;/code&gt;, then forward this method to the
+<i>510</i>&nbsp;     * wrapped object.
+<i>511</i>&nbsp;     */
+<i>512</i>&nbsp;    public ObjectInstance registerMBean(Object object, ObjectName name)
+<i>513</i>&nbsp;        throws
+<i>514</i>&nbsp;        InstanceAlreadyExistsException,
+<i>515</i>&nbsp;        MBeanRegistrationException,
+<i>516</i>&nbsp;        NotCompliantMBeanException {
+<b class="nc"><i>517</i>&nbsp;        checkWrite();</b>
+<b class="nc"><i>518</i>&nbsp;        return getMBeanServer().registerMBean(object, name);</b>
+<i>519</i>&nbsp;    }
+<i>520</i>&nbsp;
+<i>521</i>&nbsp;    /**
+<i>522</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>523</i>&nbsp;     * wrapped object.
+<i>524</i>&nbsp;     */
+<i>525</i>&nbsp;    public void removeNotificationListener(ObjectName name,
+<i>526</i>&nbsp;                                           NotificationListener listener)
+<i>527</i>&nbsp;        throws InstanceNotFoundException, ListenerNotFoundException {
+<b class="nc"><i>528</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>529</i>&nbsp;        getMBeanServer().removeNotificationListener(name, listener);</b>
+<i>530</i>&nbsp;    }
+<i>531</i>&nbsp;
+<i>532</i>&nbsp;    /**
+<i>533</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>534</i>&nbsp;     * wrapped object.
+<i>535</i>&nbsp;     */
+<i>536</i>&nbsp;    public void removeNotificationListener(ObjectName name,
+<i>537</i>&nbsp;                                           NotificationListener listener,
+<i>538</i>&nbsp;                                           NotificationFilter filter,
+<i>539</i>&nbsp;                                           Object handback)
+<i>540</i>&nbsp;        throws InstanceNotFoundException, ListenerNotFoundException {
+<b class="nc"><i>541</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>542</i>&nbsp;        getMBeanServer().removeNotificationListener(name, listener,</b>
+<i>543</i>&nbsp;                                                    filter, handback);
+<i>544</i>&nbsp;    }
+<i>545</i>&nbsp;
+<i>546</i>&nbsp;    /**
+<i>547</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>548</i>&nbsp;     * wrapped object.
+<i>549</i>&nbsp;     */
+<i>550</i>&nbsp;    public void removeNotificationListener(ObjectName name,
+<i>551</i>&nbsp;                                           ObjectName listener)
+<i>552</i>&nbsp;        throws InstanceNotFoundException, ListenerNotFoundException {
+<b class="nc"><i>553</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>554</i>&nbsp;        getMBeanServer().removeNotificationListener(name, listener);</b>
+<i>555</i>&nbsp;    }
+<i>556</i>&nbsp;
+<i>557</i>&nbsp;    /**
+<i>558</i>&nbsp;     * Call &lt;code&gt;checkRead()&lt;/code&gt;, then forward this method to the
+<i>559</i>&nbsp;     * wrapped object.
+<i>560</i>&nbsp;     */
+<i>561</i>&nbsp;    public void removeNotificationListener(ObjectName name,
+<i>562</i>&nbsp;                                           ObjectName listener,
+<i>563</i>&nbsp;                                           NotificationFilter filter,
+<i>564</i>&nbsp;                                           Object handback)
+<i>565</i>&nbsp;        throws InstanceNotFoundException, ListenerNotFoundException {
+<b class="nc"><i>566</i>&nbsp;        checkRead();</b>
+<b class="nc"><i>567</i>&nbsp;        getMBeanServer().removeNotificationListener(name, listener,</b>
+<i>568</i>&nbsp;                                                    filter, handback);
+<i>569</i>&nbsp;    }
+<i>570</i>&nbsp;
+<i>571</i>&nbsp;    /**
+<i>572</i>&nbsp;     * Call &lt;code&gt;checkWrite()&lt;/code&gt;, then forward this method to the
+<i>573</i>&nbsp;     * wrapped object.
+<i>574</i>&nbsp;     */
+<i>575</i>&nbsp;    public void setAttribute(ObjectName name, Attribute attribute)
+<i>576</i>&nbsp;        throws
+<i>577</i>&nbsp;        InstanceNotFoundException,
+<i>578</i>&nbsp;        AttributeNotFoundException,
+<i>579</i>&nbsp;        InvalidAttributeValueException,
+<i>580</i>&nbsp;        MBeanException,
+<i>581</i>&nbsp;        ReflectionException {
+<b class="nc"><i>582</i>&nbsp;        checkWrite();</b>
+<b class="nc"><i>583</i>&nbsp;        getMBeanServer().setAttribute(name, attribute);</b>
+<i>584</i>&nbsp;    }
+<i>585</i>&nbsp;
+<i>586</i>&nbsp;    /**
+<i>587</i>&nbsp;     * Call &lt;code&gt;checkWrite()&lt;/code&gt;, then forward this method to the
+<i>588</i>&nbsp;     * wrapped object.
+<i>589</i>&nbsp;     */
+<i>590</i>&nbsp;    public AttributeList setAttributes(ObjectName name,
+<i>591</i>&nbsp;                                       AttributeList attributes)
+<i>592</i>&nbsp;        throws InstanceNotFoundException, ReflectionException {
+<b class="nc"><i>593</i>&nbsp;        checkWrite();</b>
+<b class="nc"><i>594</i>&nbsp;        return getMBeanServer().setAttributes(name, attributes);</b>
+<i>595</i>&nbsp;    }
+<i>596</i>&nbsp;
+<i>597</i>&nbsp;    /**
+<i>598</i>&nbsp;     * Call &lt;code&gt;checkUnregister()&lt;/code&gt;, then forward this method to the
+<i>599</i>&nbsp;     * wrapped object.
+<i>600</i>&nbsp;     */
+<i>601</i>&nbsp;    public void unregisterMBean(ObjectName name)
+<i>602</i>&nbsp;        throws InstanceNotFoundException, MBeanRegistrationException {
+<b class="nc"><i>603</i>&nbsp;        checkUnregister(name);</b>
+<b class="nc"><i>604</i>&nbsp;        getMBeanServer().unregisterMBean(name);</b>
+<i>605</i>&nbsp;    }
+<i>606</i>&nbsp;
+<i>607</i>&nbsp;    //----------------
+<i>608</i>&nbsp;    // PRIVATE METHODS
+<i>609</i>&nbsp;    //----------------
+<i>610</i>&nbsp;
+<i>611</i>&nbsp;    private void checkClassLoader(Object object) {
+<b class="nc"><i>612</i>&nbsp;        if (object instanceof ClassLoader)</b>
+<b class="nc"><i>613</i>&nbsp;            throw new SecurityException(&quot;Access denied! Creating an &quot; +</b>
+<i>614</i>&nbsp;                                        &quot;MBean that is a ClassLoader &quot; +
+<i>615</i>&nbsp;                                        &quot;is forbidden unless a security &quot; +
+<i>616</i>&nbsp;                                        &quot;manager is installed.&quot;);
+<i>617</i>&nbsp;    }
+<i>618</i>&nbsp;
+<i>619</i>&nbsp;    private void checkMLetMethods(ObjectName name, String operation)
+<i>620</i>&nbsp;    throws InstanceNotFoundException {
+<i>621</i>&nbsp;        // Check if security manager installed
+<b class="nc"><i>622</i>&nbsp;        SecurityManager sm = System.getSecurityManager();</b>
+<b class="nc"><i>623</i>&nbsp;        if (sm != null) {</b>
+<i>624</i>&nbsp;            return;
+<i>625</i>&nbsp;        }
+<i>626</i>&nbsp;        // Check for addURL and getMBeansFromURL methods
+<b class="nc"><i>627</i>&nbsp;        if (!operation.equals(&quot;addURL&quot;) &amp;&amp;</b>
+<b class="nc"><i>628</i>&nbsp;                !operation.equals(&quot;getMBeansFromURL&quot;)) {</b>
+<i>629</i>&nbsp;            return;
+<i>630</i>&nbsp;        }
+<i>631</i>&nbsp;        // Check if MBean is instance of MLet
+<b class="nc"><i>632</i>&nbsp;        if (!getMBeanServer().isInstanceOf(name,</b>
+<i>633</i>&nbsp;                &quot;javax.management.loading.MLet&quot;)) {
+<i>634</i>&nbsp;            return;
+<i>635</i>&nbsp;        }
+<i>636</i>&nbsp;        // Throw security exception
+<b class="nc"><i>637</i>&nbsp;        if (operation.equals(&quot;addURL&quot;)) { // addURL</b>
+<b class="nc"><i>638</i>&nbsp;            throw new SecurityException(&quot;Access denied! MLet method addURL &quot; +</b>
+<i>639</i>&nbsp;                    &quot;cannot be invoked unless a security manager is installed.&quot;);
+<i>640</i>&nbsp;        } else { // getMBeansFromURL
+<i>641</i>&nbsp;            // Whether or not calling getMBeansFromURL is allowed is controlled
+<i>642</i>&nbsp;            // by the value of the &quot;jmx.remote.x.mlet.allow.getMBeansFromURL&quot;
+<i>643</i>&nbsp;            // system property. If the value of this property is true, calling
+<i>644</i>&nbsp;            // the MLet&#39;s getMBeansFromURL method is allowed. The default value
+<i>645</i>&nbsp;            // for this property is false.
+<i>646</i>&nbsp;            final String propName = &quot;jmx.remote.x.mlet.allow.getMBeansFromURL&quot;;
+<b class="nc"><i>647</i>&nbsp;            GetPropertyAction propAction = new GetPropertyAction(propName);</b>
+<b class="nc"><i>648</i>&nbsp;            String propValue = AccessController.doPrivileged(propAction);</b>
+<b class="nc"><i>649</i>&nbsp;            boolean allowGetMBeansFromURL = &quot;true&quot;.equalsIgnoreCase(propValue);</b>
+<b class="nc"><i>650</i>&nbsp;            if (!allowGetMBeansFromURL) {</b>
+<b class="nc"><i>651</i>&nbsp;                throw new SecurityException(&quot;Access denied! MLet method &quot; +</b>
+<i>652</i>&nbsp;                        &quot;getMBeansFromURL cannot be invoked unless a &quot; +
+<i>653</i>&nbsp;                        &quot;security manager is installed or the system property &quot; +
+<i>654</i>&nbsp;                        &quot;-Djmx.remote.x.mlet.allow.getMBeansFromURL=true &quot; +
+<i>655</i>&nbsp;                        &quot;is specified.&quot;);
+<i>656</i>&nbsp;            }
+<i>657</i>&nbsp;        }
+<i>658</i>&nbsp;    }
+<i>659</i>&nbsp;
+<i>660</i>&nbsp;    //------------------
+<i>661</i>&nbsp;    // PRIVATE VARIABLES
+<i>662</i>&nbsp;    //------------------
+<i>663</i>&nbsp;
+<i>664</i>&nbsp;    private MBeanServer mbs;
+<i>665</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

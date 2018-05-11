@@ -1,0 +1,334 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: IntegratedParserConfiguration</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.parsers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: IntegratedParserConfiguration (com.sun.org.apache.xerces.internal.parsers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">IntegratedParserConfiguration</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 59)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001, 2002,2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.parsers;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.XMLDocumentScannerImpl;
+<i>24</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl;
+<i>25</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dtd.XMLDTDValidator;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dtd.XMLNSDTDValidator;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaValidator;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.XSMessageFormatter;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.util.SymbolTable;
+<i>30</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarPool;
+<i>31</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLComponent;
+<i>32</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLComponentManager;
+<i>33</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentScanner;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;/**
+<i>36</i>&nbsp; * This is configuration uses a scanner that integrates both scanning of the document
+<i>37</i>&nbsp; * and binding namespaces.
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; * If namespace feature is turned on, the pipeline is constructured with the
+<i>40</i>&nbsp; * following components:
+<i>41</i>&nbsp; * XMLNSDocumentScannerImpl -&gt; XMLNSDTDValidator -&gt; (optional) XMLSchemaValidator
+<i>42</i>&nbsp; *
+<i>43</i>&nbsp; * If the namespace feature is turned off the default document scanner implementation
+<i>44</i>&nbsp; * is used (XMLDocumentScannerImpl).
+<i>45</i>&nbsp; * &lt;p&gt;
+<i>46</i>&nbsp; * In addition to the features and properties recognized by the base
+<i>47</i>&nbsp; * parser configuration, this class recognizes these additional
+<i>48</i>&nbsp; * features and properties:
+<i>49</i>&nbsp; * &lt;ul&gt;
+<i>50</i>&nbsp; * &lt;li&gt;Features
+<i>51</i>&nbsp; *  &lt;ul&gt;
+<i>52</i>&nbsp; *  &lt;li&gt;http://apache.org/xml/features/validation/schema&lt;/li&gt;
+<i>53</i>&nbsp; *  &lt;li&gt;http://apache.org/xml/features/validation/schema-full-checking&lt;/li&gt;
+<i>54</i>&nbsp; *  &lt;li&gt;http://apache.org/xml/features/validation/schema/normalized-value&lt;/li&gt;
+<i>55</i>&nbsp; *  &lt;li&gt;http://apache.org/xml/features/validation/schema/element-default&lt;/li&gt;
+<i>56</i>&nbsp; *  &lt;/ul&gt;
+<i>57</i>&nbsp; * &lt;li&gt;Properties
+<i>58</i>&nbsp; *  &lt;ul&gt;
+<i>59</i>&nbsp; *   &lt;li&gt;http://apache.org/xml/properties/internal/error-reporter&lt;/li&gt;
+<i>60</i>&nbsp; *   &lt;li&gt;http://apache.org/xml/properties/internal/entity-manager&lt;/li&gt;
+<i>61</i>&nbsp; *   &lt;li&gt;http://apache.org/xml/properties/internal/document-scanner&lt;/li&gt;
+<i>62</i>&nbsp; *   &lt;li&gt;http://apache.org/xml/properties/internal/dtd-scanner&lt;/li&gt;
+<i>63</i>&nbsp; *   &lt;li&gt;http://apache.org/xml/properties/internal/grammar-pool&lt;/li&gt;
+<i>64</i>&nbsp; *   &lt;li&gt;http://apache.org/xml/properties/internal/validator/dtd&lt;/li&gt;
+<i>65</i>&nbsp; *   &lt;li&gt;http://apache.org/xml/properties/internal/datatype-validator-factory&lt;/li&gt;
+<i>66</i>&nbsp; *  &lt;/ul&gt;
+<i>67</i>&nbsp; * &lt;/ul&gt;
+<i>68</i>&nbsp; *
+<i>69</i>&nbsp; * @author Elena Litani, IBM
+<i>70</i>&nbsp; *
+<i>71</i>&nbsp; */
+<i>72</i>&nbsp;public class IntegratedParserConfiguration
+<i>73</i>&nbsp;extends StandardParserConfiguration {
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;    //
+<i>77</i>&nbsp;    // REVISIT: should this configuration depend on the others
+<i>78</i>&nbsp;    //          like DTD/Standard one?
+<i>79</i>&nbsp;    //
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    /** Document scanner that does namespace binding. */
+<i>82</i>&nbsp;    protected XMLNSDocumentScannerImpl fNamespaceScanner;
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    /** Default Xerces implementation of scanner */
+<i>85</i>&nbsp;    protected XMLDocumentScannerImpl fNonNSScanner;
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    /** DTD Validator that does not bind namespaces */
+<i>88</i>&nbsp;    protected XMLDTDValidator fNonNSDTDValidator;
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    //
+<i>91</i>&nbsp;    // Constructors
+<i>92</i>&nbsp;    //
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    /** Default constructor. */
+<i>95</i>&nbsp;    public IntegratedParserConfiguration() {
+<b class="nc"><i>96</i>&nbsp;        this(null, null, null);</b>
+<i>97</i>&nbsp;    } // &lt;init&gt;()
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    /**
+<i>100</i>&nbsp;     * Constructs a parser configuration using the specified symbol table.
+<i>101</i>&nbsp;     *
+<i>102</i>&nbsp;     * @param symbolTable The symbol table to use.
+<i>103</i>&nbsp;     */
+<i>104</i>&nbsp;    public IntegratedParserConfiguration(SymbolTable symbolTable) {
+<b class="nc"><i>105</i>&nbsp;        this(symbolTable, null, null);</b>
+<i>106</i>&nbsp;    } // &lt;init&gt;(SymbolTable)
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;    /**
+<i>109</i>&nbsp;     * Constructs a parser configuration using the specified symbol table and
+<i>110</i>&nbsp;     * grammar pool.
+<i>111</i>&nbsp;     * &lt;p&gt;
+<i>112</i>&nbsp;     * &lt;strong&gt;REVISIT:&lt;/strong&gt;
+<i>113</i>&nbsp;     * Grammar pool will be updated when the new validation engine is
+<i>114</i>&nbsp;     * implemented.
+<i>115</i>&nbsp;     *
+<i>116</i>&nbsp;     * @param symbolTable The symbol table to use.
+<i>117</i>&nbsp;     * @param grammarPool The grammar pool to use.
+<i>118</i>&nbsp;     */
+<i>119</i>&nbsp;    public IntegratedParserConfiguration(SymbolTable symbolTable,
+<i>120</i>&nbsp;                                         XMLGrammarPool grammarPool) {
+<b class="nc"><i>121</i>&nbsp;        this(symbolTable, grammarPool, null);</b>
+<i>122</i>&nbsp;    } // &lt;init&gt;(SymbolTable,XMLGrammarPool)
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;    /**
+<i>125</i>&nbsp;     * Constructs a parser configuration using the specified symbol table,
+<i>126</i>&nbsp;     * grammar pool, and parent settings.
+<i>127</i>&nbsp;     * &lt;p&gt;
+<i>128</i>&nbsp;     * &lt;strong&gt;REVISIT:&lt;/strong&gt;
+<i>129</i>&nbsp;     * Grammar pool will be updated when the new validation engine is
+<i>130</i>&nbsp;     * implemented.
+<i>131</i>&nbsp;     *
+<i>132</i>&nbsp;     * @param symbolTable    The symbol table to use.
+<i>133</i>&nbsp;     * @param grammarPool    The grammar pool to use.
+<i>134</i>&nbsp;     * @param parentSettings The parent settings.
+<i>135</i>&nbsp;     */
+<i>136</i>&nbsp;    public IntegratedParserConfiguration(SymbolTable symbolTable,
+<i>137</i>&nbsp;                                         XMLGrammarPool grammarPool,
+<i>138</i>&nbsp;                                         XMLComponentManager parentSettings) {
+<b class="nc"><i>139</i>&nbsp;        super(symbolTable, grammarPool, parentSettings);</b>
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;        // create components
+<b class="nc"><i>142</i>&nbsp;        fNonNSScanner = new XMLDocumentScannerImpl();</b>
+<b class="nc"><i>143</i>&nbsp;        fNonNSDTDValidator = new XMLDTDValidator();</b>
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;        // add components
+<b class="nc"><i>146</i>&nbsp;        addComponent((XMLComponent)fNonNSScanner);</b>
+<b class="nc"><i>147</i>&nbsp;        addComponent((XMLComponent)fNonNSDTDValidator);</b>
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    } // &lt;init&gt;(SymbolTable,XMLGrammarPool)
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;
+<i>152</i>&nbsp;    /** Configures the pipeline. */
+<i>153</i>&nbsp;        protected void configurePipeline() {
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;                // use XML 1.0 datatype library
+<b class="nc"><i>156</i>&nbsp;                setProperty(DATATYPE_VALIDATOR_FACTORY, fDatatypeValidatorFactory);</b>
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;                // setup DTD pipeline
+<b class="nc"><i>159</i>&nbsp;                configureDTDPipeline();</b>
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;                // setup document pipeline
+<b class="nc"><i>162</i>&nbsp;                if (fFeatures.get(NAMESPACES) == Boolean.TRUE) {</b>
+<b class="nc"><i>163</i>&nbsp;            fProperties.put(NAMESPACE_BINDER, fNamespaceBinder);</b>
+<b class="nc"><i>164</i>&nbsp;                        fScanner = fNamespaceScanner;</b>
+<b class="nc"><i>165</i>&nbsp;                        fProperties.put(DOCUMENT_SCANNER, fNamespaceScanner);</b>
+<b class="nc"><i>166</i>&nbsp;                        if (fDTDValidator != null) {</b>
+<b class="nc"><i>167</i>&nbsp;                                fProperties.put(DTD_VALIDATOR, fDTDValidator);</b>
+<b class="nc"><i>168</i>&nbsp;                                fNamespaceScanner.setDTDValidator(fDTDValidator);</b>
+<b class="nc"><i>169</i>&nbsp;                                fNamespaceScanner.setDocumentHandler(fDTDValidator);</b>
+<b class="nc"><i>170</i>&nbsp;                                fDTDValidator.setDocumentSource(fNamespaceScanner);</b>
+<b class="nc"><i>171</i>&nbsp;                                fDTDValidator.setDocumentHandler(fDocumentHandler);</b>
+<b class="nc"><i>172</i>&nbsp;                                if (fDocumentHandler != null) {</b>
+<b class="nc"><i>173</i>&nbsp;                                        fDocumentHandler.setDocumentSource(fDTDValidator);</b>
+<i>174</i>&nbsp;                                }
+<b class="nc"><i>175</i>&nbsp;                                fLastComponent = fDTDValidator;</b>
+<i>176</i>&nbsp;                        }
+<i>177</i>&nbsp;                        else {
+<b class="nc"><i>178</i>&nbsp;                                fNamespaceScanner.setDocumentHandler(fDocumentHandler);</b>
+<b class="nc"><i>179</i>&nbsp;                fNamespaceScanner.setDTDValidator(null);</b>
+<b class="nc"><i>180</i>&nbsp;                                if (fDocumentHandler != null) {</b>
+<b class="nc"><i>181</i>&nbsp;                                        fDocumentHandler.setDocumentSource(fNamespaceScanner);</b>
+<i>182</i>&nbsp;                                }
+<b class="nc"><i>183</i>&nbsp;                                fLastComponent = fNamespaceScanner;</b>
+<i>184</i>&nbsp;                        }
+<i>185</i>&nbsp;                }
+<i>186</i>&nbsp;                else {
+<b class="nc"><i>187</i>&nbsp;                        fScanner = fNonNSScanner;</b>
+<b class="nc"><i>188</i>&nbsp;                        fProperties.put(DOCUMENT_SCANNER, fNonNSScanner);</b>
+<b class="nc"><i>189</i>&nbsp;                        if (fNonNSDTDValidator != null) {</b>
+<b class="nc"><i>190</i>&nbsp;                                fProperties.put(DTD_VALIDATOR, fNonNSDTDValidator);</b>
+<b class="nc"><i>191</i>&nbsp;                                fNonNSScanner.setDocumentHandler(fNonNSDTDValidator);</b>
+<b class="nc"><i>192</i>&nbsp;                                fNonNSDTDValidator.setDocumentSource(fNonNSScanner);</b>
+<b class="nc"><i>193</i>&nbsp;                                fNonNSDTDValidator.setDocumentHandler(fDocumentHandler);</b>
+<b class="nc"><i>194</i>&nbsp;                                if (fDocumentHandler != null) {</b>
+<b class="nc"><i>195</i>&nbsp;                                        fDocumentHandler.setDocumentSource(fNonNSDTDValidator);</b>
+<i>196</i>&nbsp;                                }
+<b class="nc"><i>197</i>&nbsp;                                fLastComponent = fNonNSDTDValidator;</b>
+<i>198</i>&nbsp;                        }
+<i>199</i>&nbsp;                        else {
+<b class="nc"><i>200</i>&nbsp;                                fScanner.setDocumentHandler(fDocumentHandler);</b>
+<b class="nc"><i>201</i>&nbsp;                                if (fDocumentHandler != null) {</b>
+<b class="nc"><i>202</i>&nbsp;                                        fDocumentHandler.setDocumentSource(fScanner);</b>
+<i>203</i>&nbsp;                                }
+<b class="nc"><i>204</i>&nbsp;                                fLastComponent = fScanner;</b>
+<i>205</i>&nbsp;                        }
+<i>206</i>&nbsp;                }
+<i>207</i>&nbsp;
+<i>208</i>&nbsp;                // setup document pipeline
+<b class="nc"><i>209</i>&nbsp;                if (fFeatures.get(XMLSCHEMA_VALIDATION) == Boolean.TRUE) {</b>
+<i>210</i>&nbsp;                        // If schema validator was not in the pipeline insert it.
+<b class="nc"><i>211</i>&nbsp;                        if (fSchemaValidator == null) {</b>
+<b class="nc"><i>212</i>&nbsp;                                fSchemaValidator = new XMLSchemaValidator();</b>
+<i>213</i>&nbsp;
+<i>214</i>&nbsp;                                // add schema component
+<b class="nc"><i>215</i>&nbsp;                                fProperties.put(SCHEMA_VALIDATOR, fSchemaValidator);</b>
+<b class="nc"><i>216</i>&nbsp;                                addComponent(fSchemaValidator);</b>
+<i>217</i>&nbsp;                                // add schema message formatter
+<b class="nc"><i>218</i>&nbsp;                                if (fErrorReporter.getMessageFormatter(XSMessageFormatter.SCHEMA_DOMAIN) == null) {</b>
+<b class="nc"><i>219</i>&nbsp;                                        XSMessageFormatter xmft = new XSMessageFormatter();</b>
+<b class="nc"><i>220</i>&nbsp;                                        fErrorReporter.putMessageFormatter(XSMessageFormatter.SCHEMA_DOMAIN, xmft);</b>
+<i>221</i>&nbsp;                                }
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;                        }
+<i>224</i>&nbsp;
+<b class="nc"><i>225</i>&nbsp;                        fLastComponent.setDocumentHandler(fSchemaValidator);</b>
+<b class="nc"><i>226</i>&nbsp;                        fSchemaValidator.setDocumentSource(fLastComponent);</b>
+<b class="nc"><i>227</i>&nbsp;                        fSchemaValidator.setDocumentHandler(fDocumentHandler);</b>
+<b class="nc"><i>228</i>&nbsp;                        if (fDocumentHandler != null) {</b>
+<b class="nc"><i>229</i>&nbsp;                                fDocumentHandler.setDocumentSource(fSchemaValidator);</b>
+<i>230</i>&nbsp;                        }
+<b class="nc"><i>231</i>&nbsp;                        fLastComponent = fSchemaValidator;</b>
+<i>232</i>&nbsp;                }
+<i>233</i>&nbsp;        } // configurePipeline()
+<i>234</i>&nbsp;
+<i>235</i>&nbsp;
+<i>236</i>&nbsp;
+<i>237</i>&nbsp;    /** Create a document scanner: this scanner performs namespace binding
+<i>238</i>&nbsp;      */
+<i>239</i>&nbsp;    protected XMLDocumentScanner createDocumentScanner() {
+<b class="nc"><i>240</i>&nbsp;        fNamespaceScanner = new XMLNSDocumentScannerImpl();</b>
+<b class="nc"><i>241</i>&nbsp;        return fNamespaceScanner;</b>
+<i>242</i>&nbsp;    } // createDocumentScanner():XMLDocumentScanner
+<i>243</i>&nbsp;
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;    /** Create a DTD validator: this validator performs namespace binding.
+<i>246</i>&nbsp;      */
+<i>247</i>&nbsp;    protected XMLDTDValidator createDTDValidator() {
+<b class="nc"><i>248</i>&nbsp;        return new XMLNSDTDValidator();</b>
+<i>249</i>&nbsp;    } // createDTDValidator():XMLDTDValidator
+<i>250</i>&nbsp;
+<i>251</i>&nbsp;} // class IntegratedParserConfiguration
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

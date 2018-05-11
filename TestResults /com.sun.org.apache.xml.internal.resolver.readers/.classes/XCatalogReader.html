@@ -1,0 +1,271 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XCatalogReader</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.resolver.readers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XCatalogReader (com.sun.org.apache.xml.internal.resolver.readers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XCatalogReader</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 46)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;// XCatalogReader.java - Read XML Catalog files
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;/*
+<i>8</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation or its licensors,
+<i>9</i>&nbsp; * as applicable.
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>12</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>13</i>&nbsp; * You may obtain a copy of the License at
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>18</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>19</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>20</i>&nbsp; * See the License for the specific language governing permissions and
+<i>21</i>&nbsp; * limitations under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xml.internal.resolver.readers;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.Vector;
+<i>27</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.Catalog;
+<i>28</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.CatalogEntry;
+<i>29</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.CatalogException;
+<i>30</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.helpers.PublicId;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import org.xml.sax.*;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import javax.xml.parsers.*;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; * Parse &quot;xcatalog&quot; XML Catalog files, this is the XML Catalog format
+<i>38</i>&nbsp; * developed by John Cowan and supported by Apache.
+<i>39</i>&nbsp; *
+<i>40</i>&nbsp; * @see Catalog
+<i>41</i>&nbsp; *
+<i>42</i>&nbsp; * @author Norman Walsh
+<i>43</i>&nbsp; * &lt;a href=&quot;mailto:Norman.Walsh@Sun.COM&quot;&gt;Norman.Walsh@Sun.COM&lt;/a&gt;
+<i>44</i>&nbsp; *
+<i>45</i>&nbsp; */
+<i>46</i>&nbsp;public class XCatalogReader extends SAXCatalogReader implements SAXCatalogParser {
+<i>47</i>&nbsp;  /** The catalog object needs to be stored by the object so that
+<i>48</i>&nbsp;   * SAX callbacks can use it.
+<i>49</i>&nbsp;   */
+<b class="nc"><i>50</i>&nbsp;  protected Catalog catalog = null;</b>
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;  /** Set the current catalog. */
+<i>53</i>&nbsp;  public void setCatalog (Catalog catalog) {
+<b class="nc"><i>54</i>&nbsp;    this.catalog = catalog;</b>
+<i>55</i>&nbsp;  }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;  /** Get the current catalog. */
+<i>58</i>&nbsp;  public Catalog getCatalog () {
+<b class="nc"><i>59</i>&nbsp;    return catalog;</b>
+<i>60</i>&nbsp;  }
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;  /** The constructor */
+<i>63</i>&nbsp;  public XCatalogReader(SAXParserFactory parserFactory) {
+<b class="nc"><i>64</i>&nbsp;    super(parserFactory);</b>
+<i>65</i>&nbsp;  }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;  // ----------------------------------------------------------------------
+<i>68</i>&nbsp;  // Implement the SAX DocumentHandler interface
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;  /** The SAX &lt;code&gt;setDocumentLocator&lt;/code&gt; method does nothing. */
+<i>71</i>&nbsp;  public void setDocumentLocator (Locator locator) {
+<i>72</i>&nbsp;    return;
+<i>73</i>&nbsp;  }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;  /** The SAX &lt;code&gt;startDocument&lt;/code&gt; method does nothing. */
+<i>76</i>&nbsp;  public void startDocument ()
+<i>77</i>&nbsp;    throws SAXException {
+<i>78</i>&nbsp;    return;
+<i>79</i>&nbsp;  }
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;  /** The SAX &lt;code&gt;endDocument&lt;/code&gt; method does nothing. */
+<i>82</i>&nbsp;  public void endDocument ()
+<i>83</i>&nbsp;    throws SAXException {
+<i>84</i>&nbsp;    return;
+<i>85</i>&nbsp;  }
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;  /**
+<i>88</i>&nbsp;   * The SAX &lt;code&gt;startElement&lt;/code&gt; method recognizes elements
+<i>89</i>&nbsp;   * from the plain catalog format and instantiates CatalogEntry
+<i>90</i>&nbsp;   * objects for them.
+<i>91</i>&nbsp;   *
+<i>92</i>&nbsp;   * @param namespaceURI The namespace name of the element.
+<i>93</i>&nbsp;   * @param localName The local name of the element.
+<i>94</i>&nbsp;   * @param qName The QName of the element.
+<i>95</i>&nbsp;   * @param atts The list of attributes on the element.
+<i>96</i>&nbsp;   *
+<i>97</i>&nbsp;   * @see CatalogEntry
+<i>98</i>&nbsp;   */
+<i>99</i>&nbsp;  public void startElement (String namespaceURI,
+<i>100</i>&nbsp;                            String localName,
+<i>101</i>&nbsp;                            String qName,
+<i>102</i>&nbsp;                            Attributes atts)
+<i>103</i>&nbsp;    throws SAXException {
+<i>104</i>&nbsp;
+<b class="nc"><i>105</i>&nbsp;    int entryType = -1;</b>
+<b class="nc"><i>106</i>&nbsp;    Vector entryArgs = new Vector();</b>
+<i>107</i>&nbsp;
+<b class="nc"><i>108</i>&nbsp;    if (localName.equals(&quot;Base&quot;)) {</b>
+<b class="nc"><i>109</i>&nbsp;      entryType = catalog.BASE;</b>
+<b class="nc"><i>110</i>&nbsp;      entryArgs.add(atts.getValue(&quot;HRef&quot;));</b>
+<i>111</i>&nbsp;
+<b class="nc"><i>112</i>&nbsp;      catalog.getCatalogManager().debug.message(4, &quot;Base&quot;, atts.getValue(&quot;HRef&quot;));</b>
+<b class="nc"><i>113</i>&nbsp;    } else if (localName.equals(&quot;Delegate&quot;)) {</b>
+<b class="nc"><i>114</i>&nbsp;      entryType = catalog.DELEGATE_PUBLIC;</b>
+<b class="nc"><i>115</i>&nbsp;      entryArgs.add(atts.getValue(&quot;PublicId&quot;));</b>
+<b class="nc"><i>116</i>&nbsp;      entryArgs.add(atts.getValue(&quot;HRef&quot;));</b>
+<i>117</i>&nbsp;
+<b class="nc"><i>118</i>&nbsp;      catalog.getCatalogManager().debug.message(4, &quot;Delegate&quot;,</b>
+<b class="nc"><i>119</i>&nbsp;                    PublicId.normalize(atts.getValue(&quot;PublicId&quot;)),</b>
+<b class="nc"><i>120</i>&nbsp;                    atts.getValue(&quot;HRef&quot;));</b>
+<b class="nc"><i>121</i>&nbsp;    } else if (localName.equals(&quot;Extend&quot;)) {</b>
+<b class="nc"><i>122</i>&nbsp;      entryType = catalog.CATALOG;</b>
+<b class="nc"><i>123</i>&nbsp;      entryArgs.add(atts.getValue(&quot;HRef&quot;));</b>
+<i>124</i>&nbsp;
+<b class="nc"><i>125</i>&nbsp;      catalog.getCatalogManager().debug.message(4, &quot;Extend&quot;, atts.getValue(&quot;HRef&quot;));</b>
+<b class="nc"><i>126</i>&nbsp;    } else if (localName.equals(&quot;Map&quot;)) {</b>
+<b class="nc"><i>127</i>&nbsp;      entryType = catalog.PUBLIC;</b>
+<b class="nc"><i>128</i>&nbsp;      entryArgs.add(atts.getValue(&quot;PublicId&quot;));</b>
+<b class="nc"><i>129</i>&nbsp;      entryArgs.add(atts.getValue(&quot;HRef&quot;));</b>
+<i>130</i>&nbsp;
+<b class="nc"><i>131</i>&nbsp;      catalog.getCatalogManager().debug.message(4, &quot;Map&quot;,</b>
+<b class="nc"><i>132</i>&nbsp;                    PublicId.normalize(atts.getValue(&quot;PublicId&quot;)),</b>
+<b class="nc"><i>133</i>&nbsp;                    atts.getValue(&quot;HRef&quot;));</b>
+<b class="nc"><i>134</i>&nbsp;    } else if (localName.equals(&quot;Remap&quot;)) {</b>
+<b class="nc"><i>135</i>&nbsp;      entryType = catalog.SYSTEM;</b>
+<b class="nc"><i>136</i>&nbsp;      entryArgs.add(atts.getValue(&quot;SystemId&quot;));</b>
+<b class="nc"><i>137</i>&nbsp;      entryArgs.add(atts.getValue(&quot;HRef&quot;));</b>
+<i>138</i>&nbsp;
+<b class="nc"><i>139</i>&nbsp;      catalog.getCatalogManager().debug.message(4, &quot;Remap&quot;,</b>
+<b class="nc"><i>140</i>&nbsp;                    atts.getValue(&quot;SystemId&quot;),</b>
+<b class="nc"><i>141</i>&nbsp;                    atts.getValue(&quot;HRef&quot;));</b>
+<b class="nc"><i>142</i>&nbsp;    } else if (localName.equals(&quot;XMLCatalog&quot;)) {</b>
+<i>143</i>&nbsp;      // nop, start of catalog
+<i>144</i>&nbsp;    } else {
+<i>145</i>&nbsp;      // This is equivalent to an invalid catalog entry type
+<b class="nc"><i>146</i>&nbsp;      catalog.getCatalogManager().debug.message(1, &quot;Invalid catalog entry type&quot;, localName);</b>
+<i>147</i>&nbsp;    }
+<i>148</i>&nbsp;
+<b class="nc"><i>149</i>&nbsp;    if (entryType &gt;= 0) {</b>
+<i>150</i>&nbsp;      try {
+<b class="nc"><i>151</i>&nbsp;        CatalogEntry ce = new CatalogEntry(entryType, entryArgs);</b>
+<b class="nc"><i>152</i>&nbsp;        catalog.addEntry(ce);</b>
+<b class="nc"><i>153</i>&nbsp;      } catch (CatalogException cex) {</b>
+<b class="nc"><i>154</i>&nbsp;        if (cex.getExceptionType() == CatalogException.INVALID_ENTRY_TYPE) {</b>
+<b class="nc"><i>155</i>&nbsp;          catalog.getCatalogManager().debug.message(1, &quot;Invalid catalog entry type&quot;, localName);</b>
+<b class="nc"><i>156</i>&nbsp;        } else if (cex.getExceptionType() == CatalogException.INVALID_ENTRY) {</b>
+<b class="nc"><i>157</i>&nbsp;          catalog.getCatalogManager().debug.message(1, &quot;Invalid catalog entry&quot;, localName);</b>
+<i>158</i>&nbsp;        }
+<b class="nc"><i>159</i>&nbsp;      }</b>
+<i>160</i>&nbsp;    }
+<i>161</i>&nbsp;    }
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;    /** The SAX &lt;code&gt;endElement&lt;/code&gt; method does nothing. */
+<i>164</i>&nbsp;    public void endElement (String namespaceURI,
+<i>165</i>&nbsp;                            String localName,
+<i>166</i>&nbsp;                            String qName)
+<i>167</i>&nbsp;      throws SAXException {
+<i>168</i>&nbsp;      return;
+<i>169</i>&nbsp;    }
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;  /** The SAX &lt;code&gt;characters&lt;/code&gt; method does nothing. */
+<i>172</i>&nbsp;  public void characters (char ch[], int start, int length)
+<i>173</i>&nbsp;    throws SAXException {
+<i>174</i>&nbsp;    return;
+<i>175</i>&nbsp;  }
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;  /** The SAX &lt;code&gt;ignorableWhitespace&lt;/code&gt; method does nothing. */
+<i>178</i>&nbsp;  public void ignorableWhitespace (char ch[], int start, int length)
+<i>179</i>&nbsp;    throws SAXException {
+<i>180</i>&nbsp;    return;
+<i>181</i>&nbsp;  }
+<i>182</i>&nbsp;
+<i>183</i>&nbsp;  /** The SAX &lt;code&gt;processingInstruction&lt;/code&gt; method does nothing. */
+<i>184</i>&nbsp;  public void processingInstruction (String target, String data)
+<i>185</i>&nbsp;    throws SAXException {
+<i>186</i>&nbsp;    return;
+<i>187</i>&nbsp;  }
+<i>188</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

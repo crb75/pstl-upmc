@@ -1,0 +1,2319 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: URI</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: URI (com.sun.org.apache.xerces.internal.util)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">URI</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 60)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 707)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">URI$MalformedURIException</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 62)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 709)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.util;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import java.io.IOException;
+<i>24</i>&nbsp;import java.io.Serializable;
+<i>25</i>&nbsp;import java.util.Objects;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;/**********************************************************************
+<i>28</i>&nbsp;* A class to represent a Uniform Resource Identifier (URI). This class
+<i>29</i>&nbsp;* is designed to handle the parsing of URIs and provide access to
+<i>30</i>&nbsp;* the various components (scheme, host, port, userinfo, path, query
+<i>31</i>&nbsp;* string and fragment) that may constitute a URI.
+<i>32</i>&nbsp;* &lt;p&gt;
+<i>33</i>&nbsp;* Parsing of a URI specification is done according to the URI
+<i>34</i>&nbsp;* syntax described in
+<i>35</i>&nbsp;* &lt;a href=&quot;http://www.ietf.org/rfc/rfc2396.txt?number=2396&quot;&gt;RFC 2396&lt;/a&gt;,
+<i>36</i>&nbsp;* and amended by
+<i>37</i>&nbsp;* &lt;a href=&quot;http://www.ietf.org/rfc/rfc2732.txt?number=2732&quot;&gt;RFC 2732&lt;/a&gt;.
+<i>38</i>&nbsp;* &lt;p&gt;
+<i>39</i>&nbsp;* Every absolute URI consists of a scheme, followed by a colon (&#39;:&#39;),
+<i>40</i>&nbsp;* followed by a scheme-specific part. For URIs that follow the
+<i>41</i>&nbsp;* &quot;generic URI&quot; syntax, the scheme-specific part begins with two
+<i>42</i>&nbsp;* slashes (&quot;//&quot;) and may be followed by an authority segment (comprised
+<i>43</i>&nbsp;* of user information, host, and port), path segment, query segment
+<i>44</i>&nbsp;* and fragment. Note that RFC 2396 no longer specifies the use of the
+<i>45</i>&nbsp;* parameters segment and excludes the &quot;user:password&quot; syntax as part of
+<i>46</i>&nbsp;* the authority segment. If &quot;user:password&quot; appears in a URI, the entire
+<i>47</i>&nbsp;* user/password string is stored as userinfo.
+<i>48</i>&nbsp;* &lt;p&gt;
+<i>49</i>&nbsp;* For URIs that do not follow the &quot;generic URI&quot; syntax (e.g. mailto),
+<i>50</i>&nbsp;* the entire scheme-specific part is treated as the &quot;path&quot; portion
+<i>51</i>&nbsp;* of the URI.
+<i>52</i>&nbsp;* &lt;p&gt;
+<i>53</i>&nbsp;* Note that, unlike the java.net.URL class, this class does not provide
+<i>54</i>&nbsp;* any built-in network access functionality nor does it provide any
+<i>55</i>&nbsp;* scheme-specific functionality (for example, it does not know a
+<i>56</i>&nbsp;* default port for a specific scheme). Rather, it only knows the
+<i>57</i>&nbsp;* grammar and basic set of operations that can be applied to a URI.
+<i>58</i>&nbsp;*
+<i>59</i>&nbsp;*
+<i>60</i>&nbsp;**********************************************************************/
+<i>61</i>&nbsp; public class URI implements Serializable {
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;  /*******************************************************************
+<i>64</i>&nbsp;  * MalformedURIExceptions are thrown in the process of building a URI
+<i>65</i>&nbsp;  * or setting fields on a URI when an operation would result in an
+<i>66</i>&nbsp;  * invalid URI specification.
+<i>67</i>&nbsp;  *
+<i>68</i>&nbsp;  ********************************************************************/
+<i>69</i>&nbsp;  public static class MalformedURIException extends IOException {
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;   /** Serialization version. */
+<i>72</i>&nbsp;   static final long serialVersionUID = -6695054834342951930L;
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;   /******************************************************************
+<i>75</i>&nbsp;    * Constructs a &lt;code&gt;MalformedURIException&lt;/code&gt; with no specified
+<i>76</i>&nbsp;    * detail message.
+<i>77</i>&nbsp;    ******************************************************************/
+<i>78</i>&nbsp;    public MalformedURIException() {
+<b class="nc"><i>79</i>&nbsp;      super();</b>
+<i>80</i>&nbsp;    }
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    /*****************************************************************
+<i>83</i>&nbsp;    * Constructs a &lt;code&gt;MalformedURIException&lt;/code&gt; with the
+<i>84</i>&nbsp;    * specified detail message.
+<i>85</i>&nbsp;    *
+<i>86</i>&nbsp;    * @param p_msg the detail message.
+<i>87</i>&nbsp;    ******************************************************************/
+<i>88</i>&nbsp;    public MalformedURIException(String p_msg) {
+<b class="nc"><i>89</i>&nbsp;      super(p_msg);</b>
+<i>90</i>&nbsp;    }
+<i>91</i>&nbsp;  }
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;  /** Serialization version. */
+<i>94</i>&nbsp;  static final long serialVersionUID = 1601921774685357214L;
+<i>95</i>&nbsp;
+<b class="nc"><i>96</i>&nbsp;  private static final byte [] fgLookupTable = new byte[128];</b>
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;  /**
+<i>99</i>&nbsp;   * Character Classes
+<i>100</i>&nbsp;   */
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;  /** reserved characters ;/?:@&amp;=+$,[] */
+<i>103</i>&nbsp;  //RFC 2732 added &#39;[&#39; and &#39;]&#39; as reserved characters
+<i>104</i>&nbsp;  private static final int RESERVED_CHARACTERS = 0x01;
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;  /** URI punctuation mark characters: -_.!~*&#39;() - these, combined with
+<i>107</i>&nbsp;      alphanumerics, constitute the &quot;unreserved&quot; characters */
+<i>108</i>&nbsp;  private static final int MARK_CHARACTERS = 0x02;
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;  /** scheme can be composed of alphanumerics and these characters: +-. */
+<i>111</i>&nbsp;  private static final int SCHEME_CHARACTERS = 0x04;
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;  /** userinfo can be composed of unreserved, escaped and these
+<i>114</i>&nbsp;      characters: ;:&amp;=+$, */
+<i>115</i>&nbsp;  private static final int USERINFO_CHARACTERS = 0x08;
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;  /** ASCII letter characters */
+<i>118</i>&nbsp;  private static final int ASCII_ALPHA_CHARACTERS = 0x10;
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;  /** ASCII digit characters */
+<i>121</i>&nbsp;  private static final int ASCII_DIGIT_CHARACTERS = 0x20;
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;  /** ASCII hex characters */
+<i>124</i>&nbsp;  private static final int ASCII_HEX_CHARACTERS = 0x40;
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;  /** Path characters */
+<i>127</i>&nbsp;  private static final int PATH_CHARACTERS = 0x80;
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;  /** Mask for alpha-numeric characters */
+<i>130</i>&nbsp;  private static final int MASK_ALPHA_NUMERIC = ASCII_ALPHA_CHARACTERS | ASCII_DIGIT_CHARACTERS;
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;  /** Mask for unreserved characters */
+<i>133</i>&nbsp;  private static final int MASK_UNRESERVED_MASK = MASK_ALPHA_NUMERIC | MARK_CHARACTERS;
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;  /** Mask for URI allowable characters except for % */
+<i>136</i>&nbsp;  private static final int MASK_URI_CHARACTER = MASK_UNRESERVED_MASK | RESERVED_CHARACTERS;
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;  /** Mask for scheme characters */
+<i>139</i>&nbsp;  private static final int MASK_SCHEME_CHARACTER = MASK_ALPHA_NUMERIC | SCHEME_CHARACTERS;
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;  /** Mask for userinfo characters */
+<i>142</i>&nbsp;  private static final int MASK_USERINFO_CHARACTER = MASK_UNRESERVED_MASK | USERINFO_CHARACTERS;
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;  /** Mask for path characters */
+<i>145</i>&nbsp;  private static final int MASK_PATH_CHARACTER = MASK_UNRESERVED_MASK | PATH_CHARACTERS;
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;  static {
+<i>148</i>&nbsp;      // Add ASCII Digits and ASCII Hex Numbers
+<b class="nc"><i>149</i>&nbsp;      for (int i = &#39;0&#39;; i &lt;= &#39;9&#39;; ++i) {</b>
+<b class="nc"><i>150</i>&nbsp;          fgLookupTable[i] |= ASCII_DIGIT_CHARACTERS | ASCII_HEX_CHARACTERS;</b>
+<i>151</i>&nbsp;      }
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;      // Add ASCII Letters and ASCII Hex Numbers
+<b class="nc"><i>154</i>&nbsp;      for (int i = &#39;A&#39;; i &lt;= &#39;F&#39;; ++i) {</b>
+<b class="nc"><i>155</i>&nbsp;          fgLookupTable[i] |= ASCII_ALPHA_CHARACTERS | ASCII_HEX_CHARACTERS;</b>
+<b class="nc"><i>156</i>&nbsp;          fgLookupTable[i+0x00000020] |= ASCII_ALPHA_CHARACTERS | ASCII_HEX_CHARACTERS;</b>
+<i>157</i>&nbsp;      }
+<i>158</i>&nbsp;
+<i>159</i>&nbsp;      // Add ASCII Letters
+<b class="nc"><i>160</i>&nbsp;      for (int i = &#39;G&#39;; i &lt;= &#39;Z&#39;; ++i) {</b>
+<b class="nc"><i>161</i>&nbsp;          fgLookupTable[i] |= ASCII_ALPHA_CHARACTERS;</b>
+<b class="nc"><i>162</i>&nbsp;          fgLookupTable[i+0x00000020] |= ASCII_ALPHA_CHARACTERS;</b>
+<i>163</i>&nbsp;      }
+<i>164</i>&nbsp;
+<i>165</i>&nbsp;      // Add Reserved Characters
+<b class="nc"><i>166</i>&nbsp;      fgLookupTable[&#39;;&#39;] |= RESERVED_CHARACTERS;</b>
+<b class="nc"><i>167</i>&nbsp;      fgLookupTable[&#39;/&#39;] |= RESERVED_CHARACTERS;</b>
+<b class="nc"><i>168</i>&nbsp;      fgLookupTable[&#39;?&#39;] |= RESERVED_CHARACTERS;</b>
+<b class="nc"><i>169</i>&nbsp;      fgLookupTable[&#39;:&#39;] |= RESERVED_CHARACTERS;</b>
+<b class="nc"><i>170</i>&nbsp;      fgLookupTable[&#39;@&#39;] |= RESERVED_CHARACTERS;</b>
+<b class="nc"><i>171</i>&nbsp;      fgLookupTable[&#39;&amp;&#39;] |= RESERVED_CHARACTERS;</b>
+<b class="nc"><i>172</i>&nbsp;      fgLookupTable[&#39;=&#39;] |= RESERVED_CHARACTERS;</b>
+<b class="nc"><i>173</i>&nbsp;      fgLookupTable[&#39;+&#39;] |= RESERVED_CHARACTERS;</b>
+<b class="nc"><i>174</i>&nbsp;      fgLookupTable[&#39;$&#39;] |= RESERVED_CHARACTERS;</b>
+<b class="nc"><i>175</i>&nbsp;      fgLookupTable[&#39;,&#39;] |= RESERVED_CHARACTERS;</b>
+<b class="nc"><i>176</i>&nbsp;      fgLookupTable[&#39;[&#39;] |= RESERVED_CHARACTERS;</b>
+<b class="nc"><i>177</i>&nbsp;      fgLookupTable[&#39;]&#39;] |= RESERVED_CHARACTERS;</b>
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;      // Add Mark Characters
+<b class="nc"><i>180</i>&nbsp;      fgLookupTable[&#39;-&#39;] |= MARK_CHARACTERS;</b>
+<b class="nc"><i>181</i>&nbsp;      fgLookupTable[&#39;_&#39;] |= MARK_CHARACTERS;</b>
+<b class="nc"><i>182</i>&nbsp;      fgLookupTable[&#39;.&#39;] |= MARK_CHARACTERS;</b>
+<b class="nc"><i>183</i>&nbsp;      fgLookupTable[&#39;!&#39;] |= MARK_CHARACTERS;</b>
+<b class="nc"><i>184</i>&nbsp;      fgLookupTable[&#39;~&#39;] |= MARK_CHARACTERS;</b>
+<b class="nc"><i>185</i>&nbsp;      fgLookupTable[&#39;*&#39;] |= MARK_CHARACTERS;</b>
+<b class="nc"><i>186</i>&nbsp;      fgLookupTable[&#39;\&#39;&#39;] |= MARK_CHARACTERS;</b>
+<b class="nc"><i>187</i>&nbsp;      fgLookupTable[&#39;(&#39;] |= MARK_CHARACTERS;</b>
+<b class="nc"><i>188</i>&nbsp;      fgLookupTable[&#39;)&#39;] |= MARK_CHARACTERS;</b>
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;      // Add Scheme Characters
+<b class="nc"><i>191</i>&nbsp;      fgLookupTable[&#39;+&#39;] |= SCHEME_CHARACTERS;</b>
+<b class="nc"><i>192</i>&nbsp;      fgLookupTable[&#39;-&#39;] |= SCHEME_CHARACTERS;</b>
+<b class="nc"><i>193</i>&nbsp;      fgLookupTable[&#39;.&#39;] |= SCHEME_CHARACTERS;</b>
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;      // Add Userinfo Characters
+<b class="nc"><i>196</i>&nbsp;      fgLookupTable[&#39;;&#39;] |= USERINFO_CHARACTERS;</b>
+<b class="nc"><i>197</i>&nbsp;      fgLookupTable[&#39;:&#39;] |= USERINFO_CHARACTERS;</b>
+<b class="nc"><i>198</i>&nbsp;      fgLookupTable[&#39;&amp;&#39;] |= USERINFO_CHARACTERS;</b>
+<b class="nc"><i>199</i>&nbsp;      fgLookupTable[&#39;=&#39;] |= USERINFO_CHARACTERS;</b>
+<b class="nc"><i>200</i>&nbsp;      fgLookupTable[&#39;+&#39;] |= USERINFO_CHARACTERS;</b>
+<b class="nc"><i>201</i>&nbsp;      fgLookupTable[&#39;$&#39;] |= USERINFO_CHARACTERS;</b>
+<b class="nc"><i>202</i>&nbsp;      fgLookupTable[&#39;,&#39;] |= USERINFO_CHARACTERS;</b>
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;      // Add Path Characters
+<b class="nc"><i>205</i>&nbsp;      fgLookupTable[&#39;;&#39;] |= PATH_CHARACTERS;</b>
+<b class="nc"><i>206</i>&nbsp;      fgLookupTable[&#39;/&#39;] |= PATH_CHARACTERS;</b>
+<b class="nc"><i>207</i>&nbsp;      fgLookupTable[&#39;:&#39;] |= PATH_CHARACTERS;</b>
+<b class="nc"><i>208</i>&nbsp;      fgLookupTable[&#39;@&#39;] |= PATH_CHARACTERS;</b>
+<b class="nc"><i>209</i>&nbsp;      fgLookupTable[&#39;&amp;&#39;] |= PATH_CHARACTERS;</b>
+<b class="nc"><i>210</i>&nbsp;      fgLookupTable[&#39;=&#39;] |= PATH_CHARACTERS;</b>
+<b class="nc"><i>211</i>&nbsp;      fgLookupTable[&#39;+&#39;] |= PATH_CHARACTERS;</b>
+<b class="nc"><i>212</i>&nbsp;      fgLookupTable[&#39;$&#39;] |= PATH_CHARACTERS;</b>
+<b class="nc"><i>213</i>&nbsp;      fgLookupTable[&#39;,&#39;] |= PATH_CHARACTERS;</b>
+<i>214</i>&nbsp;  }
+<i>215</i>&nbsp;
+<i>216</i>&nbsp;  /** Stores the scheme (usually the protocol) for this URI. */
+<b class="nc"><i>217</i>&nbsp;  private String m_scheme = null;</b>
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;  /** If specified, stores the userinfo for this URI; otherwise null */
+<b class="nc"><i>220</i>&nbsp;  private String m_userinfo = null;</b>
+<i>221</i>&nbsp;
+<i>222</i>&nbsp;  /** If specified, stores the host for this URI; otherwise null */
+<b class="nc"><i>223</i>&nbsp;  private String m_host = null;</b>
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;  /** If specified, stores the port for this URI; otherwise -1 */
+<b class="nc"><i>226</i>&nbsp;  private int m_port = -1;</b>
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;  /** If specified, stores the registry based authority for this URI; otherwise -1 */
+<b class="nc"><i>229</i>&nbsp;  private String m_regAuthority = null;</b>
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;  /** If specified, stores the path for this URI; otherwise null */
+<b class="nc"><i>232</i>&nbsp;  private String m_path = null;</b>
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;  /** If specified, stores the query string for this URI; otherwise
+<i>235</i>&nbsp;      null.  */
+<b class="nc"><i>236</i>&nbsp;  private String m_queryString = null;</b>
+<i>237</i>&nbsp;
+<i>238</i>&nbsp;  /** If specified, stores the fragment for this URI; otherwise null */
+<b class="nc"><i>239</i>&nbsp;  private String m_fragment = null;</b>
+<i>240</i>&nbsp;
+<b class="nc"><i>241</i>&nbsp;  private static boolean DEBUG = false;</b>
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;  /**
+<i>244</i>&nbsp;  * Construct a new and uninitialized URI.
+<i>245</i>&nbsp;  */
+<b class="nc"><i>246</i>&nbsp;  public URI() {</b>
+<i>247</i>&nbsp;  }
+<i>248</i>&nbsp;
+<i>249</i>&nbsp; /**
+<i>250</i>&nbsp;  * Construct a new URI from another URI. All fields for this URI are
+<i>251</i>&nbsp;  * set equal to the fields of the URI passed in.
+<i>252</i>&nbsp;  *
+<i>253</i>&nbsp;  * @param p_other the URI to copy (cannot be null)
+<i>254</i>&nbsp;  */
+<b class="nc"><i>255</i>&nbsp;  public URI(URI p_other) {</b>
+<b class="nc"><i>256</i>&nbsp;    initialize(p_other);</b>
+<i>257</i>&nbsp;  }
+<i>258</i>&nbsp;
+<i>259</i>&nbsp; /**
+<i>260</i>&nbsp;  * Construct a new URI from a URI specification string. If the
+<i>261</i>&nbsp;  * specification follows the &quot;generic URI&quot; syntax, (two slashes
+<i>262</i>&nbsp;  * following the first colon), the specification will be parsed
+<i>263</i>&nbsp;  * accordingly - setting the scheme, userinfo, host,port, path, query
+<i>264</i>&nbsp;  * string and fragment fields as necessary. If the specification does
+<i>265</i>&nbsp;  * not follow the &quot;generic URI&quot; syntax, the specification is parsed
+<i>266</i>&nbsp;  * into a scheme and scheme-specific part (stored as the path) only.
+<i>267</i>&nbsp;  *
+<i>268</i>&nbsp;  * @param p_uriSpec the URI specification string (cannot be null or
+<i>269</i>&nbsp;  *                  empty)
+<i>270</i>&nbsp;  *
+<i>271</i>&nbsp;  * @exception MalformedURIException if p_uriSpec violates any syntax
+<i>272</i>&nbsp;  *                                   rules
+<i>273</i>&nbsp;  */
+<i>274</i>&nbsp;  public URI(String p_uriSpec) throws MalformedURIException {
+<b class="nc"><i>275</i>&nbsp;    this((URI)null, p_uriSpec);</b>
+<i>276</i>&nbsp;  }
+<i>277</i>&nbsp;
+<i>278</i>&nbsp;  /**
+<i>279</i>&nbsp;   * Construct a new URI from a URI specification string. If the
+<i>280</i>&nbsp;   * specification follows the &quot;generic URI&quot; syntax, (two slashes
+<i>281</i>&nbsp;   * following the first colon), the specification will be parsed
+<i>282</i>&nbsp;   * accordingly - setting the scheme, userinfo, host,port, path, query
+<i>283</i>&nbsp;   * string and fragment fields as necessary. If the specification does
+<i>284</i>&nbsp;   * not follow the &quot;generic URI&quot; syntax, the specification is parsed
+<i>285</i>&nbsp;   * into a scheme and scheme-specific part (stored as the path) only.
+<i>286</i>&nbsp;   * Construct a relative URI if boolean is assigned to &quot;true&quot;
+<i>287</i>&nbsp;   * and p_uriSpec is not valid absolute URI, instead of throwing an exception.
+<i>288</i>&nbsp;   *
+<i>289</i>&nbsp;   * @param p_uriSpec the URI specification string (cannot be null or
+<i>290</i>&nbsp;   *                  empty)
+<i>291</i>&nbsp;   * @param allowNonAbsoluteURI true to permit non-absolute URIs,
+<i>292</i>&nbsp;   *                            false otherwise.
+<i>293</i>&nbsp;   *
+<i>294</i>&nbsp;   * @exception MalformedURIException if p_uriSpec violates any syntax
+<i>295</i>&nbsp;   *                                   rules
+<i>296</i>&nbsp;   */
+<i>297</i>&nbsp;  public URI(String p_uriSpec, boolean allowNonAbsoluteURI) throws MalformedURIException {
+<b class="nc"><i>298</i>&nbsp;      this((URI)null, p_uriSpec, allowNonAbsoluteURI);</b>
+<i>299</i>&nbsp;  }
+<i>300</i>&nbsp;
+<i>301</i>&nbsp; /**
+<i>302</i>&nbsp;  * Construct a new URI from a base URI and a URI specification string.
+<i>303</i>&nbsp;  * The URI specification string may be a relative URI.
+<i>304</i>&nbsp;  *
+<i>305</i>&nbsp;  * @param p_base the base URI (cannot be null if p_uriSpec is null or
+<i>306</i>&nbsp;  *               empty)
+<i>307</i>&nbsp;  * @param p_uriSpec the URI specification string (cannot be null or
+<i>308</i>&nbsp;  *                  empty if p_base is null)
+<i>309</i>&nbsp;  *
+<i>310</i>&nbsp;  * @exception MalformedURIException if p_uriSpec violates any syntax
+<i>311</i>&nbsp;  *                                  rules
+<i>312</i>&nbsp;  */
+<b class="nc"><i>313</i>&nbsp;  public URI(URI p_base, String p_uriSpec) throws MalformedURIException {</b>
+<b class="nc"><i>314</i>&nbsp;    initialize(p_base, p_uriSpec);</b>
+<i>315</i>&nbsp;  }
+<i>316</i>&nbsp;
+<i>317</i>&nbsp;  /**
+<i>318</i>&nbsp;   * Construct a new URI from a base URI and a URI specification string.
+<i>319</i>&nbsp;   * The URI specification string may be a relative URI.
+<i>320</i>&nbsp;   * Construct a relative URI if boolean is assigned to &quot;true&quot;
+<i>321</i>&nbsp;   * and p_uriSpec is not valid absolute URI and p_base is null
+<i>322</i>&nbsp;   * instead of throwing an exception.
+<i>323</i>&nbsp;   *
+<i>324</i>&nbsp;   * @param p_base the base URI (cannot be null if p_uriSpec is null or
+<i>325</i>&nbsp;   *               empty)
+<i>326</i>&nbsp;   * @param p_uriSpec the URI specification string (cannot be null or
+<i>327</i>&nbsp;   *                  empty if p_base is null)
+<i>328</i>&nbsp;   * @param allowNonAbsoluteURI true to permit non-absolute URIs,
+<i>329</i>&nbsp;   *                            false otherwise.
+<i>330</i>&nbsp;   *
+<i>331</i>&nbsp;   * @exception MalformedURIException if p_uriSpec violates any syntax
+<i>332</i>&nbsp;   *                                  rules
+<i>333</i>&nbsp;   */
+<b class="nc"><i>334</i>&nbsp;  public URI(URI p_base, String p_uriSpec, boolean allowNonAbsoluteURI) throws MalformedURIException {</b>
+<b class="nc"><i>335</i>&nbsp;      initialize(p_base, p_uriSpec, allowNonAbsoluteURI);</b>
+<i>336</i>&nbsp;  }
+<i>337</i>&nbsp;
+<i>338</i>&nbsp; /**
+<i>339</i>&nbsp;  * Construct a new URI that does not follow the generic URI syntax.
+<i>340</i>&nbsp;  * Only the scheme and scheme-specific part (stored as the path) are
+<i>341</i>&nbsp;  * initialized.
+<i>342</i>&nbsp;  *
+<i>343</i>&nbsp;  * @param p_scheme the URI scheme (cannot be null or empty)
+<i>344</i>&nbsp;  * @param p_schemeSpecificPart the scheme-specific part (cannot be
+<i>345</i>&nbsp;  *                             null or empty)
+<i>346</i>&nbsp;  *
+<i>347</i>&nbsp;  * @exception MalformedURIException if p_scheme violates any
+<i>348</i>&nbsp;  *                                  syntax rules
+<i>349</i>&nbsp;  */
+<i>350</i>&nbsp;  public URI(String p_scheme, String p_schemeSpecificPart)
+<b class="nc"><i>351</i>&nbsp;             throws MalformedURIException {</b>
+<b class="nc"><i>352</i>&nbsp;    if (p_scheme == null || p_scheme.trim().length() == 0) {</b>
+<b class="nc"><i>353</i>&nbsp;      throw new MalformedURIException(</b>
+<i>354</i>&nbsp;            &quot;Cannot construct URI with null/empty scheme!&quot;);
+<i>355</i>&nbsp;    }
+<b class="nc"><i>356</i>&nbsp;    if (p_schemeSpecificPart == null ||</b>
+<b class="nc"><i>357</i>&nbsp;        p_schemeSpecificPart.trim().length() == 0) {</b>
+<b class="nc"><i>358</i>&nbsp;      throw new MalformedURIException(</b>
+<i>359</i>&nbsp;          &quot;Cannot construct URI with null/empty scheme-specific part!&quot;);
+<i>360</i>&nbsp;    }
+<b class="nc"><i>361</i>&nbsp;    setScheme(p_scheme);</b>
+<b class="nc"><i>362</i>&nbsp;    setPath(p_schemeSpecificPart);</b>
+<i>363</i>&nbsp;  }
+<i>364</i>&nbsp;
+<i>365</i>&nbsp; /**
+<i>366</i>&nbsp;  * Construct a new URI that follows the generic URI syntax from its
+<i>367</i>&nbsp;  * component parts. Each component is validated for syntax and some
+<i>368</i>&nbsp;  * basic semantic checks are performed as well.  See the individual
+<i>369</i>&nbsp;  * setter methods for specifics.
+<i>370</i>&nbsp;  *
+<i>371</i>&nbsp;  * @param p_scheme the URI scheme (cannot be null or empty)
+<i>372</i>&nbsp;  * @param p_host the hostname, IPv4 address or IPv6 reference for the URI
+<i>373</i>&nbsp;  * @param p_path the URI path - if the path contains &#39;?&#39; or &#39;#&#39;,
+<i>374</i>&nbsp;  *               then the query string and/or fragment will be
+<i>375</i>&nbsp;  *               set from the path; however, if the query and
+<i>376</i>&nbsp;  *               fragment are specified both in the path and as
+<i>377</i>&nbsp;  *               separate parameters, an exception is thrown
+<i>378</i>&nbsp;  * @param p_queryString the URI query string (cannot be specified
+<i>379</i>&nbsp;  *                      if path is null)
+<i>380</i>&nbsp;  * @param p_fragment the URI fragment (cannot be specified if path
+<i>381</i>&nbsp;  *                   is null)
+<i>382</i>&nbsp;  *
+<i>383</i>&nbsp;  * @exception MalformedURIException if any of the parameters violates
+<i>384</i>&nbsp;  *                                  syntax rules or semantic rules
+<i>385</i>&nbsp;  */
+<i>386</i>&nbsp;  public URI(String p_scheme, String p_host, String p_path,
+<i>387</i>&nbsp;             String p_queryString, String p_fragment)
+<i>388</i>&nbsp;         throws MalformedURIException {
+<b class="nc"><i>389</i>&nbsp;    this(p_scheme, null, p_host, -1, p_path, p_queryString, p_fragment);</b>
+<i>390</i>&nbsp;  }
+<i>391</i>&nbsp;
+<i>392</i>&nbsp; /**
+<i>393</i>&nbsp;  * Construct a new URI that follows the generic URI syntax from its
+<i>394</i>&nbsp;  * component parts. Each component is validated for syntax and some
+<i>395</i>&nbsp;  * basic semantic checks are performed as well.  See the individual
+<i>396</i>&nbsp;  * setter methods for specifics.
+<i>397</i>&nbsp;  *
+<i>398</i>&nbsp;  * @param p_scheme the URI scheme (cannot be null or empty)
+<i>399</i>&nbsp;  * @param p_userinfo the URI userinfo (cannot be specified if host
+<i>400</i>&nbsp;  *                   is null)
+<i>401</i>&nbsp;  * @param p_host the hostname, IPv4 address or IPv6 reference for the URI
+<i>402</i>&nbsp;  * @param p_port the URI port (may be -1 for &quot;unspecified&quot;; cannot
+<i>403</i>&nbsp;  *               be specified if host is null)
+<i>404</i>&nbsp;  * @param p_path the URI path - if the path contains &#39;?&#39; or &#39;#&#39;,
+<i>405</i>&nbsp;  *               then the query string and/or fragment will be
+<i>406</i>&nbsp;  *               set from the path; however, if the query and
+<i>407</i>&nbsp;  *               fragment are specified both in the path and as
+<i>408</i>&nbsp;  *               separate parameters, an exception is thrown
+<i>409</i>&nbsp;  * @param p_queryString the URI query string (cannot be specified
+<i>410</i>&nbsp;  *                      if path is null)
+<i>411</i>&nbsp;  * @param p_fragment the URI fragment (cannot be specified if path
+<i>412</i>&nbsp;  *                   is null)
+<i>413</i>&nbsp;  *
+<i>414</i>&nbsp;  * @exception MalformedURIException if any of the parameters violates
+<i>415</i>&nbsp;  *                                  syntax rules or semantic rules
+<i>416</i>&nbsp;  */
+<i>417</i>&nbsp;  public URI(String p_scheme, String p_userinfo,
+<i>418</i>&nbsp;             String p_host, int p_port, String p_path,
+<i>419</i>&nbsp;             String p_queryString, String p_fragment)
+<b class="nc"><i>420</i>&nbsp;         throws MalformedURIException {</b>
+<b class="nc"><i>421</i>&nbsp;    if (p_scheme == null || p_scheme.trim().length() == 0) {</b>
+<b class="nc"><i>422</i>&nbsp;      throw new MalformedURIException(&quot;Scheme is required!&quot;);</b>
+<i>423</i>&nbsp;    }
+<i>424</i>&nbsp;
+<b class="nc"><i>425</i>&nbsp;    if (p_host == null) {</b>
+<b class="nc"><i>426</i>&nbsp;      if (p_userinfo != null) {</b>
+<b class="nc"><i>427</i>&nbsp;        throw new MalformedURIException(</b>
+<i>428</i>&nbsp;             &quot;Userinfo may not be specified if host is not specified!&quot;);
+<i>429</i>&nbsp;      }
+<b class="nc"><i>430</i>&nbsp;      if (p_port != -1) {</b>
+<b class="nc"><i>431</i>&nbsp;        throw new MalformedURIException(</b>
+<i>432</i>&nbsp;             &quot;Port may not be specified if host is not specified!&quot;);
+<i>433</i>&nbsp;      }
+<i>434</i>&nbsp;    }
+<i>435</i>&nbsp;
+<b class="nc"><i>436</i>&nbsp;    if (p_path != null) {</b>
+<b class="nc"><i>437</i>&nbsp;      if (p_path.indexOf(&#39;?&#39;) != -1 &amp;&amp; p_queryString != null) {</b>
+<b class="nc"><i>438</i>&nbsp;        throw new MalformedURIException(</b>
+<i>439</i>&nbsp;          &quot;Query string cannot be specified in path and query string!&quot;);
+<i>440</i>&nbsp;      }
+<i>441</i>&nbsp;
+<b class="nc"><i>442</i>&nbsp;      if (p_path.indexOf(&#39;#&#39;) != -1 &amp;&amp; p_fragment != null) {</b>
+<b class="nc"><i>443</i>&nbsp;        throw new MalformedURIException(</b>
+<i>444</i>&nbsp;          &quot;Fragment cannot be specified in both the path and fragment!&quot;);
+<i>445</i>&nbsp;      }
+<i>446</i>&nbsp;    }
+<i>447</i>&nbsp;
+<b class="nc"><i>448</i>&nbsp;    setScheme(p_scheme);</b>
+<b class="nc"><i>449</i>&nbsp;    setHost(p_host);</b>
+<b class="nc"><i>450</i>&nbsp;    setPort(p_port);</b>
+<b class="nc"><i>451</i>&nbsp;    setUserinfo(p_userinfo);</b>
+<b class="nc"><i>452</i>&nbsp;    setPath(p_path);</b>
+<b class="nc"><i>453</i>&nbsp;    setQueryString(p_queryString);</b>
+<b class="nc"><i>454</i>&nbsp;    setFragment(p_fragment);</b>
+<i>455</i>&nbsp;  }
+<i>456</i>&nbsp;
+<i>457</i>&nbsp; /**
+<i>458</i>&nbsp;  * Initialize all fields of this URI from another URI.
+<i>459</i>&nbsp;  *
+<i>460</i>&nbsp;  * @param p_other the URI to copy (cannot be null)
+<i>461</i>&nbsp;  */
+<i>462</i>&nbsp;  private void initialize(URI p_other) {
+<b class="nc"><i>463</i>&nbsp;    m_scheme = p_other.getScheme();</b>
+<b class="nc"><i>464</i>&nbsp;    m_userinfo = p_other.getUserinfo();</b>
+<b class="nc"><i>465</i>&nbsp;    m_host = p_other.getHost();</b>
+<b class="nc"><i>466</i>&nbsp;    m_port = p_other.getPort();</b>
+<b class="nc"><i>467</i>&nbsp;    m_regAuthority = p_other.getRegBasedAuthority();</b>
+<b class="nc"><i>468</i>&nbsp;    m_path = p_other.getPath();</b>
+<b class="nc"><i>469</i>&nbsp;    m_queryString = p_other.getQueryString();</b>
+<b class="nc"><i>470</i>&nbsp;    m_fragment = p_other.getFragment();</b>
+<i>471</i>&nbsp;  }
+<i>472</i>&nbsp;
+<i>473</i>&nbsp;  /**
+<i>474</i>&nbsp;   * Initializes this URI from a base URI and a URI specification string.
+<i>475</i>&nbsp;   * See RFC 2396 Section 4 and Appendix B for specifications on parsing
+<i>476</i>&nbsp;   * the URI and Section 5 for specifications on resolving relative URIs
+<i>477</i>&nbsp;   * and relative paths.
+<i>478</i>&nbsp;   *
+<i>479</i>&nbsp;   * @param p_base the base URI (may be null if p_uriSpec is an absolute
+<i>480</i>&nbsp;   *               URI)
+<i>481</i>&nbsp;   * @param p_uriSpec the URI spec string which may be an absolute or
+<i>482</i>&nbsp;   *                  relative URI (can only be null/empty if p_base
+<i>483</i>&nbsp;   *                  is not null)
+<i>484</i>&nbsp;   * @param allowNonAbsoluteURI true to permit non-absolute URIs,
+<i>485</i>&nbsp;   *                         in case of relative URI, false otherwise.
+<i>486</i>&nbsp;   *
+<i>487</i>&nbsp;   * @exception MalformedURIException if p_base is null and p_uriSpec
+<i>488</i>&nbsp;   *                                  is not an absolute URI or if
+<i>489</i>&nbsp;   *                                  p_uriSpec violates syntax rules
+<i>490</i>&nbsp;   */
+<i>491</i>&nbsp;  private void initialize(URI p_base, String p_uriSpec, boolean allowNonAbsoluteURI)
+<i>492</i>&nbsp;      throws MalformedURIException {
+<i>493</i>&nbsp;
+<b class="nc"><i>494</i>&nbsp;      String uriSpec = p_uriSpec;</b>
+<b class="nc"><i>495</i>&nbsp;      int uriSpecLen = (uriSpec != null) ? uriSpec.length() : 0;</b>
+<i>496</i>&nbsp;
+<b class="nc"><i>497</i>&nbsp;      if (p_base == null &amp;&amp; uriSpecLen == 0) {</b>
+<b class="nc"><i>498</i>&nbsp;          if (allowNonAbsoluteURI) {</b>
+<b class="nc"><i>499</i>&nbsp;              m_path = &quot;&quot;;</b>
+<i>500</i>&nbsp;              return;
+<i>501</i>&nbsp;          }
+<b class="nc"><i>502</i>&nbsp;          throw new MalformedURIException(&quot;Cannot initialize URI with empty parameters.&quot;);</b>
+<i>503</i>&nbsp;      }
+<i>504</i>&nbsp;
+<i>505</i>&nbsp;      // just make a copy of the base if spec is empty
+<b class="nc"><i>506</i>&nbsp;      if (uriSpecLen == 0) {</b>
+<b class="nc"><i>507</i>&nbsp;          initialize(p_base);</b>
+<i>508</i>&nbsp;          return;
+<i>509</i>&nbsp;      }
+<i>510</i>&nbsp;
+<b class="nc"><i>511</i>&nbsp;      int index = 0;</b>
+<i>512</i>&nbsp;
+<i>513</i>&nbsp;      // Check for scheme, which must be before &#39;/&#39;, &#39;?&#39; or &#39;#&#39;.
+<b class="nc"><i>514</i>&nbsp;      int colonIdx = uriSpec.indexOf(&#39;:&#39;);</b>
+<b class="nc"><i>515</i>&nbsp;      if (colonIdx != -1) {</b>
+<b class="nc"><i>516</i>&nbsp;          final int searchFrom = colonIdx - 1;</b>
+<i>517</i>&nbsp;          // search backwards starting from character before &#39;:&#39;.
+<b class="nc"><i>518</i>&nbsp;          int slashIdx = uriSpec.lastIndexOf(&#39;/&#39;, searchFrom);</b>
+<b class="nc"><i>519</i>&nbsp;          int queryIdx = uriSpec.lastIndexOf(&#39;?&#39;, searchFrom);</b>
+<b class="nc"><i>520</i>&nbsp;          int fragmentIdx = uriSpec.lastIndexOf(&#39;#&#39;, searchFrom);</b>
+<i>521</i>&nbsp;
+<b class="nc"><i>522</i>&nbsp;          if (colonIdx == 0 || slashIdx != -1 ||</b>
+<i>523</i>&nbsp;              queryIdx != -1 || fragmentIdx != -1) {
+<i>524</i>&nbsp;              // A standalone base is a valid URI according to spec
+<b class="nc"><i>525</i>&nbsp;              if (colonIdx == 0 || (p_base == null &amp;&amp; fragmentIdx != 0 &amp;&amp; !allowNonAbsoluteURI)) {</b>
+<b class="nc"><i>526</i>&nbsp;                  throw new MalformedURIException(&quot;No scheme found in URI.&quot;);</b>
+<i>527</i>&nbsp;              }
+<i>528</i>&nbsp;          }
+<i>529</i>&nbsp;          else {
+<b class="nc"><i>530</i>&nbsp;              initializeScheme(uriSpec);</b>
+<b class="nc"><i>531</i>&nbsp;              index = m_scheme.length()+1;</b>
+<i>532</i>&nbsp;
+<i>533</i>&nbsp;              // Neither &#39;scheme:&#39; or &#39;scheme:#fragment&#39; are valid URIs.
+<b class="nc"><i>534</i>&nbsp;              if (colonIdx == uriSpecLen - 1 || uriSpec.charAt(colonIdx+1) == &#39;#&#39;) {</b>
+<b class="nc"><i>535</i>&nbsp;                  throw new MalformedURIException(&quot;Scheme specific part cannot be empty.&quot;);</b>
+<i>536</i>&nbsp;              }
+<i>537</i>&nbsp;          }
+<b class="nc"><i>538</i>&nbsp;      }</b>
+<b class="nc"><i>539</i>&nbsp;      else if (p_base == null &amp;&amp; uriSpec.indexOf(&#39;#&#39;) != 0 &amp;&amp; !allowNonAbsoluteURI) {</b>
+<b class="nc"><i>540</i>&nbsp;          throw new MalformedURIException(&quot;No scheme found in URI.&quot;);</b>
+<i>541</i>&nbsp;      }
+<i>542</i>&nbsp;
+<i>543</i>&nbsp;      // Two slashes means we may have authority, but definitely means we&#39;re either
+<i>544</i>&nbsp;      // matching net_path or abs_path. These two productions are ambiguous in that
+<i>545</i>&nbsp;      // every net_path (except those containing an IPv6Reference) is an abs_path.
+<i>546</i>&nbsp;      // RFC 2396 resolves this ambiguity by applying a greedy left most matching rule.
+<i>547</i>&nbsp;      // Try matching net_path first, and if that fails we don&#39;t have authority so
+<i>548</i>&nbsp;      // then attempt to match abs_path.
+<i>549</i>&nbsp;      //
+<i>550</i>&nbsp;      // net_path = &quot;//&quot; authority [ abs_path ]
+<i>551</i>&nbsp;      // abs_path = &quot;/&quot;  path_segments
+<b class="nc"><i>552</i>&nbsp;      if (((index+1) &lt; uriSpecLen) &amp;&amp;</b>
+<b class="nc"><i>553</i>&nbsp;          (uriSpec.charAt(index) == &#39;/&#39; &amp;&amp; uriSpec.charAt(index+1) == &#39;/&#39;)) {</b>
+<b class="nc"><i>554</i>&nbsp;          index += 2;</b>
+<b class="nc"><i>555</i>&nbsp;          int startPos = index;</b>
+<i>556</i>&nbsp;
+<i>557</i>&nbsp;          // Authority will be everything up to path, query or fragment
+<b class="nc"><i>558</i>&nbsp;          char testChar = &#39;\0&#39;;</b>
+<b class="nc"><i>559</i>&nbsp;          while (index &lt; uriSpecLen) {</b>
+<b class="nc"><i>560</i>&nbsp;              testChar = uriSpec.charAt(index);</b>
+<b class="nc"><i>561</i>&nbsp;              if (testChar == &#39;/&#39; || testChar == &#39;?&#39; || testChar == &#39;#&#39;) {</b>
+<b class="nc"><i>562</i>&nbsp;                  break;</b>
+<i>563</i>&nbsp;              }
+<b class="nc"><i>564</i>&nbsp;              index++;</b>
+<i>565</i>&nbsp;          }
+<i>566</i>&nbsp;
+<i>567</i>&nbsp;          // Attempt to parse authority. If the section is an empty string
+<i>568</i>&nbsp;          // this is a valid server based authority, so set the host to this
+<i>569</i>&nbsp;          // value.
+<b class="nc"><i>570</i>&nbsp;          if (index &gt; startPos) {</b>
+<i>571</i>&nbsp;              // If we didn&#39;t find authority we need to back up. Attempt to
+<i>572</i>&nbsp;              // match against abs_path next.
+<b class="nc"><i>573</i>&nbsp;              if (!initializeAuthority(uriSpec.substring(startPos, index))) {</b>
+<b class="nc"><i>574</i>&nbsp;                  index = startPos - 2;</b>
+<i>575</i>&nbsp;              }
+<i>576</i>&nbsp;          }
+<i>577</i>&nbsp;          else {
+<b class="nc"><i>578</i>&nbsp;              m_host = &quot;&quot;;</b>
+<i>579</i>&nbsp;          }
+<i>580</i>&nbsp;      }
+<i>581</i>&nbsp;
+<b class="nc"><i>582</i>&nbsp;      initializePath(uriSpec, index);</b>
+<i>583</i>&nbsp;
+<i>584</i>&nbsp;      // Resolve relative URI to base URI - see RFC 2396 Section 5.2
+<i>585</i>&nbsp;      // In some cases, it might make more sense to throw an exception
+<i>586</i>&nbsp;      // (when scheme is specified is the string spec and the base URI
+<i>587</i>&nbsp;      // is also specified, for example), but we&#39;re just following the
+<i>588</i>&nbsp;      // RFC specifications
+<b class="nc"><i>589</i>&nbsp;      if (p_base != null) {</b>
+<b class="nc"><i>590</i>&nbsp;          absolutize(p_base);</b>
+<i>591</i>&nbsp;      }
+<i>592</i>&nbsp;  }
+<i>593</i>&nbsp;
+<i>594</i>&nbsp; /**
+<i>595</i>&nbsp;  * Initializes this URI from a base URI and a URI specification string.
+<i>596</i>&nbsp;  * See RFC 2396 Section 4 and Appendix B for specifications on parsing
+<i>597</i>&nbsp;  * the URI and Section 5 for specifications on resolving relative URIs
+<i>598</i>&nbsp;  * and relative paths.
+<i>599</i>&nbsp;  *
+<i>600</i>&nbsp;  * @param p_base the base URI (may be null if p_uriSpec is an absolute
+<i>601</i>&nbsp;  *               URI)
+<i>602</i>&nbsp;  * @param p_uriSpec the URI spec string which may be an absolute or
+<i>603</i>&nbsp;  *                  relative URI (can only be null/empty if p_base
+<i>604</i>&nbsp;  *                  is not null)
+<i>605</i>&nbsp;  *
+<i>606</i>&nbsp;  * @exception MalformedURIException if p_base is null and p_uriSpec
+<i>607</i>&nbsp;  *                                  is not an absolute URI or if
+<i>608</i>&nbsp;  *                                  p_uriSpec violates syntax rules
+<i>609</i>&nbsp;  */
+<i>610</i>&nbsp;  private void initialize(URI p_base, String p_uriSpec)
+<i>611</i>&nbsp;                         throws MalformedURIException {
+<i>612</i>&nbsp;
+<b class="nc"><i>613</i>&nbsp;    String uriSpec = p_uriSpec;</b>
+<b class="nc"><i>614</i>&nbsp;    int uriSpecLen = (uriSpec != null) ? uriSpec.length() : 0;</b>
+<i>615</i>&nbsp;
+<b class="nc"><i>616</i>&nbsp;    if (p_base == null &amp;&amp; uriSpecLen == 0) {</b>
+<b class="nc"><i>617</i>&nbsp;      throw new MalformedURIException(</b>
+<i>618</i>&nbsp;                  &quot;Cannot initialize URI with empty parameters.&quot;);
+<i>619</i>&nbsp;    }
+<i>620</i>&nbsp;
+<i>621</i>&nbsp;    // just make a copy of the base if spec is empty
+<b class="nc"><i>622</i>&nbsp;    if (uriSpecLen == 0) {</b>
+<b class="nc"><i>623</i>&nbsp;      initialize(p_base);</b>
+<i>624</i>&nbsp;      return;
+<i>625</i>&nbsp;    }
+<i>626</i>&nbsp;
+<b class="nc"><i>627</i>&nbsp;    int index = 0;</b>
+<i>628</i>&nbsp;
+<i>629</i>&nbsp;    // Check for scheme, which must be before &#39;/&#39;, &#39;?&#39; or &#39;#&#39;.
+<b class="nc"><i>630</i>&nbsp;    int colonIdx = uriSpec.indexOf(&#39;:&#39;);</b>
+<b class="nc"><i>631</i>&nbsp;    if (colonIdx != -1) {</b>
+<b class="nc"><i>632</i>&nbsp;        final int searchFrom = colonIdx - 1;</b>
+<i>633</i>&nbsp;        // search backwards starting from character before &#39;:&#39;.
+<b class="nc"><i>634</i>&nbsp;        int slashIdx = uriSpec.lastIndexOf(&#39;/&#39;, searchFrom);</b>
+<b class="nc"><i>635</i>&nbsp;        int queryIdx = uriSpec.lastIndexOf(&#39;?&#39;, searchFrom);</b>
+<b class="nc"><i>636</i>&nbsp;        int fragmentIdx = uriSpec.lastIndexOf(&#39;#&#39;, searchFrom);</b>
+<i>637</i>&nbsp;
+<b class="nc"><i>638</i>&nbsp;        if (colonIdx == 0 || slashIdx != -1 ||</b>
+<i>639</i>&nbsp;            queryIdx != -1 || fragmentIdx != -1) {
+<i>640</i>&nbsp;            // A standalone base is a valid URI according to spec
+<b class="nc"><i>641</i>&nbsp;            if (colonIdx == 0 || (p_base == null &amp;&amp; fragmentIdx != 0)) {</b>
+<b class="nc"><i>642</i>&nbsp;                throw new MalformedURIException(&quot;No scheme found in URI.&quot;);</b>
+<i>643</i>&nbsp;            }
+<i>644</i>&nbsp;        }
+<i>645</i>&nbsp;        else {
+<b class="nc"><i>646</i>&nbsp;            initializeScheme(uriSpec);</b>
+<b class="nc"><i>647</i>&nbsp;            index = m_scheme.length()+1;</b>
+<i>648</i>&nbsp;
+<i>649</i>&nbsp;            // Neither &#39;scheme:&#39; or &#39;scheme:#fragment&#39; are valid URIs.
+<b class="nc"><i>650</i>&nbsp;            if (colonIdx == uriSpecLen - 1 || uriSpec.charAt(colonIdx+1) == &#39;#&#39;) {</b>
+<b class="nc"><i>651</i>&nbsp;                throw new MalformedURIException(&quot;Scheme specific part cannot be empty.&quot;);</b>
+<i>652</i>&nbsp;            }
+<i>653</i>&nbsp;        }
+<b class="nc"><i>654</i>&nbsp;    }</b>
+<b class="nc"><i>655</i>&nbsp;    else if (p_base == null &amp;&amp; uriSpec.indexOf(&#39;#&#39;) != 0) {</b>
+<b class="nc"><i>656</i>&nbsp;        throw new MalformedURIException(&quot;No scheme found in URI.&quot;);</b>
+<i>657</i>&nbsp;    }
+<i>658</i>&nbsp;
+<i>659</i>&nbsp;    // Two slashes means we may have authority, but definitely means we&#39;re either
+<i>660</i>&nbsp;    // matching net_path or abs_path. These two productions are ambiguous in that
+<i>661</i>&nbsp;    // every net_path (except those containing an IPv6Reference) is an abs_path.
+<i>662</i>&nbsp;    // RFC 2396 resolves this ambiguity by applying a greedy left most matching rule.
+<i>663</i>&nbsp;    // Try matching net_path first, and if that fails we don&#39;t have authority so
+<i>664</i>&nbsp;    // then attempt to match abs_path.
+<i>665</i>&nbsp;    //
+<i>666</i>&nbsp;    // net_path = &quot;//&quot; authority [ abs_path ]
+<i>667</i>&nbsp;    // abs_path = &quot;/&quot;  path_segments
+<b class="nc"><i>668</i>&nbsp;    if (((index+1) &lt; uriSpecLen) &amp;&amp;</b>
+<b class="nc"><i>669</i>&nbsp;        (uriSpec.charAt(index) == &#39;/&#39; &amp;&amp; uriSpec.charAt(index+1) == &#39;/&#39;)) {</b>
+<b class="nc"><i>670</i>&nbsp;      index += 2;</b>
+<b class="nc"><i>671</i>&nbsp;      int startPos = index;</b>
+<i>672</i>&nbsp;
+<i>673</i>&nbsp;      // Authority will be everything up to path, query or fragment
+<b class="nc"><i>674</i>&nbsp;      char testChar = &#39;\0&#39;;</b>
+<b class="nc"><i>675</i>&nbsp;      while (index &lt; uriSpecLen) {</b>
+<b class="nc"><i>676</i>&nbsp;        testChar = uriSpec.charAt(index);</b>
+<b class="nc"><i>677</i>&nbsp;        if (testChar == &#39;/&#39; || testChar == &#39;?&#39; || testChar == &#39;#&#39;) {</b>
+<b class="nc"><i>678</i>&nbsp;          break;</b>
+<i>679</i>&nbsp;        }
+<b class="nc"><i>680</i>&nbsp;        index++;</b>
+<i>681</i>&nbsp;      }
+<i>682</i>&nbsp;
+<i>683</i>&nbsp;      // Attempt to parse authority. If the section is an empty string
+<i>684</i>&nbsp;      // this is a valid server based authority, so set the host to this
+<i>685</i>&nbsp;      // value.
+<b class="nc"><i>686</i>&nbsp;      if (index &gt; startPos) {</b>
+<i>687</i>&nbsp;        // If we didn&#39;t find authority we need to back up. Attempt to
+<i>688</i>&nbsp;        // match against abs_path next.
+<b class="nc"><i>689</i>&nbsp;        if (!initializeAuthority(uriSpec.substring(startPos, index))) {</b>
+<b class="nc"><i>690</i>&nbsp;          index = startPos - 2;</b>
+<i>691</i>&nbsp;        }
+<b class="nc"><i>692</i>&nbsp;      } else if (index &lt; uriSpecLen) {</b>
+<i>693</i>&nbsp;        //Same as java.net.URI:
+<i>694</i>&nbsp;        // DEVIATION: Allow empty authority prior to non-empty
+<i>695</i>&nbsp;        // path, query component or fragment identifier
+<b class="nc"><i>696</i>&nbsp;        m_host = &quot;&quot;;</b>
+<i>697</i>&nbsp;      } else {
+<b class="nc"><i>698</i>&nbsp;        throw new MalformedURIException(&quot;Expected authority.&quot;);</b>
+<i>699</i>&nbsp;      }
+<i>700</i>&nbsp;    }
+<i>701</i>&nbsp;
+<b class="nc"><i>702</i>&nbsp;    initializePath(uriSpec, index);</b>
+<i>703</i>&nbsp;
+<i>704</i>&nbsp;    // Resolve relative URI to base URI - see RFC 2396 Section 5.2
+<i>705</i>&nbsp;    // In some cases, it might make more sense to throw an exception
+<i>706</i>&nbsp;    // (when scheme is specified is the string spec and the base URI
+<i>707</i>&nbsp;    // is also specified, for example), but we&#39;re just following the
+<i>708</i>&nbsp;    // RFC specifications
+<b class="nc"><i>709</i>&nbsp;    if (p_base != null) {</b>
+<b class="nc"><i>710</i>&nbsp;        absolutize(p_base);</b>
+<i>711</i>&nbsp;    }
+<i>712</i>&nbsp;  }
+<i>713</i>&nbsp;
+<i>714</i>&nbsp;  /**
+<i>715</i>&nbsp;   * Absolutize URI with given base URI.
+<i>716</i>&nbsp;   *
+<i>717</i>&nbsp;   * @param p_base base URI for absolutization
+<i>718</i>&nbsp;   */
+<i>719</i>&nbsp;  public void absolutize(URI p_base) {
+<i>720</i>&nbsp;
+<i>721</i>&nbsp;      // check to see if this is the current doc - RFC 2396 5.2 #2
+<i>722</i>&nbsp;      // note that this is slightly different from the RFC spec in that
+<i>723</i>&nbsp;      // we don&#39;t include the check for query string being null
+<i>724</i>&nbsp;      // - this handles cases where the urispec is just a query
+<i>725</i>&nbsp;      // string or a fragment (e.g. &quot;?y&quot; or &quot;#s&quot;) -
+<i>726</i>&nbsp;      // see &lt;http://www.ics.uci.edu/~fielding/url/test1.html&gt; which
+<i>727</i>&nbsp;      // identified this as a bug in the RFC
+<b class="nc"><i>728</i>&nbsp;      if (m_path.length() == 0 &amp;&amp; m_scheme == null &amp;&amp;</b>
+<i>729</i>&nbsp;          m_host == null &amp;&amp; m_regAuthority == null) {
+<b class="nc"><i>730</i>&nbsp;          m_scheme = p_base.getScheme();</b>
+<b class="nc"><i>731</i>&nbsp;          m_userinfo = p_base.getUserinfo();</b>
+<b class="nc"><i>732</i>&nbsp;          m_host = p_base.getHost();</b>
+<b class="nc"><i>733</i>&nbsp;          m_port = p_base.getPort();</b>
+<b class="nc"><i>734</i>&nbsp;          m_regAuthority = p_base.getRegBasedAuthority();</b>
+<b class="nc"><i>735</i>&nbsp;          m_path = p_base.getPath();</b>
+<i>736</i>&nbsp;
+<b class="nc"><i>737</i>&nbsp;          if (m_queryString == null) {</b>
+<b class="nc"><i>738</i>&nbsp;              m_queryString = p_base.getQueryString();</b>
+<i>739</i>&nbsp;
+<b class="nc"><i>740</i>&nbsp;              if (m_fragment == null) {</b>
+<b class="nc"><i>741</i>&nbsp;                  m_fragment = p_base.getFragment();</b>
+<i>742</i>&nbsp;              }
+<i>743</i>&nbsp;          }
+<i>744</i>&nbsp;          return;
+<i>745</i>&nbsp;      }
+<i>746</i>&nbsp;
+<i>747</i>&nbsp;      // check for scheme - RFC 2396 5.2 #3
+<i>748</i>&nbsp;      // if we found a scheme, it means absolute URI, so we&#39;re done
+<b class="nc"><i>749</i>&nbsp;      if (m_scheme == null) {</b>
+<b class="nc"><i>750</i>&nbsp;          m_scheme = p_base.getScheme();</b>
+<i>751</i>&nbsp;      }
+<i>752</i>&nbsp;      else {
+<i>753</i>&nbsp;          return;
+<i>754</i>&nbsp;      }
+<i>755</i>&nbsp;
+<i>756</i>&nbsp;      // check for authority - RFC 2396 5.2 #4
+<i>757</i>&nbsp;      // if we found a host, then we&#39;ve got a network path, so we&#39;re done
+<b class="nc"><i>758</i>&nbsp;      if (m_host == null &amp;&amp; m_regAuthority == null) {</b>
+<b class="nc"><i>759</i>&nbsp;          m_userinfo = p_base.getUserinfo();</b>
+<b class="nc"><i>760</i>&nbsp;          m_host = p_base.getHost();</b>
+<b class="nc"><i>761</i>&nbsp;          m_port = p_base.getPort();</b>
+<b class="nc"><i>762</i>&nbsp;          m_regAuthority = p_base.getRegBasedAuthority();</b>
+<i>763</i>&nbsp;      }
+<i>764</i>&nbsp;      else {
+<i>765</i>&nbsp;          return;
+<i>766</i>&nbsp;      }
+<i>767</i>&nbsp;
+<i>768</i>&nbsp;      // check for absolute path - RFC 2396 5.2 #5
+<b class="nc"><i>769</i>&nbsp;      if (m_path.length() &gt; 0 &amp;&amp;</b>
+<b class="nc"><i>770</i>&nbsp;              m_path.startsWith(&quot;/&quot;)) {</b>
+<i>771</i>&nbsp;          return;
+<i>772</i>&nbsp;      }
+<i>773</i>&nbsp;
+<i>774</i>&nbsp;      // if we get to this point, we need to resolve relative path
+<i>775</i>&nbsp;      // RFC 2396 5.2 #6
+<b class="nc"><i>776</i>&nbsp;      String path = &quot;&quot;;</b>
+<b class="nc"><i>777</i>&nbsp;      String basePath = p_base.getPath();</b>
+<i>778</i>&nbsp;
+<i>779</i>&nbsp;      // 6a - get all but the last segment of the base URI path
+<b class="nc"><i>780</i>&nbsp;      if (basePath != null &amp;&amp; basePath.length() &gt; 0) {</b>
+<b class="nc"><i>781</i>&nbsp;          int lastSlash = basePath.lastIndexOf(&#39;/&#39;);</b>
+<b class="nc"><i>782</i>&nbsp;          if (lastSlash != -1) {</b>
+<b class="nc"><i>783</i>&nbsp;              path = basePath.substring(0, lastSlash+1);</b>
+<i>784</i>&nbsp;          }
+<b class="nc"><i>785</i>&nbsp;      }</b>
+<b class="nc"><i>786</i>&nbsp;      else if (m_path.length() &gt; 0) {</b>
+<b class="nc"><i>787</i>&nbsp;          path = &quot;/&quot;;</b>
+<i>788</i>&nbsp;      }
+<i>789</i>&nbsp;
+<i>790</i>&nbsp;      // 6b - append the relative URI path
+<b class="nc"><i>791</i>&nbsp;      path = path.concat(m_path);</b>
+<i>792</i>&nbsp;
+<i>793</i>&nbsp;      // 6c - remove all &quot;./&quot; where &quot;.&quot; is a complete path segment
+<b class="nc"><i>794</i>&nbsp;      int index = -1;</b>
+<b class="nc"><i>795</i>&nbsp;      while ((index = path.indexOf(&quot;/./&quot;)) != -1) {</b>
+<b class="nc"><i>796</i>&nbsp;          path = path.substring(0, index+1).concat(path.substring(index+3));</b>
+<i>797</i>&nbsp;      }
+<i>798</i>&nbsp;
+<i>799</i>&nbsp;      // 6d - remove &quot;.&quot; if path ends with &quot;.&quot; as a complete path segment
+<b class="nc"><i>800</i>&nbsp;      if (path.endsWith(&quot;/.&quot;)) {</b>
+<b class="nc"><i>801</i>&nbsp;          path = path.substring(0, path.length()-1);</b>
+<i>802</i>&nbsp;      }
+<i>803</i>&nbsp;
+<i>804</i>&nbsp;      // 6e - remove all &quot;&lt;segment&gt;/../&quot; where &quot;&lt;segment&gt;&quot; is a complete
+<i>805</i>&nbsp;      // path segment not equal to &quot;..&quot;
+<b class="nc"><i>806</i>&nbsp;      index = 1;</b>
+<b class="nc"><i>807</i>&nbsp;      int segIndex = -1;</b>
+<b class="nc"><i>808</i>&nbsp;      String tempString = null;</b>
+<i>809</i>&nbsp;
+<b class="nc"><i>810</i>&nbsp;      while ((index = path.indexOf(&quot;/../&quot;, index)) &gt; 0) {</b>
+<b class="nc"><i>811</i>&nbsp;          tempString = path.substring(0, path.indexOf(&quot;/../&quot;));</b>
+<b class="nc"><i>812</i>&nbsp;          segIndex = tempString.lastIndexOf(&#39;/&#39;);</b>
+<b class="nc"><i>813</i>&nbsp;          if (segIndex != -1) {</b>
+<b class="nc"><i>814</i>&nbsp;              if (!tempString.substring(segIndex).equals(&quot;..&quot;)) {</b>
+<b class="nc"><i>815</i>&nbsp;                  path = path.substring(0, segIndex+1).concat(path.substring(index+4));</b>
+<b class="nc"><i>816</i>&nbsp;                  index = segIndex;</b>
+<i>817</i>&nbsp;              }
+<i>818</i>&nbsp;              else {
+<b class="nc"><i>819</i>&nbsp;                  index += 4;</b>
+<i>820</i>&nbsp;              }
+<i>821</i>&nbsp;          }
+<i>822</i>&nbsp;          else {
+<b class="nc"><i>823</i>&nbsp;              index += 4;</b>
+<i>824</i>&nbsp;          }
+<i>825</i>&nbsp;      }
+<i>826</i>&nbsp;
+<i>827</i>&nbsp;      // 6f - remove ending &quot;&lt;segment&gt;/..&quot; where &quot;&lt;segment&gt;&quot; is a
+<i>828</i>&nbsp;      // complete path segment
+<b class="nc"><i>829</i>&nbsp;      if (path.endsWith(&quot;/..&quot;)) {</b>
+<b class="nc"><i>830</i>&nbsp;          tempString = path.substring(0, path.length()-3);</b>
+<b class="nc"><i>831</i>&nbsp;          segIndex = tempString.lastIndexOf(&#39;/&#39;);</b>
+<b class="nc"><i>832</i>&nbsp;          if (segIndex != -1) {</b>
+<b class="nc"><i>833</i>&nbsp;              path = path.substring(0, segIndex+1);</b>
+<i>834</i>&nbsp;          }
+<i>835</i>&nbsp;      }
+<b class="nc"><i>836</i>&nbsp;      m_path = path;</b>
+<i>837</i>&nbsp;  }
+<i>838</i>&nbsp;
+<i>839</i>&nbsp; /**
+<i>840</i>&nbsp;  * Initialize the scheme for this URI from a URI string spec.
+<i>841</i>&nbsp;  *
+<i>842</i>&nbsp;  * @param p_uriSpec the URI specification (cannot be null)
+<i>843</i>&nbsp;  *
+<i>844</i>&nbsp;  * @exception MalformedURIException if URI does not have a conformant
+<i>845</i>&nbsp;  *                                  scheme
+<i>846</i>&nbsp;  */
+<i>847</i>&nbsp;  private void initializeScheme(String p_uriSpec)
+<i>848</i>&nbsp;                 throws MalformedURIException {
+<b class="nc"><i>849</i>&nbsp;    int uriSpecLen = p_uriSpec.length();</b>
+<b class="nc"><i>850</i>&nbsp;    int index = 0;</b>
+<b class="nc"><i>851</i>&nbsp;    String scheme = null;</b>
+<b class="nc"><i>852</i>&nbsp;    char testChar = &#39;\0&#39;;</b>
+<i>853</i>&nbsp;
+<b class="nc"><i>854</i>&nbsp;    while (index &lt; uriSpecLen) {</b>
+<b class="nc"><i>855</i>&nbsp;      testChar = p_uriSpec.charAt(index);</b>
+<b class="nc"><i>856</i>&nbsp;      if (testChar == &#39;:&#39; || testChar == &#39;/&#39; ||</b>
+<i>857</i>&nbsp;          testChar == &#39;?&#39; || testChar == &#39;#&#39;) {
+<b class="nc"><i>858</i>&nbsp;        break;</b>
+<i>859</i>&nbsp;      }
+<b class="nc"><i>860</i>&nbsp;      index++;</b>
+<i>861</i>&nbsp;    }
+<b class="nc"><i>862</i>&nbsp;    scheme = p_uriSpec.substring(0, index);</b>
+<i>863</i>&nbsp;
+<b class="nc"><i>864</i>&nbsp;    if (scheme.length() == 0) {</b>
+<b class="nc"><i>865</i>&nbsp;      throw new MalformedURIException(&quot;No scheme found in URI.&quot;);</b>
+<i>866</i>&nbsp;    }
+<i>867</i>&nbsp;    else {
+<b class="nc"><i>868</i>&nbsp;      setScheme(scheme);</b>
+<i>869</i>&nbsp;    }
+<i>870</i>&nbsp;  }
+<i>871</i>&nbsp;
+<i>872</i>&nbsp; /**
+<i>873</i>&nbsp;  * Initialize the authority (either server or registry based)
+<i>874</i>&nbsp;  * for this URI from a URI string spec.
+<i>875</i>&nbsp;  *
+<i>876</i>&nbsp;  * @param p_uriSpec the URI specification (cannot be null)
+<i>877</i>&nbsp;  *
+<i>878</i>&nbsp;  * @return true if the given string matched server or registry
+<i>879</i>&nbsp;  * based authority
+<i>880</i>&nbsp;  */
+<i>881</i>&nbsp;  private boolean initializeAuthority(String p_uriSpec) {
+<i>882</i>&nbsp;
+<b class="nc"><i>883</i>&nbsp;    int index = 0;</b>
+<b class="nc"><i>884</i>&nbsp;    int start = 0;</b>
+<b class="nc"><i>885</i>&nbsp;    int end = p_uriSpec.length();</b>
+<i>886</i>&nbsp;
+<b class="nc"><i>887</i>&nbsp;    char testChar = &#39;\0&#39;;</b>
+<b class="nc"><i>888</i>&nbsp;    String userinfo = null;</b>
+<i>889</i>&nbsp;
+<i>890</i>&nbsp;    // userinfo is everything up to @
+<b class="nc"><i>891</i>&nbsp;    if (p_uriSpec.indexOf(&#39;@&#39;, start) != -1) {</b>
+<b class="nc"><i>892</i>&nbsp;      while (index &lt; end) {</b>
+<b class="nc"><i>893</i>&nbsp;        testChar = p_uriSpec.charAt(index);</b>
+<b class="nc"><i>894</i>&nbsp;        if (testChar == &#39;@&#39;) {</b>
+<b class="nc"><i>895</i>&nbsp;          break;</b>
+<i>896</i>&nbsp;        }
+<b class="nc"><i>897</i>&nbsp;        index++;</b>
+<i>898</i>&nbsp;      }
+<b class="nc"><i>899</i>&nbsp;      userinfo = p_uriSpec.substring(start, index);</b>
+<b class="nc"><i>900</i>&nbsp;      index++;</b>
+<i>901</i>&nbsp;    }
+<i>902</i>&nbsp;
+<i>903</i>&nbsp;    // host is everything up to last &#39;:&#39;, or up to
+<i>904</i>&nbsp;    // and including &#39;]&#39; if followed by &#39;:&#39;.
+<b class="nc"><i>905</i>&nbsp;    String host = null;</b>
+<b class="nc"><i>906</i>&nbsp;    start = index;</b>
+<b class="nc"><i>907</i>&nbsp;    boolean hasPort = false;</b>
+<b class="nc"><i>908</i>&nbsp;    if (index &lt; end) {</b>
+<b class="nc"><i>909</i>&nbsp;      if (p_uriSpec.charAt(start) == &#39;[&#39;) {</b>
+<b class="nc"><i>910</i>&nbsp;        int bracketIndex = p_uriSpec.indexOf(&#39;]&#39;, start);</b>
+<b class="nc"><i>911</i>&nbsp;        index = (bracketIndex != -1) ? bracketIndex : end;</b>
+<b class="nc"><i>912</i>&nbsp;        if (index+1 &lt; end &amp;&amp; p_uriSpec.charAt(index+1) == &#39;:&#39;) {</b>
+<b class="nc"><i>913</i>&nbsp;          ++index;</b>
+<b class="nc"><i>914</i>&nbsp;          hasPort = true;</b>
+<i>915</i>&nbsp;        }
+<i>916</i>&nbsp;        else {
+<b class="nc"><i>917</i>&nbsp;          index = end;</b>
+<i>918</i>&nbsp;        }
+<b class="nc"><i>919</i>&nbsp;      }</b>
+<i>920</i>&nbsp;      else {
+<b class="nc"><i>921</i>&nbsp;        int colonIndex = p_uriSpec.lastIndexOf(&#39;:&#39;, end);</b>
+<b class="nc"><i>922</i>&nbsp;        index = (colonIndex &gt; start) ? colonIndex : end;</b>
+<b class="nc"><i>923</i>&nbsp;        hasPort = (index != end);</b>
+<i>924</i>&nbsp;      }
+<i>925</i>&nbsp;    }
+<b class="nc"><i>926</i>&nbsp;    host = p_uriSpec.substring(start, index);</b>
+<b class="nc"><i>927</i>&nbsp;    int port = -1;</b>
+<b class="nc"><i>928</i>&nbsp;    if (host.length() &gt; 0) {</b>
+<i>929</i>&nbsp;      // port
+<b class="nc"><i>930</i>&nbsp;      if (hasPort) {</b>
+<b class="nc"><i>931</i>&nbsp;        index++;</b>
+<b class="nc"><i>932</i>&nbsp;        start = index;</b>
+<b class="nc"><i>933</i>&nbsp;        while (index &lt; end) {</b>
+<b class="nc"><i>934</i>&nbsp;          index++;</b>
+<i>935</i>&nbsp;        }
+<b class="nc"><i>936</i>&nbsp;        String portStr = p_uriSpec.substring(start, index);</b>
+<b class="nc"><i>937</i>&nbsp;        if (portStr.length() &gt; 0) {</b>
+<i>938</i>&nbsp;          // REVISIT: Remove this code.
+<i>939</i>&nbsp;          /** for (int i = 0; i &lt; portStr.length(); i++) {
+<i>940</i>&nbsp;            if (!isDigit(portStr.charAt(i))) {
+<i>941</i>&nbsp;              throw new MalformedURIException(
+<i>942</i>&nbsp;                   portStr +
+<i>943</i>&nbsp;                   &quot; is invalid. Port should only contain digits!&quot;);
+<i>944</i>&nbsp;            }
+<i>945</i>&nbsp;          }**/
+<i>946</i>&nbsp;          // REVISIT: Remove this code.
+<i>947</i>&nbsp;          // Store port value as string instead of integer.
+<i>948</i>&nbsp;          try {
+<b class="nc"><i>949</i>&nbsp;            port = Integer.parseInt(portStr);</b>
+<b class="nc"><i>950</i>&nbsp;            if (port == -1) --port;</b>
+<i>951</i>&nbsp;          }
+<b class="nc"><i>952</i>&nbsp;          catch (NumberFormatException nfe) {</b>
+<b class="nc"><i>953</i>&nbsp;            port = -2;</b>
+<b class="nc"><i>954</i>&nbsp;          }</b>
+<i>955</i>&nbsp;        }
+<i>956</i>&nbsp;      }
+<i>957</i>&nbsp;    }
+<i>958</i>&nbsp;
+<b class="nc"><i>959</i>&nbsp;    if (isValidServerBasedAuthority(host, port, userinfo)) {</b>
+<b class="nc"><i>960</i>&nbsp;      m_host = host;</b>
+<b class="nc"><i>961</i>&nbsp;      m_port = port;</b>
+<b class="nc"><i>962</i>&nbsp;      m_userinfo = userinfo;</b>
+<b class="nc"><i>963</i>&nbsp;      return true;</b>
+<i>964</i>&nbsp;    }
+<i>965</i>&nbsp;    // Note: Registry based authority is being removed from a
+<i>966</i>&nbsp;    // new spec for URI which would obsolete RFC 2396. If the
+<i>967</i>&nbsp;    // spec is added to XML errata, processing of reg_name
+<i>968</i>&nbsp;    // needs to be removed. - mrglavas.
+<b class="nc"><i>969</i>&nbsp;    else if (isValidRegistryBasedAuthority(p_uriSpec)) {</b>
+<b class="nc"><i>970</i>&nbsp;      m_regAuthority = p_uriSpec;</b>
+<b class="nc"><i>971</i>&nbsp;      return true;</b>
+<i>972</i>&nbsp;    }
+<b class="nc"><i>973</i>&nbsp;    return false;</b>
+<i>974</i>&nbsp;  }
+<i>975</i>&nbsp;
+<i>976</i>&nbsp;  /**
+<i>977</i>&nbsp;   * Determines whether the components host, port, and user info
+<i>978</i>&nbsp;   * are valid as a server authority.
+<i>979</i>&nbsp;   *
+<i>980</i>&nbsp;   * @param host the host component of authority
+<i>981</i>&nbsp;   * @param port the port number component of authority
+<i>982</i>&nbsp;   * @param userinfo the user info component of authority
+<i>983</i>&nbsp;   *
+<i>984</i>&nbsp;   * @return true if the given host, port, and userinfo compose
+<i>985</i>&nbsp;   * a valid server authority
+<i>986</i>&nbsp;   */
+<i>987</i>&nbsp;  private boolean isValidServerBasedAuthority(String host, int port, String userinfo) {
+<i>988</i>&nbsp;
+<i>989</i>&nbsp;    // Check if the host is well formed.
+<b class="nc"><i>990</i>&nbsp;    if (!isWellFormedAddress(host)) {</b>
+<b class="nc"><i>991</i>&nbsp;      return false;</b>
+<i>992</i>&nbsp;    }
+<i>993</i>&nbsp;
+<i>994</i>&nbsp;    // Check that port is well formed if it exists.
+<i>995</i>&nbsp;    // REVISIT: There&#39;s no restriction on port value ranges, but
+<i>996</i>&nbsp;    // perform the same check as in setPort to be consistent. Pass
+<i>997</i>&nbsp;    // in a string to this method instead of an integer.
+<b class="nc"><i>998</i>&nbsp;    if (port &lt; -1 || port &gt; 65535) {</b>
+<b class="nc"><i>999</i>&nbsp;      return false;</b>
+<i>1000</i>&nbsp;    }
+<i>1001</i>&nbsp;
+<i>1002</i>&nbsp;    // Check that userinfo is well formed if it exists.
+<b class="nc"><i>1003</i>&nbsp;    if (userinfo != null) {</b>
+<i>1004</i>&nbsp;      // Userinfo can contain alphanumerics, mark characters, escaped
+<i>1005</i>&nbsp;      // and &#39;;&#39;,&#39;:&#39;,&#39;&amp;&#39;,&#39;=&#39;,&#39;+&#39;,&#39;$&#39;,&#39;,&#39;
+<b class="nc"><i>1006</i>&nbsp;      int index = 0;</b>
+<b class="nc"><i>1007</i>&nbsp;      int end = userinfo.length();</b>
+<b class="nc"><i>1008</i>&nbsp;      char testChar = &#39;\0&#39;;</b>
+<b class="nc"><i>1009</i>&nbsp;      while (index &lt; end) {</b>
+<b class="nc"><i>1010</i>&nbsp;        testChar = userinfo.charAt(index);</b>
+<b class="nc"><i>1011</i>&nbsp;        if (testChar == &#39;%&#39;) {</b>
+<b class="nc"><i>1012</i>&nbsp;          if (index+2 &gt;= end ||</b>
+<b class="nc"><i>1013</i>&nbsp;            !isHex(userinfo.charAt(index+1)) ||</b>
+<b class="nc"><i>1014</i>&nbsp;            !isHex(userinfo.charAt(index+2))) {</b>
+<b class="nc"><i>1015</i>&nbsp;            return false;</b>
+<i>1016</i>&nbsp;          }
+<b class="nc"><i>1017</i>&nbsp;          index += 2;</b>
+<i>1018</i>&nbsp;        }
+<b class="nc"><i>1019</i>&nbsp;        else if (!isUserinfoCharacter(testChar)) {</b>
+<b class="nc"><i>1020</i>&nbsp;          return false;</b>
+<i>1021</i>&nbsp;        }
+<b class="nc"><i>1022</i>&nbsp;        ++index;</b>
+<i>1023</i>&nbsp;      }
+<i>1024</i>&nbsp;    }
+<b class="nc"><i>1025</i>&nbsp;    return true;</b>
+<i>1026</i>&nbsp;  }
+<i>1027</i>&nbsp;
+<i>1028</i>&nbsp;  /**
+<i>1029</i>&nbsp;   * Determines whether the given string is a registry based authority.
+<i>1030</i>&nbsp;   *
+<i>1031</i>&nbsp;   * @param authority the authority component of a URI
+<i>1032</i>&nbsp;   *
+<i>1033</i>&nbsp;   * @return true if the given string is a registry based authority
+<i>1034</i>&nbsp;   */
+<i>1035</i>&nbsp;  private boolean isValidRegistryBasedAuthority(String authority) {
+<b class="nc"><i>1036</i>&nbsp;    int index = 0;</b>
+<b class="nc"><i>1037</i>&nbsp;    int end = authority.length();</b>
+<i>1038</i>&nbsp;    char testChar;
+<i>1039</i>&nbsp;
+<b class="nc"><i>1040</i>&nbsp;    while (index &lt; end) {</b>
+<b class="nc"><i>1041</i>&nbsp;      testChar = authority.charAt(index);</b>
+<i>1042</i>&nbsp;
+<i>1043</i>&nbsp;      // check for valid escape sequence
+<b class="nc"><i>1044</i>&nbsp;      if (testChar == &#39;%&#39;) {</b>
+<b class="nc"><i>1045</i>&nbsp;        if (index+2 &gt;= end ||</b>
+<b class="nc"><i>1046</i>&nbsp;            !isHex(authority.charAt(index+1)) ||</b>
+<b class="nc"><i>1047</i>&nbsp;            !isHex(authority.charAt(index+2))) {</b>
+<b class="nc"><i>1048</i>&nbsp;            return false;</b>
+<i>1049</i>&nbsp;        }
+<b class="nc"><i>1050</i>&nbsp;        index += 2;</b>
+<i>1051</i>&nbsp;      }
+<i>1052</i>&nbsp;      // can check against path characters because the set
+<i>1053</i>&nbsp;      // is the same except for &#39;/&#39; which we&#39;ve already excluded.
+<b class="nc"><i>1054</i>&nbsp;      else if (!isPathCharacter(testChar)) {</b>
+<b class="nc"><i>1055</i>&nbsp;        return false;</b>
+<i>1056</i>&nbsp;      }
+<b class="nc"><i>1057</i>&nbsp;      ++index;</b>
+<i>1058</i>&nbsp;    }
+<b class="nc"><i>1059</i>&nbsp;    return true;</b>
+<i>1060</i>&nbsp;  }
+<i>1061</i>&nbsp;
+<i>1062</i>&nbsp; /**
+<i>1063</i>&nbsp;  * Initialize the path for this URI from a URI string spec.
+<i>1064</i>&nbsp;  *
+<i>1065</i>&nbsp;  * @param p_uriSpec the URI specification (cannot be null)
+<i>1066</i>&nbsp;  * @param p_nStartIndex the index to begin scanning from
+<i>1067</i>&nbsp;  *
+<i>1068</i>&nbsp;  * @exception MalformedURIException if p_uriSpec violates syntax rules
+<i>1069</i>&nbsp;  */
+<i>1070</i>&nbsp;  private void initializePath(String p_uriSpec, int p_nStartIndex)
+<i>1071</i>&nbsp;                 throws MalformedURIException {
+<b class="nc"><i>1072</i>&nbsp;    if (p_uriSpec == null) {</b>
+<b class="nc"><i>1073</i>&nbsp;      throw new MalformedURIException(</b>
+<i>1074</i>&nbsp;                &quot;Cannot initialize path from null string!&quot;);
+<i>1075</i>&nbsp;    }
+<i>1076</i>&nbsp;
+<b class="nc"><i>1077</i>&nbsp;    int index = p_nStartIndex;</b>
+<b class="nc"><i>1078</i>&nbsp;    int start = p_nStartIndex;</b>
+<b class="nc"><i>1079</i>&nbsp;    int end = p_uriSpec.length();</b>
+<b class="nc"><i>1080</i>&nbsp;    char testChar = &#39;\0&#39;;</b>
+<i>1081</i>&nbsp;
+<i>1082</i>&nbsp;    // path - everything up to query string or fragment
+<b class="nc"><i>1083</i>&nbsp;    if (start &lt; end) {</b>
+<i>1084</i>&nbsp;        // RFC 2732 only allows &#39;[&#39; and &#39;]&#39; to appear in the opaque part.
+<b class="nc"><i>1085</i>&nbsp;        if (getScheme() == null || p_uriSpec.charAt(start) == &#39;/&#39;) {</b>
+<i>1086</i>&nbsp;
+<i>1087</i>&nbsp;            // Scan path.
+<i>1088</i>&nbsp;            // abs_path = &quot;/&quot;  path_segments
+<i>1089</i>&nbsp;            // rel_path = rel_segment [ abs_path ]
+<b class="nc"><i>1090</i>&nbsp;            while (index &lt; end) {</b>
+<b class="nc"><i>1091</i>&nbsp;                testChar = p_uriSpec.charAt(index);</b>
+<i>1092</i>&nbsp;
+<i>1093</i>&nbsp;                // check for valid escape sequence
+<b class="nc"><i>1094</i>&nbsp;                if (testChar == &#39;%&#39;) {</b>
+<b class="nc"><i>1095</i>&nbsp;                    if (index+2 &gt;= end ||</b>
+<b class="nc"><i>1096</i>&nbsp;                    !isHex(p_uriSpec.charAt(index+1)) ||</b>
+<b class="nc"><i>1097</i>&nbsp;                    !isHex(p_uriSpec.charAt(index+2))) {</b>
+<b class="nc"><i>1098</i>&nbsp;                        throw new MalformedURIException(</b>
+<i>1099</i>&nbsp;                            &quot;Path contains invalid escape sequence!&quot;);
+<i>1100</i>&nbsp;                    }
+<b class="nc"><i>1101</i>&nbsp;                    index += 2;</b>
+<i>1102</i>&nbsp;                }
+<i>1103</i>&nbsp;                // Path segments cannot contain &#39;[&#39; or &#39;]&#39; since pchar
+<i>1104</i>&nbsp;                // production was not changed by RFC 2732.
+<b class="nc"><i>1105</i>&nbsp;                else if (!isPathCharacter(testChar)) {</b>
+<b class="nc"><i>1106</i>&nbsp;                    if (testChar == &#39;?&#39; || testChar == &#39;#&#39;) {</b>
+<b class="nc"><i>1107</i>&nbsp;                        break;</b>
+<i>1108</i>&nbsp;                    }
+<b class="nc"><i>1109</i>&nbsp;                    throw new MalformedURIException(</b>
+<i>1110</i>&nbsp;                        &quot;Path contains invalid character: &quot; + testChar);
+<i>1111</i>&nbsp;                }
+<b class="nc"><i>1112</i>&nbsp;                ++index;</b>
+<i>1113</i>&nbsp;            }
+<i>1114</i>&nbsp;        }
+<i>1115</i>&nbsp;        else {
+<i>1116</i>&nbsp;
+<i>1117</i>&nbsp;            // Scan opaque part.
+<i>1118</i>&nbsp;            // opaque_part = uric_no_slash *uric
+<b class="nc"><i>1119</i>&nbsp;            while (index &lt; end) {</b>
+<b class="nc"><i>1120</i>&nbsp;                testChar = p_uriSpec.charAt(index);</b>
+<i>1121</i>&nbsp;
+<b class="nc"><i>1122</i>&nbsp;                if (testChar == &#39;?&#39; || testChar == &#39;#&#39;) {</b>
+<b class="nc"><i>1123</i>&nbsp;                    break;</b>
+<i>1124</i>&nbsp;                }
+<i>1125</i>&nbsp;
+<i>1126</i>&nbsp;                // check for valid escape sequence
+<b class="nc"><i>1127</i>&nbsp;                if (testChar == &#39;%&#39;) {</b>
+<b class="nc"><i>1128</i>&nbsp;                    if (index+2 &gt;= end ||</b>
+<b class="nc"><i>1129</i>&nbsp;                    !isHex(p_uriSpec.charAt(index+1)) ||</b>
+<b class="nc"><i>1130</i>&nbsp;                    !isHex(p_uriSpec.charAt(index+2))) {</b>
+<b class="nc"><i>1131</i>&nbsp;                        throw new MalformedURIException(</b>
+<i>1132</i>&nbsp;                            &quot;Opaque part contains invalid escape sequence!&quot;);
+<i>1133</i>&nbsp;                    }
+<b class="nc"><i>1134</i>&nbsp;                    index += 2;</b>
+<i>1135</i>&nbsp;                }
+<i>1136</i>&nbsp;                // If the scheme specific part is opaque, it can contain &#39;[&#39;
+<i>1137</i>&nbsp;                // and &#39;]&#39;. uric_no_slash wasn&#39;t modified by RFC 2732, which
+<i>1138</i>&nbsp;                // I&#39;ve interpreted as an error in the spec, since the
+<i>1139</i>&nbsp;                // production should be equivalent to (uric - &#39;/&#39;), and uric
+<i>1140</i>&nbsp;                // contains &#39;[&#39; and &#39;]&#39;. - mrglavas
+<b class="nc"><i>1141</i>&nbsp;                else if (!isURICharacter(testChar)) {</b>
+<b class="nc"><i>1142</i>&nbsp;                    throw new MalformedURIException(</b>
+<i>1143</i>&nbsp;                        &quot;Opaque part contains invalid character: &quot; + testChar);
+<i>1144</i>&nbsp;                }
+<b class="nc"><i>1145</i>&nbsp;                ++index;</b>
+<i>1146</i>&nbsp;            }
+<i>1147</i>&nbsp;        }
+<i>1148</i>&nbsp;    }
+<b class="nc"><i>1149</i>&nbsp;    m_path = p_uriSpec.substring(start, index);</b>
+<i>1150</i>&nbsp;
+<i>1151</i>&nbsp;    // query - starts with ? and up to fragment or end
+<b class="nc"><i>1152</i>&nbsp;    if (testChar == &#39;?&#39;) {</b>
+<b class="nc"><i>1153</i>&nbsp;      index++;</b>
+<b class="nc"><i>1154</i>&nbsp;      start = index;</b>
+<b class="nc"><i>1155</i>&nbsp;      while (index &lt; end) {</b>
+<b class="nc"><i>1156</i>&nbsp;        testChar = p_uriSpec.charAt(index);</b>
+<b class="nc"><i>1157</i>&nbsp;        if (testChar == &#39;#&#39;) {</b>
+<b class="nc"><i>1158</i>&nbsp;          break;</b>
+<i>1159</i>&nbsp;        }
+<b class="nc"><i>1160</i>&nbsp;        if (testChar == &#39;%&#39;) {</b>
+<b class="nc"><i>1161</i>&nbsp;           if (index+2 &gt;= end ||</b>
+<b class="nc"><i>1162</i>&nbsp;              !isHex(p_uriSpec.charAt(index+1)) ||</b>
+<b class="nc"><i>1163</i>&nbsp;              !isHex(p_uriSpec.charAt(index+2))) {</b>
+<b class="nc"><i>1164</i>&nbsp;            throw new MalformedURIException(</b>
+<i>1165</i>&nbsp;                    &quot;Query string contains invalid escape sequence!&quot;);
+<i>1166</i>&nbsp;           }
+<b class="nc"><i>1167</i>&nbsp;           index += 2;</b>
+<i>1168</i>&nbsp;        }
+<b class="nc"><i>1169</i>&nbsp;        else if (!isURICharacter(testChar)) {</b>
+<b class="nc"><i>1170</i>&nbsp;          throw new MalformedURIException(</b>
+<i>1171</i>&nbsp;                &quot;Query string contains invalid character: &quot; + testChar);
+<i>1172</i>&nbsp;        }
+<b class="nc"><i>1173</i>&nbsp;        index++;</b>
+<i>1174</i>&nbsp;      }
+<b class="nc"><i>1175</i>&nbsp;      m_queryString = p_uriSpec.substring(start, index);</b>
+<i>1176</i>&nbsp;    }
+<i>1177</i>&nbsp;
+<i>1178</i>&nbsp;    // fragment - starts with #
+<b class="nc"><i>1179</i>&nbsp;    if (testChar == &#39;#&#39;) {</b>
+<b class="nc"><i>1180</i>&nbsp;      index++;</b>
+<b class="nc"><i>1181</i>&nbsp;      start = index;</b>
+<b class="nc"><i>1182</i>&nbsp;      while (index &lt; end) {</b>
+<b class="nc"><i>1183</i>&nbsp;        testChar = p_uriSpec.charAt(index);</b>
+<i>1184</i>&nbsp;
+<b class="nc"><i>1185</i>&nbsp;        if (testChar == &#39;%&#39;) {</b>
+<b class="nc"><i>1186</i>&nbsp;           if (index+2 &gt;= end ||</b>
+<b class="nc"><i>1187</i>&nbsp;              !isHex(p_uriSpec.charAt(index+1)) ||</b>
+<b class="nc"><i>1188</i>&nbsp;              !isHex(p_uriSpec.charAt(index+2))) {</b>
+<b class="nc"><i>1189</i>&nbsp;            throw new MalformedURIException(</b>
+<i>1190</i>&nbsp;                    &quot;Fragment contains invalid escape sequence!&quot;);
+<i>1191</i>&nbsp;           }
+<b class="nc"><i>1192</i>&nbsp;           index += 2;</b>
+<i>1193</i>&nbsp;        }
+<b class="nc"><i>1194</i>&nbsp;        else if (!isURICharacter(testChar)) {</b>
+<b class="nc"><i>1195</i>&nbsp;          throw new MalformedURIException(</b>
+<i>1196</i>&nbsp;                &quot;Fragment contains invalid character: &quot;+testChar);
+<i>1197</i>&nbsp;        }
+<b class="nc"><i>1198</i>&nbsp;        index++;</b>
+<i>1199</i>&nbsp;      }
+<b class="nc"><i>1200</i>&nbsp;      m_fragment = p_uriSpec.substring(start, index);</b>
+<i>1201</i>&nbsp;    }
+<i>1202</i>&nbsp;  }
+<i>1203</i>&nbsp;
+<i>1204</i>&nbsp; /**
+<i>1205</i>&nbsp;  * Get the scheme for this URI.
+<i>1206</i>&nbsp;  *
+<i>1207</i>&nbsp;  * @return the scheme for this URI
+<i>1208</i>&nbsp;  */
+<i>1209</i>&nbsp;  public String getScheme() {
+<b class="nc"><i>1210</i>&nbsp;    return m_scheme;</b>
+<i>1211</i>&nbsp;  }
+<i>1212</i>&nbsp;
+<i>1213</i>&nbsp; /**
+<i>1214</i>&nbsp;  * Get the scheme-specific part for this URI (everything following the
+<i>1215</i>&nbsp;  * scheme and the first colon). See RFC 2396 Section 5.2 for spec.
+<i>1216</i>&nbsp;  *
+<i>1217</i>&nbsp;  * @return the scheme-specific part for this URI
+<i>1218</i>&nbsp;  */
+<i>1219</i>&nbsp;  public String getSchemeSpecificPart() {
+<b class="nc"><i>1220</i>&nbsp;    final StringBuilder schemespec = new StringBuilder();</b>
+<i>1221</i>&nbsp;
+<b class="nc"><i>1222</i>&nbsp;    if (m_host != null || m_regAuthority != null) {</b>
+<b class="nc"><i>1223</i>&nbsp;      schemespec.append(&quot;//&quot;);</b>
+<i>1224</i>&nbsp;
+<i>1225</i>&nbsp;      // Server based authority.
+<b class="nc"><i>1226</i>&nbsp;      if (m_host != null) {</b>
+<i>1227</i>&nbsp;
+<b class="nc"><i>1228</i>&nbsp;        if (m_userinfo != null) {</b>
+<b class="nc"><i>1229</i>&nbsp;          schemespec.append(m_userinfo);</b>
+<b class="nc"><i>1230</i>&nbsp;          schemespec.append(&#39;@&#39;);</b>
+<i>1231</i>&nbsp;        }
+<i>1232</i>&nbsp;
+<b class="nc"><i>1233</i>&nbsp;        schemespec.append(m_host);</b>
+<i>1234</i>&nbsp;
+<b class="nc"><i>1235</i>&nbsp;        if (m_port != -1) {</b>
+<b class="nc"><i>1236</i>&nbsp;          schemespec.append(&#39;:&#39;);</b>
+<b class="nc"><i>1237</i>&nbsp;          schemespec.append(m_port);</b>
+<i>1238</i>&nbsp;        }
+<i>1239</i>&nbsp;      }
+<i>1240</i>&nbsp;      // Registry based authority.
+<i>1241</i>&nbsp;      else {
+<b class="nc"><i>1242</i>&nbsp;        schemespec.append(m_regAuthority);</b>
+<i>1243</i>&nbsp;      }
+<i>1244</i>&nbsp;    }
+<i>1245</i>&nbsp;
+<b class="nc"><i>1246</i>&nbsp;    if (m_path != null) {</b>
+<b class="nc"><i>1247</i>&nbsp;      schemespec.append((m_path));</b>
+<i>1248</i>&nbsp;    }
+<i>1249</i>&nbsp;
+<b class="nc"><i>1250</i>&nbsp;    if (m_queryString != null) {</b>
+<b class="nc"><i>1251</i>&nbsp;      schemespec.append(&#39;?&#39;);</b>
+<b class="nc"><i>1252</i>&nbsp;      schemespec.append(m_queryString);</b>
+<i>1253</i>&nbsp;    }
+<i>1254</i>&nbsp;
+<b class="nc"><i>1255</i>&nbsp;    if (m_fragment != null) {</b>
+<b class="nc"><i>1256</i>&nbsp;      schemespec.append(&#39;#&#39;);</b>
+<b class="nc"><i>1257</i>&nbsp;      schemespec.append(m_fragment);</b>
+<i>1258</i>&nbsp;    }
+<i>1259</i>&nbsp;
+<b class="nc"><i>1260</i>&nbsp;    return schemespec.toString();</b>
+<i>1261</i>&nbsp;  }
+<i>1262</i>&nbsp;
+<i>1263</i>&nbsp; /**
+<i>1264</i>&nbsp;  * Get the userinfo for this URI.
+<i>1265</i>&nbsp;  *
+<i>1266</i>&nbsp;  * @return the userinfo for this URI (null if not specified).
+<i>1267</i>&nbsp;  */
+<i>1268</i>&nbsp;  public String getUserinfo() {
+<b class="nc"><i>1269</i>&nbsp;    return m_userinfo;</b>
+<i>1270</i>&nbsp;  }
+<i>1271</i>&nbsp;
+<i>1272</i>&nbsp;  /**
+<i>1273</i>&nbsp;  * Get the host for this URI.
+<i>1274</i>&nbsp;  *
+<i>1275</i>&nbsp;  * @return the host for this URI (null if not specified).
+<i>1276</i>&nbsp;  */
+<i>1277</i>&nbsp;  public String getHost() {
+<b class="nc"><i>1278</i>&nbsp;    return m_host;</b>
+<i>1279</i>&nbsp;  }
+<i>1280</i>&nbsp;
+<i>1281</i>&nbsp; /**
+<i>1282</i>&nbsp;  * Get the port for this URI.
+<i>1283</i>&nbsp;  *
+<i>1284</i>&nbsp;  * @return the port for this URI (-1 if not specified).
+<i>1285</i>&nbsp;  */
+<i>1286</i>&nbsp;  public int getPort() {
+<b class="nc"><i>1287</i>&nbsp;    return m_port;</b>
+<i>1288</i>&nbsp;  }
+<i>1289</i>&nbsp;
+<i>1290</i>&nbsp;  /**
+<i>1291</i>&nbsp;   * Get the registry based authority for this URI.
+<i>1292</i>&nbsp;   *
+<i>1293</i>&nbsp;   * @return the registry based authority (null if not specified).
+<i>1294</i>&nbsp;   */
+<i>1295</i>&nbsp;  public String getRegBasedAuthority() {
+<b class="nc"><i>1296</i>&nbsp;    return m_regAuthority;</b>
+<i>1297</i>&nbsp;  }
+<i>1298</i>&nbsp;
+<i>1299</i>&nbsp;  /**
+<i>1300</i>&nbsp;   * Get the authority for this URI.
+<i>1301</i>&nbsp;   *
+<i>1302</i>&nbsp;   * @return the authority
+<i>1303</i>&nbsp;   */
+<i>1304</i>&nbsp;  public String getAuthority() {
+<b class="nc"><i>1305</i>&nbsp;      final StringBuilder authority = new StringBuilder();</b>
+<b class="nc"><i>1306</i>&nbsp;      if (m_host != null || m_regAuthority != null) {</b>
+<b class="nc"><i>1307</i>&nbsp;          authority.append(&quot;//&quot;);</b>
+<i>1308</i>&nbsp;
+<i>1309</i>&nbsp;          // Server based authority.
+<b class="nc"><i>1310</i>&nbsp;          if (m_host != null) {</b>
+<i>1311</i>&nbsp;
+<b class="nc"><i>1312</i>&nbsp;              if (m_userinfo != null) {</b>
+<b class="nc"><i>1313</i>&nbsp;                  authority.append(m_userinfo);</b>
+<b class="nc"><i>1314</i>&nbsp;                  authority.append(&#39;@&#39;);</b>
+<i>1315</i>&nbsp;              }
+<i>1316</i>&nbsp;
+<b class="nc"><i>1317</i>&nbsp;              authority.append(m_host);</b>
+<i>1318</i>&nbsp;
+<b class="nc"><i>1319</i>&nbsp;              if (m_port != -1) {</b>
+<b class="nc"><i>1320</i>&nbsp;                  authority.append(&#39;:&#39;);</b>
+<b class="nc"><i>1321</i>&nbsp;                  authority.append(m_port);</b>
+<i>1322</i>&nbsp;              }
+<i>1323</i>&nbsp;          }
+<i>1324</i>&nbsp;          // Registry based authority.
+<i>1325</i>&nbsp;          else {
+<b class="nc"><i>1326</i>&nbsp;              authority.append(m_regAuthority);</b>
+<i>1327</i>&nbsp;          }
+<i>1328</i>&nbsp;      }
+<b class="nc"><i>1329</i>&nbsp;      return authority.toString();</b>
+<i>1330</i>&nbsp;  }
+<i>1331</i>&nbsp;
+<i>1332</i>&nbsp; /**
+<i>1333</i>&nbsp;  * Get the path for this URI (optionally with the query string and
+<i>1334</i>&nbsp;  * fragment).
+<i>1335</i>&nbsp;  *
+<i>1336</i>&nbsp;  * @param p_includeQueryString if true (and query string is not null),
+<i>1337</i>&nbsp;  *                             then a &quot;?&quot; followed by the query string
+<i>1338</i>&nbsp;  *                             will be appended
+<i>1339</i>&nbsp;  * @param p_includeFragment if true (and fragment is not null),
+<i>1340</i>&nbsp;  *                             then a &quot;#&quot; followed by the fragment
+<i>1341</i>&nbsp;  *                             will be appended
+<i>1342</i>&nbsp;  *
+<i>1343</i>&nbsp;  * @return the path for this URI possibly including the query string
+<i>1344</i>&nbsp;  *         and fragment
+<i>1345</i>&nbsp;  */
+<i>1346</i>&nbsp;  public String getPath(boolean p_includeQueryString,
+<i>1347</i>&nbsp;                        boolean p_includeFragment) {
+<b class="nc"><i>1348</i>&nbsp;    final StringBuilder pathString = new StringBuilder(m_path);</b>
+<i>1349</i>&nbsp;
+<b class="nc"><i>1350</i>&nbsp;    if (p_includeQueryString &amp;&amp; m_queryString != null) {</b>
+<b class="nc"><i>1351</i>&nbsp;      pathString.append(&#39;?&#39;);</b>
+<b class="nc"><i>1352</i>&nbsp;      pathString.append(m_queryString);</b>
+<i>1353</i>&nbsp;    }
+<i>1354</i>&nbsp;
+<b class="nc"><i>1355</i>&nbsp;    if (p_includeFragment &amp;&amp; m_fragment != null) {</b>
+<b class="nc"><i>1356</i>&nbsp;      pathString.append(&#39;#&#39;);</b>
+<b class="nc"><i>1357</i>&nbsp;      pathString.append(m_fragment);</b>
+<i>1358</i>&nbsp;    }
+<b class="nc"><i>1359</i>&nbsp;    return pathString.toString();</b>
+<i>1360</i>&nbsp;  }
+<i>1361</i>&nbsp;
+<i>1362</i>&nbsp; /**
+<i>1363</i>&nbsp;  * Get the path for this URI. Note that the value returned is the path
+<i>1364</i>&nbsp;  * only and does not include the query string or fragment.
+<i>1365</i>&nbsp;  *
+<i>1366</i>&nbsp;  * @return the path for this URI.
+<i>1367</i>&nbsp;  */
+<i>1368</i>&nbsp;  public String getPath() {
+<b class="nc"><i>1369</i>&nbsp;    return m_path;</b>
+<i>1370</i>&nbsp;  }
+<i>1371</i>&nbsp;
+<i>1372</i>&nbsp; /**
+<i>1373</i>&nbsp;  * Get the query string for this URI.
+<i>1374</i>&nbsp;  *
+<i>1375</i>&nbsp;  * @return the query string for this URI. Null is returned if there
+<i>1376</i>&nbsp;  *         was no &quot;?&quot; in the URI spec, empty string if there was a
+<i>1377</i>&nbsp;  *         &quot;?&quot; but no query string following it.
+<i>1378</i>&nbsp;  */
+<i>1379</i>&nbsp;  public String getQueryString() {
+<b class="nc"><i>1380</i>&nbsp;    return m_queryString;</b>
+<i>1381</i>&nbsp;  }
+<i>1382</i>&nbsp;
+<i>1383</i>&nbsp; /**
+<i>1384</i>&nbsp;  * Get the fragment for this URI.
+<i>1385</i>&nbsp;  *
+<i>1386</i>&nbsp;  * @return the fragment for this URI. Null is returned if there
+<i>1387</i>&nbsp;  *         was no &quot;#&quot; in the URI spec, empty string if there was a
+<i>1388</i>&nbsp;  *         &quot;#&quot; but no fragment following it.
+<i>1389</i>&nbsp;  */
+<i>1390</i>&nbsp;  public String getFragment() {
+<b class="nc"><i>1391</i>&nbsp;    return m_fragment;</b>
+<i>1392</i>&nbsp;  }
+<i>1393</i>&nbsp;
+<i>1394</i>&nbsp; /**
+<i>1395</i>&nbsp;  * Set the scheme for this URI. The scheme is converted to lowercase
+<i>1396</i>&nbsp;  * before it is set.
+<i>1397</i>&nbsp;  *
+<i>1398</i>&nbsp;  * @param p_scheme the scheme for this URI (cannot be null)
+<i>1399</i>&nbsp;  *
+<i>1400</i>&nbsp;  * @exception MalformedURIException if p_scheme is not a conformant
+<i>1401</i>&nbsp;  *                                  scheme name
+<i>1402</i>&nbsp;  */
+<i>1403</i>&nbsp;  public void setScheme(String p_scheme) throws MalformedURIException {
+<b class="nc"><i>1404</i>&nbsp;    if (p_scheme == null) {</b>
+<b class="nc"><i>1405</i>&nbsp;      throw new MalformedURIException(</b>
+<i>1406</i>&nbsp;                &quot;Cannot set scheme from null string!&quot;);
+<i>1407</i>&nbsp;    }
+<b class="nc"><i>1408</i>&nbsp;    if (!isConformantSchemeName(p_scheme)) {</b>
+<b class="nc"><i>1409</i>&nbsp;      throw new MalformedURIException(&quot;The scheme is not conformant.&quot;);</b>
+<i>1410</i>&nbsp;    }
+<i>1411</i>&nbsp;
+<b class="nc"><i>1412</i>&nbsp;    m_scheme = p_scheme.toLowerCase();</b>
+<i>1413</i>&nbsp;  }
+<i>1414</i>&nbsp;
+<i>1415</i>&nbsp; /**
+<i>1416</i>&nbsp;  * Set the userinfo for this URI. If a non-null value is passed in and
+<i>1417</i>&nbsp;  * the host value is null, then an exception is thrown.
+<i>1418</i>&nbsp;  *
+<i>1419</i>&nbsp;  * @param p_userinfo the userinfo for this URI
+<i>1420</i>&nbsp;  *
+<i>1421</i>&nbsp;  * @exception MalformedURIException if p_userinfo contains invalid
+<i>1422</i>&nbsp;  *                                  characters
+<i>1423</i>&nbsp;  */
+<i>1424</i>&nbsp;  public void setUserinfo(String p_userinfo) throws MalformedURIException {
+<b class="nc"><i>1425</i>&nbsp;    if (p_userinfo == null) {</b>
+<b class="nc"><i>1426</i>&nbsp;      m_userinfo = null;</b>
+<i>1427</i>&nbsp;      return;
+<i>1428</i>&nbsp;    }
+<i>1429</i>&nbsp;    else {
+<b class="nc"><i>1430</i>&nbsp;      if (m_host == null) {</b>
+<b class="nc"><i>1431</i>&nbsp;        throw new MalformedURIException(</b>
+<i>1432</i>&nbsp;                     &quot;Userinfo cannot be set when host is null!&quot;);
+<i>1433</i>&nbsp;      }
+<i>1434</i>&nbsp;
+<i>1435</i>&nbsp;      // userinfo can contain alphanumerics, mark characters, escaped
+<i>1436</i>&nbsp;      // and &#39;;&#39;,&#39;:&#39;,&#39;&amp;&#39;,&#39;=&#39;,&#39;+&#39;,&#39;$&#39;,&#39;,&#39;
+<b class="nc"><i>1437</i>&nbsp;      int index = 0;</b>
+<b class="nc"><i>1438</i>&nbsp;      int end = p_userinfo.length();</b>
+<b class="nc"><i>1439</i>&nbsp;      char testChar = &#39;\0&#39;;</b>
+<b class="nc"><i>1440</i>&nbsp;      while (index &lt; end) {</b>
+<b class="nc"><i>1441</i>&nbsp;        testChar = p_userinfo.charAt(index);</b>
+<b class="nc"><i>1442</i>&nbsp;        if (testChar == &#39;%&#39;) {</b>
+<b class="nc"><i>1443</i>&nbsp;          if (index+2 &gt;= end ||</b>
+<b class="nc"><i>1444</i>&nbsp;              !isHex(p_userinfo.charAt(index+1)) ||</b>
+<b class="nc"><i>1445</i>&nbsp;              !isHex(p_userinfo.charAt(index+2))) {</b>
+<b class="nc"><i>1446</i>&nbsp;            throw new MalformedURIException(</b>
+<i>1447</i>&nbsp;                  &quot;Userinfo contains invalid escape sequence!&quot;);
+<i>1448</i>&nbsp;          }
+<i>1449</i>&nbsp;        }
+<b class="nc"><i>1450</i>&nbsp;        else if (!isUserinfoCharacter(testChar)) {</b>
+<b class="nc"><i>1451</i>&nbsp;          throw new MalformedURIException(</b>
+<i>1452</i>&nbsp;                  &quot;Userinfo contains invalid character:&quot;+testChar);
+<i>1453</i>&nbsp;        }
+<b class="nc"><i>1454</i>&nbsp;        index++;</b>
+<i>1455</i>&nbsp;      }
+<i>1456</i>&nbsp;    }
+<b class="nc"><i>1457</i>&nbsp;    m_userinfo = p_userinfo;</b>
+<i>1458</i>&nbsp;  }
+<i>1459</i>&nbsp;
+<i>1460</i>&nbsp; /**
+<i>1461</i>&nbsp;  * &lt;p&gt;Set the host for this URI. If null is passed in, the userinfo
+<i>1462</i>&nbsp;  * field is also set to null and the port is set to -1.&lt;/p&gt;
+<i>1463</i>&nbsp;  *
+<i>1464</i>&nbsp;  * &lt;p&gt;Note: This method overwrites registry based authority if it
+<i>1465</i>&nbsp;  * previously existed in this URI.&lt;/p&gt;
+<i>1466</i>&nbsp;  *
+<i>1467</i>&nbsp;  * @param p_host the host for this URI
+<i>1468</i>&nbsp;  *
+<i>1469</i>&nbsp;  * @exception MalformedURIException if p_host is not a valid IP
+<i>1470</i>&nbsp;  *                                  address or DNS hostname.
+<i>1471</i>&nbsp;  */
+<i>1472</i>&nbsp;  public void setHost(String p_host) throws MalformedURIException {
+<b class="nc"><i>1473</i>&nbsp;    if (p_host == null || p_host.length() == 0) {</b>
+<b class="nc"><i>1474</i>&nbsp;      if (p_host != null) {</b>
+<b class="nc"><i>1475</i>&nbsp;        m_regAuthority = null;</b>
+<i>1476</i>&nbsp;      }
+<b class="nc"><i>1477</i>&nbsp;      m_host = p_host;</b>
+<b class="nc"><i>1478</i>&nbsp;      m_userinfo = null;</b>
+<b class="nc"><i>1479</i>&nbsp;      m_port = -1;</b>
+<i>1480</i>&nbsp;      return;
+<i>1481</i>&nbsp;    }
+<b class="nc"><i>1482</i>&nbsp;    else if (!isWellFormedAddress(p_host)) {</b>
+<b class="nc"><i>1483</i>&nbsp;      throw new MalformedURIException(&quot;Host is not a well formed address!&quot;);</b>
+<i>1484</i>&nbsp;    }
+<b class="nc"><i>1485</i>&nbsp;    m_host = p_host;</b>
+<b class="nc"><i>1486</i>&nbsp;    m_regAuthority = null;</b>
+<i>1487</i>&nbsp;  }
+<i>1488</i>&nbsp;
+<i>1489</i>&nbsp; /**
+<i>1490</i>&nbsp;  * Set the port for this URI. -1 is used to indicate that the port is
+<i>1491</i>&nbsp;  * not specified, otherwise valid port numbers are  between 0 and 65535.
+<i>1492</i>&nbsp;  * If a valid port number is passed in and the host field is null,
+<i>1493</i>&nbsp;  * an exception is thrown.
+<i>1494</i>&nbsp;  *
+<i>1495</i>&nbsp;  * @param p_port the port number for this URI
+<i>1496</i>&nbsp;  *
+<i>1497</i>&nbsp;  * @exception MalformedURIException if p_port is not -1 and not a
+<i>1498</i>&nbsp;  *                                  valid port number
+<i>1499</i>&nbsp;  */
+<i>1500</i>&nbsp;  public void setPort(int p_port) throws MalformedURIException {
+<b class="nc"><i>1501</i>&nbsp;    if (p_port &gt;= 0 &amp;&amp; p_port &lt;= 65535) {</b>
+<b class="nc"><i>1502</i>&nbsp;      if (m_host == null) {</b>
+<b class="nc"><i>1503</i>&nbsp;        throw new MalformedURIException(</b>
+<i>1504</i>&nbsp;                      &quot;Port cannot be set when host is null!&quot;);
+<i>1505</i>&nbsp;      }
+<i>1506</i>&nbsp;    }
+<b class="nc"><i>1507</i>&nbsp;    else if (p_port != -1) {</b>
+<b class="nc"><i>1508</i>&nbsp;      throw new MalformedURIException(&quot;Invalid port number!&quot;);</b>
+<i>1509</i>&nbsp;    }
+<b class="nc"><i>1510</i>&nbsp;    m_port = p_port;</b>
+<i>1511</i>&nbsp;  }
+<i>1512</i>&nbsp;
+<i>1513</i>&nbsp;  /**
+<i>1514</i>&nbsp;   * &lt;p&gt;Sets the registry based authority for this URI.&lt;/p&gt;
+<i>1515</i>&nbsp;   *
+<i>1516</i>&nbsp;   * &lt;p&gt;Note: This method overwrites server based authority
+<i>1517</i>&nbsp;   * if it previously existed in this URI.&lt;/p&gt;
+<i>1518</i>&nbsp;   *
+<i>1519</i>&nbsp;   * @param authority the registry based authority for this URI
+<i>1520</i>&nbsp;   *
+<i>1521</i>&nbsp;   * @exception MalformedURIException it authority is not a
+<i>1522</i>&nbsp;   * well formed registry based authority
+<i>1523</i>&nbsp;   */
+<i>1524</i>&nbsp;  public void setRegBasedAuthority(String authority)
+<i>1525</i>&nbsp;    throws MalformedURIException {
+<i>1526</i>&nbsp;
+<b class="nc"><i>1527</i>&nbsp;        if (authority == null) {</b>
+<b class="nc"><i>1528</i>&nbsp;          m_regAuthority = null;</b>
+<i>1529</i>&nbsp;          return;
+<i>1530</i>&nbsp;        }
+<i>1531</i>&nbsp;        // reg_name = 1*( unreserved | escaped | &quot;$&quot; | &quot;,&quot; |
+<i>1532</i>&nbsp;        //            &quot;;&quot; | &quot;:&quot; | &quot;@&quot; | &quot;&amp;&quot; | &quot;=&quot; | &quot;+&quot; )
+<b class="nc"><i>1533</i>&nbsp;        else if (authority.length() &lt; 1 ||</b>
+<b class="nc"><i>1534</i>&nbsp;          !isValidRegistryBasedAuthority(authority) ||</b>
+<b class="nc"><i>1535</i>&nbsp;          authority.indexOf(&#39;/&#39;) != -1) {</b>
+<b class="nc"><i>1536</i>&nbsp;      throw new MalformedURIException(&quot;Registry based authority is not well formed.&quot;);</b>
+<i>1537</i>&nbsp;        }
+<b class="nc"><i>1538</i>&nbsp;        m_regAuthority = authority;</b>
+<b class="nc"><i>1539</i>&nbsp;        m_host = null;</b>
+<b class="nc"><i>1540</i>&nbsp;        m_userinfo = null;</b>
+<b class="nc"><i>1541</i>&nbsp;        m_port = -1;</b>
+<i>1542</i>&nbsp;  }
+<i>1543</i>&nbsp;
+<i>1544</i>&nbsp; /**
+<i>1545</i>&nbsp;  * Set the path for this URI. If the supplied path is null, then the
+<i>1546</i>&nbsp;  * query string and fragment are set to null as well. If the supplied
+<i>1547</i>&nbsp;  * path includes a query string and/or fragment, these fields will be
+<i>1548</i>&nbsp;  * parsed and set as well. Note that, for URIs following the &quot;generic
+<i>1549</i>&nbsp;  * URI&quot; syntax, the path specified should start with a slash.
+<i>1550</i>&nbsp;  * For URIs that do not follow the generic URI syntax, this method
+<i>1551</i>&nbsp;  * sets the scheme-specific part.
+<i>1552</i>&nbsp;  *
+<i>1553</i>&nbsp;  * @param p_path the path for this URI (may be null)
+<i>1554</i>&nbsp;  *
+<i>1555</i>&nbsp;  * @exception MalformedURIException if p_path contains invalid
+<i>1556</i>&nbsp;  *                                  characters
+<i>1557</i>&nbsp;  */
+<i>1558</i>&nbsp;  public void setPath(String p_path) throws MalformedURIException {
+<b class="nc"><i>1559</i>&nbsp;    if (p_path == null) {</b>
+<b class="nc"><i>1560</i>&nbsp;      m_path = null;</b>
+<b class="nc"><i>1561</i>&nbsp;      m_queryString = null;</b>
+<b class="nc"><i>1562</i>&nbsp;      m_fragment = null;</b>
+<i>1563</i>&nbsp;    }
+<i>1564</i>&nbsp;    else {
+<b class="nc"><i>1565</i>&nbsp;      initializePath(p_path, 0);</b>
+<i>1566</i>&nbsp;    }
+<i>1567</i>&nbsp;  }
+<i>1568</i>&nbsp;
+<i>1569</i>&nbsp; /**
+<i>1570</i>&nbsp;  * Append to the end of the path of this URI. If the current path does
+<i>1571</i>&nbsp;  * not end in a slash and the path to be appended does not begin with
+<i>1572</i>&nbsp;  * a slash, a slash will be appended to the current path before the
+<i>1573</i>&nbsp;  * new segment is added. Also, if the current path ends in a slash
+<i>1574</i>&nbsp;  * and the new segment begins with a slash, the extra slash will be
+<i>1575</i>&nbsp;  * removed before the new segment is appended.
+<i>1576</i>&nbsp;  *
+<i>1577</i>&nbsp;  * @param p_addToPath the new segment to be added to the current path
+<i>1578</i>&nbsp;  *
+<i>1579</i>&nbsp;  * @exception MalformedURIException if p_addToPath contains syntax
+<i>1580</i>&nbsp;  *                                  errors
+<i>1581</i>&nbsp;  */
+<i>1582</i>&nbsp;  public void appendPath(String p_addToPath)
+<i>1583</i>&nbsp;                         throws MalformedURIException {
+<b class="nc"><i>1584</i>&nbsp;    if (p_addToPath == null || p_addToPath.trim().length() == 0) {</b>
+<i>1585</i>&nbsp;      return;
+<i>1586</i>&nbsp;    }
+<i>1587</i>&nbsp;
+<b class="nc"><i>1588</i>&nbsp;    if (!isURIString(p_addToPath)) {</b>
+<b class="nc"><i>1589</i>&nbsp;      throw new MalformedURIException(</b>
+<i>1590</i>&nbsp;              &quot;Path contains invalid character!&quot;);
+<i>1591</i>&nbsp;    }
+<i>1592</i>&nbsp;
+<b class="nc"><i>1593</i>&nbsp;    if (m_path == null || m_path.trim().length() == 0) {</b>
+<b class="nc"><i>1594</i>&nbsp;      if (p_addToPath.startsWith(&quot;/&quot;)) {</b>
+<b class="nc"><i>1595</i>&nbsp;        m_path = p_addToPath;</b>
+<i>1596</i>&nbsp;      }
+<i>1597</i>&nbsp;      else {
+<b class="nc"><i>1598</i>&nbsp;        m_path = &quot;/&quot; + p_addToPath;</b>
+<i>1599</i>&nbsp;      }
+<i>1600</i>&nbsp;    }
+<b class="nc"><i>1601</i>&nbsp;    else if (m_path.endsWith(&quot;/&quot;)) {</b>
+<b class="nc"><i>1602</i>&nbsp;      if (p_addToPath.startsWith(&quot;/&quot;)) {</b>
+<b class="nc"><i>1603</i>&nbsp;        m_path = m_path.concat(p_addToPath.substring(1));</b>
+<i>1604</i>&nbsp;      }
+<i>1605</i>&nbsp;      else {
+<b class="nc"><i>1606</i>&nbsp;        m_path = m_path.concat(p_addToPath);</b>
+<i>1607</i>&nbsp;      }
+<i>1608</i>&nbsp;    }
+<i>1609</i>&nbsp;    else {
+<b class="nc"><i>1610</i>&nbsp;      if (p_addToPath.startsWith(&quot;/&quot;)) {</b>
+<b class="nc"><i>1611</i>&nbsp;        m_path = m_path.concat(p_addToPath);</b>
+<i>1612</i>&nbsp;      }
+<i>1613</i>&nbsp;      else {
+<b class="nc"><i>1614</i>&nbsp;        m_path = m_path.concat(&quot;/&quot; + p_addToPath);</b>
+<i>1615</i>&nbsp;      }
+<i>1616</i>&nbsp;    }
+<i>1617</i>&nbsp;  }
+<i>1618</i>&nbsp;
+<i>1619</i>&nbsp; /**
+<i>1620</i>&nbsp;  * Set the query string for this URI. A non-null value is valid only
+<i>1621</i>&nbsp;  * if this is an URI conforming to the generic URI syntax and
+<i>1622</i>&nbsp;  * the path value is not null.
+<i>1623</i>&nbsp;  *
+<i>1624</i>&nbsp;  * @param p_queryString the query string for this URI
+<i>1625</i>&nbsp;  *
+<i>1626</i>&nbsp;  * @exception MalformedURIException if p_queryString is not null and this
+<i>1627</i>&nbsp;  *                                  URI does not conform to the generic
+<i>1628</i>&nbsp;  *                                  URI syntax or if the path is null
+<i>1629</i>&nbsp;  */
+<i>1630</i>&nbsp;  public void setQueryString(String p_queryString) throws MalformedURIException {
+<b class="nc"><i>1631</i>&nbsp;    if (p_queryString == null) {</b>
+<b class="nc"><i>1632</i>&nbsp;      m_queryString = null;</b>
+<i>1633</i>&nbsp;    }
+<b class="nc"><i>1634</i>&nbsp;    else if (!isGenericURI()) {</b>
+<b class="nc"><i>1635</i>&nbsp;      throw new MalformedURIException(</b>
+<i>1636</i>&nbsp;              &quot;Query string can only be set for a generic URI!&quot;);
+<i>1637</i>&nbsp;    }
+<b class="nc"><i>1638</i>&nbsp;    else if (getPath() == null) {</b>
+<b class="nc"><i>1639</i>&nbsp;      throw new MalformedURIException(</b>
+<i>1640</i>&nbsp;              &quot;Query string cannot be set when path is null!&quot;);
+<i>1641</i>&nbsp;    }
+<b class="nc"><i>1642</i>&nbsp;    else if (!isURIString(p_queryString)) {</b>
+<b class="nc"><i>1643</i>&nbsp;      throw new MalformedURIException(</b>
+<i>1644</i>&nbsp;              &quot;Query string contains invalid character!&quot;);
+<i>1645</i>&nbsp;    }
+<i>1646</i>&nbsp;    else {
+<b class="nc"><i>1647</i>&nbsp;      m_queryString = p_queryString;</b>
+<i>1648</i>&nbsp;    }
+<i>1649</i>&nbsp;  }
+<i>1650</i>&nbsp;
+<i>1651</i>&nbsp; /**
+<i>1652</i>&nbsp;  * Set the fragment for this URI. A non-null value is valid only
+<i>1653</i>&nbsp;  * if this is a URI conforming to the generic URI syntax and
+<i>1654</i>&nbsp;  * the path value is not null.
+<i>1655</i>&nbsp;  *
+<i>1656</i>&nbsp;  * @param p_fragment the fragment for this URI
+<i>1657</i>&nbsp;  *
+<i>1658</i>&nbsp;  * @exception MalformedURIException if p_fragment is not null and this
+<i>1659</i>&nbsp;  *                                  URI does not conform to the generic
+<i>1660</i>&nbsp;  *                                  URI syntax or if the path is null
+<i>1661</i>&nbsp;  */
+<i>1662</i>&nbsp;  public void setFragment(String p_fragment) throws MalformedURIException {
+<b class="nc"><i>1663</i>&nbsp;    if (p_fragment == null) {</b>
+<b class="nc"><i>1664</i>&nbsp;      m_fragment = null;</b>
+<i>1665</i>&nbsp;    }
+<b class="nc"><i>1666</i>&nbsp;    else if (!isGenericURI()) {</b>
+<b class="nc"><i>1667</i>&nbsp;      throw new MalformedURIException(</b>
+<i>1668</i>&nbsp;         &quot;Fragment can only be set for a generic URI!&quot;);
+<i>1669</i>&nbsp;    }
+<b class="nc"><i>1670</i>&nbsp;    else if (getPath() == null) {</b>
+<b class="nc"><i>1671</i>&nbsp;      throw new MalformedURIException(</b>
+<i>1672</i>&nbsp;              &quot;Fragment cannot be set when path is null!&quot;);
+<i>1673</i>&nbsp;    }
+<b class="nc"><i>1674</i>&nbsp;    else if (!isURIString(p_fragment)) {</b>
+<b class="nc"><i>1675</i>&nbsp;      throw new MalformedURIException(</b>
+<i>1676</i>&nbsp;              &quot;Fragment contains invalid character!&quot;);
+<i>1677</i>&nbsp;    }
+<i>1678</i>&nbsp;    else {
+<b class="nc"><i>1679</i>&nbsp;      m_fragment = p_fragment;</b>
+<i>1680</i>&nbsp;    }
+<i>1681</i>&nbsp;  }
+<i>1682</i>&nbsp;
+<i>1683</i>&nbsp; /**
+<i>1684</i>&nbsp;  * Determines if the passed-in Object is equivalent to this URI.
+<i>1685</i>&nbsp;  *
+<i>1686</i>&nbsp;  * @param p_test the Object to test for equality.
+<i>1687</i>&nbsp;  *
+<i>1688</i>&nbsp;  * @return true if p_test is a URI with all values equal to this
+<i>1689</i>&nbsp;  *         URI, false otherwise
+<i>1690</i>&nbsp;  */
+<i>1691</i>&nbsp;  @Override
+<i>1692</i>&nbsp;  public boolean equals(Object p_test) {
+<b class="nc"><i>1693</i>&nbsp;    if (p_test instanceof URI) {</b>
+<b class="nc"><i>1694</i>&nbsp;      URI testURI = (URI) p_test;</b>
+<b class="nc"><i>1695</i>&nbsp;      if (((m_scheme == null &amp;&amp; testURI.m_scheme == null) ||</b>
+<i>1696</i>&nbsp;           (m_scheme != null &amp;&amp; testURI.m_scheme != null &amp;&amp;
+<b class="nc"><i>1697</i>&nbsp;            m_scheme.equals(testURI.m_scheme))) &amp;&amp;</b>
+<i>1698</i>&nbsp;          ((m_userinfo == null &amp;&amp; testURI.m_userinfo == null) ||
+<i>1699</i>&nbsp;           (m_userinfo != null &amp;&amp; testURI.m_userinfo != null &amp;&amp;
+<b class="nc"><i>1700</i>&nbsp;            m_userinfo.equals(testURI.m_userinfo))) &amp;&amp;</b>
+<i>1701</i>&nbsp;          ((m_host == null &amp;&amp; testURI.m_host == null) ||
+<i>1702</i>&nbsp;           (m_host != null &amp;&amp; testURI.m_host != null &amp;&amp;
+<b class="nc"><i>1703</i>&nbsp;            m_host.equals(testURI.m_host))) &amp;&amp;</b>
+<i>1704</i>&nbsp;            m_port == testURI.m_port &amp;&amp;
+<i>1705</i>&nbsp;          ((m_path == null &amp;&amp; testURI.m_path == null) ||
+<i>1706</i>&nbsp;           (m_path != null &amp;&amp; testURI.m_path != null &amp;&amp;
+<b class="nc"><i>1707</i>&nbsp;            m_path.equals(testURI.m_path))) &amp;&amp;</b>
+<i>1708</i>&nbsp;          ((m_queryString == null &amp;&amp; testURI.m_queryString == null) ||
+<i>1709</i>&nbsp;           (m_queryString != null &amp;&amp; testURI.m_queryString != null &amp;&amp;
+<b class="nc"><i>1710</i>&nbsp;            m_queryString.equals(testURI.m_queryString))) &amp;&amp;</b>
+<i>1711</i>&nbsp;          ((m_fragment == null &amp;&amp; testURI.m_fragment == null) ||
+<i>1712</i>&nbsp;           (m_fragment != null &amp;&amp; testURI.m_fragment != null &amp;&amp;
+<b class="nc"><i>1713</i>&nbsp;            m_fragment.equals(testURI.m_fragment)))) {</b>
+<b class="nc"><i>1714</i>&nbsp;        return true;</b>
+<i>1715</i>&nbsp;      }
+<i>1716</i>&nbsp;    }
+<b class="nc"><i>1717</i>&nbsp;    return false;</b>
+<i>1718</i>&nbsp;  }
+<i>1719</i>&nbsp;
+<i>1720</i>&nbsp;    @Override
+<i>1721</i>&nbsp;    public int hashCode() {
+<b class="nc"><i>1722</i>&nbsp;        int hash = 5;</b>
+<b class="nc"><i>1723</i>&nbsp;        hash = 47 * hash + Objects.hashCode(this.m_scheme);</b>
+<b class="nc"><i>1724</i>&nbsp;        hash = 47 * hash + Objects.hashCode(this.m_userinfo);</b>
+<b class="nc"><i>1725</i>&nbsp;        hash = 47 * hash + Objects.hashCode(this.m_host);</b>
+<b class="nc"><i>1726</i>&nbsp;        hash = 47 * hash + this.m_port;</b>
+<b class="nc"><i>1727</i>&nbsp;        hash = 47 * hash + Objects.hashCode(this.m_path);</b>
+<b class="nc"><i>1728</i>&nbsp;        hash = 47 * hash + Objects.hashCode(this.m_queryString);</b>
+<b class="nc"><i>1729</i>&nbsp;        hash = 47 * hash + Objects.hashCode(this.m_fragment);</b>
+<b class="nc"><i>1730</i>&nbsp;        return hash;</b>
+<i>1731</i>&nbsp;    }
+<i>1732</i>&nbsp;
+<i>1733</i>&nbsp; /**
+<i>1734</i>&nbsp;  * Get the URI as a string specification. See RFC 2396 Section 5.2.
+<i>1735</i>&nbsp;  *
+<i>1736</i>&nbsp;  * @return the URI string specification
+<i>1737</i>&nbsp;  */
+<i>1738</i>&nbsp;  @Override
+<i>1739</i>&nbsp;  public String toString() {
+<b class="nc"><i>1740</i>&nbsp;    final StringBuilder uriSpecString = new StringBuilder();</b>
+<i>1741</i>&nbsp;
+<b class="nc"><i>1742</i>&nbsp;    if (m_scheme != null) {</b>
+<b class="nc"><i>1743</i>&nbsp;      uriSpecString.append(m_scheme);</b>
+<b class="nc"><i>1744</i>&nbsp;      uriSpecString.append(&#39;:&#39;);</b>
+<i>1745</i>&nbsp;    }
+<b class="nc"><i>1746</i>&nbsp;    uriSpecString.append(getSchemeSpecificPart());</b>
+<b class="nc"><i>1747</i>&nbsp;    return uriSpecString.toString();</b>
+<i>1748</i>&nbsp;  }
+<i>1749</i>&nbsp;
+<i>1750</i>&nbsp; /**
+<i>1751</i>&nbsp;  * Get the indicator as to whether this URI uses the &quot;generic URI&quot;
+<i>1752</i>&nbsp;  * syntax.
+<i>1753</i>&nbsp;  *
+<i>1754</i>&nbsp;  * @return true if this URI uses the &quot;generic URI&quot; syntax, false
+<i>1755</i>&nbsp;  *         otherwise
+<i>1756</i>&nbsp;  */
+<i>1757</i>&nbsp;  public boolean isGenericURI() {
+<i>1758</i>&nbsp;    // presence of the host (whether valid or empty) means
+<i>1759</i>&nbsp;    // double-slashes which means generic uri
+<b class="nc"><i>1760</i>&nbsp;    return (m_host != null);</b>
+<i>1761</i>&nbsp;  }
+<i>1762</i>&nbsp;
+<i>1763</i>&nbsp;  /**
+<i>1764</i>&nbsp;   * Returns whether this URI represents an absolute URI.
+<i>1765</i>&nbsp;   *
+<i>1766</i>&nbsp;   * @return true if this URI represents an absolute URI, false
+<i>1767</i>&nbsp;   *         otherwise
+<i>1768</i>&nbsp;   */
+<i>1769</i>&nbsp;  public boolean isAbsoluteURI() {
+<i>1770</i>&nbsp;      // presence of the scheme means absolute uri
+<b class="nc"><i>1771</i>&nbsp;      return (m_scheme != null);</b>
+<i>1772</i>&nbsp;  }
+<i>1773</i>&nbsp;
+<i>1774</i>&nbsp; /**
+<i>1775</i>&nbsp;  * Determine whether a scheme conforms to the rules for a scheme name.
+<i>1776</i>&nbsp;  * A scheme is conformant if it starts with an alphanumeric, and
+<i>1777</i>&nbsp;  * contains only alphanumerics, &#39;+&#39;,&#39;-&#39; and &#39;.&#39;.
+<i>1778</i>&nbsp;  *
+<i>1779</i>&nbsp;  * @return true if the scheme is conformant, false otherwise
+<i>1780</i>&nbsp;  */
+<i>1781</i>&nbsp;  public static boolean isConformantSchemeName(String p_scheme) {
+<b class="nc"><i>1782</i>&nbsp;    if (p_scheme == null || p_scheme.trim().length() == 0) {</b>
+<b class="nc"><i>1783</i>&nbsp;      return false;</b>
+<i>1784</i>&nbsp;    }
+<i>1785</i>&nbsp;
+<b class="nc"><i>1786</i>&nbsp;    if (!isAlpha(p_scheme.charAt(0))) {</b>
+<b class="nc"><i>1787</i>&nbsp;      return false;</b>
+<i>1788</i>&nbsp;    }
+<i>1789</i>&nbsp;
+<i>1790</i>&nbsp;    char testChar;
+<b class="nc"><i>1791</i>&nbsp;    int schemeLength = p_scheme.length();</b>
+<b class="nc"><i>1792</i>&nbsp;    for (int i = 1; i &lt; schemeLength; ++i) {</b>
+<b class="nc"><i>1793</i>&nbsp;      testChar = p_scheme.charAt(i);</b>
+<b class="nc"><i>1794</i>&nbsp;      if (!isSchemeCharacter(testChar)) {</b>
+<b class="nc"><i>1795</i>&nbsp;        return false;</b>
+<i>1796</i>&nbsp;      }
+<i>1797</i>&nbsp;    }
+<i>1798</i>&nbsp;
+<b class="nc"><i>1799</i>&nbsp;    return true;</b>
+<i>1800</i>&nbsp;  }
+<i>1801</i>&nbsp;
+<i>1802</i>&nbsp; /**
+<i>1803</i>&nbsp;  * Determine whether a string is syntactically capable of representing
+<i>1804</i>&nbsp;  * a valid IPv4 address, IPv6 reference or the domain name of a network host.
+<i>1805</i>&nbsp;  * A valid IPv4 address consists of four decimal digit groups separated by a
+<i>1806</i>&nbsp;  * &#39;.&#39;. Each group must consist of one to three digits. See RFC 2732 Section 3,
+<i>1807</i>&nbsp;  * and RFC 2373 Section 2.2, for the definition of IPv6 references. A hostname
+<i>1808</i>&nbsp;  * consists of domain labels (each of which must begin and end with an alphanumeric
+<i>1809</i>&nbsp;  * but may contain &#39;-&#39;) separated &amp; by a &#39;.&#39;. See RFC 2396 Section 3.2.2.
+<i>1810</i>&nbsp;  *
+<i>1811</i>&nbsp;  * @return true if the string is a syntactically valid IPv4 address,
+<i>1812</i>&nbsp;  * IPv6 reference or hostname
+<i>1813</i>&nbsp;  */
+<i>1814</i>&nbsp;  public static boolean isWellFormedAddress(String address) {
+<b class="nc"><i>1815</i>&nbsp;    if (address == null) {</b>
+<b class="nc"><i>1816</i>&nbsp;      return false;</b>
+<i>1817</i>&nbsp;    }
+<i>1818</i>&nbsp;
+<b class="nc"><i>1819</i>&nbsp;    int addrLength = address.length();</b>
+<b class="nc"><i>1820</i>&nbsp;    if (addrLength == 0) {</b>
+<b class="nc"><i>1821</i>&nbsp;      return false;</b>
+<i>1822</i>&nbsp;    }
+<i>1823</i>&nbsp;
+<i>1824</i>&nbsp;    // Check if the host is a valid IPv6reference.
+<b class="nc"><i>1825</i>&nbsp;    if (address.startsWith(&quot;[&quot;)) {</b>
+<b class="nc"><i>1826</i>&nbsp;      return isWellFormedIPv6Reference(address);</b>
+<i>1827</i>&nbsp;    }
+<i>1828</i>&nbsp;
+<i>1829</i>&nbsp;    // Cannot start with a &#39;.&#39;, &#39;-&#39;, or end with a &#39;-&#39;.
+<b class="nc"><i>1830</i>&nbsp;    if (address.startsWith(&quot;.&quot;) ||</b>
+<b class="nc"><i>1831</i>&nbsp;        address.startsWith(&quot;-&quot;) ||</b>
+<b class="nc"><i>1832</i>&nbsp;        address.endsWith(&quot;-&quot;)) {</b>
+<b class="nc"><i>1833</i>&nbsp;      return false;</b>
+<i>1834</i>&nbsp;    }
+<i>1835</i>&nbsp;
+<i>1836</i>&nbsp;    // rightmost domain label starting with digit indicates IP address
+<i>1837</i>&nbsp;    // since top level domain label can only start with an alpha
+<i>1838</i>&nbsp;    // see RFC 2396 Section 3.2.2
+<b class="nc"><i>1839</i>&nbsp;    int index = address.lastIndexOf(&#39;.&#39;);</b>
+<b class="nc"><i>1840</i>&nbsp;    if (address.endsWith(&quot;.&quot;)) {</b>
+<b class="nc"><i>1841</i>&nbsp;      index = address.substring(0, index).lastIndexOf(&#39;.&#39;);</b>
+<i>1842</i>&nbsp;    }
+<i>1843</i>&nbsp;
+<b class="nc"><i>1844</i>&nbsp;    if (index+1 &lt; addrLength &amp;&amp; isDigit(address.charAt(index+1))) {</b>
+<b class="nc"><i>1845</i>&nbsp;      return isWellFormedIPv4Address(address);</b>
+<i>1846</i>&nbsp;    }
+<i>1847</i>&nbsp;    else {
+<i>1848</i>&nbsp;      // hostname      = *( domainlabel &quot;.&quot; ) toplabel [ &quot;.&quot; ]
+<i>1849</i>&nbsp;      // domainlabel   = alphanum | alphanum *( alphanum | &quot;-&quot; ) alphanum
+<i>1850</i>&nbsp;      // toplabel      = alpha | alpha *( alphanum | &quot;-&quot; ) alphanum
+<i>1851</i>&nbsp;
+<i>1852</i>&nbsp;      // RFC 2396 states that hostnames take the form described in
+<i>1853</i>&nbsp;      // RFC 1034 (Section 3) and RFC 1123 (Section 2.1). According
+<i>1854</i>&nbsp;      // to RFC 1034, hostnames are limited to 255 characters.
+<b class="nc"><i>1855</i>&nbsp;      if (addrLength &gt; 255) {</b>
+<b class="nc"><i>1856</i>&nbsp;        return false;</b>
+<i>1857</i>&nbsp;      }
+<i>1858</i>&nbsp;
+<i>1859</i>&nbsp;      // domain labels can contain alphanumerics and &#39;-&quot;
+<i>1860</i>&nbsp;      // but must start and end with an alphanumeric
+<i>1861</i>&nbsp;      char testChar;
+<b class="nc"><i>1862</i>&nbsp;      int labelCharCount = 0;</b>
+<i>1863</i>&nbsp;
+<b class="nc"><i>1864</i>&nbsp;      for (int i = 0; i &lt; addrLength; i++) {</b>
+<b class="nc"><i>1865</i>&nbsp;        testChar = address.charAt(i);</b>
+<b class="nc"><i>1866</i>&nbsp;        if (testChar == &#39;.&#39;) {</b>
+<b class="nc"><i>1867</i>&nbsp;          if (!isAlphanum(address.charAt(i-1))) {</b>
+<b class="nc"><i>1868</i>&nbsp;            return false;</b>
+<i>1869</i>&nbsp;          }
+<b class="nc"><i>1870</i>&nbsp;          if (i+1 &lt; addrLength &amp;&amp; !isAlphanum(address.charAt(i+1))) {</b>
+<b class="nc"><i>1871</i>&nbsp;            return false;</b>
+<i>1872</i>&nbsp;          }
+<b class="nc"><i>1873</i>&nbsp;          labelCharCount = 0;</b>
+<i>1874</i>&nbsp;        }
+<b class="nc"><i>1875</i>&nbsp;        else if (!isAlphanum(testChar) &amp;&amp; testChar != &#39;-&#39;) {</b>
+<b class="nc"><i>1876</i>&nbsp;          return false;</b>
+<i>1877</i>&nbsp;        }
+<i>1878</i>&nbsp;        // RFC 1034: Labels must be 63 characters or less.
+<b class="nc"><i>1879</i>&nbsp;        else if (++labelCharCount &gt; 63) {</b>
+<b class="nc"><i>1880</i>&nbsp;          return false;</b>
+<i>1881</i>&nbsp;        }
+<i>1882</i>&nbsp;      }
+<i>1883</i>&nbsp;    }
+<b class="nc"><i>1884</i>&nbsp;    return true;</b>
+<i>1885</i>&nbsp;  }
+<i>1886</i>&nbsp;
+<i>1887</i>&nbsp;  /**
+<i>1888</i>&nbsp;   * &lt;p&gt;Determines whether a string is an IPv4 address as defined by
+<i>1889</i>&nbsp;   * RFC 2373, and under the further constraint that it must be a 32-bit
+<i>1890</i>&nbsp;   * address. Though not expressed in the grammar, in order to satisfy
+<i>1891</i>&nbsp;   * the 32-bit address constraint, each segment of the address cannot
+<i>1892</i>&nbsp;   * be greater than 255 (8 bits of information).&lt;/p&gt;
+<i>1893</i>&nbsp;   *
+<i>1894</i>&nbsp;   * &lt;p&gt;&lt;code&gt;IPv4address = 1*3DIGIT &quot;.&quot; 1*3DIGIT &quot;.&quot; 1*3DIGIT &quot;.&quot; 1*3DIGIT&lt;/code&gt;&lt;/p&gt;
+<i>1895</i>&nbsp;   *
+<i>1896</i>&nbsp;   * @return true if the string is a syntactically valid IPv4 address
+<i>1897</i>&nbsp;   */
+<i>1898</i>&nbsp;  public static boolean isWellFormedIPv4Address(String address) {
+<i>1899</i>&nbsp;
+<b class="nc"><i>1900</i>&nbsp;      int addrLength = address.length();</b>
+<i>1901</i>&nbsp;      char testChar;
+<b class="nc"><i>1902</i>&nbsp;      int numDots = 0;</b>
+<b class="nc"><i>1903</i>&nbsp;      int numDigits = 0;</b>
+<i>1904</i>&nbsp;
+<i>1905</i>&nbsp;      // make sure that 1) we see only digits and dot separators, 2) that
+<i>1906</i>&nbsp;      // any dot separator is preceded and followed by a digit and
+<i>1907</i>&nbsp;      // 3) that we find 3 dots
+<i>1908</i>&nbsp;      //
+<i>1909</i>&nbsp;      // RFC 2732 amended RFC 2396 by replacing the definition
+<i>1910</i>&nbsp;      // of IPv4address with the one defined by RFC 2373. - mrglavas
+<i>1911</i>&nbsp;      //
+<i>1912</i>&nbsp;      // IPv4address = 1*3DIGIT &quot;.&quot; 1*3DIGIT &quot;.&quot; 1*3DIGIT &quot;.&quot; 1*3DIGIT
+<i>1913</i>&nbsp;      //
+<i>1914</i>&nbsp;      // One to three digits must be in each segment.
+<b class="nc"><i>1915</i>&nbsp;      for (int i = 0; i &lt; addrLength; i++) {</b>
+<b class="nc"><i>1916</i>&nbsp;        testChar = address.charAt(i);</b>
+<b class="nc"><i>1917</i>&nbsp;        if (testChar == &#39;.&#39;) {</b>
+<b class="nc"><i>1918</i>&nbsp;          if ((i &gt; 0 &amp;&amp; !isDigit(address.charAt(i-1))) ||</b>
+<b class="nc"><i>1919</i>&nbsp;              (i+1 &lt; addrLength &amp;&amp; !isDigit(address.charAt(i+1)))) {</b>
+<b class="nc"><i>1920</i>&nbsp;            return false;</b>
+<i>1921</i>&nbsp;          }
+<b class="nc"><i>1922</i>&nbsp;          numDigits = 0;</b>
+<b class="nc"><i>1923</i>&nbsp;          if (++numDots &gt; 3) {</b>
+<b class="nc"><i>1924</i>&nbsp;            return false;</b>
+<i>1925</i>&nbsp;          }
+<i>1926</i>&nbsp;        }
+<b class="nc"><i>1927</i>&nbsp;        else if (!isDigit(testChar)) {</b>
+<b class="nc"><i>1928</i>&nbsp;          return false;</b>
+<i>1929</i>&nbsp;        }
+<i>1930</i>&nbsp;        // Check that that there are no more than three digits
+<i>1931</i>&nbsp;        // in this segment.
+<b class="nc"><i>1932</i>&nbsp;        else if (++numDigits &gt; 3) {</b>
+<b class="nc"><i>1933</i>&nbsp;          return false;</b>
+<i>1934</i>&nbsp;        }
+<i>1935</i>&nbsp;        // Check that this segment is not greater than 255.
+<b class="nc"><i>1936</i>&nbsp;        else if (numDigits == 3) {</b>
+<b class="nc"><i>1937</i>&nbsp;          char first = address.charAt(i-2);</b>
+<b class="nc"><i>1938</i>&nbsp;          char second = address.charAt(i-1);</b>
+<b class="nc"><i>1939</i>&nbsp;          if (!(first &lt; &#39;2&#39; ||</b>
+<i>1940</i>&nbsp;               (first == &#39;2&#39; &amp;&amp;
+<i>1941</i>&nbsp;               (second &lt; &#39;5&#39; ||
+<i>1942</i>&nbsp;               (second == &#39;5&#39; &amp;&amp; testChar &lt;= &#39;5&#39;))))) {
+<b class="nc"><i>1943</i>&nbsp;            return false;</b>
+<i>1944</i>&nbsp;          }
+<i>1945</i>&nbsp;        }
+<i>1946</i>&nbsp;      }
+<b class="nc"><i>1947</i>&nbsp;      return (numDots == 3);</b>
+<i>1948</i>&nbsp;  }
+<i>1949</i>&nbsp;
+<i>1950</i>&nbsp;  /**
+<i>1951</i>&nbsp;   * &lt;p&gt;Determines whether a string is an IPv6 reference as defined
+<i>1952</i>&nbsp;   * by RFC 2732, where IPv6address is defined in RFC 2373. The
+<i>1953</i>&nbsp;   * IPv6 address is parsed according to Section 2.2 of RFC 2373,
+<i>1954</i>&nbsp;   * with the additional constraint that the address be composed of
+<i>1955</i>&nbsp;   * 128 bits of information.&lt;/p&gt;
+<i>1956</i>&nbsp;   *
+<i>1957</i>&nbsp;   * &lt;p&gt;&lt;code&gt;IPv6reference = &quot;[&quot; IPv6address &quot;]&quot;&lt;/code&gt;&lt;/p&gt;
+<i>1958</i>&nbsp;   *
+<i>1959</i>&nbsp;   * &lt;p&gt;Note: The BNF expressed in RFC 2373 Appendix B does not
+<i>1960</i>&nbsp;   * accurately describe section 2.2, and was in fact removed from
+<i>1961</i>&nbsp;   * RFC 3513, the successor of RFC 2373.&lt;/p&gt;
+<i>1962</i>&nbsp;   *
+<i>1963</i>&nbsp;   * @return true if the string is a syntactically valid IPv6 reference
+<i>1964</i>&nbsp;   */
+<i>1965</i>&nbsp;  public static boolean isWellFormedIPv6Reference(String address) {
+<i>1966</i>&nbsp;
+<b class="nc"><i>1967</i>&nbsp;      int addrLength = address.length();</b>
+<b class="nc"><i>1968</i>&nbsp;      int index = 1;</b>
+<b class="nc"><i>1969</i>&nbsp;      int end = addrLength-1;</b>
+<i>1970</i>&nbsp;
+<i>1971</i>&nbsp;      // Check if string is a potential match for IPv6reference.
+<b class="nc"><i>1972</i>&nbsp;      if (!(addrLength &gt; 2 &amp;&amp; address.charAt(0) == &#39;[&#39;</b>
+<b class="nc"><i>1973</i>&nbsp;          &amp;&amp; address.charAt(end) == &#39;]&#39;)) {</b>
+<b class="nc"><i>1974</i>&nbsp;          return false;</b>
+<i>1975</i>&nbsp;      }
+<i>1976</i>&nbsp;
+<i>1977</i>&nbsp;      // Counter for the number of 16-bit sections read in the address.
+<b class="nc"><i>1978</i>&nbsp;      int [] counter = new int[1];</b>
+<i>1979</i>&nbsp;
+<i>1980</i>&nbsp;      // Scan hex sequence before possible &#39;::&#39; or IPv4 address.
+<b class="nc"><i>1981</i>&nbsp;      index = scanHexSequence(address, index, end, counter);</b>
+<b class="nc"><i>1982</i>&nbsp;      if (index == -1) {</b>
+<b class="nc"><i>1983</i>&nbsp;          return false;</b>
+<i>1984</i>&nbsp;      }
+<i>1985</i>&nbsp;      // Address must contain 128-bits of information.
+<b class="nc"><i>1986</i>&nbsp;      else if (index == end) {</b>
+<b class="nc"><i>1987</i>&nbsp;          return (counter[0] == 8);</b>
+<i>1988</i>&nbsp;      }
+<i>1989</i>&nbsp;
+<b class="nc"><i>1990</i>&nbsp;      if (index+1 &lt; end &amp;&amp; address.charAt(index) == &#39;:&#39;) {</b>
+<b class="nc"><i>1991</i>&nbsp;          if (address.charAt(index+1) == &#39;:&#39;) {</b>
+<i>1992</i>&nbsp;              // &#39;::&#39; represents at least one 16-bit group of zeros.
+<b class="nc"><i>1993</i>&nbsp;              if (++counter[0] &gt; 8) {</b>
+<b class="nc"><i>1994</i>&nbsp;                  return false;</b>
+<i>1995</i>&nbsp;              }
+<b class="nc"><i>1996</i>&nbsp;              index += 2;</b>
+<i>1997</i>&nbsp;              // Trailing zeros will fill out the rest of the address.
+<b class="nc"><i>1998</i>&nbsp;              if (index == end) {</b>
+<b class="nc"><i>1999</i>&nbsp;                 return true;</b>
+<i>2000</i>&nbsp;              }
+<i>2001</i>&nbsp;          }
+<i>2002</i>&nbsp;          // If the second character wasn&#39;t &#39;:&#39;, in order to be valid,
+<i>2003</i>&nbsp;          // the remainder of the string must match IPv4Address,
+<i>2004</i>&nbsp;          // and we must have read exactly 6 16-bit groups.
+<i>2005</i>&nbsp;          else {
+<b class="nc"><i>2006</i>&nbsp;              return (counter[0] == 6) &amp;&amp;</b>
+<b class="nc"><i>2007</i>&nbsp;                  isWellFormedIPv4Address(address.substring(index+1, end));</b>
+<i>2008</i>&nbsp;          }
+<i>2009</i>&nbsp;      }
+<i>2010</i>&nbsp;      else {
+<b class="nc"><i>2011</i>&nbsp;          return false;</b>
+<i>2012</i>&nbsp;      }
+<i>2013</i>&nbsp;
+<i>2014</i>&nbsp;      // 3. Scan hex sequence after &#39;::&#39;.
+<b class="nc"><i>2015</i>&nbsp;      int prevCount = counter[0];</b>
+<b class="nc"><i>2016</i>&nbsp;      index = scanHexSequence(address, index, end, counter);</b>
+<i>2017</i>&nbsp;
+<i>2018</i>&nbsp;      // We&#39;ve either reached the end of the string, the address ends in
+<i>2019</i>&nbsp;      // an IPv4 address, or it is invalid. scanHexSequence has already
+<i>2020</i>&nbsp;      // made sure that we have the right number of bits.
+<b class="nc"><i>2021</i>&nbsp;      return (index == end) ||</b>
+<b class="nc"><i>2022</i>&nbsp;          (index != -1 &amp;&amp; isWellFormedIPv4Address(</b>
+<b class="nc"><i>2023</i>&nbsp;          address.substring((counter[0] &gt; prevCount) ? index+1 : index, end)));</b>
+<i>2024</i>&nbsp;  }
+<i>2025</i>&nbsp;
+<i>2026</i>&nbsp;  /**
+<i>2027</i>&nbsp;   * Helper method for isWellFormedIPv6Reference which scans the
+<i>2028</i>&nbsp;   * hex sequences of an IPv6 address. It returns the index of the
+<i>2029</i>&nbsp;   * next character to scan in the address, or -1 if the string
+<i>2030</i>&nbsp;   * cannot match a valid IPv6 address.
+<i>2031</i>&nbsp;   *
+<i>2032</i>&nbsp;   * @param address the string to be scanned
+<i>2033</i>&nbsp;   * @param index the beginning index (inclusive)
+<i>2034</i>&nbsp;   * @param end the ending index (exclusive)
+<i>2035</i>&nbsp;   * @param counter a counter for the number of 16-bit sections read
+<i>2036</i>&nbsp;   * in the address
+<i>2037</i>&nbsp;   *
+<i>2038</i>&nbsp;   * @return the index of the next character to scan, or -1 if the
+<i>2039</i>&nbsp;   * string cannot match a valid IPv6 address
+<i>2040</i>&nbsp;   */
+<i>2041</i>&nbsp;  private static int scanHexSequence (String address, int index, int end, int [] counter) {
+<i>2042</i>&nbsp;
+<i>2043</i>&nbsp;      char testChar;
+<b class="nc"><i>2044</i>&nbsp;      int numDigits = 0;</b>
+<b class="nc"><i>2045</i>&nbsp;      int start = index;</b>
+<i>2046</i>&nbsp;
+<i>2047</i>&nbsp;      // Trying to match the following productions:
+<i>2048</i>&nbsp;      // hexseq = hex4 *( &quot;:&quot; hex4)
+<i>2049</i>&nbsp;      // hex4   = 1*4HEXDIG
+<b class="nc"><i>2050</i>&nbsp;      for (; index &lt; end; ++index) {</b>
+<b class="nc"><i>2051</i>&nbsp;        testChar = address.charAt(index);</b>
+<b class="nc"><i>2052</i>&nbsp;        if (testChar == &#39;:&#39;) {</b>
+<i>2053</i>&nbsp;            // IPv6 addresses are 128-bit, so there can be at most eight sections.
+<b class="nc"><i>2054</i>&nbsp;            if (numDigits &gt; 0 &amp;&amp; ++counter[0] &gt; 8) {</b>
+<b class="nc"><i>2055</i>&nbsp;                return -1;</b>
+<i>2056</i>&nbsp;            }
+<i>2057</i>&nbsp;            // This could be &#39;::&#39;.
+<b class="nc"><i>2058</i>&nbsp;            if (numDigits == 0 || ((index+1 &lt; end) &amp;&amp; address.charAt(index+1) == &#39;:&#39;)) {</b>
+<b class="nc"><i>2059</i>&nbsp;                return index;</b>
+<i>2060</i>&nbsp;            }
+<b class="nc"><i>2061</i>&nbsp;            numDigits = 0;</b>
+<i>2062</i>&nbsp;        }
+<i>2063</i>&nbsp;        // This might be invalid or an IPv4address. If it&#39;s potentially an IPv4address,
+<i>2064</i>&nbsp;        // backup to just after the last valid character that matches hexseq.
+<b class="nc"><i>2065</i>&nbsp;        else if (!isHex(testChar)) {</b>
+<b class="nc"><i>2066</i>&nbsp;            if (testChar == &#39;.&#39; &amp;&amp; numDigits &lt; 4 &amp;&amp; numDigits &gt; 0 &amp;&amp; counter[0] &lt;= 6) {</b>
+<b class="nc"><i>2067</i>&nbsp;                int back = index - numDigits - 1;</b>
+<b class="nc"><i>2068</i>&nbsp;                return (back &gt;= start) ? back : (back+1);</b>
+<i>2069</i>&nbsp;            }
+<b class="nc"><i>2070</i>&nbsp;            return -1;</b>
+<i>2071</i>&nbsp;        }
+<i>2072</i>&nbsp;        // There can be at most 4 hex digits per group.
+<b class="nc"><i>2073</i>&nbsp;        else if (++numDigits &gt; 4) {</b>
+<b class="nc"><i>2074</i>&nbsp;            return -1;</b>
+<i>2075</i>&nbsp;        }
+<i>2076</i>&nbsp;      }
+<b class="nc"><i>2077</i>&nbsp;      return (numDigits &gt; 0 &amp;&amp; ++counter[0] &lt;= 8) ? end : -1;</b>
+<i>2078</i>&nbsp;  }
+<i>2079</i>&nbsp;
+<i>2080</i>&nbsp;
+<i>2081</i>&nbsp; /**
+<i>2082</i>&nbsp;  * Determine whether a char is a digit.
+<i>2083</i>&nbsp;  *
+<i>2084</i>&nbsp;  * @return true if the char is betweeen &#39;0&#39; and &#39;9&#39;, false otherwise
+<i>2085</i>&nbsp;  */
+<i>2086</i>&nbsp;  private static boolean isDigit(char p_char) {
+<b class="nc"><i>2087</i>&nbsp;    return p_char &gt;= &#39;0&#39; &amp;&amp; p_char &lt;= &#39;9&#39;;</b>
+<i>2088</i>&nbsp;  }
+<i>2089</i>&nbsp;
+<i>2090</i>&nbsp; /**
+<i>2091</i>&nbsp;  * Determine whether a character is a hexadecimal character.
+<i>2092</i>&nbsp;  *
+<i>2093</i>&nbsp;  * @return true if the char is betweeen &#39;0&#39; and &#39;9&#39;, &#39;a&#39; and &#39;f&#39;
+<i>2094</i>&nbsp;  *         or &#39;A&#39; and &#39;F&#39;, false otherwise
+<i>2095</i>&nbsp;  */
+<i>2096</i>&nbsp;  private static boolean isHex(char p_char) {
+<b class="nc"><i>2097</i>&nbsp;    return (p_char &lt;= &#39;f&#39; &amp;&amp; (fgLookupTable[p_char] &amp; ASCII_HEX_CHARACTERS) != 0);</b>
+<i>2098</i>&nbsp;  }
+<i>2099</i>&nbsp;
+<i>2100</i>&nbsp; /**
+<i>2101</i>&nbsp;  * Determine whether a char is an alphabetic character: a-z or A-Z
+<i>2102</i>&nbsp;  *
+<i>2103</i>&nbsp;  * @return true if the char is alphabetic, false otherwise
+<i>2104</i>&nbsp;  */
+<i>2105</i>&nbsp;  private static boolean isAlpha(char p_char) {
+<b class="nc"><i>2106</i>&nbsp;      return ((p_char &gt;= &#39;a&#39; &amp;&amp; p_char &lt;= &#39;z&#39;) || (p_char &gt;= &#39;A&#39; &amp;&amp; p_char &lt;= &#39;Z&#39; ));</b>
+<i>2107</i>&nbsp;  }
+<i>2108</i>&nbsp;
+<i>2109</i>&nbsp; /**
+<i>2110</i>&nbsp;  * Determine whether a char is an alphanumeric: 0-9, a-z or A-Z
+<i>2111</i>&nbsp;  *
+<i>2112</i>&nbsp;  * @return true if the char is alphanumeric, false otherwise
+<i>2113</i>&nbsp;  */
+<i>2114</i>&nbsp;  private static boolean isAlphanum(char p_char) {
+<b class="nc"><i>2115</i>&nbsp;     return (p_char &lt;= &#39;z&#39; &amp;&amp; (fgLookupTable[p_char] &amp; MASK_ALPHA_NUMERIC) != 0);</b>
+<i>2116</i>&nbsp;  }
+<i>2117</i>&nbsp;
+<i>2118</i>&nbsp; /**
+<i>2119</i>&nbsp;  * Determine whether a character is a reserved character:
+<i>2120</i>&nbsp;  * &#39;;&#39;, &#39;/&#39;, &#39;?&#39;, &#39;:&#39;, &#39;@&#39;, &#39;&amp;&#39;, &#39;=&#39;, &#39;+&#39;, &#39;$&#39;, &#39;,&#39;, &#39;[&#39;, or &#39;]&#39;
+<i>2121</i>&nbsp;  *
+<i>2122</i>&nbsp;  * @return true if the string contains any reserved characters
+<i>2123</i>&nbsp;  */
+<i>2124</i>&nbsp;  private static boolean isReservedCharacter(char p_char) {
+<b class="nc"><i>2125</i>&nbsp;     return (p_char &lt;= &#39;]&#39; &amp;&amp; (fgLookupTable[p_char] &amp; RESERVED_CHARACTERS) != 0);</b>
+<i>2126</i>&nbsp;  }
+<i>2127</i>&nbsp;
+<i>2128</i>&nbsp; /**
+<i>2129</i>&nbsp;  * Determine whether a char is an unreserved character.
+<i>2130</i>&nbsp;  *
+<i>2131</i>&nbsp;  * @return true if the char is unreserved, false otherwise
+<i>2132</i>&nbsp;  */
+<i>2133</i>&nbsp;  private static boolean isUnreservedCharacter(char p_char) {
+<b class="nc"><i>2134</i>&nbsp;     return (p_char &lt;= &#39;~&#39; &amp;&amp; (fgLookupTable[p_char] &amp; MASK_UNRESERVED_MASK) != 0);</b>
+<i>2135</i>&nbsp;  }
+<i>2136</i>&nbsp;
+<i>2137</i>&nbsp; /**
+<i>2138</i>&nbsp;  * Determine whether a char is a URI character (reserved or
+<i>2139</i>&nbsp;  * unreserved, not including &#39;%&#39; for escaped octets).
+<i>2140</i>&nbsp;  *
+<i>2141</i>&nbsp;  * @return true if the char is a URI character, false otherwise
+<i>2142</i>&nbsp;  */
+<i>2143</i>&nbsp;  private static boolean isURICharacter (char p_char) {
+<b class="nc"><i>2144</i>&nbsp;      return (p_char &lt;= &#39;~&#39; &amp;&amp; (fgLookupTable[p_char] &amp; MASK_URI_CHARACTER) != 0);</b>
+<i>2145</i>&nbsp;  }
+<i>2146</i>&nbsp;
+<i>2147</i>&nbsp; /**
+<i>2148</i>&nbsp;  * Determine whether a char is a scheme character.
+<i>2149</i>&nbsp;  *
+<i>2150</i>&nbsp;  * @return true if the char is a scheme character, false otherwise
+<i>2151</i>&nbsp;  */
+<i>2152</i>&nbsp;  private static boolean isSchemeCharacter (char p_char) {
+<b class="nc"><i>2153</i>&nbsp;      return (p_char &lt;= &#39;z&#39; &amp;&amp; (fgLookupTable[p_char] &amp; MASK_SCHEME_CHARACTER) != 0);</b>
+<i>2154</i>&nbsp;  }
+<i>2155</i>&nbsp;
+<i>2156</i>&nbsp; /**
+<i>2157</i>&nbsp;  * Determine whether a char is a userinfo character.
+<i>2158</i>&nbsp;  *
+<i>2159</i>&nbsp;  * @return true if the char is a userinfo character, false otherwise
+<i>2160</i>&nbsp;  */
+<i>2161</i>&nbsp;  private static boolean isUserinfoCharacter (char p_char) {
+<b class="nc"><i>2162</i>&nbsp;      return (p_char &lt;= &#39;z&#39; &amp;&amp; (fgLookupTable[p_char] &amp; MASK_USERINFO_CHARACTER) != 0);</b>
+<i>2163</i>&nbsp;  }
+<i>2164</i>&nbsp;
+<i>2165</i>&nbsp; /**
+<i>2166</i>&nbsp;  * Determine whether a char is a path character.
+<i>2167</i>&nbsp;  *
+<i>2168</i>&nbsp;  * @return true if the char is a path character, false otherwise
+<i>2169</i>&nbsp;  */
+<i>2170</i>&nbsp;  private static boolean isPathCharacter (char p_char) {
+<b class="nc"><i>2171</i>&nbsp;      return (p_char &lt;= &#39;~&#39; &amp;&amp; (fgLookupTable[p_char] &amp; MASK_PATH_CHARACTER) != 0);</b>
+<i>2172</i>&nbsp;  }
+<i>2173</i>&nbsp;
+<i>2174</i>&nbsp;
+<i>2175</i>&nbsp; /**
+<i>2176</i>&nbsp;  * Determine whether a given string contains only URI characters (also
+<i>2177</i>&nbsp;  * called &quot;uric&quot; in RFC 2396). uric consist of all reserved
+<i>2178</i>&nbsp;  * characters, unreserved characters and escaped characters.
+<i>2179</i>&nbsp;  *
+<i>2180</i>&nbsp;  * @return true if the string is comprised of uric, false otherwise
+<i>2181</i>&nbsp;  */
+<i>2182</i>&nbsp;  private static boolean isURIString(String p_uric) {
+<b class="nc"><i>2183</i>&nbsp;    if (p_uric == null) {</b>
+<b class="nc"><i>2184</i>&nbsp;      return false;</b>
+<i>2185</i>&nbsp;    }
+<b class="nc"><i>2186</i>&nbsp;    int end = p_uric.length();</b>
+<b class="nc"><i>2187</i>&nbsp;    char testChar = &#39;\0&#39;;</b>
+<b class="nc"><i>2188</i>&nbsp;    for (int i = 0; i &lt; end; i++) {</b>
+<b class="nc"><i>2189</i>&nbsp;      testChar = p_uric.charAt(i);</b>
+<b class="nc"><i>2190</i>&nbsp;      if (testChar == &#39;%&#39;) {</b>
+<b class="nc"><i>2191</i>&nbsp;        if (i+2 &gt;= end ||</b>
+<b class="nc"><i>2192</i>&nbsp;            !isHex(p_uric.charAt(i+1)) ||</b>
+<b class="nc"><i>2193</i>&nbsp;            !isHex(p_uric.charAt(i+2))) {</b>
+<b class="nc"><i>2194</i>&nbsp;          return false;</b>
+<i>2195</i>&nbsp;        }
+<i>2196</i>&nbsp;        else {
+<b class="nc"><i>2197</i>&nbsp;          i += 2;</b>
+<b class="nc"><i>2198</i>&nbsp;          continue;</b>
+<i>2199</i>&nbsp;        }
+<i>2200</i>&nbsp;      }
+<b class="nc"><i>2201</i>&nbsp;      if (isURICharacter(testChar)) {</b>
+<b class="nc"><i>2202</i>&nbsp;          continue;</b>
+<i>2203</i>&nbsp;      }
+<i>2204</i>&nbsp;      else {
+<b class="nc"><i>2205</i>&nbsp;        return false;</b>
+<i>2206</i>&nbsp;      }
+<i>2207</i>&nbsp;    }
+<b class="nc"><i>2208</i>&nbsp;    return true;</b>
+<i>2209</i>&nbsp;  }
+<i>2210</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

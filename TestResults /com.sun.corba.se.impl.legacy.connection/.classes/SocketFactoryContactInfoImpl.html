@@ -1,0 +1,195 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SocketFactoryContactInfoImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.legacy.connection</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SocketFactoryContactInfoImpl (com.sun.corba.se.impl.legacy.connection)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SocketFactoryContactInfoImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2003, 2004, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.legacy.connection;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import com.sun.corba.se.pept.transport.Connection;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>31</i>&nbsp;import com.sun.corba.se.spi.ior.IOR;
+<i>32</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains;
+<i>33</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaContactInfoList;
+<i>34</i>&nbsp;import com.sun.corba.se.spi.transport.SocketInfo;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import com.sun.corba.se.impl.logging.ORBUtilSystemException;
+<i>37</i>&nbsp;import com.sun.corba.se.impl.transport.SocketOrChannelContactInfoImpl;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;/**
+<i>41</i>&nbsp; * @author Harold Carr
+<i>42</i>&nbsp; */
+<i>43</i>&nbsp;public class SocketFactoryContactInfoImpl
+<i>44</i>&nbsp;    extends
+<i>45</i>&nbsp;        SocketOrChannelContactInfoImpl
+<i>46</i>&nbsp;{
+<i>47</i>&nbsp;    protected ORBUtilSystemException wrapper;
+<i>48</i>&nbsp;    protected SocketInfo socketInfo;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    // XREVISIT
+<i>51</i>&nbsp;    // See SocketOrChannelAcceptorImpl.createMessageMediator
+<i>52</i>&nbsp;    // See SocketFactoryContactInfoImpl.constructor()
+<i>53</i>&nbsp;    // See SocketOrChannelContactInfoImpl.constructor()
+<i>54</i>&nbsp;    public SocketFactoryContactInfoImpl()
+<b class="nc"><i>55</i>&nbsp;    {</b>
+<i>56</i>&nbsp;    }
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    public SocketFactoryContactInfoImpl(
+<i>59</i>&nbsp;        ORB orb,
+<i>60</i>&nbsp;        CorbaContactInfoList contactInfoList,
+<i>61</i>&nbsp;        IOR effectiveTargetIOR,
+<i>62</i>&nbsp;        short addressingDisposition,
+<i>63</i>&nbsp;        SocketInfo cookie)
+<i>64</i>&nbsp;    {
+<b class="nc"><i>65</i>&nbsp;        super(orb, contactInfoList);</b>
+<b class="nc"><i>66</i>&nbsp;        this.effectiveTargetIOR = effectiveTargetIOR;</b>
+<b class="nc"><i>67</i>&nbsp;        this.addressingDisposition = addressingDisposition;</b>
+<i>68</i>&nbsp;
+<b class="nc"><i>69</i>&nbsp;        wrapper = ORBUtilSystemException.get( orb,</b>
+<i>70</i>&nbsp;            CORBALogDomains.RPC_TRANSPORT ) ;
+<i>71</i>&nbsp;
+<b class="nc"><i>72</i>&nbsp;        socketInfo =</b>
+<b class="nc"><i>73</i>&nbsp;            orb.getORBData().getLegacySocketFactory()</b>
+<b class="nc"><i>74</i>&nbsp;                .getEndPointInfo(orb, effectiveTargetIOR, cookie);</b>
+<i>75</i>&nbsp;
+<b class="nc"><i>76</i>&nbsp;        socketType = socketInfo.getType();</b>
+<b class="nc"><i>77</i>&nbsp;        hostname = socketInfo.getHost();</b>
+<b class="nc"><i>78</i>&nbsp;        port = socketInfo.getPort();</b>
+<i>79</i>&nbsp;    }
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    ////////////////////////////////////////////////////
+<i>82</i>&nbsp;    //
+<i>83</i>&nbsp;    // pept.transport.ContactInfo
+<i>84</i>&nbsp;    //
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    public Connection createConnection()
+<i>87</i>&nbsp;    {
+<b class="nc"><i>88</i>&nbsp;        Connection connection =</b>
+<i>89</i>&nbsp;            new SocketFactoryConnectionImpl(
+<i>90</i>&nbsp;                orb, this,
+<b class="nc"><i>91</i>&nbsp;                orb.getORBData().connectionSocketUseSelectThreadToWait(),</b>
+<b class="nc"><i>92</i>&nbsp;                orb.getORBData().connectionSocketUseWorkerThreadForEvent());</b>
+<b class="nc"><i>93</i>&nbsp;        return connection;</b>
+<i>94</i>&nbsp;    }
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    ////////////////////////////////////////////////////
+<i>97</i>&nbsp;    //
+<i>98</i>&nbsp;    // java.lang.Object
+<i>99</i>&nbsp;    //
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;    public String toString()
+<i>102</i>&nbsp;    {
+<b class="nc"><i>103</i>&nbsp;        return</b>
+<i>104</i>&nbsp;            &quot;SocketFactoryContactInfoImpl[&quot;
+<i>105</i>&nbsp;            + socketType + &quot; &quot;
+<i>106</i>&nbsp;            + hostname + &quot; &quot;
+<i>107</i>&nbsp;            + port
+<i>108</i>&nbsp;            + &quot;]&quot;;
+<i>109</i>&nbsp;    }
+<i>110</i>&nbsp;}
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;// End of file.
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,802 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XSComplexTypeDecl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.xs</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XSComplexTypeDecl (com.sun.org.apache.xerces.internal.impl.xs)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XSComplexTypeDecl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 44)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 207)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.xs;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dv.XSSimpleType;
+<i>24</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.*;
+<i>25</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.models.XSCMValidator;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.models.CMBuilder;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.util.XSObjectListImpl;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.dv.xs.XSSimpleTypeDecl;
+<i>29</i>&nbsp;import org.w3c.dom.TypeInfo;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;/**
+<i>32</i>&nbsp; * The XML representation for a complexType
+<i>33</i>&nbsp; * schema component is a &lt;complexType&gt; element information item
+<i>34</i>&nbsp; *
+<i>35</i>&nbsp; * @xerces.internal
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; * @author Elena Litani, IBM
+<i>38</i>&nbsp; * @author Sandy Gao, IBM
+<i>39</i>&nbsp; * @version $Id: XSComplexTypeDecl.java,v 1.8 2010-11-01 04:39:55 joehw Exp $
+<i>40</i>&nbsp; */
+<i>41</i>&nbsp;public class XSComplexTypeDecl implements XSComplexTypeDefinition, TypeInfo {
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    // name of the complexType
+<b class="nc"><i>44</i>&nbsp;    String fName = null;</b>
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    // target namespace of the complexType
+<b class="nc"><i>47</i>&nbsp;    String fTargetNamespace = null;</b>
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    // base type of the complexType
+<b class="nc"><i>50</i>&nbsp;    XSTypeDefinition fBaseType = null;</b>
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    // derivation method of the complexType
+<b class="nc"><i>53</i>&nbsp;    short fDerivedBy = XSConstants.DERIVATION_RESTRICTION;</b>
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    // final set of the complexType
+<b class="nc"><i>56</i>&nbsp;    short fFinal = XSConstants.DERIVATION_NONE;</b>
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    // block set (prohibited substitution) of the complexType
+<b class="nc"><i>59</i>&nbsp;    short fBlock = XSConstants.DERIVATION_NONE;</b>
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    // flags: whether is abstract; whether contains ID type;
+<i>62</i>&nbsp;    //        whether it&#39;s an anonymous tpye
+<b class="nc"><i>63</i>&nbsp;    short fMiscFlags = 0;</b>
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    // the attribute group that holds the attribute uses and attribute wildcard
+<b class="nc"><i>66</i>&nbsp;    XSAttributeGroupDecl fAttrGrp = null;</b>
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    // the content type of the complexType
+<b class="nc"><i>69</i>&nbsp;    short fContentType = CONTENTTYPE_EMPTY;</b>
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    // if the content type is simple, then the corresponding simpleType
+<b class="nc"><i>72</i>&nbsp;    XSSimpleType fXSSimpleType = null;</b>
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    // if the content type is element or mixed, the particle
+<b class="nc"><i>75</i>&nbsp;    XSParticleDecl fParticle = null;</b>
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    // if there is a particle, the content model corresponding to that particle
+<b class="nc"><i>78</i>&nbsp;    volatile XSCMValidator fCMValidator = null;</b>
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    // the content model that&#39;s sufficient for computing UPA
+<b class="nc"><i>81</i>&nbsp;    XSCMValidator fUPACMValidator = null;</b>
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    // list of annotations affiliated with this type
+<b class="nc"><i>84</i>&nbsp;    XSObjectListImpl fAnnotations = null;</b>
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    // The namespace schema information item corresponding to the target namespace
+<i>87</i>&nbsp;    // of the complex type definition, if it is globally declared; or null otherwise.
+<b class="nc"><i>88</i>&nbsp;    private XSNamespaceItem fNamespaceItem = null;</b>
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    // DOM Level 3 TypeInfo Derivation Method constants
+<i>91</i>&nbsp;    static final int DERIVATION_ANY = 0;
+<i>92</i>&nbsp;    static final int DERIVATION_RESTRICTION = 1;
+<i>93</i>&nbsp;    static final int DERIVATION_EXTENSION = 2;
+<i>94</i>&nbsp;    static final int DERIVATION_UNION = 4;
+<i>95</i>&nbsp;    static final int DERIVATION_LIST = 8;
+<i>96</i>&nbsp;
+<b class="nc"><i>97</i>&nbsp;    public XSComplexTypeDecl() {</b>
+<i>98</i>&nbsp;        // do-nothing constructor for now.
+<i>99</i>&nbsp;    }
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;    public void setValues(String name, String targetNamespace,
+<i>102</i>&nbsp;            XSTypeDefinition baseType, short derivedBy, short schemaFinal,
+<i>103</i>&nbsp;            short block, short contentType,
+<i>104</i>&nbsp;            boolean isAbstract, XSAttributeGroupDecl attrGrp,
+<i>105</i>&nbsp;            XSSimpleType simpleType, XSParticleDecl particle,
+<i>106</i>&nbsp;            XSObjectListImpl annotations) {
+<b class="nc"><i>107</i>&nbsp;        fTargetNamespace = targetNamespace;</b>
+<b class="nc"><i>108</i>&nbsp;        fBaseType = baseType;</b>
+<b class="nc"><i>109</i>&nbsp;        fDerivedBy = derivedBy;</b>
+<b class="nc"><i>110</i>&nbsp;        fFinal = schemaFinal;</b>
+<b class="nc"><i>111</i>&nbsp;        fBlock = block;</b>
+<b class="nc"><i>112</i>&nbsp;        fContentType = contentType;</b>
+<b class="nc"><i>113</i>&nbsp;        if(isAbstract)</b>
+<b class="nc"><i>114</i>&nbsp;            fMiscFlags |= CT_IS_ABSTRACT;</b>
+<b class="nc"><i>115</i>&nbsp;        fAttrGrp = attrGrp;</b>
+<b class="nc"><i>116</i>&nbsp;        fXSSimpleType = simpleType;</b>
+<b class="nc"><i>117</i>&nbsp;        fParticle = particle;</b>
+<b class="nc"><i>118</i>&nbsp;        fAnnotations = annotations;</b>
+<i>119</i>&nbsp;   }
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;   public void setName(String name) {
+<b class="nc"><i>122</i>&nbsp;        fName = name;</b>
+<i>123</i>&nbsp;   }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    public short getTypeCategory() {
+<b class="nc"><i>126</i>&nbsp;        return COMPLEX_TYPE;</b>
+<i>127</i>&nbsp;    }
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;    public String getTypeName() {
+<b class="nc"><i>130</i>&nbsp;        return fName;</b>
+<i>131</i>&nbsp;    }
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;    public short getFinalSet(){
+<b class="nc"><i>134</i>&nbsp;        return fFinal;</b>
+<i>135</i>&nbsp;    }
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;    public String getTargetNamespace(){
+<b class="nc"><i>138</i>&nbsp;        return fTargetNamespace;</b>
+<i>139</i>&nbsp;    }
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;    // flags for the misc flag
+<i>142</i>&nbsp;    private static final short CT_IS_ABSTRACT = 1;
+<i>143</i>&nbsp;    private static final short CT_HAS_TYPE_ID = 2;
+<i>144</i>&nbsp;    private static final short CT_IS_ANONYMOUS = 4;
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;    // methods to get/set misc flag
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;    public boolean containsTypeID () {
+<b class="nc"><i>149</i>&nbsp;        return((fMiscFlags &amp; CT_HAS_TYPE_ID) != 0);</b>
+<i>150</i>&nbsp;    }
+<i>151</i>&nbsp;
+<i>152</i>&nbsp;    public void setIsAbstractType() {
+<b class="nc"><i>153</i>&nbsp;        fMiscFlags |= CT_IS_ABSTRACT;</b>
+<i>154</i>&nbsp;    }
+<i>155</i>&nbsp;    public void setContainsTypeID() {
+<b class="nc"><i>156</i>&nbsp;        fMiscFlags |= CT_HAS_TYPE_ID;</b>
+<i>157</i>&nbsp;    }
+<i>158</i>&nbsp;    public void setIsAnonymous() {
+<b class="nc"><i>159</i>&nbsp;        fMiscFlags |= CT_IS_ANONYMOUS;</b>
+<i>160</i>&nbsp;    }
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;    public XSCMValidator getContentModel(CMBuilder cmBuilder) {
+<i>163</i>&nbsp;        // for complex type with empty or simple content,
+<i>164</i>&nbsp;        // there is no content model validator
+<b class="nc"><i>165</i>&nbsp;        if (fContentType == XSComplexTypeDecl.CONTENTTYPE_SIMPLE ||</b>
+<i>166</i>&nbsp;            fContentType == XSComplexTypeDecl.CONTENTTYPE_EMPTY) {
+<b class="nc"><i>167</i>&nbsp;            return null;</b>
+<i>168</i>&nbsp;        }
+<b class="nc"><i>169</i>&nbsp;        if (fCMValidator == null)</b>
+<b class="nc"><i>170</i>&nbsp;            synchronized (this) {</b>
+<b class="nc"><i>171</i>&nbsp;                if (fCMValidator == null) {</b>
+<b class="nc"><i>172</i>&nbsp;                    fCMValidator = cmBuilder.getContentModel(this);</b>
+<i>173</i>&nbsp;                }
+<b class="nc"><i>174</i>&nbsp;            }</b>
+<b class="nc"><i>175</i>&nbsp;        return fCMValidator;</b>
+<i>176</i>&nbsp;    }
+<i>177</i>&nbsp;
+<i>178</i>&nbsp;    // some utility methods:
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;    // return the attribute group for this complex type
+<i>181</i>&nbsp;    public XSAttributeGroupDecl getAttrGrp() {
+<b class="nc"><i>182</i>&nbsp;        return fAttrGrp;</b>
+<i>183</i>&nbsp;    }
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;    public String toString() {
+<b class="nc"><i>186</i>&nbsp;        StringBuilder str = new StringBuilder(192);</b>
+<b class="nc"><i>187</i>&nbsp;        appendTypeInfo(str);</b>
+<b class="nc"><i>188</i>&nbsp;        return str.toString();</b>
+<i>189</i>&nbsp;    }
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;    void appendTypeInfo(StringBuilder str) {
+<b class="nc"><i>192</i>&nbsp;        String contentType[] = {&quot;EMPTY&quot;, &quot;SIMPLE&quot;, &quot;ELEMENT&quot;, &quot;MIXED&quot;};</b>
+<b class="nc"><i>193</i>&nbsp;        String derivedBy[] = {&quot;EMPTY&quot;, &quot;EXTENSION&quot;, &quot;RESTRICTION&quot;};</b>
+<i>194</i>&nbsp;
+<b class="nc"><i>195</i>&nbsp;        str.append(&quot;Complex type name=&#39;&quot;).append(fTargetNamespace).append(&#39;,&#39;).append(getTypeName()).append(&quot;&#39;, &quot;);</b>
+<b class="nc"><i>196</i>&nbsp;        if (fBaseType != null) {</b>
+<b class="nc"><i>197</i>&nbsp;            str.append(&quot; base type name=&#39;&quot;).append(fBaseType.getName()).append(&quot;&#39;, &quot;);</b>
+<i>198</i>&nbsp;        }
+<b class="nc"><i>199</i>&nbsp;        str.append(&quot; content type=&#39;&quot;).append(contentType[fContentType]).append(&quot;&#39;, &quot;);</b>
+<b class="nc"><i>200</i>&nbsp;        str.append(&quot; isAbstract=&#39;&quot;).append(getAbstract()).append(&quot;&#39;, &quot;);</b>
+<b class="nc"><i>201</i>&nbsp;        str.append(&quot; hasTypeId=&#39;&quot;).append(containsTypeID()).append(&quot;&#39;, &quot;);</b>
+<b class="nc"><i>202</i>&nbsp;        str.append(&quot; final=&#39;&quot;).append(fFinal).append(&quot;&#39;, &quot;);</b>
+<b class="nc"><i>203</i>&nbsp;        str.append(&quot; block=&#39;&quot;).append(fBlock).append(&quot;&#39;, &quot;);</b>
+<b class="nc"><i>204</i>&nbsp;        if (fParticle != null) {</b>
+<b class="nc"><i>205</i>&nbsp;            str.append(&quot; particle=&#39;&quot;).append(fParticle.toString()).append(&quot;&#39;, &quot;);</b>
+<i>206</i>&nbsp;        }
+<b class="nc"><i>207</i>&nbsp;        str.append(&quot; derivedBy=&#39;&quot;).append(derivedBy[fDerivedBy]).append(&quot;&#39;. &quot;);</b>
+<i>208</i>&nbsp;
+<i>209</i>&nbsp;    }
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;    public boolean derivedFromType(XSTypeDefinition ancestor, short derivationMethod) {
+<i>212</i>&nbsp;        // ancestor is null, retur false
+<b class="nc"><i>213</i>&nbsp;        if (ancestor == null)</b>
+<b class="nc"><i>214</i>&nbsp;            return false;</b>
+<i>215</i>&nbsp;        // ancestor is anyType, return true
+<b class="nc"><i>216</i>&nbsp;        if (ancestor == SchemaGrammar.fAnyType)</b>
+<b class="nc"><i>217</i>&nbsp;            return true;</b>
+<i>218</i>&nbsp;        // recursively get base, and compare it with ancestor
+<b class="nc"><i>219</i>&nbsp;        XSTypeDefinition type = this;</b>
+<b class="nc"><i>220</i>&nbsp;        while (type != ancestor &amp;&amp;                     // compare with ancestor</b>
+<i>221</i>&nbsp;               type != SchemaGrammar.fAnySimpleType &amp;&amp;  // reached anySimpleType
+<i>222</i>&nbsp;               type != SchemaGrammar.fAnyType) {        // reached anyType
+<b class="nc"><i>223</i>&nbsp;            type = type.getBaseType();</b>
+<i>224</i>&nbsp;        }
+<i>225</i>&nbsp;
+<b class="nc"><i>226</i>&nbsp;        return type == ancestor;</b>
+<i>227</i>&nbsp;    }
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;    public boolean derivedFrom(String ancestorNS, String ancestorName, short derivationMethod) {
+<i>230</i>&nbsp;        // ancestor is null, retur false
+<b class="nc"><i>231</i>&nbsp;        if (ancestorName == null)</b>
+<b class="nc"><i>232</i>&nbsp;            return false;</b>
+<i>233</i>&nbsp;        // ancestor is anyType, return true
+<b class="nc"><i>234</i>&nbsp;        if (ancestorNS != null &amp;&amp;</b>
+<b class="nc"><i>235</i>&nbsp;            ancestorNS.equals(SchemaSymbols.URI_SCHEMAFORSCHEMA) &amp;&amp;</b>
+<b class="nc"><i>236</i>&nbsp;            ancestorName.equals(SchemaSymbols.ATTVAL_ANYTYPE)) {</b>
+<b class="nc"><i>237</i>&nbsp;            return true;</b>
+<i>238</i>&nbsp;        }
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;        // recursively get base, and compare it with ancestor
+<b class="nc"><i>241</i>&nbsp;        XSTypeDefinition type = this;</b>
+<b class="nc"><i>242</i>&nbsp;        while (!(ancestorName.equals(type.getName()) &amp;&amp;</b>
+<b class="nc"><i>243</i>&nbsp;                 ((ancestorNS == null &amp;&amp; type.getNamespace() == null) ||</b>
+<b class="nc"><i>244</i>&nbsp;                  (ancestorNS != null &amp;&amp; ancestorNS.equals(type.getNamespace())))) &amp;&amp;   // compare with ancestor</b>
+<i>245</i>&nbsp;               type != SchemaGrammar.fAnySimpleType &amp;&amp;  // reached anySimpleType
+<i>246</i>&nbsp;               type != SchemaGrammar.fAnyType) {        // reached anyType
+<b class="nc"><i>247</i>&nbsp;            type = (XSTypeDefinition)type.getBaseType();</b>
+<i>248</i>&nbsp;        }
+<i>249</i>&nbsp;
+<b class="nc"><i>250</i>&nbsp;        return type != SchemaGrammar.fAnySimpleType &amp;&amp;</b>
+<i>251</i>&nbsp;        type != SchemaGrammar.fAnyType;
+<i>252</i>&nbsp;    }
+<i>253</i>&nbsp;
+<i>254</i>&nbsp;    /**
+<i>255</i>&nbsp;     * Checks if a type is derived from another given the the name, namespace
+<i>256</i>&nbsp;     * and derivation method. See:
+<i>257</i>&nbsp;     * http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/core.html#TypeInfo-isDerivedFrom
+<i>258</i>&nbsp;     *
+<i>259</i>&nbsp;     * @param ancestorNS
+<i>260</i>&nbsp;     *            The namspace of the ancestor type declaration
+<i>261</i>&nbsp;     * @param ancestorName
+<i>262</i>&nbsp;     *            The name of the ancestor type declaration
+<i>263</i>&nbsp;     * @param derivationMethod
+<i>264</i>&nbsp;     *            The derivation method
+<i>265</i>&nbsp;     *
+<i>266</i>&nbsp;     * @return boolean True if the ancestor type is derived from the reference
+<i>267</i>&nbsp;     *         type by the specifiied derivation method.
+<i>268</i>&nbsp;     */
+<i>269</i>&nbsp;    public boolean isDOMDerivedFrom(String ancestorNS, String ancestorName,
+<i>270</i>&nbsp;            int derivationMethod) {
+<i>271</i>&nbsp;        // ancestor is null, retur false
+<b class="nc"><i>272</i>&nbsp;        if (ancestorName == null)</b>
+<b class="nc"><i>273</i>&nbsp;            return false;</b>
+<i>274</i>&nbsp;
+<i>275</i>&nbsp;        // ancestor is anyType, return true
+<b class="nc"><i>276</i>&nbsp;        if (ancestorNS != null</b>
+<b class="nc"><i>277</i>&nbsp;                &amp;&amp; ancestorNS.equals(SchemaSymbols.URI_SCHEMAFORSCHEMA)</b>
+<b class="nc"><i>278</i>&nbsp;                &amp;&amp; ancestorName.equals(SchemaSymbols.ATTVAL_ANYTYPE)</b>
+<i>279</i>&nbsp;                &amp;&amp; (derivationMethod == DERIVATION_RESTRICTION
+<i>280</i>&nbsp;                &amp;&amp; derivationMethod == DERIVATION_EXTENSION)) {
+<b class="nc"><i>281</i>&nbsp;            return true;</b>
+<i>282</i>&nbsp;        }
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;        // restriction
+<b class="nc"><i>285</i>&nbsp;        if ((derivationMethod &amp; DERIVATION_RESTRICTION) != 0) {</b>
+<b class="nc"><i>286</i>&nbsp;            if (isDerivedByRestriction(ancestorNS, ancestorName,</b>
+<i>287</i>&nbsp;                    derivationMethod, this)) {
+<b class="nc"><i>288</i>&nbsp;                return true;</b>
+<i>289</i>&nbsp;            }
+<i>290</i>&nbsp;        }
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;        // extension
+<b class="nc"><i>293</i>&nbsp;        if ((derivationMethod &amp; DERIVATION_EXTENSION) != 0) {</b>
+<b class="nc"><i>294</i>&nbsp;            if (isDerivedByExtension(ancestorNS, ancestorName,</b>
+<i>295</i>&nbsp;                    derivationMethod, this)) {
+<b class="nc"><i>296</i>&nbsp;                return true;</b>
+<i>297</i>&nbsp;            }
+<i>298</i>&nbsp;        }
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;        // list or union
+<b class="nc"><i>301</i>&nbsp;        if ((((derivationMethod &amp; DERIVATION_LIST) != 0) || ((derivationMethod &amp; DERIVATION_UNION) != 0))</b>
+<i>302</i>&nbsp;                &amp;&amp; ((derivationMethod &amp; DERIVATION_RESTRICTION) == 0)
+<i>303</i>&nbsp;                &amp;&amp; ((derivationMethod &amp; DERIVATION_EXTENSION) == 0)) {
+<i>304</i>&nbsp;
+<b class="nc"><i>305</i>&nbsp;            if (ancestorNS.equals(SchemaSymbols.URI_SCHEMAFORSCHEMA)</b>
+<b class="nc"><i>306</i>&nbsp;                    &amp;&amp; ancestorName.equals(SchemaSymbols.ATTVAL_ANYTYPE)) {</b>
+<b class="nc"><i>307</i>&nbsp;                ancestorName = SchemaSymbols.ATTVAL_ANYSIMPLETYPE;</b>
+<i>308</i>&nbsp;            }
+<i>309</i>&nbsp;
+<b class="nc"><i>310</i>&nbsp;            if(!(fName.equals(SchemaSymbols.ATTVAL_ANYTYPE)</b>
+<b class="nc"><i>311</i>&nbsp;                            &amp;&amp; fTargetNamespace.equals(SchemaSymbols.URI_SCHEMAFORSCHEMA))){</b>
+<b class="nc"><i>312</i>&nbsp;                if (fBaseType != null &amp;&amp; fBaseType instanceof XSSimpleTypeDecl) {</b>
+<i>313</i>&nbsp;
+<b class="nc"><i>314</i>&nbsp;                    return ((XSSimpleTypeDecl) fBaseType).isDOMDerivedFrom(ancestorNS,</b>
+<i>315</i>&nbsp;                            ancestorName, derivationMethod);
+<b class="nc"><i>316</i>&nbsp;                } else if (fBaseType != null</b>
+<i>317</i>&nbsp;                        &amp;&amp; fBaseType instanceof XSComplexTypeDecl) {
+<b class="nc"><i>318</i>&nbsp;                    return ((XSComplexTypeDecl) fBaseType).isDOMDerivedFrom(</b>
+<i>319</i>&nbsp;                            ancestorNS, ancestorName, derivationMethod);
+<i>320</i>&nbsp;                }
+<i>321</i>&nbsp;            }
+<i>322</i>&nbsp;        }
+<i>323</i>&nbsp;
+<i>324</i>&nbsp;        // If the value of the parameter is 0 i.e. no bit (corresponding to
+<i>325</i>&nbsp;        // restriction, list, extension or union) is set to 1 for the
+<i>326</i>&nbsp;        // derivationMethod parameter.
+<b class="nc"><i>327</i>&nbsp;        if (((derivationMethod  &amp; DERIVATION_EXTENSION) == 0)</b>
+<i>328</i>&nbsp;                &amp;&amp; (((derivationMethod &amp; DERIVATION_RESTRICTION) == 0)
+<i>329</i>&nbsp;                        &amp;&amp; ((derivationMethod &amp; DERIVATION_LIST) == 0)
+<i>330</i>&nbsp;                        &amp;&amp; ((derivationMethod &amp; DERIVATION_UNION) == 0))) {
+<b class="nc"><i>331</i>&nbsp;            return isDerivedByAny(ancestorNS, ancestorName, derivationMethod, this);</b>
+<i>332</i>&nbsp;        }
+<i>333</i>&nbsp;
+<b class="nc"><i>334</i>&nbsp;        return false;</b>
+<i>335</i>&nbsp;    }
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;    /**
+<i>338</i>&nbsp;     * Checks if a type is derived from another by any combination of
+<i>339</i>&nbsp;     * restriction, list ir union. See:
+<i>340</i>&nbsp;     * http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/core.html#TypeInfo-isDerivedFrom
+<i>341</i>&nbsp;     *
+<i>342</i>&nbsp;     * @param ancestorNS
+<i>343</i>&nbsp;     *            The namspace of the ancestor type declaration
+<i>344</i>&nbsp;     * @param ancestorName
+<i>345</i>&nbsp;     *            The name of the ancestor type declaration
+<i>346</i>&nbsp;     * @param derivationMethod
+<i>347</i>&nbsp;     *            A short indication the method of derivation
+<i>348</i>&nbsp;     * @param type
+<i>349</i>&nbsp;     *            The reference type definition
+<i>350</i>&nbsp;     *
+<i>351</i>&nbsp;     * @return boolean True if the type is derived by any method for the
+<i>352</i>&nbsp;     *         reference type
+<i>353</i>&nbsp;     */
+<i>354</i>&nbsp;    private boolean isDerivedByAny(String ancestorNS, String ancestorName,
+<i>355</i>&nbsp;            int derivationMethod, XSTypeDefinition type) {
+<b class="nc"><i>356</i>&nbsp;        XSTypeDefinition oldType = null;</b>
+<b class="nc"><i>357</i>&nbsp;        boolean derivedFrom = false;</b>
+<b class="nc"><i>358</i>&nbsp;        while (type != null &amp;&amp; type != oldType) {</b>
+<i>359</i>&nbsp;
+<i>360</i>&nbsp;            // If the ancestor type is reached or is the same as this type.
+<b class="nc"><i>361</i>&nbsp;            if ((ancestorName.equals(type.getName()))</b>
+<b class="nc"><i>362</i>&nbsp;                    &amp;&amp; ((ancestorNS == null &amp;&amp; type.getNamespace() == null)</b>
+<b class="nc"><i>363</i>&nbsp;                        || (ancestorNS != null &amp;&amp; ancestorNS.equals(type.getNamespace())))) {</b>
+<b class="nc"><i>364</i>&nbsp;                derivedFrom = true;</b>
+<b class="nc"><i>365</i>&nbsp;                break;</b>
+<i>366</i>&nbsp;            }
+<i>367</i>&nbsp;
+<i>368</i>&nbsp;            // Check if this type is derived from the base by restriction or
+<i>369</i>&nbsp;            // extension
+<b class="nc"><i>370</i>&nbsp;            if (isDerivedByRestriction(ancestorNS, ancestorName,</b>
+<i>371</i>&nbsp;                    derivationMethod, type)) {
+<b class="nc"><i>372</i>&nbsp;                return true;</b>
+<b class="nc"><i>373</i>&nbsp;            } else if (!isDerivedByExtension(ancestorNS, ancestorName,</b>
+<i>374</i>&nbsp;                    derivationMethod, type)) {
+<b class="nc"><i>375</i>&nbsp;                return true;</b>
+<i>376</i>&nbsp;            }
+<b class="nc"><i>377</i>&nbsp;            oldType = type;</b>
+<b class="nc"><i>378</i>&nbsp;            type = type.getBaseType();</b>
+<i>379</i>&nbsp;        }
+<i>380</i>&nbsp;
+<b class="nc"><i>381</i>&nbsp;        return derivedFrom;</b>
+<i>382</i>&nbsp;    }
+<i>383</i>&nbsp;
+<i>384</i>&nbsp;    /**
+<i>385</i>&nbsp;     * Checks if a type is derived from another by restriction. See:
+<i>386</i>&nbsp;     * http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/core.html#TypeInfo-isDerivedFrom
+<i>387</i>&nbsp;     *
+<i>388</i>&nbsp;     * @param ancestorNS
+<i>389</i>&nbsp;     *            The namspace of the ancestor type declaration
+<i>390</i>&nbsp;     * @param ancestorName
+<i>391</i>&nbsp;     *            The name of the ancestor type declaration
+<i>392</i>&nbsp;     * @param derivationMethod
+<i>393</i>&nbsp;     *            A short indication the method of derivation *
+<i>394</i>&nbsp;     * @param type
+<i>395</i>&nbsp;     *            The reference type definition
+<i>396</i>&nbsp;     *
+<i>397</i>&nbsp;     * @return boolean True if the type is derived by restriciton for the
+<i>398</i>&nbsp;     *         reference type
+<i>399</i>&nbsp;     */
+<i>400</i>&nbsp;    private boolean isDerivedByRestriction(String ancestorNS,
+<i>401</i>&nbsp;            String ancestorName, int derivationMethod, XSTypeDefinition type) {
+<i>402</i>&nbsp;
+<b class="nc"><i>403</i>&nbsp;        XSTypeDefinition oldType = null;</b>
+<b class="nc"><i>404</i>&nbsp;        while (type != null &amp;&amp; type != oldType) {</b>
+<i>405</i>&nbsp;
+<i>406</i>&nbsp;            // ancestor is anySimpleType, return false
+<b class="nc"><i>407</i>&nbsp;            if (ancestorNS != null</b>
+<b class="nc"><i>408</i>&nbsp;                    &amp;&amp; ancestorNS.equals(SchemaSymbols.URI_SCHEMAFORSCHEMA)</b>
+<b class="nc"><i>409</i>&nbsp;                    &amp;&amp; ancestorName.equals(SchemaSymbols.ATTVAL_ANYSIMPLETYPE)) {</b>
+<b class="nc"><i>410</i>&nbsp;                return false;</b>
+<i>411</i>&nbsp;            }
+<i>412</i>&nbsp;
+<i>413</i>&nbsp;            // if the name and namespace of this type is the same as the
+<i>414</i>&nbsp;            // ancestor return true
+<b class="nc"><i>415</i>&nbsp;            if ((ancestorName.equals(type.getName()))</b>
+<b class="nc"><i>416</i>&nbsp;                    &amp;&amp; (ancestorNS != null &amp;&amp; ancestorNS.equals(type.getNamespace()))</b>
+<b class="nc"><i>417</i>&nbsp;                            || ((type.getNamespace() == null &amp;&amp; ancestorNS == null))) {</b>
+<i>418</i>&nbsp;
+<b class="nc"><i>419</i>&nbsp;                return true;</b>
+<i>420</i>&nbsp;            }
+<i>421</i>&nbsp;
+<i>422</i>&nbsp;            // If the base type is a complexType with simpleContent
+<b class="nc"><i>423</i>&nbsp;            if (type instanceof XSSimpleTypeDecl) {</b>
+<b class="nc"><i>424</i>&nbsp;                if (ancestorNS.equals(SchemaSymbols.URI_SCHEMAFORSCHEMA)</b>
+<b class="nc"><i>425</i>&nbsp;                        &amp;&amp; ancestorName.equals(SchemaSymbols.ATTVAL_ANYTYPE)) {</b>
+<b class="nc"><i>426</i>&nbsp;                    ancestorName = SchemaSymbols.ATTVAL_ANYSIMPLETYPE;</b>
+<i>427</i>&nbsp;                }
+<b class="nc"><i>428</i>&nbsp;                return ((XSSimpleTypeDecl) type).isDOMDerivedFrom(ancestorNS,</b>
+<i>429</i>&nbsp;                        ancestorName, derivationMethod);
+<i>430</i>&nbsp;            } else {
+<i>431</i>&nbsp;                // If the base type is a complex type
+<i>432</i>&nbsp;                // Every derivation step till the base type should be
+<i>433</i>&nbsp;                // restriction. If not return false
+<b class="nc"><i>434</i>&nbsp;                if (((XSComplexTypeDecl) type).getDerivationMethod() != XSConstants.DERIVATION_RESTRICTION) {</b>
+<b class="nc"><i>435</i>&nbsp;                    return false;</b>
+<i>436</i>&nbsp;                }
+<i>437</i>&nbsp;            }
+<b class="nc"><i>438</i>&nbsp;            oldType = type;</b>
+<b class="nc"><i>439</i>&nbsp;            type = type.getBaseType();</b>
+<i>440</i>&nbsp;
+<i>441</i>&nbsp;        }
+<i>442</i>&nbsp;
+<b class="nc"><i>443</i>&nbsp;        return false;</b>
+<i>444</i>&nbsp;    }
+<i>445</i>&nbsp;
+<i>446</i>&nbsp;    /**
+<i>447</i>&nbsp;     * Checks if a type is derived from another by extension. See:
+<i>448</i>&nbsp;     * http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/core.html#TypeInfo-isDerivedFrom
+<i>449</i>&nbsp;     *
+<i>450</i>&nbsp;     * @param ancestorNS
+<i>451</i>&nbsp;     *            The namspace of the ancestor type declaration
+<i>452</i>&nbsp;     * @param ancestorName
+<i>453</i>&nbsp;     *            The name of the ancestor type declaration
+<i>454</i>&nbsp;     * @param derivationMethod
+<i>455</i>&nbsp;     *            A short indication the method of derivation
+<i>456</i>&nbsp;     * @param type
+<i>457</i>&nbsp;     *            The reference type definition
+<i>458</i>&nbsp;     *
+<i>459</i>&nbsp;     * @return boolean True if the type is derived by extension for the
+<i>460</i>&nbsp;     *         reference type
+<i>461</i>&nbsp;     */
+<i>462</i>&nbsp;    private boolean isDerivedByExtension(String ancestorNS,
+<i>463</i>&nbsp;            String ancestorName, int derivationMethod, XSTypeDefinition type) {
+<i>464</i>&nbsp;
+<b class="nc"><i>465</i>&nbsp;        boolean extension = false;</b>
+<b class="nc"><i>466</i>&nbsp;        XSTypeDefinition oldType = null;</b>
+<b class="nc"><i>467</i>&nbsp;        while (type != null &amp;&amp; type != oldType) {</b>
+<i>468</i>&nbsp;            // If ancestor is anySimpleType return false.
+<b class="nc"><i>469</i>&nbsp;            if (ancestorNS != null</b>
+<b class="nc"><i>470</i>&nbsp;                    &amp;&amp; ancestorNS.equals(SchemaSymbols.URI_SCHEMAFORSCHEMA)</b>
+<b class="nc"><i>471</i>&nbsp;                    &amp;&amp; ancestorName.equals(SchemaSymbols.ATTVAL_ANYSIMPLETYPE)</b>
+<b class="nc"><i>472</i>&nbsp;                    &amp;&amp; SchemaSymbols.URI_SCHEMAFORSCHEMA.equals(type.getNamespace())</b>
+<b class="nc"><i>473</i>&nbsp;                            &amp;&amp; SchemaSymbols.ATTVAL_ANYTYPE.equals(type.getName())) {</b>
+<b class="nc"><i>474</i>&nbsp;                break;</b>
+<i>475</i>&nbsp;            }
+<i>476</i>&nbsp;
+<b class="nc"><i>477</i>&nbsp;            if ((ancestorName.equals(type.getName()))</b>
+<b class="nc"><i>478</i>&nbsp;                    &amp;&amp; ((ancestorNS == null &amp;&amp; type.getNamespace() == null)</b>
+<b class="nc"><i>479</i>&nbsp;                        || (ancestorNS != null &amp;&amp; ancestorNS.equals(type.getNamespace())))) {</b>
+<i>480</i>&nbsp;                // returns true if atleast one derivation step was extension
+<b class="nc"><i>481</i>&nbsp;                return extension;</b>
+<i>482</i>&nbsp;            }
+<i>483</i>&nbsp;
+<i>484</i>&nbsp;            // If the base type is a complexType with simpleContent
+<b class="nc"><i>485</i>&nbsp;            if (type instanceof XSSimpleTypeDecl) {</b>
+<b class="nc"><i>486</i>&nbsp;                if (ancestorNS.equals(SchemaSymbols.URI_SCHEMAFORSCHEMA)</b>
+<b class="nc"><i>487</i>&nbsp;                        &amp;&amp; ancestorName.equals(SchemaSymbols.ATTVAL_ANYTYPE)) {</b>
+<b class="nc"><i>488</i>&nbsp;                    ancestorName = SchemaSymbols.ATTVAL_ANYSIMPLETYPE;</b>
+<i>489</i>&nbsp;                }
+<i>490</i>&nbsp;
+<i>491</i>&nbsp;                // derivationMethod extension will always return false for a
+<i>492</i>&nbsp;                // simpleType,
+<i>493</i>&nbsp;                // we treat it like a restriction
+<b class="nc"><i>494</i>&nbsp;                if ((derivationMethod &amp; DERIVATION_EXTENSION) != 0) {</b>
+<b class="nc"><i>495</i>&nbsp;                    return extension</b>
+<b class="nc"><i>496</i>&nbsp;                    &amp; ((XSSimpleTypeDecl) type).isDOMDerivedFrom(</b>
+<i>497</i>&nbsp;                            ancestorNS, ancestorName,
+<i>498</i>&nbsp;                            (derivationMethod &amp; DERIVATION_RESTRICTION));
+<i>499</i>&nbsp;                } else {
+<b class="nc"><i>500</i>&nbsp;                    return extension</b>
+<b class="nc"><i>501</i>&nbsp;                    &amp; ((XSSimpleTypeDecl) type).isDOMDerivedFrom(</b>
+<i>502</i>&nbsp;                            ancestorNS, ancestorName, derivationMethod);
+<i>503</i>&nbsp;                }
+<i>504</i>&nbsp;
+<i>505</i>&nbsp;            } else {
+<i>506</i>&nbsp;                // If the base type is a complex type
+<i>507</i>&nbsp;                // At least one derivation step upto the ancestor type should be
+<i>508</i>&nbsp;                // extension.
+<b class="nc"><i>509</i>&nbsp;                if (((XSComplexTypeDecl) type).getDerivationMethod() == XSConstants.DERIVATION_EXTENSION) {</b>
+<b class="nc"><i>510</i>&nbsp;                    extension = extension | true;</b>
+<i>511</i>&nbsp;                }
+<i>512</i>&nbsp;            }
+<b class="nc"><i>513</i>&nbsp;            oldType = type;</b>
+<b class="nc"><i>514</i>&nbsp;            type = type.getBaseType();</b>
+<i>515</i>&nbsp;        }
+<i>516</i>&nbsp;
+<b class="nc"><i>517</i>&nbsp;        return false;</b>
+<i>518</i>&nbsp;    }
+<i>519</i>&nbsp;
+<i>520</i>&nbsp;
+<i>521</i>&nbsp;
+<i>522</i>&nbsp;    public void reset(){
+<b class="nc"><i>523</i>&nbsp;        fName = null;</b>
+<b class="nc"><i>524</i>&nbsp;        fTargetNamespace = null;</b>
+<b class="nc"><i>525</i>&nbsp;        fBaseType = null;</b>
+<b class="nc"><i>526</i>&nbsp;        fDerivedBy = XSConstants.DERIVATION_RESTRICTION;</b>
+<b class="nc"><i>527</i>&nbsp;        fFinal = XSConstants.DERIVATION_NONE;</b>
+<b class="nc"><i>528</i>&nbsp;        fBlock = XSConstants.DERIVATION_NONE;</b>
+<i>529</i>&nbsp;
+<b class="nc"><i>530</i>&nbsp;        fMiscFlags = 0;</b>
+<i>531</i>&nbsp;
+<i>532</i>&nbsp;        // reset attribute group
+<b class="nc"><i>533</i>&nbsp;        fAttrGrp.reset();</b>
+<b class="nc"><i>534</i>&nbsp;        fContentType = CONTENTTYPE_EMPTY;</b>
+<b class="nc"><i>535</i>&nbsp;        fXSSimpleType = null;</b>
+<b class="nc"><i>536</i>&nbsp;        fParticle = null;</b>
+<b class="nc"><i>537</i>&nbsp;        fCMValidator = null;</b>
+<b class="nc"><i>538</i>&nbsp;        fUPACMValidator = null;</b>
+<b class="nc"><i>539</i>&nbsp;        if(fAnnotations != null) {</b>
+<i>540</i>&nbsp;            // help out the garbage collector
+<b class="nc"><i>541</i>&nbsp;            fAnnotations.clearXSObjectList();</b>
+<i>542</i>&nbsp;        }
+<b class="nc"><i>543</i>&nbsp;        fAnnotations = null;</b>
+<i>544</i>&nbsp;    }
+<i>545</i>&nbsp;
+<i>546</i>&nbsp;    /**
+<i>547</i>&nbsp;     * Get the type of the object, i.e ELEMENT_DECLARATION.
+<i>548</i>&nbsp;     */
+<i>549</i>&nbsp;    public short getType() {
+<b class="nc"><i>550</i>&nbsp;        return XSConstants.TYPE_DEFINITION;</b>
+<i>551</i>&nbsp;    }
+<i>552</i>&nbsp;
+<i>553</i>&nbsp;    /**
+<i>554</i>&nbsp;     * The &lt;code&gt;name&lt;/code&gt; of this &lt;code&gt;XSObject&lt;/code&gt; depending on the
+<i>555</i>&nbsp;     * &lt;code&gt;XSObject&lt;/code&gt; type.
+<i>556</i>&nbsp;     */
+<i>557</i>&nbsp;    public String getName() {
+<b class="nc"><i>558</i>&nbsp;        return getAnonymous() ? null : fName;</b>
+<i>559</i>&nbsp;    }
+<i>560</i>&nbsp;
+<i>561</i>&nbsp;    /**
+<i>562</i>&nbsp;     * A boolean that specifies if the type definition is anonymous.
+<i>563</i>&nbsp;     * Convenience attribute. This is a field is not part of
+<i>564</i>&nbsp;     * XML Schema component model.
+<i>565</i>&nbsp;     */
+<i>566</i>&nbsp;    public boolean getAnonymous() {
+<b class="nc"><i>567</i>&nbsp;        return((fMiscFlags &amp; CT_IS_ANONYMOUS) != 0);</b>
+<i>568</i>&nbsp;    }
+<i>569</i>&nbsp;
+<i>570</i>&nbsp;    /**
+<i>571</i>&nbsp;     * The namespace URI of this node, or &lt;code&gt;null&lt;/code&gt; if it is
+<i>572</i>&nbsp;     * unspecified.  defines how a namespace URI is attached to schema
+<i>573</i>&nbsp;     * components.
+<i>574</i>&nbsp;     */
+<i>575</i>&nbsp;    public String getNamespace() {
+<b class="nc"><i>576</i>&nbsp;        return fTargetNamespace;</b>
+<i>577</i>&nbsp;    }
+<i>578</i>&nbsp;
+<i>579</i>&nbsp;    /**
+<i>580</i>&nbsp;     * {base type definition} Either a simple type definition or a complex
+<i>581</i>&nbsp;     * type definition.
+<i>582</i>&nbsp;     */
+<i>583</i>&nbsp;    public XSTypeDefinition getBaseType() {
+<b class="nc"><i>584</i>&nbsp;        return fBaseType;</b>
+<i>585</i>&nbsp;    }
+<i>586</i>&nbsp;
+<i>587</i>&nbsp;    /**
+<i>588</i>&nbsp;     * {derivation method} Either extension or restriction. The valid constant
+<i>589</i>&nbsp;     * value for this &lt;code&gt;XSConstants&lt;/code&gt; EXTENTION, RESTRICTION.
+<i>590</i>&nbsp;     */
+<i>591</i>&nbsp;    public short getDerivationMethod() {
+<b class="nc"><i>592</i>&nbsp;        return fDerivedBy;</b>
+<i>593</i>&nbsp;    }
+<i>594</i>&nbsp;
+<i>595</i>&nbsp;    /**
+<i>596</i>&nbsp;     * {final} For complex type definition it is a subset of {extension,
+<i>597</i>&nbsp;     * restriction}. For simple type definition it is a subset of
+<i>598</i>&nbsp;     * {extension, list, restriction, union}.
+<i>599</i>&nbsp;     * @param derivation  Extension, restriction, list, union constants
+<i>600</i>&nbsp;     *   (defined in &lt;code&gt;XSConstants&lt;/code&gt;).
+<i>601</i>&nbsp;     * @return True if derivation is in the final set, otherwise false.
+<i>602</i>&nbsp;     */
+<i>603</i>&nbsp;    public boolean isFinal(short derivation) {
+<b class="nc"><i>604</i>&nbsp;        return (fFinal &amp; derivation) != 0;</b>
+<i>605</i>&nbsp;    }
+<i>606</i>&nbsp;
+<i>607</i>&nbsp;    /**
+<i>608</i>&nbsp;     * {final} For complex type definition it is a subset of {extension, restriction}.
+<i>609</i>&nbsp;     *
+<i>610</i>&nbsp;     * @return A bit flag that represents:
+<i>611</i>&nbsp;     *         {extension, restriction) or none for complexTypes;
+<i>612</i>&nbsp;     *         {extension, list, restriction, union} or none for simpleTypes;
+<i>613</i>&nbsp;     */
+<i>614</i>&nbsp;    public short getFinal() {
+<b class="nc"><i>615</i>&nbsp;        return fFinal;</b>
+<i>616</i>&nbsp;    }
+<i>617</i>&nbsp;
+<i>618</i>&nbsp;    /**
+<i>619</i>&nbsp;     * {abstract} A boolean. Complex types for which {abstract} is true must
+<i>620</i>&nbsp;     * not be used as the {type definition} for the validation of element
+<i>621</i>&nbsp;     * information items.
+<i>622</i>&nbsp;     */
+<i>623</i>&nbsp;    public boolean getAbstract() {
+<b class="nc"><i>624</i>&nbsp;        return((fMiscFlags &amp; CT_IS_ABSTRACT) != 0);</b>
+<i>625</i>&nbsp;    }
+<i>626</i>&nbsp;
+<i>627</i>&nbsp;    /**
+<i>628</i>&nbsp;     *  {attribute uses} A set of attribute uses.
+<i>629</i>&nbsp;     */
+<i>630</i>&nbsp;    public XSObjectList getAttributeUses() {
+<b class="nc"><i>631</i>&nbsp;        return fAttrGrp.getAttributeUses();</b>
+<i>632</i>&nbsp;    }
+<i>633</i>&nbsp;
+<i>634</i>&nbsp;    /**
+<i>635</i>&nbsp;     * {attribute wildcard} Optional. A wildcard.
+<i>636</i>&nbsp;     */
+<i>637</i>&nbsp;    public XSWildcard getAttributeWildcard() {
+<b class="nc"><i>638</i>&nbsp;        return fAttrGrp.getAttributeWildcard();</b>
+<i>639</i>&nbsp;    }
+<i>640</i>&nbsp;
+<i>641</i>&nbsp;    /**
+<i>642</i>&nbsp;     * {content type} One of empty, a simple type definition (see
+<i>643</i>&nbsp;     * &lt;code&gt;simpleType&lt;/code&gt;, or mixed, element-only (see
+<i>644</i>&nbsp;     * &lt;code&gt;cmParticle&lt;/code&gt;).
+<i>645</i>&nbsp;     */
+<i>646</i>&nbsp;    public short getContentType() {
+<b class="nc"><i>647</i>&nbsp;        return fContentType;</b>
+<i>648</i>&nbsp;    }
+<i>649</i>&nbsp;
+<i>650</i>&nbsp;    /**
+<i>651</i>&nbsp;     * A simple type definition corresponding to simple content model,
+<i>652</i>&nbsp;     * otherwise &lt;code&gt;null&lt;/code&gt;
+<i>653</i>&nbsp;     */
+<i>654</i>&nbsp;    public XSSimpleTypeDefinition getSimpleType() {
+<b class="nc"><i>655</i>&nbsp;        return fXSSimpleType;</b>
+<i>656</i>&nbsp;    }
+<i>657</i>&nbsp;
+<i>658</i>&nbsp;    /**
+<i>659</i>&nbsp;     * A particle for mixed or element-only content model, otherwise
+<i>660</i>&nbsp;     * &lt;code&gt;null&lt;/code&gt;
+<i>661</i>&nbsp;     */
+<i>662</i>&nbsp;    public XSParticle getParticle() {
+<b class="nc"><i>663</i>&nbsp;        return fParticle;</b>
+<i>664</i>&nbsp;    }
+<i>665</i>&nbsp;
+<i>666</i>&nbsp;    /**
+<i>667</i>&nbsp;     * {prohibited substitutions} A subset of {extension, restriction}.
+<i>668</i>&nbsp;     * @param prohibited  extention or restriction constants (defined in
+<i>669</i>&nbsp;     *   &lt;code&gt;XSConstants&lt;/code&gt;).
+<i>670</i>&nbsp;     * @return True if prohibited is a prohibited substitution, otherwise
+<i>671</i>&nbsp;     *   false.
+<i>672</i>&nbsp;     */
+<i>673</i>&nbsp;    public boolean isProhibitedSubstitution(short prohibited) {
+<b class="nc"><i>674</i>&nbsp;        return (fBlock &amp; prohibited) != 0;</b>
+<i>675</i>&nbsp;    }
+<i>676</i>&nbsp;
+<i>677</i>&nbsp;    /**
+<i>678</i>&nbsp;     * {prohibited substitutions}
+<i>679</i>&nbsp;     *
+<i>680</i>&nbsp;     * @return A bit flag corresponding to prohibited substitutions
+<i>681</i>&nbsp;     */
+<i>682</i>&nbsp;    public short getProhibitedSubstitutions() {
+<b class="nc"><i>683</i>&nbsp;        return fBlock;</b>
+<i>684</i>&nbsp;    }
+<i>685</i>&nbsp;
+<i>686</i>&nbsp;    /**
+<i>687</i>&nbsp;     * Optional. Annotation.
+<i>688</i>&nbsp;     */
+<i>689</i>&nbsp;    public XSObjectList getAnnotations() {
+<b class="nc"><i>690</i>&nbsp;        return (fAnnotations != null) ? fAnnotations : XSObjectListImpl.EMPTY_LIST;</b>
+<i>691</i>&nbsp;    }
+<i>692</i>&nbsp;
+<i>693</i>&nbsp;    /**
+<i>694</i>&nbsp;     * @see org.apache.xerces.xs.XSObject#getNamespaceItem()
+<i>695</i>&nbsp;     */
+<i>696</i>&nbsp;    public XSNamespaceItem getNamespaceItem() {
+<b class="nc"><i>697</i>&nbsp;        return fNamespaceItem;</b>
+<i>698</i>&nbsp;    }
+<i>699</i>&nbsp;
+<i>700</i>&nbsp;    void setNamespaceItem(XSNamespaceItem namespaceItem) {
+<b class="nc"><i>701</i>&nbsp;        fNamespaceItem = namespaceItem;</b>
+<i>702</i>&nbsp;    }
+<i>703</i>&nbsp;
+<i>704</i>&nbsp;    /* (non-Javadoc)
+<i>705</i>&nbsp;     * @see org.apache.xerces.xs.XSComplexTypeDefinition#getAttributeUse(java.lang.String, java.lang.String)
+<i>706</i>&nbsp;     */
+<i>707</i>&nbsp;    public XSAttributeUse getAttributeUse(String namespace, String name) {
+<b class="nc"><i>708</i>&nbsp;         return fAttrGrp.getAttributeUse(namespace, name);</b>
+<i>709</i>&nbsp;    }
+<i>710</i>&nbsp;
+<i>711</i>&nbsp;    public String getTypeNamespace() {
+<b class="nc"><i>712</i>&nbsp;        return getNamespace();</b>
+<i>713</i>&nbsp;    }
+<i>714</i>&nbsp;
+<i>715</i>&nbsp;    public boolean isDerivedFrom(String typeNamespaceArg, String typeNameArg, int derivationMethod) {
+<b class="nc"><i>716</i>&nbsp;        return isDOMDerivedFrom(typeNamespaceArg, typeNameArg, derivationMethod);</b>
+<i>717</i>&nbsp;    }
+<i>718</i>&nbsp;
+<i>719</i>&nbsp;} // class XSComplexTypeDecl
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:55</div>
+</div>
+</body>
+</html>

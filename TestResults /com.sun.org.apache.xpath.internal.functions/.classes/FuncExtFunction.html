@@ -1,0 +1,451 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: FuncExtFunction</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xpath.internal.functions</a> ]
+</div>
+
+<h1>Coverage Summary for Class: FuncExtFunction (com.sun.org.apache.xpath.internal.functions)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FuncExtFunction</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 49)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">FuncExtFunction$ArgExtOwner</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 54)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: FuncExtFunction.java,v 1.2.4.2 2005/09/14 20:18:43 jeffsuttor Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xpath.internal.functions;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.util.Vector;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import com.sun.org.apache.xalan.internal.res.XSLMessages;
+<i>28</i>&nbsp;import com.sun.org.apache.xpath.internal.Expression;
+<i>29</i>&nbsp;import com.sun.org.apache.xpath.internal.ExpressionNode;
+<i>30</i>&nbsp;import com.sun.org.apache.xpath.internal.ExpressionOwner;
+<i>31</i>&nbsp;import com.sun.org.apache.xpath.internal.ExtensionsProvider;
+<i>32</i>&nbsp;import com.sun.org.apache.xpath.internal.XPathContext;
+<i>33</i>&nbsp;import com.sun.org.apache.xpath.internal.XPathVisitor;
+<i>34</i>&nbsp;import com.sun.org.apache.xpath.internal.objects.XNull;
+<i>35</i>&nbsp;import com.sun.org.apache.xpath.internal.objects.XObject;
+<i>36</i>&nbsp;import com.sun.org.apache.xpath.internal.res.XPATHErrorResources;
+<i>37</i>&nbsp;import com.sun.org.apache.xpath.internal.res.XPATHMessages;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**
+<i>40</i>&nbsp; * An object of this class represents an extension call expression.  When
+<i>41</i>&nbsp; * the expression executes, it calls ExtensionsTable#extFunction, and then
+<i>42</i>&nbsp; * converts the result to the appropriate XObject.
+<i>43</i>&nbsp; * @xsl.usage advanced
+<i>44</i>&nbsp; */
+<i>45</i>&nbsp;public class FuncExtFunction extends Function
+<i>46</i>&nbsp;{
+<i>47</i>&nbsp;    static final long serialVersionUID = 5196115554693708718L;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;  /**
+<i>50</i>&nbsp;   * The namespace for the extension function, which should not normally
+<i>51</i>&nbsp;   *  be null or empty.
+<i>52</i>&nbsp;   *  @serial
+<i>53</i>&nbsp;   */
+<i>54</i>&nbsp;  String m_namespace;
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;  /**
+<i>57</i>&nbsp;   * The local name of the extension.
+<i>58</i>&nbsp;   *  @serial
+<i>59</i>&nbsp;   */
+<i>60</i>&nbsp;  String m_extensionName;
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;  /**
+<i>63</i>&nbsp;   * Unique method key, which is passed to ExtensionsTable#extFunction in
+<i>64</i>&nbsp;   *  order to allow caching of the method.
+<i>65</i>&nbsp;   *  @serial
+<i>66</i>&nbsp;   */
+<i>67</i>&nbsp;  Object m_methodKey;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;  /**
+<i>70</i>&nbsp;   * Array of static expressions which represent the parameters to the
+<i>71</i>&nbsp;   *  function.
+<i>72</i>&nbsp;   *  @serial
+<i>73</i>&nbsp;   */
+<b class="nc"><i>74</i>&nbsp;  Vector m_argVec = new Vector();</b>
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;  /**
+<i>77</i>&nbsp;   * This function is used to fixup variables from QNames to stack frame
+<i>78</i>&nbsp;   * indexes at stylesheet build time.
+<i>79</i>&nbsp;   * @param vars List of QNames that correspond to variables.  This list
+<i>80</i>&nbsp;   * should be searched backwards for the first qualified name that
+<i>81</i>&nbsp;   * corresponds to the variable reference qname.  The position of the
+<i>82</i>&nbsp;   * QName in the vector from the start of the vector will be its position
+<i>83</i>&nbsp;   * in the stack frame (but variables above the globalsTop value will need
+<i>84</i>&nbsp;   * to be offset to the current stack frame).
+<i>85</i>&nbsp;   * NEEDSDOC @param globalsSize
+<i>86</i>&nbsp;   */
+<i>87</i>&nbsp;  public void fixupVariables(java.util.Vector vars, int globalsSize)
+<i>88</i>&nbsp;  {
+<i>89</i>&nbsp;
+<b class="nc"><i>90</i>&nbsp;    if (null != m_argVec)</b>
+<i>91</i>&nbsp;    {
+<b class="nc"><i>92</i>&nbsp;      int nArgs = m_argVec.size();</b>
+<i>93</i>&nbsp;
+<b class="nc"><i>94</i>&nbsp;      for (int i = 0; i &lt; nArgs; i++)</b>
+<i>95</i>&nbsp;      {
+<b class="nc"><i>96</i>&nbsp;        Expression arg = (Expression) m_argVec.elementAt(i);</b>
+<i>97</i>&nbsp;
+<b class="nc"><i>98</i>&nbsp;        arg.fixupVariables(vars, globalsSize);</b>
+<i>99</i>&nbsp;      }
+<i>100</i>&nbsp;    }
+<i>101</i>&nbsp;  }
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;  /**
+<i>104</i>&nbsp;   * Return the namespace of the extension function.
+<i>105</i>&nbsp;   *
+<i>106</i>&nbsp;   * @return The namespace of the extension function.
+<i>107</i>&nbsp;   */
+<i>108</i>&nbsp;  public String getNamespace()
+<i>109</i>&nbsp;  {
+<b class="nc"><i>110</i>&nbsp;    return m_namespace;</b>
+<i>111</i>&nbsp;  }
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;  /**
+<i>114</i>&nbsp;   * Return the name of the extension function.
+<i>115</i>&nbsp;   *
+<i>116</i>&nbsp;   * @return The name of the extension function.
+<i>117</i>&nbsp;   */
+<i>118</i>&nbsp;  public String getFunctionName()
+<i>119</i>&nbsp;  {
+<b class="nc"><i>120</i>&nbsp;    return m_extensionName;</b>
+<i>121</i>&nbsp;  }
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;  /**
+<i>124</i>&nbsp;   * Return the method key of the extension function.
+<i>125</i>&nbsp;   *
+<i>126</i>&nbsp;   * @return The method key of the extension function.
+<i>127</i>&nbsp;   */
+<i>128</i>&nbsp;  public Object getMethodKey()
+<i>129</i>&nbsp;  {
+<b class="nc"><i>130</i>&nbsp;    return m_methodKey;</b>
+<i>131</i>&nbsp;  }
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;  /**
+<i>134</i>&nbsp;   * Return the nth argument passed to the extension function.
+<i>135</i>&nbsp;   *
+<i>136</i>&nbsp;   * @param n The argument number index.
+<i>137</i>&nbsp;   * @return The Expression object at the given index.
+<i>138</i>&nbsp;   */
+<i>139</i>&nbsp;  public Expression getArg(int n) {
+<b class="nc"><i>140</i>&nbsp;    if (n &gt;= 0 &amp;&amp; n &lt; m_argVec.size())</b>
+<b class="nc"><i>141</i>&nbsp;      return (Expression) m_argVec.elementAt(n);</b>
+<i>142</i>&nbsp;    else
+<b class="nc"><i>143</i>&nbsp;      return null;</b>
+<i>144</i>&nbsp;  }
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;  /**
+<i>147</i>&nbsp;   * Return the number of arguments that were passed
+<i>148</i>&nbsp;   * into this extension function.
+<i>149</i>&nbsp;   *
+<i>150</i>&nbsp;   * @return The number of arguments.
+<i>151</i>&nbsp;   */
+<i>152</i>&nbsp;  public int getArgCount() {
+<b class="nc"><i>153</i>&nbsp;    return m_argVec.size();</b>
+<i>154</i>&nbsp;  }
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;  /**
+<i>157</i>&nbsp;   * Create a new FuncExtFunction based on the qualified name of the extension,
+<i>158</i>&nbsp;   * and a unique method key.
+<i>159</i>&nbsp;   *
+<i>160</i>&nbsp;   * @param namespace The namespace for the extension function, which should
+<i>161</i>&nbsp;   *                  not normally be null or empty.
+<i>162</i>&nbsp;   * @param extensionName The local name of the extension.
+<i>163</i>&nbsp;   * @param methodKey Unique method key, which is passed to
+<i>164</i>&nbsp;   *                  ExtensionsTable#extFunction in order to allow caching
+<i>165</i>&nbsp;   *                  of the method.
+<i>166</i>&nbsp;   */
+<i>167</i>&nbsp;  public FuncExtFunction(java.lang.String namespace,
+<i>168</i>&nbsp;                         java.lang.String extensionName, Object methodKey)
+<b class="nc"><i>169</i>&nbsp;  {</b>
+<i>170</i>&nbsp;    //try{throw new Exception(&quot;FuncExtFunction() &quot; + namespace + &quot; &quot; + extensionName);} catch (Exception e){e.printStackTrace();}
+<b class="nc"><i>171</i>&nbsp;    m_namespace = namespace;</b>
+<b class="nc"><i>172</i>&nbsp;    m_extensionName = extensionName;</b>
+<b class="nc"><i>173</i>&nbsp;    m_methodKey = methodKey;</b>
+<i>174</i>&nbsp;  }
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;  /**
+<i>177</i>&nbsp;   * Execute the function.  The function must return
+<i>178</i>&nbsp;   * a valid object.
+<i>179</i>&nbsp;   * @param xctxt The current execution context.
+<i>180</i>&nbsp;   * @return A valid XObject.
+<i>181</i>&nbsp;   *
+<i>182</i>&nbsp;   * @throws javax.xml.transform.TransformerException
+<i>183</i>&nbsp;   */
+<i>184</i>&nbsp;  public XObject execute(XPathContext xctxt)
+<i>185</i>&nbsp;          throws javax.xml.transform.TransformerException
+<i>186</i>&nbsp;  {
+<b class="nc"><i>187</i>&nbsp;    if (xctxt.isSecureProcessing())</b>
+<b class="nc"><i>188</i>&nbsp;      throw new javax.xml.transform.TransformerException(</b>
+<b class="nc"><i>189</i>&nbsp;        XPATHMessages.createXPATHMessage(</b>
+<i>190</i>&nbsp;          XPATHErrorResources.ER_EXTENSION_FUNCTION_CANNOT_BE_INVOKED,
+<b class="nc"><i>191</i>&nbsp;          new Object[] {toString()}));</b>
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;    XObject result;
+<b class="nc"><i>194</i>&nbsp;    Vector argVec = new Vector();</b>
+<b class="nc"><i>195</i>&nbsp;    int nArgs = m_argVec.size();</b>
+<i>196</i>&nbsp;
+<b class="nc"><i>197</i>&nbsp;    for (int i = 0; i &lt; nArgs; i++)</b>
+<i>198</i>&nbsp;    {
+<b class="nc"><i>199</i>&nbsp;      Expression arg = (Expression) m_argVec.elementAt(i);</b>
+<i>200</i>&nbsp;
+<b class="nc"><i>201</i>&nbsp;      XObject xobj = arg.execute(xctxt);</b>
+<i>202</i>&nbsp;      /*
+<i>203</i>&nbsp;       * Should cache the arguments for func:function
+<i>204</i>&nbsp;       */
+<b class="nc"><i>205</i>&nbsp;      xobj.allowDetachToRelease(false);</b>
+<b class="nc"><i>206</i>&nbsp;      argVec.addElement(xobj);</b>
+<i>207</i>&nbsp;    }
+<i>208</i>&nbsp;    //dml
+<b class="nc"><i>209</i>&nbsp;    ExtensionsProvider extProvider = (ExtensionsProvider)xctxt.getOwnerObject();</b>
+<b class="nc"><i>210</i>&nbsp;    Object val = extProvider.extFunction(this, argVec);</b>
+<i>211</i>&nbsp;
+<b class="nc"><i>212</i>&nbsp;    if (null != val)</b>
+<i>213</i>&nbsp;    {
+<b class="nc"><i>214</i>&nbsp;      result = XObject.create(val, xctxt);</b>
+<i>215</i>&nbsp;    }
+<i>216</i>&nbsp;    else
+<i>217</i>&nbsp;    {
+<b class="nc"><i>218</i>&nbsp;      result = new XNull();</b>
+<i>219</i>&nbsp;    }
+<i>220</i>&nbsp;
+<b class="nc"><i>221</i>&nbsp;    return result;</b>
+<i>222</i>&nbsp;  }
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;  /**
+<i>225</i>&nbsp;   * Set an argument expression for a function.  This method is called by the
+<i>226</i>&nbsp;   * XPath compiler.
+<i>227</i>&nbsp;   *
+<i>228</i>&nbsp;   * @param arg non-null expression that represents the argument.
+<i>229</i>&nbsp;   * @param argNum The argument number index.
+<i>230</i>&nbsp;   *
+<i>231</i>&nbsp;   * @throws WrongNumberArgsException If the argNum parameter is beyond what
+<i>232</i>&nbsp;   * is specified for this function.
+<i>233</i>&nbsp;   */
+<i>234</i>&nbsp;  public void setArg(Expression arg, int argNum)
+<i>235</i>&nbsp;          throws WrongNumberArgsException
+<i>236</i>&nbsp;  {
+<b class="nc"><i>237</i>&nbsp;    m_argVec.addElement(arg);</b>
+<b class="nc"><i>238</i>&nbsp;    arg.exprSetParent(this);</b>
+<i>239</i>&nbsp;  }
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;  /**
+<i>242</i>&nbsp;   * Check that the number of arguments passed to this function is correct.
+<i>243</i>&nbsp;   *
+<i>244</i>&nbsp;   *
+<i>245</i>&nbsp;   * @param argNum The number of arguments that is being passed to the function.
+<i>246</i>&nbsp;   *
+<i>247</i>&nbsp;   * @throws WrongNumberArgsException
+<i>248</i>&nbsp;   */
+<i>249</i>&nbsp;  public void checkNumberArgs(int argNum) throws WrongNumberArgsException{}
+<i>250</i>&nbsp;
+<i>251</i>&nbsp;
+<i>252</i>&nbsp;  class ArgExtOwner implements ExpressionOwner
+<i>253</i>&nbsp;  {
+<i>254</i>&nbsp;
+<i>255</i>&nbsp;    Expression m_exp;
+<i>256</i>&nbsp;
+<i>257</i>&nbsp;        ArgExtOwner(Expression exp)
+<b class="nc"><i>258</i>&nbsp;        {</b>
+<b class="nc"><i>259</i>&nbsp;                m_exp = exp;</b>
+<i>260</i>&nbsp;        }
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;    /**
+<i>263</i>&nbsp;     * @see ExpressionOwner#getExpression()
+<i>264</i>&nbsp;     */
+<i>265</i>&nbsp;    public Expression getExpression()
+<i>266</i>&nbsp;    {
+<b class="nc"><i>267</i>&nbsp;      return m_exp;</b>
+<i>268</i>&nbsp;    }
+<i>269</i>&nbsp;
+<i>270</i>&nbsp;
+<i>271</i>&nbsp;    /**
+<i>272</i>&nbsp;     * @see ExpressionOwner#setExpression(Expression)
+<i>273</i>&nbsp;     */
+<i>274</i>&nbsp;    public void setExpression(Expression exp)
+<i>275</i>&nbsp;    {
+<b class="nc"><i>276</i>&nbsp;        exp.exprSetParent(FuncExtFunction.this);</b>
+<b class="nc"><i>277</i>&nbsp;        m_exp = exp;</b>
+<i>278</i>&nbsp;    }
+<i>279</i>&nbsp;  }
+<i>280</i>&nbsp;
+<i>281</i>&nbsp;
+<i>282</i>&nbsp;  /**
+<i>283</i>&nbsp;   * Call the visitors for the function arguments.
+<i>284</i>&nbsp;   */
+<i>285</i>&nbsp;  public void callArgVisitors(XPathVisitor visitor)
+<i>286</i>&nbsp;  {
+<b class="nc"><i>287</i>&nbsp;      for (int i = 0; i &lt; m_argVec.size(); i++)</b>
+<i>288</i>&nbsp;      {
+<b class="nc"><i>289</i>&nbsp;         Expression exp = (Expression)m_argVec.elementAt(i);</b>
+<b class="nc"><i>290</i>&nbsp;         exp.callVisitors(new ArgExtOwner(exp), visitor);</b>
+<i>291</i>&nbsp;      }
+<i>292</i>&nbsp;
+<i>293</i>&nbsp;  }
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;  /**
+<i>296</i>&nbsp;   * Set the parent node.
+<i>297</i>&nbsp;   * For an extension function, we also need to set the parent
+<i>298</i>&nbsp;   * node for all argument expressions.
+<i>299</i>&nbsp;   *
+<i>300</i>&nbsp;   * @param n The parent node
+<i>301</i>&nbsp;   */
+<i>302</i>&nbsp;  public void exprSetParent(ExpressionNode n)
+<i>303</i>&nbsp;  {
+<i>304</i>&nbsp;
+<b class="nc"><i>305</i>&nbsp;    super.exprSetParent(n);</b>
+<i>306</i>&nbsp;
+<b class="nc"><i>307</i>&nbsp;    int nArgs = m_argVec.size();</b>
+<i>308</i>&nbsp;
+<b class="nc"><i>309</i>&nbsp;    for (int i = 0; i &lt; nArgs; i++)</b>
+<i>310</i>&nbsp;    {
+<b class="nc"><i>311</i>&nbsp;      Expression arg = (Expression) m_argVec.elementAt(i);</b>
+<i>312</i>&nbsp;
+<b class="nc"><i>313</i>&nbsp;      arg.exprSetParent(n);</b>
+<i>314</i>&nbsp;    }
+<i>315</i>&nbsp;  }
+<i>316</i>&nbsp;
+<i>317</i>&nbsp;  /**
+<i>318</i>&nbsp;   * Constructs and throws a WrongNumberArgException with the appropriate
+<i>319</i>&nbsp;   * message for this function object.  This class supports an arbitrary
+<i>320</i>&nbsp;   * number of arguments, so this method must never be called.
+<i>321</i>&nbsp;   *
+<i>322</i>&nbsp;   * @throws WrongNumberArgsException
+<i>323</i>&nbsp;   */
+<i>324</i>&nbsp;  protected void reportWrongNumberArgs() throws WrongNumberArgsException {
+<b class="nc"><i>325</i>&nbsp;    String fMsg = XSLMessages.createXPATHMessage(</b>
+<i>326</i>&nbsp;        XPATHErrorResources.ER_INCORRECT_PROGRAMMER_ASSERTION,
+<i>327</i>&nbsp;        new Object[]{ &quot;Programmer&#39;s assertion:  the method FunctionMultiArgs.reportWrongNumberArgs() should never be called.&quot; });
+<i>328</i>&nbsp;
+<b class="nc"><i>329</i>&nbsp;    throw new RuntimeException(fMsg);</b>
+<i>330</i>&nbsp;  }
+<i>331</i>&nbsp;
+<i>332</i>&nbsp;  /**
+<i>333</i>&nbsp;   * Return the name of the extesion function in string format
+<i>334</i>&nbsp;   */
+<i>335</i>&nbsp;  public String toString()
+<i>336</i>&nbsp;  {
+<b class="nc"><i>337</i>&nbsp;    if (m_namespace != null &amp;&amp; m_namespace.length() &gt; 0)</b>
+<b class="nc"><i>338</i>&nbsp;      return &quot;{&quot; + m_namespace + &quot;}&quot; + m_extensionName;</b>
+<i>339</i>&nbsp;    else
+<b class="nc"><i>340</i>&nbsp;      return m_extensionName;</b>
+<i>341</i>&nbsp;  }
+<i>342</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

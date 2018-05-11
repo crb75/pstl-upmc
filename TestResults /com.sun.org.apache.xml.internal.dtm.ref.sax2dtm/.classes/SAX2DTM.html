@@ -1,0 +1,2623 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SAX2DTM</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.dtm.ref.sax2dtm</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SAX2DTM (com.sun.org.apache.xml.internal.dtm.ref.sax2dtm)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SAX2DTM</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 67)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 544)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: SAX2DTM.java,v 1.2.4.1 2005/09/15 08:15:11 suresh_emailid Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.dtm.ref.sax2dtm;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTM;
+<i>27</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTMManager;
+<i>28</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTMWSFilter;
+<i>29</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.ref.DTMDefaultBaseIterators;
+<i>30</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.ref.DTMManagerDefault;
+<i>31</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.ref.DTMStringPool;
+<i>32</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.ref.DTMTreeWalker;
+<i>33</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.ref.IncrementalSAXSource;
+<i>34</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.ref.NodeLocator;
+<i>35</i>&nbsp;import com.sun.org.apache.xml.internal.res.XMLErrorResources;
+<i>36</i>&nbsp;import com.sun.org.apache.xml.internal.res.XMLMessages;
+<i>37</i>&nbsp;import com.sun.org.apache.xml.internal.utils.FastStringBuffer;
+<i>38</i>&nbsp;import com.sun.org.apache.xml.internal.utils.IntStack;
+<i>39</i>&nbsp;import com.sun.org.apache.xml.internal.utils.IntVector;
+<i>40</i>&nbsp;import com.sun.org.apache.xml.internal.utils.StringVector;
+<i>41</i>&nbsp;import com.sun.org.apache.xml.internal.utils.SuballocatedIntVector;
+<i>42</i>&nbsp;import com.sun.org.apache.xml.internal.utils.SystemIDResolver;
+<i>43</i>&nbsp;import com.sun.org.apache.xml.internal.utils.WrappedRuntimeException;
+<i>44</i>&nbsp;import com.sun.org.apache.xml.internal.utils.XMLString;
+<i>45</i>&nbsp;import com.sun.org.apache.xml.internal.utils.XMLStringFactory;
+<i>46</i>&nbsp;import java.util.HashMap;
+<i>47</i>&nbsp;import java.util.Map;
+<i>48</i>&nbsp;import java.util.Vector;
+<i>49</i>&nbsp;import javax.xml.transform.Source;
+<i>50</i>&nbsp;import javax.xml.transform.SourceLocator;
+<i>51</i>&nbsp;import org.xml.sax.Attributes;
+<i>52</i>&nbsp;import org.xml.sax.ContentHandler;
+<i>53</i>&nbsp;import org.xml.sax.DTDHandler;
+<i>54</i>&nbsp;import org.xml.sax.EntityResolver;
+<i>55</i>&nbsp;import org.xml.sax.ErrorHandler;
+<i>56</i>&nbsp;import org.xml.sax.InputSource;
+<i>57</i>&nbsp;import org.xml.sax.Locator;
+<i>58</i>&nbsp;import org.xml.sax.SAXException;
+<i>59</i>&nbsp;import org.xml.sax.SAXParseException;
+<i>60</i>&nbsp;import org.xml.sax.ext.DeclHandler;
+<i>61</i>&nbsp;import org.xml.sax.ext.LexicalHandler;
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;/**
+<i>64</i>&nbsp; * This class implements a DTM that tends to be optimized more for speed than
+<i>65</i>&nbsp; * for compactness, that is constructed via SAX2 ContentHandler events.
+<i>66</i>&nbsp; */
+<i>67</i>&nbsp;public class SAX2DTM extends DTMDefaultBaseIterators
+<i>68</i>&nbsp;        implements EntityResolver, DTDHandler, ContentHandler, ErrorHandler,
+<i>69</i>&nbsp;                   DeclHandler, LexicalHandler
+<i>70</i>&nbsp;{
+<i>71</i>&nbsp;  /** Set true to monitor SAX events and similar diagnostic info. */
+<i>72</i>&nbsp;  private static final boolean DEBUG = false;
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;  /**
+<i>75</i>&nbsp;   * If we&#39;re building the model incrementally on demand, we need to
+<i>76</i>&nbsp;   * be able to tell the source when to send us more data.
+<i>77</i>&nbsp;   *
+<i>78</i>&nbsp;   * Note that if this has not been set, and you attempt to read ahead
+<i>79</i>&nbsp;   * of the current build point, we&#39;ll probably throw a null-pointer
+<i>80</i>&nbsp;   * exception. We could try to wait-and-retry instead, as a very poor
+<i>81</i>&nbsp;   * fallback, but that has all the known problems with multithreading
+<i>82</i>&nbsp;   * on multiprocessors and we Don&#39;t Want to Go There.
+<i>83</i>&nbsp;   *
+<i>84</i>&nbsp;   * @see setIncrementalSAXSource
+<i>85</i>&nbsp;   */
+<b class="nc"><i>86</i>&nbsp;  private IncrementalSAXSource m_incrementalSAXSource = null;</b>
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;  /**
+<i>89</i>&nbsp;   * All the character content, including attribute values, are stored in
+<i>90</i>&nbsp;   * this buffer.
+<i>91</i>&nbsp;   *
+<i>92</i>&nbsp;   * %REVIEW% Should this have an option of being shared across DTMs?
+<i>93</i>&nbsp;   * Sequentially only; not threadsafe... Currently, I think not.
+<i>94</i>&nbsp;   *
+<i>95</i>&nbsp;   * %REVIEW% Initial size was pushed way down to reduce weight of RTFs.
+<i>96</i>&nbsp;   * pending reduction in number of RTF DTMs. Now that we&#39;re sharing a DTM
+<i>97</i>&nbsp;   * between RTFs, and tail-pruning... consider going back to the larger/faster.
+<i>98</i>&nbsp;   *
+<i>99</i>&nbsp;   * Made protected rather than private so SAX2RTFDTM can access it.
+<i>100</i>&nbsp;   */
+<i>101</i>&nbsp;  //private FastStringBuffer m_chars = new FastStringBuffer(13, 13);
+<i>102</i>&nbsp;  protected FastStringBuffer m_chars;
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;  /** This vector holds offset and length data.
+<i>105</i>&nbsp;   */
+<i>106</i>&nbsp;  protected SuballocatedIntVector m_data;
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;  /** The parent stack, needed only for construction.
+<i>109</i>&nbsp;   * Made protected rather than private so SAX2RTFDTM can access it.
+<i>110</i>&nbsp;   */
+<i>111</i>&nbsp;  transient protected IntStack m_parents;
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;  /** The current previous node, needed only for construction time.
+<i>114</i>&nbsp;   * Made protected rather than private so SAX2RTFDTM can access it.
+<i>115</i>&nbsp;   */
+<b class="nc"><i>116</i>&nbsp;  transient protected int m_previous = 0;</b>
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;  /** Namespace support, only relevent at construction time.
+<i>119</i>&nbsp;   * Made protected rather than private so SAX2RTFDTM can access it.
+<i>120</i>&nbsp;   */
+<b class="nc"><i>121</i>&nbsp;  transient protected java.util.Vector m_prefixMappings =</b>
+<i>122</i>&nbsp;    new java.util.Vector();
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;  /** Namespace support, only relevent at construction time.
+<i>125</i>&nbsp;   * Made protected rather than private so SAX2RTFDTM can access it.
+<i>126</i>&nbsp;   */
+<i>127</i>&nbsp;  transient protected IntStack m_contextIndexes;
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;  /** Type of next characters() event within text block in prgress. */
+<b class="nc"><i>130</i>&nbsp;  transient protected int m_textType = DTM.TEXT_NODE;</b>
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;  /**
+<i>133</i>&nbsp;   * Type of coalesced text block. See logic in the characters()
+<i>134</i>&nbsp;   * method.
+<i>135</i>&nbsp;   */
+<b class="nc"><i>136</i>&nbsp;  transient protected int m_coalescedTextType = DTM.TEXT_NODE;</b>
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;  /** The SAX Document locator */
+<b class="nc"><i>139</i>&nbsp;  transient protected Locator m_locator = null;</b>
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;  /** The SAX Document system-id */
+<b class="nc"><i>142</i>&nbsp;  transient private String m_systemId = null;</b>
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;  /** We are inside the DTD.  This is used for ignoring comments.  */
+<b class="nc"><i>145</i>&nbsp;  transient protected boolean m_insideDTD = false;</b>
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;  /** Tree Walker for dispatchToEvents. */
+<b class="nc"><i>148</i>&nbsp;  protected DTMTreeWalker m_walker = new DTMTreeWalker();</b>
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;  /** pool of string values that come as strings. */
+<i>151</i>&nbsp;  protected DTMStringPool m_valuesOrPrefixes;
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;  /** End document has been reached.
+<i>154</i>&nbsp;   * Made protected rather than private so SAX2RTFDTM can access it.
+<i>155</i>&nbsp;   */
+<b class="nc"><i>156</i>&nbsp;  protected boolean m_endDocumentOccured = false;</b>
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;  /** Data or qualified name values, one array element for each node. */
+<i>159</i>&nbsp;  protected SuballocatedIntVector m_dataOrQName;
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;  /**
+<i>162</i>&nbsp;   * This table holds the ID string to node associations, for
+<i>163</i>&nbsp;   * XML IDs.
+<i>164</i>&nbsp;   */
+<b class="nc"><i>165</i>&nbsp;  protected Map&lt;String, Integer&gt; m_idAttributes = new HashMap&lt;&gt;();</b>
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;  /**
+<i>168</i>&nbsp;   * fixed dom-style names.
+<i>169</i>&nbsp;   */
+<b class="nc"><i>170</i>&nbsp;  private static final String[] m_fixednames = { null,</b>
+<i>171</i>&nbsp;                    null,  // nothing, Element
+<i>172</i>&nbsp;                    null, &quot;#text&quot;,  // Attr, Text
+<i>173</i>&nbsp;                    &quot;#cdata_section&quot;, null,  // CDATA, EntityReference
+<i>174</i>&nbsp;                    null, null,  // Entity, PI
+<i>175</i>&nbsp;                    &quot;#comment&quot;, &quot;#document&quot;,  // Comment, Document
+<i>176</i>&nbsp;                    null, &quot;#document-fragment&quot;,  // Doctype, DocumentFragment
+<i>177</i>&nbsp;                    null };  // Notation
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;  /**
+<i>180</i>&nbsp;   * Vector of entities.  Each record is composed of four Strings:
+<i>181</i>&nbsp;   *  publicId, systemID, notationName, and name.
+<i>182</i>&nbsp;   */
+<b class="nc"><i>183</i>&nbsp;  private Vector m_entities = null;</b>
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;  /** m_entities public ID offset. */
+<i>186</i>&nbsp;  private static final int ENTITY_FIELD_PUBLICID = 0;
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;  /** m_entities system ID offset. */
+<i>189</i>&nbsp;  private static final int ENTITY_FIELD_SYSTEMID = 1;
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;  /** m_entities notation name offset. */
+<i>192</i>&nbsp;  private static final int ENTITY_FIELD_NOTATIONNAME = 2;
+<i>193</i>&nbsp;
+<i>194</i>&nbsp;  /** m_entities name offset. */
+<i>195</i>&nbsp;  private static final int ENTITY_FIELD_NAME = 3;
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;  /** Number of entries per record for m_entities. */
+<i>198</i>&nbsp;  private static final int ENTITY_FIELDS_PER = 4;
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;  /**
+<i>201</i>&nbsp;   * The starting offset within m_chars for the text or
+<i>202</i>&nbsp;   * CDATA_SECTION node currently being acumulated,
+<i>203</i>&nbsp;   * or -1 if there is no text node in progress
+<i>204</i>&nbsp;   */
+<b class="nc"><i>205</i>&nbsp;  protected int m_textPendingStart = -1;</b>
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;  /**
+<i>208</i>&nbsp;   * Describes whether information about document source location
+<i>209</i>&nbsp;   * should be maintained or not.
+<i>210</i>&nbsp;   *
+<i>211</i>&nbsp;   * Made protected for access by SAX2RTFDTM.
+<i>212</i>&nbsp;   */
+<b class="nc"><i>213</i>&nbsp;  protected boolean m_useSourceLocationProperty = false;</b>
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;   /** Made protected for access by SAX2RTFDTM.
+<i>216</i>&nbsp;   */
+<i>217</i>&nbsp;  protected StringVector m_sourceSystemId;
+<i>218</i>&nbsp;   /** Made protected for access by SAX2RTFDTM.
+<i>219</i>&nbsp;   */
+<i>220</i>&nbsp;  protected IntVector m_sourceLine;
+<i>221</i>&nbsp;   /** Made protected for access by SAX2RTFDTM.
+<i>222</i>&nbsp;   */
+<i>223</i>&nbsp;  protected IntVector m_sourceColumn;
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;  /**
+<i>226</i>&nbsp;   * Construct a SAX2DTM object using the default block size.
+<i>227</i>&nbsp;   *
+<i>228</i>&nbsp;   * @param mgr The DTMManager who owns this DTM.
+<i>229</i>&nbsp;   * @param source the JAXP 1.1 Source object for this DTM.
+<i>230</i>&nbsp;   * @param dtmIdentity The DTM identity ID for this DTM.
+<i>231</i>&nbsp;   * @param whiteSpaceFilter The white space filter for this DTM, which may
+<i>232</i>&nbsp;   *                         be null.
+<i>233</i>&nbsp;   * @param xstringfactory XMLString factory for creating character content.
+<i>234</i>&nbsp;   * @param doIndexing true if the caller considers it worth it to use
+<i>235</i>&nbsp;   *                   indexing schemes.
+<i>236</i>&nbsp;   */
+<i>237</i>&nbsp;  public SAX2DTM(DTMManager mgr, Source source, int dtmIdentity,
+<i>238</i>&nbsp;                 DTMWSFilter whiteSpaceFilter,
+<i>239</i>&nbsp;                 XMLStringFactory xstringfactory,
+<i>240</i>&nbsp;                 boolean doIndexing)
+<i>241</i>&nbsp;  {
+<i>242</i>&nbsp;
+<b class="nc"><i>243</i>&nbsp;    this(mgr, source, dtmIdentity, whiteSpaceFilter,</b>
+<i>244</i>&nbsp;          xstringfactory, doIndexing, DEFAULT_BLOCKSIZE, true, false);
+<i>245</i>&nbsp;  }
+<i>246</i>&nbsp;
+<i>247</i>&nbsp;  /**
+<i>248</i>&nbsp;   * Construct a SAX2DTM object ready to be constructed from SAX2
+<i>249</i>&nbsp;   * ContentHandler events.
+<i>250</i>&nbsp;   *
+<i>251</i>&nbsp;   * @param mgr The DTMManager who owns this DTM.
+<i>252</i>&nbsp;   * @param source the JAXP 1.1 Source object for this DTM.
+<i>253</i>&nbsp;   * @param dtmIdentity The DTM identity ID for this DTM.
+<i>254</i>&nbsp;   * @param whiteSpaceFilter The white space filter for this DTM, which may
+<i>255</i>&nbsp;   *                         be null.
+<i>256</i>&nbsp;   * @param xstringfactory XMLString factory for creating character content.
+<i>257</i>&nbsp;   * @param doIndexing true if the caller considers it worth it to use
+<i>258</i>&nbsp;   *                   indexing schemes.
+<i>259</i>&nbsp;   * @param blocksize The block size of the DTM.
+<i>260</i>&nbsp;   * @param usePrevsib true if we want to build the previous sibling node array.
+<i>261</i>&nbsp;   * @param newNameTable true if we want to use a new ExpandedNameTable for this DTM.
+<i>262</i>&nbsp;   */
+<i>263</i>&nbsp;  public SAX2DTM(DTMManager mgr, Source source, int dtmIdentity,
+<i>264</i>&nbsp;                 DTMWSFilter whiteSpaceFilter,
+<i>265</i>&nbsp;                 XMLStringFactory xstringfactory,
+<i>266</i>&nbsp;                 boolean doIndexing,
+<i>267</i>&nbsp;                 int blocksize,
+<i>268</i>&nbsp;                 boolean usePrevsib,
+<i>269</i>&nbsp;                 boolean newNameTable)
+<i>270</i>&nbsp;  {
+<i>271</i>&nbsp;
+<b class="nc"><i>272</i>&nbsp;    super(mgr, source, dtmIdentity, whiteSpaceFilter,</b>
+<i>273</i>&nbsp;          xstringfactory, doIndexing, blocksize, usePrevsib, newNameTable);
+<i>274</i>&nbsp;
+<i>275</i>&nbsp;    // %OPT% Use smaller sizes for all internal storage units when
+<i>276</i>&nbsp;    // the blocksize is small. This reduces the cost of creating an RTF.
+<b class="nc"><i>277</i>&nbsp;    if (blocksize &lt;= 64)</b>
+<i>278</i>&nbsp;    {
+<b class="nc"><i>279</i>&nbsp;      m_data = new SuballocatedIntVector(blocksize, DEFAULT_NUMBLOCKS_SMALL);</b>
+<b class="nc"><i>280</i>&nbsp;      m_dataOrQName = new SuballocatedIntVector(blocksize, DEFAULT_NUMBLOCKS_SMALL);</b>
+<b class="nc"><i>281</i>&nbsp;      m_valuesOrPrefixes = new DTMStringPool(16);</b>
+<b class="nc"><i>282</i>&nbsp;      m_chars = new FastStringBuffer(7, 10);</b>
+<b class="nc"><i>283</i>&nbsp;      m_contextIndexes = new IntStack(4);</b>
+<b class="nc"><i>284</i>&nbsp;      m_parents = new IntStack(4);</b>
+<i>285</i>&nbsp;    }
+<i>286</i>&nbsp;    else
+<i>287</i>&nbsp;    {
+<b class="nc"><i>288</i>&nbsp;      m_data = new SuballocatedIntVector(blocksize, DEFAULT_NUMBLOCKS);</b>
+<b class="nc"><i>289</i>&nbsp;      m_dataOrQName = new SuballocatedIntVector(blocksize, DEFAULT_NUMBLOCKS);</b>
+<b class="nc"><i>290</i>&nbsp;      m_valuesOrPrefixes = new DTMStringPool();</b>
+<b class="nc"><i>291</i>&nbsp;      m_chars = new FastStringBuffer(10, 13);</b>
+<b class="nc"><i>292</i>&nbsp;      m_contextIndexes = new IntStack();</b>
+<b class="nc"><i>293</i>&nbsp;      m_parents = new IntStack();</b>
+<i>294</i>&nbsp;    }
+<i>295</i>&nbsp;
+<i>296</i>&nbsp;    // %REVIEW%  Initial size pushed way down to reduce weight of RTFs
+<i>297</i>&nbsp;    // (I&#39;m not entirely sure 0 would work, so I&#39;m playing it safe for now.)
+<i>298</i>&nbsp;    //m_data = new SuballocatedIntVector(doIndexing ? (1024*2) : 512, 1024);
+<i>299</i>&nbsp;    //m_data = new SuballocatedIntVector(blocksize);
+<i>300</i>&nbsp;
+<b class="nc"><i>301</i>&nbsp;    m_data.addElement(0);   // Need placeholder in case index into here must be &lt;0.</b>
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;    //m_dataOrQName = new SuballocatedIntVector(blocksize);
+<i>304</i>&nbsp;
+<i>305</i>&nbsp;    // m_useSourceLocationProperty=com.sun.org.apache.xalan.internal.processor.TransformerFactoryImpl.m_source_location;
+<b class="nc"><i>306</i>&nbsp;    m_useSourceLocationProperty = mgr.getSource_location();</b>
+<b class="nc"><i>307</i>&nbsp;    m_sourceSystemId = (m_useSourceLocationProperty) ? new StringVector() : null;</b>
+<b class="nc"><i>308</i>&nbsp;        m_sourceLine = (m_useSourceLocationProperty) ?  new IntVector() : null;</b>
+<b class="nc"><i>309</i>&nbsp;    m_sourceColumn = (m_useSourceLocationProperty) ?  new IntVector() : null;</b>
+<i>310</i>&nbsp;  }
+<i>311</i>&nbsp;
+<i>312</i>&nbsp;  /**
+<i>313</i>&nbsp;   * Set whether information about document source location
+<i>314</i>&nbsp;   * should be maintained or not.
+<i>315</i>&nbsp;   */
+<i>316</i>&nbsp;  public void setUseSourceLocation(boolean useSourceLocation)
+<i>317</i>&nbsp;  {
+<b class="nc"><i>318</i>&nbsp;    m_useSourceLocationProperty = useSourceLocation;</b>
+<i>319</i>&nbsp;  }
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;  /**
+<i>322</i>&nbsp;   * Get the data or qualified name for the given node identity.
+<i>323</i>&nbsp;   *
+<i>324</i>&nbsp;   * @param identity The node identity.
+<i>325</i>&nbsp;   *
+<i>326</i>&nbsp;   * @return The data or qualified name, or DTM.NULL.
+<i>327</i>&nbsp;   */
+<i>328</i>&nbsp;  protected int _dataOrQName(int identity)
+<i>329</i>&nbsp;  {
+<i>330</i>&nbsp;
+<b class="nc"><i>331</i>&nbsp;    if (identity &lt; m_size)</b>
+<b class="nc"><i>332</i>&nbsp;      return m_dataOrQName.elementAt(identity);</b>
+<i>333</i>&nbsp;
+<i>334</i>&nbsp;    // Check to see if the information requested has been processed, and,
+<i>335</i>&nbsp;    // if not, advance the iterator until we the information has been
+<i>336</i>&nbsp;    // processed.
+<i>337</i>&nbsp;    while (true)
+<i>338</i>&nbsp;    {
+<b class="nc"><i>339</i>&nbsp;      boolean isMore = nextNode();</b>
+<i>340</i>&nbsp;
+<b class="nc"><i>341</i>&nbsp;      if (!isMore)</b>
+<b class="nc"><i>342</i>&nbsp;        return NULL;</b>
+<b class="nc"><i>343</i>&nbsp;      else if (identity &lt; m_size)</b>
+<b class="nc"><i>344</i>&nbsp;        return m_dataOrQName.elementAt(identity);</b>
+<b class="nc"><i>345</i>&nbsp;    }</b>
+<i>346</i>&nbsp;  }
+<i>347</i>&nbsp;
+<i>348</i>&nbsp;  /**
+<i>349</i>&nbsp;   * Ask the CoRoutine parser to doTerminate and clear the reference.
+<i>350</i>&nbsp;   */
+<i>351</i>&nbsp;  public void clearCoRoutine()
+<i>352</i>&nbsp;  {
+<b class="nc"><i>353</i>&nbsp;    clearCoRoutine(true);</b>
+<i>354</i>&nbsp;  }
+<i>355</i>&nbsp;
+<i>356</i>&nbsp;  /**
+<i>357</i>&nbsp;   * Ask the CoRoutine parser to doTerminate and clear the reference. If
+<i>358</i>&nbsp;   * the CoRoutine parser has already been cleared, this will have no effect.
+<i>359</i>&nbsp;   *
+<i>360</i>&nbsp;   * @param callDoTerminate true of doTerminate should be called on the
+<i>361</i>&nbsp;   * coRoutine parser.
+<i>362</i>&nbsp;   */
+<i>363</i>&nbsp;  public void clearCoRoutine(boolean callDoTerminate)
+<i>364</i>&nbsp;  {
+<i>365</i>&nbsp;
+<b class="nc"><i>366</i>&nbsp;    if (null != m_incrementalSAXSource)</b>
+<i>367</i>&nbsp;    {
+<b class="nc"><i>368</i>&nbsp;      if (callDoTerminate)</b>
+<b class="nc"><i>369</i>&nbsp;        m_incrementalSAXSource.deliverMoreNodes(false);</b>
+<i>370</i>&nbsp;
+<b class="nc"><i>371</i>&nbsp;      m_incrementalSAXSource = null;</b>
+<i>372</i>&nbsp;    }
+<i>373</i>&nbsp;  }
+<i>374</i>&nbsp;
+<i>375</i>&nbsp;  /**
+<i>376</i>&nbsp;   * Bind a IncrementalSAXSource to this DTM. If we discover we need nodes
+<i>377</i>&nbsp;   * that have not yet been built, we will ask this object to send us more
+<i>378</i>&nbsp;   * events, and it will manage interactions with its data sources.
+<i>379</i>&nbsp;   *
+<i>380</i>&nbsp;   * Note that we do not actually build the IncrementalSAXSource, since we don&#39;t
+<i>381</i>&nbsp;   * know what source it&#39;s reading from, what thread that source will run in,
+<i>382</i>&nbsp;   * or when it will run.
+<i>383</i>&nbsp;   *
+<i>384</i>&nbsp;   * @param incrementalSAXSource The parser that we want to recieve events from
+<i>385</i>&nbsp;   * on demand.
+<i>386</i>&nbsp;   */
+<i>387</i>&nbsp;  public void setIncrementalSAXSource(IncrementalSAXSource incrementalSAXSource)
+<i>388</i>&nbsp;  {
+<i>389</i>&nbsp;
+<i>390</i>&nbsp;    // Establish coroutine link so we can request more data
+<i>391</i>&nbsp;    //
+<i>392</i>&nbsp;    // Note: It&#39;s possible that some versions of IncrementalSAXSource may
+<i>393</i>&nbsp;    // not actually use a CoroutineManager, and hence may not require
+<i>394</i>&nbsp;    // that we obtain an Application Coroutine ID. (This relies on the
+<i>395</i>&nbsp;    // coroutine transaction details having been encapsulated in the
+<i>396</i>&nbsp;    // IncrementalSAXSource.do...() methods.)
+<b class="nc"><i>397</i>&nbsp;    m_incrementalSAXSource = incrementalSAXSource;</b>
+<i>398</i>&nbsp;
+<i>399</i>&nbsp;    // Establish SAX-stream link so we can receive the requested data
+<b class="nc"><i>400</i>&nbsp;    incrementalSAXSource.setContentHandler(this);</b>
+<b class="nc"><i>401</i>&nbsp;    incrementalSAXSource.setLexicalHandler(this);</b>
+<b class="nc"><i>402</i>&nbsp;    incrementalSAXSource.setDTDHandler(this);</b>
+<i>403</i>&nbsp;
+<i>404</i>&nbsp;    // Are the following really needed? incrementalSAXSource doesn&#39;t yet
+<i>405</i>&nbsp;    // support them, and they&#39;re mostly no-ops here...
+<i>406</i>&nbsp;    //incrementalSAXSource.setErrorHandler(this);
+<i>407</i>&nbsp;    //incrementalSAXSource.setDeclHandler(this);
+<i>408</i>&nbsp;  }
+<i>409</i>&nbsp;
+<i>410</i>&nbsp;  /**
+<i>411</i>&nbsp;   * getContentHandler returns &quot;our SAX builder&quot; -- the thing that
+<i>412</i>&nbsp;   * someone else should send SAX events to in order to extend this
+<i>413</i>&nbsp;   * DTM model.
+<i>414</i>&nbsp;   *
+<i>415</i>&nbsp;   * %REVIEW% Should this return null if constrution already done/begun?
+<i>416</i>&nbsp;   *
+<i>417</i>&nbsp;   * @return null if this model doesn&#39;t respond to SAX events,
+<i>418</i>&nbsp;   * &quot;this&quot; if the DTM object has a built-in SAX ContentHandler,
+<i>419</i>&nbsp;   * the IncrementalSAXSource if we&#39;re bound to one and should receive
+<i>420</i>&nbsp;   * the SAX stream via it for incremental build purposes...
+<i>421</i>&nbsp;   *
+<i>422</i>&nbsp;   * Note that IncrementalSAXSource_Filter is package private, hence
+<i>423</i>&nbsp;   * it can be statically referenced using instanceof (CR 6537912).
+<i>424</i>&nbsp;   */
+<i>425</i>&nbsp;  public ContentHandler getContentHandler()
+<i>426</i>&nbsp;  {
+<i>427</i>&nbsp;
+<b class="nc"><i>428</i>&nbsp;    if (m_incrementalSAXSource.getClass()</b>
+<b class="nc"><i>429</i>&nbsp;        .getName().equals(&quot;com.sun.org.apache.xml.internal.dtm.ref.IncrementalSAXSource_Filter&quot;))</b>
+<b class="nc"><i>430</i>&nbsp;      return (ContentHandler) m_incrementalSAXSource;</b>
+<i>431</i>&nbsp;    else
+<b class="nc"><i>432</i>&nbsp;      return this;</b>
+<i>433</i>&nbsp;  }
+<i>434</i>&nbsp;
+<i>435</i>&nbsp;  /**
+<i>436</i>&nbsp;   * Return this DTM&#39;s lexical handler.
+<i>437</i>&nbsp;   *
+<i>438</i>&nbsp;   * %REVIEW% Should this return null if constrution already done/begun?
+<i>439</i>&nbsp;   *
+<i>440</i>&nbsp;   * @return null if this model doesn&#39;t respond to lexical SAX events,
+<i>441</i>&nbsp;   * &quot;this&quot; if the DTM object has a built-in SAX ContentHandler,
+<i>442</i>&nbsp;   * the IncrementalSAXSource if we&#39;re bound to one and should receive
+<i>443</i>&nbsp;   * the SAX stream via it for incremental build purposes...
+<i>444</i>&nbsp;   *
+<i>445</i>&nbsp;   * Note that IncrementalSAXSource_Filter is package private, hence
+<i>446</i>&nbsp;   * it can be statically referenced using instanceof (CR 6537912).
+<i>447</i>&nbsp;   */
+<i>448</i>&nbsp;  public LexicalHandler getLexicalHandler()
+<i>449</i>&nbsp;  {
+<i>450</i>&nbsp;
+<b class="nc"><i>451</i>&nbsp;    if (m_incrementalSAXSource.getClass()</b>
+<b class="nc"><i>452</i>&nbsp;        .getName().equals(&quot;com.sun.org.apache.xml.internal.dtm.ref.IncrementalSAXSource_Filter&quot;))</b>
+<b class="nc"><i>453</i>&nbsp;      return (LexicalHandler) m_incrementalSAXSource;</b>
+<i>454</i>&nbsp;    else
+<b class="nc"><i>455</i>&nbsp;      return this;</b>
+<i>456</i>&nbsp;  }
+<i>457</i>&nbsp;
+<i>458</i>&nbsp;  /**
+<i>459</i>&nbsp;   * Return this DTM&#39;s EntityResolver.
+<i>460</i>&nbsp;   *
+<i>461</i>&nbsp;   * @return null if this model doesn&#39;t respond to SAX entity ref events.
+<i>462</i>&nbsp;   */
+<i>463</i>&nbsp;  public EntityResolver getEntityResolver()
+<i>464</i>&nbsp;  {
+<b class="nc"><i>465</i>&nbsp;    return this;</b>
+<i>466</i>&nbsp;  }
+<i>467</i>&nbsp;
+<i>468</i>&nbsp;  /**
+<i>469</i>&nbsp;   * Return this DTM&#39;s DTDHandler.
+<i>470</i>&nbsp;   *
+<i>471</i>&nbsp;   * @return null if this model doesn&#39;t respond to SAX dtd events.
+<i>472</i>&nbsp;   */
+<i>473</i>&nbsp;  public DTDHandler getDTDHandler()
+<i>474</i>&nbsp;  {
+<b class="nc"><i>475</i>&nbsp;    return this;</b>
+<i>476</i>&nbsp;  }
+<i>477</i>&nbsp;
+<i>478</i>&nbsp;  /**
+<i>479</i>&nbsp;   * Return this DTM&#39;s ErrorHandler.
+<i>480</i>&nbsp;   *
+<i>481</i>&nbsp;   * @return null if this model doesn&#39;t respond to SAX error events.
+<i>482</i>&nbsp;   */
+<i>483</i>&nbsp;  public ErrorHandler getErrorHandler()
+<i>484</i>&nbsp;  {
+<b class="nc"><i>485</i>&nbsp;    return this;</b>
+<i>486</i>&nbsp;  }
+<i>487</i>&nbsp;
+<i>488</i>&nbsp;  /**
+<i>489</i>&nbsp;   * Return this DTM&#39;s DeclHandler.
+<i>490</i>&nbsp;   *
+<i>491</i>&nbsp;   * @return null if this model doesn&#39;t respond to SAX Decl events.
+<i>492</i>&nbsp;   */
+<i>493</i>&nbsp;  public DeclHandler getDeclHandler()
+<i>494</i>&nbsp;  {
+<b class="nc"><i>495</i>&nbsp;    return this;</b>
+<i>496</i>&nbsp;  }
+<i>497</i>&nbsp;
+<i>498</i>&nbsp;  /**
+<i>499</i>&nbsp;   * @return true iff we&#39;re building this model incrementally (eg
+<i>500</i>&nbsp;   * we&#39;re partnered with a IncrementalSAXSource) and thus require that the
+<i>501</i>&nbsp;   * transformation and the parse run simultaneously. Guidance to the
+<i>502</i>&nbsp;   * DTMManager.
+<i>503</i>&nbsp;   */
+<i>504</i>&nbsp;  public boolean needsTwoThreads()
+<i>505</i>&nbsp;  {
+<b class="nc"><i>506</i>&nbsp;    return null != m_incrementalSAXSource;</b>
+<i>507</i>&nbsp;  }
+<i>508</i>&nbsp;
+<i>509</i>&nbsp;  /**
+<i>510</i>&nbsp;   * Directly call the
+<i>511</i>&nbsp;   * characters method on the passed ContentHandler for the
+<i>512</i>&nbsp;   * string-value of the given node (see http://www.w3.org/TR/xpath#data-model
+<i>513</i>&nbsp;   * for the definition of a node&#39;s string-value). Multiple calls to the
+<i>514</i>&nbsp;   * ContentHandler&#39;s characters methods may well occur for a single call to
+<i>515</i>&nbsp;   * this method.
+<i>516</i>&nbsp;   *
+<i>517</i>&nbsp;   * @param nodeHandle The node ID.
+<i>518</i>&nbsp;   * @param ch A non-null reference to a ContentHandler.
+<i>519</i>&nbsp;   * @param normalize true if the content should be normalized according to
+<i>520</i>&nbsp;   * the rules for the XPath
+<i>521</i>&nbsp;   * &lt;a href=&quot;http://www.w3.org/TR/xpath#function-normalize-space&quot;&gt;normalize-space&lt;/a&gt;
+<i>522</i>&nbsp;   * function.
+<i>523</i>&nbsp;   *
+<i>524</i>&nbsp;   * @throws SAXException
+<i>525</i>&nbsp;   */
+<i>526</i>&nbsp;  public void dispatchCharactersEvents(int nodeHandle, ContentHandler ch,
+<i>527</i>&nbsp;                                       boolean normalize)
+<i>528</i>&nbsp;          throws SAXException
+<i>529</i>&nbsp;  {
+<i>530</i>&nbsp;
+<b class="nc"><i>531</i>&nbsp;    int identity = makeNodeIdentity(nodeHandle);</b>
+<i>532</i>&nbsp;
+<b class="nc"><i>533</i>&nbsp;    if (identity == DTM.NULL)</b>
+<i>534</i>&nbsp;      return;
+<i>535</i>&nbsp;
+<b class="nc"><i>536</i>&nbsp;    int type = _type(identity);</b>
+<i>537</i>&nbsp;
+<b class="nc"><i>538</i>&nbsp;    if (isTextType(type))</b>
+<i>539</i>&nbsp;    {
+<b class="nc"><i>540</i>&nbsp;      int dataIndex = m_dataOrQName.elementAt(identity);</b>
+<b class="nc"><i>541</i>&nbsp;      int offset = m_data.elementAt(dataIndex);</b>
+<b class="nc"><i>542</i>&nbsp;      int length = m_data.elementAt(dataIndex + 1);</b>
+<i>543</i>&nbsp;
+<b class="nc"><i>544</i>&nbsp;      if(normalize)</b>
+<b class="nc"><i>545</i>&nbsp;        m_chars.sendNormalizedSAXcharacters(ch, offset, length);</b>
+<i>546</i>&nbsp;      else
+<b class="nc"><i>547</i>&nbsp;        m_chars.sendSAXcharacters(ch, offset, length);</b>
+<b class="nc"><i>548</i>&nbsp;    }</b>
+<i>549</i>&nbsp;    else
+<i>550</i>&nbsp;    {
+<b class="nc"><i>551</i>&nbsp;      int firstChild = _firstch(identity);</b>
+<i>552</i>&nbsp;
+<b class="nc"><i>553</i>&nbsp;      if (DTM.NULL != firstChild)</b>
+<i>554</i>&nbsp;      {
+<b class="nc"><i>555</i>&nbsp;        int offset = -1;</b>
+<b class="nc"><i>556</i>&nbsp;        int length = 0;</b>
+<b class="nc"><i>557</i>&nbsp;        int startNode = identity;</b>
+<i>558</i>&nbsp;
+<b class="nc"><i>559</i>&nbsp;        identity = firstChild;</b>
+<i>560</i>&nbsp;
+<i>561</i>&nbsp;        do {
+<b class="nc"><i>562</i>&nbsp;          type = _type(identity);</b>
+<i>563</i>&nbsp;
+<b class="nc"><i>564</i>&nbsp;          if (isTextType(type))</b>
+<i>565</i>&nbsp;          {
+<b class="nc"><i>566</i>&nbsp;            int dataIndex = _dataOrQName(identity);</b>
+<i>567</i>&nbsp;
+<b class="nc"><i>568</i>&nbsp;            if (-1 == offset)</b>
+<i>569</i>&nbsp;            {
+<b class="nc"><i>570</i>&nbsp;              offset = m_data.elementAt(dataIndex);</b>
+<i>571</i>&nbsp;            }
+<i>572</i>&nbsp;
+<b class="nc"><i>573</i>&nbsp;            length += m_data.elementAt(dataIndex + 1);</b>
+<i>574</i>&nbsp;          }
+<i>575</i>&nbsp;
+<b class="nc"><i>576</i>&nbsp;          identity = getNextNodeIdentity(identity);</b>
+<b class="nc"><i>577</i>&nbsp;        } while (DTM.NULL != identity &amp;&amp; (_parent(identity) &gt;= startNode));</b>
+<i>578</i>&nbsp;
+<b class="nc"><i>579</i>&nbsp;        if (length &gt; 0)</b>
+<i>580</i>&nbsp;        {
+<b class="nc"><i>581</i>&nbsp;          if(normalize)</b>
+<b class="nc"><i>582</i>&nbsp;            m_chars.sendNormalizedSAXcharacters(ch, offset, length);</b>
+<i>583</i>&nbsp;          else
+<b class="nc"><i>584</i>&nbsp;            m_chars.sendSAXcharacters(ch, offset, length);</b>
+<i>585</i>&nbsp;        }
+<b class="nc"><i>586</i>&nbsp;      }</b>
+<b class="nc"><i>587</i>&nbsp;      else if(type != DTM.ELEMENT_NODE)</b>
+<i>588</i>&nbsp;      {
+<b class="nc"><i>589</i>&nbsp;        int dataIndex = _dataOrQName(identity);</b>
+<i>590</i>&nbsp;
+<b class="nc"><i>591</i>&nbsp;        if (dataIndex &lt; 0)</b>
+<i>592</i>&nbsp;        {
+<b class="nc"><i>593</i>&nbsp;          dataIndex = -dataIndex;</b>
+<b class="nc"><i>594</i>&nbsp;          dataIndex = m_data.elementAt(dataIndex + 1);</b>
+<i>595</i>&nbsp;        }
+<i>596</i>&nbsp;
+<b class="nc"><i>597</i>&nbsp;        String str = m_valuesOrPrefixes.indexToString(dataIndex);</b>
+<i>598</i>&nbsp;
+<b class="nc"><i>599</i>&nbsp;          if(normalize)</b>
+<b class="nc"><i>600</i>&nbsp;            FastStringBuffer.sendNormalizedSAXcharacters(str.toCharArray(),</b>
+<b class="nc"><i>601</i>&nbsp;                                                         0, str.length(), ch);</b>
+<i>602</i>&nbsp;          else
+<b class="nc"><i>603</i>&nbsp;            ch.characters(str.toCharArray(), 0, str.length());</b>
+<i>604</i>&nbsp;      }
+<i>605</i>&nbsp;    }
+<i>606</i>&nbsp;  }
+<i>607</i>&nbsp;
+<i>608</i>&nbsp;
+<i>609</i>&nbsp;  /**
+<i>610</i>&nbsp;   * Given a node handle, return its DOM-style node name. This will
+<i>611</i>&nbsp;   * include names such as #text or #document.
+<i>612</i>&nbsp;   *
+<i>613</i>&nbsp;   * @param nodeHandle the id of the node.
+<i>614</i>&nbsp;   * @return String Name of this node, which may be an empty string.
+<i>615</i>&nbsp;   * %REVIEW% Document when empty string is possible...
+<i>616</i>&nbsp;   * %REVIEW-COMMENT% It should never be empty, should it?
+<i>617</i>&nbsp;   */
+<i>618</i>&nbsp;  public String getNodeName(int nodeHandle)
+<i>619</i>&nbsp;  {
+<i>620</i>&nbsp;
+<b class="nc"><i>621</i>&nbsp;    int expandedTypeID = getExpandedTypeID(nodeHandle);</b>
+<i>622</i>&nbsp;    // If just testing nonzero, no need to shift...
+<b class="nc"><i>623</i>&nbsp;    int namespaceID = m_expandedNameTable.getNamespaceID(expandedTypeID);</b>
+<i>624</i>&nbsp;
+<b class="nc"><i>625</i>&nbsp;    if (0 == namespaceID)</b>
+<i>626</i>&nbsp;    {
+<i>627</i>&nbsp;      // Don&#39;t retrieve name until/unless needed
+<i>628</i>&nbsp;      // String name = m_expandedNameTable.getLocalName(expandedTypeID);
+<b class="nc"><i>629</i>&nbsp;      int type = getNodeType(nodeHandle);</b>
+<i>630</i>&nbsp;
+<b class="nc"><i>631</i>&nbsp;      if (type == DTM.NAMESPACE_NODE)</b>
+<i>632</i>&nbsp;      {
+<b class="nc"><i>633</i>&nbsp;        if (null == m_expandedNameTable.getLocalName(expandedTypeID))</b>
+<b class="nc"><i>634</i>&nbsp;          return &quot;xmlns&quot;;</b>
+<i>635</i>&nbsp;        else
+<b class="nc"><i>636</i>&nbsp;          return &quot;xmlns:&quot; + m_expandedNameTable.getLocalName(expandedTypeID);</b>
+<i>637</i>&nbsp;      }
+<b class="nc"><i>638</i>&nbsp;      else if (0 == m_expandedNameTable.getLocalNameID(expandedTypeID))</b>
+<i>639</i>&nbsp;      {
+<b class="nc"><i>640</i>&nbsp;        return m_fixednames[type];</b>
+<i>641</i>&nbsp;      }
+<i>642</i>&nbsp;      else
+<b class="nc"><i>643</i>&nbsp;        return m_expandedNameTable.getLocalName(expandedTypeID);</b>
+<i>644</i>&nbsp;    }
+<i>645</i>&nbsp;    else
+<i>646</i>&nbsp;    {
+<b class="nc"><i>647</i>&nbsp;      int qnameIndex = m_dataOrQName.elementAt(makeNodeIdentity(nodeHandle));</b>
+<i>648</i>&nbsp;
+<b class="nc"><i>649</i>&nbsp;      if (qnameIndex &lt; 0)</b>
+<i>650</i>&nbsp;      {
+<b class="nc"><i>651</i>&nbsp;        qnameIndex = -qnameIndex;</b>
+<b class="nc"><i>652</i>&nbsp;        qnameIndex = m_data.elementAt(qnameIndex);</b>
+<i>653</i>&nbsp;      }
+<i>654</i>&nbsp;
+<b class="nc"><i>655</i>&nbsp;      return m_valuesOrPrefixes.indexToString(qnameIndex);</b>
+<i>656</i>&nbsp;    }
+<i>657</i>&nbsp;  }
+<i>658</i>&nbsp;
+<i>659</i>&nbsp;  /**
+<i>660</i>&nbsp;   * Given a node handle, return the XPath node name.  This should be
+<i>661</i>&nbsp;   * the name as described by the XPath data model, NOT the DOM-style
+<i>662</i>&nbsp;   * name.
+<i>663</i>&nbsp;   *
+<i>664</i>&nbsp;   * @param nodeHandle the id of the node.
+<i>665</i>&nbsp;   * @return String Name of this node, which may be an empty string.
+<i>666</i>&nbsp;   */
+<i>667</i>&nbsp;  public String getNodeNameX(int nodeHandle)
+<i>668</i>&nbsp;  {
+<i>669</i>&nbsp;
+<b class="nc"><i>670</i>&nbsp;    int expandedTypeID = getExpandedTypeID(nodeHandle);</b>
+<b class="nc"><i>671</i>&nbsp;    int namespaceID = m_expandedNameTable.getNamespaceID(expandedTypeID);</b>
+<i>672</i>&nbsp;
+<b class="nc"><i>673</i>&nbsp;    if (0 == namespaceID)</b>
+<i>674</i>&nbsp;    {
+<b class="nc"><i>675</i>&nbsp;      String name = m_expandedNameTable.getLocalName(expandedTypeID);</b>
+<i>676</i>&nbsp;
+<b class="nc"><i>677</i>&nbsp;      if (name == null)</b>
+<b class="nc"><i>678</i>&nbsp;        return &quot;&quot;;</b>
+<i>679</i>&nbsp;      else
+<b class="nc"><i>680</i>&nbsp;        return name;</b>
+<i>681</i>&nbsp;    }
+<i>682</i>&nbsp;    else
+<i>683</i>&nbsp;    {
+<b class="nc"><i>684</i>&nbsp;      int qnameIndex = m_dataOrQName.elementAt(makeNodeIdentity(nodeHandle));</b>
+<i>685</i>&nbsp;
+<b class="nc"><i>686</i>&nbsp;      if (qnameIndex &lt; 0)</b>
+<i>687</i>&nbsp;      {
+<b class="nc"><i>688</i>&nbsp;        qnameIndex = -qnameIndex;</b>
+<b class="nc"><i>689</i>&nbsp;        qnameIndex = m_data.elementAt(qnameIndex);</b>
+<i>690</i>&nbsp;      }
+<i>691</i>&nbsp;
+<b class="nc"><i>692</i>&nbsp;      return m_valuesOrPrefixes.indexToString(qnameIndex);</b>
+<i>693</i>&nbsp;    }
+<i>694</i>&nbsp;  }
+<i>695</i>&nbsp;
+<i>696</i>&nbsp;  /**
+<i>697</i>&nbsp;   *     5. [specified] A flag indicating whether this attribute was actually
+<i>698</i>&nbsp;   *        specified in the start-tag of its element, or was defaulted from the
+<i>699</i>&nbsp;   *        DTD.
+<i>700</i>&nbsp;   *
+<i>701</i>&nbsp;   * @param attributeHandle Must be a valid handle to an attribute node.
+<i>702</i>&nbsp;   * @return &lt;code&gt;true&lt;/code&gt; if the attribute was specified;
+<i>703</i>&nbsp;   *         &lt;code&gt;false&lt;/code&gt; if it was defaulted.
+<i>704</i>&nbsp;   */
+<i>705</i>&nbsp;  public boolean isAttributeSpecified(int attributeHandle)
+<i>706</i>&nbsp;  {
+<i>707</i>&nbsp;
+<i>708</i>&nbsp;    // I&#39;m not sure if I want to do anything with this...
+<b class="nc"><i>709</i>&nbsp;    return true;  // ??</b>
+<i>710</i>&nbsp;  }
+<i>711</i>&nbsp;
+<i>712</i>&nbsp;  /**
+<i>713</i>&nbsp;   *   A document type declaration information item has the following properties:
+<i>714</i>&nbsp;   *
+<i>715</i>&nbsp;   *     1. [system identifier] The system identifier of the external subset, if
+<i>716</i>&nbsp;   *        it exists. Otherwise this property has no value.
+<i>717</i>&nbsp;   *
+<i>718</i>&nbsp;   * @return the system identifier String object, or null if there is none.
+<i>719</i>&nbsp;   */
+<i>720</i>&nbsp;  public String getDocumentTypeDeclarationSystemIdentifier()
+<i>721</i>&nbsp;  {
+<i>722</i>&nbsp;
+<i>723</i>&nbsp;    /** @todo: implement this com.sun.org.apache.xml.internal.dtm.DTMDefaultBase abstract method */
+<b class="nc"><i>724</i>&nbsp;    error(XMLMessages.createXMLMessage(XMLErrorResources.ER_METHOD_NOT_SUPPORTED, null));//&quot;Not yet supported!&quot;);</b>
+<i>725</i>&nbsp;
+<b class="nc"><i>726</i>&nbsp;    return null;</b>
+<i>727</i>&nbsp;  }
+<i>728</i>&nbsp;
+<i>729</i>&nbsp;  /**
+<i>730</i>&nbsp;   * Get the next node identity value in the list, and call the iterator
+<i>731</i>&nbsp;   * if it hasn&#39;t been added yet.
+<i>732</i>&nbsp;   *
+<i>733</i>&nbsp;   * @param identity The node identity (index).
+<i>734</i>&nbsp;   * @return identity+1, or DTM.NULL.
+<i>735</i>&nbsp;   */
+<i>736</i>&nbsp;  protected int getNextNodeIdentity(int identity)
+<i>737</i>&nbsp;  {
+<i>738</i>&nbsp;
+<b class="nc"><i>739</i>&nbsp;    identity += 1;</b>
+<i>740</i>&nbsp;
+<b class="nc"><i>741</i>&nbsp;    while (identity &gt;= m_size)</b>
+<i>742</i>&nbsp;    {
+<b class="nc"><i>743</i>&nbsp;      if (null == m_incrementalSAXSource)</b>
+<b class="nc"><i>744</i>&nbsp;        return DTM.NULL;</b>
+<i>745</i>&nbsp;
+<b class="nc"><i>746</i>&nbsp;      nextNode();</b>
+<i>747</i>&nbsp;    }
+<i>748</i>&nbsp;
+<b class="nc"><i>749</i>&nbsp;    return identity;</b>
+<i>750</i>&nbsp;  }
+<i>751</i>&nbsp;
+<i>752</i>&nbsp;  /**
+<i>753</i>&nbsp;   * Directly create SAX parser events from a subtree.
+<i>754</i>&nbsp;   *
+<i>755</i>&nbsp;   * @param nodeHandle The node ID.
+<i>756</i>&nbsp;   * @param ch A non-null reference to a ContentHandler.
+<i>757</i>&nbsp;   *
+<i>758</i>&nbsp;   * @throws org.xml.sax.SAXException
+<i>759</i>&nbsp;   */
+<i>760</i>&nbsp;  public void dispatchToEvents(int nodeHandle, org.xml.sax.ContentHandler ch)
+<i>761</i>&nbsp;          throws org.xml.sax.SAXException
+<i>762</i>&nbsp;  {
+<i>763</i>&nbsp;
+<b class="nc"><i>764</i>&nbsp;    DTMTreeWalker treeWalker = m_walker;</b>
+<b class="nc"><i>765</i>&nbsp;    ContentHandler prevCH = treeWalker.getcontentHandler();</b>
+<i>766</i>&nbsp;
+<b class="nc"><i>767</i>&nbsp;    if (null != prevCH)</b>
+<i>768</i>&nbsp;    {
+<b class="nc"><i>769</i>&nbsp;      treeWalker = new DTMTreeWalker();</b>
+<i>770</i>&nbsp;    }
+<i>771</i>&nbsp;
+<b class="nc"><i>772</i>&nbsp;    treeWalker.setcontentHandler(ch);</b>
+<b class="nc"><i>773</i>&nbsp;    treeWalker.setDTM(this);</b>
+<i>774</i>&nbsp;
+<i>775</i>&nbsp;    try
+<i>776</i>&nbsp;    {
+<b class="nc"><i>777</i>&nbsp;      treeWalker.traverse(nodeHandle);</b>
+<i>778</i>&nbsp;    }
+<i>779</i>&nbsp;    finally
+<i>780</i>&nbsp;    {
+<b class="nc"><i>781</i>&nbsp;      treeWalker.setcontentHandler(null);</b>
+<b class="nc"><i>782</i>&nbsp;    }</b>
+<i>783</i>&nbsp;  }
+<i>784</i>&nbsp;
+<i>785</i>&nbsp;  /**
+<i>786</i>&nbsp;   * Get the number of nodes that have been added.
+<i>787</i>&nbsp;   *
+<i>788</i>&nbsp;   * @return The number of that are currently in the tree.
+<i>789</i>&nbsp;   */
+<i>790</i>&nbsp;  public int getNumberOfNodes()
+<i>791</i>&nbsp;  {
+<b class="nc"><i>792</i>&nbsp;    return m_size;</b>
+<i>793</i>&nbsp;  }
+<i>794</i>&nbsp;
+<i>795</i>&nbsp;  /**
+<i>796</i>&nbsp;   * This method should try and build one or more nodes in the table.
+<i>797</i>&nbsp;   *
+<i>798</i>&nbsp;   * @return The true if a next node is found or false if
+<i>799</i>&nbsp;   *         there are no more nodes.
+<i>800</i>&nbsp;   */
+<i>801</i>&nbsp;  protected boolean nextNode()
+<i>802</i>&nbsp;  {
+<i>803</i>&nbsp;
+<b class="nc"><i>804</i>&nbsp;    if (null == m_incrementalSAXSource)</b>
+<b class="nc"><i>805</i>&nbsp;      return false;</b>
+<i>806</i>&nbsp;
+<b class="nc"><i>807</i>&nbsp;    if (m_endDocumentOccured)</b>
+<i>808</i>&nbsp;    {
+<b class="nc"><i>809</i>&nbsp;      clearCoRoutine();</b>
+<i>810</i>&nbsp;
+<b class="nc"><i>811</i>&nbsp;      return false;</b>
+<i>812</i>&nbsp;    }
+<i>813</i>&nbsp;
+<b class="nc"><i>814</i>&nbsp;    Object gotMore = m_incrementalSAXSource.deliverMoreNodes(true);</b>
+<i>815</i>&nbsp;
+<i>816</i>&nbsp;    // gotMore may be a Boolean (TRUE if still parsing, FALSE if
+<i>817</i>&nbsp;    // EOF) or an exception if IncrementalSAXSource malfunctioned
+<i>818</i>&nbsp;    // (code error rather than user error).
+<i>819</i>&nbsp;    //
+<i>820</i>&nbsp;    // %REVIEW% Currently the ErrorHandlers sketched herein are
+<i>821</i>&nbsp;    // no-ops, so I&#39;m going to initially leave this also as a
+<i>822</i>&nbsp;    // no-op.
+<b class="nc"><i>823</i>&nbsp;    if (!(gotMore instanceof Boolean))</b>
+<i>824</i>&nbsp;    {
+<b class="nc"><i>825</i>&nbsp;      if(gotMore instanceof RuntimeException)</b>
+<i>826</i>&nbsp;      {
+<b class="nc"><i>827</i>&nbsp;        throw (RuntimeException)gotMore;</b>
+<i>828</i>&nbsp;      }
+<b class="nc"><i>829</i>&nbsp;      else if(gotMore instanceof Exception)</b>
+<i>830</i>&nbsp;      {
+<b class="nc"><i>831</i>&nbsp;        throw new WrappedRuntimeException((Exception)gotMore);</b>
+<i>832</i>&nbsp;      }
+<i>833</i>&nbsp;      // for now...
+<b class="nc"><i>834</i>&nbsp;      clearCoRoutine();</b>
+<i>835</i>&nbsp;
+<b class="nc"><i>836</i>&nbsp;      return false;</b>
+<i>837</i>&nbsp;
+<i>838</i>&nbsp;      // %TBD%
+<i>839</i>&nbsp;    }
+<i>840</i>&nbsp;
+<b class="nc"><i>841</i>&nbsp;    if (gotMore != Boolean.TRUE)</b>
+<i>842</i>&nbsp;    {
+<i>843</i>&nbsp;
+<i>844</i>&nbsp;      // EOF reached without satisfying the request
+<b class="nc"><i>845</i>&nbsp;      clearCoRoutine();  // Drop connection, stop trying</b>
+<i>846</i>&nbsp;
+<i>847</i>&nbsp;      // %TBD% deregister as its listener?
+<i>848</i>&nbsp;    }
+<i>849</i>&nbsp;
+<b class="nc"><i>850</i>&nbsp;    return true;</b>
+<i>851</i>&nbsp;  }
+<i>852</i>&nbsp;
+<i>853</i>&nbsp;  /**
+<i>854</i>&nbsp;   * Bottleneck determination of text type.
+<i>855</i>&nbsp;   *
+<i>856</i>&nbsp;   * @param type oneof DTM.XXX_NODE.
+<i>857</i>&nbsp;   *
+<i>858</i>&nbsp;   * @return true if this is a text or cdata section.
+<i>859</i>&nbsp;   */
+<i>860</i>&nbsp;  private final boolean isTextType(int type)
+<i>861</i>&nbsp;  {
+<b class="nc"><i>862</i>&nbsp;    return (DTM.TEXT_NODE == type || DTM.CDATA_SECTION_NODE == type);</b>
+<i>863</i>&nbsp;  }
+<i>864</i>&nbsp;
+<i>865</i>&nbsp;//    /**
+<i>866</i>&nbsp;//     * Ensure that the size of the information arrays can hold another entry
+<i>867</i>&nbsp;//     * at the given index.
+<i>868</i>&nbsp;//     *
+<i>869</i>&nbsp;//     * @param on exit from this function, the information arrays sizes must be
+<i>870</i>&nbsp;//     * at least index+1.
+<i>871</i>&nbsp;//     *
+<i>872</i>&nbsp;//     * NEEDSDOC @param index
+<i>873</i>&nbsp;//     */
+<i>874</i>&nbsp;//    protected void ensureSize(int index)
+<i>875</i>&nbsp;//    {
+<i>876</i>&nbsp;//          // dataOrQName is an SuballocatedIntVector and hence self-sizing.
+<i>877</i>&nbsp;//          // But DTMDefaultBase may need fixup.
+<i>878</i>&nbsp;//        super.ensureSize(index);
+<i>879</i>&nbsp;//    }
+<i>880</i>&nbsp;
+<i>881</i>&nbsp;  /**
+<i>882</i>&nbsp;   * Construct the node map from the node.
+<i>883</i>&nbsp;   *
+<i>884</i>&nbsp;   * @param type raw type ID, one of DTM.XXX_NODE.
+<i>885</i>&nbsp;   * @param expandedTypeID The expended type ID.
+<i>886</i>&nbsp;   * @param parentIndex The current parent index.
+<i>887</i>&nbsp;   * @param previousSibling The previous sibling index.
+<i>888</i>&nbsp;   * @param dataOrPrefix index into m_data table, or string handle.
+<i>889</i>&nbsp;   * @param canHaveFirstChild true if the node can have a first child, false
+<i>890</i>&nbsp;   *                          if it is atomic.
+<i>891</i>&nbsp;   *
+<i>892</i>&nbsp;   * @return The index identity of the node that was added.
+<i>893</i>&nbsp;   */
+<i>894</i>&nbsp;  protected int addNode(int type, int expandedTypeID,
+<i>895</i>&nbsp;                        int parentIndex, int previousSibling,
+<i>896</i>&nbsp;                        int dataOrPrefix, boolean canHaveFirstChild)
+<i>897</i>&nbsp;  {
+<i>898</i>&nbsp;    // Common to all nodes:
+<b class="nc"><i>899</i>&nbsp;    int nodeIndex = m_size++;</b>
+<i>900</i>&nbsp;
+<i>901</i>&nbsp;    // Have we overflowed a DTM Identity&#39;s addressing range?
+<b class="nc"><i>902</i>&nbsp;    if(m_dtmIdent.size() == (nodeIndex&gt;&gt;&gt;DTMManager.IDENT_DTM_NODE_BITS))</b>
+<i>903</i>&nbsp;    {
+<b class="nc"><i>904</i>&nbsp;      addNewDTMID(nodeIndex);</b>
+<i>905</i>&nbsp;    }
+<i>906</i>&nbsp;
+<b class="nc"><i>907</i>&nbsp;    m_firstch.addElement(canHaveFirstChild ? NOTPROCESSED : DTM.NULL);</b>
+<b class="nc"><i>908</i>&nbsp;    m_nextsib.addElement(NOTPROCESSED);</b>
+<b class="nc"><i>909</i>&nbsp;    m_parent.addElement(parentIndex);</b>
+<b class="nc"><i>910</i>&nbsp;    m_exptype.addElement(expandedTypeID);</b>
+<b class="nc"><i>911</i>&nbsp;    m_dataOrQName.addElement(dataOrPrefix);</b>
+<i>912</i>&nbsp;
+<b class="nc"><i>913</i>&nbsp;    if (m_prevsib != null) {</b>
+<b class="nc"><i>914</i>&nbsp;      m_prevsib.addElement(previousSibling);</b>
+<i>915</i>&nbsp;    }
+<i>916</i>&nbsp;
+<b class="nc"><i>917</i>&nbsp;    if (DTM.NULL != previousSibling) {</b>
+<b class="nc"><i>918</i>&nbsp;      m_nextsib.setElementAt(nodeIndex,previousSibling);</b>
+<i>919</i>&nbsp;    }
+<i>920</i>&nbsp;
+<b class="nc"><i>921</i>&nbsp;    if (m_locator != null &amp;&amp; m_useSourceLocationProperty) {</b>
+<b class="nc"><i>922</i>&nbsp;      setSourceLocation();</b>
+<i>923</i>&nbsp;    }
+<i>924</i>&nbsp;
+<i>925</i>&nbsp;    // Note that nextSibling is not processed until charactersFlush()
+<i>926</i>&nbsp;    // is called, to handle successive characters() events.
+<i>927</i>&nbsp;
+<i>928</i>&nbsp;    // Special handling by type: Declare namespaces, attach first child
+<b class="nc"><i>929</i>&nbsp;    switch(type)</b>
+<i>930</i>&nbsp;    {
+<i>931</i>&nbsp;    case DTM.NAMESPACE_NODE:
+<b class="nc"><i>932</i>&nbsp;      declareNamespaceInContext(parentIndex,nodeIndex);</b>
+<b class="nc"><i>933</i>&nbsp;      break;</b>
+<i>934</i>&nbsp;    case DTM.ATTRIBUTE_NODE:
+<b class="nc"><i>935</i>&nbsp;      break;</b>
+<i>936</i>&nbsp;    default:
+<b class="nc"><i>937</i>&nbsp;      if (DTM.NULL == previousSibling &amp;&amp; DTM.NULL != parentIndex) {</b>
+<b class="nc"><i>938</i>&nbsp;        m_firstch.setElementAt(nodeIndex,parentIndex);</b>
+<i>939</i>&nbsp;      }
+<i>940</i>&nbsp;      break;
+<i>941</i>&nbsp;    }
+<i>942</i>&nbsp;
+<b class="nc"><i>943</i>&nbsp;    return nodeIndex;</b>
+<i>944</i>&nbsp;  }
+<i>945</i>&nbsp;
+<i>946</i>&nbsp;  /**
+<i>947</i>&nbsp;   * Get a new DTM ID beginning at the specified node index.
+<i>948</i>&nbsp;   * @param  nodeIndex The node identity at which the new DTM ID will begin
+<i>949</i>&nbsp;   * addressing.
+<i>950</i>&nbsp;   */
+<i>951</i>&nbsp;  protected void addNewDTMID(int nodeIndex) {
+<i>952</i>&nbsp;    try
+<i>953</i>&nbsp;    {
+<b class="nc"><i>954</i>&nbsp;      if(m_mgr==null)</b>
+<b class="nc"><i>955</i>&nbsp;        throw new ClassCastException();</b>
+<i>956</i>&nbsp;
+<i>957</i>&nbsp;                              // Handle as Extended Addressing
+<b class="nc"><i>958</i>&nbsp;      DTMManagerDefault mgrD=(DTMManagerDefault)m_mgr;</b>
+<b class="nc"><i>959</i>&nbsp;      int id=mgrD.getFirstFreeDTMID();</b>
+<b class="nc"><i>960</i>&nbsp;      mgrD.addDTM(this,id,nodeIndex);</b>
+<b class="nc"><i>961</i>&nbsp;      m_dtmIdent.addElement(id&lt;&lt;DTMManager.IDENT_DTM_NODE_BITS);</b>
+<i>962</i>&nbsp;    }
+<b class="nc"><i>963</i>&nbsp;    catch(ClassCastException e)</b>
+<i>964</i>&nbsp;    {
+<i>965</i>&nbsp;      // %REVIEW% Wrong error message, but I&#39;ve been told we&#39;re trying
+<i>966</i>&nbsp;      // not to add messages right not for I18N reasons.
+<i>967</i>&nbsp;      // %REVIEW% Should this be a Fatal Error?
+<b class="nc"><i>968</i>&nbsp;      error(XMLMessages.createXMLMessage(XMLErrorResources.ER_NO_DTMIDS_AVAIL, null));//&quot;No more DTM IDs are available&quot;;</b>
+<b class="nc"><i>969</i>&nbsp;    }</b>
+<i>970</i>&nbsp;  }
+<i>971</i>&nbsp;
+<i>972</i>&nbsp;  /**
+<i>973</i>&nbsp;    * Migrate a DTM built with an old DTMManager to a new DTMManager.
+<i>974</i>&nbsp;    * After the migration, the new DTMManager will treat the DTM as
+<i>975</i>&nbsp;    * one that is built by itself.
+<i>976</i>&nbsp;    * This is used to support DTM sharing between multiple transformations.
+<i>977</i>&nbsp;    * @param manager the DTMManager
+<i>978</i>&nbsp;    */
+<i>979</i>&nbsp;  public void migrateTo(DTMManager manager) {
+<b class="nc"><i>980</i>&nbsp;    super.migrateTo(manager);</b>
+<i>981</i>&nbsp;
+<i>982</i>&nbsp;    // We have to reset the information in m_dtmIdent and
+<i>983</i>&nbsp;    // register the DTM with the new manager.
+<b class="nc"><i>984</i>&nbsp;    int numDTMs = m_dtmIdent.size();</b>
+<b class="nc"><i>985</i>&nbsp;    int dtmId = m_mgrDefault.getFirstFreeDTMID();</b>
+<b class="nc"><i>986</i>&nbsp;    int nodeIndex = 0;</b>
+<b class="nc"><i>987</i>&nbsp;    for (int i = 0; i &lt; numDTMs; i++)</b>
+<i>988</i>&nbsp;    {
+<b class="nc"><i>989</i>&nbsp;      m_dtmIdent.setElementAt(dtmId &lt;&lt; DTMManager.IDENT_DTM_NODE_BITS, i);</b>
+<b class="nc"><i>990</i>&nbsp;      m_mgrDefault.addDTM(this, dtmId, nodeIndex);</b>
+<b class="nc"><i>991</i>&nbsp;      dtmId++;</b>
+<b class="nc"><i>992</i>&nbsp;      nodeIndex += (1 &lt;&lt; DTMManager.IDENT_DTM_NODE_BITS);</b>
+<i>993</i>&nbsp;    }
+<i>994</i>&nbsp;  }
+<i>995</i>&nbsp;
+<i>996</i>&nbsp;  /**
+<i>997</i>&nbsp;   * Store the source location of the current node.  This method must be called
+<i>998</i>&nbsp;   * as every node is added to the DTM or for no node.
+<i>999</i>&nbsp;   */
+<i>1000</i>&nbsp;  protected void setSourceLocation() {
+<b class="nc"><i>1001</i>&nbsp;    m_sourceSystemId.addElement(m_locator.getSystemId());</b>
+<b class="nc"><i>1002</i>&nbsp;    m_sourceLine.addElement(m_locator.getLineNumber());</b>
+<b class="nc"><i>1003</i>&nbsp;    m_sourceColumn.addElement(m_locator.getColumnNumber());</b>
+<i>1004</i>&nbsp;
+<i>1005</i>&nbsp;    //%REVIEW% %BUG% Prevent this from arising in the first place
+<i>1006</i>&nbsp;    // by not allowing the enabling conditions to change after we start
+<i>1007</i>&nbsp;    // building the document.
+<b class="nc"><i>1008</i>&nbsp;    if (m_sourceSystemId.size() != m_size) {</b>
+<b class="nc"><i>1009</i>&nbsp;        String msg = &quot;CODING ERROR in Source Location: &quot; + m_size + &quot; != &quot;</b>
+<b class="nc"><i>1010</i>&nbsp;                    + m_sourceSystemId.size();</b>
+<b class="nc"><i>1011</i>&nbsp;        System.err.println(msg);</b>
+<b class="nc"><i>1012</i>&nbsp;        throw new RuntimeException(msg);</b>
+<i>1013</i>&nbsp;    }
+<i>1014</i>&nbsp;  }
+<i>1015</i>&nbsp;
+<i>1016</i>&nbsp;  /**
+<i>1017</i>&nbsp;   * Given a node handle, return its node value. This is mostly
+<i>1018</i>&nbsp;   * as defined by the DOM, but may ignore some conveniences.
+<i>1019</i>&nbsp;   * &lt;p&gt;
+<i>1020</i>&nbsp;   *
+<i>1021</i>&nbsp;   * @param nodeHandle The node id.
+<i>1022</i>&nbsp;   * @return String Value of this node, or null if not
+<i>1023</i>&nbsp;   * meaningful for this node type.
+<i>1024</i>&nbsp;   */
+<i>1025</i>&nbsp;  public String getNodeValue(int nodeHandle)
+<i>1026</i>&nbsp;  {
+<i>1027</i>&nbsp;
+<b class="nc"><i>1028</i>&nbsp;    int identity = makeNodeIdentity(nodeHandle);</b>
+<b class="nc"><i>1029</i>&nbsp;    int type = _type(identity);</b>
+<i>1030</i>&nbsp;
+<b class="nc"><i>1031</i>&nbsp;    if (isTextType(type))</b>
+<i>1032</i>&nbsp;    {
+<b class="nc"><i>1033</i>&nbsp;      int dataIndex = _dataOrQName(identity);</b>
+<b class="nc"><i>1034</i>&nbsp;      int offset = m_data.elementAt(dataIndex);</b>
+<b class="nc"><i>1035</i>&nbsp;      int length = m_data.elementAt(dataIndex + 1);</b>
+<i>1036</i>&nbsp;
+<i>1037</i>&nbsp;      // %OPT% We should cache this, I guess.
+<b class="nc"><i>1038</i>&nbsp;      return m_chars.getString(offset, length);</b>
+<i>1039</i>&nbsp;    }
+<b class="nc"><i>1040</i>&nbsp;    else if (DTM.ELEMENT_NODE == type || DTM.DOCUMENT_FRAGMENT_NODE == type</b>
+<i>1041</i>&nbsp;             || DTM.DOCUMENT_NODE == type)
+<i>1042</i>&nbsp;    {
+<b class="nc"><i>1043</i>&nbsp;      return null;</b>
+<i>1044</i>&nbsp;    }
+<i>1045</i>&nbsp;    else
+<i>1046</i>&nbsp;    {
+<b class="nc"><i>1047</i>&nbsp;      int dataIndex = _dataOrQName(identity);</b>
+<i>1048</i>&nbsp;
+<b class="nc"><i>1049</i>&nbsp;      if (dataIndex &lt; 0)</b>
+<i>1050</i>&nbsp;      {
+<b class="nc"><i>1051</i>&nbsp;        dataIndex = -dataIndex;</b>
+<b class="nc"><i>1052</i>&nbsp;        dataIndex = m_data.elementAt(dataIndex + 1);</b>
+<i>1053</i>&nbsp;      }
+<i>1054</i>&nbsp;
+<b class="nc"><i>1055</i>&nbsp;      return m_valuesOrPrefixes.indexToString(dataIndex);</b>
+<i>1056</i>&nbsp;    }
+<i>1057</i>&nbsp;  }
+<i>1058</i>&nbsp;
+<i>1059</i>&nbsp;  /**
+<i>1060</i>&nbsp;   * Given a node handle, return its XPath-style localname.
+<i>1061</i>&nbsp;   * (As defined in Namespaces, this is the portion of the name after any
+<i>1062</i>&nbsp;   * colon character).
+<i>1063</i>&nbsp;   *
+<i>1064</i>&nbsp;   * @param nodeHandle the id of the node.
+<i>1065</i>&nbsp;   * @return String Local name of this node.
+<i>1066</i>&nbsp;   */
+<i>1067</i>&nbsp;  public String getLocalName(int nodeHandle)
+<i>1068</i>&nbsp;  {
+<b class="nc"><i>1069</i>&nbsp;    return m_expandedNameTable.getLocalName(_exptype(makeNodeIdentity(nodeHandle)));</b>
+<i>1070</i>&nbsp;  }
+<i>1071</i>&nbsp;
+<i>1072</i>&nbsp;  /**
+<i>1073</i>&nbsp;   * The getUnparsedEntityURI function returns the URI of the unparsed
+<i>1074</i>&nbsp;   * entity with the specified name in the same document as the context
+<i>1075</i>&nbsp;   * node (see [3.3 Unparsed Entities]). It returns the empty string if
+<i>1076</i>&nbsp;   * there is no such entity.
+<i>1077</i>&nbsp;   * &lt;p&gt;
+<i>1078</i>&nbsp;   * XML processors may choose to use the System Identifier (if one
+<i>1079</i>&nbsp;   * is provided) to resolve the entity, rather than the URI in the
+<i>1080</i>&nbsp;   * Public Identifier. The details are dependent on the processor, and
+<i>1081</i>&nbsp;   * we would have to support some form of plug-in resolver to handle
+<i>1082</i>&nbsp;   * this properly. Currently, we simply return the System Identifier if
+<i>1083</i>&nbsp;   * present, and hope that it a usable URI or that our caller can
+<i>1084</i>&nbsp;   * map it to one.
+<i>1085</i>&nbsp;   * TODO: Resolve Public Identifiers... or consider changing function name.
+<i>1086</i>&nbsp;   * &lt;p&gt;
+<i>1087</i>&nbsp;   * If we find a relative URI
+<i>1088</i>&nbsp;   * reference, XML expects it to be resolved in terms of the base URI
+<i>1089</i>&nbsp;   * of the document. The DOM doesn&#39;t do that for us, and it isn&#39;t
+<i>1090</i>&nbsp;   * entirely clear whether that should be done here; currently that&#39;s
+<i>1091</i>&nbsp;   * pushed up to a higher level of our application. (Note that DOM Level
+<i>1092</i>&nbsp;   * 1 didn&#39;t store the document&#39;s base URI.)
+<i>1093</i>&nbsp;   * TODO: Consider resolving Relative URIs.
+<i>1094</i>&nbsp;   * &lt;p&gt;
+<i>1095</i>&nbsp;   * (The DOM&#39;s statement that &quot;An XML processor may choose to
+<i>1096</i>&nbsp;   * completely expand entities before the structure model is passed
+<i>1097</i>&nbsp;   * to the DOM&quot; refers only to parsed entities, not unparsed, and hence
+<i>1098</i>&nbsp;   * doesn&#39;t affect this function.)
+<i>1099</i>&nbsp;   *
+<i>1100</i>&nbsp;   * @param name A string containing the Entity Name of the unparsed
+<i>1101</i>&nbsp;   * entity.
+<i>1102</i>&nbsp;   *
+<i>1103</i>&nbsp;   * @return String containing the URI of the Unparsed Entity, or an
+<i>1104</i>&nbsp;   * empty string if no such entity exists.
+<i>1105</i>&nbsp;   */
+<i>1106</i>&nbsp;  public String getUnparsedEntityURI(String name)
+<i>1107</i>&nbsp;  {
+<i>1108</i>&nbsp;
+<b class="nc"><i>1109</i>&nbsp;    String url = &quot;&quot;;</b>
+<i>1110</i>&nbsp;
+<b class="nc"><i>1111</i>&nbsp;    if (null == m_entities)</b>
+<b class="nc"><i>1112</i>&nbsp;      return url;</b>
+<i>1113</i>&nbsp;
+<b class="nc"><i>1114</i>&nbsp;    int n = m_entities.size();</b>
+<i>1115</i>&nbsp;
+<b class="nc"><i>1116</i>&nbsp;    for (int i = 0; i &lt; n; i += ENTITY_FIELDS_PER)</b>
+<i>1117</i>&nbsp;    {
+<b class="nc"><i>1118</i>&nbsp;      String ename = (String) m_entities.elementAt(i + ENTITY_FIELD_NAME);</b>
+<i>1119</i>&nbsp;
+<b class="nc"><i>1120</i>&nbsp;      if (null != ename &amp;&amp; ename.equals(name))</b>
+<i>1121</i>&nbsp;      {
+<b class="nc"><i>1122</i>&nbsp;        String nname = (String) m_entities.elementAt(i</b>
+<i>1123</i>&nbsp;                         + ENTITY_FIELD_NOTATIONNAME);
+<i>1124</i>&nbsp;
+<b class="nc"><i>1125</i>&nbsp;        if (null != nname)</b>
+<i>1126</i>&nbsp;        {
+<i>1127</i>&nbsp;
+<i>1128</i>&nbsp;          // The draft says: &quot;The XSLT processor may use the public
+<i>1129</i>&nbsp;          // identifier to generate a URI for the entity instead of the URI
+<i>1130</i>&nbsp;          // specified in the system identifier. If the XSLT processor does
+<i>1131</i>&nbsp;          // not use the public identifier to generate the URI, it must use
+<i>1132</i>&nbsp;          // the system identifier; if the system identifier is a relative
+<i>1133</i>&nbsp;          // URI, it must be resolved into an absolute URI using the URI of
+<i>1134</i>&nbsp;          // the resource containing the entity declaration as the base
+<i>1135</i>&nbsp;          // URI [RFC2396].&quot;
+<i>1136</i>&nbsp;          // So I&#39;m falling a bit short here.
+<b class="nc"><i>1137</i>&nbsp;          url = (String) m_entities.elementAt(i + ENTITY_FIELD_SYSTEMID);</b>
+<i>1138</i>&nbsp;
+<b class="nc"><i>1139</i>&nbsp;          if (null == url)</b>
+<i>1140</i>&nbsp;          {
+<b class="nc"><i>1141</i>&nbsp;            url = (String) m_entities.elementAt(i + ENTITY_FIELD_PUBLICID);</b>
+<i>1142</i>&nbsp;          }
+<i>1143</i>&nbsp;        }
+<i>1144</i>&nbsp;
+<i>1145</i>&nbsp;        break;
+<i>1146</i>&nbsp;      }
+<i>1147</i>&nbsp;    }
+<i>1148</i>&nbsp;
+<b class="nc"><i>1149</i>&nbsp;    return url;</b>
+<i>1150</i>&nbsp;  }
+<i>1151</i>&nbsp;
+<i>1152</i>&nbsp;  /**
+<i>1153</i>&nbsp;   * Given a namespace handle, return the prefix that the namespace decl is
+<i>1154</i>&nbsp;   * mapping.
+<i>1155</i>&nbsp;   * Given a node handle, return the prefix used to map to the namespace.
+<i>1156</i>&nbsp;   *
+<i>1157</i>&nbsp;   * &lt;p&gt; %REVIEW% Are you sure you want &quot;&quot; for no prefix?  &lt;/p&gt;
+<i>1158</i>&nbsp;   * &lt;p&gt; %REVIEW-COMMENT% I think so... not totally sure. -sb  &lt;/p&gt;
+<i>1159</i>&nbsp;   *
+<i>1160</i>&nbsp;   * @param nodeHandle the id of the node.
+<i>1161</i>&nbsp;   * @return String prefix of this node&#39;s name, or &quot;&quot; if no explicit
+<i>1162</i>&nbsp;   * namespace prefix was given.
+<i>1163</i>&nbsp;   */
+<i>1164</i>&nbsp;  public String getPrefix(int nodeHandle)
+<i>1165</i>&nbsp;  {
+<i>1166</i>&nbsp;
+<b class="nc"><i>1167</i>&nbsp;    int identity = makeNodeIdentity(nodeHandle);</b>
+<b class="nc"><i>1168</i>&nbsp;    int type = _type(identity);</b>
+<i>1169</i>&nbsp;
+<b class="nc"><i>1170</i>&nbsp;    if (DTM.ELEMENT_NODE == type)</b>
+<i>1171</i>&nbsp;    {
+<b class="nc"><i>1172</i>&nbsp;      int prefixIndex = _dataOrQName(identity);</b>
+<i>1173</i>&nbsp;
+<b class="nc"><i>1174</i>&nbsp;      if (0 == prefixIndex)</b>
+<b class="nc"><i>1175</i>&nbsp;        return &quot;&quot;;</b>
+<i>1176</i>&nbsp;      else
+<i>1177</i>&nbsp;      {
+<b class="nc"><i>1178</i>&nbsp;        String qname = m_valuesOrPrefixes.indexToString(prefixIndex);</b>
+<i>1179</i>&nbsp;
+<b class="nc"><i>1180</i>&nbsp;        return getPrefix(qname, null);</b>
+<i>1181</i>&nbsp;      }
+<i>1182</i>&nbsp;    }
+<b class="nc"><i>1183</i>&nbsp;    else if (DTM.ATTRIBUTE_NODE == type)</b>
+<i>1184</i>&nbsp;    {
+<b class="nc"><i>1185</i>&nbsp;      int prefixIndex = _dataOrQName(identity);</b>
+<i>1186</i>&nbsp;
+<b class="nc"><i>1187</i>&nbsp;      if (prefixIndex &lt; 0)</b>
+<i>1188</i>&nbsp;      {
+<b class="nc"><i>1189</i>&nbsp;        prefixIndex = m_data.elementAt(-prefixIndex);</b>
+<i>1190</i>&nbsp;
+<b class="nc"><i>1191</i>&nbsp;        String qname = m_valuesOrPrefixes.indexToString(prefixIndex);</b>
+<i>1192</i>&nbsp;
+<b class="nc"><i>1193</i>&nbsp;        return getPrefix(qname, null);</b>
+<i>1194</i>&nbsp;      }
+<i>1195</i>&nbsp;    }
+<i>1196</i>&nbsp;
+<b class="nc"><i>1197</i>&nbsp;    return &quot;&quot;;</b>
+<i>1198</i>&nbsp;  }
+<i>1199</i>&nbsp;
+<i>1200</i>&nbsp;  /**
+<i>1201</i>&nbsp;   * Retrieves an attribute node by by qualified name and namespace URI.
+<i>1202</i>&nbsp;   *
+<i>1203</i>&nbsp;   * @param nodeHandle int Handle of the node upon which to look up this attribute..
+<i>1204</i>&nbsp;   * @param namespaceURI The namespace URI of the attribute to
+<i>1205</i>&nbsp;   *   retrieve, or null.
+<i>1206</i>&nbsp;   * @param name The local name of the attribute to
+<i>1207</i>&nbsp;   *   retrieve.
+<i>1208</i>&nbsp;   * @return The attribute node handle with the specified name (
+<i>1209</i>&nbsp;   *   &lt;code&gt;nodeName&lt;/code&gt;) or &lt;code&gt;DTM.NULL&lt;/code&gt; if there is no such
+<i>1210</i>&nbsp;   *   attribute.
+<i>1211</i>&nbsp;   */
+<i>1212</i>&nbsp;  public int getAttributeNode(int nodeHandle, String namespaceURI,
+<i>1213</i>&nbsp;                              String name)
+<i>1214</i>&nbsp;  {
+<i>1215</i>&nbsp;
+<b class="nc"><i>1216</i>&nbsp;    for (int attrH = getFirstAttribute(nodeHandle); DTM.NULL != attrH;</b>
+<b class="nc"><i>1217</i>&nbsp;            attrH = getNextAttribute(attrH))</b>
+<i>1218</i>&nbsp;    {
+<b class="nc"><i>1219</i>&nbsp;      String attrNS = getNamespaceURI(attrH);</b>
+<b class="nc"><i>1220</i>&nbsp;      String attrName = getLocalName(attrH);</b>
+<b class="nc"><i>1221</i>&nbsp;      boolean nsMatch = namespaceURI == attrNS</b>
+<i>1222</i>&nbsp;                        || (namespaceURI != null
+<b class="nc"><i>1223</i>&nbsp;                            &amp;&amp; namespaceURI.equals(attrNS));</b>
+<i>1224</i>&nbsp;
+<b class="nc"><i>1225</i>&nbsp;      if (nsMatch &amp;&amp; name.equals(attrName))</b>
+<b class="nc"><i>1226</i>&nbsp;        return attrH;</b>
+<i>1227</i>&nbsp;    }
+<i>1228</i>&nbsp;
+<b class="nc"><i>1229</i>&nbsp;    return DTM.NULL;</b>
+<i>1230</i>&nbsp;  }
+<i>1231</i>&nbsp;
+<i>1232</i>&nbsp;  /**
+<i>1233</i>&nbsp;   * Return the public identifier of the external subset,
+<i>1234</i>&nbsp;   * normalized as described in 4.2.2 External Entities [XML]. If there is
+<i>1235</i>&nbsp;   * no external subset or if it has no public identifier, this property
+<i>1236</i>&nbsp;   * has no value.
+<i>1237</i>&nbsp;   *
+<i>1238</i>&nbsp;   * @return the public identifier String object, or null if there is none.
+<i>1239</i>&nbsp;   */
+<i>1240</i>&nbsp;  public String getDocumentTypeDeclarationPublicIdentifier()
+<i>1241</i>&nbsp;  {
+<i>1242</i>&nbsp;
+<i>1243</i>&nbsp;    /** @todo: implement this com.sun.org.apache.xml.internal.dtm.DTMDefaultBase abstract method */
+<b class="nc"><i>1244</i>&nbsp;    error(XMLMessages.createXMLMessage(XMLErrorResources.ER_METHOD_NOT_SUPPORTED, null));//&quot;Not yet supported!&quot;);</b>
+<i>1245</i>&nbsp;
+<b class="nc"><i>1246</i>&nbsp;    return null;</b>
+<i>1247</i>&nbsp;  }
+<i>1248</i>&nbsp;
+<i>1249</i>&nbsp;  /**
+<i>1250</i>&nbsp;   * Given a node handle, return its DOM-style namespace URI
+<i>1251</i>&nbsp;   * (As defined in Namespaces, this is the declared URI which this node&#39;s
+<i>1252</i>&nbsp;   * prefix -- or default in lieu thereof -- was mapped to.)
+<i>1253</i>&nbsp;   *
+<i>1254</i>&nbsp;   * &lt;p&gt;%REVIEW% Null or &quot;&quot;? -sb&lt;/p&gt;
+<i>1255</i>&nbsp;   *
+<i>1256</i>&nbsp;   * @param nodeHandle the id of the node.
+<i>1257</i>&nbsp;   * @return String URI value of this node&#39;s namespace, or null if no
+<i>1258</i>&nbsp;   * namespace was resolved.
+<i>1259</i>&nbsp;   */
+<i>1260</i>&nbsp;  public String getNamespaceURI(int nodeHandle)
+<i>1261</i>&nbsp;  {
+<i>1262</i>&nbsp;
+<b class="nc"><i>1263</i>&nbsp;    return m_expandedNameTable.getNamespace(_exptype(makeNodeIdentity(nodeHandle)));</b>
+<i>1264</i>&nbsp;  }
+<i>1265</i>&nbsp;
+<i>1266</i>&nbsp;  /**
+<i>1267</i>&nbsp;   * Get the string-value of a node as a String object
+<i>1268</i>&nbsp;   * (see http://www.w3.org/TR/xpath#data-model
+<i>1269</i>&nbsp;   * for the definition of a node&#39;s string-value).
+<i>1270</i>&nbsp;   *
+<i>1271</i>&nbsp;   * @param nodeHandle The node ID.
+<i>1272</i>&nbsp;   *
+<i>1273</i>&nbsp;   * @return A string object that represents the string-value of the given node.
+<i>1274</i>&nbsp;   */
+<i>1275</i>&nbsp;  public XMLString getStringValue(int nodeHandle)
+<i>1276</i>&nbsp;  {
+<b class="nc"><i>1277</i>&nbsp;    int identity = makeNodeIdentity(nodeHandle);</b>
+<i>1278</i>&nbsp;    int type;
+<b class="nc"><i>1279</i>&nbsp;    if(identity==DTM.NULL) // Separate lines because I wanted to breakpoint it</b>
+<b class="nc"><i>1280</i>&nbsp;      type = DTM.NULL;</b>
+<i>1281</i>&nbsp;    else
+<b class="nc"><i>1282</i>&nbsp;      type= _type(identity);</b>
+<i>1283</i>&nbsp;
+<b class="nc"><i>1284</i>&nbsp;    if (isTextType(type))</b>
+<i>1285</i>&nbsp;    {
+<b class="nc"><i>1286</i>&nbsp;      int dataIndex = _dataOrQName(identity);</b>
+<b class="nc"><i>1287</i>&nbsp;      int offset = m_data.elementAt(dataIndex);</b>
+<b class="nc"><i>1288</i>&nbsp;      int length = m_data.elementAt(dataIndex + 1);</b>
+<i>1289</i>&nbsp;
+<b class="nc"><i>1290</i>&nbsp;      return m_xstrf.newstr(m_chars, offset, length);</b>
+<i>1291</i>&nbsp;    }
+<i>1292</i>&nbsp;    else
+<i>1293</i>&nbsp;    {
+<b class="nc"><i>1294</i>&nbsp;      int firstChild = _firstch(identity);</b>
+<i>1295</i>&nbsp;
+<b class="nc"><i>1296</i>&nbsp;      if (DTM.NULL != firstChild)</b>
+<i>1297</i>&nbsp;      {
+<b class="nc"><i>1298</i>&nbsp;        int offset = -1;</b>
+<b class="nc"><i>1299</i>&nbsp;        int length = 0;</b>
+<b class="nc"><i>1300</i>&nbsp;        int startNode = identity;</b>
+<i>1301</i>&nbsp;
+<b class="nc"><i>1302</i>&nbsp;        identity = firstChild;</b>
+<i>1303</i>&nbsp;
+<i>1304</i>&nbsp;        do {
+<b class="nc"><i>1305</i>&nbsp;          type = _type(identity);</b>
+<i>1306</i>&nbsp;
+<b class="nc"><i>1307</i>&nbsp;          if (isTextType(type))</b>
+<i>1308</i>&nbsp;          {
+<b class="nc"><i>1309</i>&nbsp;            int dataIndex = _dataOrQName(identity);</b>
+<i>1310</i>&nbsp;
+<b class="nc"><i>1311</i>&nbsp;            if (-1 == offset)</b>
+<i>1312</i>&nbsp;            {
+<b class="nc"><i>1313</i>&nbsp;              offset = m_data.elementAt(dataIndex);</b>
+<i>1314</i>&nbsp;            }
+<i>1315</i>&nbsp;
+<b class="nc"><i>1316</i>&nbsp;            length += m_data.elementAt(dataIndex + 1);</b>
+<i>1317</i>&nbsp;          }
+<i>1318</i>&nbsp;
+<b class="nc"><i>1319</i>&nbsp;          identity = getNextNodeIdentity(identity);</b>
+<b class="nc"><i>1320</i>&nbsp;        } while (DTM.NULL != identity &amp;&amp; (_parent(identity) &gt;= startNode));</b>
+<i>1321</i>&nbsp;
+<b class="nc"><i>1322</i>&nbsp;        if (length &gt; 0)</b>
+<i>1323</i>&nbsp;        {
+<b class="nc"><i>1324</i>&nbsp;          return m_xstrf.newstr(m_chars, offset, length);</b>
+<i>1325</i>&nbsp;        }
+<b class="nc"><i>1326</i>&nbsp;      }</b>
+<b class="nc"><i>1327</i>&nbsp;      else if(type != DTM.ELEMENT_NODE)</b>
+<i>1328</i>&nbsp;      {
+<b class="nc"><i>1329</i>&nbsp;        int dataIndex = _dataOrQName(identity);</b>
+<i>1330</i>&nbsp;
+<b class="nc"><i>1331</i>&nbsp;        if (dataIndex &lt; 0)</b>
+<i>1332</i>&nbsp;        {
+<b class="nc"><i>1333</i>&nbsp;          dataIndex = -dataIndex;</b>
+<b class="nc"><i>1334</i>&nbsp;          dataIndex = m_data.elementAt(dataIndex + 1);</b>
+<i>1335</i>&nbsp;        }
+<b class="nc"><i>1336</i>&nbsp;        return m_xstrf.newstr(m_valuesOrPrefixes.indexToString(dataIndex));</b>
+<i>1337</i>&nbsp;      }
+<i>1338</i>&nbsp;    }
+<i>1339</i>&nbsp;
+<b class="nc"><i>1340</i>&nbsp;    return m_xstrf.emptystr();</b>
+<i>1341</i>&nbsp;  }
+<i>1342</i>&nbsp;
+<i>1343</i>&nbsp;  /**
+<i>1344</i>&nbsp;   * Determine if the string-value of a node is whitespace
+<i>1345</i>&nbsp;   *
+<i>1346</i>&nbsp;   * @param nodeHandle The node Handle.
+<i>1347</i>&nbsp;   *
+<i>1348</i>&nbsp;   * @return Return true if the given node is whitespace.
+<i>1349</i>&nbsp;   */
+<i>1350</i>&nbsp;  public boolean isWhitespace(int nodeHandle)
+<i>1351</i>&nbsp;  {
+<b class="nc"><i>1352</i>&nbsp;    int identity = makeNodeIdentity(nodeHandle);</b>
+<i>1353</i>&nbsp;    int type;
+<b class="nc"><i>1354</i>&nbsp;    if(identity==DTM.NULL) // Separate lines because I wanted to breakpoint it</b>
+<b class="nc"><i>1355</i>&nbsp;      type = DTM.NULL;</b>
+<i>1356</i>&nbsp;    else
+<b class="nc"><i>1357</i>&nbsp;      type= _type(identity);</b>
+<i>1358</i>&nbsp;
+<b class="nc"><i>1359</i>&nbsp;    if (isTextType(type))</b>
+<i>1360</i>&nbsp;    {
+<b class="nc"><i>1361</i>&nbsp;      int dataIndex = _dataOrQName(identity);</b>
+<b class="nc"><i>1362</i>&nbsp;      int offset = m_data.elementAt(dataIndex);</b>
+<b class="nc"><i>1363</i>&nbsp;      int length = m_data.elementAt(dataIndex + 1);</b>
+<i>1364</i>&nbsp;
+<b class="nc"><i>1365</i>&nbsp;      return m_chars.isWhitespace(offset, length);</b>
+<i>1366</i>&nbsp;    }
+<b class="nc"><i>1367</i>&nbsp;    return false;</b>
+<i>1368</i>&nbsp;  }
+<i>1369</i>&nbsp;
+<i>1370</i>&nbsp;  /**
+<i>1371</i>&nbsp;   * Returns the &lt;code&gt;Element&lt;/code&gt; whose &lt;code&gt;ID&lt;/code&gt; is given by
+<i>1372</i>&nbsp;   * &lt;code&gt;elementId&lt;/code&gt;. If no such element exists, returns
+<i>1373</i>&nbsp;   * &lt;code&gt;DTM.NULL&lt;/code&gt;. Behavior is not defined if more than one element
+<i>1374</i>&nbsp;   * has this &lt;code&gt;ID&lt;/code&gt;. Attributes (including those
+<i>1375</i>&nbsp;   * with the name &quot;ID&quot;) are not of type ID unless so defined by DTD/Schema
+<i>1376</i>&nbsp;   * information available to the DTM implementation.
+<i>1377</i>&nbsp;   * Implementations that do not know whether attributes are of type ID or
+<i>1378</i>&nbsp;   * not are expected to return &lt;code&gt;DTM.NULL&lt;/code&gt;.
+<i>1379</i>&nbsp;   *
+<i>1380</i>&nbsp;   * &lt;p&gt;%REVIEW% Presumably IDs are still scoped to a single document,
+<i>1381</i>&nbsp;   * and this operation searches only within a single document, right?
+<i>1382</i>&nbsp;   * Wouldn&#39;t want collisions between DTMs in the same process.&lt;/p&gt;
+<i>1383</i>&nbsp;   *
+<i>1384</i>&nbsp;   * @param elementId The unique &lt;code&gt;id&lt;/code&gt; value for an element.
+<i>1385</i>&nbsp;   * @return The handle of the matching element.
+<i>1386</i>&nbsp;   */
+<i>1387</i>&nbsp;  public int getElementById(String elementId)
+<i>1388</i>&nbsp;  {
+<i>1389</i>&nbsp;
+<i>1390</i>&nbsp;    Integer intObj;
+<b class="nc"><i>1391</i>&nbsp;    boolean isMore = true;</b>
+<i>1392</i>&nbsp;
+<i>1393</i>&nbsp;    do
+<i>1394</i>&nbsp;    {
+<b class="nc"><i>1395</i>&nbsp;      intObj = m_idAttributes.get(elementId);</b>
+<i>1396</i>&nbsp;
+<b class="nc"><i>1397</i>&nbsp;      if (null != intObj)</b>
+<b class="nc"><i>1398</i>&nbsp;        return makeNodeHandle(intObj.intValue());</b>
+<i>1399</i>&nbsp;
+<b class="nc"><i>1400</i>&nbsp;      if (!isMore || m_endDocumentOccured)</b>
+<b class="nc"><i>1401</i>&nbsp;        break;</b>
+<i>1402</i>&nbsp;
+<b class="nc"><i>1403</i>&nbsp;      isMore = nextNode();</b>
+<i>1404</i>&nbsp;    }
+<b class="nc"><i>1405</i>&nbsp;    while (null == intObj);</b>
+<i>1406</i>&nbsp;
+<b class="nc"><i>1407</i>&nbsp;    return DTM.NULL;</b>
+<i>1408</i>&nbsp;  }
+<i>1409</i>&nbsp;
+<i>1410</i>&nbsp;  /**
+<i>1411</i>&nbsp;   * Get a prefix either from the qname or from the uri mapping, or just make
+<i>1412</i>&nbsp;   * one up!
+<i>1413</i>&nbsp;   *
+<i>1414</i>&nbsp;   * @param qname The qualified name, which may be null.
+<i>1415</i>&nbsp;   * @param uri The namespace URI, which may be null.
+<i>1416</i>&nbsp;   *
+<i>1417</i>&nbsp;   * @return The prefix if there is one, or null.
+<i>1418</i>&nbsp;   */
+<i>1419</i>&nbsp;  public String getPrefix(String qname, String uri)
+<i>1420</i>&nbsp;  {
+<i>1421</i>&nbsp;
+<i>1422</i>&nbsp;    String prefix;
+<b class="nc"><i>1423</i>&nbsp;    int uriIndex = -1;</b>
+<i>1424</i>&nbsp;
+<b class="nc"><i>1425</i>&nbsp;    if (null != uri &amp;&amp; uri.length() &gt; 0)</b>
+<i>1426</i>&nbsp;    {
+<i>1427</i>&nbsp;
+<i>1428</i>&nbsp;      do
+<i>1429</i>&nbsp;      {
+<b class="nc"><i>1430</i>&nbsp;        uriIndex = m_prefixMappings.indexOf(uri, ++uriIndex);</b>
+<b class="nc"><i>1431</i>&nbsp;      } while ( (uriIndex &amp; 0x01) == 0);</b>
+<i>1432</i>&nbsp;
+<b class="nc"><i>1433</i>&nbsp;      if (uriIndex &gt;= 0)</b>
+<i>1434</i>&nbsp;      {
+<b class="nc"><i>1435</i>&nbsp;        prefix = (String) m_prefixMappings.elementAt(uriIndex - 1);</b>
+<i>1436</i>&nbsp;      }
+<b class="nc"><i>1437</i>&nbsp;      else if (null != qname)</b>
+<i>1438</i>&nbsp;      {
+<b class="nc"><i>1439</i>&nbsp;        int indexOfNSSep = qname.indexOf(&#39;:&#39;);</b>
+<i>1440</i>&nbsp;
+<b class="nc"><i>1441</i>&nbsp;        if (qname.equals(&quot;xmlns&quot;))</b>
+<b class="nc"><i>1442</i>&nbsp;          prefix = &quot;&quot;;</b>
+<b class="nc"><i>1443</i>&nbsp;        else if (qname.startsWith(&quot;xmlns:&quot;))</b>
+<b class="nc"><i>1444</i>&nbsp;          prefix = qname.substring(indexOfNSSep + 1);</b>
+<i>1445</i>&nbsp;        else
+<b class="nc"><i>1446</i>&nbsp;          prefix = (indexOfNSSep &gt; 0)</b>
+<b class="nc"><i>1447</i>&nbsp;                   ? qname.substring(0, indexOfNSSep) : null;</b>
+<b class="nc"><i>1448</i>&nbsp;      }</b>
+<i>1449</i>&nbsp;      else
+<i>1450</i>&nbsp;      {
+<b class="nc"><i>1451</i>&nbsp;        prefix = null;</b>
+<i>1452</i>&nbsp;      }
+<i>1453</i>&nbsp;    }
+<b class="nc"><i>1454</i>&nbsp;    else if (null != qname)</b>
+<i>1455</i>&nbsp;    {
+<b class="nc"><i>1456</i>&nbsp;      int indexOfNSSep = qname.indexOf(&#39;:&#39;);</b>
+<i>1457</i>&nbsp;
+<b class="nc"><i>1458</i>&nbsp;      if (indexOfNSSep &gt; 0)</b>
+<i>1459</i>&nbsp;      {
+<b class="nc"><i>1460</i>&nbsp;        if (qname.startsWith(&quot;xmlns:&quot;))</b>
+<b class="nc"><i>1461</i>&nbsp;          prefix = qname.substring(indexOfNSSep + 1);</b>
+<i>1462</i>&nbsp;        else
+<b class="nc"><i>1463</i>&nbsp;          prefix = qname.substring(0, indexOfNSSep);</b>
+<i>1464</i>&nbsp;      }
+<i>1465</i>&nbsp;      else
+<i>1466</i>&nbsp;      {
+<b class="nc"><i>1467</i>&nbsp;        if (qname.equals(&quot;xmlns&quot;))</b>
+<b class="nc"><i>1468</i>&nbsp;          prefix = &quot;&quot;;</b>
+<i>1469</i>&nbsp;        else
+<b class="nc"><i>1470</i>&nbsp;          prefix = null;</b>
+<i>1471</i>&nbsp;      }
+<b class="nc"><i>1472</i>&nbsp;    }</b>
+<i>1473</i>&nbsp;    else
+<i>1474</i>&nbsp;    {
+<b class="nc"><i>1475</i>&nbsp;      prefix = null;</b>
+<i>1476</i>&nbsp;    }
+<i>1477</i>&nbsp;
+<b class="nc"><i>1478</i>&nbsp;    return prefix;</b>
+<i>1479</i>&nbsp;  }
+<i>1480</i>&nbsp;
+<i>1481</i>&nbsp;  /**
+<i>1482</i>&nbsp;   * Get a prefix either from the uri mapping, or just make
+<i>1483</i>&nbsp;   * one up!
+<i>1484</i>&nbsp;   *
+<i>1485</i>&nbsp;   * @param uri The namespace URI, which may be null.
+<i>1486</i>&nbsp;   *
+<i>1487</i>&nbsp;   * @return The prefix if there is one, or null.
+<i>1488</i>&nbsp;   */
+<i>1489</i>&nbsp;  public int getIdForNamespace(String uri)
+<i>1490</i>&nbsp;  {
+<i>1491</i>&nbsp;
+<b class="nc"><i>1492</i>&nbsp;     return m_valuesOrPrefixes.stringToIndex(uri);</b>
+<i>1493</i>&nbsp;
+<i>1494</i>&nbsp;  }
+<i>1495</i>&nbsp;
+<i>1496</i>&nbsp;    /**
+<i>1497</i>&nbsp;   * Get a prefix either from the qname or from the uri mapping, or just make
+<i>1498</i>&nbsp;   * one up!
+<i>1499</i>&nbsp;   *
+<i>1500</i>&nbsp;   * @return The prefix if there is one, or null.
+<i>1501</i>&nbsp;   */
+<i>1502</i>&nbsp;  public String getNamespaceURI(String prefix)
+<i>1503</i>&nbsp;  {
+<i>1504</i>&nbsp;
+<b class="nc"><i>1505</i>&nbsp;    String uri = &quot;&quot;;</b>
+<b class="nc"><i>1506</i>&nbsp;    int prefixIndex = m_contextIndexes.peek() - 1 ;</b>
+<i>1507</i>&nbsp;
+<b class="nc"><i>1508</i>&nbsp;    if(null == prefix)</b>
+<b class="nc"><i>1509</i>&nbsp;      prefix = &quot;&quot;;</b>
+<i>1510</i>&nbsp;
+<i>1511</i>&nbsp;      do
+<i>1512</i>&nbsp;      {
+<b class="nc"><i>1513</i>&nbsp;        prefixIndex = m_prefixMappings.indexOf(prefix, ++prefixIndex);</b>
+<b class="nc"><i>1514</i>&nbsp;      } while ( (prefixIndex &gt;= 0) &amp;&amp; (prefixIndex &amp; 0x01) == 0x01);</b>
+<i>1515</i>&nbsp;
+<b class="nc"><i>1516</i>&nbsp;      if (prefixIndex &gt; -1)</b>
+<i>1517</i>&nbsp;      {
+<b class="nc"><i>1518</i>&nbsp;        uri = (String) m_prefixMappings.elementAt(prefixIndex + 1);</b>
+<i>1519</i>&nbsp;      }
+<i>1520</i>&nbsp;
+<i>1521</i>&nbsp;
+<b class="nc"><i>1522</i>&nbsp;    return uri;</b>
+<i>1523</i>&nbsp;  }
+<i>1524</i>&nbsp;
+<i>1525</i>&nbsp;  /**
+<i>1526</i>&nbsp;   * Set an ID string to node association in the ID table.
+<i>1527</i>&nbsp;   *
+<i>1528</i>&nbsp;   * @param id The ID string.
+<i>1529</i>&nbsp;   * @param elem The associated element handle.
+<i>1530</i>&nbsp;   */
+<i>1531</i>&nbsp;  public void setIDAttribute(String id, int elem)
+<i>1532</i>&nbsp;  {
+<b class="nc"><i>1533</i>&nbsp;    m_idAttributes.put(id, elem);</b>
+<i>1534</i>&nbsp;  }
+<i>1535</i>&nbsp;
+<i>1536</i>&nbsp;  /**
+<i>1537</i>&nbsp;   * Check whether accumulated text should be stripped; if not,
+<i>1538</i>&nbsp;   * append the appropriate flavor of text/cdata node.
+<i>1539</i>&nbsp;   */
+<i>1540</i>&nbsp;  protected void charactersFlush()
+<i>1541</i>&nbsp;  {
+<i>1542</i>&nbsp;
+<b class="nc"><i>1543</i>&nbsp;    if (m_textPendingStart &gt;= 0)  // -1 indicates no-text-in-progress</b>
+<i>1544</i>&nbsp;    {
+<b class="nc"><i>1545</i>&nbsp;      int length = m_chars.size() - m_textPendingStart;</b>
+<b class="nc"><i>1546</i>&nbsp;      boolean doStrip = false;</b>
+<i>1547</i>&nbsp;
+<b class="nc"><i>1548</i>&nbsp;      if (getShouldStripWhitespace())</b>
+<i>1549</i>&nbsp;      {
+<b class="nc"><i>1550</i>&nbsp;        doStrip = m_chars.isWhitespace(m_textPendingStart, length);</b>
+<i>1551</i>&nbsp;      }
+<i>1552</i>&nbsp;
+<b class="nc"><i>1553</i>&nbsp;      if (doStrip) {</b>
+<b class="nc"><i>1554</i>&nbsp;        m_chars.setLength(m_textPendingStart);  // Discard accumulated text</b>
+<i>1555</i>&nbsp;      } else {
+<i>1556</i>&nbsp;        // Guard against characters/ignorableWhitespace events that
+<i>1557</i>&nbsp;        // contained no characters.  They should not result in a node.
+<b class="nc"><i>1558</i>&nbsp;        if (length &gt; 0) {</b>
+<b class="nc"><i>1559</i>&nbsp;          int exName = m_expandedNameTable.getExpandedTypeID(DTM.TEXT_NODE);</b>
+<b class="nc"><i>1560</i>&nbsp;          int dataIndex = m_data.size();</b>
+<i>1561</i>&nbsp;
+<b class="nc"><i>1562</i>&nbsp;          m_previous = addNode(m_coalescedTextType, exName,</b>
+<b class="nc"><i>1563</i>&nbsp;                               m_parents.peek(), m_previous, dataIndex, false);</b>
+<i>1564</i>&nbsp;
+<b class="nc"><i>1565</i>&nbsp;          m_data.addElement(m_textPendingStart);</b>
+<b class="nc"><i>1566</i>&nbsp;          m_data.addElement(length);</b>
+<i>1567</i>&nbsp;        }
+<i>1568</i>&nbsp;      }
+<i>1569</i>&nbsp;
+<i>1570</i>&nbsp;      // Reset for next text block
+<b class="nc"><i>1571</i>&nbsp;      m_textPendingStart = -1;</b>
+<b class="nc"><i>1572</i>&nbsp;      m_textType = m_coalescedTextType = DTM.TEXT_NODE;</b>
+<i>1573</i>&nbsp;    }
+<i>1574</i>&nbsp;  }
+<i>1575</i>&nbsp;
+<i>1576</i>&nbsp;  ////////////////////////////////////////////////////////////////////
+<i>1577</i>&nbsp;  // Implementation of the EntityResolver interface.
+<i>1578</i>&nbsp;  ////////////////////////////////////////////////////////////////////
+<i>1579</i>&nbsp;
+<i>1580</i>&nbsp;  /**
+<i>1581</i>&nbsp;   * Resolve an external entity.
+<i>1582</i>&nbsp;   *
+<i>1583</i>&nbsp;   * &lt;p&gt;Always return null, so that the parser will use the system
+<i>1584</i>&nbsp;   * identifier provided in the XML document.  This method implements
+<i>1585</i>&nbsp;   * the SAX default behaviour: application writers can override it
+<i>1586</i>&nbsp;   * in a subclass to do special translations such as catalog lookups
+<i>1587</i>&nbsp;   * or URI redirection.&lt;/p&gt;
+<i>1588</i>&nbsp;   *
+<i>1589</i>&nbsp;   * @param publicId The public identifer, or null if none is
+<i>1590</i>&nbsp;   *                 available.
+<i>1591</i>&nbsp;   * @param systemId The system identifier provided in the XML
+<i>1592</i>&nbsp;   *                 document.
+<i>1593</i>&nbsp;   * @return The new input source, or null to require the
+<i>1594</i>&nbsp;   *         default behaviour.
+<i>1595</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>1596</i>&nbsp;   *            wrapping another exception.
+<i>1597</i>&nbsp;   * @see org.xml.sax.EntityResolver#resolveEntity
+<i>1598</i>&nbsp;   *
+<i>1599</i>&nbsp;   * @throws SAXException
+<i>1600</i>&nbsp;   */
+<i>1601</i>&nbsp;  public InputSource resolveEntity(String publicId, String systemId)
+<i>1602</i>&nbsp;          throws SAXException
+<i>1603</i>&nbsp;  {
+<b class="nc"><i>1604</i>&nbsp;    return null;</b>
+<i>1605</i>&nbsp;  }
+<i>1606</i>&nbsp;
+<i>1607</i>&nbsp;  ////////////////////////////////////////////////////////////////////
+<i>1608</i>&nbsp;  // Implementation of DTDHandler interface.
+<i>1609</i>&nbsp;  ////////////////////////////////////////////////////////////////////
+<i>1610</i>&nbsp;
+<i>1611</i>&nbsp;  /**
+<i>1612</i>&nbsp;   * Receive notification of a notation declaration.
+<i>1613</i>&nbsp;   *
+<i>1614</i>&nbsp;   * &lt;p&gt;By default, do nothing.  Application writers may override this
+<i>1615</i>&nbsp;   * method in a subclass if they wish to keep track of the notations
+<i>1616</i>&nbsp;   * declared in a document.&lt;/p&gt;
+<i>1617</i>&nbsp;   *
+<i>1618</i>&nbsp;   * @param name The notation name.
+<i>1619</i>&nbsp;   * @param publicId The notation public identifier, or null if not
+<i>1620</i>&nbsp;   *                 available.
+<i>1621</i>&nbsp;   * @param systemId The notation system identifier.
+<i>1622</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>1623</i>&nbsp;   *            wrapping another exception.
+<i>1624</i>&nbsp;   * @see org.xml.sax.DTDHandler#notationDecl
+<i>1625</i>&nbsp;   *
+<i>1626</i>&nbsp;   * @throws SAXException
+<i>1627</i>&nbsp;   */
+<i>1628</i>&nbsp;  public void notationDecl(String name, String publicId, String systemId)
+<i>1629</i>&nbsp;          throws SAXException
+<i>1630</i>&nbsp;  {
+<i>1631</i>&nbsp;
+<i>1632</i>&nbsp;    // no op
+<i>1633</i>&nbsp;  }
+<i>1634</i>&nbsp;
+<i>1635</i>&nbsp;  /**
+<i>1636</i>&nbsp;   * Receive notification of an unparsed entity declaration.
+<i>1637</i>&nbsp;   *
+<i>1638</i>&nbsp;   * &lt;p&gt;By default, do nothing.  Application writers may override this
+<i>1639</i>&nbsp;   * method in a subclass to keep track of the unparsed entities
+<i>1640</i>&nbsp;   * declared in a document.&lt;/p&gt;
+<i>1641</i>&nbsp;   *
+<i>1642</i>&nbsp;   * @param name The entity name.
+<i>1643</i>&nbsp;   * @param publicId The entity public identifier, or null if not
+<i>1644</i>&nbsp;   *                 available.
+<i>1645</i>&nbsp;   * @param systemId The entity system identifier.
+<i>1646</i>&nbsp;   * @param notationName The name of the associated notation.
+<i>1647</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>1648</i>&nbsp;   *            wrapping another exception.
+<i>1649</i>&nbsp;   * @see org.xml.sax.DTDHandler#unparsedEntityDecl
+<i>1650</i>&nbsp;   *
+<i>1651</i>&nbsp;   * @throws SAXException
+<i>1652</i>&nbsp;   */
+<i>1653</i>&nbsp;  public void unparsedEntityDecl(
+<i>1654</i>&nbsp;          String name, String publicId, String systemId, String notationName)
+<i>1655</i>&nbsp;            throws SAXException
+<i>1656</i>&nbsp;  {
+<i>1657</i>&nbsp;
+<b class="nc"><i>1658</i>&nbsp;    if (null == m_entities)</b>
+<i>1659</i>&nbsp;    {
+<b class="nc"><i>1660</i>&nbsp;      m_entities = new Vector();</b>
+<i>1661</i>&nbsp;    }
+<i>1662</i>&nbsp;
+<i>1663</i>&nbsp;    try
+<i>1664</i>&nbsp;    {
+<b class="nc"><i>1665</i>&nbsp;      systemId = SystemIDResolver.getAbsoluteURI(systemId,</b>
+<b class="nc"><i>1666</i>&nbsp;                                                 getDocumentBaseURI());</b>
+<i>1667</i>&nbsp;    }
+<b class="nc"><i>1668</i>&nbsp;    catch (Exception e)</b>
+<i>1669</i>&nbsp;    {
+<b class="nc"><i>1670</i>&nbsp;      throw new org.xml.sax.SAXException(e);</b>
+<b class="nc"><i>1671</i>&nbsp;    }</b>
+<i>1672</i>&nbsp;
+<i>1673</i>&nbsp;    //  private static final int ENTITY_FIELD_PUBLICID = 0;
+<b class="nc"><i>1674</i>&nbsp;    m_entities.addElement(publicId);</b>
+<i>1675</i>&nbsp;
+<i>1676</i>&nbsp;    //  private static final int ENTITY_FIELD_SYSTEMID = 1;
+<b class="nc"><i>1677</i>&nbsp;    m_entities.addElement(systemId);</b>
+<i>1678</i>&nbsp;
+<i>1679</i>&nbsp;    //  private static final int ENTITY_FIELD_NOTATIONNAME = 2;
+<b class="nc"><i>1680</i>&nbsp;    m_entities.addElement(notationName);</b>
+<i>1681</i>&nbsp;
+<i>1682</i>&nbsp;    //  private static final int ENTITY_FIELD_NAME = 3;
+<b class="nc"><i>1683</i>&nbsp;    m_entities.addElement(name);</b>
+<i>1684</i>&nbsp;  }
+<i>1685</i>&nbsp;
+<i>1686</i>&nbsp;  ////////////////////////////////////////////////////////////////////
+<i>1687</i>&nbsp;  // Implementation of ContentHandler interface.
+<i>1688</i>&nbsp;  ////////////////////////////////////////////////////////////////////
+<i>1689</i>&nbsp;
+<i>1690</i>&nbsp;  /**
+<i>1691</i>&nbsp;   * Receive a Locator object for document events.
+<i>1692</i>&nbsp;   *
+<i>1693</i>&nbsp;   * &lt;p&gt;By default, do nothing.  Application writers may override this
+<i>1694</i>&nbsp;   * method in a subclass if they wish to store the locator for use
+<i>1695</i>&nbsp;   * with other document events.&lt;/p&gt;
+<i>1696</i>&nbsp;   *
+<i>1697</i>&nbsp;   * @param locator A locator for all SAX document events.
+<i>1698</i>&nbsp;   * @see org.xml.sax.ContentHandler#setDocumentLocator
+<i>1699</i>&nbsp;   * @see org.xml.sax.Locator
+<i>1700</i>&nbsp;   */
+<i>1701</i>&nbsp;  public void setDocumentLocator(Locator locator)
+<i>1702</i>&nbsp;  {
+<b class="nc"><i>1703</i>&nbsp;    m_locator = locator;</b>
+<b class="nc"><i>1704</i>&nbsp;    m_systemId = locator.getSystemId();</b>
+<i>1705</i>&nbsp;  }
+<i>1706</i>&nbsp;
+<i>1707</i>&nbsp;  /**
+<i>1708</i>&nbsp;   * Receive notification of the beginning of the document.
+<i>1709</i>&nbsp;   *
+<i>1710</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>1711</i>&nbsp;   *            wrapping another exception.
+<i>1712</i>&nbsp;   * @see org.xml.sax.ContentHandler#startDocument
+<i>1713</i>&nbsp;   */
+<i>1714</i>&nbsp;  public void startDocument() throws SAXException
+<i>1715</i>&nbsp;  {
+<i>1716</i>&nbsp;    if (DEBUG)
+<i>1717</i>&nbsp;      System.out.println(&quot;startDocument&quot;);
+<i>1718</i>&nbsp;
+<i>1719</i>&nbsp;
+<b class="nc"><i>1720</i>&nbsp;    int doc = addNode(DTM.DOCUMENT_NODE,</b>
+<b class="nc"><i>1721</i>&nbsp;                      m_expandedNameTable.getExpandedTypeID(DTM.DOCUMENT_NODE),</b>
+<i>1722</i>&nbsp;                      DTM.NULL, DTM.NULL, 0, true);
+<i>1723</i>&nbsp;
+<b class="nc"><i>1724</i>&nbsp;    m_parents.push(doc);</b>
+<b class="nc"><i>1725</i>&nbsp;    m_previous = DTM.NULL;</b>
+<i>1726</i>&nbsp;
+<b class="nc"><i>1727</i>&nbsp;    m_contextIndexes.push(m_prefixMappings.size());  // for the next element.</b>
+<i>1728</i>&nbsp;  }
+<i>1729</i>&nbsp;
+<i>1730</i>&nbsp;  /**
+<i>1731</i>&nbsp;   * Receive notification of the end of the document.
+<i>1732</i>&nbsp;   *
+<i>1733</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>1734</i>&nbsp;   *            wrapping another exception.
+<i>1735</i>&nbsp;   * @see org.xml.sax.ContentHandler#endDocument
+<i>1736</i>&nbsp;   */
+<i>1737</i>&nbsp;  public void endDocument() throws SAXException
+<i>1738</i>&nbsp;  {
+<i>1739</i>&nbsp;    if (DEBUG)
+<i>1740</i>&nbsp;      System.out.println(&quot;endDocument&quot;);
+<i>1741</i>&nbsp;
+<b class="nc"><i>1742</i>&nbsp;                charactersFlush();</b>
+<i>1743</i>&nbsp;
+<b class="nc"><i>1744</i>&nbsp;    m_nextsib.setElementAt(NULL,0);</b>
+<i>1745</i>&nbsp;
+<b class="nc"><i>1746</i>&nbsp;    if (m_firstch.elementAt(0) == NOTPROCESSED)</b>
+<b class="nc"><i>1747</i>&nbsp;      m_firstch.setElementAt(NULL,0);</b>
+<i>1748</i>&nbsp;
+<b class="nc"><i>1749</i>&nbsp;    if (DTM.NULL != m_previous)</b>
+<b class="nc"><i>1750</i>&nbsp;      m_nextsib.setElementAt(DTM.NULL,m_previous);</b>
+<i>1751</i>&nbsp;
+<b class="nc"><i>1752</i>&nbsp;    m_parents = null;</b>
+<b class="nc"><i>1753</i>&nbsp;    m_prefixMappings = null;</b>
+<b class="nc"><i>1754</i>&nbsp;    m_contextIndexes = null;</b>
+<i>1755</i>&nbsp;
+<b class="nc"><i>1756</i>&nbsp;    m_endDocumentOccured = true;</b>
+<i>1757</i>&nbsp;
+<i>1758</i>&nbsp;    // Bugzilla 4858: throw away m_locator. we cache m_systemId
+<b class="nc"><i>1759</i>&nbsp;    m_locator = null;</b>
+<i>1760</i>&nbsp;  }
+<i>1761</i>&nbsp;
+<i>1762</i>&nbsp;  /**
+<i>1763</i>&nbsp;   * Receive notification of the start of a Namespace mapping.
+<i>1764</i>&nbsp;   *
+<i>1765</i>&nbsp;   * &lt;p&gt;By default, do nothing.  Application writers may override this
+<i>1766</i>&nbsp;   * method in a subclass to take specific actions at the start of
+<i>1767</i>&nbsp;   * each Namespace prefix scope (such as storing the prefix mapping).&lt;/p&gt;
+<i>1768</i>&nbsp;   *
+<i>1769</i>&nbsp;   * @param prefix The Namespace prefix being declared.
+<i>1770</i>&nbsp;   * @param uri The Namespace URI mapped to the prefix.
+<i>1771</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>1772</i>&nbsp;   *            wrapping another exception.
+<i>1773</i>&nbsp;   * @see org.xml.sax.ContentHandler#startPrefixMapping
+<i>1774</i>&nbsp;   */
+<i>1775</i>&nbsp;  public void startPrefixMapping(String prefix, String uri)
+<i>1776</i>&nbsp;          throws SAXException
+<i>1777</i>&nbsp;  {
+<i>1778</i>&nbsp;
+<i>1779</i>&nbsp;    if (DEBUG)
+<i>1780</i>&nbsp;      System.out.println(&quot;startPrefixMapping: prefix: &quot; + prefix + &quot;, uri: &quot;
+<i>1781</i>&nbsp;                         + uri);
+<i>1782</i>&nbsp;
+<b class="nc"><i>1783</i>&nbsp;    if(null == prefix)</b>
+<b class="nc"><i>1784</i>&nbsp;      prefix = &quot;&quot;;</b>
+<b class="nc"><i>1785</i>&nbsp;    m_prefixMappings.addElement(prefix);  // JDK 1.1.x compat -sc</b>
+<b class="nc"><i>1786</i>&nbsp;    m_prefixMappings.addElement(uri);  // JDK 1.1.x compat -sc</b>
+<i>1787</i>&nbsp;  }
+<i>1788</i>&nbsp;
+<i>1789</i>&nbsp;  /**
+<i>1790</i>&nbsp;   * Receive notification of the end of a Namespace mapping.
+<i>1791</i>&nbsp;   *
+<i>1792</i>&nbsp;   * &lt;p&gt;By default, do nothing.  Application writers may override this
+<i>1793</i>&nbsp;   * method in a subclass to take specific actions at the end of
+<i>1794</i>&nbsp;   * each prefix mapping.&lt;/p&gt;
+<i>1795</i>&nbsp;   *
+<i>1796</i>&nbsp;   * @param prefix The Namespace prefix being declared.
+<i>1797</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>1798</i>&nbsp;   *            wrapping another exception.
+<i>1799</i>&nbsp;   * @see org.xml.sax.ContentHandler#endPrefixMapping
+<i>1800</i>&nbsp;   */
+<i>1801</i>&nbsp;  public void endPrefixMapping(String prefix) throws SAXException
+<i>1802</i>&nbsp;  {
+<i>1803</i>&nbsp;    if (DEBUG)
+<i>1804</i>&nbsp;      System.out.println(&quot;endPrefixMapping: prefix: &quot; + prefix);
+<i>1805</i>&nbsp;
+<b class="nc"><i>1806</i>&nbsp;    if(null == prefix)</b>
+<b class="nc"><i>1807</i>&nbsp;      prefix = &quot;&quot;;</b>
+<i>1808</i>&nbsp;
+<b class="nc"><i>1809</i>&nbsp;    int index = m_contextIndexes.peek() - 1;</b>
+<i>1810</i>&nbsp;
+<i>1811</i>&nbsp;    do
+<i>1812</i>&nbsp;    {
+<b class="nc"><i>1813</i>&nbsp;      index = m_prefixMappings.indexOf(prefix, ++index);</b>
+<b class="nc"><i>1814</i>&nbsp;    } while ( (index &gt;= 0) &amp;&amp; ((index &amp; 0x01) == 0x01) );</b>
+<i>1815</i>&nbsp;
+<i>1816</i>&nbsp;
+<b class="nc"><i>1817</i>&nbsp;    if (index &gt; -1)</b>
+<i>1818</i>&nbsp;    {
+<b class="nc"><i>1819</i>&nbsp;      m_prefixMappings.setElementAt(&quot;%@$#^@#&quot;, index);</b>
+<b class="nc"><i>1820</i>&nbsp;      m_prefixMappings.setElementAt(&quot;%@$#^@#&quot;, index + 1);</b>
+<i>1821</i>&nbsp;    }
+<i>1822</i>&nbsp;
+<i>1823</i>&nbsp;    // no op
+<i>1824</i>&nbsp;  }
+<i>1825</i>&nbsp;
+<i>1826</i>&nbsp;  /**
+<i>1827</i>&nbsp;   * Check if a declaration has already been made for a given prefix.
+<i>1828</i>&nbsp;   *
+<i>1829</i>&nbsp;   * @param prefix non-null prefix string.
+<i>1830</i>&nbsp;   *
+<i>1831</i>&nbsp;   * @return true if the declaration has already been declared in the
+<i>1832</i>&nbsp;   *         current context.
+<i>1833</i>&nbsp;   */
+<i>1834</i>&nbsp;  protected boolean declAlreadyDeclared(String prefix)
+<i>1835</i>&nbsp;  {
+<i>1836</i>&nbsp;
+<b class="nc"><i>1837</i>&nbsp;    int startDecls = m_contextIndexes.peek();</b>
+<b class="nc"><i>1838</i>&nbsp;    java.util.Vector prefixMappings = m_prefixMappings;</b>
+<b class="nc"><i>1839</i>&nbsp;    int nDecls = prefixMappings.size();</b>
+<i>1840</i>&nbsp;
+<b class="nc"><i>1841</i>&nbsp;    for (int i = startDecls; i &lt; nDecls; i += 2)</b>
+<i>1842</i>&nbsp;    {
+<b class="nc"><i>1843</i>&nbsp;      String prefixDecl = (String) prefixMappings.elementAt(i);</b>
+<i>1844</i>&nbsp;
+<b class="nc"><i>1845</i>&nbsp;      if (prefixDecl == null)</b>
+<b class="nc"><i>1846</i>&nbsp;        continue;</b>
+<i>1847</i>&nbsp;
+<b class="nc"><i>1848</i>&nbsp;      if (prefixDecl.equals(prefix))</b>
+<b class="nc"><i>1849</i>&nbsp;        return true;</b>
+<i>1850</i>&nbsp;    }
+<i>1851</i>&nbsp;
+<b class="nc"><i>1852</i>&nbsp;    return false;</b>
+<i>1853</i>&nbsp;  }
+<i>1854</i>&nbsp;
+<b class="nc"><i>1855</i>&nbsp;        boolean m_pastFirstElement=false;</b>
+<i>1856</i>&nbsp;
+<i>1857</i>&nbsp;  /**
+<i>1858</i>&nbsp;   * Receive notification of the start of an element.
+<i>1859</i>&nbsp;   *
+<i>1860</i>&nbsp;   * &lt;p&gt;By default, do nothing.  Application writers may override this
+<i>1861</i>&nbsp;   * method in a subclass to take specific actions at the start of
+<i>1862</i>&nbsp;   * each element (such as allocating a new tree node or writing
+<i>1863</i>&nbsp;   * output to a file).&lt;/p&gt;
+<i>1864</i>&nbsp;   *
+<i>1865</i>&nbsp;   * @param uri The Namespace URI, or the empty string if the
+<i>1866</i>&nbsp;   *        element has no Namespace URI or if Namespace
+<i>1867</i>&nbsp;   *        processing is not being performed.
+<i>1868</i>&nbsp;   * @param localName The local name (without prefix), or the
+<i>1869</i>&nbsp;   *        empty string if Namespace processing is not being
+<i>1870</i>&nbsp;   *        performed.
+<i>1871</i>&nbsp;   * @param qName The qualified name (with prefix), or the
+<i>1872</i>&nbsp;   *        empty string if qualified names are not available.
+<i>1873</i>&nbsp;   * @param attributes The specified or defaulted attributes.
+<i>1874</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>1875</i>&nbsp;   *            wrapping another exception.
+<i>1876</i>&nbsp;   * @see org.xml.sax.ContentHandler#startElement
+<i>1877</i>&nbsp;   */
+<i>1878</i>&nbsp;  public void startElement(
+<i>1879</i>&nbsp;          String uri, String localName, String qName, Attributes attributes)
+<i>1880</i>&nbsp;            throws SAXException
+<i>1881</i>&nbsp;  {
+<i>1882</i>&nbsp;   if (DEBUG)
+<i>1883</i>&nbsp;         {
+<i>1884</i>&nbsp;      System.out.println(&quot;startElement: uri: &quot; + uri + &quot;, localname: &quot;
+<i>1885</i>&nbsp;                                                                                                 + localName + &quot;, qname: &quot;+qName+&quot;, atts: &quot; + attributes);
+<i>1886</i>&nbsp;
+<i>1887</i>&nbsp;                        boolean DEBUG_ATTRS=true;
+<i>1888</i>&nbsp;                        if(DEBUG_ATTRS &amp; attributes!=null)
+<i>1889</i>&nbsp;                        {
+<i>1890</i>&nbsp;                                int n = attributes.getLength();
+<i>1891</i>&nbsp;                                if(n==0)
+<i>1892</i>&nbsp;                                        System.out.println(&quot;\tempty attribute list&quot;);
+<i>1893</i>&nbsp;                                else for (int i = 0; i &lt; n; i++)
+<i>1894</i>&nbsp;                                        System.out.println(&quot;\t attr: uri: &quot; + attributes.getURI(i) +
+<i>1895</i>&nbsp;                                                                                                                 &quot;, localname: &quot; + attributes.getLocalName(i) +
+<i>1896</i>&nbsp;                                                                                                                 &quot;, qname: &quot; + attributes.getQName(i) +
+<i>1897</i>&nbsp;                                                                                                                 &quot;, type: &quot; + attributes.getType(i) +
+<i>1898</i>&nbsp;                                                                                                                 &quot;, value: &quot; + attributes.getValue(i)
+<i>1899</i>&nbsp;                                                                                                                 );
+<i>1900</i>&nbsp;                        }
+<i>1901</i>&nbsp;         }
+<i>1902</i>&nbsp;
+<b class="nc"><i>1903</i>&nbsp;    charactersFlush();</b>
+<i>1904</i>&nbsp;
+<b class="nc"><i>1905</i>&nbsp;    int exName = m_expandedNameTable.getExpandedTypeID(uri, localName, DTM.ELEMENT_NODE);</b>
+<b class="nc"><i>1906</i>&nbsp;    String prefix = getPrefix(qName, uri);</b>
+<b class="nc"><i>1907</i>&nbsp;    int prefixIndex = (null != prefix)</b>
+<b class="nc"><i>1908</i>&nbsp;                      ? m_valuesOrPrefixes.stringToIndex(qName) : 0;</b>
+<i>1909</i>&nbsp;
+<b class="nc"><i>1910</i>&nbsp;    int elemNode = addNode(DTM.ELEMENT_NODE, exName,</b>
+<b class="nc"><i>1911</i>&nbsp;                           m_parents.peek(), m_previous, prefixIndex, true);</b>
+<i>1912</i>&nbsp;
+<b class="nc"><i>1913</i>&nbsp;    if(m_indexing)</b>
+<b class="nc"><i>1914</i>&nbsp;      indexNode(exName, elemNode);</b>
+<i>1915</i>&nbsp;
+<i>1916</i>&nbsp;
+<b class="nc"><i>1917</i>&nbsp;    m_parents.push(elemNode);</b>
+<i>1918</i>&nbsp;
+<b class="nc"><i>1919</i>&nbsp;    int startDecls = m_contextIndexes.peek();</b>
+<b class="nc"><i>1920</i>&nbsp;    int nDecls = m_prefixMappings.size();</b>
+<b class="nc"><i>1921</i>&nbsp;    int prev = DTM.NULL;</b>
+<i>1922</i>&nbsp;
+<b class="nc"><i>1923</i>&nbsp;    if(!m_pastFirstElement)</b>
+<i>1924</i>&nbsp;    {
+<i>1925</i>&nbsp;      // SPECIAL CASE: Implied declaration at root element
+<b class="nc"><i>1926</i>&nbsp;      prefix=&quot;xml&quot;;</b>
+<b class="nc"><i>1927</i>&nbsp;      String declURL = &quot;http://www.w3.org/XML/1998/namespace&quot;;</b>
+<b class="nc"><i>1928</i>&nbsp;      exName = m_expandedNameTable.getExpandedTypeID(null, prefix, DTM.NAMESPACE_NODE);</b>
+<b class="nc"><i>1929</i>&nbsp;      int val = m_valuesOrPrefixes.stringToIndex(declURL);</b>
+<b class="nc"><i>1930</i>&nbsp;      prev = addNode(DTM.NAMESPACE_NODE, exName, elemNode,</b>
+<i>1931</i>&nbsp;                     prev, val, false);
+<b class="nc"><i>1932</i>&nbsp;      m_pastFirstElement=true;</b>
+<i>1933</i>&nbsp;    }
+<i>1934</i>&nbsp;
+<b class="nc"><i>1935</i>&nbsp;    for (int i = startDecls; i &lt; nDecls; i += 2)</b>
+<i>1936</i>&nbsp;    {
+<b class="nc"><i>1937</i>&nbsp;      prefix = (String) m_prefixMappings.elementAt(i);</b>
+<i>1938</i>&nbsp;
+<b class="nc"><i>1939</i>&nbsp;      if (prefix == null)</b>
+<b class="nc"><i>1940</i>&nbsp;        continue;</b>
+<i>1941</i>&nbsp;
+<b class="nc"><i>1942</i>&nbsp;      String declURL = (String) m_prefixMappings.elementAt(i + 1);</b>
+<i>1943</i>&nbsp;
+<b class="nc"><i>1944</i>&nbsp;      exName = m_expandedNameTable.getExpandedTypeID(null, prefix, DTM.NAMESPACE_NODE);</b>
+<i>1945</i>&nbsp;
+<b class="nc"><i>1946</i>&nbsp;      int val = m_valuesOrPrefixes.stringToIndex(declURL);</b>
+<i>1947</i>&nbsp;
+<b class="nc"><i>1948</i>&nbsp;      prev = addNode(DTM.NAMESPACE_NODE, exName, elemNode,</b>
+<i>1949</i>&nbsp;                     prev, val, false);
+<i>1950</i>&nbsp;    }
+<i>1951</i>&nbsp;
+<b class="nc"><i>1952</i>&nbsp;    int n = attributes.getLength();</b>
+<i>1953</i>&nbsp;
+<b class="nc"><i>1954</i>&nbsp;    for (int i = 0; i &lt; n; i++)</b>
+<i>1955</i>&nbsp;    {
+<b class="nc"><i>1956</i>&nbsp;      String attrUri = attributes.getURI(i);</b>
+<b class="nc"><i>1957</i>&nbsp;      String attrQName = attributes.getQName(i);</b>
+<b class="nc"><i>1958</i>&nbsp;      String valString = attributes.getValue(i);</b>
+<i>1959</i>&nbsp;
+<b class="nc"><i>1960</i>&nbsp;      prefix = getPrefix(attrQName, attrUri);</b>
+<i>1961</i>&nbsp;
+<i>1962</i>&nbsp;      int nodeType;
+<i>1963</i>&nbsp;
+<b class="nc"><i>1964</i>&nbsp;       String attrLocalName = attributes.getLocalName(i);</b>
+<i>1965</i>&nbsp;
+<b class="nc"><i>1966</i>&nbsp;      if ((null != attrQName)</b>
+<b class="nc"><i>1967</i>&nbsp;              &amp;&amp; (attrQName.equals(&quot;xmlns&quot;)</b>
+<b class="nc"><i>1968</i>&nbsp;                  || attrQName.startsWith(&quot;xmlns:&quot;)))</b>
+<i>1969</i>&nbsp;      {
+<b class="nc"><i>1970</i>&nbsp;        if (declAlreadyDeclared(prefix))</b>
+<b class="nc"><i>1971</i>&nbsp;          continue;  // go to the next attribute.</b>
+<i>1972</i>&nbsp;
+<b class="nc"><i>1973</i>&nbsp;        nodeType = DTM.NAMESPACE_NODE;</b>
+<i>1974</i>&nbsp;      }
+<i>1975</i>&nbsp;      else
+<i>1976</i>&nbsp;      {
+<b class="nc"><i>1977</i>&nbsp;        nodeType = DTM.ATTRIBUTE_NODE;</b>
+<i>1978</i>&nbsp;
+<b class="nc"><i>1979</i>&nbsp;        if (attributes.getType(i).equalsIgnoreCase(&quot;ID&quot;))</b>
+<b class="nc"><i>1980</i>&nbsp;          setIDAttribute(valString, elemNode);</b>
+<i>1981</i>&nbsp;      }
+<i>1982</i>&nbsp;
+<i>1983</i>&nbsp;      // Bit of a hack... if somehow valString is null, stringToIndex will
+<i>1984</i>&nbsp;      // return -1, which will make things very unhappy.
+<b class="nc"><i>1985</i>&nbsp;      if(null == valString)</b>
+<b class="nc"><i>1986</i>&nbsp;        valString = &quot;&quot;;</b>
+<i>1987</i>&nbsp;
+<b class="nc"><i>1988</i>&nbsp;      int val = m_valuesOrPrefixes.stringToIndex(valString);</b>
+<i>1989</i>&nbsp;      //String attrLocalName = attributes.getLocalName(i);
+<i>1990</i>&nbsp;
+<b class="nc"><i>1991</i>&nbsp;      if (null != prefix)</b>
+<i>1992</i>&nbsp;      {
+<i>1993</i>&nbsp;
+<b class="nc"><i>1994</i>&nbsp;        prefixIndex = m_valuesOrPrefixes.stringToIndex(attrQName);</b>
+<i>1995</i>&nbsp;
+<b class="nc"><i>1996</i>&nbsp;        int dataIndex = m_data.size();</b>
+<i>1997</i>&nbsp;
+<b class="nc"><i>1998</i>&nbsp;        m_data.addElement(prefixIndex);</b>
+<b class="nc"><i>1999</i>&nbsp;        m_data.addElement(val);</b>
+<i>2000</i>&nbsp;
+<b class="nc"><i>2001</i>&nbsp;        val = -dataIndex;</b>
+<i>2002</i>&nbsp;      }
+<i>2003</i>&nbsp;
+<b class="nc"><i>2004</i>&nbsp;      exName = m_expandedNameTable.getExpandedTypeID(attrUri, attrLocalName, nodeType);</b>
+<b class="nc"><i>2005</i>&nbsp;      prev = addNode(nodeType, exName, elemNode, prev, val,</b>
+<i>2006</i>&nbsp;                     false);
+<i>2007</i>&nbsp;    }
+<i>2008</i>&nbsp;
+<b class="nc"><i>2009</i>&nbsp;    if (DTM.NULL != prev)</b>
+<b class="nc"><i>2010</i>&nbsp;      m_nextsib.setElementAt(DTM.NULL,prev);</b>
+<i>2011</i>&nbsp;
+<b class="nc"><i>2012</i>&nbsp;    if (null != m_wsfilter)</b>
+<i>2013</i>&nbsp;    {
+<b class="nc"><i>2014</i>&nbsp;      short wsv = m_wsfilter.getShouldStripSpace(makeNodeHandle(elemNode), this);</b>
+<b class="nc"><i>2015</i>&nbsp;      boolean shouldStrip = (DTMWSFilter.INHERIT == wsv)</b>
+<b class="nc"><i>2016</i>&nbsp;                            ? getShouldStripWhitespace()</b>
+<i>2017</i>&nbsp;                            : (DTMWSFilter.STRIP == wsv);
+<i>2018</i>&nbsp;
+<b class="nc"><i>2019</i>&nbsp;      pushShouldStripWhitespace(shouldStrip);</b>
+<i>2020</i>&nbsp;    }
+<i>2021</i>&nbsp;
+<b class="nc"><i>2022</i>&nbsp;    m_previous = DTM.NULL;</b>
+<i>2023</i>&nbsp;
+<b class="nc"><i>2024</i>&nbsp;    m_contextIndexes.push(m_prefixMappings.size());  // for the children.</b>
+<i>2025</i>&nbsp;  }
+<i>2026</i>&nbsp;
+<i>2027</i>&nbsp;  /**
+<i>2028</i>&nbsp;   * Receive notification of the end of an element.
+<i>2029</i>&nbsp;   *
+<i>2030</i>&nbsp;   * &lt;p&gt;By default, do nothing.  Application writers may override this
+<i>2031</i>&nbsp;   * method in a subclass to take specific actions at the end of
+<i>2032</i>&nbsp;   * each element (such as finalising a tree node or writing
+<i>2033</i>&nbsp;   * output to a file).&lt;/p&gt;
+<i>2034</i>&nbsp;   *
+<i>2035</i>&nbsp;   * @param uri The Namespace URI, or the empty string if the
+<i>2036</i>&nbsp;   *        element has no Namespace URI or if Namespace
+<i>2037</i>&nbsp;   *        processing is not being performed.
+<i>2038</i>&nbsp;   * @param localName The local name (without prefix), or the
+<i>2039</i>&nbsp;   *        empty string if Namespace processing is not being
+<i>2040</i>&nbsp;   *        performed.
+<i>2041</i>&nbsp;   * @param qName The qualified XML 1.0 name (with prefix), or the
+<i>2042</i>&nbsp;   *        empty string if qualified names are not available.
+<i>2043</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>2044</i>&nbsp;   *            wrapping another exception.
+<i>2045</i>&nbsp;   * @see org.xml.sax.ContentHandler#endElement
+<i>2046</i>&nbsp;   */
+<i>2047</i>&nbsp;  public void endElement(String uri, String localName, String qName)
+<i>2048</i>&nbsp;          throws SAXException
+<i>2049</i>&nbsp;  {
+<i>2050</i>&nbsp;   if (DEBUG)
+<i>2051</i>&nbsp;      System.out.println(&quot;endElement: uri: &quot; + uri + &quot;, localname: &quot;
+<i>2052</i>&nbsp;                                                                                                 + localName + &quot;, qname: &quot;+qName);
+<i>2053</i>&nbsp;
+<b class="nc"><i>2054</i>&nbsp;    charactersFlush();</b>
+<i>2055</i>&nbsp;
+<i>2056</i>&nbsp;    // If no one noticed, startPrefixMapping is a drag.
+<i>2057</i>&nbsp;    // Pop the context for the last child (the one pushed by startElement)
+<b class="nc"><i>2058</i>&nbsp;    m_contextIndexes.quickPop(1);</b>
+<i>2059</i>&nbsp;
+<i>2060</i>&nbsp;    // Do it again for this one (the one pushed by the last endElement).
+<b class="nc"><i>2061</i>&nbsp;    int topContextIndex = m_contextIndexes.peek();</b>
+<b class="nc"><i>2062</i>&nbsp;    if (topContextIndex != m_prefixMappings.size()) {</b>
+<b class="nc"><i>2063</i>&nbsp;      m_prefixMappings.setSize(topContextIndex);</b>
+<i>2064</i>&nbsp;    }
+<i>2065</i>&nbsp;
+<b class="nc"><i>2066</i>&nbsp;    int lastNode = m_previous;</b>
+<i>2067</i>&nbsp;
+<b class="nc"><i>2068</i>&nbsp;    m_previous = m_parents.pop();</b>
+<i>2069</i>&nbsp;
+<i>2070</i>&nbsp;    // If lastNode is still DTM.NULL, this element had no children
+<b class="nc"><i>2071</i>&nbsp;    if (DTM.NULL == lastNode)</b>
+<b class="nc"><i>2072</i>&nbsp;      m_firstch.setElementAt(DTM.NULL,m_previous);</b>
+<i>2073</i>&nbsp;    else
+<b class="nc"><i>2074</i>&nbsp;      m_nextsib.setElementAt(DTM.NULL,lastNode);</b>
+<i>2075</i>&nbsp;
+<b class="nc"><i>2076</i>&nbsp;    popShouldStripWhitespace();</b>
+<i>2077</i>&nbsp;  }
+<i>2078</i>&nbsp;
+<i>2079</i>&nbsp;  /**
+<i>2080</i>&nbsp;   * Receive notification of character data inside an element.
+<i>2081</i>&nbsp;   *
+<i>2082</i>&nbsp;   * &lt;p&gt;By default, do nothing.  Application writers may override this
+<i>2083</i>&nbsp;   * method to take specific actions for each chunk of character data
+<i>2084</i>&nbsp;   * (such as adding the data to a node or buffer, or printing it to
+<i>2085</i>&nbsp;   * a file).&lt;/p&gt;
+<i>2086</i>&nbsp;   *
+<i>2087</i>&nbsp;   * @param ch The characters.
+<i>2088</i>&nbsp;   * @param start The start position in the character array.
+<i>2089</i>&nbsp;   * @param length The number of characters to use from the
+<i>2090</i>&nbsp;   *               character array.
+<i>2091</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>2092</i>&nbsp;   *            wrapping another exception.
+<i>2093</i>&nbsp;   * @see org.xml.sax.ContentHandler#characters
+<i>2094</i>&nbsp;   */
+<i>2095</i>&nbsp;  public void characters(char ch[], int start, int length) throws SAXException
+<i>2096</i>&nbsp;  {
+<b class="nc"><i>2097</i>&nbsp;    if (m_textPendingStart == -1)  // First one in this block</b>
+<i>2098</i>&nbsp;    {
+<b class="nc"><i>2099</i>&nbsp;      m_textPendingStart = m_chars.size();</b>
+<b class="nc"><i>2100</i>&nbsp;      m_coalescedTextType = m_textType;</b>
+<i>2101</i>&nbsp;    }
+<i>2102</i>&nbsp;    // Type logic: If all adjacent text is CDATASections, the
+<i>2103</i>&nbsp;    // concatentated text is treated as a single CDATASection (see
+<i>2104</i>&nbsp;    // initialization above).  If any were ordinary Text, the whole
+<i>2105</i>&nbsp;    // thing is treated as Text. This may be worth %REVIEW%ing.
+<b class="nc"><i>2106</i>&nbsp;    else if (m_textType == DTM.TEXT_NODE)</b>
+<i>2107</i>&nbsp;    {
+<b class="nc"><i>2108</i>&nbsp;      m_coalescedTextType = DTM.TEXT_NODE;</b>
+<i>2109</i>&nbsp;    }
+<i>2110</i>&nbsp;
+<b class="nc"><i>2111</i>&nbsp;    m_chars.append(ch, start, length);</b>
+<i>2112</i>&nbsp;  }
+<i>2113</i>&nbsp;
+<i>2114</i>&nbsp;  /**
+<i>2115</i>&nbsp;   * Receive notification of ignorable whitespace in element content.
+<i>2116</i>&nbsp;   *
+<i>2117</i>&nbsp;   * &lt;p&gt;By default, do nothing.  Application writers may override this
+<i>2118</i>&nbsp;   * method to take specific actions for each chunk of ignorable
+<i>2119</i>&nbsp;   * whitespace (such as adding data to a node or buffer, or printing
+<i>2120</i>&nbsp;   * it to a file).&lt;/p&gt;
+<i>2121</i>&nbsp;   *
+<i>2122</i>&nbsp;   * @param ch The whitespace characters.
+<i>2123</i>&nbsp;   * @param start The start position in the character array.
+<i>2124</i>&nbsp;   * @param length The number of characters to use from the
+<i>2125</i>&nbsp;   *               character array.
+<i>2126</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>2127</i>&nbsp;   *            wrapping another exception.
+<i>2128</i>&nbsp;   * @see org.xml.sax.ContentHandler#ignorableWhitespace
+<i>2129</i>&nbsp;   */
+<i>2130</i>&nbsp;  public void ignorableWhitespace(char ch[], int start, int length)
+<i>2131</i>&nbsp;          throws SAXException
+<i>2132</i>&nbsp;  {
+<i>2133</i>&nbsp;
+<i>2134</i>&nbsp;    // %OPT% We can probably take advantage of the fact that we know this
+<i>2135</i>&nbsp;    // is whitespace.
+<b class="nc"><i>2136</i>&nbsp;    characters(ch, start, length);</b>
+<i>2137</i>&nbsp;  }
+<i>2138</i>&nbsp;
+<i>2139</i>&nbsp;  /**
+<i>2140</i>&nbsp;   * Receive notification of a processing instruction.
+<i>2141</i>&nbsp;   *
+<i>2142</i>&nbsp;   * &lt;p&gt;By default, do nothing.  Application writers may override this
+<i>2143</i>&nbsp;   * method in a subclass to take specific actions for each
+<i>2144</i>&nbsp;   * processing instruction, such as setting status variables or
+<i>2145</i>&nbsp;   * invoking other methods.&lt;/p&gt;
+<i>2146</i>&nbsp;   *
+<i>2147</i>&nbsp;   * @param target The processing instruction target.
+<i>2148</i>&nbsp;   * @param data The processing instruction data, or null if
+<i>2149</i>&nbsp;   *             none is supplied.
+<i>2150</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>2151</i>&nbsp;   *            wrapping another exception.
+<i>2152</i>&nbsp;   * @see org.xml.sax.ContentHandler#processingInstruction
+<i>2153</i>&nbsp;   */
+<i>2154</i>&nbsp;  public void processingInstruction(String target, String data)
+<i>2155</i>&nbsp;          throws SAXException
+<i>2156</i>&nbsp;  {
+<i>2157</i>&nbsp;    if (DEBUG)
+<i>2158</i>&nbsp;                 System.out.println(&quot;processingInstruction: target: &quot; + target +&quot;, data: &quot;+data);
+<i>2159</i>&nbsp;
+<b class="nc"><i>2160</i>&nbsp;    charactersFlush();</b>
+<i>2161</i>&nbsp;
+<b class="nc"><i>2162</i>&nbsp;    int exName = m_expandedNameTable.getExpandedTypeID(null, target,</b>
+<i>2163</i>&nbsp;                                         DTM.PROCESSING_INSTRUCTION_NODE);
+<b class="nc"><i>2164</i>&nbsp;    int dataIndex = m_valuesOrPrefixes.stringToIndex(data);</b>
+<i>2165</i>&nbsp;
+<b class="nc"><i>2166</i>&nbsp;    m_previous = addNode(DTM.PROCESSING_INSTRUCTION_NODE, exName,</b>
+<b class="nc"><i>2167</i>&nbsp;                         m_parents.peek(), m_previous,</b>
+<i>2168</i>&nbsp;                         dataIndex, false);
+<i>2169</i>&nbsp;  }
+<i>2170</i>&nbsp;
+<i>2171</i>&nbsp;  /**
+<i>2172</i>&nbsp;   * Receive notification of a skipped entity.
+<i>2173</i>&nbsp;   *
+<i>2174</i>&nbsp;   * &lt;p&gt;By default, do nothing.  Application writers may override this
+<i>2175</i>&nbsp;   * method in a subclass to take specific actions for each
+<i>2176</i>&nbsp;   * processing instruction, such as setting status variables or
+<i>2177</i>&nbsp;   * invoking other methods.&lt;/p&gt;
+<i>2178</i>&nbsp;   *
+<i>2179</i>&nbsp;   * @param name The name of the skipped entity.
+<i>2180</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>2181</i>&nbsp;   *            wrapping another exception.
+<i>2182</i>&nbsp;   * @see org.xml.sax.ContentHandler#processingInstruction
+<i>2183</i>&nbsp;   */
+<i>2184</i>&nbsp;  public void skippedEntity(String name) throws SAXException
+<i>2185</i>&nbsp;  {
+<i>2186</i>&nbsp;
+<i>2187</i>&nbsp;    // %REVIEW% What should be done here?
+<i>2188</i>&nbsp;    // no op
+<i>2189</i>&nbsp;  }
+<i>2190</i>&nbsp;
+<i>2191</i>&nbsp;  ////////////////////////////////////////////////////////////////////
+<i>2192</i>&nbsp;  // Implementation of the ErrorHandler interface.
+<i>2193</i>&nbsp;  ////////////////////////////////////////////////////////////////////
+<i>2194</i>&nbsp;
+<i>2195</i>&nbsp;  /**
+<i>2196</i>&nbsp;   * Receive notification of a parser warning.
+<i>2197</i>&nbsp;   *
+<i>2198</i>&nbsp;   * &lt;p&gt;The default implementation does nothing.  Application writers
+<i>2199</i>&nbsp;   * may override this method in a subclass to take specific actions
+<i>2200</i>&nbsp;   * for each warning, such as inserting the message in a log file or
+<i>2201</i>&nbsp;   * printing it to the console.&lt;/p&gt;
+<i>2202</i>&nbsp;   *
+<i>2203</i>&nbsp;   * @param e The warning information encoded as an exception.
+<i>2204</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>2205</i>&nbsp;   *            wrapping another exception.
+<i>2206</i>&nbsp;   * @see org.xml.sax.ErrorHandler#warning
+<i>2207</i>&nbsp;   * @see org.xml.sax.SAXParseException
+<i>2208</i>&nbsp;   */
+<i>2209</i>&nbsp;  public void warning(SAXParseException e) throws SAXException
+<i>2210</i>&nbsp;  {
+<i>2211</i>&nbsp;
+<i>2212</i>&nbsp;    // %REVIEW% Is there anyway to get the JAXP error listener here?
+<b class="nc"><i>2213</i>&nbsp;    System.err.println(e.getMessage());</b>
+<i>2214</i>&nbsp;  }
+<i>2215</i>&nbsp;
+<i>2216</i>&nbsp;  /**
+<i>2217</i>&nbsp;   * Receive notification of a recoverable parser error.
+<i>2218</i>&nbsp;   *
+<i>2219</i>&nbsp;   * &lt;p&gt;The default implementation does nothing.  Application writers
+<i>2220</i>&nbsp;   * may override this method in a subclass to take specific actions
+<i>2221</i>&nbsp;   * for each error, such as inserting the message in a log file or
+<i>2222</i>&nbsp;   * printing it to the console.&lt;/p&gt;
+<i>2223</i>&nbsp;   *
+<i>2224</i>&nbsp;   * @param e The warning information encoded as an exception.
+<i>2225</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>2226</i>&nbsp;   *            wrapping another exception.
+<i>2227</i>&nbsp;   * @see org.xml.sax.ErrorHandler#warning
+<i>2228</i>&nbsp;   * @see org.xml.sax.SAXParseException
+<i>2229</i>&nbsp;   */
+<i>2230</i>&nbsp;  public void error(SAXParseException e) throws SAXException
+<i>2231</i>&nbsp;  {
+<b class="nc"><i>2232</i>&nbsp;    throw e;</b>
+<i>2233</i>&nbsp;  }
+<i>2234</i>&nbsp;
+<i>2235</i>&nbsp;  /**
+<i>2236</i>&nbsp;   * Report a fatal XML parsing error.
+<i>2237</i>&nbsp;   *
+<i>2238</i>&nbsp;   * &lt;p&gt;The default implementation throws a SAXParseException.
+<i>2239</i>&nbsp;   * Application writers may override this method in a subclass if
+<i>2240</i>&nbsp;   * they need to take specific actions for each fatal error (such as
+<i>2241</i>&nbsp;   * collecting all of the errors into a single report): in any case,
+<i>2242</i>&nbsp;   * the application must stop all regular processing when this
+<i>2243</i>&nbsp;   * method is invoked, since the document is no longer reliable, and
+<i>2244</i>&nbsp;   * the parser may no longer report parsing events.&lt;/p&gt;
+<i>2245</i>&nbsp;   *
+<i>2246</i>&nbsp;   * @param e The error information encoded as an exception.
+<i>2247</i>&nbsp;   * @throws SAXException Any SAX exception, possibly
+<i>2248</i>&nbsp;   *            wrapping another exception.
+<i>2249</i>&nbsp;   * @see org.xml.sax.ErrorHandler#fatalError
+<i>2250</i>&nbsp;   * @see org.xml.sax.SAXParseException
+<i>2251</i>&nbsp;   */
+<i>2252</i>&nbsp;  public void fatalError(SAXParseException e) throws SAXException
+<i>2253</i>&nbsp;  {
+<b class="nc"><i>2254</i>&nbsp;    throw e;</b>
+<i>2255</i>&nbsp;  }
+<i>2256</i>&nbsp;
+<i>2257</i>&nbsp;  ////////////////////////////////////////////////////////////////////
+<i>2258</i>&nbsp;  // Implementation of the DeclHandler interface.
+<i>2259</i>&nbsp;  ////////////////////////////////////////////////////////////////////
+<i>2260</i>&nbsp;
+<i>2261</i>&nbsp;  /**
+<i>2262</i>&nbsp;   * Report an element type declaration.
+<i>2263</i>&nbsp;   *
+<i>2264</i>&nbsp;   * &lt;p&gt;The content model will consist of the string &quot;EMPTY&quot;, the
+<i>2265</i>&nbsp;   * string &quot;ANY&quot;, or a parenthesised group, optionally followed
+<i>2266</i>&nbsp;   * by an occurrence indicator.  The model will be normalized so
+<i>2267</i>&nbsp;   * that all whitespace is removed,and will include the enclosing
+<i>2268</i>&nbsp;   * parentheses.&lt;/p&gt;
+<i>2269</i>&nbsp;   *
+<i>2270</i>&nbsp;   * @param name The element type name.
+<i>2271</i>&nbsp;   * @param model The content model as a normalized string.
+<i>2272</i>&nbsp;   * @throws SAXException The application may raise an exception.
+<i>2273</i>&nbsp;   */
+<i>2274</i>&nbsp;  public void elementDecl(String name, String model) throws SAXException
+<i>2275</i>&nbsp;  {
+<i>2276</i>&nbsp;
+<i>2277</i>&nbsp;    // no op
+<i>2278</i>&nbsp;  }
+<i>2279</i>&nbsp;
+<i>2280</i>&nbsp;  /**
+<i>2281</i>&nbsp;   * Report an attribute type declaration.
+<i>2282</i>&nbsp;   *
+<i>2283</i>&nbsp;   * &lt;p&gt;Only the effective (first) declaration for an attribute will
+<i>2284</i>&nbsp;   * be reported.  The type will be one of the strings &quot;CDATA&quot;,
+<i>2285</i>&nbsp;   * &quot;ID&quot;, &quot;IDREF&quot;, &quot;IDREFS&quot;, &quot;NMTOKEN&quot;, &quot;NMTOKENS&quot;, &quot;ENTITY&quot;,
+<i>2286</i>&nbsp;   * &quot;ENTITIES&quot;, or &quot;NOTATION&quot;, or a parenthesized token group with
+<i>2287</i>&nbsp;   * the separator &quot;|&quot; and all whitespace removed.&lt;/p&gt;
+<i>2288</i>&nbsp;   *
+<i>2289</i>&nbsp;   * @param eName The name of the associated element.
+<i>2290</i>&nbsp;   * @param aName The name of the attribute.
+<i>2291</i>&nbsp;   * @param type A string representing the attribute type.
+<i>2292</i>&nbsp;   * @param valueDefault A string representing the attribute default
+<i>2293</i>&nbsp;   *        (&quot;#IMPLIED&quot;, &quot;#REQUIRED&quot;, or &quot;#FIXED&quot;) or null if
+<i>2294</i>&nbsp;   *        none of these applies.
+<i>2295</i>&nbsp;   * @param value A string representing the attribute&#39;s default value,
+<i>2296</i>&nbsp;   *        or null if there is none.
+<i>2297</i>&nbsp;   * @throws SAXException The application may raise an exception.
+<i>2298</i>&nbsp;   */
+<i>2299</i>&nbsp;  public void attributeDecl(
+<i>2300</i>&nbsp;          String eName, String aName, String type, String valueDefault, String value)
+<i>2301</i>&nbsp;            throws SAXException
+<i>2302</i>&nbsp;  {
+<i>2303</i>&nbsp;
+<i>2304</i>&nbsp;    // no op
+<i>2305</i>&nbsp;  }
+<i>2306</i>&nbsp;
+<i>2307</i>&nbsp;  /**
+<i>2308</i>&nbsp;   * Report an internal entity declaration.
+<i>2309</i>&nbsp;   *
+<i>2310</i>&nbsp;   * &lt;p&gt;Only the effective (first) declaration for each entity
+<i>2311</i>&nbsp;   * will be reported.&lt;/p&gt;
+<i>2312</i>&nbsp;   *
+<i>2313</i>&nbsp;   * @param name The name of the entity.  If it is a parameter
+<i>2314</i>&nbsp;   *        entity, the name will begin with &#39;%&#39;.
+<i>2315</i>&nbsp;   * @param value The replacement text of the entity.
+<i>2316</i>&nbsp;   * @throws SAXException The application may raise an exception.
+<i>2317</i>&nbsp;   * @see #externalEntityDecl
+<i>2318</i>&nbsp;   * @see org.xml.sax.DTDHandler#unparsedEntityDecl
+<i>2319</i>&nbsp;   */
+<i>2320</i>&nbsp;  public void internalEntityDecl(String name, String value)
+<i>2321</i>&nbsp;          throws SAXException
+<i>2322</i>&nbsp;  {
+<i>2323</i>&nbsp;
+<i>2324</i>&nbsp;    // no op
+<i>2325</i>&nbsp;  }
+<i>2326</i>&nbsp;
+<i>2327</i>&nbsp;  /**
+<i>2328</i>&nbsp;   * Report a parsed external entity declaration.
+<i>2329</i>&nbsp;   *
+<i>2330</i>&nbsp;   * &lt;p&gt;Only the effective (first) declaration for each entity
+<i>2331</i>&nbsp;   * will be reported.&lt;/p&gt;
+<i>2332</i>&nbsp;   *
+<i>2333</i>&nbsp;   * @param name The name of the entity.  If it is a parameter
+<i>2334</i>&nbsp;   *        entity, the name will begin with &#39;%&#39;.
+<i>2335</i>&nbsp;   * @param publicId The declared public identifier of the entity, or
+<i>2336</i>&nbsp;   *        null if none was declared.
+<i>2337</i>&nbsp;   * @param systemId The declared system identifier of the entity.
+<i>2338</i>&nbsp;   * @throws SAXException The application may raise an exception.
+<i>2339</i>&nbsp;   * @see #internalEntityDecl
+<i>2340</i>&nbsp;   * @see org.xml.sax.DTDHandler#unparsedEntityDecl
+<i>2341</i>&nbsp;   */
+<i>2342</i>&nbsp;  public void externalEntityDecl(
+<i>2343</i>&nbsp;          String name, String publicId, String systemId) throws SAXException
+<i>2344</i>&nbsp;  {
+<i>2345</i>&nbsp;
+<i>2346</i>&nbsp;    // no op
+<i>2347</i>&nbsp;  }
+<i>2348</i>&nbsp;
+<i>2349</i>&nbsp;  ////////////////////////////////////////////////////////////////////
+<i>2350</i>&nbsp;  // Implementation of the LexicalHandler interface.
+<i>2351</i>&nbsp;  ////////////////////////////////////////////////////////////////////
+<i>2352</i>&nbsp;
+<i>2353</i>&nbsp;  /**
+<i>2354</i>&nbsp;   * Report the start of DTD declarations, if any.
+<i>2355</i>&nbsp;   *
+<i>2356</i>&nbsp;   * &lt;p&gt;Any declarations are assumed to be in the internal subset
+<i>2357</i>&nbsp;   * unless otherwise indicated by a {@link #startEntity startEntity}
+<i>2358</i>&nbsp;   * event.&lt;/p&gt;
+<i>2359</i>&nbsp;   *
+<i>2360</i>&nbsp;   * &lt;p&gt;Note that the start/endDTD events will appear within
+<i>2361</i>&nbsp;   * the start/endDocument events from ContentHandler and
+<i>2362</i>&nbsp;   * before the first startElement event.&lt;/p&gt;
+<i>2363</i>&nbsp;   *
+<i>2364</i>&nbsp;   * @param name The document type name.
+<i>2365</i>&nbsp;   * @param publicId The declared public identifier for the
+<i>2366</i>&nbsp;   *        external DTD subset, or null if none was declared.
+<i>2367</i>&nbsp;   * @param systemId The declared system identifier for the
+<i>2368</i>&nbsp;   *        external DTD subset, or null if none was declared.
+<i>2369</i>&nbsp;   * @throws SAXException The application may raise an
+<i>2370</i>&nbsp;   *            exception.
+<i>2371</i>&nbsp;   * @see #endDTD
+<i>2372</i>&nbsp;   * @see #startEntity
+<i>2373</i>&nbsp;   */
+<i>2374</i>&nbsp;  public void startDTD(String name, String publicId, String systemId)
+<i>2375</i>&nbsp;          throws SAXException
+<i>2376</i>&nbsp;  {
+<i>2377</i>&nbsp;
+<b class="nc"><i>2378</i>&nbsp;    m_insideDTD = true;</b>
+<i>2379</i>&nbsp;  }
+<i>2380</i>&nbsp;
+<i>2381</i>&nbsp;  /**
+<i>2382</i>&nbsp;   * Report the end of DTD declarations.
+<i>2383</i>&nbsp;   *
+<i>2384</i>&nbsp;   * @throws SAXException The application may raise an exception.
+<i>2385</i>&nbsp;   * @see #startDTD
+<i>2386</i>&nbsp;   */
+<i>2387</i>&nbsp;  public void endDTD() throws SAXException
+<i>2388</i>&nbsp;  {
+<i>2389</i>&nbsp;
+<b class="nc"><i>2390</i>&nbsp;    m_insideDTD = false;</b>
+<i>2391</i>&nbsp;  }
+<i>2392</i>&nbsp;
+<i>2393</i>&nbsp;  /**
+<i>2394</i>&nbsp;   * Report the beginning of an entity in content.
+<i>2395</i>&nbsp;   *
+<i>2396</i>&nbsp;   * &lt;p&gt;&lt;strong&gt;NOTE:&lt;/entity&gt; entity references in attribute
+<i>2397</i>&nbsp;   * values -- and the start and end of the document entity --
+<i>2398</i>&nbsp;   * are never reported.&lt;/p&gt;
+<i>2399</i>&nbsp;   *
+<i>2400</i>&nbsp;   * &lt;p&gt;The start and end of the external DTD subset are reported
+<i>2401</i>&nbsp;   * using the pseudo-name &quot;[dtd]&quot;.  All other events must be
+<i>2402</i>&nbsp;   * properly nested within start/end entity events.&lt;/p&gt;
+<i>2403</i>&nbsp;   *
+<i>2404</i>&nbsp;   * &lt;p&gt;Note that skipped entities will be reported through the
+<i>2405</i>&nbsp;   * {@link org.xml.sax.ContentHandler#skippedEntity skippedEntity}
+<i>2406</i>&nbsp;   * event, which is part of the ContentHandler interface.&lt;/p&gt;
+<i>2407</i>&nbsp;   *
+<i>2408</i>&nbsp;   * @param name The name of the entity.  If it is a parameter
+<i>2409</i>&nbsp;   *        entity, the name will begin with &#39;%&#39;.
+<i>2410</i>&nbsp;   * @throws SAXException The application may raise an exception.
+<i>2411</i>&nbsp;   * @see #endEntity
+<i>2412</i>&nbsp;   * @see org.xml.sax.ext.DeclHandler#internalEntityDecl
+<i>2413</i>&nbsp;   * @see org.xml.sax.ext.DeclHandler#externalEntityDecl
+<i>2414</i>&nbsp;   */
+<i>2415</i>&nbsp;  public void startEntity(String name) throws SAXException
+<i>2416</i>&nbsp;  {
+<i>2417</i>&nbsp;
+<i>2418</i>&nbsp;    // no op
+<i>2419</i>&nbsp;  }
+<i>2420</i>&nbsp;
+<i>2421</i>&nbsp;  /**
+<i>2422</i>&nbsp;   * Report the end of an entity.
+<i>2423</i>&nbsp;   *
+<i>2424</i>&nbsp;   * @param name The name of the entity that is ending.
+<i>2425</i>&nbsp;   * @throws SAXException The application may raise an exception.
+<i>2426</i>&nbsp;   * @see #startEntity
+<i>2427</i>&nbsp;   */
+<i>2428</i>&nbsp;  public void endEntity(String name) throws SAXException
+<i>2429</i>&nbsp;  {
+<i>2430</i>&nbsp;
+<i>2431</i>&nbsp;    // no op
+<i>2432</i>&nbsp;  }
+<i>2433</i>&nbsp;
+<i>2434</i>&nbsp;  /**
+<i>2435</i>&nbsp;   * Report the start of a CDATA section.
+<i>2436</i>&nbsp;   *
+<i>2437</i>&nbsp;   * &lt;p&gt;The contents of the CDATA section will be reported through
+<i>2438</i>&nbsp;   * the regular {@link org.xml.sax.ContentHandler#characters
+<i>2439</i>&nbsp;   * characters} event.&lt;/p&gt;
+<i>2440</i>&nbsp;   *
+<i>2441</i>&nbsp;   * @throws SAXException The application may raise an exception.
+<i>2442</i>&nbsp;   * @see #endCDATA
+<i>2443</i>&nbsp;   */
+<i>2444</i>&nbsp;  public void startCDATA() throws SAXException
+<i>2445</i>&nbsp;  {
+<b class="nc"><i>2446</i>&nbsp;    m_textType = DTM.CDATA_SECTION_NODE;</b>
+<i>2447</i>&nbsp;  }
+<i>2448</i>&nbsp;
+<i>2449</i>&nbsp;  /**
+<i>2450</i>&nbsp;   * Report the end of a CDATA section.
+<i>2451</i>&nbsp;   *
+<i>2452</i>&nbsp;   * @throws SAXException The application may raise an exception.
+<i>2453</i>&nbsp;   * @see #startCDATA
+<i>2454</i>&nbsp;   */
+<i>2455</i>&nbsp;  public void endCDATA() throws SAXException
+<i>2456</i>&nbsp;  {
+<b class="nc"><i>2457</i>&nbsp;    m_textType = DTM.TEXT_NODE;</b>
+<i>2458</i>&nbsp;  }
+<i>2459</i>&nbsp;
+<i>2460</i>&nbsp;  /**
+<i>2461</i>&nbsp;   * Report an XML comment anywhere in the document.
+<i>2462</i>&nbsp;   *
+<i>2463</i>&nbsp;   * &lt;p&gt;This callback will be used for comments inside or outside the
+<i>2464</i>&nbsp;   * document element, including comments in the external DTD
+<i>2465</i>&nbsp;   * subset (if read).&lt;/p&gt;
+<i>2466</i>&nbsp;   *
+<i>2467</i>&nbsp;   * @param ch An array holding the characters in the comment.
+<i>2468</i>&nbsp;   * @param start The starting position in the array.
+<i>2469</i>&nbsp;   * @param length The number of characters to use from the array.
+<i>2470</i>&nbsp;   * @throws SAXException The application may raise an exception.
+<i>2471</i>&nbsp;   */
+<i>2472</i>&nbsp;  public void comment(char ch[], int start, int length) throws SAXException
+<i>2473</i>&nbsp;  {
+<i>2474</i>&nbsp;
+<b class="nc"><i>2475</i>&nbsp;    if (m_insideDTD)      // ignore comments if we&#39;re inside the DTD</b>
+<i>2476</i>&nbsp;      return;
+<i>2477</i>&nbsp;
+<b class="nc"><i>2478</i>&nbsp;    charactersFlush();</b>
+<i>2479</i>&nbsp;
+<b class="nc"><i>2480</i>&nbsp;    int exName = m_expandedNameTable.getExpandedTypeID(DTM.COMMENT_NODE);</b>
+<i>2481</i>&nbsp;
+<i>2482</i>&nbsp;    // For now, treat comments as strings...  I guess we should do a
+<i>2483</i>&nbsp;    // seperate FSB buffer instead.
+<b class="nc"><i>2484</i>&nbsp;    int dataIndex = m_valuesOrPrefixes.stringToIndex(new String(ch, start,</b>
+<i>2485</i>&nbsp;                      length));
+<i>2486</i>&nbsp;
+<i>2487</i>&nbsp;
+<b class="nc"><i>2488</i>&nbsp;    m_previous = addNode(DTM.COMMENT_NODE, exName,</b>
+<b class="nc"><i>2489</i>&nbsp;                         m_parents.peek(), m_previous, dataIndex, false);</b>
+<i>2490</i>&nbsp;  }
+<i>2491</i>&nbsp;
+<i>2492</i>&nbsp;  /**
+<i>2493</i>&nbsp;   * Set a run time property for this DTM instance.
+<i>2494</i>&nbsp;   *
+<i>2495</i>&nbsp;   * %REVIEW% Now that we no longer use this method to support
+<i>2496</i>&nbsp;   * getSourceLocatorFor, can we remove it?
+<i>2497</i>&nbsp;   *
+<i>2498</i>&nbsp;   * @param property a &lt;code&gt;String&lt;/code&gt; value
+<i>2499</i>&nbsp;   * @param value an &lt;code&gt;Object&lt;/code&gt; value
+<i>2500</i>&nbsp;   */
+<i>2501</i>&nbsp;  public void setProperty(String property, Object value)
+<i>2502</i>&nbsp;  {
+<i>2503</i>&nbsp;  }
+<i>2504</i>&nbsp;
+<i>2505</i>&nbsp;  /** Retrieve the SourceLocator associated with a specific node.
+<i>2506</i>&nbsp;   * This is only meaningful if the XalanProperties.SOURCE_LOCATION flag was
+<i>2507</i>&nbsp;   * set True using setProperty; if it was never set, or was set false, we
+<i>2508</i>&nbsp;   * will return null.
+<i>2509</i>&nbsp;   *
+<i>2510</i>&nbsp;   * (We _could_ return a locator with the document&#39;s base URI and bogus
+<i>2511</i>&nbsp;   * line/column information. Trying that; see the else clause.)
+<i>2512</i>&nbsp;   * */
+<i>2513</i>&nbsp;  public SourceLocator getSourceLocatorFor(int node)
+<i>2514</i>&nbsp;  {
+<b class="nc"><i>2515</i>&nbsp;    if (m_useSourceLocationProperty)</b>
+<i>2516</i>&nbsp;    {
+<i>2517</i>&nbsp;
+<b class="nc"><i>2518</i>&nbsp;      node = makeNodeIdentity(node);</b>
+<i>2519</i>&nbsp;
+<i>2520</i>&nbsp;
+<b class="nc"><i>2521</i>&nbsp;      return new NodeLocator(null,</b>
+<b class="nc"><i>2522</i>&nbsp;                             m_sourceSystemId.elementAt(node),</b>
+<b class="nc"><i>2523</i>&nbsp;                             m_sourceLine.elementAt(node),</b>
+<b class="nc"><i>2524</i>&nbsp;                             m_sourceColumn.elementAt(node));</b>
+<i>2525</i>&nbsp;    }
+<b class="nc"><i>2526</i>&nbsp;    else if(m_locator!=null)</b>
+<i>2527</i>&nbsp;    {
+<b class="nc"><i>2528</i>&nbsp;        return new NodeLocator(null,m_locator.getSystemId(),-1,-1);</b>
+<i>2529</i>&nbsp;    }
+<b class="nc"><i>2530</i>&nbsp;    else if(m_systemId!=null)</b>
+<i>2531</i>&nbsp;    {
+<b class="nc"><i>2532</i>&nbsp;        return new NodeLocator(null,m_systemId,-1,-1);</b>
+<i>2533</i>&nbsp;    }
+<b class="nc"><i>2534</i>&nbsp;    return null;</b>
+<i>2535</i>&nbsp;  }
+<i>2536</i>&nbsp;
+<i>2537</i>&nbsp;  public String getFixedNames(int type){
+<b class="nc"><i>2538</i>&nbsp;    return m_fixednames[type];</b>
+<i>2539</i>&nbsp;  }
+<i>2540</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

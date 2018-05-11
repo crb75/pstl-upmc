@@ -1,0 +1,268 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BindingIteratorImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.naming.cosnaming</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BindingIteratorImpl (com.sun.corba.se.impl.naming.cosnaming)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BindingIteratorImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 1996, 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.naming.cosnaming;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;// Import general CORBA classes
+<i>29</i>&nbsp;import org.omg.CORBA.ORB;
+<i>30</i>&nbsp;import org.omg.CORBA.Object;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;// Import org.omg.CosNaming classes
+<i>33</i>&nbsp;import org.omg.CosNaming.Binding;
+<i>34</i>&nbsp;import org.omg.CosNaming.BindingType;
+<i>35</i>&nbsp;import org.omg.CosNaming.BindingHolder;
+<i>36</i>&nbsp;import org.omg.CosNaming.BindingListHolder;
+<i>37</i>&nbsp;import org.omg.CosNaming.BindingIteratorHolder;
+<i>38</i>&nbsp;import org.omg.CosNaming.BindingIteratorPOA;
+<i>39</i>&nbsp;import org.omg.CORBA.BAD_PARAM;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;/**
+<i>42</i>&nbsp; * Class BindingIteratorImpl implements the org.omg.CosNaming::BindingIterator
+<i>43</i>&nbsp; * interface, but does not implement the method to retrieve the next
+<i>44</i>&nbsp; * binding in the NamingContext for which it was created. This is left
+<i>45</i>&nbsp; * to a subclass, which is why this class is abstract; BindingIteratorImpl
+<i>46</i>&nbsp; * provides an implementation of the interface operations on top of two
+<i>47</i>&nbsp; * subclass methods, allowing multiple implementations of iterators that
+<i>48</i>&nbsp; * differ in storage and access to the contents of a NamingContext
+<i>49</i>&nbsp; * implementation.
+<i>50</i>&nbsp; * &lt;p&gt;
+<i>51</i>&nbsp; * The operation next_one() is implemented by the subclass, whereas
+<i>52</i>&nbsp; * next_n() is implemented on top of the next_one() implementation.
+<i>53</i>&nbsp; * Destroy must also be implemented by the subclass.
+<i>54</i>&nbsp; * &lt;p&gt;
+<i>55</i>&nbsp; * A subclass must implement NextOne() and Destroy(); these
+<i>56</i>&nbsp; * methods are invoked from synchronized methods and need therefore
+<i>57</i>&nbsp; * not be synchronized themselves.
+<i>58</i>&nbsp; */
+<i>59</i>&nbsp;public abstract class BindingIteratorImpl extends BindingIteratorPOA
+<i>60</i>&nbsp;{
+<i>61</i>&nbsp;    protected ORB orb ;
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    /**
+<i>64</i>&nbsp;     * Create a binding iterator servant.
+<i>65</i>&nbsp;     * runs the super constructor.
+<i>66</i>&nbsp;     * @param orb an ORB object.
+<i>67</i>&nbsp;     * @exception java.lang.Exception a Java exception.
+<i>68</i>&nbsp;     */
+<i>69</i>&nbsp;    public BindingIteratorImpl(ORB orb)
+<i>70</i>&nbsp;        throws java.lang.Exception
+<i>71</i>&nbsp;    {
+<b class="nc"><i>72</i>&nbsp;        super();</b>
+<b class="nc"><i>73</i>&nbsp;        this.orb = orb ;</b>
+<i>74</i>&nbsp;    }
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;    /**
+<i>77</i>&nbsp;     * Return the next binding. It also returns true or false, indicating
+<i>78</i>&nbsp;     * whether there were more bindings.
+<i>79</i>&nbsp;     * @param b The Binding as an out parameter.
+<i>80</i>&nbsp;     * @return true if there were more bindings.
+<i>81</i>&nbsp;     * @exception org.omg.CORBA.SystemException One of a fixed set of CORBA
+<i>82</i>&nbsp;     * system exceptions.
+<i>83</i>&nbsp;     * @see NextOne
+<i>84</i>&nbsp;     */
+<i>85</i>&nbsp;    public synchronized boolean next_one(org.omg.CosNaming.BindingHolder b)
+<i>86</i>&nbsp;    {
+<i>87</i>&nbsp;        // NextOne actually returns the next one
+<b class="nc"><i>88</i>&nbsp;        return NextOne(b);</b>
+<i>89</i>&nbsp;    }
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    /**
+<i>92</i>&nbsp;     * Return the next n bindings. It also returns true or false, indicating
+<i>93</i>&nbsp;     * whether there were more bindings.
+<i>94</i>&nbsp;     * @param how_many The number of requested bindings in the BindingList.
+<i>95</i>&nbsp;     * @param bl The BindingList as an out parameter.
+<i>96</i>&nbsp;     * @return true if there were more bindings.
+<i>97</i>&nbsp;     * @exception org.omg.CORBA.SystemException One of a fixed set of CORBA
+<i>98</i>&nbsp;     * system exceptions.
+<i>99</i>&nbsp;     * @see NextOne
+<i>100</i>&nbsp;     */
+<i>101</i>&nbsp;    public synchronized boolean next_n(int how_many,
+<i>102</i>&nbsp;        org.omg.CosNaming.BindingListHolder blh)
+<i>103</i>&nbsp;    {
+<b class="nc"><i>104</i>&nbsp;        if( how_many == 0 ) {</b>
+<b class="nc"><i>105</i>&nbsp;            throw new BAD_PARAM( &quot; &#39;how_many&#39; parameter is set to 0 which is&quot; +</b>
+<i>106</i>&nbsp;            &quot; invalid&quot; );
+<i>107</i>&nbsp;        }
+<b class="nc"><i>108</i>&nbsp;        return list( how_many, blh );</b>
+<i>109</i>&nbsp;    }
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;    /**
+<i>112</i>&nbsp;     * lists next n bindings. It returns true or false, indicating
+<i>113</i>&nbsp;     * whether there were more bindings. This method has the package private
+<i>114</i>&nbsp;     * scope, It will be called from NamingContext.list() operation or
+<i>115</i>&nbsp;     * this.next_n().
+<i>116</i>&nbsp;     * @param how_many The number of requested bindings in the BindingList.
+<i>117</i>&nbsp;     * @param bl The BindingList as an out parameter.
+<i>118</i>&nbsp;     * @return true if there were more bindings.
+<i>119</i>&nbsp;     */
+<i>120</i>&nbsp;    public boolean list( int how_many, org.omg.CosNaming.BindingListHolder blh)
+<i>121</i>&nbsp;    {
+<i>122</i>&nbsp;        // Take the smallest of what&#39;s left and what&#39;s being asked for
+<b class="nc"><i>123</i>&nbsp;        int numberToGet = Math.min(RemainingElements(),how_many);</b>
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;        // Create a resulting BindingList
+<b class="nc"><i>126</i>&nbsp;        Binding[] bl = new Binding[numberToGet];</b>
+<b class="nc"><i>127</i>&nbsp;        BindingHolder bh = new BindingHolder();</b>
+<b class="nc"><i>128</i>&nbsp;        int i = 0;</b>
+<i>129</i>&nbsp;        // Keep iterating as long as there are entries
+<b class="nc"><i>130</i>&nbsp;        while (i &lt; numberToGet &amp;&amp; this.NextOne(bh) == true) {</b>
+<b class="nc"><i>131</i>&nbsp;            bl[i] = bh.value;</b>
+<b class="nc"><i>132</i>&nbsp;            i++;</b>
+<i>133</i>&nbsp;        }
+<i>134</i>&nbsp;        // Found any at all?
+<b class="nc"><i>135</i>&nbsp;        if (i == 0) {</b>
+<i>136</i>&nbsp;            // No
+<b class="nc"><i>137</i>&nbsp;            blh.value = new Binding[0];</b>
+<b class="nc"><i>138</i>&nbsp;            return false;</b>
+<i>139</i>&nbsp;        }
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;        // Set into holder
+<b class="nc"><i>142</i>&nbsp;        blh.value = bl;</b>
+<i>143</i>&nbsp;
+<b class="nc"><i>144</i>&nbsp;        return true;</b>
+<i>145</i>&nbsp;    }
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;    /**
+<i>151</i>&nbsp;     * Destroy this BindingIterator object. The object corresponding to this
+<i>152</i>&nbsp;     * object reference is destroyed.
+<i>153</i>&nbsp;     * @exception org.omg.CORBA.SystemException One of a fixed set of CORBA
+<i>154</i>&nbsp;     * system exceptions.
+<i>155</i>&nbsp;     * @see Destroy
+<i>156</i>&nbsp;     */
+<i>157</i>&nbsp;    public synchronized void destroy()
+<i>158</i>&nbsp;    {
+<i>159</i>&nbsp;        // Destroy actually destroys
+<b class="nc"><i>160</i>&nbsp;        this.Destroy();</b>
+<i>161</i>&nbsp;    }
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;    /**
+<i>164</i>&nbsp;     * Abstract method for returning the next binding in the NamingContext
+<i>165</i>&nbsp;     * for which this BindingIterator was created.
+<i>166</i>&nbsp;     * @param b The Binding as an out parameter.
+<i>167</i>&nbsp;     * @return true if there were more bindings.
+<i>168</i>&nbsp;     * @exception org.omg.CORBA.SystemException One of a fixed set of CORBA
+<i>169</i>&nbsp;     * system exceptions.
+<i>170</i>&nbsp;     */
+<i>171</i>&nbsp;    protected abstract boolean NextOne(org.omg.CosNaming.BindingHolder b);
+<i>172</i>&nbsp;
+<i>173</i>&nbsp;    /**
+<i>174</i>&nbsp;     * Abstract method for destroying this BindingIterator.
+<i>175</i>&nbsp;     * @exception org.omg.CORBA.SystemException One of a fixed set of CORBA
+<i>176</i>&nbsp;     * system exceptions.
+<i>177</i>&nbsp;     */
+<i>178</i>&nbsp;    protected abstract void Destroy();
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;    /**
+<i>181</i>&nbsp;     * Abstract method for returning the remaining number of elements.
+<i>182</i>&nbsp;     * @return the remaining number of elements in the iterator.
+<i>183</i>&nbsp;     */
+<i>184</i>&nbsp;    protected abstract int RemainingElements();
+<i>185</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

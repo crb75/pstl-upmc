@@ -1,0 +1,341 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: AttributeHTML</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.bcel.internal.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: AttributeHTML (com.sun.org.apache.bcel.internal.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AttributeHTML</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 83)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;package com.sun.org.apache.bcel.internal.util;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;/* ====================================================================
+<i>8</i>&nbsp; * The Apache Software License, Version 1.1
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; * Copyright (c) 2001 The Apache Software Foundation.  All rights
+<i>11</i>&nbsp; * reserved.
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; * Redistribution and use in source and binary forms, with or without
+<i>14</i>&nbsp; * modification, are permitted provided that the following conditions
+<i>15</i>&nbsp; * are met:
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; * 1. Redistributions of source code must retain the above copyright
+<i>18</i>&nbsp; *    notice, this list of conditions and the following disclaimer.
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; * 2. Redistributions in binary form must reproduce the above copyright
+<i>21</i>&nbsp; *    notice, this list of conditions and the following disclaimer in
+<i>22</i>&nbsp; *    the documentation and/or other materials provided with the
+<i>23</i>&nbsp; *    distribution.
+<i>24</i>&nbsp; *
+<i>25</i>&nbsp; * 3. The end-user documentation included with the redistribution,
+<i>26</i>&nbsp; *    if any, must include the following acknowledgment:
+<i>27</i>&nbsp; *       &quot;This product includes software developed by the
+<i>28</i>&nbsp; *        Apache Software Foundation (http://www.apache.org/).&quot;
+<i>29</i>&nbsp; *    Alternately, this acknowledgment may appear in the software itself,
+<i>30</i>&nbsp; *    if and wherever such third-party acknowledgments normally appear.
+<i>31</i>&nbsp; *
+<i>32</i>&nbsp; * 4. The names &quot;Apache&quot; and &quot;Apache Software Foundation&quot; and
+<i>33</i>&nbsp; *    &quot;Apache BCEL&quot; must not be used to endorse or promote products
+<i>34</i>&nbsp; *    derived from this software without prior written permission. For
+<i>35</i>&nbsp; *    written permission, please contact apache@apache.org.
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; * 5. Products derived from this software may not be called &quot;Apache&quot;,
+<i>38</i>&nbsp; *    &quot;Apache BCEL&quot;, nor may &quot;Apache&quot; appear in their name, without
+<i>39</i>&nbsp; *    prior written permission of the Apache Software Foundation.
+<i>40</i>&nbsp; *
+<i>41</i>&nbsp; * THIS SOFTWARE IS PROVIDED ``AS IS&#39;&#39; AND ANY EXPRESSED OR IMPLIED
+<i>42</i>&nbsp; * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+<i>43</i>&nbsp; * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+<i>44</i>&nbsp; * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+<i>45</i>&nbsp; * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+<i>46</i>&nbsp; * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+<i>47</i>&nbsp; * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+<i>48</i>&nbsp; * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+<i>49</i>&nbsp; * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+<i>50</i>&nbsp; * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+<i>51</i>&nbsp; * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+<i>52</i>&nbsp; * SUCH DAMAGE.
+<i>53</i>&nbsp; * ====================================================================
+<i>54</i>&nbsp; *
+<i>55</i>&nbsp; * This software consists of voluntary contributions made by many
+<i>56</i>&nbsp; * individuals on behalf of the Apache Software Foundation.  For more
+<i>57</i>&nbsp; * information on the Apache Software Foundation, please see
+<i>58</i>&nbsp; * &lt;http://www.apache.org/&gt;.
+<i>59</i>&nbsp; */
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;import com.sun.org.apache.bcel.internal.classfile.*;
+<i>62</i>&nbsp;import java.io.*;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;/**
+<i>65</i>&nbsp; * Convert found attributes into HTML file.
+<i>66</i>&nbsp; *
+<i>67</i>&nbsp; * @author  &lt;A HREF=&quot;mailto:markus.dahm@berlin.de&quot;&gt;M. Dahm&lt;/A&gt;
+<i>68</i>&nbsp; *
+<i>69</i>&nbsp; */
+<i>70</i>&nbsp;final class AttributeHTML implements com.sun.org.apache.bcel.internal.Constants {
+<i>71</i>&nbsp;  private String       class_name;     // name of current class
+<i>72</i>&nbsp;  private PrintWriter  file;                                    // file to write to
+<b class="nc"><i>73</i>&nbsp;  private int          attr_count = 0;</b>
+<i>74</i>&nbsp;  private ConstantHTML constant_html;
+<i>75</i>&nbsp;  private ConstantPool constant_pool;
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;  AttributeHTML(String dir, String class_name, ConstantPool constant_pool,
+<i>78</i>&nbsp;                ConstantHTML constant_html) throws IOException
+<b class="nc"><i>79</i>&nbsp;  {</b>
+<b class="nc"><i>80</i>&nbsp;    this.class_name    = class_name;</b>
+<b class="nc"><i>81</i>&nbsp;    this.constant_pool = constant_pool;</b>
+<b class="nc"><i>82</i>&nbsp;    this.constant_html = constant_html;</b>
+<i>83</i>&nbsp;
+<b class="nc"><i>84</i>&nbsp;    file = new PrintWriter(new FileOutputStream(dir + class_name + &quot;_attributes.html&quot;));</b>
+<b class="nc"><i>85</i>&nbsp;    file.println(&quot;&lt;HTML&gt;&lt;BODY BGCOLOR=\&quot;#C0C0C0\&quot;&gt;&lt;TABLE BORDER=0&gt;&quot;);</b>
+<i>86</i>&nbsp;  }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;  private final String codeLink(int link, int method_number) {
+<b class="nc"><i>89</i>&nbsp;    return &quot;&lt;A HREF=\&quot;&quot; + class_name + &quot;_code.html#code&quot; +</b>
+<i>90</i>&nbsp;      method_number + &quot;@&quot; + link + &quot;\&quot; TARGET=Code&gt;&quot; +
+<i>91</i>&nbsp;      link + &quot;&lt;/A&gt;&quot;;
+<i>92</i>&nbsp;  }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;  final void close() {
+<b class="nc"><i>95</i>&nbsp;    file.println(&quot;&lt;/TABLE&gt;&lt;/BODY&gt;&lt;/HTML&gt;&quot;);</b>
+<b class="nc"><i>96</i>&nbsp;    file.close();</b>
+<i>97</i>&nbsp;  }
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;  final void writeAttribute(Attribute attribute, String anchor) throws IOException {
+<b class="nc"><i>100</i>&nbsp;    writeAttribute(attribute, anchor, 0);</b>
+<i>101</i>&nbsp;  }
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;  final void writeAttribute(Attribute attribute, String anchor, int method_number) throws IOException {
+<b class="nc"><i>104</i>&nbsp;    byte         tag = attribute.getTag();</b>
+<i>105</i>&nbsp;    int        index;
+<i>106</i>&nbsp;
+<b class="nc"><i>107</i>&nbsp;    if(tag == ATTR_UNKNOWN) // Don&#39;t know what to do about this one</b>
+<i>108</i>&nbsp;      return;
+<i>109</i>&nbsp;
+<b class="nc"><i>110</i>&nbsp;    attr_count++; // Increment number of attributes found so far</b>
+<i>111</i>&nbsp;
+<b class="nc"><i>112</i>&nbsp;    if(attr_count % 2 == 0)</b>
+<b class="nc"><i>113</i>&nbsp;      file.print(&quot;&lt;TR BGCOLOR=\&quot;#C0C0C0\&quot;&gt;&lt;TD&gt;&quot;);</b>
+<i>114</i>&nbsp;    else
+<b class="nc"><i>115</i>&nbsp;      file.print(&quot;&lt;TR BGCOLOR=\&quot;#A0A0A0\&quot;&gt;&lt;TD&gt;&quot;);</b>
+<i>116</i>&nbsp;
+<b class="nc"><i>117</i>&nbsp;    file.println(&quot;&lt;H4&gt;&lt;A NAME=\&quot;&quot; + anchor + &quot;\&quot;&gt;&quot; + attr_count + &quot; &quot; + ATTRIBUTE_NAMES[tag] + &quot;&lt;/A&gt;&lt;/H4&gt;&quot;);</b>
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;    /* Handle different attributes
+<i>120</i>&nbsp;     */
+<b class="nc"><i>121</i>&nbsp;    switch(tag) {</b>
+<i>122</i>&nbsp;    case ATTR_CODE:
+<b class="nc"><i>123</i>&nbsp;      Code        c          = (Code)attribute;</b>
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;      // Some directly printable values
+<b class="nc"><i>126</i>&nbsp;      file.print(&quot;&lt;UL&gt;&lt;LI&gt;Maximum stack size = &quot; + c.getMaxStack() +</b>
+<i>127</i>&nbsp;                 &quot;&lt;/LI&gt;\n&lt;LI&gt;Number of local variables = &quot; +
+<b class="nc"><i>128</i>&nbsp;                 c.getMaxLocals() + &quot;&lt;/LI&gt;\n&lt;LI&gt;&lt;A HREF=\&quot;&quot; + class_name +</b>
+<i>129</i>&nbsp;                 &quot;_code.html#method&quot; + method_number + &quot;\&quot; TARGET=Code&gt;Byte code&lt;/A&gt;&lt;/LI&gt;&lt;/UL&gt;\n&quot;);
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;      // Get handled exceptions and list them
+<b class="nc"><i>132</i>&nbsp;      CodeException[] ce  = c.getExceptionTable();</b>
+<b class="nc"><i>133</i>&nbsp;      int             len = ce.length;</b>
+<i>134</i>&nbsp;
+<b class="nc"><i>135</i>&nbsp;      if(len &gt; 0) {</b>
+<b class="nc"><i>136</i>&nbsp;        file.print(&quot;&lt;P&gt;&lt;B&gt;Exceptions handled&lt;/B&gt;&lt;UL&gt;&quot;);</b>
+<i>137</i>&nbsp;
+<b class="nc"><i>138</i>&nbsp;        for(int i=0; i &lt; len; i++) {</b>
+<b class="nc"><i>139</i>&nbsp;          int catch_type = ce[i].getCatchType(); // Index in constant pool</b>
+<i>140</i>&nbsp;
+<b class="nc"><i>141</i>&nbsp;          file.print(&quot;&lt;LI&gt;&quot;);</b>
+<i>142</i>&nbsp;
+<b class="nc"><i>143</i>&nbsp;          if(catch_type != 0)</b>
+<b class="nc"><i>144</i>&nbsp;            file.print(constant_html.referenceConstant(catch_type)); // Create Link to _cp.html</b>
+<i>145</i>&nbsp;          else
+<b class="nc"><i>146</i>&nbsp;            file.print(&quot;Any Exception&quot;);</b>
+<i>147</i>&nbsp;
+<b class="nc"><i>148</i>&nbsp;          file.print(&quot;&lt;BR&gt;(Ranging from lines &quot; + codeLink(ce[i].getStartPC(), method_number) +</b>
+<b class="nc"><i>149</i>&nbsp;                     &quot; to &quot; + codeLink(ce[i].getEndPC(), method_number) + &quot;, handled at line &quot; +</b>
+<b class="nc"><i>150</i>&nbsp;                     codeLink(ce[i].getHandlerPC(), method_number) + &quot;)&lt;/LI&gt;&quot;);</b>
+<i>151</i>&nbsp;        }
+<b class="nc"><i>152</i>&nbsp;        file.print(&quot;&lt;/UL&gt;&quot;);</b>
+<i>153</i>&nbsp;      }
+<i>154</i>&nbsp;      break;
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;    case ATTR_CONSTANT_VALUE:
+<b class="nc"><i>157</i>&nbsp;      index = ((ConstantValue)attribute).getConstantValueIndex();</b>
+<i>158</i>&nbsp;
+<i>159</i>&nbsp;      // Reference _cp.html
+<b class="nc"><i>160</i>&nbsp;      file.print(&quot;&lt;UL&gt;&lt;LI&gt;&lt;A HREF=\&quot;&quot; + class_name + &quot;_cp.html#cp&quot; + index +</b>
+<i>161</i>&nbsp;                 &quot;\&quot; TARGET=\&quot;ConstantPool\&quot;&gt;Constant value index(&quot; + index +&quot;)&lt;/A&gt;&lt;/UL&gt;\n&quot;);
+<b class="nc"><i>162</i>&nbsp;      break;</b>
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;    case ATTR_SOURCE_FILE:
+<b class="nc"><i>165</i>&nbsp;      index = ((SourceFile)attribute).getSourceFileIndex();</b>
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;      // Reference _cp.html
+<b class="nc"><i>168</i>&nbsp;      file.print(&quot;&lt;UL&gt;&lt;LI&gt;&lt;A HREF=\&quot;&quot; + class_name + &quot;_cp.html#cp&quot; + index +</b>
+<i>169</i>&nbsp;                 &quot;\&quot; TARGET=\&quot;ConstantPool\&quot;&gt;Source file index(&quot; + index +&quot;)&lt;/A&gt;&lt;/UL&gt;\n&quot;);
+<b class="nc"><i>170</i>&nbsp;      break;</b>
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;    case ATTR_EXCEPTIONS:
+<i>173</i>&nbsp;      // List thrown exceptions
+<b class="nc"><i>174</i>&nbsp;      int[] indices = ((ExceptionTable)attribute).getExceptionIndexTable();</b>
+<i>175</i>&nbsp;
+<b class="nc"><i>176</i>&nbsp;      file.print(&quot;&lt;UL&gt;&quot;);</b>
+<i>177</i>&nbsp;
+<b class="nc"><i>178</i>&nbsp;      for(int i=0; i &lt; indices.length; i++)</b>
+<b class="nc"><i>179</i>&nbsp;        file.print(&quot;&lt;LI&gt;&lt;A HREF=\&quot;&quot; + class_name + &quot;_cp.html#cp&quot; + indices[i] +</b>
+<i>180</i>&nbsp;                   &quot;\&quot; TARGET=\&quot;ConstantPool\&quot;&gt;Exception class index(&quot; + indices[i] + &quot;)&lt;/A&gt;\n&quot;);
+<i>181</i>&nbsp;
+<b class="nc"><i>182</i>&nbsp;      file.print(&quot;&lt;/UL&gt;\n&quot;);</b>
+<b class="nc"><i>183</i>&nbsp;      break;</b>
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;    case ATTR_LINE_NUMBER_TABLE:
+<b class="nc"><i>186</i>&nbsp;      LineNumber[] line_numbers =((LineNumberTable)attribute).getLineNumberTable();</b>
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;      // List line number pairs
+<b class="nc"><i>189</i>&nbsp;      file.print(&quot;&lt;P&gt;&quot;);</b>
+<i>190</i>&nbsp;
+<b class="nc"><i>191</i>&nbsp;      for(int i=0; i &lt; line_numbers.length; i++) {</b>
+<b class="nc"><i>192</i>&nbsp;        file.print(&quot;(&quot; + line_numbers[i].getStartPC() + &quot;,&amp;nbsp;&quot; + line_numbers[i].getLineNumber() + &quot;)&quot;);</b>
+<i>193</i>&nbsp;
+<b class="nc"><i>194</i>&nbsp;        if(i &lt; line_numbers.length - 1)</b>
+<b class="nc"><i>195</i>&nbsp;          file.print(&quot;, &quot;); // breakable</b>
+<i>196</i>&nbsp;      }
+<b class="nc"><i>197</i>&nbsp;      break;</b>
+<i>198</i>&nbsp;
+<i>199</i>&nbsp;    case ATTR_LOCAL_VARIABLE_TABLE:
+<b class="nc"><i>200</i>&nbsp;      LocalVariable[] vars = ((LocalVariableTable)attribute).getLocalVariableTable();</b>
+<i>201</i>&nbsp;
+<i>202</i>&nbsp;      // List name, range and type
+<b class="nc"><i>203</i>&nbsp;      file.print(&quot;&lt;UL&gt;&quot;);</b>
+<i>204</i>&nbsp;
+<b class="nc"><i>205</i>&nbsp;      for(int i=0; i &lt; vars.length; i++) {</b>
+<b class="nc"><i>206</i>&nbsp;        index = vars[i].getSignatureIndex();</b>
+<b class="nc"><i>207</i>&nbsp;        String signature = ((ConstantUtf8)constant_pool.getConstant(index, CONSTANT_Utf8)).getBytes();</b>
+<b class="nc"><i>208</i>&nbsp;        signature = Utility.signatureToString(signature, false);</b>
+<b class="nc"><i>209</i>&nbsp;        int  start = vars[i].getStartPC();</b>
+<b class="nc"><i>210</i>&nbsp;        int  end   = (start + vars[i].getLength());</b>
+<i>211</i>&nbsp;
+<b class="nc"><i>212</i>&nbsp;        file.println(&quot;&lt;LI&gt;&quot; + Class2HTML.referenceType(signature) +</b>
+<b class="nc"><i>213</i>&nbsp;                     &quot;&amp;nbsp;&lt;B&gt;&quot; + vars[i].getName() + &quot;&lt;/B&gt; in slot %&quot; + vars[i].getIndex() +</b>
+<i>214</i>&nbsp;                     &quot;&lt;BR&gt;Valid from lines &quot; +
+<i>215</i>&nbsp;                     &quot;&lt;A HREF=\&quot;&quot; + class_name + &quot;_code.html#code&quot; + method_number + &quot;@&quot; + start + &quot;\&quot; TARGET=Code&gt;&quot; +
+<i>216</i>&nbsp;                     start + &quot;&lt;/A&gt; to &quot; +
+<i>217</i>&nbsp;                     &quot;&lt;A HREF=\&quot;&quot; + class_name + &quot;_code.html#code&quot; + method_number + &quot;@&quot; + end + &quot;\&quot; TARGET=Code&gt;&quot; +
+<i>218</i>&nbsp;                     end + &quot;&lt;/A&gt;&lt;/LI&gt;&quot;);
+<i>219</i>&nbsp;      }
+<b class="nc"><i>220</i>&nbsp;      file.print(&quot;&lt;/UL&gt;\n&quot;);</b>
+<i>221</i>&nbsp;
+<b class="nc"><i>222</i>&nbsp;      break;</b>
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;    case ATTR_INNER_CLASSES:
+<b class="nc"><i>225</i>&nbsp;      InnerClass[] classes = ((InnerClasses)attribute).getInnerClasses();</b>
+<i>226</i>&nbsp;
+<i>227</i>&nbsp;      // List inner classes
+<b class="nc"><i>228</i>&nbsp;      file.print(&quot;&lt;UL&gt;&quot;);</b>
+<i>229</i>&nbsp;
+<b class="nc"><i>230</i>&nbsp;      for(int i=0; i &lt; classes.length; i++) {</b>
+<i>231</i>&nbsp;        String name, access;
+<i>232</i>&nbsp;
+<b class="nc"><i>233</i>&nbsp;        index = classes[i].getInnerNameIndex();</b>
+<b class="nc"><i>234</i>&nbsp;        if(index &gt; 0)</b>
+<b class="nc"><i>235</i>&nbsp;          name =((ConstantUtf8)constant_pool.getConstant(index, CONSTANT_Utf8)).getBytes();</b>
+<i>236</i>&nbsp;        else
+<b class="nc"><i>237</i>&nbsp;          name = &quot;&amp;lt;anonymous&amp;gt;&quot;;</b>
+<i>238</i>&nbsp;
+<b class="nc"><i>239</i>&nbsp;        access = Utility.accessToString(classes[i].getInnerAccessFlags());</b>
+<i>240</i>&nbsp;
+<b class="nc"><i>241</i>&nbsp;        file.print(&quot;&lt;LI&gt;&lt;FONT COLOR=\&quot;#FF0000\&quot;&gt;&quot; + access + &quot;&lt;/FONT&gt; &quot;+</b>
+<b class="nc"><i>242</i>&nbsp;                   constant_html.referenceConstant(classes[i].getInnerClassIndex()) +</b>
+<i>243</i>&nbsp;                   &quot; in&amp;nbsp;class &quot; +
+<b class="nc"><i>244</i>&nbsp;                   constant_html.referenceConstant(classes[i].getOuterClassIndex()) +</b>
+<i>245</i>&nbsp;                   &quot; named &quot; + name + &quot;&lt;/LI&gt;\n&quot;);
+<i>246</i>&nbsp;      }
+<i>247</i>&nbsp;
+<b class="nc"><i>248</i>&nbsp;      file.print(&quot;&lt;/UL&gt;\n&quot;);</b>
+<b class="nc"><i>249</i>&nbsp;      break;</b>
+<i>250</i>&nbsp;
+<i>251</i>&nbsp;    default: // Such as Unknown attribute or Deprecated
+<b class="nc"><i>252</i>&nbsp;      file.print(&quot;&lt;P&gt;&quot; + attribute.toString());</b>
+<i>253</i>&nbsp;    }
+<i>254</i>&nbsp;
+<b class="nc"><i>255</i>&nbsp;    file.println(&quot;&lt;/TD&gt;&lt;/TR&gt;&quot;);</b>
+<b class="nc"><i>256</i>&nbsp;    file.flush();</b>
+<i>257</i>&nbsp;  }
+<i>258</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

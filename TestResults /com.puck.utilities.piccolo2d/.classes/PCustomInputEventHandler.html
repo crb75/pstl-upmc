@@ -1,0 +1,239 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PCustomInputEventHandler</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.puck.utilities.piccolo2d</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PCustomInputEventHandler (com.puck.utilities.piccolo2d)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PCustomInputEventHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 65)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package com.puck.utilities.piccolo2d;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;import java.awt.event.InputEvent;
+<i>7</i>&nbsp;import java.util.HashMap;
+<i>8</i>&nbsp;import java.util.Map;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;import javax.swing.JMenuItem;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;import org.piccolo2d.event.PBasicInputEventHandler;
+<i>13</i>&nbsp;import org.piccolo2d.event.PInputEvent;
+<i>14</i>&nbsp;import org.piccolo2d.event.PInputEventFilter;
+<i>15</i>&nbsp;import org.piccolo2d.extras.pswing.PSwingCanvas;
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;import com.puck.arrows.ArrowNodesHolder;
+<i>18</i>&nbsp;import com.puck.arrows.Parrow;
+<i>19</i>&nbsp;import com.puck.menu.Menu;
+<i>20</i>&nbsp;import com.puck.menu.items.AddNode;
+<i>21</i>&nbsp;import com.puck.menu.items.CollapseAll;
+<i>22</i>&nbsp;import com.puck.menu.items.ExpandAll;
+<i>23</i>&nbsp;import com.puck.menu.items.FocusNode;
+<i>24</i>&nbsp;import com.puck.menu.items.HideNode;
+<i>25</i>&nbsp;import com.puck.menu.items.RenameNode;
+<i>26</i>&nbsp;import com.puck.menu.items.ingoing.CreateEdgesBy;
+<i>27</i>&nbsp;import com.puck.menu.items.ingoing.CreateEgdesHierarchyBy;
+<i>28</i>&nbsp;import com.puck.menu.items.outgoing.CreateEdgesOf;
+<i>29</i>&nbsp;import com.puck.menu.items.outgoing.CreateEgdesHierarchyOf;
+<i>30</i>&nbsp;import com.puck.menu.items.removing.RemoveEdgesOf;
+<i>31</i>&nbsp;import com.puck.menu.items.removing.RemovesHierarchyEdgesOf;
+<i>32</i>&nbsp;import com.puck.nodes.piccolo2d.Node;
+<i>33</i>&nbsp;import com.puck.nodes.piccolo2d.PiccoloCustomNode;
+<i>34</i>&nbsp;import com.puck.undoRedo.Changeable;
+<i>35</i>&nbsp;import com.puck.undoRedo.StateChanger;
+<i>36</i>&nbsp;import com.puck.utilities.NodeType;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;public class PCustomInputEventHandler extends PBasicInputEventHandler {
+<i>39</i>&nbsp;	private PiccoloCustomNode pnode;
+<i>40</i>&nbsp;	private PiccoloCustomNode root;
+<i>41</i>&nbsp;	private PSwingCanvas canvas;
+<i>42</i>&nbsp;	private HashMap&lt;String, PiccoloCustomNode&gt; allPNodes;
+<i>43</i>&nbsp;	private Menu menu;
+<i>44</i>&nbsp;	private JMenuItem createEdgesOf;
+<i>45</i>&nbsp;	private JMenuItem createEdgesBy;
+<i>46</i>&nbsp;	private JMenuItem removeEdgesOf;
+<i>47</i>&nbsp;	private JMenuItem createEgdesHierarchyBy;
+<i>48</i>&nbsp;	private JMenuItem createEgdesHierarchyOf;
+<i>49</i>&nbsp;	private JMenuItem removesHierarchyEdgesOf;
+<i>50</i>&nbsp;	private Map&lt;String, Node&gt; listNodes;
+<i>51</i>&nbsp;	private ArrowNodesHolder ANH;
+<i>52</i>&nbsp;	private HideNode hideNode ;
+<i>53</i>&nbsp;	private FocusNode focusNode;
+<i>54</i>&nbsp;	private ExpandAll expandAll;
+<i>55</i>&nbsp;	private CollapseAll collapseAll;
+<i>56</i>&nbsp;	private JMenuItem addClass;
+<i>57</i>&nbsp;	private JMenuItem addPackage;
+<i>58</i>&nbsp;	private JMenuItem renameNode;
+<i>59</i>&nbsp;	private Changeable state;
+<i>60</i>&nbsp;	public PCustomInputEventHandler(PiccoloCustomNode pnode, PiccoloCustomNode root, PSwingCanvas canvas,
+<b class="nc"><i>61</i>&nbsp;			Map&lt;String, PiccoloCustomNode&gt; allPNodes, Menu menu, ArrowNodesHolder ANH, Map&lt;String, Node&gt; listNodes) {</b>
+<b class="nc"><i>62</i>&nbsp;		setEventFilter(new PInputEventFilter(InputEvent.BUTTON1_MASK &amp; InputEvent.BUTTON2_MASK));</b>
+<b class="nc"><i>63</i>&nbsp;		this.pnode = pnode;</b>
+<b class="nc"><i>64</i>&nbsp;		this.canvas = canvas;</b>
+<b class="nc"><i>65</i>&nbsp;		this.root = root;</b>
+<b class="nc"><i>66</i>&nbsp;		this.allPNodes = (HashMap&lt;String, PiccoloCustomNode&gt;) allPNodes;</b>
+<b class="nc"><i>67</i>&nbsp;		this.menu = menu;</b>
+<b class="nc"><i>68</i>&nbsp;		this.ANH = ANH;</b>
+<b class="nc"><i>69</i>&nbsp;		this.listNodes = listNodes;</b>
+<b class="nc"><i>70</i>&nbsp;		createEdgesOf = new CreateEdgesOf(pnode, canvas, this.allPNodes, menu,ANH,this.listNodes);</b>
+<b class="nc"><i>71</i>&nbsp;		removeEdgesOf = new RemoveEdgesOf(pnode, canvas, this.allPNodes, menu,ANH,listNodes);</b>
+<b class="nc"><i>72</i>&nbsp;		createEdgesBy = new CreateEdgesBy(pnode, canvas, this.allPNodes, menu,ANH,listNodes);</b>
+<b class="nc"><i>73</i>&nbsp;		createEgdesHierarchyBy = new CreateEgdesHierarchyBy(pnode, canvas, this.allPNodes, menu,ANH,listNodes);</b>
+<b class="nc"><i>74</i>&nbsp;		createEgdesHierarchyOf = new CreateEgdesHierarchyOf(pnode, canvas, this.allPNodes, menu,ANH,listNodes);</b>
+<b class="nc"><i>75</i>&nbsp;		removesHierarchyEdgesOf = new RemovesHierarchyEdgesOf(pnode, canvas, this.allPNodes, menu, ANH, listNodes);</b>
+<b class="nc"><i>76</i>&nbsp;		hideNode = new HideNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes);</b>
+<b class="nc"><i>77</i>&nbsp;		focusNode = new FocusNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes);</b>
+<b class="nc"><i>78</i>&nbsp;		expandAll = new ExpandAll(pnode, canvas, this.allPNodes, menu, ANH, listNodes);</b>
+<b class="nc"><i>79</i>&nbsp;		collapseAll = new CollapseAll(pnode, canvas, this.allPNodes, menu, ANH, listNodes);</b>
+<b class="nc"><i>80</i>&nbsp;		state = StateChanger.getInstance();</b>
+<b class="nc"><i>81</i>&nbsp;		addClass = new AddNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes, NodeType.CLASS, state);</b>
+<b class="nc"><i>82</i>&nbsp;		addPackage =  new AddNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes, NodeType.PACKAGE, state);</b>
+<b class="nc"><i>83</i>&nbsp;		renameNode = new RenameNode(pnode, canvas, this.allPNodes, menu, ANH, listNodes, state);</b>
+<b class="nc"><i>84</i>&nbsp;	}</b>
+<i>85</i>&nbsp;
+<b class="nc"><i>86</i>&nbsp;	public PCustomInputEventHandler(PiccoloCustomNode pnode) {</b>
+<b class="nc"><i>87</i>&nbsp;		setEventFilter(new PInputEventFilter(InputEvent.BUTTON1_MASK &amp; InputEvent.BUTTON2_MASK));</b>
+<b class="nc"><i>88</i>&nbsp;		this.pnode = pnode;</b>
+<b class="nc"><i>89</i>&nbsp;	}</b>
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;	@Override
+<i>92</i>&nbsp;	public void mousePressed(PInputEvent aEvent) {
+<i>93</i>&nbsp;		
+<i>94</i>&nbsp;		try {
+<b class="nc"><i>95</i>&nbsp;			if (aEvent.isLeftMouseButton()) {</b>
+<b class="nc"><i>96</i>&nbsp;				pnode.toggleChildren();</b>
+<i>97</i>&nbsp;				//System.out.println(pnode.isHidden());
+<b class="nc"><i>98</i>&nbsp;				root.setLayout();</b>
+<b class="nc"><i>99</i>&nbsp;				root.updateContentBoundingBoxes(false, canvas);</b>
+<b class="nc"><i>100</i>&nbsp;				for (Parrow arrow : ANH.getVisibleArrows()) {</b>
+<b class="nc"><i>101</i>&nbsp;					ANH.updatePosition(arrow);</b>
+<b class="nc"><i>102</i>&nbsp;				}</b>
+<i>103</i>&nbsp;			}
+<b class="nc"><i>104</i>&nbsp;			if (aEvent.isRightMouseButton()) {</b>
+<b class="nc"><i>105</i>&nbsp;					generateMenu(menu,aEvent);		</b>
+<i>106</i>&nbsp;					
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;			}
+<b class="nc"><i>109</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>110</i>&nbsp;			e.printStackTrace();</b>
+<b class="nc"><i>111</i>&nbsp;		}</b>
+<i>112</i>&nbsp;
+<b class="nc"><i>113</i>&nbsp;	}</b>
+<i>114</i>&nbsp;	
+<i>115</i>&nbsp;	public void generateMenu(Menu menu,PInputEvent aEvent) {
+<b class="nc"><i>116</i>&nbsp;		menu.removeAll();</b>
+<b class="nc"><i>117</i>&nbsp;		menu.add(createEdgesOf);</b>
+<b class="nc"><i>118</i>&nbsp;		menu.add(createEgdesHierarchyOf);</b>
+<b class="nc"><i>119</i>&nbsp;		menu.addSeparator();</b>
+<b class="nc"><i>120</i>&nbsp;		menu.add(createEdgesBy);</b>
+<b class="nc"><i>121</i>&nbsp;		menu.add(createEgdesHierarchyBy);</b>
+<b class="nc"><i>122</i>&nbsp;		menu.addSeparator();</b>
+<b class="nc"><i>123</i>&nbsp;		menu.add(removeEdgesOf);</b>
+<b class="nc"><i>124</i>&nbsp;		menu.add(removesHierarchyEdgesOf);</b>
+<b class="nc"><i>125</i>&nbsp;		menu.addSeparator();</b>
+<b class="nc"><i>126</i>&nbsp;		menu.add(hideNode);</b>
+<b class="nc"><i>127</i>&nbsp;		menu.add(focusNode);</b>
+<b class="nc"><i>128</i>&nbsp;		menu.addSeparator();</b>
+<b class="nc"><i>129</i>&nbsp;		menu.add(expandAll);</b>
+<b class="nc"><i>130</i>&nbsp;		menu.add(collapseAll);</b>
+<b class="nc"><i>131</i>&nbsp;		menu.addSeparator();</b>
+<b class="nc"><i>132</i>&nbsp;		if(pnode.getContent().getType().equals(&quot;package&quot;)) {</b>
+<b class="nc"><i>133</i>&nbsp;		menu.add(addClass);</b>
+<b class="nc"><i>134</i>&nbsp;		menu.add(addPackage);</b>
+<b class="nc"><i>135</i>&nbsp;		menu.addSeparator();</b>
+<i>136</i>&nbsp;		}
+<b class="nc"><i>137</i>&nbsp;		menu.add(renameNode);</b>
+<i>138</i>&nbsp;	
+<b class="nc"><i>139</i>&nbsp;		menu.setPoint(aEvent.getPosition());</b>
+<b class="nc"><i>140</i>&nbsp;		menu.setCanvas(canvas);</b>
+<b class="nc"><i>141</i>&nbsp;	}</b>
+<i>142</i>&nbsp;//	public boolean menuContainsPoint(Menu menu, Point point) {
+<i>143</i>&nbsp;//		PBounds bounds = menu.getP().getGlobalFullBounds();
+<i>144</i>&nbsp;//		Point2D poi = new Point2D.Double(point.getX()+5, point.getY()+5);
+<i>145</i>&nbsp;//		int x = (int) bounds.x;
+<i>146</i>&nbsp;//		int y = (int) bounds.y;
+<i>147</i>&nbsp;//		Rectangle2D rect =new Rectangle2D.Double();
+<i>148</i>&nbsp;//		rect.setFrame(x, y, bounds.getWidth(), bounds.getWidth());
+<i>149</i>&nbsp;//		System.out.println(&quot;menu &quot;+rect);
+<i>150</i>&nbsp;//		System.out.println(&quot;point event &quot;+poi);
+<i>151</i>&nbsp;//		System.out.println(rect.contains(poi));
+<i>152</i>&nbsp;//		return rect.contains(poi);
+<i>153</i>&nbsp;//	}
+<i>154</i>&nbsp;	
+<i>155</i>&nbsp;	 
+<i>156</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

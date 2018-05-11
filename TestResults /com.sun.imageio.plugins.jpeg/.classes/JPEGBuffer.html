@@ -1,0 +1,337 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: JPEGBuffer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.imageio.plugins.jpeg</a> ]
+</div>
+
+<h1>Coverage Summary for Class: JPEGBuffer (com.sun.imageio.plugins.jpeg)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JPEGBuffer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 82)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2001, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.imageio.plugins.jpeg;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import javax.imageio.stream.ImageInputStream;
+<i>29</i>&nbsp;import javax.imageio.IIOException;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import java.io.IOException;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;/**
+<i>34</i>&nbsp; * A class wrapping a buffer and its state.  For efficiency,
+<i>35</i>&nbsp; * the members are made visible to other classes in this package.
+<i>36</i>&nbsp; */
+<i>37</i>&nbsp;class JPEGBuffer {
+<i>38</i>&nbsp;
+<b class="nc"><i>39</i>&nbsp;    private boolean debug = false;</b>
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    /**
+<i>42</i>&nbsp;     * The size of the buffer.  This is large enough to hold all
+<i>43</i>&nbsp;     * known marker segments (other than thumbnails and icc profiles)
+<i>44</i>&nbsp;     */
+<b class="nc"><i>45</i>&nbsp;    final int BUFFER_SIZE = 4096;</b>
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    /**
+<i>48</i>&nbsp;     * The actual buffer.
+<i>49</i>&nbsp;     */
+<i>50</i>&nbsp;    byte [] buf;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    /**
+<i>53</i>&nbsp;     * The number of bytes available for reading from the buffer.
+<i>54</i>&nbsp;     * Anytime data is read from the buffer, this should be updated.
+<i>55</i>&nbsp;     */
+<i>56</i>&nbsp;    int bufAvail;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    /**
+<i>59</i>&nbsp;     * A pointer to the next available byte in the buffer.  This is
+<i>60</i>&nbsp;     * used to read data from the buffer and must be updated to
+<i>61</i>&nbsp;     * move through the buffer.
+<i>62</i>&nbsp;     */
+<i>63</i>&nbsp;    int bufPtr;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    /**
+<i>66</i>&nbsp;     * The ImageInputStream buffered.
+<i>67</i>&nbsp;     */
+<i>68</i>&nbsp;    ImageInputStream iis;
+<i>69</i>&nbsp;
+<b class="nc"><i>70</i>&nbsp;    JPEGBuffer (ImageInputStream iis) {</b>
+<b class="nc"><i>71</i>&nbsp;        buf = new byte[BUFFER_SIZE];</b>
+<b class="nc"><i>72</i>&nbsp;        bufAvail = 0;</b>
+<b class="nc"><i>73</i>&nbsp;        bufPtr = 0;</b>
+<b class="nc"><i>74</i>&nbsp;        this.iis = iis;</b>
+<i>75</i>&nbsp;    }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    /**
+<i>78</i>&nbsp;     * Ensures that there are at least &lt;code&gt;count&lt;/code&gt; bytes available
+<i>79</i>&nbsp;     * in the buffer, loading more data and moving any remaining
+<i>80</i>&nbsp;     * bytes to the front.  A count of 0 means to just fill the buffer.
+<i>81</i>&nbsp;     * If the count is larger than the buffer size, just fills the buffer.
+<i>82</i>&nbsp;     * If the end of the stream is encountered before a non-0 count can
+<i>83</i>&nbsp;     * be satisfied, an &lt;code&gt;IIOException&lt;/code&gt; is thrown with the
+<i>84</i>&nbsp;     * message &quot;Image Format Error&quot;.
+<i>85</i>&nbsp;     */
+<i>86</i>&nbsp;    void loadBuf(int count) throws IOException {
+<b class="nc"><i>87</i>&nbsp;        if (debug) {</b>
+<b class="nc"><i>88</i>&nbsp;            System.out.print(&quot;loadbuf called with &quot;);</b>
+<b class="nc"><i>89</i>&nbsp;            System.out.print(&quot;count &quot; + count + &quot;, &quot;);</b>
+<b class="nc"><i>90</i>&nbsp;            System.out.println(&quot;bufAvail &quot; + bufAvail + &quot;, &quot;);</b>
+<i>91</i>&nbsp;        }
+<b class="nc"><i>92</i>&nbsp;        if (count != 0) {</b>
+<b class="nc"><i>93</i>&nbsp;            if (bufAvail &gt;= count) {  // have enough</b>
+<i>94</i>&nbsp;                return;
+<i>95</i>&nbsp;            }
+<i>96</i>&nbsp;        } else {
+<b class="nc"><i>97</i>&nbsp;            if (bufAvail == BUFFER_SIZE) {  // already full</b>
+<i>98</i>&nbsp;                return;
+<i>99</i>&nbsp;            }
+<i>100</i>&nbsp;        }
+<i>101</i>&nbsp;        // First copy any remaining bytes down to the beginning
+<b class="nc"><i>102</i>&nbsp;        if ((bufAvail &gt; 0) &amp;&amp; (bufAvail &lt; BUFFER_SIZE)) {</b>
+<b class="nc"><i>103</i>&nbsp;            System.arraycopy(buf, bufPtr, buf, 0, bufAvail);</b>
+<i>104</i>&nbsp;        }
+<i>105</i>&nbsp;        // Now fill the rest of the buffer
+<b class="nc"><i>106</i>&nbsp;        int ret = iis.read(buf, bufAvail, buf.length - bufAvail);</b>
+<b class="nc"><i>107</i>&nbsp;        if (debug) {</b>
+<b class="nc"><i>108</i>&nbsp;            System.out.println(&quot;iis.read returned &quot; + ret);</b>
+<i>109</i>&nbsp;        }
+<b class="nc"><i>110</i>&nbsp;        if (ret != -1) {</b>
+<b class="nc"><i>111</i>&nbsp;            bufAvail += ret;</b>
+<i>112</i>&nbsp;        }
+<b class="nc"><i>113</i>&nbsp;        bufPtr = 0;</b>
+<b class="nc"><i>114</i>&nbsp;        int minimum = Math.min(BUFFER_SIZE, count);</b>
+<b class="nc"><i>115</i>&nbsp;        if (bufAvail &lt; minimum) {</b>
+<b class="nc"><i>116</i>&nbsp;            throw new IIOException (&quot;Image Format Error&quot;);</b>
+<i>117</i>&nbsp;        }
+<i>118</i>&nbsp;    }
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    /**
+<i>121</i>&nbsp;     * Fills the data array from the stream, starting with
+<i>122</i>&nbsp;     * the buffer and then reading directly from the stream
+<i>123</i>&nbsp;     * if necessary.  The buffer is left in an appropriate
+<i>124</i>&nbsp;     * state.  If the end of the stream is encountered, an
+<i>125</i>&nbsp;     * &lt;code&gt;IIOException&lt;/code&gt; is thrown with the
+<i>126</i>&nbsp;     * message &quot;Image Format Error&quot;.
+<i>127</i>&nbsp;     */
+<i>128</i>&nbsp;    void readData(byte [] data) throws IOException {
+<b class="nc"><i>129</i>&nbsp;        int count = data.length;</b>
+<i>130</i>&nbsp;        // First see what&#39;s left in the buffer.
+<b class="nc"><i>131</i>&nbsp;        if (bufAvail &gt;= count) {  // It&#39;s enough</b>
+<b class="nc"><i>132</i>&nbsp;            System.arraycopy(buf, bufPtr, data, 0, count);</b>
+<b class="nc"><i>133</i>&nbsp;            bufAvail -= count;</b>
+<b class="nc"><i>134</i>&nbsp;            bufPtr += count;</b>
+<i>135</i>&nbsp;            return;
+<i>136</i>&nbsp;        }
+<b class="nc"><i>137</i>&nbsp;        int offset = 0;</b>
+<b class="nc"><i>138</i>&nbsp;        if (bufAvail &gt; 0) {  // Some there, but not enough</b>
+<b class="nc"><i>139</i>&nbsp;            System.arraycopy(buf, bufPtr, data, 0, bufAvail);</b>
+<b class="nc"><i>140</i>&nbsp;            offset = bufAvail;</b>
+<b class="nc"><i>141</i>&nbsp;            count -= bufAvail;</b>
+<b class="nc"><i>142</i>&nbsp;            bufAvail = 0;</b>
+<b class="nc"><i>143</i>&nbsp;            bufPtr = 0;</b>
+<i>144</i>&nbsp;        }
+<i>145</i>&nbsp;        // Now read the rest directly from the stream
+<b class="nc"><i>146</i>&nbsp;        if (iis.read(data, offset, count) != count) {</b>
+<b class="nc"><i>147</i>&nbsp;            throw new IIOException (&quot;Image format Error&quot;);</b>
+<i>148</i>&nbsp;        }
+<i>149</i>&nbsp;    }
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;    /**
+<i>152</i>&nbsp;     * Skips &lt;code&gt;count&lt;/code&gt; bytes, leaving the buffer
+<i>153</i>&nbsp;     * in an appropriate state.  If the end of the stream is
+<i>154</i>&nbsp;     * encountered, an &lt;code&gt;IIOException&lt;/code&gt; is thrown with the
+<i>155</i>&nbsp;     * message &quot;Image Format Error&quot;.
+<i>156</i>&nbsp;     */
+<i>157</i>&nbsp;    void skipData(int count) throws IOException {
+<i>158</i>&nbsp;        // First see what&#39;s left in the buffer.
+<b class="nc"><i>159</i>&nbsp;        if (bufAvail &gt;= count) {  // It&#39;s enough</b>
+<b class="nc"><i>160</i>&nbsp;            bufAvail -= count;</b>
+<b class="nc"><i>161</i>&nbsp;            bufPtr += count;</b>
+<i>162</i>&nbsp;            return;
+<i>163</i>&nbsp;        }
+<b class="nc"><i>164</i>&nbsp;        if (bufAvail &gt; 0) {  // Some there, but not enough</b>
+<b class="nc"><i>165</i>&nbsp;            count -= bufAvail;</b>
+<b class="nc"><i>166</i>&nbsp;            bufAvail = 0;</b>
+<b class="nc"><i>167</i>&nbsp;            bufPtr = 0;</b>
+<i>168</i>&nbsp;        }
+<i>169</i>&nbsp;        // Now read the rest directly from the stream
+<b class="nc"><i>170</i>&nbsp;        if (iis.skipBytes(count) != count) {</b>
+<b class="nc"><i>171</i>&nbsp;            throw new IIOException (&quot;Image format Error&quot;);</b>
+<i>172</i>&nbsp;        }
+<i>173</i>&nbsp;    }
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;    /**
+<i>176</i>&nbsp;     * Push back the remaining contents of the buffer by
+<i>177</i>&nbsp;     * repositioning the input stream.
+<i>178</i>&nbsp;     */
+<i>179</i>&nbsp;    void pushBack() throws IOException {
+<b class="nc"><i>180</i>&nbsp;        iis.seek(iis.getStreamPosition()-bufAvail);</b>
+<b class="nc"><i>181</i>&nbsp;        bufAvail = 0;</b>
+<b class="nc"><i>182</i>&nbsp;        bufPtr = 0;</b>
+<i>183</i>&nbsp;    }
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;    /**
+<i>186</i>&nbsp;     * Return the stream position corresponding to the next
+<i>187</i>&nbsp;     * available byte in the buffer.
+<i>188</i>&nbsp;     */
+<i>189</i>&nbsp;    long getStreamPosition() throws IOException {
+<b class="nc"><i>190</i>&nbsp;        return (iis.getStreamPosition()-bufAvail);</b>
+<i>191</i>&nbsp;    }
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;    /**
+<i>194</i>&nbsp;     * Scan the buffer until the next 0xff byte, reloading
+<i>195</i>&nbsp;     * the buffer as necessary.  The buffer position is left
+<i>196</i>&nbsp;     * pointing to the first non-0xff byte after a run of
+<i>197</i>&nbsp;     * 0xff bytes.  If the end of the stream is encountered,
+<i>198</i>&nbsp;     * an EOI marker is inserted into the buffer and &lt;code&gt;true&lt;/code&gt;
+<i>199</i>&nbsp;     * is returned.  Otherwise returns &lt;code&gt;false&lt;/code&gt;.
+<i>200</i>&nbsp;     */
+<i>201</i>&nbsp;    boolean scanForFF(JPEGImageReader reader) throws IOException {
+<b class="nc"><i>202</i>&nbsp;        boolean retval = false;</b>
+<b class="nc"><i>203</i>&nbsp;        boolean foundFF = false;</b>
+<b class="nc"><i>204</i>&nbsp;        while (foundFF == false) {</b>
+<b class="nc"><i>205</i>&nbsp;            while (bufAvail &gt; 0) {</b>
+<b class="nc"><i>206</i>&nbsp;                if ((buf[bufPtr++] &amp; 0xff) == 0xff) {</b>
+<b class="nc"><i>207</i>&nbsp;                    bufAvail--;</b>
+<b class="nc"><i>208</i>&nbsp;                    foundFF = true;</b>
+<b class="nc"><i>209</i>&nbsp;                    break;  // out of inner while</b>
+<i>210</i>&nbsp;                }
+<b class="nc"><i>211</i>&nbsp;                bufAvail--;</b>
+<i>212</i>&nbsp;            }
+<i>213</i>&nbsp;            // Reload the buffer and keep going
+<b class="nc"><i>214</i>&nbsp;            loadBuf(0);</b>
+<i>215</i>&nbsp;            // Skip any remaining pad bytes
+<b class="nc"><i>216</i>&nbsp;            if (foundFF == true) {</b>
+<b class="nc"><i>217</i>&nbsp;                while ((bufAvail &gt; 0) &amp;&amp; (buf[bufPtr] &amp; 0xff) == 0xff) {</b>
+<b class="nc"><i>218</i>&nbsp;                    bufPtr++;  // Only if it still is 0xff</b>
+<b class="nc"><i>219</i>&nbsp;                    bufAvail--;</b>
+<i>220</i>&nbsp;                }
+<i>221</i>&nbsp;            }
+<b class="nc"><i>222</i>&nbsp;            if (bufAvail == 0) {  // Premature EOF</b>
+<i>223</i>&nbsp;                // send out a warning, but treat it as EOI
+<i>224</i>&nbsp;                //reader.warningOccurred(JPEGImageReader.WARNING_NO_EOI);
+<b class="nc"><i>225</i>&nbsp;                retval = true;</b>
+<b class="nc"><i>226</i>&nbsp;                buf[0] = (byte)JPEG.EOI;</b>
+<b class="nc"><i>227</i>&nbsp;                bufAvail = 1;</b>
+<b class="nc"><i>228</i>&nbsp;                bufPtr = 0;</b>
+<b class="nc"><i>229</i>&nbsp;                foundFF = true;</b>
+<i>230</i>&nbsp;            }
+<i>231</i>&nbsp;        }
+<b class="nc"><i>232</i>&nbsp;        return retval;</b>
+<i>233</i>&nbsp;    }
+<i>234</i>&nbsp;
+<i>235</i>&nbsp;    /**
+<i>236</i>&nbsp;     * Prints the contents of the buffer, in hex.
+<i>237</i>&nbsp;     * @param count the number of bytes to print,
+<i>238</i>&nbsp;     * starting at the current available byte.
+<i>239</i>&nbsp;     */
+<i>240</i>&nbsp;    void print(int count) {
+<b class="nc"><i>241</i>&nbsp;        System.out.print(&quot;buffer has &quot;);</b>
+<b class="nc"><i>242</i>&nbsp;        System.out.print(bufAvail);</b>
+<b class="nc"><i>243</i>&nbsp;        System.out.println(&quot; bytes available&quot;);</b>
+<b class="nc"><i>244</i>&nbsp;        if (bufAvail &lt; count) {</b>
+<b class="nc"><i>245</i>&nbsp;            count = bufAvail;</b>
+<i>246</i>&nbsp;        }
+<b class="nc"><i>247</i>&nbsp;        for (int ptr = bufPtr; count &gt; 0; count--) {</b>
+<b class="nc"><i>248</i>&nbsp;            int val = (int)buf[ptr++] &amp; 0xff;</b>
+<b class="nc"><i>249</i>&nbsp;            System.out.print(&quot; &quot; + Integer.toHexString(val));</b>
+<i>250</i>&nbsp;        }
+<b class="nc"><i>251</i>&nbsp;        System.out.println();</b>
+<i>252</i>&nbsp;    }
+<i>253</i>&nbsp;
+<i>254</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

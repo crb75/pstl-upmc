@@ -1,0 +1,445 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PortableRemoteObject</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.javax.rmi</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PortableRemoteObject (com.sun.corba.se.impl.javax.rmi)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PortableRemoteObject</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 86)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 1999, 2004, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;/*
+<i>26</i>&nbsp; * Licensed Materials - Property of IBM
+<i>27</i>&nbsp; * RMI-IIOP v1.0
+<i>28</i>&nbsp; * Copyright IBM Corp. 1998 1999  All Rights Reserved
+<i>29</i>&nbsp; *
+<i>30</i>&nbsp; */
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;package com.sun.corba.se.impl.javax.rmi;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import java.lang.reflect.Method ;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import javax.rmi.CORBA.Tie;
+<i>37</i>&nbsp;import javax.rmi.CORBA.Util;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;import java.rmi.RemoteException;
+<i>40</i>&nbsp;import java.rmi.NoSuchObjectException;
+<i>41</i>&nbsp;import java.rmi.Remote;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;import java.util.Properties;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;import org.omg.CORBA.ORB;
+<i>46</i>&nbsp;import org.omg.CORBA.portable.Delegate;
+<i>47</i>&nbsp;import org.omg.CORBA.SystemException;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;import java.rmi.server.UnicastRemoteObject;
+<i>50</i>&nbsp;import java.rmi.server.RemoteStub;
+<i>51</i>&nbsp;import java.rmi.server.ExportException;
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;import java.net.URL;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;import com.sun.corba.se.impl.util.JDKBridge;
+<i>56</i>&nbsp;import com.sun.corba.se.impl.util.Utility;
+<i>57</i>&nbsp;import com.sun.corba.se.impl.util.RepositoryId;
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;import com.sun.corba.se.spi.presentation.rmi.StubAdapter;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;import java.security.AccessController;
+<i>62</i>&nbsp;import com.sun.corba.se.impl.orbutil.GetPropertyAction;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;/**
+<i>65</i>&nbsp; * Server implementation objects may either inherit from
+<i>66</i>&nbsp; * javax.rmi.PortableRemoteObject or they may implement a remote interface
+<i>67</i>&nbsp; * and then use the exportObject method to register themselves as a server object.
+<i>68</i>&nbsp; * The toStub method takes a server implementation and returns a stub that
+<i>69</i>&nbsp; * can be used to access that server object.
+<i>70</i>&nbsp; * The connect method makes a Remote object ready for remote communication.
+<i>71</i>&nbsp; * The unexportObject method is used to deregister a server object, allowing it to become
+<i>72</i>&nbsp; * available for garbage collection.
+<i>73</i>&nbsp; * The narrow method takes an object reference or abstract interface type and
+<i>74</i>&nbsp; * attempts to narrow it to conform to
+<i>75</i>&nbsp; * the given interface. If the operation is successful the result will be an
+<i>76</i>&nbsp; * object of the specified type, otherwise an exception will be thrown.
+<i>77</i>&nbsp; */
+<b class="nc"><i>78</i>&nbsp;public class PortableRemoteObject</b>
+<i>79</i>&nbsp;        implements javax.rmi.CORBA.PortableRemoteObjectDelegate {
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    /**
+<i>82</i>&nbsp;     * Makes a server object ready to receive remote calls. Note
+<i>83</i>&nbsp;     * that subclasses of PortableRemoteObject do not need to call this
+<i>84</i>&nbsp;     * method, as it is called by the constructor.
+<i>85</i>&nbsp;     * @param obj the server object to export.
+<i>86</i>&nbsp;     * @exception RemoteException if export fails.
+<i>87</i>&nbsp;     */
+<i>88</i>&nbsp;    public void exportObject(Remote obj)
+<i>89</i>&nbsp;        throws RemoteException {
+<i>90</i>&nbsp;
+<b class="nc"><i>91</i>&nbsp;        if (obj == null) {</b>
+<b class="nc"><i>92</i>&nbsp;            throw new NullPointerException(&quot;invalid argument&quot;);</b>
+<i>93</i>&nbsp;        }
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;        // Has this object already been exported to IIOP?
+<i>96</i>&nbsp;
+<b class="nc"><i>97</i>&nbsp;        if (Util.getTie(obj) != null) {</b>
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;            // Yes, so this is an error...
+<i>100</i>&nbsp;
+<b class="nc"><i>101</i>&nbsp;            throw new ExportException (obj.getClass().getName() + &quot; already exported&quot;);</b>
+<i>102</i>&nbsp;        }
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;        // Can we load a Tie?
+<i>105</i>&nbsp;
+<b class="nc"><i>106</i>&nbsp;        Tie theTie = Utility.loadTie(obj);</b>
+<i>107</i>&nbsp;
+<b class="nc"><i>108</i>&nbsp;        if (theTie != null) {</b>
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;            // Yes, so export it to IIOP...
+<i>111</i>&nbsp;
+<b class="nc"><i>112</i>&nbsp;            Util.registerTarget(theTie,obj);</b>
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;        } else {
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;            // No, so export to JRMP. If this is called twice for the
+<i>117</i>&nbsp;            // same object, it will throw an ExportException...
+<i>118</i>&nbsp;
+<b class="nc"><i>119</i>&nbsp;            UnicastRemoteObject.exportObject(obj);</b>
+<i>120</i>&nbsp;        }
+<i>121</i>&nbsp;    }
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;    /**
+<i>124</i>&nbsp;     * Returns a stub for the given server object.
+<i>125</i>&nbsp;     * @param obj the server object for which a stub is required. Must either be a subclass
+<i>126</i>&nbsp;     * of PortableRemoteObject or have been previously the target of a call to
+<i>127</i>&nbsp;     * {@link #exportObject}.
+<i>128</i>&nbsp;     * @return the most derived stub for the object.
+<i>129</i>&nbsp;     * @exception NoSuchObjectException if a stub cannot be located for the given server object.
+<i>130</i>&nbsp;     */
+<i>131</i>&nbsp;    public Remote toStub (Remote obj)
+<i>132</i>&nbsp;        throws NoSuchObjectException
+<i>133</i>&nbsp;    {
+<b class="nc"><i>134</i>&nbsp;        Remote result = null;</b>
+<b class="nc"><i>135</i>&nbsp;        if (obj == null) {</b>
+<b class="nc"><i>136</i>&nbsp;            throw new NullPointerException(&quot;invalid argument&quot;);</b>
+<i>137</i>&nbsp;        }
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;        // If the class is already an IIOP stub then return it.
+<b class="nc"><i>140</i>&nbsp;        if (StubAdapter.isStub( obj )) {</b>
+<b class="nc"><i>141</i>&nbsp;            return obj;</b>
+<i>142</i>&nbsp;        }
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;        // If the class is already a JRMP stub then return it.
+<b class="nc"><i>145</i>&nbsp;        if (obj instanceof java.rmi.server.RemoteStub) {</b>
+<b class="nc"><i>146</i>&nbsp;            return obj;</b>
+<i>147</i>&nbsp;        }
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;        // Has it been exported to IIOP?
+<b class="nc"><i>150</i>&nbsp;        Tie theTie = Util.getTie(obj);</b>
+<i>151</i>&nbsp;
+<b class="nc"><i>152</i>&nbsp;        if (theTie != null) {</b>
+<b class="nc"><i>153</i>&nbsp;            result = Utility.loadStub(theTie,null,null,true);</b>
+<i>154</i>&nbsp;        } else {
+<b class="nc"><i>155</i>&nbsp;            if (Utility.loadTie(obj) == null) {</b>
+<b class="nc"><i>156</i>&nbsp;                result = java.rmi.server.RemoteObject.toStub(obj);</b>
+<i>157</i>&nbsp;            }
+<i>158</i>&nbsp;        }
+<i>159</i>&nbsp;
+<b class="nc"><i>160</i>&nbsp;        if (result == null) {</b>
+<b class="nc"><i>161</i>&nbsp;            throw new NoSuchObjectException(&quot;object not exported&quot;);</b>
+<i>162</i>&nbsp;        }
+<i>163</i>&nbsp;
+<b class="nc"><i>164</i>&nbsp;        return result;</b>
+<i>165</i>&nbsp;    }
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;    /**
+<i>168</i>&nbsp;     * Deregisters a server object from the runtime, allowing the object to become
+<i>169</i>&nbsp;     * available for garbage collection.
+<i>170</i>&nbsp;     * @param obj the object to unexport.
+<i>171</i>&nbsp;     * @exception NoSuchObjectException if the remote object is not
+<i>172</i>&nbsp;     * currently exported.
+<i>173</i>&nbsp;     */
+<i>174</i>&nbsp;    public void unexportObject(Remote obj)
+<i>175</i>&nbsp;        throws NoSuchObjectException {
+<i>176</i>&nbsp;
+<b class="nc"><i>177</i>&nbsp;        if (obj == null) {</b>
+<b class="nc"><i>178</i>&nbsp;            throw new NullPointerException(&quot;invalid argument&quot;);</b>
+<i>179</i>&nbsp;        }
+<i>180</i>&nbsp;
+<b class="nc"><i>181</i>&nbsp;        if (StubAdapter.isStub(obj) ||</b>
+<i>182</i>&nbsp;            obj instanceof java.rmi.server.RemoteStub) {
+<b class="nc"><i>183</i>&nbsp;            throw new NoSuchObjectException(</b>
+<i>184</i>&nbsp;                &quot;Can only unexport a server object.&quot;);
+<i>185</i>&nbsp;        }
+<i>186</i>&nbsp;
+<b class="nc"><i>187</i>&nbsp;        Tie theTie = Util.getTie(obj);</b>
+<b class="nc"><i>188</i>&nbsp;        if (theTie != null) {</b>
+<b class="nc"><i>189</i>&nbsp;            Util.unexportObject(obj);</b>
+<i>190</i>&nbsp;        } else {
+<b class="nc"><i>191</i>&nbsp;            if (Utility.loadTie(obj) == null) {</b>
+<b class="nc"><i>192</i>&nbsp;                UnicastRemoteObject.unexportObject(obj,true);</b>
+<i>193</i>&nbsp;            } else {
+<b class="nc"><i>194</i>&nbsp;                throw new NoSuchObjectException(&quot;Object not exported.&quot;);</b>
+<i>195</i>&nbsp;            }
+<i>196</i>&nbsp;        }
+<i>197</i>&nbsp;    }
+<i>198</i>&nbsp;
+<i>199</i>&nbsp;    /**
+<i>200</i>&nbsp;     * Checks to ensure that an object of a remote or abstract interface type
+<i>201</i>&nbsp;     * can be cast to a desired type.
+<i>202</i>&nbsp;     * @param narrowFrom the object to check.
+<i>203</i>&nbsp;     * @param narrowTo the desired type.
+<i>204</i>&nbsp;     * @return an object which can be cast to the desired type.
+<i>205</i>&nbsp;     * @throws ClassCastException if narrowFrom cannot be cast to narrowTo.
+<i>206</i>&nbsp;     */
+<i>207</i>&nbsp;    public java.lang.Object narrow ( java.lang.Object narrowFrom,
+<i>208</i>&nbsp;        java.lang.Class narrowTo) throws ClassCastException
+<i>209</i>&nbsp;    {
+<b class="nc"><i>210</i>&nbsp;        java.lang.Object result = null;</b>
+<i>211</i>&nbsp;
+<b class="nc"><i>212</i>&nbsp;        if (narrowFrom == null)</b>
+<b class="nc"><i>213</i>&nbsp;            return null;</b>
+<i>214</i>&nbsp;
+<b class="nc"><i>215</i>&nbsp;        if (narrowTo == null)</b>
+<b class="nc"><i>216</i>&nbsp;            throw new NullPointerException(&quot;invalid argument&quot;);</b>
+<i>217</i>&nbsp;
+<i>218</i>&nbsp;        try {
+<b class="nc"><i>219</i>&nbsp;            if (narrowTo.isAssignableFrom(narrowFrom.getClass()))</b>
+<b class="nc"><i>220</i>&nbsp;                return narrowFrom;</b>
+<i>221</i>&nbsp;
+<i>222</i>&nbsp;            // Is narrowTo an interface that might be
+<i>223</i>&nbsp;            // implemented by a servant running on iiop?
+<b class="nc"><i>224</i>&nbsp;            if (narrowTo.isInterface() &amp;&amp;</b>
+<i>225</i>&nbsp;                narrowTo != java.io.Serializable.class &amp;&amp;
+<i>226</i>&nbsp;                narrowTo != java.io.Externalizable.class) {
+<i>227</i>&nbsp;
+<b class="nc"><i>228</i>&nbsp;                org.omg.CORBA.Object narrowObj</b>
+<i>229</i>&nbsp;                    = (org.omg.CORBA.Object) narrowFrom;
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;                // Create an id from the narrowTo type...
+<b class="nc"><i>232</i>&nbsp;                String id = RepositoryId.createForAnyType(narrowTo);</b>
+<i>233</i>&nbsp;
+<b class="nc"><i>234</i>&nbsp;                if (narrowObj._is_a(id)) {</b>
+<b class="nc"><i>235</i>&nbsp;                    return Utility.loadStub(narrowObj,narrowTo);</b>
+<i>236</i>&nbsp;                } else {
+<b class="nc"><i>237</i>&nbsp;                    throw new ClassCastException( &quot;Object is not of remote type &quot; +</b>
+<b class="nc"><i>238</i>&nbsp;                        narrowTo.getName() ) ;</b>
+<i>239</i>&nbsp;                }
+<i>240</i>&nbsp;            } else {
+<b class="nc"><i>241</i>&nbsp;                throw new ClassCastException( &quot;Class &quot; + narrowTo.getName() +</b>
+<i>242</i>&nbsp;                    &quot; is not a valid remote interface&quot; ) ;
+<i>243</i>&nbsp;            }
+<b class="nc"><i>244</i>&nbsp;        } catch(Exception error) {</b>
+<b class="nc"><i>245</i>&nbsp;            ClassCastException cce = new ClassCastException() ;</b>
+<b class="nc"><i>246</i>&nbsp;            cce.initCause( error ) ;</b>
+<b class="nc"><i>247</i>&nbsp;            throw cce ;</b>
+<i>248</i>&nbsp;        }
+<i>249</i>&nbsp;    }
+<i>250</i>&nbsp;
+<i>251</i>&nbsp;    /**
+<i>252</i>&nbsp;     * Makes a Remote object ready for remote communication. This normally
+<i>253</i>&nbsp;     * happens implicitly when the object is sent or received as an argument
+<i>254</i>&nbsp;     * on a remote method call, but in some circumstances it is useful to
+<i>255</i>&nbsp;     * perform this action by making an explicit call.  See the
+<i>256</i>&nbsp;     * {@link Stub#connect} method for more information.
+<i>257</i>&nbsp;     * @param target the object to connect.
+<i>258</i>&nbsp;     * @param source a previously connected object.
+<i>259</i>&nbsp;     * @throws RemoteException if &lt;code&gt;source&lt;/code&gt; is not connected
+<i>260</i>&nbsp;     * or if &lt;code&gt;target&lt;/code&gt; is already connected to a different ORB than
+<i>261</i>&nbsp;     * &lt;code&gt;source&lt;/code&gt;.
+<i>262</i>&nbsp;     */
+<i>263</i>&nbsp;    public void connect (Remote target, Remote source)
+<i>264</i>&nbsp;        throws RemoteException
+<i>265</i>&nbsp;    {
+<b class="nc"><i>266</i>&nbsp;        if (target == null || source == null) {</b>
+<b class="nc"><i>267</i>&nbsp;            throw new NullPointerException(&quot;invalid argument&quot;);</b>
+<i>268</i>&nbsp;        }
+<i>269</i>&nbsp;
+<b class="nc"><i>270</i>&nbsp;        ORB orb = null;</b>
+<i>271</i>&nbsp;        try {
+<b class="nc"><i>272</i>&nbsp;            if (StubAdapter.isStub( source )) {</b>
+<b class="nc"><i>273</i>&nbsp;                orb = StubAdapter.getORB( source ) ;</b>
+<i>274</i>&nbsp;            } else {
+<i>275</i>&nbsp;                // Is this a servant that was exported to iiop?
+<b class="nc"><i>276</i>&nbsp;                Tie tie = Util.getTie(source);</b>
+<b class="nc"><i>277</i>&nbsp;                if (tie == null) {</b>
+<i>278</i>&nbsp;                    /* loadTie always succeeds for dynamic RMI-IIOP
+<i>279</i>&nbsp;                    // No, can we get a tie for it?  If not,
+<i>280</i>&nbsp;                    // assume that source is a JRMP object...
+<i>281</i>&nbsp;                    if (Utility.loadTie(source) != null) {
+<i>282</i>&nbsp;                        // Yes, so it is an iiop object which
+<i>283</i>&nbsp;                        // has not been exported...
+<i>284</i>&nbsp;                        throw new RemoteException(
+<i>285</i>&nbsp;                            &quot;&#39;source&#39; object not exported&quot;);
+<i>286</i>&nbsp;                    }
+<i>287</i>&nbsp;                    */
+<i>288</i>&nbsp;                } else {
+<b class="nc"><i>289</i>&nbsp;                    orb = tie.orb();</b>
+<i>290</i>&nbsp;                }
+<i>291</i>&nbsp;            }
+<b class="nc"><i>292</i>&nbsp;        } catch (SystemException e) {</b>
+<b class="nc"><i>293</i>&nbsp;            throw new RemoteException(&quot;&#39;source&#39; object not connected&quot;, e );</b>
+<b class="nc"><i>294</i>&nbsp;        }</b>
+<i>295</i>&nbsp;
+<b class="nc"><i>296</i>&nbsp;        boolean targetIsIIOP = false ;</b>
+<b class="nc"><i>297</i>&nbsp;        Tie targetTie = null;</b>
+<b class="nc"><i>298</i>&nbsp;        if (StubAdapter.isStub(target)) {</b>
+<b class="nc"><i>299</i>&nbsp;            targetIsIIOP = true;</b>
+<i>300</i>&nbsp;        } else {
+<b class="nc"><i>301</i>&nbsp;            targetTie = Util.getTie(target);</b>
+<b class="nc"><i>302</i>&nbsp;            if (targetTie != null) {</b>
+<b class="nc"><i>303</i>&nbsp;                targetIsIIOP = true;</b>
+<i>304</i>&nbsp;            } else {
+<i>305</i>&nbsp;                /* loadTie always succeeds for dynamic RMI-IIOP
+<i>306</i>&nbsp;                if (Utility.loadTie(target) != null) {
+<i>307</i>&nbsp;                    throw new RemoteException(&quot;&#39;target&#39; servant not exported&quot;);
+<i>308</i>&nbsp;                }
+<i>309</i>&nbsp;                */
+<i>310</i>&nbsp;            }
+<i>311</i>&nbsp;        }
+<i>312</i>&nbsp;
+<b class="nc"><i>313</i>&nbsp;        if (!targetIsIIOP) {</b>
+<i>314</i>&nbsp;            // Yes. Do we have an ORB from the source object?
+<i>315</i>&nbsp;            // If not, we&#39;re done - there is nothing to do to
+<i>316</i>&nbsp;            // connect a JRMP object. If so, it is an error because
+<i>317</i>&nbsp;            // the caller mixed JRMP and IIOP...
+<b class="nc"><i>318</i>&nbsp;            if (orb != null) {</b>
+<b class="nc"><i>319</i>&nbsp;                throw new RemoteException(</b>
+<i>320</i>&nbsp;                    &quot;&#39;source&#39; object exported to IIOP, &#39;target&#39; is JRMP&quot;);
+<i>321</i>&nbsp;            }
+<i>322</i>&nbsp;        } else {
+<i>323</i>&nbsp;            // The target object is IIOP. Make sure we have a
+<i>324</i>&nbsp;            // valid ORB from the source object...
+<b class="nc"><i>325</i>&nbsp;            if (orb == null) {</b>
+<b class="nc"><i>326</i>&nbsp;                throw new RemoteException(</b>
+<i>327</i>&nbsp;                    &quot;&#39;source&#39; object is JRMP, &#39;target&#39; is IIOP&quot;);
+<i>328</i>&nbsp;            }
+<i>329</i>&nbsp;
+<i>330</i>&nbsp;            // And, finally, connect it up...
+<i>331</i>&nbsp;            try {
+<b class="nc"><i>332</i>&nbsp;                if (targetTie != null) {</b>
+<i>333</i>&nbsp;                    // Is the tie already connected?
+<i>334</i>&nbsp;                    try {
+<b class="nc"><i>335</i>&nbsp;                        ORB existingOrb = targetTie.orb();</b>
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;                        // Yes. Is it the same orb?
+<b class="nc"><i>338</i>&nbsp;                        if (existingOrb == orb) {</b>
+<i>339</i>&nbsp;
+<i>340</i>&nbsp;                            // Yes, so nothing to do...
+<i>341</i>&nbsp;                            return;
+<i>342</i>&nbsp;                        } else {
+<i>343</i>&nbsp;                            // No, so this is an error...
+<b class="nc"><i>344</i>&nbsp;                            throw new RemoteException(</b>
+<i>345</i>&nbsp;                                &quot;&#39;target&#39; object was already connected&quot;);
+<i>346</i>&nbsp;                        }
+<b class="nc"><i>347</i>&nbsp;                    } catch (SystemException e) {}</b>
+<i>348</i>&nbsp;
+<i>349</i>&nbsp;                    // No, so do it...
+<b class="nc"><i>350</i>&nbsp;                    targetTie.orb(orb);</b>
+<i>351</i>&nbsp;                } else {
+<b class="nc"><i>352</i>&nbsp;                    StubAdapter.connect( target, orb ) ;</b>
+<i>353</i>&nbsp;                }
+<b class="nc"><i>354</i>&nbsp;            } catch (SystemException e) {</b>
+<i>355</i>&nbsp;
+<i>356</i>&nbsp;                // The stub or tie was already connected...
+<b class="nc"><i>357</i>&nbsp;                throw new RemoteException(</b>
+<i>358</i>&nbsp;                    &quot;&#39;target&#39; object was already connected&quot;, e );
+<b class="nc"><i>359</i>&nbsp;            }</b>
+<i>360</i>&nbsp;        }
+<i>361</i>&nbsp;    }
+<i>362</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

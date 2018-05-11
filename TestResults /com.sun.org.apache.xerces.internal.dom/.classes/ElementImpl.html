@@ -1,0 +1,1261 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ElementImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.dom</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ElementImpl (com.sun.org.apache.xerces.internal.dom)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ElementImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 43)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 309)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2002,2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.dom;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import org.w3c.dom.Attr;
+<i>24</i>&nbsp;import org.w3c.dom.DOMException;
+<i>25</i>&nbsp;import org.w3c.dom.Element;
+<i>26</i>&nbsp;import org.w3c.dom.NamedNodeMap;
+<i>27</i>&nbsp;import org.w3c.dom.Node;
+<i>28</i>&nbsp;import org.w3c.dom.NodeList;
+<i>29</i>&nbsp;import org.w3c.dom.Text;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import org.w3c.dom.TypeInfo;
+<i>32</i>&nbsp;import com.sun.org.apache.xerces.internal.util.URI;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;/**
+<i>35</i>&nbsp; * Elements represent most of the &quot;markup&quot; and structure of the
+<i>36</i>&nbsp; * document.  They contain both the data for the element itself
+<i>37</i>&nbsp; * (element name and attributes), and any contained nodes, including
+<i>38</i>&nbsp; * document text (as children).
+<i>39</i>&nbsp; * &lt;P&gt;
+<i>40</i>&nbsp; * Elements may have Attributes associated with them; the API for this is
+<i>41</i>&nbsp; * defined in Node, but the function is implemented here. In general, XML
+<i>42</i>&nbsp; * applications should retrive Attributes as Nodes, since they may contain
+<i>43</i>&nbsp; * entity references and hence be a fairly complex sub-tree. HTML users will
+<i>44</i>&nbsp; * be dealing with simple string values, and convenience methods are provided
+<i>45</i>&nbsp; * to work in terms of Strings.
+<i>46</i>&nbsp; * &lt;P&gt;
+<i>47</i>&nbsp; * ElementImpl does not support Namespaces. ElementNSImpl, which inherits from
+<i>48</i>&nbsp; * it, does.
+<i>49</i>&nbsp; * @see ElementNSImpl
+<i>50</i>&nbsp; *
+<i>51</i>&nbsp; * @xerces.internal
+<i>52</i>&nbsp; *
+<i>53</i>&nbsp; * @author Arnaud  Le Hors, IBM
+<i>54</i>&nbsp; * @author Joe Kesselman, IBM
+<i>55</i>&nbsp; * @author Andy Clark, IBM
+<i>56</i>&nbsp; * @author Ralf Pfeiffer, IBM
+<i>57</i>&nbsp; * @since  PR-DOM-Level-1-19980818.
+<i>58</i>&nbsp; */
+<i>59</i>&nbsp;public class ElementImpl
+<i>60</i>&nbsp;    extends ParentNode
+<i>61</i>&nbsp;    implements Element, TypeInfo {
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    //
+<i>64</i>&nbsp;    // Constants
+<i>65</i>&nbsp;    //
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    /** Serialization version. */
+<i>68</i>&nbsp;    static final long serialVersionUID = 3717253516652722278L;
+<i>69</i>&nbsp;    //
+<i>70</i>&nbsp;    // Data
+<i>71</i>&nbsp;    //
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    /** Element name. */
+<i>74</i>&nbsp;    protected String name;
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;    /** Attributes. */
+<i>77</i>&nbsp;    protected AttributeMap attributes;
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    //
+<i>80</i>&nbsp;    // Constructors
+<i>81</i>&nbsp;    //
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    /** Factory constructor. */
+<i>84</i>&nbsp;    public ElementImpl(CoreDocumentImpl ownerDoc, String name) {
+<b class="nc"><i>85</i>&nbsp;        super(ownerDoc);</b>
+<b class="nc"><i>86</i>&nbsp;        this.name = name;</b>
+<b class="nc"><i>87</i>&nbsp;        needsSyncData(true);    // synchronizeData will initialize attributes</b>
+<i>88</i>&nbsp;    }
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    // for ElementNSImpl
+<b class="nc"><i>91</i>&nbsp;    protected ElementImpl() {}</b>
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    // Support for DOM Level 3 renameNode method.
+<i>94</i>&nbsp;    // Note: This only deals with part of the pb. CoreDocumentImpl
+<i>95</i>&nbsp;    // does all the work.
+<i>96</i>&nbsp;    void rename(String name) {
+<b class="nc"><i>97</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>98</i>&nbsp;            synchronizeData();</b>
+<i>99</i>&nbsp;        }
+<b class="nc"><i>100</i>&nbsp;            this.name = name;</b>
+<b class="nc"><i>101</i>&nbsp;        reconcileDefaultAttributes();</b>
+<i>102</i>&nbsp;    }
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    //
+<i>105</i>&nbsp;    // Node methods
+<i>106</i>&nbsp;    //
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    /**
+<i>110</i>&nbsp;     * A short integer indicating what type of node this is. The named
+<i>111</i>&nbsp;     * constants for this value are defined in the org.w3c.dom.Node interface.
+<i>112</i>&nbsp;     */
+<i>113</i>&nbsp;    public short getNodeType() {
+<b class="nc"><i>114</i>&nbsp;        return Node.ELEMENT_NODE;</b>
+<i>115</i>&nbsp;    }
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    /**
+<i>118</i>&nbsp;     * Returns the element name
+<i>119</i>&nbsp;     */
+<i>120</i>&nbsp;    public String getNodeName() {
+<b class="nc"><i>121</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>122</i>&nbsp;            synchronizeData();</b>
+<i>123</i>&nbsp;        }
+<b class="nc"><i>124</i>&nbsp;        return name;</b>
+<i>125</i>&nbsp;    }
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;    /**
+<i>128</i>&nbsp;     * Retrieve all the Attributes as a set. Note that this API is inherited
+<i>129</i>&nbsp;     * from Node rather than specified on Element; in fact only Elements will
+<i>130</i>&nbsp;     * ever have Attributes, but they want to allow folks to &quot;blindly&quot; operate
+<i>131</i>&nbsp;     * on the tree as a set of Nodes.
+<i>132</i>&nbsp;     */
+<i>133</i>&nbsp;    public NamedNodeMap getAttributes() {
+<i>134</i>&nbsp;
+<b class="nc"><i>135</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>136</i>&nbsp;            synchronizeData();</b>
+<i>137</i>&nbsp;        }
+<b class="nc"><i>138</i>&nbsp;        if (attributes == null) {</b>
+<b class="nc"><i>139</i>&nbsp;            attributes = new AttributeMap(this, null);</b>
+<i>140</i>&nbsp;        }
+<b class="nc"><i>141</i>&nbsp;        return attributes;</b>
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;    } // getAttributes():NamedNodeMap
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;    /**
+<i>146</i>&nbsp;     * Return a duplicate copy of this Element. Note that its children
+<i>147</i>&nbsp;     * will not be copied unless the &quot;deep&quot; flag is true, but Attributes
+<i>148</i>&nbsp;     * are &lt;i&gt;always&lt;/i&gt; replicated.
+<i>149</i>&nbsp;     *
+<i>150</i>&nbsp;     * @see org.w3c.dom.Node#cloneNode(boolean)
+<i>151</i>&nbsp;     */
+<i>152</i>&nbsp;    public Node cloneNode(boolean deep) {
+<i>153</i>&nbsp;
+<b class="nc"><i>154</i>&nbsp;        ElementImpl newnode = (ElementImpl) super.cloneNode(deep);</b>
+<i>155</i>&nbsp;        // Replicate NamedNodeMap rather than sharing it.
+<b class="nc"><i>156</i>&nbsp;        if (attributes != null) {</b>
+<b class="nc"><i>157</i>&nbsp;            newnode.attributes = (AttributeMap) attributes.cloneMap(newnode);</b>
+<i>158</i>&nbsp;        }
+<b class="nc"><i>159</i>&nbsp;        return newnode;</b>
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;    } // cloneNode(boolean):Node
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;   /**
+<i>164</i>&nbsp;     * DOM Level 3 WD - Experimental.
+<i>165</i>&nbsp;     * Retrieve baseURI
+<i>166</i>&nbsp;     */
+<i>167</i>&nbsp;    public String getBaseURI() {
+<i>168</i>&nbsp;
+<b class="nc"><i>169</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>170</i>&nbsp;            synchronizeData();</b>
+<i>171</i>&nbsp;        }
+<i>172</i>&nbsp;        // Absolute base URI is computed according to
+<i>173</i>&nbsp;        // XML Base (http://www.w3.org/TR/xmlbase/#granularity)
+<i>174</i>&nbsp;        // 1. The base URI specified by an xml:base attribute on the element,
+<i>175</i>&nbsp;        // if one exists
+<b class="nc"><i>176</i>&nbsp;        if (attributes != null) {</b>
+<b class="nc"><i>177</i>&nbsp;            Attr attrNode = (Attr)attributes.getNamedItem(&quot;xml:base&quot;);</b>
+<b class="nc"><i>178</i>&nbsp;            if (attrNode != null) {</b>
+<b class="nc"><i>179</i>&nbsp;                String uri =  attrNode.getNodeValue();</b>
+<b class="nc"><i>180</i>&nbsp;                if (uri.length() != 0 ) {// attribute value is always empty string</b>
+<i>181</i>&nbsp;                    try {
+<b class="nc"><i>182</i>&nbsp;                       uri = new URI(uri).toString();</b>
+<i>183</i>&nbsp;                    }
+<b class="nc"><i>184</i>&nbsp;                    catch (com.sun.org.apache.xerces.internal.util.URI.MalformedURIException e) {</b>
+<i>185</i>&nbsp;                        // This may be a relative URI.
+<i>186</i>&nbsp;
+<i>187</i>&nbsp;                        // Make any parentURI into a URI object to use with the URI(URI, String) constructor
+<b class="nc"><i>188</i>&nbsp;                        String parentBaseURI = (this.ownerNode != null) ? this.ownerNode.getBaseURI() : null;</b>
+<b class="nc"><i>189</i>&nbsp;                        if (parentBaseURI != null){</b>
+<i>190</i>&nbsp;                            try{
+<b class="nc"><i>191</i>&nbsp;                                uri = new URI(new URI(parentBaseURI), uri).toString();</b>
+<i>192</i>&nbsp;                            }
+<b class="nc"><i>193</i>&nbsp;                            catch (com.sun.org.apache.xerces.internal.util.URI.MalformedURIException ex){</b>
+<i>194</i>&nbsp;                                // This should never happen: parent should have checked the URI and returned null if invalid.
+<b class="nc"><i>195</i>&nbsp;                                return null;</b>
+<b class="nc"><i>196</i>&nbsp;                            }</b>
+<b class="nc"><i>197</i>&nbsp;                            return uri;</b>
+<i>198</i>&nbsp;                        }
+<b class="nc"><i>199</i>&nbsp;                        return null;</b>
+<b class="nc"><i>200</i>&nbsp;                    }</b>
+<b class="nc"><i>201</i>&nbsp;                    return uri;</b>
+<i>202</i>&nbsp;                }
+<i>203</i>&nbsp;            }
+<i>204</i>&nbsp;        }
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;        // 2.the base URI of the element&#39;s parent element within the
+<i>207</i>&nbsp;        // document or external entity, if one exists
+<i>208</i>&nbsp;                // 3. the base URI of the document entity or external entity
+<i>209</i>&nbsp;                // containing the element
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;                // ownerNode serves as a parent or as document
+<b class="nc"><i>212</i>&nbsp;                String baseURI = (this.ownerNode != null) ? this.ownerNode.getBaseURI() : null ;</b>
+<i>213</i>&nbsp;        //base URI of parent element is not null
+<b class="nc"><i>214</i>&nbsp;        if(baseURI != null){</b>
+<i>215</i>&nbsp;            try {
+<i>216</i>&nbsp;                //return valid absolute base URI
+<b class="nc"><i>217</i>&nbsp;               return new URI(baseURI).toString();</b>
+<i>218</i>&nbsp;            }
+<b class="nc"><i>219</i>&nbsp;            catch (com.sun.org.apache.xerces.internal.util.URI.MalformedURIException e){</b>
+<b class="nc"><i>220</i>&nbsp;                return null;</b>
+<i>221</i>&nbsp;            }
+<i>222</i>&nbsp;        }
+<b class="nc"><i>223</i>&nbsp;        return null;</b>
+<i>224</i>&nbsp;    } //getBaseURI
+<i>225</i>&nbsp;
+<i>226</i>&nbsp;
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;    /**
+<i>229</i>&nbsp;     * NON-DOM
+<i>230</i>&nbsp;     * set the ownerDocument of this node, its children, and its attributes
+<i>231</i>&nbsp;     */
+<i>232</i>&nbsp;    void setOwnerDocument(CoreDocumentImpl doc) {
+<b class="nc"><i>233</i>&nbsp;        super.setOwnerDocument(doc);</b>
+<b class="nc"><i>234</i>&nbsp;        if (attributes != null) {</b>
+<b class="nc"><i>235</i>&nbsp;            attributes.setOwnerDocument(doc);</b>
+<i>236</i>&nbsp;        }
+<i>237</i>&nbsp;    }
+<i>238</i>&nbsp;
+<i>239</i>&nbsp;    //
+<i>240</i>&nbsp;    // Element methods
+<i>241</i>&nbsp;    //
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;    /**
+<i>244</i>&nbsp;     * Look up a single Attribute by name. Returns the Attribute&#39;s
+<i>245</i>&nbsp;     * string value, or an empty string (NOT null!) to indicate that the
+<i>246</i>&nbsp;     * name did not map to a currently defined attribute.
+<i>247</i>&nbsp;     * &lt;p&gt;
+<i>248</i>&nbsp;     * Note: Attributes may contain complex node trees. This method
+<i>249</i>&nbsp;     * returns the &quot;flattened&quot; string obtained from Attribute.getValue().
+<i>250</i>&nbsp;     * If you need the structure information, see getAttributeNode().
+<i>251</i>&nbsp;     */
+<i>252</i>&nbsp;    public String getAttribute(String name) {
+<i>253</i>&nbsp;
+<b class="nc"><i>254</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>255</i>&nbsp;            synchronizeData();</b>
+<i>256</i>&nbsp;        }
+<b class="nc"><i>257</i>&nbsp;        if (attributes == null) {</b>
+<b class="nc"><i>258</i>&nbsp;            return &quot;&quot;;</b>
+<i>259</i>&nbsp;        }
+<b class="nc"><i>260</i>&nbsp;        Attr attr = (Attr)(attributes.getNamedItem(name));</b>
+<b class="nc"><i>261</i>&nbsp;        return (attr == null) ? &quot;&quot; : attr.getValue();</b>
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;    } // getAttribute(String):String
+<i>264</i>&nbsp;
+<i>265</i>&nbsp;
+<i>266</i>&nbsp;    /**
+<i>267</i>&nbsp;     * Look up a single Attribute by name. Returns the Attribute Node,
+<i>268</i>&nbsp;     * so its complete child tree is available. This could be important in
+<i>269</i>&nbsp;     * XML, where the string rendering may not be sufficient information.
+<i>270</i>&nbsp;     * &lt;p&gt;
+<i>271</i>&nbsp;     * If no matching attribute is available, returns null.
+<i>272</i>&nbsp;     */
+<i>273</i>&nbsp;    public Attr getAttributeNode(String name) {
+<i>274</i>&nbsp;
+<b class="nc"><i>275</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>276</i>&nbsp;            synchronizeData();</b>
+<i>277</i>&nbsp;        }
+<b class="nc"><i>278</i>&nbsp;        if (attributes == null) {</b>
+<b class="nc"><i>279</i>&nbsp;            return null;</b>
+<i>280</i>&nbsp;        }
+<b class="nc"><i>281</i>&nbsp;        return (Attr)attributes.getNamedItem(name);</b>
+<i>282</i>&nbsp;
+<i>283</i>&nbsp;    } // getAttributeNode(String):Attr
+<i>284</i>&nbsp;
+<i>285</i>&nbsp;
+<i>286</i>&nbsp;    /**
+<i>287</i>&nbsp;     * Returns a NodeList of all descendent nodes (children,
+<i>288</i>&nbsp;     * grandchildren, and so on) which are Elements and which have the
+<i>289</i>&nbsp;     * specified tag name.
+<i>290</i>&nbsp;     * &lt;p&gt;
+<i>291</i>&nbsp;     * Note: NodeList is a &quot;live&quot; view of the DOM. Its contents will
+<i>292</i>&nbsp;     * change as the DOM changes, and alterations made to the NodeList
+<i>293</i>&nbsp;     * will be reflected in the DOM.
+<i>294</i>&nbsp;     *
+<i>295</i>&nbsp;     * @param tagname The type of element to gather. To obtain a list of
+<i>296</i>&nbsp;     * all elements no matter what their names, use the wild-card tag
+<i>297</i>&nbsp;     * name &quot;*&quot;.
+<i>298</i>&nbsp;     *
+<i>299</i>&nbsp;     * @see DeepNodeListImpl
+<i>300</i>&nbsp;     */
+<i>301</i>&nbsp;    public NodeList getElementsByTagName(String tagname) {
+<b class="nc"><i>302</i>&nbsp;        return new DeepNodeListImpl(this,tagname);</b>
+<i>303</i>&nbsp;    }
+<i>304</i>&nbsp;
+<i>305</i>&nbsp;    /**
+<i>306</i>&nbsp;     * Returns the name of the Element. Note that Element.nodeName() is
+<i>307</i>&nbsp;     * defined to also return the tag name.
+<i>308</i>&nbsp;     * &lt;p&gt;
+<i>309</i>&nbsp;     * This is case-preserving in XML. HTML should uppercasify it on the
+<i>310</i>&nbsp;     * way in.
+<i>311</i>&nbsp;     */
+<i>312</i>&nbsp;    public String getTagName() {
+<b class="nc"><i>313</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>314</i>&nbsp;            synchronizeData();</b>
+<i>315</i>&nbsp;        }
+<b class="nc"><i>316</i>&nbsp;        return name;</b>
+<i>317</i>&nbsp;    }
+<i>318</i>&nbsp;
+<i>319</i>&nbsp;    /**
+<i>320</i>&nbsp;     * In &quot;normal form&quot; (as read from a source file), there will never be two
+<i>321</i>&nbsp;     * Text children in succession. But DOM users may create successive Text
+<i>322</i>&nbsp;     * nodes in the course of manipulating the document. Normalize walks the
+<i>323</i>&nbsp;     * sub-tree and merges adjacent Texts, as if the DOM had been written out
+<i>324</i>&nbsp;     * and read back in again. This simplifies implementation of higher-level
+<i>325</i>&nbsp;     * functions that may want to assume that the document is in standard form.
+<i>326</i>&nbsp;     * &lt;p&gt;
+<i>327</i>&nbsp;     * To normalize a Document, normalize its top-level Element child.
+<i>328</i>&nbsp;     * &lt;p&gt;
+<i>329</i>&nbsp;     * As of PR-DOM-Level-1-19980818, CDATA -- despite being a subclass of
+<i>330</i>&nbsp;     * Text -- is considered &quot;markup&quot; and will _not_ be merged either with
+<i>331</i>&nbsp;     * normal Text or with other CDATASections.
+<i>332</i>&nbsp;     */
+<i>333</i>&nbsp;    public void normalize() {
+<i>334</i>&nbsp;        // No need to normalize if already normalized.
+<b class="nc"><i>335</i>&nbsp;        if (isNormalized()) {</b>
+<i>336</i>&nbsp;            return;
+<i>337</i>&nbsp;        }
+<b class="nc"><i>338</i>&nbsp;        if (needsSyncChildren()) {</b>
+<b class="nc"><i>339</i>&nbsp;            synchronizeChildren();</b>
+<i>340</i>&nbsp;        }
+<i>341</i>&nbsp;        ChildNode kid, next;
+<b class="nc"><i>342</i>&nbsp;        for (kid = firstChild; kid != null; kid = next) {</b>
+<b class="nc"><i>343</i>&nbsp;            next = kid.nextSibling;</b>
+<i>344</i>&nbsp;
+<i>345</i>&nbsp;            // If kid is a text node, we need to check for one of two
+<i>346</i>&nbsp;            // conditions:
+<i>347</i>&nbsp;            //   1) There is an adjacent text node
+<i>348</i>&nbsp;            //   2) There is no adjacent text node, but kid is
+<i>349</i>&nbsp;            //      an empty text node.
+<b class="nc"><i>350</i>&nbsp;            if ( kid.getNodeType() == Node.TEXT_NODE )</b>
+<i>351</i>&nbsp;            {
+<i>352</i>&nbsp;                // If an adjacent text node, merge it with kid
+<b class="nc"><i>353</i>&nbsp;                if ( next!=null &amp;&amp; next.getNodeType() == Node.TEXT_NODE )</b>
+<i>354</i>&nbsp;                {
+<b class="nc"><i>355</i>&nbsp;                    ((Text)kid).appendData(next.getNodeValue());</b>
+<b class="nc"><i>356</i>&nbsp;                    removeChild( next );</b>
+<b class="nc"><i>357</i>&nbsp;                    next = kid; // Don&#39;t advance; there might be another.</b>
+<i>358</i>&nbsp;                }
+<i>359</i>&nbsp;                else
+<i>360</i>&nbsp;                {
+<i>361</i>&nbsp;                    // If kid is empty, remove it
+<b class="nc"><i>362</i>&nbsp;                    if ( kid.getNodeValue() == null || kid.getNodeValue().length() == 0 ) {</b>
+<b class="nc"><i>363</i>&nbsp;                        removeChild( kid );</b>
+<i>364</i>&nbsp;                    }
+<i>365</i>&nbsp;                }
+<i>366</i>&nbsp;            }
+<i>367</i>&nbsp;
+<i>368</i>&nbsp;            // Otherwise it might be an Element, which is handled recursively
+<b class="nc"><i>369</i>&nbsp;            else if (kid.getNodeType() == Node.ELEMENT_NODE) {</b>
+<b class="nc"><i>370</i>&nbsp;                kid.normalize();</b>
+<i>371</i>&nbsp;            }
+<i>372</i>&nbsp;        }
+<i>373</i>&nbsp;
+<i>374</i>&nbsp;        // We must also normalize all of the attributes
+<b class="nc"><i>375</i>&nbsp;        if ( attributes!=null )</b>
+<i>376</i>&nbsp;        {
+<b class="nc"><i>377</i>&nbsp;            for( int i=0; i&lt;attributes.getLength(); ++i )</b>
+<i>378</i>&nbsp;            {
+<b class="nc"><i>379</i>&nbsp;                Node attr = attributes.item(i);</b>
+<b class="nc"><i>380</i>&nbsp;                attr.normalize();</b>
+<i>381</i>&nbsp;            }
+<i>382</i>&nbsp;        }
+<i>383</i>&nbsp;
+<i>384</i>&nbsp;        // changed() will have occurred when the removeChild() was done,
+<i>385</i>&nbsp;        // so does not have to be reissued.
+<i>386</i>&nbsp;
+<b class="nc"><i>387</i>&nbsp;        isNormalized(true);</b>
+<i>388</i>&nbsp;    } // normalize()
+<i>389</i>&nbsp;
+<i>390</i>&nbsp;    /**
+<i>391</i>&nbsp;     * Remove the named attribute from this Element. If the removed
+<i>392</i>&nbsp;     * Attribute has a default value, it is immediately replaced thereby.
+<i>393</i>&nbsp;     * &lt;P&gt;
+<i>394</i>&nbsp;     * The default logic is actually implemented in NamedNodeMapImpl.
+<i>395</i>&nbsp;     * PR-DOM-Level-1-19980818 doesn&#39;t fully address the DTD, so some
+<i>396</i>&nbsp;     * of this behavior is likely to change in future versions. ?????
+<i>397</i>&nbsp;     * &lt;P&gt;
+<i>398</i>&nbsp;     * Note that this call &quot;succeeds&quot; even if no attribute by this name
+<i>399</i>&nbsp;     * existed -- unlike removeAttributeNode, which will throw a not-found
+<i>400</i>&nbsp;     * exception in that case.
+<i>401</i>&nbsp;     *
+<i>402</i>&nbsp;     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if the node is
+<i>403</i>&nbsp;     * readonly.
+<i>404</i>&nbsp;     */
+<i>405</i>&nbsp;    public void removeAttribute(String name) {
+<i>406</i>&nbsp;
+<b class="nc"><i>407</i>&nbsp;        if (ownerDocument.errorChecking &amp;&amp; isReadOnly()) {</b>
+<b class="nc"><i>408</i>&nbsp;            String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;NO_MODIFICATION_ALLOWED_ERR&quot;, null);</b>
+<b class="nc"><i>409</i>&nbsp;            throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR, msg);</b>
+<i>410</i>&nbsp;        }
+<i>411</i>&nbsp;
+<b class="nc"><i>412</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>413</i>&nbsp;            synchronizeData();</b>
+<i>414</i>&nbsp;        }
+<i>415</i>&nbsp;
+<b class="nc"><i>416</i>&nbsp;        if (attributes == null) {</b>
+<i>417</i>&nbsp;            return;
+<i>418</i>&nbsp;        }
+<i>419</i>&nbsp;
+<b class="nc"><i>420</i>&nbsp;        attributes.safeRemoveNamedItem(name);</b>
+<i>421</i>&nbsp;
+<i>422</i>&nbsp;    } // removeAttribute(String)
+<i>423</i>&nbsp;
+<i>424</i>&nbsp;
+<i>425</i>&nbsp;    /**
+<i>426</i>&nbsp;     * Remove the specified attribute/value pair. If the removed
+<i>427</i>&nbsp;     * Attribute has a default value, it is immediately replaced.
+<i>428</i>&nbsp;     * &lt;p&gt;
+<i>429</i>&nbsp;     * NOTE: Specifically removes THIS NODE -- not the node with this
+<i>430</i>&nbsp;     * name, nor the node with these contents. If the specific Attribute
+<i>431</i>&nbsp;     * object passed in is not stored in this Element, we throw a
+<i>432</i>&nbsp;     * DOMException.  If you really want to remove an attribute by name,
+<i>433</i>&nbsp;     * use removeAttribute().
+<i>434</i>&nbsp;     *
+<i>435</i>&nbsp;     * @return the Attribute object that was removed.
+<i>436</i>&nbsp;     * @throws DOMException(NOT_FOUND_ERR) if oldattr is not an attribute of
+<i>437</i>&nbsp;     * this Element.
+<i>438</i>&nbsp;     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if the node is
+<i>439</i>&nbsp;     * readonly.
+<i>440</i>&nbsp;     */
+<i>441</i>&nbsp;    public Attr removeAttributeNode(Attr oldAttr)
+<i>442</i>&nbsp;        throws DOMException {
+<i>443</i>&nbsp;
+<b class="nc"><i>444</i>&nbsp;        if (ownerDocument.errorChecking &amp;&amp; isReadOnly()) {</b>
+<b class="nc"><i>445</i>&nbsp;            String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;NO_MODIFICATION_ALLOWED_ERR&quot;, null);</b>
+<b class="nc"><i>446</i>&nbsp;            throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR, msg);</b>
+<i>447</i>&nbsp;        }
+<i>448</i>&nbsp;
+<b class="nc"><i>449</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>450</i>&nbsp;            synchronizeData();</b>
+<i>451</i>&nbsp;        }
+<i>452</i>&nbsp;
+<b class="nc"><i>453</i>&nbsp;        if (attributes == null) {</b>
+<b class="nc"><i>454</i>&nbsp;            String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;NOT_FOUND_ERR&quot;, null);</b>
+<b class="nc"><i>455</i>&nbsp;            throw new DOMException(DOMException.NOT_FOUND_ERR, msg);</b>
+<i>456</i>&nbsp;        }
+<b class="nc"><i>457</i>&nbsp;        return (Attr) attributes.removeItem(oldAttr, true);</b>
+<i>458</i>&nbsp;
+<i>459</i>&nbsp;    } // removeAttributeNode(Attr):Attr
+<i>460</i>&nbsp;
+<i>461</i>&nbsp;
+<i>462</i>&nbsp;    /**
+<i>463</i>&nbsp;     * Add a new name/value pair, or replace the value of the existing
+<i>464</i>&nbsp;     * attribute having that name.
+<i>465</i>&nbsp;     *
+<i>466</i>&nbsp;     * Note: this method supports only the simplest kind of Attribute,
+<i>467</i>&nbsp;     * one whose value is a string contained in a single Text node.
+<i>468</i>&nbsp;     * If you want to assert a more complex value (which XML permits,
+<i>469</i>&nbsp;     * though HTML doesn&#39;t), see setAttributeNode().
+<i>470</i>&nbsp;     *
+<i>471</i>&nbsp;     * The attribute is created with specified=true, meaning it&#39;s an
+<i>472</i>&nbsp;     * explicit value rather than inherited from the DTD as a default.
+<i>473</i>&nbsp;     * Again, setAttributeNode can be used to achieve other results.
+<i>474</i>&nbsp;     *
+<i>475</i>&nbsp;     * @throws DOMException(INVALID_NAME_ERR) if the name is not acceptable.
+<i>476</i>&nbsp;     * (Attribute factory will do that test for us.)
+<i>477</i>&nbsp;     *
+<i>478</i>&nbsp;     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if the node is
+<i>479</i>&nbsp;     * readonly.
+<i>480</i>&nbsp;     */
+<i>481</i>&nbsp;        public void setAttribute(String name, String value) {
+<i>482</i>&nbsp;
+<b class="nc"><i>483</i>&nbsp;                if (ownerDocument.errorChecking &amp;&amp; isReadOnly()) {</b>
+<b class="nc"><i>484</i>&nbsp;                        String msg =</b>
+<b class="nc"><i>485</i>&nbsp;                                DOMMessageFormatter.formatMessage(</b>
+<i>486</i>&nbsp;                                        DOMMessageFormatter.DOM_DOMAIN,
+<i>487</i>&nbsp;                                        &quot;NO_MODIFICATION_ALLOWED_ERR&quot;,
+<i>488</i>&nbsp;                                        null);
+<b class="nc"><i>489</i>&nbsp;                        throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR, msg);</b>
+<i>490</i>&nbsp;                }
+<i>491</i>&nbsp;
+<b class="nc"><i>492</i>&nbsp;                if (needsSyncData()) {</b>
+<b class="nc"><i>493</i>&nbsp;                        synchronizeData();</b>
+<i>494</i>&nbsp;                }
+<i>495</i>&nbsp;
+<b class="nc"><i>496</i>&nbsp;                Attr newAttr = getAttributeNode(name);</b>
+<b class="nc"><i>497</i>&nbsp;                if (newAttr == null) {</b>
+<b class="nc"><i>498</i>&nbsp;                        newAttr = getOwnerDocument().createAttribute(name);</b>
+<i>499</i>&nbsp;
+<b class="nc"><i>500</i>&nbsp;                        if (attributes == null) {</b>
+<b class="nc"><i>501</i>&nbsp;                                attributes = new AttributeMap(this, null);</b>
+<i>502</i>&nbsp;                        }
+<i>503</i>&nbsp;
+<b class="nc"><i>504</i>&nbsp;                        newAttr.setNodeValue(value);</b>
+<b class="nc"><i>505</i>&nbsp;                        attributes.setNamedItem(newAttr);</b>
+<i>506</i>&nbsp;                }
+<i>507</i>&nbsp;                else {
+<b class="nc"><i>508</i>&nbsp;                        newAttr.setNodeValue(value);</b>
+<i>509</i>&nbsp;                }
+<i>510</i>&nbsp;
+<i>511</i>&nbsp;        } // setAttribute(String,String)
+<i>512</i>&nbsp;
+<i>513</i>&nbsp;    /**
+<i>514</i>&nbsp;     * Add a new attribute/value pair, or replace the value of the
+<i>515</i>&nbsp;     * existing attribute with that name.
+<i>516</i>&nbsp;     * &lt;P&gt;
+<i>517</i>&nbsp;     * This method allows you to add an Attribute that has already been
+<i>518</i>&nbsp;     * constructed, and hence avoids the limitations of the simple
+<i>519</i>&nbsp;     * setAttribute() call. It can handle attribute values that have
+<i>520</i>&nbsp;     * arbitrarily complex tree structure -- in particular, those which
+<i>521</i>&nbsp;     * had entity references mixed into their text.
+<i>522</i>&nbsp;     *
+<i>523</i>&nbsp;     * @throws DOMException(INUSE_ATTRIBUTE_ERR) if the Attribute object
+<i>524</i>&nbsp;     * has already been assigned to another Element.
+<i>525</i>&nbsp;     */
+<i>526</i>&nbsp;    public Attr setAttributeNode(Attr newAttr)
+<i>527</i>&nbsp;        throws DOMException
+<i>528</i>&nbsp;        {
+<i>529</i>&nbsp;
+<b class="nc"><i>530</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>531</i>&nbsp;            synchronizeData();</b>
+<i>532</i>&nbsp;        }
+<i>533</i>&nbsp;
+<b class="nc"><i>534</i>&nbsp;        if (ownerDocument.errorChecking) {</b>
+<b class="nc"><i>535</i>&nbsp;            if (isReadOnly()) {</b>
+<b class="nc"><i>536</i>&nbsp;                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;NO_MODIFICATION_ALLOWED_ERR&quot;, null);</b>
+<b class="nc"><i>537</i>&nbsp;                throw new DOMException(</b>
+<i>538</i>&nbsp;                                     DOMException.NO_MODIFICATION_ALLOWED_ERR,
+<i>539</i>&nbsp;                                     msg);
+<i>540</i>&nbsp;            }
+<i>541</i>&nbsp;
+<b class="nc"><i>542</i>&nbsp;            if (newAttr.getOwnerDocument() != ownerDocument) {</b>
+<b class="nc"><i>543</i>&nbsp;                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;WRONG_DOCUMENT_ERR&quot;, null);</b>
+<b class="nc"><i>544</i>&nbsp;                    throw new DOMException(DOMException.WRONG_DOCUMENT_ERR, msg);</b>
+<i>545</i>&nbsp;            }
+<i>546</i>&nbsp;        }
+<i>547</i>&nbsp;
+<b class="nc"><i>548</i>&nbsp;        if (attributes == null) {</b>
+<b class="nc"><i>549</i>&nbsp;            attributes = new AttributeMap(this, null);</b>
+<i>550</i>&nbsp;        }
+<i>551</i>&nbsp;        // This will throw INUSE if necessary
+<b class="nc"><i>552</i>&nbsp;        return (Attr) attributes.setNamedItem(newAttr);</b>
+<i>553</i>&nbsp;
+<i>554</i>&nbsp;    } // setAttributeNode(Attr):Attr
+<i>555</i>&nbsp;
+<i>556</i>&nbsp;    //
+<i>557</i>&nbsp;    // DOM2: Namespace methods
+<i>558</i>&nbsp;    //
+<i>559</i>&nbsp;
+<i>560</i>&nbsp;    /**
+<i>561</i>&nbsp;     * Introduced in DOM Level 2. &lt;p&gt;
+<i>562</i>&nbsp;     *
+<i>563</i>&nbsp;     * Retrieves an attribute value by local name and namespace URI.
+<i>564</i>&nbsp;     *
+<i>565</i>&nbsp;     * @param namespaceURI
+<i>566</i>&nbsp;     *                      The namespace URI of the attribute to
+<i>567</i>&nbsp;     *                      retrieve.
+<i>568</i>&nbsp;     * @param localName     The local name of the attribute to retrieve.
+<i>569</i>&nbsp;     * @return String       The Attr value as a string, or empty string
+<i>570</i>&nbsp;     *                      if that attribute
+<i>571</i>&nbsp;     *                      does not have a specified or default value.
+<i>572</i>&nbsp;     * @since WD-DOM-Level-2-19990923
+<i>573</i>&nbsp;     */
+<i>574</i>&nbsp;    public String getAttributeNS(String namespaceURI, String localName) {
+<i>575</i>&nbsp;
+<b class="nc"><i>576</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>577</i>&nbsp;            synchronizeData();</b>
+<i>578</i>&nbsp;        }
+<i>579</i>&nbsp;
+<b class="nc"><i>580</i>&nbsp;        if (attributes == null) {</b>
+<b class="nc"><i>581</i>&nbsp;            return &quot;&quot;;</b>
+<i>582</i>&nbsp;        }
+<i>583</i>&nbsp;
+<b class="nc"><i>584</i>&nbsp;        Attr attr = (Attr)(attributes.getNamedItemNS(namespaceURI, localName));</b>
+<b class="nc"><i>585</i>&nbsp;        return (attr == null) ? &quot;&quot; : attr.getValue();</b>
+<i>586</i>&nbsp;
+<i>587</i>&nbsp;    } // getAttributeNS(String,String):String
+<i>588</i>&nbsp;
+<i>589</i>&nbsp;    /**
+<i>590</i>&nbsp;     * Introduced in DOM Level 2. &lt;p&gt;
+<i>591</i>&nbsp;     *
+<i>592</i>&nbsp;     *  Adds a new attribute.
+<i>593</i>&nbsp;     *  If the given namespaceURI is null or an empty string and the
+<i>594</i>&nbsp;     *  qualifiedName has a prefix that is &quot;xml&quot;, the new attribute is bound to
+<i>595</i>&nbsp;     *  the predefined namespace &quot;http://www.w3.org/XML/1998/namespace&quot;
+<i>596</i>&nbsp;     *  [Namespaces].  If an attribute with the same local name and namespace
+<i>597</i>&nbsp;     *  URI is already present on the element, its prefix is changed to be the
+<i>598</i>&nbsp;     *  prefix part of the qualifiedName, and its value is changed to be the
+<i>599</i>&nbsp;     *  value parameter. This value is a simple string, it is not parsed as it
+<i>600</i>&nbsp;     *  is being set. So any markup (such as syntax to be recognized as an
+<i>601</i>&nbsp;     *  entity reference) is treated as literal text, and needs to be
+<i>602</i>&nbsp;     *  appropriately escaped by the implementation when it is written out. In
+<i>603</i>&nbsp;     *  order to assign an attribute value that contains entity references, the
+<i>604</i>&nbsp;     *  user must create an Attr node plus any Text and EntityReference nodes,
+<i>605</i>&nbsp;     *  build the appropriate subtree, and use setAttributeNodeNS or
+<i>606</i>&nbsp;     *  setAttributeNode to assign it as the value of an attribute.
+<i>607</i>&nbsp;     *
+<i>608</i>&nbsp;     * @param namespaceURI      The namespace URI of the attribute to create
+<i>609</i>&nbsp;     *                          or alter.
+<i>610</i>&nbsp;     * @param qualifiedName     The qualified name of the attribute to create or
+<i>611</i>&nbsp;     *                          alter.
+<i>612</i>&nbsp;     * @param value             The value to set in string form.
+<i>613</i>&nbsp;     * @throws                  INVALID_CHARACTER_ERR: Raised if the specified
+<i>614</i>&nbsp;     *                          name contains an invalid character.
+<i>615</i>&nbsp;     *
+<i>616</i>&nbsp;     * @throws                  NO_MODIFICATION_ALLOWED_ERR: Raised if this
+<i>617</i>&nbsp;     *                          node is readonly.
+<i>618</i>&nbsp;     *
+<i>619</i>&nbsp;     * @throws                  NAMESPACE_ERR: Raised if the qualifiedName
+<i>620</i>&nbsp;     *                          has a prefix that is &quot;xml&quot; and the namespaceURI
+<i>621</i>&nbsp;     *                          is neither null nor an empty string nor
+<i>622</i>&nbsp;     *                          &quot;http://www.w3.org/XML/1998/namespace&quot;, or if
+<i>623</i>&nbsp;     *                          the qualifiedName has a prefix that is &quot;xmlns&quot;
+<i>624</i>&nbsp;     *                          but the namespaceURI is neither null nor an
+<i>625</i>&nbsp;     *                          empty string, or if if the qualifiedName has a
+<i>626</i>&nbsp;     *                          prefix different from &quot;xml&quot; and &quot;xmlns&quot; and the
+<i>627</i>&nbsp;     *                          namespaceURI is null or an empty string.
+<i>628</i>&nbsp;     * @since WD-DOM-Level-2-19990923
+<i>629</i>&nbsp;     */
+<i>630</i>&nbsp;     public void setAttributeNS(String namespaceURI,String qualifiedName,
+<i>631</i>&nbsp;                                          String value) {
+<b class="nc"><i>632</i>&nbsp;                if (ownerDocument.errorChecking &amp;&amp; isReadOnly()) {</b>
+<b class="nc"><i>633</i>&nbsp;                        String msg =</b>
+<b class="nc"><i>634</i>&nbsp;                                DOMMessageFormatter.formatMessage(</b>
+<i>635</i>&nbsp;                                        DOMMessageFormatter.DOM_DOMAIN,
+<i>636</i>&nbsp;                                        &quot;NO_MODIFICATION_ALLOWED_ERR&quot;,
+<i>637</i>&nbsp;                                        null);
+<b class="nc"><i>638</i>&nbsp;                        throw new DOMException(</b>
+<i>639</i>&nbsp;                                DOMException.NO_MODIFICATION_ALLOWED_ERR,
+<i>640</i>&nbsp;                                msg);
+<i>641</i>&nbsp;                }
+<b class="nc"><i>642</i>&nbsp;                if (needsSyncData()) {</b>
+<b class="nc"><i>643</i>&nbsp;                        synchronizeData();</b>
+<i>644</i>&nbsp;                }
+<b class="nc"><i>645</i>&nbsp;                int index = qualifiedName.indexOf(&#39;:&#39;);</b>
+<i>646</i>&nbsp;                String prefix, localName;
+<b class="nc"><i>647</i>&nbsp;                if (index &lt; 0) {</b>
+<b class="nc"><i>648</i>&nbsp;                        prefix = null;</b>
+<b class="nc"><i>649</i>&nbsp;                        localName = qualifiedName;</b>
+<i>650</i>&nbsp;                }
+<i>651</i>&nbsp;                else {
+<b class="nc"><i>652</i>&nbsp;                        prefix = qualifiedName.substring(0, index);</b>
+<b class="nc"><i>653</i>&nbsp;                        localName = qualifiedName.substring(index + 1);</b>
+<i>654</i>&nbsp;                }
+<b class="nc"><i>655</i>&nbsp;                Attr newAttr = getAttributeNodeNS(namespaceURI, localName);</b>
+<b class="nc"><i>656</i>&nbsp;                if (newAttr == null) {</b>
+<i>657</i>&nbsp;            // REVISIT: this is not efficient, we are creating twice the same
+<i>658</i>&nbsp;            //          strings for prefix and localName.
+<b class="nc"><i>659</i>&nbsp;                        newAttr = getOwnerDocument().createAttributeNS(</b>
+<i>660</i>&nbsp;                                        namespaceURI,
+<i>661</i>&nbsp;                                        qualifiedName);
+<b class="nc"><i>662</i>&nbsp;                        if (attributes == null) {</b>
+<b class="nc"><i>663</i>&nbsp;                                attributes = new AttributeMap(this, null);</b>
+<i>664</i>&nbsp;                        }
+<b class="nc"><i>665</i>&nbsp;                        newAttr.setNodeValue(value);</b>
+<b class="nc"><i>666</i>&nbsp;                        attributes.setNamedItemNS(newAttr);</b>
+<i>667</i>&nbsp;                }
+<i>668</i>&nbsp;                else {
+<b class="nc"><i>669</i>&nbsp;            if (newAttr instanceof AttrNSImpl){</b>
+<b class="nc"><i>670</i>&nbsp;                String origNodeName = ((AttrNSImpl) newAttr).name;</b>
+<b class="nc"><i>671</i>&nbsp;                String newName = (prefix!=null) ? (prefix+&quot;:&quot;+localName) : localName;</b>
+<i>672</i>&nbsp;
+<b class="nc"><i>673</i>&nbsp;                ((AttrNSImpl) newAttr).name = newName;</b>
+<i>674</i>&nbsp;
+<b class="nc"><i>675</i>&nbsp;                if (!newName.equals(origNodeName)) {</b>
+<i>676</i>&nbsp;                    // Note: we can&#39;t just change the name of the attribute. Names have to be in sorted
+<i>677</i>&nbsp;                    // order in the attributes vector because a binary search is used to locate them.
+<i>678</i>&nbsp;                    // If the new name has a different prefix, the list may become unsorted.
+<i>679</i>&nbsp;                    // Maybe it would be better to resort the list, but the simplest
+<i>680</i>&nbsp;                    // fix seems to be to remove the old attribute and re-insert it.
+<i>681</i>&nbsp;                    // -- Norman.Walsh@Sun.COM, 2 Feb 2007
+<b class="nc"><i>682</i>&nbsp;                    newAttr = (Attr) attributes.removeItem(newAttr, false);</b>
+<b class="nc"><i>683</i>&nbsp;                    attributes.addItem(newAttr);</b>
+<i>684</i>&nbsp;                }
+<b class="nc"><i>685</i>&nbsp;            }</b>
+<i>686</i>&nbsp;            else {
+<i>687</i>&nbsp;                // This case may happen if user calls:
+<i>688</i>&nbsp;                //      elem.setAttribute(&quot;name&quot;, &quot;value&quot;);
+<i>689</i>&nbsp;                //      elem.setAttributeNS(null, &quot;name&quot;, &quot;value&quot;);
+<i>690</i>&nbsp;                // This case is not defined by the DOM spec, we choose
+<i>691</i>&nbsp;                // to create a new attribute in this case and remove an old one from the tree
+<i>692</i>&nbsp;                // note this might cause events to be propagated or user data to be lost
+<b class="nc"><i>693</i>&nbsp;                newAttr = new AttrNSImpl((CoreDocumentImpl)getOwnerDocument(), namespaceURI, qualifiedName, localName);</b>
+<b class="nc"><i>694</i>&nbsp;                attributes.setNamedItemNS(newAttr);</b>
+<i>695</i>&nbsp;            }
+<i>696</i>&nbsp;
+<b class="nc"><i>697</i>&nbsp;                        newAttr.setNodeValue(value);</b>
+<i>698</i>&nbsp;                }
+<i>699</i>&nbsp;
+<i>700</i>&nbsp;    } // setAttributeNS(String,String,String)
+<i>701</i>&nbsp;
+<i>702</i>&nbsp;
+<i>703</i>&nbsp;    /**
+<i>704</i>&nbsp;     * Introduced in DOM Level 2. &lt;p&gt;
+<i>705</i>&nbsp;     *
+<i>706</i>&nbsp;     * Removes an attribute by local name and namespace URI. If the removed
+<i>707</i>&nbsp;     * attribute has a default value it is immediately replaced.
+<i>708</i>&nbsp;     * The replacing attribute has the same namespace URI and local name,
+<i>709</i>&nbsp;     * as well as the original prefix.&lt;p&gt;
+<i>710</i>&nbsp;     *
+<i>711</i>&nbsp;     * @param namespaceURI  The namespace URI of the attribute to remove.
+<i>712</i>&nbsp;     *
+<i>713</i>&nbsp;     * @param localName     The local name of the attribute to remove.
+<i>714</i>&nbsp;     * @throws                  NO_MODIFICATION_ALLOWED_ERR: Raised if this
+<i>715</i>&nbsp;     *                          node is readonly.
+<i>716</i>&nbsp;     * @since WD-DOM-Level-2-19990923
+<i>717</i>&nbsp;     */
+<i>718</i>&nbsp;    public void removeAttributeNS(String namespaceURI, String localName) {
+<i>719</i>&nbsp;
+<b class="nc"><i>720</i>&nbsp;        if (ownerDocument.errorChecking &amp;&amp; isReadOnly()) {</b>
+<b class="nc"><i>721</i>&nbsp;            String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;NO_MODIFICATION_ALLOWED_ERR&quot;, null);</b>
+<b class="nc"><i>722</i>&nbsp;            throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR, msg);</b>
+<i>723</i>&nbsp;        }
+<i>724</i>&nbsp;
+<b class="nc"><i>725</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>726</i>&nbsp;            synchronizeData();</b>
+<i>727</i>&nbsp;        }
+<i>728</i>&nbsp;
+<b class="nc"><i>729</i>&nbsp;        if (attributes == null) {</b>
+<i>730</i>&nbsp;            return;
+<i>731</i>&nbsp;        }
+<i>732</i>&nbsp;
+<b class="nc"><i>733</i>&nbsp;        attributes.safeRemoveNamedItemNS(namespaceURI, localName);</b>
+<i>734</i>&nbsp;
+<i>735</i>&nbsp;    } // removeAttributeNS(String,String)
+<i>736</i>&nbsp;
+<i>737</i>&nbsp;    /**
+<i>738</i>&nbsp;     * Retrieves an Attr node by local name and namespace URI.
+<i>739</i>&nbsp;     *
+<i>740</i>&nbsp;     * @param namespaceURI  The namespace URI of the attribute to
+<i>741</i>&nbsp;     *                      retrieve.
+<i>742</i>&nbsp;     * @param localName     The local name of the attribute to retrieve.
+<i>743</i>&nbsp;     * @return Attr         The Attr node with the specified attribute
+<i>744</i>&nbsp;     *                      local name and namespace
+<i>745</i>&nbsp;     *                      URI or null if there is no such attribute.
+<i>746</i>&nbsp;     * @since WD-DOM-Level-2-19990923
+<i>747</i>&nbsp;     */
+<i>748</i>&nbsp;    public Attr getAttributeNodeNS(String namespaceURI, String localName){
+<i>749</i>&nbsp;
+<b class="nc"><i>750</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>751</i>&nbsp;            synchronizeData();</b>
+<i>752</i>&nbsp;        }
+<b class="nc"><i>753</i>&nbsp;        if (attributes == null) {</b>
+<b class="nc"><i>754</i>&nbsp;            return null;</b>
+<i>755</i>&nbsp;        }
+<b class="nc"><i>756</i>&nbsp;        return (Attr)attributes.getNamedItemNS(namespaceURI, localName);</b>
+<i>757</i>&nbsp;
+<i>758</i>&nbsp;    } // getAttributeNodeNS(String,String):Attr
+<i>759</i>&nbsp;
+<i>760</i>&nbsp;    /**
+<i>761</i>&nbsp;     * Introduced in DOM Level 2. &lt;p&gt;
+<i>762</i>&nbsp;     *
+<i>763</i>&nbsp;     * Adds a new attribute. If an attribute with that local name and
+<i>764</i>&nbsp;     * namespace URI is already present in the element, it is replaced
+<i>765</i>&nbsp;     * by the new one.
+<i>766</i>&nbsp;     *
+<i>767</i>&nbsp;     * @param Attr      The Attr node to add to the attribute list. When
+<i>768</i>&nbsp;     *                  the Node has no namespaceURI, this method behaves
+<i>769</i>&nbsp;     *                  like setAttributeNode.
+<i>770</i>&nbsp;     * @return Attr     If the newAttr attribute replaces an existing attribute
+<i>771</i>&nbsp;     *                  with the same local name and namespace URI, the *
+<i>772</i>&nbsp;     *                  previously existing Attr node is returned, otherwise
+<i>773</i>&nbsp;     *                  null is returned.
+<i>774</i>&nbsp;     * @throws          WRONG_DOCUMENT_ERR: Raised if newAttr
+<i>775</i>&nbsp;     *                  was created from a different document than the one that
+<i>776</i>&nbsp;     *                  created the element.
+<i>777</i>&nbsp;     *
+<i>778</i>&nbsp;     * @throws          NO_MODIFICATION_ALLOWED_ERR: Raised if
+<i>779</i>&nbsp;     *                  this node is readonly.
+<i>780</i>&nbsp;     *
+<i>781</i>&nbsp;     * @throws          INUSE_ATTRIBUTE_ERR: Raised if newAttr is
+<i>782</i>&nbsp;     *                  already an attribute of another Element object. The
+<i>783</i>&nbsp;     *                  DOM user must explicitly clone Attr nodes to re-use
+<i>784</i>&nbsp;     *                  them in other elements.
+<i>785</i>&nbsp;     * @since WD-DOM-Level-2-19990923
+<i>786</i>&nbsp;     */
+<i>787</i>&nbsp;    public Attr setAttributeNodeNS(Attr newAttr)
+<i>788</i>&nbsp;        throws DOMException
+<i>789</i>&nbsp;        {
+<i>790</i>&nbsp;
+<b class="nc"><i>791</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>792</i>&nbsp;            synchronizeData();</b>
+<i>793</i>&nbsp;        }
+<b class="nc"><i>794</i>&nbsp;        if (ownerDocument.errorChecking) {</b>
+<b class="nc"><i>795</i>&nbsp;            if (isReadOnly()) {</b>
+<b class="nc"><i>796</i>&nbsp;                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;NO_MODIFICATION_ALLOWED_ERR&quot;, null);</b>
+<b class="nc"><i>797</i>&nbsp;                    throw new DOMException(</b>
+<i>798</i>&nbsp;                                     DOMException.NO_MODIFICATION_ALLOWED_ERR,
+<i>799</i>&nbsp;                                     msg);
+<i>800</i>&nbsp;            }
+<b class="nc"><i>801</i>&nbsp;            if (newAttr.getOwnerDocument() != ownerDocument) {</b>
+<b class="nc"><i>802</i>&nbsp;                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;WRONG_DOCUMENT_ERR&quot;, null);</b>
+<b class="nc"><i>803</i>&nbsp;                throw new DOMException(DOMException.WRONG_DOCUMENT_ERR, msg);</b>
+<i>804</i>&nbsp;            }
+<i>805</i>&nbsp;        }
+<i>806</i>&nbsp;
+<b class="nc"><i>807</i>&nbsp;        if (attributes == null) {</b>
+<b class="nc"><i>808</i>&nbsp;            attributes = new AttributeMap(this, null);</b>
+<i>809</i>&nbsp;        }
+<i>810</i>&nbsp;        // This will throw INUSE if necessary
+<b class="nc"><i>811</i>&nbsp;        return (Attr) attributes.setNamedItemNS(newAttr);</b>
+<i>812</i>&nbsp;
+<i>813</i>&nbsp;    } // setAttributeNodeNS(Attr):Attr
+<i>814</i>&nbsp;
+<i>815</i>&nbsp;    /**
+<i>816</i>&nbsp;      * NON-DOM: sets attribute node for this element
+<i>817</i>&nbsp;      */
+<i>818</i>&nbsp;    protected int setXercesAttributeNode (Attr attr){
+<i>819</i>&nbsp;
+<b class="nc"><i>820</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>821</i>&nbsp;            synchronizeData();</b>
+<i>822</i>&nbsp;        }
+<i>823</i>&nbsp;
+<b class="nc"><i>824</i>&nbsp;        if (attributes == null) {</b>
+<b class="nc"><i>825</i>&nbsp;            attributes = new AttributeMap(this, null);</b>
+<i>826</i>&nbsp;        }
+<b class="nc"><i>827</i>&nbsp;        return attributes.addItem(attr);</b>
+<i>828</i>&nbsp;
+<i>829</i>&nbsp;    }
+<i>830</i>&nbsp;
+<i>831</i>&nbsp;    /**
+<i>832</i>&nbsp;      * NON-DOM: get inded of an attribute
+<i>833</i>&nbsp;      */
+<i>834</i>&nbsp;    protected int getXercesAttribute(String namespaceURI, String localName){
+<i>835</i>&nbsp;
+<b class="nc"><i>836</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>837</i>&nbsp;            synchronizeData();</b>
+<i>838</i>&nbsp;        }
+<b class="nc"><i>839</i>&nbsp;        if (attributes == null) {</b>
+<b class="nc"><i>840</i>&nbsp;            return -1;</b>
+<i>841</i>&nbsp;        }
+<b class="nc"><i>842</i>&nbsp;        return attributes.getNamedItemIndex(namespaceURI, localName);</b>
+<i>843</i>&nbsp;
+<i>844</i>&nbsp;    }
+<i>845</i>&nbsp;
+<i>846</i>&nbsp;    /**
+<i>847</i>&nbsp;     * Introduced in DOM Level 2.
+<i>848</i>&nbsp;     */
+<i>849</i>&nbsp;    public boolean hasAttributes() {
+<b class="nc"><i>850</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>851</i>&nbsp;            synchronizeData();</b>
+<i>852</i>&nbsp;        }
+<b class="nc"><i>853</i>&nbsp;        return (attributes != null &amp;&amp; attributes.getLength() != 0);</b>
+<i>854</i>&nbsp;    }
+<i>855</i>&nbsp;
+<i>856</i>&nbsp;    /**
+<i>857</i>&nbsp;     * Introduced in DOM Level 2.
+<i>858</i>&nbsp;     */
+<i>859</i>&nbsp;    public boolean hasAttribute(String name) {
+<b class="nc"><i>860</i>&nbsp;        return getAttributeNode(name) != null;</b>
+<i>861</i>&nbsp;    }
+<i>862</i>&nbsp;
+<i>863</i>&nbsp;    /**
+<i>864</i>&nbsp;     * Introduced in DOM Level 2.
+<i>865</i>&nbsp;     */
+<i>866</i>&nbsp;    public boolean hasAttributeNS(String namespaceURI, String localName) {
+<b class="nc"><i>867</i>&nbsp;        return getAttributeNodeNS(namespaceURI, localName) != null;</b>
+<i>868</i>&nbsp;    }
+<i>869</i>&nbsp;
+<i>870</i>&nbsp;    /**
+<i>871</i>&nbsp;     * Introduced in DOM Level 2. &lt;p&gt;
+<i>872</i>&nbsp;     *
+<i>873</i>&nbsp;     * Returns a NodeList of all the Elements with a given local name and
+<i>874</i>&nbsp;     * namespace URI in the order in which they would be encountered in a
+<i>875</i>&nbsp;     * preorder traversal of the Document tree, starting from this node.
+<i>876</i>&nbsp;     *
+<i>877</i>&nbsp;     * @param namespaceURI The namespace URI of the elements to match
+<i>878</i>&nbsp;     *                     on. The special value &quot;*&quot; matches all
+<i>879</i>&nbsp;     *                     namespaces. When it is null or an empty
+<i>880</i>&nbsp;     *                     string, this method behaves like
+<i>881</i>&nbsp;     *                     getElementsByTagName.
+<i>882</i>&nbsp;     * @param localName    The local name of the elements to match on.
+<i>883</i>&nbsp;     *                     The special value &quot;*&quot; matches all local names.
+<i>884</i>&nbsp;     * @return NodeList    A new NodeList object containing all the matched
+<i>885</i>&nbsp;     *                     Elements.
+<i>886</i>&nbsp;     * @since WD-DOM-Level-2-19990923
+<i>887</i>&nbsp;     */
+<i>888</i>&nbsp;    public NodeList getElementsByTagNameNS(String namespaceURI,
+<i>889</i>&nbsp;                                           String localName) {
+<b class="nc"><i>890</i>&nbsp;        return new DeepNodeListImpl(this, namespaceURI, localName);</b>
+<i>891</i>&nbsp;    }
+<i>892</i>&nbsp;
+<i>893</i>&nbsp;    /**
+<i>894</i>&nbsp;     * DOM Level 3 WD- Experimental.
+<i>895</i>&nbsp;     * Override inherited behavior from NodeImpl and ParentNode to check on
+<i>896</i>&nbsp;     * attributes
+<i>897</i>&nbsp;     */
+<i>898</i>&nbsp;    public boolean isEqualNode(Node arg) {
+<b class="nc"><i>899</i>&nbsp;        if (!super.isEqualNode(arg)) {</b>
+<b class="nc"><i>900</i>&nbsp;            return false;</b>
+<i>901</i>&nbsp;        }
+<b class="nc"><i>902</i>&nbsp;        boolean hasAttrs = hasAttributes();</b>
+<b class="nc"><i>903</i>&nbsp;        if (hasAttrs != ((Element) arg).hasAttributes()) {</b>
+<b class="nc"><i>904</i>&nbsp;            return false;</b>
+<i>905</i>&nbsp;        }
+<b class="nc"><i>906</i>&nbsp;        if (hasAttrs) {</b>
+<b class="nc"><i>907</i>&nbsp;            NamedNodeMap map1 = getAttributes();</b>
+<b class="nc"><i>908</i>&nbsp;            NamedNodeMap map2 = ((Element) arg).getAttributes();</b>
+<b class="nc"><i>909</i>&nbsp;            int len = map1.getLength();</b>
+<b class="nc"><i>910</i>&nbsp;            if (len != map2.getLength()) {</b>
+<b class="nc"><i>911</i>&nbsp;                return false;</b>
+<i>912</i>&nbsp;            }
+<b class="nc"><i>913</i>&nbsp;            for (int i = 0; i &lt; len; i++) {</b>
+<b class="nc"><i>914</i>&nbsp;                Node n1 = map1.item(i);</b>
+<b class="nc"><i>915</i>&nbsp;                if (n1.getLocalName() == null) { // DOM Level 1 Node</b>
+<b class="nc"><i>916</i>&nbsp;                    Node n2 = map2.getNamedItem(n1.getNodeName());</b>
+<b class="nc"><i>917</i>&nbsp;                    if (n2 == null || !((NodeImpl) n1).isEqualNode(n2)) {</b>
+<b class="nc"><i>918</i>&nbsp;                        return false;</b>
+<i>919</i>&nbsp;                    }
+<b class="nc"><i>920</i>&nbsp;                }</b>
+<i>921</i>&nbsp;                else {
+<b class="nc"><i>922</i>&nbsp;                    Node n2 = map2.getNamedItemNS(n1.getNamespaceURI(),</b>
+<b class="nc"><i>923</i>&nbsp;                                                  n1.getLocalName());</b>
+<b class="nc"><i>924</i>&nbsp;                    if (n2 == null || !((NodeImpl) n1).isEqualNode(n2)) {</b>
+<b class="nc"><i>925</i>&nbsp;                        return false;</b>
+<i>926</i>&nbsp;                    }
+<i>927</i>&nbsp;                }
+<i>928</i>&nbsp;            }
+<i>929</i>&nbsp;        }
+<b class="nc"><i>930</i>&nbsp;        return true;</b>
+<i>931</i>&nbsp;    }
+<i>932</i>&nbsp;
+<i>933</i>&nbsp;    /**
+<i>934</i>&nbsp;     * DOM Level 3: register the given attribute node as an ID attribute
+<i>935</i>&nbsp;     */
+<i>936</i>&nbsp;    public void setIdAttributeNode(Attr at, boolean makeId) {
+<b class="nc"><i>937</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>938</i>&nbsp;            synchronizeData();</b>
+<i>939</i>&nbsp;        }
+<b class="nc"><i>940</i>&nbsp;        if (ownerDocument.errorChecking) {</b>
+<b class="nc"><i>941</i>&nbsp;            if (isReadOnly()) {</b>
+<b class="nc"><i>942</i>&nbsp;                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;NO_MODIFICATION_ALLOWED_ERR&quot;, null);</b>
+<b class="nc"><i>943</i>&nbsp;                throw new DOMException(</b>
+<i>944</i>&nbsp;                                     DOMException.NO_MODIFICATION_ALLOWED_ERR,
+<i>945</i>&nbsp;                                     msg);
+<i>946</i>&nbsp;            }
+<i>947</i>&nbsp;
+<b class="nc"><i>948</i>&nbsp;            if (at.getOwnerElement() != this) {</b>
+<b class="nc"><i>949</i>&nbsp;                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;NOT_FOUND_ERR&quot;, null);</b>
+<b class="nc"><i>950</i>&nbsp;                throw new DOMException(DOMException.NOT_FOUND_ERR, msg);</b>
+<i>951</i>&nbsp;            }
+<i>952</i>&nbsp;        }
+<b class="nc"><i>953</i>&nbsp;        ((AttrImpl) at).isIdAttribute(makeId);</b>
+<b class="nc"><i>954</i>&nbsp;        if (!makeId) {</b>
+<b class="nc"><i>955</i>&nbsp;            ownerDocument.removeIdentifier(at.getValue());</b>
+<i>956</i>&nbsp;        }
+<i>957</i>&nbsp;        else {
+<b class="nc"><i>958</i>&nbsp;            ownerDocument.putIdentifier(at.getValue(), this);</b>
+<i>959</i>&nbsp;        }
+<i>960</i>&nbsp;    }
+<i>961</i>&nbsp;
+<i>962</i>&nbsp;    /**
+<i>963</i>&nbsp;     * DOM Level 3: register the given attribute node as an ID attribute
+<i>964</i>&nbsp;     */
+<i>965</i>&nbsp;    public void setIdAttribute(String name, boolean makeId) {
+<b class="nc"><i>966</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>967</i>&nbsp;            synchronizeData();</b>
+<i>968</i>&nbsp;        }
+<b class="nc"><i>969</i>&nbsp;        Attr at = getAttributeNode(name);</b>
+<i>970</i>&nbsp;
+<b class="nc"><i>971</i>&nbsp;                if( at == null){</b>
+<b class="nc"><i>972</i>&nbsp;                String msg = DOMMessageFormatter.formatMessage(</b>
+<i>973</i>&nbsp;                                                                        DOMMessageFormatter.DOM_DOMAIN,
+<i>974</i>&nbsp;                                                                        &quot;NOT_FOUND_ERR&quot;, null);
+<b class="nc"><i>975</i>&nbsp;            throw new DOMException(DOMException.NOT_FOUND_ERR, msg);</b>
+<i>976</i>&nbsp;                }
+<i>977</i>&nbsp;
+<b class="nc"><i>978</i>&nbsp;                if (ownerDocument.errorChecking) {</b>
+<b class="nc"><i>979</i>&nbsp;            if (isReadOnly()) {</b>
+<b class="nc"><i>980</i>&nbsp;                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;NO_MODIFICATION_ALLOWED_ERR&quot;, null);</b>
+<b class="nc"><i>981</i>&nbsp;                throw new DOMException(</b>
+<i>982</i>&nbsp;                                     DOMException.NO_MODIFICATION_ALLOWED_ERR,
+<i>983</i>&nbsp;                                     msg);
+<i>984</i>&nbsp;            }
+<i>985</i>&nbsp;
+<b class="nc"><i>986</i>&nbsp;            if (at.getOwnerElement() != this) {</b>
+<b class="nc"><i>987</i>&nbsp;                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;NOT_FOUND_ERR&quot;, null);</b>
+<b class="nc"><i>988</i>&nbsp;                throw new DOMException(DOMException.NOT_FOUND_ERR, msg);</b>
+<i>989</i>&nbsp;            }
+<i>990</i>&nbsp;        }
+<i>991</i>&nbsp;
+<b class="nc"><i>992</i>&nbsp;        ((AttrImpl) at).isIdAttribute(makeId);</b>
+<b class="nc"><i>993</i>&nbsp;        if (!makeId) {</b>
+<b class="nc"><i>994</i>&nbsp;            ownerDocument.removeIdentifier(at.getValue());</b>
+<i>995</i>&nbsp;        }
+<i>996</i>&nbsp;        else {
+<b class="nc"><i>997</i>&nbsp;            ownerDocument.putIdentifier(at.getValue(), this);</b>
+<i>998</i>&nbsp;        }
+<i>999</i>&nbsp;    }
+<i>1000</i>&nbsp;
+<i>1001</i>&nbsp;    /**
+<i>1002</i>&nbsp;     * DOM Level 3: register the given attribute node as an ID attribute
+<i>1003</i>&nbsp;     */
+<i>1004</i>&nbsp;    public void setIdAttributeNS(String namespaceURI, String localName,
+<i>1005</i>&nbsp;                                    boolean makeId) {
+<b class="nc"><i>1006</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>1007</i>&nbsp;            synchronizeData();</b>
+<i>1008</i>&nbsp;        }
+<i>1009</i>&nbsp;        //if namespace uri is empty string, set it to &#39;null&#39;
+<b class="nc"><i>1010</i>&nbsp;        if (namespaceURI != null) {</b>
+<b class="nc"><i>1011</i>&nbsp;            namespaceURI = (namespaceURI.length() == 0)? null : namespaceURI;</b>
+<i>1012</i>&nbsp;        }
+<b class="nc"><i>1013</i>&nbsp;        Attr at = getAttributeNodeNS(namespaceURI, localName);</b>
+<i>1014</i>&nbsp;
+<b class="nc"><i>1015</i>&nbsp;                if( at == null){</b>
+<b class="nc"><i>1016</i>&nbsp;                String msg = DOMMessageFormatter.formatMessage(</b>
+<i>1017</i>&nbsp;                                                                        DOMMessageFormatter.DOM_DOMAIN,
+<i>1018</i>&nbsp;                                                                        &quot;NOT_FOUND_ERR&quot;, null);
+<b class="nc"><i>1019</i>&nbsp;            throw new DOMException(DOMException.NOT_FOUND_ERR, msg);</b>
+<i>1020</i>&nbsp;                }
+<i>1021</i>&nbsp;
+<b class="nc"><i>1022</i>&nbsp;                if (ownerDocument.errorChecking) {</b>
+<b class="nc"><i>1023</i>&nbsp;            if (isReadOnly()) {</b>
+<b class="nc"><i>1024</i>&nbsp;                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;NO_MODIFICATION_ALLOWED_ERR&quot;, null);</b>
+<b class="nc"><i>1025</i>&nbsp;                throw new DOMException(</b>
+<i>1026</i>&nbsp;                                     DOMException.NO_MODIFICATION_ALLOWED_ERR,
+<i>1027</i>&nbsp;                                     msg);
+<i>1028</i>&nbsp;            }
+<i>1029</i>&nbsp;
+<b class="nc"><i>1030</i>&nbsp;            if (at.getOwnerElement() != this) {</b>
+<b class="nc"><i>1031</i>&nbsp;                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, &quot;NOT_FOUND_ERR&quot;, null);</b>
+<b class="nc"><i>1032</i>&nbsp;                throw new DOMException(DOMException.NOT_FOUND_ERR, msg);</b>
+<i>1033</i>&nbsp;            }
+<i>1034</i>&nbsp;        }
+<b class="nc"><i>1035</i>&nbsp;        ((AttrImpl) at).isIdAttribute(makeId);</b>
+<b class="nc"><i>1036</i>&nbsp;        if (!makeId) {</b>
+<b class="nc"><i>1037</i>&nbsp;            ownerDocument.removeIdentifier(at.getValue());</b>
+<i>1038</i>&nbsp;        }
+<i>1039</i>&nbsp;        else {
+<b class="nc"><i>1040</i>&nbsp;            ownerDocument.putIdentifier(at.getValue(), this);</b>
+<i>1041</i>&nbsp;        }
+<i>1042</i>&nbsp;   }
+<i>1043</i>&nbsp;
+<i>1044</i>&nbsp;    /**
+<i>1045</i>&nbsp;     * @see org.w3c.dom.TypeInfo#getTypeName()
+<i>1046</i>&nbsp;     */
+<i>1047</i>&nbsp;     public String getTypeName() {
+<b class="nc"><i>1048</i>&nbsp;        return null;</b>
+<i>1049</i>&nbsp;     }
+<i>1050</i>&nbsp;
+<i>1051</i>&nbsp;    /**
+<i>1052</i>&nbsp;     * @see org.w3c.dom.TypeInfo#getTypeNamespace()
+<i>1053</i>&nbsp;     */
+<i>1054</i>&nbsp;    public String getTypeNamespace() {
+<b class="nc"><i>1055</i>&nbsp;        return null;</b>
+<i>1056</i>&nbsp;    }
+<i>1057</i>&nbsp;
+<i>1058</i>&nbsp;    /**
+<i>1059</i>&nbsp;     * Introduced in DOM Level 3. &lt;p&gt;
+<i>1060</i>&nbsp;     * Checks if a type is derived from another by restriction. See:
+<i>1061</i>&nbsp;     * http://www.w3.org/TR/DOM-Level-3-Core/core.html#TypeInfo-isDerivedFrom
+<i>1062</i>&nbsp;     *
+<i>1063</i>&nbsp;     * @param ancestorNS
+<i>1064</i>&nbsp;     *        The namspace of the ancestor type declaration
+<i>1065</i>&nbsp;     * @param ancestorName
+<i>1066</i>&nbsp;     *        The name of the ancestor type declaration
+<i>1067</i>&nbsp;     * @param type
+<i>1068</i>&nbsp;     *        The reference type definition
+<i>1069</i>&nbsp;     *
+<i>1070</i>&nbsp;     * @return boolean True if the type is derived by restriciton for the
+<i>1071</i>&nbsp;     *         reference type
+<i>1072</i>&nbsp;     */
+<i>1073</i>&nbsp;    public boolean isDerivedFrom(String typeNamespaceArg,
+<i>1074</i>&nbsp;                                 String typeNameArg,
+<i>1075</i>&nbsp;                                 int derivationMethod) {
+<i>1076</i>&nbsp;
+<b class="nc"><i>1077</i>&nbsp;        return false;</b>
+<i>1078</i>&nbsp;    }
+<i>1079</i>&nbsp;
+<i>1080</i>&nbsp;        /**
+<i>1081</i>&nbsp;         * Method getSchemaTypeInfo.
+<i>1082</i>&nbsp;         * @return TypeInfo
+<i>1083</i>&nbsp;         */
+<i>1084</i>&nbsp;    public TypeInfo getSchemaTypeInfo(){
+<b class="nc"><i>1085</i>&nbsp;        if(needsSyncData()) {</b>
+<b class="nc"><i>1086</i>&nbsp;            synchronizeData();</b>
+<i>1087</i>&nbsp;        }
+<b class="nc"><i>1088</i>&nbsp;        return this;</b>
+<i>1089</i>&nbsp;    }
+<i>1090</i>&nbsp;
+<i>1091</i>&nbsp;    //
+<i>1092</i>&nbsp;    // Public methods
+<i>1093</i>&nbsp;    //
+<i>1094</i>&nbsp;
+<i>1095</i>&nbsp;    /**
+<i>1096</i>&nbsp;     * NON-DOM: Subclassed to flip the attributes&#39; readonly switch as well.
+<i>1097</i>&nbsp;     * @see NodeImpl#setReadOnly
+<i>1098</i>&nbsp;     */
+<i>1099</i>&nbsp;    public void setReadOnly(boolean readOnly, boolean deep) {
+<b class="nc"><i>1100</i>&nbsp;        super.setReadOnly(readOnly,deep);</b>
+<b class="nc"><i>1101</i>&nbsp;        if (attributes != null) {</b>
+<b class="nc"><i>1102</i>&nbsp;            attributes.setReadOnly(readOnly,true);</b>
+<i>1103</i>&nbsp;        }
+<i>1104</i>&nbsp;    }
+<i>1105</i>&nbsp;
+<i>1106</i>&nbsp;
+<i>1107</i>&nbsp;
+<i>1108</i>&nbsp;    //
+<i>1109</i>&nbsp;    // Protected methods
+<i>1110</i>&nbsp;    //
+<i>1111</i>&nbsp;
+<i>1112</i>&nbsp;    /** Synchronizes the data (name and value) for fast nodes. */
+<i>1113</i>&nbsp;    protected void synchronizeData() {
+<i>1114</i>&nbsp;
+<i>1115</i>&nbsp;        // no need to sync in the future
+<b class="nc"><i>1116</i>&nbsp;        needsSyncData(false);</b>
+<i>1117</i>&nbsp;
+<i>1118</i>&nbsp;        // we don&#39;t want to generate any event for this so turn them off
+<b class="nc"><i>1119</i>&nbsp;        boolean orig = ownerDocument.getMutationEvents();</b>
+<b class="nc"><i>1120</i>&nbsp;        ownerDocument.setMutationEvents(false);</b>
+<i>1121</i>&nbsp;
+<i>1122</i>&nbsp;        // attributes
+<b class="nc"><i>1123</i>&nbsp;        setupDefaultAttributes();</b>
+<i>1124</i>&nbsp;
+<i>1125</i>&nbsp;        // set mutation events flag back to its original value
+<b class="nc"><i>1126</i>&nbsp;        ownerDocument.setMutationEvents(orig);</b>
+<i>1127</i>&nbsp;
+<i>1128</i>&nbsp;    } // synchronizeData()
+<i>1129</i>&nbsp;
+<i>1130</i>&nbsp;    // support for DOM Level 3 renameNode method
+<i>1131</i>&nbsp;    // @param el The element from which to take the attributes
+<i>1132</i>&nbsp;    void moveSpecifiedAttributes(ElementImpl el) {
+<b class="nc"><i>1133</i>&nbsp;        if (needsSyncData()) {</b>
+<b class="nc"><i>1134</i>&nbsp;            synchronizeData();</b>
+<i>1135</i>&nbsp;        }
+<b class="nc"><i>1136</i>&nbsp;        if (el.hasAttributes()) {</b>
+<b class="nc"><i>1137</i>&nbsp;            if (attributes == null) {</b>
+<b class="nc"><i>1138</i>&nbsp;                attributes = new AttributeMap(this, null);</b>
+<i>1139</i>&nbsp;            }
+<b class="nc"><i>1140</i>&nbsp;            attributes.moveSpecifiedAttributes(el.attributes);</b>
+<i>1141</i>&nbsp;        }
+<i>1142</i>&nbsp;    }
+<i>1143</i>&nbsp;
+<i>1144</i>&nbsp;    /** Setup the default attributes. */
+<i>1145</i>&nbsp;    protected void setupDefaultAttributes() {
+<b class="nc"><i>1146</i>&nbsp;        NamedNodeMapImpl defaults = getDefaultAttributes();</b>
+<b class="nc"><i>1147</i>&nbsp;        if (defaults != null) {</b>
+<b class="nc"><i>1148</i>&nbsp;            attributes = new AttributeMap(this, defaults);</b>
+<i>1149</i>&nbsp;        }
+<i>1150</i>&nbsp;    }
+<i>1151</i>&nbsp;
+<i>1152</i>&nbsp;    /** Reconcile default attributes. */
+<i>1153</i>&nbsp;    protected void reconcileDefaultAttributes() {
+<b class="nc"><i>1154</i>&nbsp;        if (attributes != null) {</b>
+<b class="nc"><i>1155</i>&nbsp;            NamedNodeMapImpl defaults = getDefaultAttributes();</b>
+<b class="nc"><i>1156</i>&nbsp;            attributes.reconcileDefaults(defaults);</b>
+<i>1157</i>&nbsp;        }
+<i>1158</i>&nbsp;    }
+<i>1159</i>&nbsp;
+<i>1160</i>&nbsp;    /** Get the default attributes. */
+<i>1161</i>&nbsp;    protected NamedNodeMapImpl getDefaultAttributes() {
+<i>1162</i>&nbsp;
+<b class="nc"><i>1163</i>&nbsp;        DocumentTypeImpl doctype =</b>
+<b class="nc"><i>1164</i>&nbsp;            (DocumentTypeImpl) ownerDocument.getDoctype();</b>
+<b class="nc"><i>1165</i>&nbsp;        if (doctype == null) {</b>
+<b class="nc"><i>1166</i>&nbsp;            return null;</b>
+<i>1167</i>&nbsp;        }
+<b class="nc"><i>1168</i>&nbsp;        ElementDefinitionImpl eldef =</b>
+<b class="nc"><i>1169</i>&nbsp;            (ElementDefinitionImpl)doctype.getElements()</b>
+<b class="nc"><i>1170</i>&nbsp;                                               .getNamedItem(getNodeName());</b>
+<b class="nc"><i>1171</i>&nbsp;        if (eldef == null) {</b>
+<b class="nc"><i>1172</i>&nbsp;            return null;</b>
+<i>1173</i>&nbsp;        }
+<b class="nc"><i>1174</i>&nbsp;        return (NamedNodeMapImpl) eldef.getAttributes();</b>
+<i>1175</i>&nbsp;
+<i>1176</i>&nbsp;    } // getDefaultAttributes()
+<i>1177</i>&nbsp;
+<i>1178</i>&nbsp;} // class ElementImpl
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

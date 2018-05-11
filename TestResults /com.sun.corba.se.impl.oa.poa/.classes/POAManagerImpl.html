@@ -1,0 +1,656 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: POAManagerImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.oa.poa</a> ]
+</div>
+
+<h1>Coverage Summary for Class: POAManagerImpl (com.sun.corba.se.impl.oa.poa)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">POAManagerImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 136)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">POAManagerImpl$POAManagerDeactivator</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 29)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 165)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 1997, 2004, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.oa.poa;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.util.Iterator;
+<i>29</i>&nbsp;import java.util.Collections;
+<i>30</i>&nbsp;import java.util.Set;
+<i>31</i>&nbsp;import java.util.HashSet;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import org.omg.CORBA.LocalObject;
+<i>34</i>&nbsp;import org.omg.CORBA.CompletionStatus ;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import org.omg.PortableServer.POAManager;
+<i>37</i>&nbsp;import org.omg.PortableServer.POAManagerPackage.State;
+<i>38</i>&nbsp;import org.omg.PortableServer.POA;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import org.omg.PortableInterceptor.DISCARDING ;
+<i>41</i>&nbsp;import org.omg.PortableInterceptor.ACTIVE ;
+<i>42</i>&nbsp;import org.omg.PortableInterceptor.HOLDING ;
+<i>43</i>&nbsp;import org.omg.PortableInterceptor.INACTIVE ;
+<i>44</i>&nbsp;import org.omg.PortableInterceptor.NON_EXISTENT ;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;import com.sun.corba.se.spi.protocol.PIHandler ;
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;import com.sun.corba.se.impl.logging.POASystemException ;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBUtility ;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;/** POAManagerImpl is the implementation of the POAManager interface.
+<i>53</i>&nbsp; *  Its public methods are activate(), hold_requests(), discard_requests()
+<i>54</i>&nbsp; *  and deactivate().
+<i>55</i>&nbsp; */
+<i>56</i>&nbsp;
+<b class="nc"><i>57</i>&nbsp;public class POAManagerImpl extends org.omg.CORBA.LocalObject implements</b>
+<i>58</i>&nbsp;    POAManager
+<i>59</i>&nbsp;{
+<i>60</i>&nbsp;    private final POAFactory factory ;  // factory which contains global state
+<i>61</i>&nbsp;                                        // for all POAManagers
+<i>62</i>&nbsp;    private PIHandler pihandler ;       // for adapterManagerStateChanged
+<i>63</i>&nbsp;    private State state;                // current state of this POAManager
+<b class="nc"><i>64</i>&nbsp;    private Set poas = new HashSet(4) ; // all poas controlled by this POAManager</b>
+<b class="nc"><i>65</i>&nbsp;    private int nInvocations=0;         // Number of invocations in progress</b>
+<b class="nc"><i>66</i>&nbsp;    private int nWaiters=0;             // Number of threads waiting for</b>
+<i>67</i>&nbsp;                                        // invocations to complete
+<b class="nc"><i>68</i>&nbsp;    private int myId = 0 ;              // This POAManager&#39;s ID</b>
+<i>69</i>&nbsp;    private boolean debug ;
+<i>70</i>&nbsp;    private boolean explicitStateChange ; // initially false, set true as soon as
+<i>71</i>&nbsp;                                        // one of activate, hold_request,
+<i>72</i>&nbsp;                                        // discard_request, or deactivate is called.
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    private String stateToString( State state )
+<i>75</i>&nbsp;    {
+<b class="nc"><i>76</i>&nbsp;        switch (state.value()) {</b>
+<b class="nc"><i>77</i>&nbsp;            case State._HOLDING : return &quot;State[HOLDING]&quot; ;</b>
+<b class="nc"><i>78</i>&nbsp;            case State._ACTIVE : return &quot;State[ACTIVE]&quot; ;</b>
+<b class="nc"><i>79</i>&nbsp;            case State._DISCARDING : return &quot;State[DISCARDING]&quot; ;</b>
+<b class="nc"><i>80</i>&nbsp;            case State._INACTIVE : return &quot;State[INACTIVE]&quot; ;</b>
+<i>81</i>&nbsp;        }
+<i>82</i>&nbsp;
+<b class="nc"><i>83</i>&nbsp;        return &quot;State[UNKNOWN]&quot; ;</b>
+<i>84</i>&nbsp;    }
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    public String toString()
+<i>87</i>&nbsp;    {
+<b class="nc"><i>88</i>&nbsp;        return &quot;POAManagerImpl[myId=&quot; + myId +</b>
+<b class="nc"><i>89</i>&nbsp;            &quot; state=&quot; + stateToString(state) +</b>
+<i>90</i>&nbsp;            &quot; nInvocations=&quot; + nInvocations +
+<i>91</i>&nbsp;            &quot; nWaiters=&quot; + nWaiters + &quot;]&quot; ;
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    POAFactory getFactory()
+<i>95</i>&nbsp;    {
+<b class="nc"><i>96</i>&nbsp;        return factory ;</b>
+<i>97</i>&nbsp;    }
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    PIHandler getPIHandler()
+<i>100</i>&nbsp;    {
+<b class="nc"><i>101</i>&nbsp;        return pihandler ;</b>
+<i>102</i>&nbsp;    }
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    private void countedWait()
+<i>105</i>&nbsp;    {
+<i>106</i>&nbsp;        try {
+<b class="nc"><i>107</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>108</i>&nbsp;                ORBUtility.dprint( this, &quot;Calling countedWait on POAManager &quot; +</b>
+<i>109</i>&nbsp;                    this + &quot; nWaiters=&quot; + nWaiters ) ;
+<i>110</i>&nbsp;            }
+<i>111</i>&nbsp;
+<b class="nc"><i>112</i>&nbsp;            nWaiters++ ;</b>
+<b class="nc"><i>113</i>&nbsp;            wait();</b>
+<b class="nc"><i>114</i>&nbsp;        } catch ( java.lang.InterruptedException ex ) {</b>
+<i>115</i>&nbsp;            // NOP
+<i>116</i>&nbsp;        } finally {
+<b class="nc"><i>117</i>&nbsp;            nWaiters-- ;</b>
+<i>118</i>&nbsp;
+<b class="nc"><i>119</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>120</i>&nbsp;                ORBUtility.dprint( this, &quot;Exiting countedWait on POAManager &quot; +</b>
+<i>121</i>&nbsp;                    this + &quot; nWaiters=&quot; + nWaiters ) ;
+<i>122</i>&nbsp;            }
+<i>123</i>&nbsp;        }
+<i>124</i>&nbsp;    }
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;    private void notifyWaiters()
+<i>127</i>&nbsp;    {
+<b class="nc"><i>128</i>&nbsp;        if (debug) {</b>
+<b class="nc"><i>129</i>&nbsp;            ORBUtility.dprint( this, &quot;Calling notifyWaiters on POAManager &quot; +</b>
+<i>130</i>&nbsp;                this + &quot; nWaiters=&quot; + nWaiters ) ;
+<i>131</i>&nbsp;        }
+<i>132</i>&nbsp;
+<b class="nc"><i>133</i>&nbsp;        if (nWaiters &gt;0)</b>
+<b class="nc"><i>134</i>&nbsp;            notifyAll() ;</b>
+<i>135</i>&nbsp;    }
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;    public int getManagerId()
+<i>138</i>&nbsp;    {
+<b class="nc"><i>139</i>&nbsp;        return myId ;</b>
+<i>140</i>&nbsp;    }
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;    POAManagerImpl( POAFactory factory, PIHandler pihandler )
+<b class="nc"><i>143</i>&nbsp;    {</b>
+<b class="nc"><i>144</i>&nbsp;        this.factory = factory ;</b>
+<b class="nc"><i>145</i>&nbsp;        factory.addPoaManager(this);</b>
+<b class="nc"><i>146</i>&nbsp;        this.pihandler = pihandler ;</b>
+<b class="nc"><i>147</i>&nbsp;        myId = factory.newPOAManagerId() ;</b>
+<b class="nc"><i>148</i>&nbsp;        state = State.HOLDING;</b>
+<b class="nc"><i>149</i>&nbsp;        debug = factory.getORB().poaDebugFlag ;</b>
+<b class="nc"><i>150</i>&nbsp;        explicitStateChange = false ;</b>
+<i>151</i>&nbsp;
+<b class="nc"><i>152</i>&nbsp;        if (debug) {</b>
+<b class="nc"><i>153</i>&nbsp;            ORBUtility.dprint( this, &quot;Creating POAManagerImpl &quot; + this ) ;</b>
+<i>154</i>&nbsp;        }
+<i>155</i>&nbsp;    }
+<i>156</i>&nbsp;
+<i>157</i>&nbsp;    synchronized void addPOA(POA poa)
+<i>158</i>&nbsp;    {
+<i>159</i>&nbsp;        // XXX This is probably not the correct error
+<b class="nc"><i>160</i>&nbsp;        if (state.value() == State._INACTIVE) {</b>
+<b class="nc"><i>161</i>&nbsp;            POASystemException wrapper = factory.getWrapper();</b>
+<b class="nc"><i>162</i>&nbsp;            throw wrapper.addPoaInactive( CompletionStatus.COMPLETED_NO ) ;</b>
+<i>163</i>&nbsp;        }
+<i>164</i>&nbsp;
+<b class="nc"><i>165</i>&nbsp;        poas.add(poa);</b>
+<i>166</i>&nbsp;    }
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;    synchronized void removePOA(POA poa)
+<i>169</i>&nbsp;    {
+<b class="nc"><i>170</i>&nbsp;        poas.remove(poa);</b>
+<b class="nc"><i>171</i>&nbsp;        if ( poas.isEmpty() ) {</b>
+<b class="nc"><i>172</i>&nbsp;            factory.removePoaManager(this);</b>
+<i>173</i>&nbsp;        }
+<i>174</i>&nbsp;    }
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    public short getORTState()
+<i>177</i>&nbsp;    {
+<b class="nc"><i>178</i>&nbsp;        switch (state.value()) {</b>
+<b class="nc"><i>179</i>&nbsp;            case State._HOLDING    : return HOLDING.value ;</b>
+<b class="nc"><i>180</i>&nbsp;            case State._ACTIVE     : return ACTIVE.value ;</b>
+<b class="nc"><i>181</i>&nbsp;            case State._INACTIVE   : return INACTIVE.value ;</b>
+<b class="nc"><i>182</i>&nbsp;            case State._DISCARDING : return DISCARDING.value ;</b>
+<b class="nc"><i>183</i>&nbsp;            default                : return NON_EXISTENT.value ;</b>
+<i>184</i>&nbsp;        }
+<i>185</i>&nbsp;    }
+<i>186</i>&nbsp;
+<i>187</i>&nbsp;/****************************************************************************
+<i>188</i>&nbsp; * The following four public methods are used to change the POAManager&#39;s state.
+<i>189</i>&nbsp; *
+<i>190</i>&nbsp; * A note on the design of synchronization code:
+<i>191</i>&nbsp; * There are 4 places where a thread would need to wait for a condition:
+<i>192</i>&nbsp; *      - in hold_requests, discard_requests, deactivate, enter
+<i>193</i>&nbsp; * There are 5 places where a thread notifies a condition:
+<i>194</i>&nbsp; *      - in activate, hold_requests, discard_requests, deactivate, exit
+<i>195</i>&nbsp; *
+<i>196</i>&nbsp; * Since each notify needs to awaken waiters in several of the 4 places,
+<i>197</i>&nbsp; * and since wait() in Java has the nice property of releasing the lock
+<i>198</i>&nbsp; * on its monitor before sleeping, it seemed simplest to have just one
+<i>199</i>&nbsp; * monitor object: &quot;this&quot;. Thus all notifies will awaken all waiters.
+<i>200</i>&nbsp; * On waking up, each waiter verifies that the condition it was waiting
+<i>201</i>&nbsp; * for is satisfied, otherwise it goes back into a wait().
+<i>202</i>&nbsp; *
+<i>203</i>&nbsp; ****************************************************************************/
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;    /**
+<i>206</i>&nbsp;     * &lt;code&gt;activate&lt;/code&gt;
+<i>207</i>&nbsp;     * &lt;b&gt;Spec: pages 3-14 thru 3-18&lt;/b&gt;
+<i>208</i>&nbsp;     */
+<i>209</i>&nbsp;    public synchronized void activate()
+<i>210</i>&nbsp;        throws org.omg.PortableServer.POAManagerPackage.AdapterInactive
+<i>211</i>&nbsp;    {
+<b class="nc"><i>212</i>&nbsp;        explicitStateChange = true ;</b>
+<i>213</i>&nbsp;
+<b class="nc"><i>214</i>&nbsp;        if (debug) {</b>
+<b class="nc"><i>215</i>&nbsp;            ORBUtility.dprint( this,</b>
+<i>216</i>&nbsp;                &quot;Calling activate on POAManager &quot; + this ) ;
+<i>217</i>&nbsp;        }
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;        try {
+<b class="nc"><i>220</i>&nbsp;            if ( state.value() == State._INACTIVE )</b>
+<b class="nc"><i>221</i>&nbsp;                throw new org.omg.PortableServer.POAManagerPackage.AdapterInactive();</b>
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;            // set the state to ACTIVE
+<b class="nc"><i>224</i>&nbsp;            state = State.ACTIVE;</b>
+<i>225</i>&nbsp;
+<b class="nc"><i>226</i>&nbsp;            pihandler.adapterManagerStateChanged( myId, getORTState() ) ;</b>
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;            // Notify any invocations that were waiting because the previous
+<i>229</i>&nbsp;            // state was HOLDING, as well as notify any threads that were waiting
+<i>230</i>&nbsp;            // inside hold_requests() or discard_requests().
+<b class="nc"><i>231</i>&nbsp;            notifyWaiters();</b>
+<i>232</i>&nbsp;        } finally {
+<b class="nc"><i>233</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>234</i>&nbsp;                ORBUtility.dprint( this,</b>
+<i>235</i>&nbsp;                    &quot;Exiting activate on POAManager &quot; + this ) ;
+<i>236</i>&nbsp;            }
+<i>237</i>&nbsp;        }
+<i>238</i>&nbsp;    }
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;    /**
+<i>241</i>&nbsp;     * &lt;code&gt;hold_requests&lt;/code&gt;
+<i>242</i>&nbsp;     * &lt;b&gt;Spec: pages 3-14 thru 3-18&lt;/b&gt;
+<i>243</i>&nbsp;     */
+<i>244</i>&nbsp;    public synchronized void hold_requests(boolean wait_for_completion)
+<i>245</i>&nbsp;        throws org.omg.PortableServer.POAManagerPackage.AdapterInactive
+<i>246</i>&nbsp;    {
+<b class="nc"><i>247</i>&nbsp;        explicitStateChange = true ;</b>
+<i>248</i>&nbsp;
+<b class="nc"><i>249</i>&nbsp;        if (debug) {</b>
+<b class="nc"><i>250</i>&nbsp;            ORBUtility.dprint( this,</b>
+<i>251</i>&nbsp;                &quot;Calling hold_requests on POAManager &quot; + this ) ;
+<i>252</i>&nbsp;        }
+<i>253</i>&nbsp;
+<i>254</i>&nbsp;        try {
+<b class="nc"><i>255</i>&nbsp;            if ( state.value() == State._INACTIVE )</b>
+<b class="nc"><i>256</i>&nbsp;                throw new org.omg.PortableServer.POAManagerPackage.AdapterInactive();</b>
+<i>257</i>&nbsp;            // set the state to HOLDING
+<b class="nc"><i>258</i>&nbsp;            state  = State.HOLDING;</b>
+<i>259</i>&nbsp;
+<b class="nc"><i>260</i>&nbsp;            pihandler.adapterManagerStateChanged( myId, getORTState() ) ;</b>
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;            // Notify any threads that were waiting in the wait() inside
+<i>263</i>&nbsp;            // discard_requests. This will cause discard_requests to return
+<i>264</i>&nbsp;            // (which is in conformance with the spec).
+<b class="nc"><i>265</i>&nbsp;            notifyWaiters();</b>
+<i>266</i>&nbsp;
+<b class="nc"><i>267</i>&nbsp;            if ( wait_for_completion ) {</b>
+<b class="nc"><i>268</i>&nbsp;                while ( state.value() == State._HOLDING &amp;&amp; nInvocations &gt; 0 ) {</b>
+<b class="nc"><i>269</i>&nbsp;                    countedWait() ;</b>
+<i>270</i>&nbsp;                }
+<i>271</i>&nbsp;            }
+<i>272</i>&nbsp;        } finally {
+<b class="nc"><i>273</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>274</i>&nbsp;                ORBUtility.dprint( this,</b>
+<i>275</i>&nbsp;                    &quot;Exiting hold_requests on POAManager &quot; + this ) ;
+<i>276</i>&nbsp;            }
+<i>277</i>&nbsp;        }
+<i>278</i>&nbsp;    }
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;    /**
+<i>281</i>&nbsp;     * &lt;code&gt;discard_requests&lt;/code&gt;
+<i>282</i>&nbsp;     * &lt;b&gt;Spec: pages 3-14 thru 3-18&lt;/b&gt;
+<i>283</i>&nbsp;     */
+<i>284</i>&nbsp;    public synchronized void discard_requests(boolean wait_for_completion)
+<i>285</i>&nbsp;        throws org.omg.PortableServer.POAManagerPackage.AdapterInactive
+<i>286</i>&nbsp;    {
+<b class="nc"><i>287</i>&nbsp;        explicitStateChange = true ;</b>
+<i>288</i>&nbsp;
+<b class="nc"><i>289</i>&nbsp;        if (debug) {</b>
+<b class="nc"><i>290</i>&nbsp;            ORBUtility.dprint( this,</b>
+<i>291</i>&nbsp;                &quot;Calling hold_requests on POAManager &quot; + this ) ;
+<i>292</i>&nbsp;        }
+<i>293</i>&nbsp;
+<i>294</i>&nbsp;        try {
+<b class="nc"><i>295</i>&nbsp;            if ( state.value() == State._INACTIVE )</b>
+<b class="nc"><i>296</i>&nbsp;                throw new org.omg.PortableServer.POAManagerPackage.AdapterInactive();</b>
+<i>297</i>&nbsp;
+<i>298</i>&nbsp;            // set the state to DISCARDING
+<b class="nc"><i>299</i>&nbsp;            state = State.DISCARDING;</b>
+<i>300</i>&nbsp;
+<b class="nc"><i>301</i>&nbsp;            pihandler.adapterManagerStateChanged( myId, getORTState() ) ;</b>
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;            // Notify any invocations that were waiting because the previous
+<i>304</i>&nbsp;            // state was HOLDING. Those invocations will henceforth be rejected with
+<i>305</i>&nbsp;            // a TRANSIENT exception. Also notify any threads that were waiting
+<i>306</i>&nbsp;            // inside hold_requests().
+<b class="nc"><i>307</i>&nbsp;            notifyWaiters();</b>
+<i>308</i>&nbsp;
+<b class="nc"><i>309</i>&nbsp;            if ( wait_for_completion ) {</b>
+<b class="nc"><i>310</i>&nbsp;                while ( state.value() == State._DISCARDING &amp;&amp; nInvocations &gt; 0 ) {</b>
+<b class="nc"><i>311</i>&nbsp;                    countedWait() ;</b>
+<i>312</i>&nbsp;                }
+<i>313</i>&nbsp;            }
+<i>314</i>&nbsp;        } finally {
+<b class="nc"><i>315</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>316</i>&nbsp;                ORBUtility.dprint( this,</b>
+<i>317</i>&nbsp;                    &quot;Exiting hold_requests on POAManager &quot; + this ) ;
+<i>318</i>&nbsp;            }
+<i>319</i>&nbsp;        }
+<i>320</i>&nbsp;    }
+<i>321</i>&nbsp;
+<i>322</i>&nbsp;    /**
+<i>323</i>&nbsp;     * &lt;code&gt;deactivate&lt;/code&gt;
+<i>324</i>&nbsp;     * &lt;b&gt;Spec: pages 3-14 thru 3-18&lt;/b&gt;
+<i>325</i>&nbsp;     * Note: INACTIVE is a permanent state.
+<i>326</i>&nbsp;     */
+<i>327</i>&nbsp;
+<i>328</i>&nbsp;    public void deactivate(boolean etherealize_objects, boolean wait_for_completion)
+<i>329</i>&nbsp;        throws org.omg.PortableServer.POAManagerPackage.AdapterInactive
+<i>330</i>&nbsp;    {
+<b class="nc"><i>331</i>&nbsp;        explicitStateChange = true ;</b>
+<i>332</i>&nbsp;
+<i>333</i>&nbsp;        try {
+<b class="nc"><i>334</i>&nbsp;            synchronized( this ) {</b>
+<b class="nc"><i>335</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>336</i>&nbsp;                    ORBUtility.dprint( this,</b>
+<i>337</i>&nbsp;                        &quot;Calling deactivate on POAManager &quot; + this ) ;
+<i>338</i>&nbsp;                }
+<i>339</i>&nbsp;
+<b class="nc"><i>340</i>&nbsp;                if ( state.value() == State._INACTIVE )</b>
+<b class="nc"><i>341</i>&nbsp;                    throw new org.omg.PortableServer.POAManagerPackage.AdapterInactive();</b>
+<i>342</i>&nbsp;
+<b class="nc"><i>343</i>&nbsp;                state = State.INACTIVE;</b>
+<i>344</i>&nbsp;
+<b class="nc"><i>345</i>&nbsp;                pihandler.adapterManagerStateChanged( myId, getORTState() ) ;</b>
+<i>346</i>&nbsp;
+<i>347</i>&nbsp;                // Notify any invocations that were waiting because the previous
+<i>348</i>&nbsp;                // state was HOLDING. Those invocations will then be rejected with
+<i>349</i>&nbsp;                // an OBJ_ADAPTER exception. Also notify any threads that were waiting
+<i>350</i>&nbsp;                // inside hold_requests() or discard_requests().
+<b class="nc"><i>351</i>&nbsp;                notifyWaiters();</b>
+<b class="nc"><i>352</i>&nbsp;            }</b>
+<i>353</i>&nbsp;
+<b class="nc"><i>354</i>&nbsp;            POAManagerDeactivator deactivator = new POAManagerDeactivator( this,</b>
+<i>355</i>&nbsp;                etherealize_objects, debug ) ;
+<i>356</i>&nbsp;
+<b class="nc"><i>357</i>&nbsp;            if (wait_for_completion)</b>
+<b class="nc"><i>358</i>&nbsp;                deactivator.run() ;</b>
+<i>359</i>&nbsp;            else {
+<b class="nc"><i>360</i>&nbsp;                Thread thr = new Thread(deactivator) ;</b>
+<b class="nc"><i>361</i>&nbsp;                thr.start() ;</b>
+<i>362</i>&nbsp;            }
+<i>363</i>&nbsp;        } finally {
+<b class="nc"><i>364</i>&nbsp;            synchronized(this) {</b>
+<b class="nc"><i>365</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>366</i>&nbsp;                    ORBUtility.dprint( this,</b>
+<i>367</i>&nbsp;                        &quot;Exiting deactivate on POAManager &quot; + this ) ;
+<i>368</i>&nbsp;                }
+<b class="nc"><i>369</i>&nbsp;            }</b>
+<b class="nc"><i>370</i>&nbsp;        }</b>
+<i>371</i>&nbsp;    }
+<i>372</i>&nbsp;
+<i>373</i>&nbsp;    private class POAManagerDeactivator implements Runnable
+<i>374</i>&nbsp;    {
+<i>375</i>&nbsp;        private boolean etherealize_objects ;
+<i>376</i>&nbsp;        private POAManagerImpl pmi ;
+<i>377</i>&nbsp;        private boolean debug ;
+<i>378</i>&nbsp;
+<i>379</i>&nbsp;        POAManagerDeactivator( POAManagerImpl pmi, boolean etherealize_objects,
+<i>380</i>&nbsp;            boolean debug )
+<b class="nc"><i>381</i>&nbsp;        {</b>
+<b class="nc"><i>382</i>&nbsp;            this.etherealize_objects = etherealize_objects ;</b>
+<b class="nc"><i>383</i>&nbsp;            this.pmi = pmi ;</b>
+<b class="nc"><i>384</i>&nbsp;            this.debug = debug ;</b>
+<i>385</i>&nbsp;        }
+<i>386</i>&nbsp;
+<i>387</i>&nbsp;        public void run()
+<i>388</i>&nbsp;        {
+<i>389</i>&nbsp;            try {
+<b class="nc"><i>390</i>&nbsp;                synchronized (pmi) {</b>
+<b class="nc"><i>391</i>&nbsp;                    if (debug) {</b>
+<b class="nc"><i>392</i>&nbsp;                        ORBUtility.dprint( this,</b>
+<i>393</i>&nbsp;                            &quot;Calling run with etherealize_objects=&quot; +
+<i>394</i>&nbsp;                            etherealize_objects + &quot; pmi=&quot; + pmi ) ;
+<i>395</i>&nbsp;                    }
+<i>396</i>&nbsp;
+<b class="nc"><i>397</i>&nbsp;                    while ( pmi.nInvocations &gt; 0 ) {</b>
+<b class="nc"><i>398</i>&nbsp;                        countedWait() ;</b>
+<i>399</i>&nbsp;                    }
+<b class="nc"><i>400</i>&nbsp;                }</b>
+<i>401</i>&nbsp;
+<b class="nc"><i>402</i>&nbsp;                if (etherealize_objects) {</b>
+<b class="nc"><i>403</i>&nbsp;                    Iterator iterator = null ;</b>
+<i>404</i>&nbsp;
+<i>405</i>&nbsp;                    // Make sure that poas cannot change while we copy it!
+<b class="nc"><i>406</i>&nbsp;                    synchronized (pmi) {</b>
+<b class="nc"><i>407</i>&nbsp;                        if (debug) {</b>
+<b class="nc"><i>408</i>&nbsp;                            ORBUtility.dprint( this,</b>
+<i>409</i>&nbsp;                                &quot;run: Preparing to etherealize with pmi=&quot; +
+<i>410</i>&nbsp;                                pmi ) ;
+<i>411</i>&nbsp;                        }
+<i>412</i>&nbsp;
+<b class="nc"><i>413</i>&nbsp;                        iterator = (new HashSet(pmi.poas)).iterator();</b>
+<b class="nc"><i>414</i>&nbsp;                    }</b>
+<i>415</i>&nbsp;
+<b class="nc"><i>416</i>&nbsp;                    while (iterator.hasNext()) {</b>
+<i>417</i>&nbsp;                        // Each RETAIN+USE_SERVANT_MGR poa
+<i>418</i>&nbsp;                        // must call etherealize for all its objects
+<b class="nc"><i>419</i>&nbsp;                        ((POAImpl)iterator.next()).etherealizeAll();</b>
+<i>420</i>&nbsp;                    }
+<i>421</i>&nbsp;
+<b class="nc"><i>422</i>&nbsp;                    synchronized (pmi) {</b>
+<b class="nc"><i>423</i>&nbsp;                        if (debug) {</b>
+<b class="nc"><i>424</i>&nbsp;                            ORBUtility.dprint( this,</b>
+<i>425</i>&nbsp;                                &quot;run: removing POAManager and clearing poas &quot; +
+<i>426</i>&nbsp;                                &quot;with pmi=&quot; + pmi ) ;
+<i>427</i>&nbsp;                        }
+<i>428</i>&nbsp;
+<b class="nc"><i>429</i>&nbsp;                        factory.removePoaManager(pmi);</b>
+<b class="nc"><i>430</i>&nbsp;                        poas.clear();</b>
+<b class="nc"><i>431</i>&nbsp;                    }</b>
+<i>432</i>&nbsp;                }
+<i>433</i>&nbsp;            } finally {
+<b class="nc"><i>434</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>435</i>&nbsp;                    synchronized (pmi) {</b>
+<b class="nc"><i>436</i>&nbsp;                        ORBUtility.dprint( this, &quot;Exiting run&quot; ) ;</b>
+<b class="nc"><i>437</i>&nbsp;                    }</b>
+<i>438</i>&nbsp;                }
+<i>439</i>&nbsp;            }
+<i>440</i>&nbsp;        }
+<i>441</i>&nbsp;    }
+<i>442</i>&nbsp;
+<i>443</i>&nbsp;    /**
+<i>444</i>&nbsp;     * Added according to the spec CORBA V2.3; this returns the
+<i>445</i>&nbsp;     * state of the POAManager
+<i>446</i>&nbsp;     */
+<i>447</i>&nbsp;
+<i>448</i>&nbsp;    public org.omg.PortableServer.POAManagerPackage.State get_state () {
+<b class="nc"><i>449</i>&nbsp;        return state;</b>
+<i>450</i>&nbsp;    }
+<i>451</i>&nbsp;
+<i>452</i>&nbsp;/****************************************************************************
+<i>453</i>&nbsp; * The following methods are used on the invocation path.
+<i>454</i>&nbsp; ****************************************************************************/
+<i>455</i>&nbsp;
+<i>456</i>&nbsp;    // called from POA.find_POA before calling
+<i>457</i>&nbsp;    // AdapterActivator.unknown_adapter.
+<i>458</i>&nbsp;    synchronized void checkIfActive()
+<i>459</i>&nbsp;    {
+<i>460</i>&nbsp;        try {
+<b class="nc"><i>461</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>462</i>&nbsp;                ORBUtility.dprint( this,</b>
+<i>463</i>&nbsp;                    &quot;Calling checkIfActive for POAManagerImpl &quot; + this ) ;
+<i>464</i>&nbsp;            }
+<i>465</i>&nbsp;
+<b class="nc"><i>466</i>&nbsp;            checkState();</b>
+<i>467</i>&nbsp;        } finally {
+<b class="nc"><i>468</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>469</i>&nbsp;                ORBUtility.dprint( this,</b>
+<i>470</i>&nbsp;                    &quot;Exiting checkIfActive for POAManagerImpl &quot; + this ) ;
+<i>471</i>&nbsp;            }
+<i>472</i>&nbsp;        }
+<i>473</i>&nbsp;    }
+<i>474</i>&nbsp;
+<i>475</i>&nbsp;    private void checkState()
+<i>476</i>&nbsp;    {
+<b class="nc"><i>477</i>&nbsp;        while ( state.value() != State._ACTIVE ) {</b>
+<b class="nc"><i>478</i>&nbsp;            switch ( state.value() ) {</b>
+<i>479</i>&nbsp;                case State._HOLDING:
+<b class="nc"><i>480</i>&nbsp;                    while ( state.value() == State._HOLDING ) {</b>
+<b class="nc"><i>481</i>&nbsp;                        countedWait() ;</b>
+<i>482</i>&nbsp;                    }
+<i>483</i>&nbsp;                    break;
+<i>484</i>&nbsp;
+<i>485</i>&nbsp;                case State._DISCARDING:
+<b class="nc"><i>486</i>&nbsp;                    throw factory.getWrapper().poaDiscarding() ;</b>
+<i>487</i>&nbsp;
+<i>488</i>&nbsp;                case State._INACTIVE:
+<b class="nc"><i>489</i>&nbsp;                    throw factory.getWrapper().poaInactive() ;</b>
+<i>490</i>&nbsp;            }
+<i>491</i>&nbsp;        }
+<i>492</i>&nbsp;    }
+<i>493</i>&nbsp;
+<i>494</i>&nbsp;    synchronized void enter()
+<i>495</i>&nbsp;    {
+<i>496</i>&nbsp;        try {
+<b class="nc"><i>497</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>498</i>&nbsp;                ORBUtility.dprint( this,</b>
+<i>499</i>&nbsp;                    &quot;Calling enter for POAManagerImpl &quot; + this ) ;
+<i>500</i>&nbsp;            }
+<i>501</i>&nbsp;
+<b class="nc"><i>502</i>&nbsp;            checkState();</b>
+<b class="nc"><i>503</i>&nbsp;            nInvocations++;</b>
+<i>504</i>&nbsp;        } finally {
+<b class="nc"><i>505</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>506</i>&nbsp;                ORBUtility.dprint( this,</b>
+<i>507</i>&nbsp;                    &quot;Exiting enter for POAManagerImpl &quot; + this ) ;
+<i>508</i>&nbsp;            }
+<i>509</i>&nbsp;        }
+<i>510</i>&nbsp;    }
+<i>511</i>&nbsp;
+<i>512</i>&nbsp;    synchronized void exit()
+<i>513</i>&nbsp;    {
+<i>514</i>&nbsp;        try {
+<b class="nc"><i>515</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>516</i>&nbsp;                ORBUtility.dprint( this,</b>
+<i>517</i>&nbsp;                    &quot;Calling exit for POAManagerImpl &quot; + this ) ;
+<i>518</i>&nbsp;            }
+<i>519</i>&nbsp;
+<b class="nc"><i>520</i>&nbsp;            nInvocations--;</b>
+<i>521</i>&nbsp;
+<b class="nc"><i>522</i>&nbsp;            if ( nInvocations == 0 ) {</b>
+<i>523</i>&nbsp;                // This notifies any threads that were in the
+<i>524</i>&nbsp;                // wait_for_completion loop in hold/discard/deactivate().
+<b class="nc"><i>525</i>&nbsp;                notifyWaiters();</b>
+<i>526</i>&nbsp;            }
+<i>527</i>&nbsp;        } finally {
+<b class="nc"><i>528</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>529</i>&nbsp;                ORBUtility.dprint( this,</b>
+<i>530</i>&nbsp;                    &quot;Exiting exit for POAManagerImpl &quot; + this ) ;
+<i>531</i>&nbsp;            }
+<i>532</i>&nbsp;        }
+<i>533</i>&nbsp;    }
+<i>534</i>&nbsp;
+<i>535</i>&nbsp;    /** Activate the POAManager if no explicit state change has ever been
+<i>536</i>&nbsp;     * previously invoked.
+<i>537</i>&nbsp;     */
+<i>538</i>&nbsp;    public synchronized void implicitActivation()
+<i>539</i>&nbsp;    {
+<b class="nc"><i>540</i>&nbsp;        if (!explicitStateChange)</b>
+<i>541</i>&nbsp;            try {
+<b class="nc"><i>542</i>&nbsp;                activate() ;</b>
+<b class="nc"><i>543</i>&nbsp;            } catch (org.omg.PortableServer.POAManagerPackage.AdapterInactive ai) {</b>
+<i>544</i>&nbsp;                // ignore the exception.
+<b class="nc"><i>545</i>&nbsp;            }</b>
+<i>546</i>&nbsp;    }
+<i>547</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

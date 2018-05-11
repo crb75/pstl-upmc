@@ -1,0 +1,210 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: FilteredAbsoluteLocationPath</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler</a> ]
+</div>
+
+<h1>Coverage Summary for Class: FilteredAbsoluteLocationPath (com.sun.org.apache.xalan.internal.xsltc.compiler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FilteredAbsoluteLocationPath</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 34)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: FilteredAbsoluteLocationPath.java,v 1.2.4.1 2005/09/12 10:26:50 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ALOAD;
+<i>27</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ASTORE;
+<i>28</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+<i>29</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKEINTERFACE;
+<i>30</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKESPECIAL;
+<i>31</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>32</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.LocalVariableGen;
+<i>33</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.NEW;
+<i>34</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
+<i>35</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+<i>36</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.NodeType;
+<i>37</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
+<i>38</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+<i>39</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;/**
+<i>42</i>&nbsp; * @author G. Todd Miller
+<i>43</i>&nbsp; */
+<i>44</i>&nbsp;final class FilteredAbsoluteLocationPath extends Expression {
+<i>45</i>&nbsp;    private Expression _path;   // may be null
+<i>46</i>&nbsp;
+<b class="nc"><i>47</i>&nbsp;    public FilteredAbsoluteLocationPath() {</b>
+<b class="nc"><i>48</i>&nbsp;        _path = null;</b>
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;
+<b class="nc"><i>51</i>&nbsp;    public FilteredAbsoluteLocationPath(Expression path) {</b>
+<b class="nc"><i>52</i>&nbsp;        _path = path;</b>
+<b class="nc"><i>53</i>&nbsp;        if (path != null) {</b>
+<b class="nc"><i>54</i>&nbsp;            _path.setParent(this);</b>
+<i>55</i>&nbsp;        }
+<i>56</i>&nbsp;    }
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    public void setParser(Parser parser) {
+<b class="nc"><i>59</i>&nbsp;        super.setParser(parser);</b>
+<b class="nc"><i>60</i>&nbsp;        if (_path != null) {</b>
+<b class="nc"><i>61</i>&nbsp;            _path.setParser(parser);</b>
+<i>62</i>&nbsp;        }
+<i>63</i>&nbsp;    }
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    public Expression getPath() {
+<b class="nc"><i>66</i>&nbsp;        return(_path);</b>
+<i>67</i>&nbsp;    }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    public String toString() {
+<b class="nc"><i>70</i>&nbsp;        return &quot;FilteredAbsoluteLocationPath(&quot; +</b>
+<b class="nc"><i>71</i>&nbsp;            (_path != null ? _path.toString() : &quot;null&quot;) + &#39;)&#39;;</b>
+<i>72</i>&nbsp;    }
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+<b class="nc"><i>75</i>&nbsp;        if (_path != null) {</b>
+<b class="nc"><i>76</i>&nbsp;            final Type ptype = _path.typeCheck(stable);</b>
+<b class="nc"><i>77</i>&nbsp;            if (ptype instanceof NodeType) {            // promote to node-set</b>
+<b class="nc"><i>78</i>&nbsp;                _path = new CastExpr(_path, Type.NodeSet);</b>
+<i>79</i>&nbsp;            }
+<i>80</i>&nbsp;        }
+<b class="nc"><i>81</i>&nbsp;        return _type = Type.NodeSet;</b>
+<i>82</i>&nbsp;    }
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+<b class="nc"><i>85</i>&nbsp;        final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>86</i>&nbsp;        final InstructionList il = methodGen.getInstructionList();</b>
+<b class="nc"><i>87</i>&nbsp;        if (_path != null) {</b>
+<b class="nc"><i>88</i>&nbsp;            final int initDFI = cpg.addMethodref(DUP_FILTERED_ITERATOR,</b>
+<i>89</i>&nbsp;                                                &quot;&lt;init&gt;&quot;,
+<i>90</i>&nbsp;                                                &quot;(&quot;
+<i>91</i>&nbsp;                                                + NODE_ITERATOR_SIG
+<i>92</i>&nbsp;                                                + &quot;)V&quot;);
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;            // Backwards branches are prohibited if an uninitialized object is
+<i>95</i>&nbsp;            // on the stack by section 4.9.4 of the JVM Specification, 2nd Ed.
+<i>96</i>&nbsp;            // We don&#39;t know whether this code might contain backwards branches,
+<i>97</i>&nbsp;            // so we mustn&#39;t create the new object until after we&#39;ve created
+<i>98</i>&nbsp;            // the suspect arguments to its constructor.  Instead we calculate
+<i>99</i>&nbsp;            // the values of the arguments to the constructor first, store them
+<i>100</i>&nbsp;            // in temporary variables, create the object and reload the
+<i>101</i>&nbsp;            // arguments from the temporaries to avoid the problem.
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;            // Compile relative path iterator(s)
+<b class="nc"><i>104</i>&nbsp;            LocalVariableGen pathTemp =</b>
+<b class="nc"><i>105</i>&nbsp;               methodGen.addLocalVariable(&quot;filtered_absolute_location_path_tmp&quot;,</b>
+<b class="nc"><i>106</i>&nbsp;                                          Util.getJCRefType(NODE_ITERATOR_SIG),</b>
+<i>107</i>&nbsp;                                          null, null);
+<b class="nc"><i>108</i>&nbsp;            _path.translate(classGen, methodGen);</b>
+<b class="nc"><i>109</i>&nbsp;            pathTemp.setStart(il.append(new ASTORE(pathTemp.getIndex())));</b>
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;            // Create new Dup Filter Iterator
+<b class="nc"><i>112</i>&nbsp;            il.append(new NEW(cpg.addClass(DUP_FILTERED_ITERATOR)));</b>
+<b class="nc"><i>113</i>&nbsp;            il.append(DUP);</b>
+<b class="nc"><i>114</i>&nbsp;            pathTemp.setEnd(il.append(new ALOAD(pathTemp.getIndex())));</b>
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;            // Initialize Dup Filter Iterator with iterator from the stack
+<b class="nc"><i>117</i>&nbsp;            il.append(new INVOKESPECIAL(initDFI));</b>
+<b class="nc"><i>118</i>&nbsp;        }</b>
+<i>119</i>&nbsp;        else {
+<b class="nc"><i>120</i>&nbsp;            final int git = cpg.addInterfaceMethodref(DOM_INTF,</b>
+<i>121</i>&nbsp;                                                      &quot;getIterator&quot;,
+<i>122</i>&nbsp;                                                      &quot;()&quot;+NODE_ITERATOR_SIG);
+<b class="nc"><i>123</i>&nbsp;            il.append(methodGen.loadDOM());</b>
+<b class="nc"><i>124</i>&nbsp;            il.append(new INVOKEINTERFACE(git, 1));</b>
+<i>125</i>&nbsp;        }
+<i>126</i>&nbsp;    }
+<i>127</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,859 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: KeepAlive</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.javax.rmi.CORBA</a> ]
+</div>
+
+<h1>Coverage Summary for Class: KeepAlive (com.sun.corba.se.impl.javax.rmi.CORBA)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">KeepAlive</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 1999, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;/*
+<i>26</i>&nbsp; * Licensed Materials - Property of IBM
+<i>27</i>&nbsp; * RMI-IIOP v1.0
+<i>28</i>&nbsp; * Copyright IBM Corp. 1998 1999  All Rights Reserved
+<i>29</i>&nbsp; *
+<i>30</i>&nbsp; */
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;package com.sun.corba.se.impl.javax.rmi.CORBA; // Util (sed marker, don&#39;t remove!)
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import java.rmi.RemoteException;
+<i>35</i>&nbsp;import java.rmi.UnexpectedException;
+<i>36</i>&nbsp;import java.rmi.MarshalException;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import java.rmi.server.RMIClassLoader;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import java.util.Hashtable;
+<i>41</i>&nbsp;import java.util.Enumeration;
+<i>42</i>&nbsp;import java.util.Properties;
+<i>43</i>&nbsp;import java.util.Map;
+<i>44</i>&nbsp;import java.util.WeakHashMap;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;import java.io.Serializable;
+<i>47</i>&nbsp;import java.io.NotSerializableException;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;import java.lang.reflect.Constructor;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;import javax.rmi.CORBA.ValueHandler;
+<i>52</i>&nbsp;import javax.rmi.CORBA.Tie;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;import java.security.AccessController;
+<i>55</i>&nbsp;import java.security.PrivilegedAction;
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;import java.rmi.MarshalException;
+<i>58</i>&nbsp;import java.rmi.NoSuchObjectException;
+<i>59</i>&nbsp;import java.rmi.AccessException;
+<i>60</i>&nbsp;import java.rmi.Remote;
+<i>61</i>&nbsp;import java.rmi.ServerError;
+<i>62</i>&nbsp;import java.rmi.ServerException;
+<i>63</i>&nbsp;import java.rmi.ServerRuntimeException;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;import javax.transaction.TransactionRequiredException;
+<i>66</i>&nbsp;import javax.transaction.TransactionRolledbackException;
+<i>67</i>&nbsp;import javax.transaction.InvalidTransactionException;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;import org.omg.CORBA.SystemException;
+<i>70</i>&nbsp;import org.omg.CORBA.Any;
+<i>71</i>&nbsp;import org.omg.CORBA.TypeCode;
+<i>72</i>&nbsp;import org.omg.CORBA.COMM_FAILURE;
+<i>73</i>&nbsp;import org.omg.CORBA.BAD_PARAM;
+<i>74</i>&nbsp;import org.omg.CORBA.INV_OBJREF;
+<i>75</i>&nbsp;import org.omg.CORBA.NO_PERMISSION;
+<i>76</i>&nbsp;import org.omg.CORBA.MARSHAL;
+<i>77</i>&nbsp;import org.omg.CORBA.OBJECT_NOT_EXIST;
+<i>78</i>&nbsp;import org.omg.CORBA.TRANSACTION_REQUIRED;
+<i>79</i>&nbsp;import org.omg.CORBA.TRANSACTION_ROLLEDBACK;
+<i>80</i>&nbsp;import org.omg.CORBA.INVALID_TRANSACTION;
+<i>81</i>&nbsp;import org.omg.CORBA.BAD_OPERATION;
+<i>82</i>&nbsp;import org.omg.CORBA.ACTIVITY_REQUIRED;
+<i>83</i>&nbsp;import org.omg.CORBA.ACTIVITY_COMPLETED;
+<i>84</i>&nbsp;import org.omg.CORBA.INVALID_ACTIVITY;
+<i>85</i>&nbsp;import org.omg.CORBA.CompletionStatus;
+<i>86</i>&nbsp;import org.omg.CORBA.TCKind;
+<i>87</i>&nbsp;import org.omg.CORBA.portable.UnknownException;
+<i>88</i>&nbsp;import org.omg.CORBA.portable.InputStream;
+<i>89</i>&nbsp;import org.omg.CORBA.portable.OutputStream;
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;// This class must be able to function with non-Sun ORBs.
+<i>92</i>&nbsp;// This means that any of the following com.sun.corba classes
+<i>93</i>&nbsp;// must only occur in contexts that also handle the non-Sun case.
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;import com.sun.corba.se.pept.transport.ContactInfoList ;
+<i>96</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>97</i>&nbsp;import com.sun.corba.se.spi.orb.ORBVersionFactory;
+<i>98</i>&nbsp;import com.sun.corba.se.spi.protocol.CorbaClientDelegate;
+<i>99</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaContactInfoList ;
+<i>100</i>&nbsp;import com.sun.corba.se.spi.protocol.LocalClientRequestDispatcher ;
+<i>101</i>&nbsp;import com.sun.corba.se.spi.copyobject.ReflectiveCopyException ;
+<i>102</i>&nbsp;import com.sun.corba.se.spi.copyobject.CopierManager ;
+<i>103</i>&nbsp;import com.sun.corba.se.spi.copyobject.ObjectCopierFactory ;
+<i>104</i>&nbsp;import com.sun.corba.se.spi.copyobject.ObjectCopier ;
+<i>105</i>&nbsp;import com.sun.corba.se.impl.io.ValueHandlerImpl;
+<i>106</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBConstants;
+<i>107</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBUtility;
+<i>108</i>&nbsp;import com.sun.corba.se.impl.logging.OMGSystemException;
+<i>109</i>&nbsp;import com.sun.corba.se.impl.util.Utility;
+<i>110</i>&nbsp;import com.sun.corba.se.impl.util.IdentityHashtable;
+<i>111</i>&nbsp;import com.sun.corba.se.impl.util.JDKBridge;
+<i>112</i>&nbsp;import com.sun.corba.se.impl.logging.UtilSystemException;
+<i>113</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains;
+<i>114</i>&nbsp;import sun.corba.SharedSecrets;
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;/**
+<i>117</i>&nbsp; * Provides utility methods that can be used by stubs and ties to
+<i>118</i>&nbsp; * perform common operations.
+<i>119</i>&nbsp; */
+<i>120</i>&nbsp;public class Util implements javax.rmi.CORBA.UtilDelegate
+<i>121</i>&nbsp;{
+<i>122</i>&nbsp;    // Runs as long as there are exportedServants
+<i>123</i>&nbsp;    private static KeepAlive keepAlive = null;
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    // Maps targets to ties.
+<i>126</i>&nbsp;    private static IdentityHashtable exportedServants = new IdentityHashtable();
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;    private static final ValueHandlerImpl valueHandlerSingleton =
+<i>129</i>&nbsp;        SharedSecrets.getJavaCorbaAccess().newValueHandlerImpl();
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;    private UtilSystemException utilWrapper = UtilSystemException.get(
+<i>132</i>&nbsp;                                                  CORBALogDomains.RPC_ENCODING);
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;    private static Util instance = null;
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;    public Util() {
+<i>137</i>&nbsp;        setInstance(this);
+<i>138</i>&nbsp;    }
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;    private static void setInstance( Util util ) {
+<i>141</i>&nbsp;        assert instance == null : &quot;Instance already defined&quot;;
+<i>142</i>&nbsp;        instance = util;
+<i>143</i>&nbsp;    }
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;    public static Util getInstance() {
+<i>146</i>&nbsp;        return instance;
+<i>147</i>&nbsp;    }
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    public static boolean isInstanceDefined() {
+<i>150</i>&nbsp;        return instance != null;
+<i>151</i>&nbsp;    }
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;    // Used by TOAFactory.shutdown to unexport all targets for this
+<i>154</i>&nbsp;    // particular ORB.  This happens during ORB shutdown.
+<i>155</i>&nbsp;    public void unregisterTargetsForORB(org.omg.CORBA.ORB orb)
+<i>156</i>&nbsp;    {
+<i>157</i>&nbsp;        for (Enumeration e = exportedServants.keys(); e.hasMoreElements(); )
+<i>158</i>&nbsp;        {
+<i>159</i>&nbsp;            java.lang.Object key = e.nextElement();
+<i>160</i>&nbsp;            Remote target = (Remote)(key instanceof Tie ? ((Tie)key).getTarget() : key);
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;            // Bug 4476347: BAD_OPERATION is thrown if the ties delegate isn&#39;t set.
+<i>163</i>&nbsp;            // We can ignore this because it means the tie is not connected to an ORB.
+<i>164</i>&nbsp;            try {
+<i>165</i>&nbsp;                if (orb == getTie(target).orb()) {
+<i>166</i>&nbsp;                    try {
+<i>167</i>&nbsp;                        unexportObject(target);
+<i>168</i>&nbsp;                    } catch( java.rmi.NoSuchObjectException ex ) {
+<i>169</i>&nbsp;                        // We neglect this exception if at all if it is
+<i>170</i>&nbsp;                        // raised. It is not harmful.
+<i>171</i>&nbsp;                    }
+<i>172</i>&nbsp;                }
+<i>173</i>&nbsp;            } catch (BAD_OPERATION bad) {
+<i>174</i>&nbsp;                /* Ignore */
+<i>175</i>&nbsp;            }
+<i>176</i>&nbsp;        }
+<i>177</i>&nbsp;    }
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;   /**
+<i>180</i>&nbsp;     * Maps a SystemException to a RemoteException.
+<i>181</i>&nbsp;     * @param ex the SystemException to map.
+<i>182</i>&nbsp;     * @return the mapped exception.
+<i>183</i>&nbsp;     */
+<i>184</i>&nbsp;    public RemoteException mapSystemException(SystemException ex)
+<i>185</i>&nbsp;    {
+<i>186</i>&nbsp;        if (ex instanceof UnknownException) {
+<i>187</i>&nbsp;            Throwable orig = ((UnknownException)ex).originalEx;
+<i>188</i>&nbsp;            if (orig instanceof Error) {
+<i>189</i>&nbsp;                return new ServerError(&quot;Error occurred in server thread&quot;,(Error)orig);
+<i>190</i>&nbsp;            } else if (orig instanceof RemoteException) {
+<i>191</i>&nbsp;                return new ServerException(&quot;RemoteException occurred in server thread&quot;,
+<i>192</i>&nbsp;                    (Exception)orig);
+<i>193</i>&nbsp;            } else if (orig instanceof RuntimeException) {
+<i>194</i>&nbsp;                throw (RuntimeException) orig;
+<i>195</i>&nbsp;            }
+<i>196</i>&nbsp;        }
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;        // Build the message string...
+<i>199</i>&nbsp;        String name = ex.getClass().getName();
+<i>200</i>&nbsp;        String corbaName = name.substring(name.lastIndexOf(&#39;.&#39;)+1);
+<i>201</i>&nbsp;        String status;
+<i>202</i>&nbsp;        switch (ex.completed.value()) {
+<i>203</i>&nbsp;            case CompletionStatus._COMPLETED_YES:
+<i>204</i>&nbsp;                status = &quot;Yes&quot;;
+<i>205</i>&nbsp;                break;
+<i>206</i>&nbsp;            case CompletionStatus._COMPLETED_NO:
+<i>207</i>&nbsp;                status = &quot;No&quot;;
+<i>208</i>&nbsp;                break;
+<i>209</i>&nbsp;            case CompletionStatus._COMPLETED_MAYBE:
+<i>210</i>&nbsp;            default:
+<i>211</i>&nbsp;                status = &quot;Maybe&quot;;
+<i>212</i>&nbsp;                break;
+<i>213</i>&nbsp;        }
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;        String message = &quot;CORBA &quot; + corbaName + &quot; &quot; + ex.minor + &quot; &quot; + status;
+<i>216</i>&nbsp;
+<i>217</i>&nbsp;        // Now map to the correct RemoteException type...
+<i>218</i>&nbsp;        if (ex instanceof COMM_FAILURE) {
+<i>219</i>&nbsp;            return new MarshalException(message, ex);
+<i>220</i>&nbsp;        } else if (ex instanceof INV_OBJREF) {
+<i>221</i>&nbsp;            RemoteException newEx = new NoSuchObjectException(message);
+<i>222</i>&nbsp;            newEx.detail = ex;
+<i>223</i>&nbsp;            return newEx;
+<i>224</i>&nbsp;        } else if (ex instanceof NO_PERMISSION) {
+<i>225</i>&nbsp;            return new AccessException(message, ex);
+<i>226</i>&nbsp;        } else if (ex instanceof MARSHAL) {
+<i>227</i>&nbsp;            return new MarshalException(message, ex);
+<i>228</i>&nbsp;        } else if (ex instanceof OBJECT_NOT_EXIST) {
+<i>229</i>&nbsp;            RemoteException newEx = new NoSuchObjectException(message);
+<i>230</i>&nbsp;            newEx.detail = ex;
+<i>231</i>&nbsp;            return newEx;
+<i>232</i>&nbsp;        } else if (ex instanceof TRANSACTION_REQUIRED) {
+<i>233</i>&nbsp;            RemoteException newEx = new TransactionRequiredException(message);
+<i>234</i>&nbsp;            newEx.detail = ex;
+<i>235</i>&nbsp;            return newEx;
+<i>236</i>&nbsp;        } else if (ex instanceof TRANSACTION_ROLLEDBACK) {
+<i>237</i>&nbsp;            RemoteException newEx = new TransactionRolledbackException(message);
+<i>238</i>&nbsp;            newEx.detail = ex;
+<i>239</i>&nbsp;            return newEx;
+<i>240</i>&nbsp;        } else if (ex instanceof INVALID_TRANSACTION) {
+<i>241</i>&nbsp;            RemoteException newEx = new InvalidTransactionException(message);
+<i>242</i>&nbsp;            newEx.detail = ex;
+<i>243</i>&nbsp;            return newEx;
+<i>244</i>&nbsp;        } else if (ex instanceof BAD_PARAM) {
+<i>245</i>&nbsp;            Exception inner = ex;
+<i>246</i>&nbsp;
+<i>247</i>&nbsp;            // Pre-Merlin Sun ORBs used the incorrect minor code for
+<i>248</i>&nbsp;            // this case.  See Java to IDL ptc-00-01-08 1.4.8.
+<i>249</i>&nbsp;            if (ex.minor == ORBConstants.LEGACY_SUN_NOT_SERIALIZABLE ||
+<i>250</i>&nbsp;                ex.minor == OMGSystemException.NOT_SERIALIZABLE) {
+<i>251</i>&nbsp;
+<i>252</i>&nbsp;                if (ex.getMessage() != null)
+<i>253</i>&nbsp;                    inner = new NotSerializableException(ex.getMessage());
+<i>254</i>&nbsp;                else
+<i>255</i>&nbsp;                    inner = new NotSerializableException();
+<i>256</i>&nbsp;
+<i>257</i>&nbsp;                inner.initCause( ex ) ;
+<i>258</i>&nbsp;            }
+<i>259</i>&nbsp;
+<i>260</i>&nbsp;            return new MarshalException(message,inner);
+<i>261</i>&nbsp;        } else if (ex instanceof ACTIVITY_REQUIRED) {
+<i>262</i>&nbsp;            try {
+<i>263</i>&nbsp;                Class&lt;?&gt; cl = SharedSecrets.getJavaCorbaAccess().loadClass(
+<i>264</i>&nbsp;                               &quot;javax.activity.ActivityRequiredException&quot;);
+<i>265</i>&nbsp;                Class[] params = new Class[2];
+<i>266</i>&nbsp;                params[0] = java.lang.String.class;
+<i>267</i>&nbsp;                params[1] = java.lang.Throwable.class;
+<i>268</i>&nbsp;                Constructor cr = cl.getConstructor(params);
+<i>269</i>&nbsp;                Object[] args = new Object[2];
+<i>270</i>&nbsp;                args[0] = message;
+<i>271</i>&nbsp;                args[1] = ex;
+<i>272</i>&nbsp;                return (RemoteException) cr.newInstance(args);
+<i>273</i>&nbsp;            } catch (Throwable e) {
+<i>274</i>&nbsp;                utilWrapper.classNotFound(
+<i>275</i>&nbsp;                              e, &quot;javax.activity.ActivityRequiredException&quot;);
+<i>276</i>&nbsp;            }
+<i>277</i>&nbsp;        } else if (ex instanceof ACTIVITY_COMPLETED) {
+<i>278</i>&nbsp;            try {
+<i>279</i>&nbsp;                Class&lt;?&gt; cl = SharedSecrets.getJavaCorbaAccess().loadClass(
+<i>280</i>&nbsp;                               &quot;javax.activity.ActivityCompletedException&quot;);
+<i>281</i>&nbsp;                Class[] params = new Class[2];
+<i>282</i>&nbsp;                params[0] = java.lang.String.class;
+<i>283</i>&nbsp;                params[1] = java.lang.Throwable.class;
+<i>284</i>&nbsp;                Constructor cr = cl.getConstructor(params);
+<i>285</i>&nbsp;                Object[] args = new Object[2];
+<i>286</i>&nbsp;                args[0] = message;
+<i>287</i>&nbsp;                args[1] = ex;
+<i>288</i>&nbsp;                return (RemoteException) cr.newInstance(args);
+<i>289</i>&nbsp;              } catch (Throwable e) {
+<i>290</i>&nbsp;                  utilWrapper.classNotFound(
+<i>291</i>&nbsp;                                e, &quot;javax.activity.ActivityCompletedException&quot;);
+<i>292</i>&nbsp;              }
+<i>293</i>&nbsp;        } else if (ex instanceof INVALID_ACTIVITY) {
+<i>294</i>&nbsp;            try {
+<i>295</i>&nbsp;                Class&lt;?&gt; cl = SharedSecrets.getJavaCorbaAccess().loadClass(
+<i>296</i>&nbsp;                               &quot;javax.activity.InvalidActivityException&quot;);
+<i>297</i>&nbsp;                Class[] params = new Class[2];
+<i>298</i>&nbsp;                params[0] = java.lang.String.class;
+<i>299</i>&nbsp;                params[1] = java.lang.Throwable.class;
+<i>300</i>&nbsp;                Constructor cr = cl.getConstructor(params);
+<i>301</i>&nbsp;                Object[] args = new Object[2];
+<i>302</i>&nbsp;                args[0] = message;
+<i>303</i>&nbsp;                args[1] = ex;
+<i>304</i>&nbsp;                return (RemoteException) cr.newInstance(args);
+<i>305</i>&nbsp;              } catch (Throwable e) {
+<i>306</i>&nbsp;                  utilWrapper.classNotFound(
+<i>307</i>&nbsp;                                e, &quot;javax.activity.InvalidActivityException&quot;);
+<i>308</i>&nbsp;              }
+<i>309</i>&nbsp;        }
+<i>310</i>&nbsp;
+<i>311</i>&nbsp;        // Just map to a generic RemoteException...
+<i>312</i>&nbsp;        return new RemoteException(message, ex);
+<i>313</i>&nbsp;    }
+<i>314</i>&nbsp;
+<i>315</i>&nbsp;    /**
+<i>316</i>&nbsp;     * Writes any java.lang.Object as a CORBA any.
+<i>317</i>&nbsp;     * @param out the stream in which to write the any.
+<i>318</i>&nbsp;     * @param obj the object to write as an any.
+<i>319</i>&nbsp;     */
+<i>320</i>&nbsp;    public void writeAny( org.omg.CORBA.portable.OutputStream out,
+<i>321</i>&nbsp;                         java.lang.Object obj)
+<i>322</i>&nbsp;    {
+<i>323</i>&nbsp;        org.omg.CORBA.ORB orb = out.orb();
+<i>324</i>&nbsp;
+<i>325</i>&nbsp;        // Create Any
+<i>326</i>&nbsp;        Any any = orb.create_any();
+<i>327</i>&nbsp;
+<i>328</i>&nbsp;        // Make sure we have a connected object...
+<i>329</i>&nbsp;        java.lang.Object newObj = Utility.autoConnect(obj,orb,false);
+<i>330</i>&nbsp;
+<i>331</i>&nbsp;        if (newObj instanceof org.omg.CORBA.Object) {
+<i>332</i>&nbsp;            any.insert_Object((org.omg.CORBA.Object)newObj);
+<i>333</i>&nbsp;        } else {
+<i>334</i>&nbsp;            if (newObj == null) {
+<i>335</i>&nbsp;                // Handle the null case, including backwards
+<i>336</i>&nbsp;                // compatibility issues
+<i>337</i>&nbsp;                any.insert_Value(null, createTypeCodeForNull(orb));
+<i>338</i>&nbsp;            } else {
+<i>339</i>&nbsp;                if (newObj instanceof Serializable) {
+<i>340</i>&nbsp;                    // If they&#39;re our Any and ORB implementations,
+<i>341</i>&nbsp;                    // we may want to do type code related versioning.
+<i>342</i>&nbsp;                    TypeCode tc = createTypeCode((Serializable)newObj, any, orb);
+<i>343</i>&nbsp;                    if (tc == null)
+<i>344</i>&nbsp;                        any.insert_Value((Serializable)newObj);
+<i>345</i>&nbsp;                    else
+<i>346</i>&nbsp;                        any.insert_Value((Serializable)newObj, tc);
+<i>347</i>&nbsp;                } else if (newObj instanceof Remote) {
+<i>348</i>&nbsp;                    ORBUtility.throwNotSerializableForCorba(newObj.getClass().getName());
+<i>349</i>&nbsp;                } else {
+<i>350</i>&nbsp;                    ORBUtility.throwNotSerializableForCorba(newObj.getClass().getName());
+<i>351</i>&nbsp;                }
+<i>352</i>&nbsp;            }
+<i>353</i>&nbsp;        }
+<i>354</i>&nbsp;
+<i>355</i>&nbsp;        out.write_any(any);
+<i>356</i>&nbsp;    }
+<i>357</i>&nbsp;
+<i>358</i>&nbsp;    /**
+<i>359</i>&nbsp;     * When using our own ORB and Any implementations, we need to get
+<i>360</i>&nbsp;     * the ORB version and create the type code appropriately.  This is
+<i>361</i>&nbsp;     * to overcome a bug in which the JDK 1.3.x ORBs used a tk_char
+<i>362</i>&nbsp;     * rather than a tk_wchar to describe a Java char field.
+<i>363</i>&nbsp;     *
+<i>364</i>&nbsp;     * This only works in RMI-IIOP with Util.writeAny since we actually
+<i>365</i>&nbsp;     * know what ORB and stream we&#39;re writing with when we insert
+<i>366</i>&nbsp;     * the value.
+<i>367</i>&nbsp;     *
+<i>368</i>&nbsp;     * Returns null if it wasn&#39;t possible to create the TypeCode (means
+<i>369</i>&nbsp;     * it wasn&#39;t our ORB or Any implementation).
+<i>370</i>&nbsp;     *
+<i>371</i>&nbsp;     * This does not handle null objs.
+<i>372</i>&nbsp;     */
+<i>373</i>&nbsp;    private TypeCode createTypeCode(Serializable obj,
+<i>374</i>&nbsp;                                    org.omg.CORBA.Any any,
+<i>375</i>&nbsp;                                    org.omg.CORBA.ORB orb) {
+<i>376</i>&nbsp;
+<i>377</i>&nbsp;        if (any instanceof com.sun.corba.se.impl.corba.AnyImpl &amp;&amp;
+<i>378</i>&nbsp;            orb instanceof ORB) {
+<i>379</i>&nbsp;
+<i>380</i>&nbsp;            com.sun.corba.se.impl.corba.AnyImpl anyImpl
+<i>381</i>&nbsp;                = (com.sun.corba.se.impl.corba.AnyImpl)any;
+<i>382</i>&nbsp;
+<i>383</i>&nbsp;            ORB ourORB = (ORB)orb;
+<i>384</i>&nbsp;
+<i>385</i>&nbsp;            return anyImpl.createTypeCodeForClass(obj.getClass(), ourORB);
+<i>386</i>&nbsp;
+<i>387</i>&nbsp;        } else
+<i>388</i>&nbsp;            return null;
+<i>389</i>&nbsp;    }
+<i>390</i>&nbsp;
+<i>391</i>&nbsp;
+<i>392</i>&nbsp;    /**
+<i>393</i>&nbsp;     * This is used to create the TypeCode for a null reference.
+<i>394</i>&nbsp;     * It also handles backwards compatibility with JDK 1.3.x.
+<i>395</i>&nbsp;     *
+<i>396</i>&nbsp;     * This method will not return null.
+<i>397</i>&nbsp;     */
+<i>398</i>&nbsp;    private TypeCode createTypeCodeForNull(org.omg.CORBA.ORB orb)
+<i>399</i>&nbsp;    {
+<i>400</i>&nbsp;        if (orb instanceof ORB) {
+<i>401</i>&nbsp;
+<i>402</i>&nbsp;            ORB ourORB = (ORB)orb;
+<i>403</i>&nbsp;
+<i>404</i>&nbsp;            // Preserve backwards compatibility with Kestrel and Ladybird
+<i>405</i>&nbsp;            // by not fully implementing interop issue resolution 3857,
+<i>406</i>&nbsp;            // and returning a null TypeCode with a tk_value TCKind.
+<i>407</i>&nbsp;            // If we&#39;re not talking to Kestrel or Ladybird, fall through
+<i>408</i>&nbsp;            // to the abstract interface case (also used for foreign ORBs).
+<i>409</i>&nbsp;            if (!ORBVersionFactory.getFOREIGN().equals(ourORB.getORBVersion()) &amp;&amp;
+<i>410</i>&nbsp;                ORBVersionFactory.getNEWER().compareTo(ourORB.getORBVersion()) &gt; 0) {
+<i>411</i>&nbsp;
+<i>412</i>&nbsp;                return orb.get_primitive_tc(TCKind.tk_value);
+<i>413</i>&nbsp;            }
+<i>414</i>&nbsp;        }
+<i>415</i>&nbsp;
+<i>416</i>&nbsp;        // Use tk_abstract_interface as detailed in the resolution
+<i>417</i>&nbsp;
+<i>418</i>&nbsp;        // REVISIT: Define this in IDL and get the ID in generated code
+<i>419</i>&nbsp;        String abstractBaseID = &quot;IDL:omg.org/CORBA/AbstractBase:1.0&quot;;
+<i>420</i>&nbsp;
+<i>421</i>&nbsp;        return orb.create_abstract_interface_tc(abstractBaseID, &quot;&quot;);
+<i>422</i>&nbsp;    }
+<i>423</i>&nbsp;
+<i>424</i>&nbsp;    /**
+<i>425</i>&nbsp;     * Reads a java.lang.Object as a CORBA any.
+<i>426</i>&nbsp;     * @param in the stream from which to read the any.
+<i>427</i>&nbsp;     * @return the object read from the stream.
+<i>428</i>&nbsp;     */
+<i>429</i>&nbsp;    public Object readAny(InputStream in)
+<i>430</i>&nbsp;    {
+<i>431</i>&nbsp;        Any any = in.read_any();
+<i>432</i>&nbsp;        if ( any.type().kind().value() == TCKind._tk_objref )
+<i>433</i>&nbsp;            return any.extract_Object ();
+<i>434</i>&nbsp;        else
+<i>435</i>&nbsp;            return any.extract_Value();
+<i>436</i>&nbsp;    }
+<i>437</i>&nbsp;
+<i>438</i>&nbsp;    /**
+<i>439</i>&nbsp;     * Writes a java.lang.Object as a CORBA Object. If &lt;code&gt;obj&lt;/code&gt; is
+<i>440</i>&nbsp;     * an exported RMI-IIOP server object, the tie is found
+<i>441</i>&nbsp;     * and wired to &lt;code&gt;obj&lt;/code&gt;, then written to &lt;code&gt;out.write_Object(org.omg.CORBA.Object)&lt;/code&gt;.
+<i>442</i>&nbsp;     * If &lt;code&gt;obj&lt;/code&gt; is a CORBA Object, it is written to
+<i>443</i>&nbsp;     * &lt;code&gt;out.write_Object(org.omg.CORBA.Object)&lt;/code&gt;.
+<i>444</i>&nbsp;     * @param out the stream in which to write the object.
+<i>445</i>&nbsp;     * @param obj the object to write.
+<i>446</i>&nbsp;     */
+<i>447</i>&nbsp;    public void writeRemoteObject(OutputStream out, java.lang.Object obj)
+<i>448</i>&nbsp;    {
+<i>449</i>&nbsp;        // Make sure we have a connected object, then
+<i>450</i>&nbsp;        // write it out...
+<i>451</i>&nbsp;
+<i>452</i>&nbsp;        Object newObj = Utility.autoConnect(obj,out.orb(),false);
+<i>453</i>&nbsp;        out.write_Object((org.omg.CORBA.Object)newObj);
+<i>454</i>&nbsp;    }
+<i>455</i>&nbsp;
+<i>456</i>&nbsp;    /**
+<i>457</i>&nbsp;     * Writes a java.lang.Object as either a value or a CORBA Object.
+<i>458</i>&nbsp;     * If &lt;code&gt;obj&lt;/code&gt; is a value object or a stub object, it is written to
+<i>459</i>&nbsp;     * &lt;code&gt;out.write_abstract_interface(java.lang.Object)&lt;/code&gt;. If &lt;code&gt;obj&lt;/code&gt; is an exported
+<i>460</i>&nbsp;     * RMI-IIOP server object, the tie is found and wired to &lt;code&gt;obj&lt;/code&gt;,
+<i>461</i>&nbsp;     * then written to &lt;code&gt;out.write_abstract_interface(java.lang.Object)&lt;/code&gt;.
+<i>462</i>&nbsp;     * @param out the stream in which to write the object.
+<i>463</i>&nbsp;     * @param obj the object to write.
+<i>464</i>&nbsp;     */
+<i>465</i>&nbsp;    public void writeAbstractObject( OutputStream out, java.lang.Object obj )
+<i>466</i>&nbsp;    {
+<i>467</i>&nbsp;        // Make sure we have a connected object, then
+<i>468</i>&nbsp;        // write it out...
+<i>469</i>&nbsp;
+<i>470</i>&nbsp;        Object newObj = Utility.autoConnect(obj,out.orb(),false);
+<i>471</i>&nbsp;        ((org.omg.CORBA_2_3.portable.OutputStream)out).write_abstract_interface(newObj);
+<i>472</i>&nbsp;    }
+<i>473</i>&nbsp;
+<i>474</i>&nbsp;    /**
+<i>475</i>&nbsp;     * Registers a target for a tie. Adds the tie to an internal table and calls
+<i>476</i>&nbsp;     * {@link Tie#setTarget} on the tie object.
+<i>477</i>&nbsp;     * @param tie the tie to register.
+<i>478</i>&nbsp;     * @param target the target for the tie.
+<i>479</i>&nbsp;     */
+<i>480</i>&nbsp;    public void registerTarget(javax.rmi.CORBA.Tie tie, java.rmi.Remote target)
+<i>481</i>&nbsp;    {
+<i>482</i>&nbsp;        synchronized (exportedServants) {
+<i>483</i>&nbsp;            // Do we already have this target registered?
+<i>484</i>&nbsp;            if (lookupTie(target) == null) {
+<i>485</i>&nbsp;                // No, so register it and set the target...
+<i>486</i>&nbsp;                exportedServants.put(target,tie);
+<i>487</i>&nbsp;                tie.setTarget(target);
+<i>488</i>&nbsp;
+<i>489</i>&nbsp;                // Do we need to instantiate our keep-alive thread?
+<i>490</i>&nbsp;                if (keepAlive == null) {
+<i>491</i>&nbsp;                    // Yes. Instantiate our keep-alive thread and start
+<i>492</i>&nbsp;                    // it up...
+<i>493</i>&nbsp;                    keepAlive = (KeepAlive)AccessController.doPrivileged(new PrivilegedAction() {
+<i>494</i>&nbsp;                        public java.lang.Object run() {
+<i>495</i>&nbsp;                            return new KeepAlive();
+<i>496</i>&nbsp;                        }
+<i>497</i>&nbsp;                    });
+<i>498</i>&nbsp;                    keepAlive.start();
+<i>499</i>&nbsp;                }
+<i>500</i>&nbsp;            }
+<i>501</i>&nbsp;        }
+<i>502</i>&nbsp;    }
+<i>503</i>&nbsp;
+<i>504</i>&nbsp;    /**
+<i>505</i>&nbsp;     * Removes the associated tie from an internal table and calls {@link Tie#deactivate}
+<i>506</i>&nbsp;     * to deactivate the object.
+<i>507</i>&nbsp;     * @param target the object to unexport.
+<i>508</i>&nbsp;     */
+<i>509</i>&nbsp;    public void unexportObject(java.rmi.Remote target)
+<i>510</i>&nbsp;        throws java.rmi.NoSuchObjectException
+<i>511</i>&nbsp;    {
+<i>512</i>&nbsp;        synchronized (exportedServants) {
+<i>513</i>&nbsp;            Tie cachedTie = lookupTie(target);
+<i>514</i>&nbsp;            if (cachedTie != null) {
+<i>515</i>&nbsp;                exportedServants.remove(target);
+<i>516</i>&nbsp;                Utility.purgeStubForTie(cachedTie);
+<i>517</i>&nbsp;                Utility.purgeTieAndServant(cachedTie);
+<i>518</i>&nbsp;                try {
+<i>519</i>&nbsp;                    cleanUpTie(cachedTie);
+<i>520</i>&nbsp;                } catch (BAD_OPERATION e) {
+<i>521</i>&nbsp;                    // ignore
+<i>522</i>&nbsp;                } catch (org.omg.CORBA.OBJ_ADAPTER e) {
+<i>523</i>&nbsp;                    // This can happen when the target was never associated with a POA.
+<i>524</i>&nbsp;                    // We can safely ignore this case.
+<i>525</i>&nbsp;                }
+<i>526</i>&nbsp;
+<i>527</i>&nbsp;                // Is it time to shut down our keep alive thread?
+<i>528</i>&nbsp;                if (exportedServants.isEmpty()) {
+<i>529</i>&nbsp;                    keepAlive.quit();
+<i>530</i>&nbsp;                    keepAlive = null;
+<i>531</i>&nbsp;                }
+<i>532</i>&nbsp;            } else {
+<i>533</i>&nbsp;                throw new java.rmi.NoSuchObjectException(&quot;Tie not found&quot; );
+<i>534</i>&nbsp;            }
+<i>535</i>&nbsp;        }
+<i>536</i>&nbsp;    }
+<i>537</i>&nbsp;
+<i>538</i>&nbsp;    protected void cleanUpTie(Tie cachedTie)
+<i>539</i>&nbsp;        throws java.rmi.NoSuchObjectException
+<i>540</i>&nbsp;    {
+<i>541</i>&nbsp;        cachedTie.setTarget(null);
+<i>542</i>&nbsp;        cachedTie.deactivate();
+<i>543</i>&nbsp;    }
+<i>544</i>&nbsp;
+<i>545</i>&nbsp;    /**
+<i>546</i>&nbsp;     * Returns the tie (if any) for a given target object.
+<i>547</i>&nbsp;     * @return the tie or null if no tie is registered for the given target.
+<i>548</i>&nbsp;     */
+<i>549</i>&nbsp;    public Tie getTie (Remote target)
+<i>550</i>&nbsp;    {
+<i>551</i>&nbsp;        synchronized (exportedServants) {
+<i>552</i>&nbsp;            return lookupTie(target);
+<i>553</i>&nbsp;        }
+<i>554</i>&nbsp;    }
+<i>555</i>&nbsp;
+<i>556</i>&nbsp;    /**
+<i>557</i>&nbsp;     * An unsynchronized version of getTie() for internal use.
+<i>558</i>&nbsp;     */
+<i>559</i>&nbsp;    private static Tie lookupTie (Remote target)
+<i>560</i>&nbsp;    {
+<i>561</i>&nbsp;        Tie result = (Tie)exportedServants.get(target);
+<i>562</i>&nbsp;        if (result == null &amp;&amp; target instanceof Tie) {
+<i>563</i>&nbsp;            if (exportedServants.contains(target)) {
+<i>564</i>&nbsp;                result = (Tie)target;
+<i>565</i>&nbsp;            }
+<i>566</i>&nbsp;        }
+<i>567</i>&nbsp;        return result;
+<i>568</i>&nbsp;    }
+<i>569</i>&nbsp;
+<i>570</i>&nbsp;    /**
+<i>571</i>&nbsp;     * Returns a singleton instance of a class that implements the
+<i>572</i>&nbsp;     * {@link ValueHandler} interface.
+<i>573</i>&nbsp;     * @return a class which implements the ValueHandler interface.
+<i>574</i>&nbsp;     */
+<i>575</i>&nbsp;    public ValueHandler createValueHandler()
+<i>576</i>&nbsp;    {
+<i>577</i>&nbsp;        return valueHandlerSingleton;
+<i>578</i>&nbsp;    }
+<i>579</i>&nbsp;
+<i>580</i>&nbsp;    /**
+<i>581</i>&nbsp;     * Returns the codebase, if any, for the given class.
+<i>582</i>&nbsp;     * @param clz the class to get a codebase for.
+<i>583</i>&nbsp;     * @return a space-separated list of URLs, or null.
+<i>584</i>&nbsp;     */
+<i>585</i>&nbsp;    public String getCodebase(java.lang.Class clz) {
+<i>586</i>&nbsp;        return RMIClassLoader.getClassAnnotation(clz);
+<i>587</i>&nbsp;    }
+<i>588</i>&nbsp;
+<i>589</i>&nbsp;    /**
+<i>590</i>&nbsp;     * Returns a class instance for the specified class.
+<i>591</i>&nbsp;     * @param className the name of the class.
+<i>592</i>&nbsp;     * @param remoteCodebase a space-separated list of URLs at which
+<i>593</i>&nbsp;     * the class might be found. May be null.
+<i>594</i>&nbsp;     * @param loadingContext a class whose ClassLoader may be used to
+<i>595</i>&nbsp;     * load the class if all other methods fail.
+<i>596</i>&nbsp;     * @return the &lt;code&gt;Class&lt;/code&gt; object representing the loaded class.
+<i>597</i>&nbsp;     * @exception ClassNotFoundException if class cannot be loaded.
+<i>598</i>&nbsp;     */
+<i>599</i>&nbsp;    public Class loadClass( String className, String remoteCodebase,
+<i>600</i>&nbsp;        ClassLoader loader) throws ClassNotFoundException
+<i>601</i>&nbsp;    {
+<i>602</i>&nbsp;        return JDKBridge.loadClass(className,remoteCodebase,loader);
+<i>603</i>&nbsp;    }
+<i>604</i>&nbsp;
+<i>605</i>&nbsp;    /**
+<i>606</i>&nbsp;     * The &lt;tt&gt;isLocal&lt;/tt&gt; method has the same semantics as the
+<i>607</i>&nbsp;     * ObjectImpl._is_local method, except that it can throw a RemoteException.
+<i>608</i>&nbsp;     * (no it doesn&#39;t but the spec says it should.)
+<i>609</i>&nbsp;     *
+<i>610</i>&nbsp;     * The &lt;tt&gt;_is_local()&lt;/tt&gt; method is provided so that stubs may determine
+<i>611</i>&nbsp;     * if a particular object is implemented by a local servant and hence local
+<i>612</i>&nbsp;     * invocation APIs may be used.
+<i>613</i>&nbsp;     *
+<i>614</i>&nbsp;     * @param stub the stub to test.
+<i>615</i>&nbsp;     *
+<i>616</i>&nbsp;     * @return The &lt;tt&gt;_is_local()&lt;/tt&gt; method returns true if
+<i>617</i>&nbsp;     * the servant incarnating the object is located in the same process as
+<i>618</i>&nbsp;     * the stub and they both share the same ORB instance.  The &lt;tt&gt;_is_local()&lt;/tt&gt;
+<i>619</i>&nbsp;     * method returns false otherwise. The default behavior of &lt;tt&gt;_is_local()&lt;/tt&gt; is
+<i>620</i>&nbsp;     * to return false.
+<i>621</i>&nbsp;     *
+<i>622</i>&nbsp;     * @throws RemoteException The Java to IDL specification does to
+<i>623</i>&nbsp;     * specify the conditions that cause a RemoteException to be thrown.
+<i>624</i>&nbsp;     */
+<i>625</i>&nbsp;    public boolean isLocal(javax.rmi.CORBA.Stub stub) throws RemoteException
+<i>626</i>&nbsp;    {
+<i>627</i>&nbsp;        boolean result = false ;
+<i>628</i>&nbsp;
+<i>629</i>&nbsp;        try {
+<i>630</i>&nbsp;            org.omg.CORBA.portable.Delegate delegate = stub._get_delegate() ;
+<i>631</i>&nbsp;            if (delegate instanceof CorbaClientDelegate) {
+<i>632</i>&nbsp;                // For the Sun ORB
+<i>633</i>&nbsp;                CorbaClientDelegate cdel = (CorbaClientDelegate)delegate ;
+<i>634</i>&nbsp;                ContactInfoList cil = cdel.getContactInfoList() ;
+<i>635</i>&nbsp;                if (cil instanceof CorbaContactInfoList) {
+<i>636</i>&nbsp;                    CorbaContactInfoList ccil = (CorbaContactInfoList)cil ;
+<i>637</i>&nbsp;                    LocalClientRequestDispatcher lcs = ccil.getLocalClientRequestDispatcher() ;
+<i>638</i>&nbsp;                    result = lcs.useLocalInvocation( null ) ;
+<i>639</i>&nbsp;                }
+<i>640</i>&nbsp;            } else {
+<i>641</i>&nbsp;                // For a non-Sun ORB
+<i>642</i>&nbsp;                result = delegate.is_local( stub ) ;
+<i>643</i>&nbsp;            }
+<i>644</i>&nbsp;        } catch (SystemException e) {
+<i>645</i>&nbsp;            throw javax.rmi.CORBA.Util.mapSystemException(e);
+<i>646</i>&nbsp;        }
+<i>647</i>&nbsp;
+<i>648</i>&nbsp;        return result ;
+<i>649</i>&nbsp;    }
+<i>650</i>&nbsp;
+<i>651</i>&nbsp;    /**
+<i>652</i>&nbsp;     * Wraps an exception thrown by an implementation
+<i>653</i>&nbsp;     * method.  It returns the corresponding client-side exception.
+<i>654</i>&nbsp;     * @param orig the exception to wrap.
+<i>655</i>&nbsp;     * @return the wrapped exception.
+<i>656</i>&nbsp;     */
+<i>657</i>&nbsp;    public RemoteException wrapException(Throwable orig)
+<i>658</i>&nbsp;    {
+<i>659</i>&nbsp;        if (orig instanceof SystemException) {
+<i>660</i>&nbsp;            return mapSystemException((SystemException)orig);
+<i>661</i>&nbsp;        }
+<i>662</i>&nbsp;
+<i>663</i>&nbsp;        if (orig instanceof Error) {
+<i>664</i>&nbsp;            return new ServerError(&quot;Error occurred in server thread&quot;,(Error)orig);
+<i>665</i>&nbsp;        } else if (orig instanceof RemoteException) {
+<i>666</i>&nbsp;            return new ServerException(&quot;RemoteException occurred in server thread&quot;,
+<i>667</i>&nbsp;                                       (Exception)orig);
+<i>668</i>&nbsp;        } else if (orig instanceof RuntimeException) {
+<i>669</i>&nbsp;            throw (RuntimeException) orig;
+<i>670</i>&nbsp;        }
+<i>671</i>&nbsp;
+<i>672</i>&nbsp;        if (orig instanceof Exception)
+<i>673</i>&nbsp;            return new UnexpectedException( orig.toString(), (Exception)orig );
+<i>674</i>&nbsp;        else
+<i>675</i>&nbsp;            return new UnexpectedException( orig.toString());
+<i>676</i>&nbsp;    }
+<i>677</i>&nbsp;
+<i>678</i>&nbsp;    /**
+<i>679</i>&nbsp;     * Copies or connects an array of objects. Used by local stubs
+<i>680</i>&nbsp;     * to copy any number of actual parameters, preserving sharing
+<i>681</i>&nbsp;     * across parameters as necessary to support RMI semantics.
+<i>682</i>&nbsp;     * @param obj the objects to copy or connect.
+<i>683</i>&nbsp;     * @param orb the ORB.
+<i>684</i>&nbsp;     * @return the copied or connected objects.
+<i>685</i>&nbsp;     * @exception RemoteException if any object could not be copied or connected.
+<i>686</i>&nbsp;     */
+<i>687</i>&nbsp;    public Object[] copyObjects (Object[] obj, org.omg.CORBA.ORB orb)
+<i>688</i>&nbsp;        throws RemoteException
+<i>689</i>&nbsp;    {
+<i>690</i>&nbsp;        if (obj == null)
+<i>691</i>&nbsp;            // Bug fix for 5018613: JCK test expects copyObjects to throw
+<i>692</i>&nbsp;            // NPE when obj==null.  This is actually not in the spec, since
+<i>693</i>&nbsp;            // obj is not really an RMI-IDL data type, but we follow our
+<i>694</i>&nbsp;            // test here, and force this error to be thrown.
+<i>695</i>&nbsp;            throw new NullPointerException() ;
+<i>696</i>&nbsp;
+<i>697</i>&nbsp;        Class compType = obj.getClass().getComponentType() ;
+<i>698</i>&nbsp;        if (Remote.class.isAssignableFrom( compType ) &amp;&amp; !compType.isInterface()) {
+<i>699</i>&nbsp;            // obj is an array of remote impl types.  This
+<i>700</i>&nbsp;            // causes problems with stream copier, so we copy
+<i>701</i>&nbsp;            // it over to an array of Remotes instead.
+<i>702</i>&nbsp;            Remote[] result = new Remote[obj.length] ;
+<i>703</i>&nbsp;            System.arraycopy( (Object)obj, 0, (Object)result, 0, obj.length ) ;
+<i>704</i>&nbsp;            return (Object[])copyObject( result, orb ) ;
+<i>705</i>&nbsp;        } else
+<i>706</i>&nbsp;            return (Object[])copyObject( obj, orb ) ;
+<i>707</i>&nbsp;    }
+<i>708</i>&nbsp;
+<i>709</i>&nbsp;    /**
+<i>710</i>&nbsp;     * Copies or connects an object. Used by local stubs to copy
+<i>711</i>&nbsp;     * an actual parameter, result object, or exception.
+<i>712</i>&nbsp;     * @param obj the object to copy.
+<i>713</i>&nbsp;     * @param orb the ORB.
+<i>714</i>&nbsp;     * @return the copy or connected object.
+<i>715</i>&nbsp;     * @exception RemoteException if the object could not be copied or connected.
+<i>716</i>&nbsp;     */
+<i>717</i>&nbsp;    public Object copyObject (Object obj, org.omg.CORBA.ORB orb)
+<i>718</i>&nbsp;        throws RemoteException
+<i>719</i>&nbsp;    {
+<i>720</i>&nbsp;        if (orb instanceof ORB) {
+<i>721</i>&nbsp;            ORB lorb = (ORB)orb ;
+<i>722</i>&nbsp;
+<i>723</i>&nbsp;            try {
+<i>724</i>&nbsp;                try {
+<i>725</i>&nbsp;                    // This gets the copier for the current invocation, which was
+<i>726</i>&nbsp;                    // previously set by preinvoke.
+<i>727</i>&nbsp;                    return lorb.peekInvocationInfo().getCopierFactory().make().copy( obj ) ;
+<i>728</i>&nbsp;                } catch (java.util.EmptyStackException exc) {
+<i>729</i>&nbsp;                    // copyObject was invoked outside of an invocation, probably by
+<i>730</i>&nbsp;                    // a test.  Get the default copier from the ORB.
+<i>731</i>&nbsp;                    // XXX should we just make the default copier available directly
+<i>732</i>&nbsp;                    // and avoid constructing one on each call?
+<i>733</i>&nbsp;                    CopierManager cm = lorb.getCopierManager() ;
+<i>734</i>&nbsp;                    ObjectCopier copier = cm.getDefaultObjectCopierFactory().make() ;
+<i>735</i>&nbsp;                    return copier.copy( obj ) ;
+<i>736</i>&nbsp;                }
+<i>737</i>&nbsp;            } catch (ReflectiveCopyException exc) {
+<i>738</i>&nbsp;                RemoteException rexc = new RemoteException() ;
+<i>739</i>&nbsp;                rexc.initCause( exc ) ;
+<i>740</i>&nbsp;                throw rexc ;
+<i>741</i>&nbsp;            }
+<i>742</i>&nbsp;        } else {
+<i>743</i>&nbsp;            org.omg.CORBA_2_3.portable.OutputStream out =
+<i>744</i>&nbsp;                (org.omg.CORBA_2_3.portable.OutputStream)orb.create_output_stream();
+<i>745</i>&nbsp;            out.write_value((Serializable)obj);
+<i>746</i>&nbsp;            org.omg.CORBA_2_3.portable.InputStream in =
+<i>747</i>&nbsp;                (org.omg.CORBA_2_3.portable.InputStream)out.create_input_stream();
+<i>748</i>&nbsp;            return in.read_value();
+<i>749</i>&nbsp;        }
+<i>750</i>&nbsp;    }
+<i>751</i>&nbsp;}
+<i>752</i>&nbsp;
+<i>753</i>&nbsp;class KeepAlive extends Thread
+<i>754</i>&nbsp;{
+<b class="nc"><i>755</i>&nbsp;    boolean quit = false;</b>
+<i>756</i>&nbsp;
+<i>757</i>&nbsp;    public KeepAlive ()
+<b class="nc"><i>758</i>&nbsp;    {</b>
+<b class="nc"><i>759</i>&nbsp;        setDaemon(false);</b>
+<i>760</i>&nbsp;    }
+<i>761</i>&nbsp;
+<i>762</i>&nbsp;    public synchronized void run ()
+<i>763</i>&nbsp;    {
+<b class="nc"><i>764</i>&nbsp;        while (!quit) {</b>
+<i>765</i>&nbsp;            try {
+<b class="nc"><i>766</i>&nbsp;                wait();</b>
+<b class="nc"><i>767</i>&nbsp;            } catch (InterruptedException e) {}</b>
+<i>768</i>&nbsp;        }
+<i>769</i>&nbsp;    }
+<i>770</i>&nbsp;
+<i>771</i>&nbsp;    public synchronized void quit ()
+<i>772</i>&nbsp;    {
+<b class="nc"><i>773</i>&nbsp;        quit = true;</b>
+<b class="nc"><i>774</i>&nbsp;        notifyAll();</b>
+<i>775</i>&nbsp;    }
+<i>776</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

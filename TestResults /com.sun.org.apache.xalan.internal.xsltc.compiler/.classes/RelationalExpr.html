@@ -1,0 +1,366 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: RelationalExpr</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler</a> ]
+</div>
+
+<h1>Coverage Summary for Class: RelationalExpr (com.sun.org.apache.xalan.internal.xsltc.compiler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RelationalExpr</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 117)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: RelationalExpr.java,v 1.2.4.1 2005/09/12 11:05:00 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.BranchInstruction;
+<i>27</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+<i>28</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.INVOKESTATIC;
+<i>29</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.InstructionList;
+<i>30</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.PUSH;
+<i>31</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.BooleanType;
+<i>32</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
+<i>33</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg;
+<i>34</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.IntType;
+<i>35</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+<i>36</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodType;
+<i>37</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.NodeSetType;
+<i>38</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.NodeType;
+<i>39</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.RealType;
+<i>40</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ReferenceType;
+<i>41</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ResultTreeType;
+<i>42</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
+<i>43</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+<i>44</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.runtime.Operators;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;/**
+<i>47</i>&nbsp; * @author Jacek Ambroziak
+<i>48</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>49</i>&nbsp; */
+<i>50</i>&nbsp;final class RelationalExpr extends Expression {
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    private int _op;
+<i>53</i>&nbsp;    private Expression _left, _right;
+<i>54</i>&nbsp;
+<b class="nc"><i>55</i>&nbsp;    public RelationalExpr(int op, Expression left, Expression right) {</b>
+<b class="nc"><i>56</i>&nbsp;        _op = op;</b>
+<b class="nc"><i>57</i>&nbsp;        (_left = left).setParent(this);</b>
+<b class="nc"><i>58</i>&nbsp;        (_right = right).setParent(this);</b>
+<i>59</i>&nbsp;    }
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    public void setParser(Parser parser) {
+<b class="nc"><i>62</i>&nbsp;        super.setParser(parser);</b>
+<b class="nc"><i>63</i>&nbsp;        _left.setParser(parser);</b>
+<b class="nc"><i>64</i>&nbsp;        _right.setParser(parser);</b>
+<i>65</i>&nbsp;    }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    /**
+<i>68</i>&nbsp;     * Returns true if this expressions contains a call to position(). This is
+<i>69</i>&nbsp;     * needed for context changes in node steps containing multiple predicates.
+<i>70</i>&nbsp;     */
+<i>71</i>&nbsp;    public boolean hasPositionCall() {
+<b class="nc"><i>72</i>&nbsp;        if (_left.hasPositionCall()) return true;</b>
+<b class="nc"><i>73</i>&nbsp;        if (_right.hasPositionCall()) return true;</b>
+<b class="nc"><i>74</i>&nbsp;        return false;</b>
+<i>75</i>&nbsp;    }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    /**
+<i>78</i>&nbsp;     * Returns true if this expressions contains a call to last()
+<i>79</i>&nbsp;     */
+<i>80</i>&nbsp;    public boolean hasLastCall() {
+<b class="nc"><i>81</i>&nbsp;            return (_left.hasLastCall() || _right.hasLastCall());</b>
+<i>82</i>&nbsp;    }
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    public boolean hasReferenceArgs() {
+<b class="nc"><i>85</i>&nbsp;        return _left.getType() instanceof ReferenceType ||</b>
+<b class="nc"><i>86</i>&nbsp;            _right.getType() instanceof ReferenceType;</b>
+<i>87</i>&nbsp;    }
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    public boolean hasNodeArgs() {
+<b class="nc"><i>90</i>&nbsp;        return _left.getType() instanceof NodeType ||</b>
+<b class="nc"><i>91</i>&nbsp;            _right.getType() instanceof NodeType;</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    public boolean hasNodeSetArgs() {
+<b class="nc"><i>95</i>&nbsp;        return _left.getType() instanceof NodeSetType ||</b>
+<b class="nc"><i>96</i>&nbsp;            _right.getType() instanceof NodeSetType;</b>
+<i>97</i>&nbsp;    }
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+<b class="nc"><i>100</i>&nbsp;        Type tleft = _left.typeCheck(stable);</b>
+<b class="nc"><i>101</i>&nbsp;        Type tright = _right.typeCheck(stable);</b>
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;        //bug fix # 2838, cast to reals if both are result tree fragments
+<b class="nc"><i>104</i>&nbsp;        if (tleft instanceof ResultTreeType &amp;&amp;</b>
+<i>105</i>&nbsp;            tright instanceof ResultTreeType )
+<i>106</i>&nbsp;        {
+<b class="nc"><i>107</i>&nbsp;            _right = new CastExpr(_right, Type.Real);</b>
+<b class="nc"><i>108</i>&nbsp;            _left = new CastExpr(_left, Type.Real);</b>
+<b class="nc"><i>109</i>&nbsp;            return _type = Type.Boolean;</b>
+<i>110</i>&nbsp;        }
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;        // If one is of reference type, then convert the other too
+<b class="nc"><i>113</i>&nbsp;        if (hasReferenceArgs()) {</b>
+<b class="nc"><i>114</i>&nbsp;            Type type = null;</b>
+<b class="nc"><i>115</i>&nbsp;            Type typeL = null;</b>
+<b class="nc"><i>116</i>&nbsp;            Type typeR = null;</b>
+<b class="nc"><i>117</i>&nbsp;            if (tleft instanceof ReferenceType) {</b>
+<b class="nc"><i>118</i>&nbsp;                if (_left instanceof VariableRefBase) {</b>
+<b class="nc"><i>119</i>&nbsp;                    VariableRefBase ref = (VariableRefBase)_left;</b>
+<b class="nc"><i>120</i>&nbsp;                    VariableBase var = ref.getVariable();</b>
+<b class="nc"><i>121</i>&nbsp;                    typeL = var.getType();</b>
+<i>122</i>&nbsp;                }
+<i>123</i>&nbsp;            }
+<b class="nc"><i>124</i>&nbsp;            if (tright instanceof ReferenceType) {</b>
+<b class="nc"><i>125</i>&nbsp;                if (_right instanceof VariableRefBase) {</b>
+<b class="nc"><i>126</i>&nbsp;                    VariableRefBase ref = (VariableRefBase)_right;</b>
+<b class="nc"><i>127</i>&nbsp;                    VariableBase var = ref.getVariable();</b>
+<b class="nc"><i>128</i>&nbsp;                    typeR = var.getType();</b>
+<i>129</i>&nbsp;                }
+<i>130</i>&nbsp;            }
+<i>131</i>&nbsp;            // bug fix # 2838
+<b class="nc"><i>132</i>&nbsp;            if (typeL == null)</b>
+<b class="nc"><i>133</i>&nbsp;                type = typeR;</b>
+<b class="nc"><i>134</i>&nbsp;            else if (typeR == null)</b>
+<b class="nc"><i>135</i>&nbsp;                type = typeL;</b>
+<i>136</i>&nbsp;            else {
+<b class="nc"><i>137</i>&nbsp;                type = Type.Real;</b>
+<i>138</i>&nbsp;            }
+<b class="nc"><i>139</i>&nbsp;            if (type == null) type = Type.Real;</b>
+<i>140</i>&nbsp;
+<b class="nc"><i>141</i>&nbsp;            _right = new CastExpr(_right, type);</b>
+<b class="nc"><i>142</i>&nbsp;            _left = new CastExpr(_left, type);</b>
+<b class="nc"><i>143</i>&nbsp;            return _type = Type.Boolean;</b>
+<i>144</i>&nbsp;        }
+<i>145</i>&nbsp;
+<b class="nc"><i>146</i>&nbsp;        if (hasNodeSetArgs()) {</b>
+<i>147</i>&nbsp;            // Ensure that the node-set is the left argument
+<b class="nc"><i>148</i>&nbsp;            if (tright instanceof NodeSetType) {</b>
+<b class="nc"><i>149</i>&nbsp;                final Expression temp = _right; _right = _left; _left = temp;</b>
+<b class="nc"><i>150</i>&nbsp;        _op = (_op == Operators.GT) ? Operators.LT :</b>
+<i>151</i>&nbsp;            (_op == Operators.LT) ? Operators.GT :
+<i>152</i>&nbsp;            (_op == Operators.GE) ? Operators.LE : Operators.GE;
+<b class="nc"><i>153</i>&nbsp;                tright = _right.getType();</b>
+<i>154</i>&nbsp;            }
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;            // Promote nodes to node sets
+<b class="nc"><i>157</i>&nbsp;            if (tright instanceof NodeType) {</b>
+<b class="nc"><i>158</i>&nbsp;                _right = new CastExpr(_right, Type.NodeSet);</b>
+<i>159</i>&nbsp;            }
+<i>160</i>&nbsp;            // Promote integer to doubles to have fewer compares
+<b class="nc"><i>161</i>&nbsp;            if (tright instanceof IntType) {</b>
+<b class="nc"><i>162</i>&nbsp;                _right = new CastExpr(_right, Type.Real);</b>
+<i>163</i>&nbsp;            }
+<i>164</i>&nbsp;            // Promote result-trees to strings
+<b class="nc"><i>165</i>&nbsp;            if (tright instanceof ResultTreeType) {</b>
+<b class="nc"><i>166</i>&nbsp;                _right = new CastExpr(_right, Type.String);</b>
+<i>167</i>&nbsp;            }
+<b class="nc"><i>168</i>&nbsp;            return _type = Type.Boolean;</b>
+<i>169</i>&nbsp;        }
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;        // In the node-boolean case, convert node to boolean first
+<b class="nc"><i>172</i>&nbsp;        if (hasNodeArgs()) {</b>
+<b class="nc"><i>173</i>&nbsp;            if (tleft instanceof BooleanType) {</b>
+<b class="nc"><i>174</i>&nbsp;                _right = new CastExpr(_right, Type.Boolean);</b>
+<b class="nc"><i>175</i>&nbsp;                tright = Type.Boolean;</b>
+<i>176</i>&nbsp;            }
+<b class="nc"><i>177</i>&nbsp;            if (tright instanceof BooleanType) {</b>
+<b class="nc"><i>178</i>&nbsp;                _left = new CastExpr(_left, Type.Boolean);</b>
+<b class="nc"><i>179</i>&nbsp;                tleft = Type.Boolean;</b>
+<i>180</i>&nbsp;            }
+<i>181</i>&nbsp;        }
+<i>182</i>&nbsp;
+<i>183</i>&nbsp;        // Lookup the table of primops to find the best match
+<b class="nc"><i>184</i>&nbsp;    MethodType ptype = lookupPrimop(stable, Operators.getOpNames(_op),</b>
+<i>185</i>&nbsp;                new MethodType(Type.Void, tleft, tright));
+<i>186</i>&nbsp;
+<b class="nc"><i>187</i>&nbsp;        if (ptype != null) {</b>
+<b class="nc"><i>188</i>&nbsp;            Type arg1 = (Type) ptype.argsType().elementAt(0);</b>
+<b class="nc"><i>189</i>&nbsp;            if (!arg1.identicalTo(tleft)) {</b>
+<b class="nc"><i>190</i>&nbsp;                _left = new CastExpr(_left, arg1);</b>
+<i>191</i>&nbsp;            }
+<b class="nc"><i>192</i>&nbsp;            Type arg2 = (Type) ptype.argsType().elementAt(1);</b>
+<b class="nc"><i>193</i>&nbsp;            if (!arg2.identicalTo(tright)) {</b>
+<b class="nc"><i>194</i>&nbsp;                _right = new CastExpr(_right, arg1);</b>
+<i>195</i>&nbsp;            }
+<b class="nc"><i>196</i>&nbsp;            return _type = ptype.resultType();</b>
+<i>197</i>&nbsp;        }
+<b class="nc"><i>198</i>&nbsp;        throw new TypeCheckError(this);</b>
+<i>199</i>&nbsp;    }
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+<b class="nc"><i>202</i>&nbsp;        if (hasNodeSetArgs() || hasReferenceArgs()) {</b>
+<b class="nc"><i>203</i>&nbsp;            final ConstantPoolGen cpg = classGen.getConstantPool();</b>
+<b class="nc"><i>204</i>&nbsp;            final InstructionList il = methodGen.getInstructionList();</b>
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;            // Call compare() from the BasisLibrary
+<b class="nc"><i>207</i>&nbsp;            _left.translate(classGen, methodGen);</b>
+<b class="nc"><i>208</i>&nbsp;            _left.startIterator(classGen, methodGen);</b>
+<b class="nc"><i>209</i>&nbsp;            _right.translate(classGen, methodGen);</b>
+<b class="nc"><i>210</i>&nbsp;            _right.startIterator(classGen, methodGen);</b>
+<i>211</i>&nbsp;
+<b class="nc"><i>212</i>&nbsp;            il.append(new PUSH(cpg, _op));</b>
+<b class="nc"><i>213</i>&nbsp;            il.append(methodGen.loadDOM());</b>
+<i>214</i>&nbsp;
+<b class="nc"><i>215</i>&nbsp;            int index = cpg.addMethodref(BASIS_LIBRARY_CLASS, &quot;compare&quot;,</b>
+<i>216</i>&nbsp;                                         &quot;(&quot;
+<b class="nc"><i>217</i>&nbsp;                                         + _left.getType().toSignature()</b>
+<b class="nc"><i>218</i>&nbsp;                                         + _right.getType().toSignature()</b>
+<i>219</i>&nbsp;                                         + &quot;I&quot;
+<i>220</i>&nbsp;                                         + DOM_INTF_SIG
+<i>221</i>&nbsp;                                         + &quot;)Z&quot;);
+<b class="nc"><i>222</i>&nbsp;            il.append(new INVOKESTATIC(index));</b>
+<b class="nc"><i>223</i>&nbsp;        }</b>
+<i>224</i>&nbsp;        else {
+<b class="nc"><i>225</i>&nbsp;            translateDesynthesized(classGen, methodGen);</b>
+<b class="nc"><i>226</i>&nbsp;            synthesize(classGen, methodGen);</b>
+<i>227</i>&nbsp;        }
+<i>228</i>&nbsp;    }
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;    public void translateDesynthesized(ClassGenerator classGen,
+<i>231</i>&nbsp;                                       MethodGenerator methodGen) {
+<b class="nc"><i>232</i>&nbsp;        if (hasNodeSetArgs() || hasReferenceArgs()) {</b>
+<b class="nc"><i>233</i>&nbsp;            translate(classGen, methodGen);</b>
+<b class="nc"><i>234</i>&nbsp;            desynthesize(classGen, methodGen);</b>
+<i>235</i>&nbsp;        }
+<i>236</i>&nbsp;        else {
+<b class="nc"><i>237</i>&nbsp;            BranchInstruction bi = null;</b>
+<b class="nc"><i>238</i>&nbsp;            final InstructionList il = methodGen.getInstructionList();</b>
+<i>239</i>&nbsp;
+<b class="nc"><i>240</i>&nbsp;            _left.translate(classGen, methodGen);</b>
+<b class="nc"><i>241</i>&nbsp;            _right.translate(classGen, methodGen);</b>
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;            // TODO: optimize if one of the args is 0
+<i>244</i>&nbsp;
+<b class="nc"><i>245</i>&nbsp;            boolean tozero = false;</b>
+<b class="nc"><i>246</i>&nbsp;            Type tleft = _left.getType();</b>
+<i>247</i>&nbsp;
+<b class="nc"><i>248</i>&nbsp;            if (tleft instanceof RealType) {</b>
+<b class="nc"><i>249</i>&nbsp;        il.append(tleft.CMP(_op == Operators.LT || _op == Operators.LE));</b>
+<b class="nc"><i>250</i>&nbsp;                tleft = Type.Int;</b>
+<b class="nc"><i>251</i>&nbsp;                tozero = true;</b>
+<i>252</i>&nbsp;            }
+<i>253</i>&nbsp;
+<b class="nc"><i>254</i>&nbsp;            switch (_op) {</b>
+<i>255</i>&nbsp;        case Operators.LT:
+<b class="nc"><i>256</i>&nbsp;                bi = tleft.GE(tozero);</b>
+<b class="nc"><i>257</i>&nbsp;                break;</b>
+<i>258</i>&nbsp;
+<i>259</i>&nbsp;        case Operators.GT:
+<b class="nc"><i>260</i>&nbsp;                bi = tleft.LE(tozero);</b>
+<b class="nc"><i>261</i>&nbsp;                break;</b>
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;        case Operators.LE:
+<b class="nc"><i>264</i>&nbsp;                bi = tleft.GT(tozero);</b>
+<b class="nc"><i>265</i>&nbsp;                break;</b>
+<i>266</i>&nbsp;
+<i>267</i>&nbsp;        case Operators.GE:
+<b class="nc"><i>268</i>&nbsp;                bi = tleft.LT(tozero);</b>
+<b class="nc"><i>269</i>&nbsp;                break;</b>
+<i>270</i>&nbsp;
+<i>271</i>&nbsp;            default:
+<b class="nc"><i>272</i>&nbsp;                ErrorMsg msg = new ErrorMsg(ErrorMsg.ILLEGAL_RELAT_OP_ERR,this);</b>
+<b class="nc"><i>273</i>&nbsp;                getParser().reportError(Constants.FATAL, msg);</b>
+<i>274</i>&nbsp;            }
+<i>275</i>&nbsp;
+<b class="nc"><i>276</i>&nbsp;            _falseList.add(il.append(bi));              // must be backpatched</b>
+<i>277</i>&nbsp;        }
+<i>278</i>&nbsp;    }
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;    public String toString() {
+<b class="nc"><i>281</i>&nbsp;        return Operators.getOpNames(_op) + &#39;(&#39; + _left + &quot;, &quot; + _right + &#39;)&#39;;</b>
+<i>282</i>&nbsp;    }
+<i>283</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

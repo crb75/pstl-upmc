@@ -1,0 +1,297 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SlotTableStack</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.interceptors</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SlotTableStack (com.sun.corba.se.impl.interceptors)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SlotTableStack</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 27)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SlotTableStack$SlotTablePool</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 38)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.interceptors;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import org.omg.CORBA.CompletionStatus;
+<i>29</i>&nbsp;import org.omg.CORBA.INTERNAL;
+<i>30</i>&nbsp;import org.omg.PortableInterceptor.Current;
+<i>31</i>&nbsp;import org.omg.PortableInterceptor.InvalidSlot;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import com.sun.corba.se.impl.corba.AnyImpl;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import com.sun.corba.se.impl.logging.InterceptorsSystemException;
+<i>36</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;/**
+<i>41</i>&nbsp; * SlotTableStack is the container of SlotTable instances for each thread
+<i>42</i>&nbsp; */
+<i>43</i>&nbsp;public class SlotTableStack
+<i>44</i>&nbsp;{
+<i>45</i>&nbsp;    // SlotTablePool is the container for reusable SlotTables&#39;
+<i>46</i>&nbsp;    private class SlotTablePool {
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;        // Contains a list of reusable SlotTable
+<i>49</i>&nbsp;        private SlotTable[] pool;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;        // High water mark for the pool
+<i>52</i>&nbsp;        // If the pool size reaches this limit then putSlotTable will
+<i>53</i>&nbsp;        // not put SlotTable to the pool.
+<b class="nc"><i>54</i>&nbsp;        private final int  HIGH_WATER_MARK = 5;</b>
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;        // currentIndex points to the last SlotTable in the list
+<i>57</i>&nbsp;        private int currentIndex;
+<i>58</i>&nbsp;
+<b class="nc"><i>59</i>&nbsp;        SlotTablePool( ) {</b>
+<b class="nc"><i>60</i>&nbsp;            pool = new SlotTable[HIGH_WATER_MARK];</b>
+<b class="nc"><i>61</i>&nbsp;            currentIndex = 0;</b>
+<i>62</i>&nbsp;        }
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;        /**
+<i>65</i>&nbsp;         * Puts SlotTable to the re-usable pool.
+<i>66</i>&nbsp;         */
+<i>67</i>&nbsp;        void putSlotTable( SlotTable table ) {
+<i>68</i>&nbsp;            // If there are enough SlotTables in the pool, then don&#39;t add
+<i>69</i>&nbsp;            // this table to the pool.
+<b class="nc"><i>70</i>&nbsp;            if( currentIndex &gt;= HIGH_WATER_MARK ) {</b>
+<i>71</i>&nbsp;                // Let the garbage collector collect it.
+<i>72</i>&nbsp;                return;
+<i>73</i>&nbsp;            }
+<b class="nc"><i>74</i>&nbsp;            pool[currentIndex] = table;</b>
+<b class="nc"><i>75</i>&nbsp;            currentIndex++;</b>
+<i>76</i>&nbsp;        }
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;        /**
+<i>79</i>&nbsp;         * Gets SlotTable from the re-usable pool.
+<i>80</i>&nbsp;         */
+<i>81</i>&nbsp;        SlotTable getSlotTable( ) {
+<i>82</i>&nbsp;            // If there are no entries in the pool then return null
+<b class="nc"><i>83</i>&nbsp;            if( currentIndex == 0 ) {</b>
+<b class="nc"><i>84</i>&nbsp;                return null;</b>
+<i>85</i>&nbsp;            }
+<i>86</i>&nbsp;            // Works like a stack, Gets the last one added first
+<b class="nc"><i>87</i>&nbsp;            currentIndex--;</b>
+<b class="nc"><i>88</i>&nbsp;            return pool[currentIndex];</b>
+<i>89</i>&nbsp;        }
+<i>90</i>&nbsp;    }
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;    // Contains all the active SlotTables for each thread.
+<i>93</i>&nbsp;    // The List is made to behave like a stack.
+<i>94</i>&nbsp;    private java.util.List tableContainer;
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    // Keeps track of number of PICurrents in the stack.
+<i>97</i>&nbsp;    private int currentIndex;
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    // For Every Thread there will be a pool of re-usable SlotTables&#39;
+<i>100</i>&nbsp;    // stored in SlotTablePool
+<i>101</i>&nbsp;    private SlotTablePool tablePool;
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    // The ORB associated with this slot table stack
+<i>104</i>&nbsp;    private ORB orb;
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;    private InterceptorsSystemException wrapper ;
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;    /**
+<i>109</i>&nbsp;     * Constructs the stack and and SlotTablePool
+<i>110</i>&nbsp;     */
+<b class="nc"><i>111</i>&nbsp;    SlotTableStack( ORB orb, SlotTable table ) {</b>
+<b class="nc"><i>112</i>&nbsp;       this.orb = orb;</b>
+<b class="nc"><i>113</i>&nbsp;       wrapper = InterceptorsSystemException.get( orb, CORBALogDomains.RPC_PROTOCOL ) ;</b>
+<i>114</i>&nbsp;
+<b class="nc"><i>115</i>&nbsp;       currentIndex = 0;</b>
+<b class="nc"><i>116</i>&nbsp;       tableContainer = new java.util.ArrayList( );</b>
+<b class="nc"><i>117</i>&nbsp;       tablePool = new SlotTablePool( );</b>
+<i>118</i>&nbsp;       // SlotTableStack will be created with one SlotTable on the stack.
+<i>119</i>&nbsp;       // This table is used as the reference to query for number of
+<i>120</i>&nbsp;       // allocated slots to create other slottables.
+<b class="nc"><i>121</i>&nbsp;       tableContainer.add( currentIndex, table );</b>
+<b class="nc"><i>122</i>&nbsp;       currentIndex++;</b>
+<i>123</i>&nbsp;    }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;    /**
+<i>127</i>&nbsp;     * pushSlotTable  pushes a fresh Slot Table on to the stack by doing the
+<i>128</i>&nbsp;     * following,
+<i>129</i>&nbsp;     * 1: Checks to see if there is any SlotTable in SlotTablePool
+<i>130</i>&nbsp;     *    If present then use that instance to push into the SlotTableStack
+<i>131</i>&nbsp;     *
+<i>132</i>&nbsp;     * 2: If there is no SlotTable in the pool, then creates a new one and
+<i>133</i>&nbsp;     *    pushes that into the SlotTableStack
+<i>134</i>&nbsp;     */
+<i>135</i>&nbsp;    void pushSlotTable( ) {
+<b class="nc"><i>136</i>&nbsp;        SlotTable table = tablePool.getSlotTable( );</b>
+<b class="nc"><i>137</i>&nbsp;        if( table == null ) {</b>
+<i>138</i>&nbsp;            // get an existing PICurrent to get the slotSize
+<b class="nc"><i>139</i>&nbsp;            SlotTable tableTemp = peekSlotTable();</b>
+<b class="nc"><i>140</i>&nbsp;            table = new SlotTable( orb, tableTemp.getSize( ));</b>
+<i>141</i>&nbsp;        }
+<i>142</i>&nbsp;        // NOTE: Very important not to always &quot;add&quot; - otherwise a memory leak.
+<b class="nc"><i>143</i>&nbsp;        if (currentIndex == tableContainer.size()) {</b>
+<i>144</i>&nbsp;            // Add will cause the table to grow.
+<b class="nc"><i>145</i>&nbsp;            tableContainer.add( currentIndex, table );</b>
+<b class="nc"><i>146</i>&nbsp;        } else if (currentIndex &gt; tableContainer.size()) {</b>
+<b class="nc"><i>147</i>&nbsp;            throw wrapper.slotTableInvariant( new Integer( currentIndex ),</b>
+<b class="nc"><i>148</i>&nbsp;                new Integer( tableContainer.size() ) ) ;</b>
+<i>149</i>&nbsp;        } else {
+<i>150</i>&nbsp;            // Set will override unused slots.
+<b class="nc"><i>151</i>&nbsp;            tableContainer.set( currentIndex, table );</b>
+<i>152</i>&nbsp;        }
+<b class="nc"><i>153</i>&nbsp;        currentIndex++;</b>
+<i>154</i>&nbsp;    }
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;    /**
+<i>157</i>&nbsp;     * popSlotTable does the following
+<i>158</i>&nbsp;     * 1: pops the top SlotTable in the SlotTableStack
+<i>159</i>&nbsp;     *
+<i>160</i>&nbsp;     * 2: resets the slots in the SlotTable which resets the slotvalues to
+<i>161</i>&nbsp;     *    null if there are any previous sets.
+<i>162</i>&nbsp;     *
+<i>163</i>&nbsp;     * 3: puts the reset SlotTable into the SlotTablePool to reuse
+<i>164</i>&nbsp;     */
+<i>165</i>&nbsp;    void  popSlotTable( ) {
+<b class="nc"><i>166</i>&nbsp;        if( currentIndex &lt;= 1 ) {</b>
+<i>167</i>&nbsp;            // Do not pop the SlotTable, If there is only one.
+<i>168</i>&nbsp;            // This should not happen, But an extra check for safety.
+<b class="nc"><i>169</i>&nbsp;            throw wrapper.cantPopOnlyPicurrent() ;</b>
+<i>170</i>&nbsp;        }
+<b class="nc"><i>171</i>&nbsp;        currentIndex--;</b>
+<b class="nc"><i>172</i>&nbsp;        SlotTable table = (SlotTable)tableContainer.get( currentIndex );</b>
+<b class="nc"><i>173</i>&nbsp;        tableContainer.set( currentIndex, null ); // Do not leak memory.</b>
+<b class="nc"><i>174</i>&nbsp;        table.resetSlots( );</b>
+<b class="nc"><i>175</i>&nbsp;        tablePool.putSlotTable( table );</b>
+<i>176</i>&nbsp;    }
+<i>177</i>&nbsp;
+<i>178</i>&nbsp;    /**
+<i>179</i>&nbsp;     * peekSlotTable gets the top SlotTable from the SlotTableStack without
+<i>180</i>&nbsp;     * popping.
+<i>181</i>&nbsp;     */
+<i>182</i>&nbsp;    SlotTable peekSlotTable( ) {
+<b class="nc"><i>183</i>&nbsp;       return (SlotTable) tableContainer.get( currentIndex - 1);</b>
+<i>184</i>&nbsp;    }
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;}
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;// End of file.
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

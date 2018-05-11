@@ -1,0 +1,293 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XalanXPathAPI</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.security.utils</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XalanXPathAPI (com.sun.org.apache.xml.internal.security.utils)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XalanXPathAPI</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 68)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one
+<i>7</i>&nbsp; * or more contributor license agreements. See the NOTICE file
+<i>8</i>&nbsp; * distributed with this work for additional information
+<i>9</i>&nbsp; * regarding copyright ownership. The ASF licenses this file
+<i>10</i>&nbsp; * to you under the Apache License, Version 2.0 (the
+<i>11</i>&nbsp; * &quot;License&quot;); you may not use this file except in compliance
+<i>12</i>&nbsp; * with the License. You may obtain a copy of the License at
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * http://www.apache.org/licenses/LICENSE-2.0
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; * Unless required by applicable law or agreed to in writing,
+<i>17</i>&nbsp; * software distributed under the License is distributed on an
+<i>18</i>&nbsp; * &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+<i>19</i>&nbsp; * KIND, either express or implied. See the License for the
+<i>20</i>&nbsp; * specific language governing permissions and limitations
+<i>21</i>&nbsp; * under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.security.utils;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.lang.reflect.Constructor;
+<i>26</i>&nbsp;import java.lang.reflect.Method;
+<i>27</i>&nbsp;import java.lang.reflect.Modifier;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import javax.xml.transform.ErrorListener;
+<i>30</i>&nbsp;import javax.xml.transform.SourceLocator;
+<i>31</i>&nbsp;import javax.xml.transform.TransformerException;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import com.sun.org.apache.xml.internal.security.transforms.implementations.FuncHere;
+<i>34</i>&nbsp;import com.sun.org.apache.xml.internal.utils.PrefixResolver;
+<i>35</i>&nbsp;import com.sun.org.apache.xml.internal.utils.PrefixResolverDefault;
+<i>36</i>&nbsp;import com.sun.org.apache.xpath.internal.Expression;
+<i>37</i>&nbsp;import com.sun.org.apache.xpath.internal.XPath;
+<i>38</i>&nbsp;import com.sun.org.apache.xpath.internal.XPathContext;
+<i>39</i>&nbsp;import com.sun.org.apache.xpath.internal.compiler.FunctionTable;
+<i>40</i>&nbsp;import com.sun.org.apache.xpath.internal.objects.XObject;
+<i>41</i>&nbsp;import org.w3c.dom.Document;
+<i>42</i>&nbsp;import org.w3c.dom.Node;
+<i>43</i>&nbsp;import org.w3c.dom.NodeList;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;/**
+<i>46</i>&nbsp; * An implementation of XPathAPI using Xalan. This supports the &quot;here()&quot; function defined in the digital
+<i>47</i>&nbsp; * signature spec.
+<i>48</i>&nbsp; */
+<b class="nc"><i>49</i>&nbsp;public class XalanXPathAPI implements XPathAPI {</b>
+<i>50</i>&nbsp;
+<b class="nc"><i>51</i>&nbsp;    private static java.util.logging.Logger log =</b>
+<b class="nc"><i>52</i>&nbsp;        java.util.logging.Logger.getLogger(XalanXPathAPI.class.getName());</b>
+<i>53</i>&nbsp;
+<b class="nc"><i>54</i>&nbsp;    private String xpathStr = null;</b>
+<i>55</i>&nbsp;
+<b class="nc"><i>56</i>&nbsp;    private XPath xpath = null;</b>
+<i>57</i>&nbsp;
+<b class="nc"><i>58</i>&nbsp;    private static FunctionTable funcTable = null;</b>
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    private static boolean installed;
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    private XPathContext context;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    static {
+<b class="nc"><i>65</i>&nbsp;        fixupFunctionTable();</b>
+<i>66</i>&nbsp;    }
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    /**
+<i>70</i>&nbsp;     *  Use an XPath string to select a nodelist.
+<i>71</i>&nbsp;     *  XPath namespace prefixes are resolved from the namespaceNode.
+<i>72</i>&nbsp;     *
+<i>73</i>&nbsp;     *  @param contextNode The node to start searching from.
+<i>74</i>&nbsp;     *  @param xpathnode
+<i>75</i>&nbsp;     *  @param str
+<i>76</i>&nbsp;     *  @param namespaceNode The node from which prefixes in the XPath will be resolved to namespaces.
+<i>77</i>&nbsp;     *  @return A NodeIterator, should never be null.
+<i>78</i>&nbsp;     *
+<i>79</i>&nbsp;     * @throws TransformerException
+<i>80</i>&nbsp;     */
+<i>81</i>&nbsp;    public NodeList selectNodeList(
+<i>82</i>&nbsp;        Node contextNode, Node xpathnode, String str, Node namespaceNode
+<i>83</i>&nbsp;    ) throws TransformerException {
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;        // Execute the XPath, and have it return the result
+<b class="nc"><i>86</i>&nbsp;        XObject list = eval(contextNode, xpathnode, str, namespaceNode);</b>
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;        // Return a NodeList.
+<b class="nc"><i>89</i>&nbsp;        return list.nodelist();</b>
+<i>90</i>&nbsp;    }
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;    /**
+<i>93</i>&nbsp;     * Evaluate an XPath string and return true if the output is to be included or not.
+<i>94</i>&nbsp;     *  @param contextNode The node to start searching from.
+<i>95</i>&nbsp;     *  @param xpathnode The XPath node
+<i>96</i>&nbsp;     *  @param str The XPath expression
+<i>97</i>&nbsp;     *  @param namespaceNode The node from which prefixes in the XPath will be resolved to namespaces.
+<i>98</i>&nbsp;     */
+<i>99</i>&nbsp;    public boolean evaluate(Node contextNode, Node xpathnode, String str, Node namespaceNode)
+<i>100</i>&nbsp;        throws TransformerException {
+<b class="nc"><i>101</i>&nbsp;        XObject object = eval(contextNode, xpathnode, str, namespaceNode);</b>
+<b class="nc"><i>102</i>&nbsp;        return object.bool();</b>
+<i>103</i>&nbsp;    }
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;    /**
+<i>106</i>&nbsp;     * Clear any context information from this object
+<i>107</i>&nbsp;     */
+<i>108</i>&nbsp;    public void clear() {
+<b class="nc"><i>109</i>&nbsp;        xpathStr = null;</b>
+<b class="nc"><i>110</i>&nbsp;        xpath = null;</b>
+<b class="nc"><i>111</i>&nbsp;        context = null;</b>
+<i>112</i>&nbsp;    }
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;    public synchronized static boolean isInstalled() {
+<b class="nc"><i>115</i>&nbsp;        return installed;</b>
+<i>116</i>&nbsp;    }
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;    private XObject eval(Node contextNode, Node xpathnode, String str, Node namespaceNode)
+<i>119</i>&nbsp;        throws TransformerException {
+<b class="nc"><i>120</i>&nbsp;        if (context == null) {</b>
+<b class="nc"><i>121</i>&nbsp;            context = new XPathContext(xpathnode);</b>
+<b class="nc"><i>122</i>&nbsp;            context.setSecureProcessing(true);</b>
+<i>123</i>&nbsp;        }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;        // Create an object to resolve namespace prefixes.
+<i>126</i>&nbsp;        // XPath namespaces are resolved from the input context node&#39;s document element
+<i>127</i>&nbsp;        // if it is a root node, or else the current context node (for lack of a better
+<i>128</i>&nbsp;        // resolution space, given the simplicity of this sample code).
+<b class="nc"><i>129</i>&nbsp;        Node resolverNode =</b>
+<b class="nc"><i>130</i>&nbsp;            (namespaceNode.getNodeType() == Node.DOCUMENT_NODE)</b>
+<b class="nc"><i>131</i>&nbsp;                ? ((Document) namespaceNode).getDocumentElement() : namespaceNode;</b>
+<b class="nc"><i>132</i>&nbsp;        PrefixResolverDefault prefixResolver = new PrefixResolverDefault(resolverNode);</b>
+<i>133</i>&nbsp;
+<b class="nc"><i>134</i>&nbsp;        if (!str.equals(xpathStr)) {</b>
+<b class="nc"><i>135</i>&nbsp;            if (str.indexOf(&quot;here()&quot;) &gt; 0) {</b>
+<b class="nc"><i>136</i>&nbsp;                context.reset();</b>
+<i>137</i>&nbsp;            }
+<b class="nc"><i>138</i>&nbsp;            xpath = createXPath(str, prefixResolver);</b>
+<b class="nc"><i>139</i>&nbsp;            xpathStr = str;</b>
+<i>140</i>&nbsp;        }
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;        // Execute the XPath, and have it return the result
+<b class="nc"><i>143</i>&nbsp;        int ctxtNode = context.getDTMHandleFromNode(contextNode);</b>
+<i>144</i>&nbsp;
+<b class="nc"><i>145</i>&nbsp;        return xpath.execute(context, ctxtNode, prefixResolver);</b>
+<i>146</i>&nbsp;    }
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;    private XPath createXPath(String str, PrefixResolver prefixResolver) throws TransformerException {
+<b class="nc"><i>149</i>&nbsp;        XPath xpath = null;</b>
+<b class="nc"><i>150</i>&nbsp;        Class&lt;?&gt;[] classes = new Class&lt;?&gt;[]{String.class, SourceLocator.class, PrefixResolver.class, int.class,</b>
+<i>151</i>&nbsp;                                      ErrorListener.class, FunctionTable.class};
+<b class="nc"><i>152</i>&nbsp;        Object[] objects =</b>
+<b class="nc"><i>153</i>&nbsp;            new Object[]{str, null, prefixResolver, Integer.valueOf(XPath.SELECT), null, funcTable};</b>
+<i>154</i>&nbsp;        try {
+<b class="nc"><i>155</i>&nbsp;            Constructor&lt;?&gt; constructor = XPath.class.getConstructor(classes);</b>
+<b class="nc"><i>156</i>&nbsp;            xpath = (XPath) constructor.newInstance(objects);</b>
+<b class="nc"><i>157</i>&nbsp;        } catch (Exception ex) {</b>
+<b class="nc"><i>158</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>159</i>&nbsp;                log.log(java.util.logging.Level.FINE, ex.getMessage(), ex);</b>
+<i>160</i>&nbsp;            }
+<b class="nc"><i>161</i>&nbsp;        }</b>
+<b class="nc"><i>162</i>&nbsp;        if (xpath == null) {</b>
+<b class="nc"><i>163</i>&nbsp;            xpath = new XPath(str, null, prefixResolver, XPath.SELECT, null);</b>
+<i>164</i>&nbsp;        }
+<b class="nc"><i>165</i>&nbsp;        return xpath;</b>
+<i>166</i>&nbsp;    }
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;    private synchronized static void fixupFunctionTable() {
+<b class="nc"><i>169</i>&nbsp;        installed = false;</b>
+<b class="nc"><i>170</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>171</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;Registering Here function&quot;);</b>
+<i>172</i>&nbsp;        }
+<i>173</i>&nbsp;        /**
+<i>174</i>&nbsp;         * Try to register our here() implementation as internal function.
+<i>175</i>&nbsp;         */
+<i>176</i>&nbsp;        try {
+<b class="nc"><i>177</i>&nbsp;            Class&lt;?&gt;[] args = {String.class, Expression.class};</b>
+<b class="nc"><i>178</i>&nbsp;            Method installFunction = FunctionTable.class.getMethod(&quot;installFunction&quot;, args);</b>
+<b class="nc"><i>179</i>&nbsp;            if ((installFunction.getModifiers() &amp; Modifier.STATIC) != 0) {</b>
+<b class="nc"><i>180</i>&nbsp;                Object[] params = {&quot;here&quot;, new FuncHere()};</b>
+<b class="nc"><i>181</i>&nbsp;                installFunction.invoke(null, params);</b>
+<b class="nc"><i>182</i>&nbsp;                installed = true;</b>
+<i>183</i>&nbsp;            }
+<b class="nc"><i>184</i>&nbsp;        } catch (Exception ex) {</b>
+<b class="nc"><i>185</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;Error installing function using the static installFunction method&quot;, ex);</b>
+<b class="nc"><i>186</i>&nbsp;        }</b>
+<b class="nc"><i>187</i>&nbsp;        if (!installed) {</b>
+<i>188</i>&nbsp;            try {
+<b class="nc"><i>189</i>&nbsp;                funcTable = new FunctionTable();</b>
+<b class="nc"><i>190</i>&nbsp;                Class&lt;?&gt;[] args = {String.class, Class.class};</b>
+<b class="nc"><i>191</i>&nbsp;                Method installFunction = FunctionTable.class.getMethod(&quot;installFunction&quot;, args);</b>
+<b class="nc"><i>192</i>&nbsp;                Object[] params = {&quot;here&quot;, FuncHere.class};</b>
+<b class="nc"><i>193</i>&nbsp;                installFunction.invoke(funcTable, params);</b>
+<b class="nc"><i>194</i>&nbsp;                installed = true;</b>
+<b class="nc"><i>195</i>&nbsp;            } catch (Exception ex) {</b>
+<b class="nc"><i>196</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;Error installing function using the static installFunction method&quot;, ex);</b>
+<b class="nc"><i>197</i>&nbsp;            }</b>
+<i>198</i>&nbsp;        }
+<b class="nc"><i>199</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>200</i>&nbsp;            if (installed) {</b>
+<b class="nc"><i>201</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;Registered class &quot; + FuncHere.class.getName()</b>
+<i>202</i>&nbsp;                          + &quot; for XPath function &#39;here()&#39; function in internal table&quot;);
+<i>203</i>&nbsp;            } else {
+<b class="nc"><i>204</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;Unable to register class &quot; + FuncHere.class.getName()</b>
+<i>205</i>&nbsp;                          + &quot; for XPath function &#39;here()&#39; function in internal table&quot;);
+<i>206</i>&nbsp;            }
+<i>207</i>&nbsp;        }
+<i>208</i>&nbsp;    }
+<i>209</i>&nbsp;
+<i>210</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

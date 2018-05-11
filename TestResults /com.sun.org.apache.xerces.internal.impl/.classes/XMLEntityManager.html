@@ -1,0 +1,3182 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XMLEntityManager</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XMLEntityManager (com.sun.org.apache.xerces.internal.impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XMLEntityManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 57)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 837)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">XMLEntityManager$CharacterBuffer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">XMLEntityManager$CharacterBufferPool</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 25)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">XMLEntityManager$RewindableInputStream</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 76)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 76)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 942)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2003, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl ;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.io.ASCIIReader;
+<i>24</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.io.UCSReader;
+<i>25</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.io.UTF8Reader;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.msg.XMLMessageFormatter;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.validation.ValidationManager;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.util.*;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.util.URI;
+<i>30</i>&nbsp;import com.sun.org.apache.xerces.internal.utils.SecuritySupport;
+<i>31</i>&nbsp;import com.sun.org.apache.xerces.internal.utils.XMLLimitAnalyzer;
+<i>32</i>&nbsp;import com.sun.org.apache.xerces.internal.utils.XMLSecurityManager;
+<i>33</i>&nbsp;import com.sun.org.apache.xerces.internal.utils.XMLSecurityPropertyManager;
+<i>34</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.Augmentations;
+<i>35</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
+<i>36</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XNIException;
+<i>37</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.*;
+<i>38</i>&nbsp;import com.sun.xml.internal.stream.Entity;
+<i>39</i>&nbsp;import com.sun.xml.internal.stream.StaxEntityResolverWrapper;
+<i>40</i>&nbsp;import com.sun.xml.internal.stream.StaxXMLInputSource;
+<i>41</i>&nbsp;import com.sun.xml.internal.stream.XMLEntityStorage;
+<i>42</i>&nbsp;import java.io.*;
+<i>43</i>&nbsp;import java.lang.reflect.Method;
+<i>44</i>&nbsp;import java.net.HttpURLConnection;
+<i>45</i>&nbsp;import java.net.URISyntaxException;
+<i>46</i>&nbsp;import java.net.URL;
+<i>47</i>&nbsp;import java.net.URLConnection;
+<i>48</i>&nbsp;import java.util.HashMap;
+<i>49</i>&nbsp;import java.util.Iterator;
+<i>50</i>&nbsp;import java.util.Locale;
+<i>51</i>&nbsp;import java.util.Map;
+<i>52</i>&nbsp;import java.util.Stack;
+<i>53</i>&nbsp;import javax.xml.stream.XMLInputFactory;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;/**
+<i>57</i>&nbsp; * Will keep track of current entity.
+<i>58</i>&nbsp; *
+<i>59</i>&nbsp; * The entity manager handles the registration of general and parameter
+<i>60</i>&nbsp; * entities; resolves entities; and starts entities. The entity manager
+<i>61</i>&nbsp; * is a central component in a standard parser configuration and this
+<i>62</i>&nbsp; * class works directly with the entity scanner to manage the underlying
+<i>63</i>&nbsp; * xni.
+<i>64</i>&nbsp; * &lt;p&gt;
+<i>65</i>&nbsp; * This component requires the following features and properties from the
+<i>66</i>&nbsp; * component manager that uses it:
+<i>67</i>&nbsp; * &lt;ul&gt;
+<i>68</i>&nbsp; *  &lt;li&gt;http://xml.org/sax/features/validation&lt;/li&gt;
+<i>69</i>&nbsp; *  &lt;li&gt;http://xml.org/sax/features/external-general-entities&lt;/li&gt;
+<i>70</i>&nbsp; *  &lt;li&gt;http://xml.org/sax/features/external-parameter-entities&lt;/li&gt;
+<i>71</i>&nbsp; *  &lt;li&gt;http://apache.org/xml/features/allow-java-encodings&lt;/li&gt;
+<i>72</i>&nbsp; *  &lt;li&gt;http://apache.org/xml/properties/internal/symbol-table&lt;/li&gt;
+<i>73</i>&nbsp; *  &lt;li&gt;http://apache.org/xml/properties/internal/error-reporter&lt;/li&gt;
+<i>74</i>&nbsp; *  &lt;li&gt;http://apache.org/xml/properties/internal/entity-resolver&lt;/li&gt;
+<i>75</i>&nbsp; * &lt;/ul&gt;
+<i>76</i>&nbsp; *
+<i>77</i>&nbsp; *
+<i>78</i>&nbsp; * @author Andy Clark, IBM
+<i>79</i>&nbsp; * @author Arnaud  Le Hors, IBM
+<i>80</i>&nbsp; * @author K.Venugopal SUN Microsystems
+<i>81</i>&nbsp; * @author Neeraj Bajaj SUN Microsystems
+<i>82</i>&nbsp; * @author Sunitha Reddy SUN Microsystems
+<i>83</i>&nbsp; * @version $Id: XMLEntityManager.java,v 1.17 2010-11-01 04:39:41 joehw Exp $
+<i>84</i>&nbsp; */
+<i>85</i>&nbsp;public class XMLEntityManager implements XMLComponent, XMLEntityResolver {
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    //
+<i>88</i>&nbsp;    // Constants
+<i>89</i>&nbsp;    //
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    /** Default buffer size (2048). */
+<i>92</i>&nbsp;    public static final int DEFAULT_BUFFER_SIZE = 8192;
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    /** Default buffer size before we&#39;ve finished with the XMLDecl:  */
+<i>95</i>&nbsp;    public static final int DEFAULT_XMLDECL_BUFFER_SIZE = 64;
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    /** Default internal entity buffer size (1024). */
+<i>98</i>&nbsp;    public static final int DEFAULT_INTERNAL_BUFFER_SIZE = 1024;
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;    // feature identifiers
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;    /** Feature identifier: validation. */
+<i>103</i>&nbsp;    protected static final String VALIDATION =
+<i>104</i>&nbsp;            Constants.SAX_FEATURE_PREFIX + Constants.VALIDATION_FEATURE;
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;    /**
+<i>107</i>&nbsp;     * standard uri conformant (strict uri).
+<i>108</i>&nbsp;     * http://apache.org/xml/features/standard-uri-conformant
+<i>109</i>&nbsp;     */
+<i>110</i>&nbsp;    protected boolean fStrictURI;
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    /** Feature identifier: external general entities. */
+<i>114</i>&nbsp;    protected static final String EXTERNAL_GENERAL_ENTITIES =
+<i>115</i>&nbsp;            Constants.SAX_FEATURE_PREFIX + Constants.EXTERNAL_GENERAL_ENTITIES_FEATURE;
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    /** Feature identifier: external parameter entities. */
+<i>118</i>&nbsp;    protected static final String EXTERNAL_PARAMETER_ENTITIES =
+<i>119</i>&nbsp;            Constants.SAX_FEATURE_PREFIX + Constants.EXTERNAL_PARAMETER_ENTITIES_FEATURE;
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;    /** Feature identifier: allow Java encodings. */
+<i>122</i>&nbsp;    protected static final String ALLOW_JAVA_ENCODINGS =
+<i>123</i>&nbsp;            Constants.XERCES_FEATURE_PREFIX + Constants.ALLOW_JAVA_ENCODINGS_FEATURE;
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    /** Feature identifier: warn on duplicate EntityDef */
+<i>126</i>&nbsp;    protected static final String WARN_ON_DUPLICATE_ENTITYDEF =
+<i>127</i>&nbsp;            Constants.XERCES_FEATURE_PREFIX +Constants.WARN_ON_DUPLICATE_ENTITYDEF_FEATURE;
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;    /** Feature identifier: load external DTD. */
+<i>130</i>&nbsp;    protected static final String LOAD_EXTERNAL_DTD =
+<i>131</i>&nbsp;            Constants.XERCES_FEATURE_PREFIX + Constants.LOAD_EXTERNAL_DTD_FEATURE;
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;    // property identifiers
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;    /** Property identifier: symbol table. */
+<i>136</i>&nbsp;    protected static final String SYMBOL_TABLE =
+<i>137</i>&nbsp;            Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY;
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;    /** Property identifier: error reporter. */
+<i>140</i>&nbsp;    protected static final String ERROR_REPORTER =
+<i>141</i>&nbsp;            Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_REPORTER_PROPERTY;
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;    /** Feature identifier: standard uri conformant */
+<i>144</i>&nbsp;    protected static final String STANDARD_URI_CONFORMANT =
+<i>145</i>&nbsp;            Constants.XERCES_FEATURE_PREFIX +Constants.STANDARD_URI_CONFORMANT_FEATURE;
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;    /** Property identifier: entity resolver. */
+<i>148</i>&nbsp;    protected static final String ENTITY_RESOLVER =
+<i>149</i>&nbsp;            Constants.XERCES_PROPERTY_PREFIX + Constants.ENTITY_RESOLVER_PROPERTY;
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;    protected static final String STAX_ENTITY_RESOLVER =
+<i>152</i>&nbsp;            Constants.XERCES_PROPERTY_PREFIX + Constants.STAX_ENTITY_RESOLVER_PROPERTY;
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;    // property identifier:  ValidationManager
+<i>155</i>&nbsp;    protected static final String VALIDATION_MANAGER =
+<i>156</i>&nbsp;            Constants.XERCES_PROPERTY_PREFIX + Constants.VALIDATION_MANAGER_PROPERTY;
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;    /** property identifier: buffer size. */
+<i>159</i>&nbsp;    protected static final String BUFFER_SIZE =
+<i>160</i>&nbsp;            Constants.XERCES_PROPERTY_PREFIX + Constants.BUFFER_SIZE_PROPERTY;
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;    /** property identifier: security manager. */
+<i>163</i>&nbsp;    protected static final String SECURITY_MANAGER =
+<i>164</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.SECURITY_MANAGER_PROPERTY;
+<i>165</i>&nbsp;
+<i>166</i>&nbsp;    protected static final String PARSER_SETTINGS =
+<i>167</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.PARSER_SETTINGS;
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;    /** Property identifier: Security property manager. */
+<i>170</i>&nbsp;    private static final String XML_SECURITY_PROPERTY_MANAGER =
+<i>171</i>&nbsp;            Constants.XML_SECURITY_PROPERTY_MANAGER;
+<i>172</i>&nbsp;
+<i>173</i>&nbsp;    /** access external dtd: file protocol */
+<i>174</i>&nbsp;    static final String EXTERNAL_ACCESS_DEFAULT = Constants.EXTERNAL_ACCESS_DEFAULT;
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    // recognized features and properties
+<i>177</i>&nbsp;
+<i>178</i>&nbsp;    /** Recognized features. */
+<b class="nc"><i>179</i>&nbsp;    private static final String[] RECOGNIZED_FEATURES = {</b>
+<i>180</i>&nbsp;                VALIDATION,
+<i>181</i>&nbsp;                EXTERNAL_GENERAL_ENTITIES,
+<i>182</i>&nbsp;                EXTERNAL_PARAMETER_ENTITIES,
+<i>183</i>&nbsp;                ALLOW_JAVA_ENCODINGS,
+<i>184</i>&nbsp;                WARN_ON_DUPLICATE_ENTITYDEF,
+<i>185</i>&nbsp;                STANDARD_URI_CONFORMANT
+<i>186</i>&nbsp;    };
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;    /** Feature defaults. */
+<b class="nc"><i>189</i>&nbsp;    private static final Boolean[] FEATURE_DEFAULTS = {</b>
+<i>190</i>&nbsp;                null,
+<i>191</i>&nbsp;                Boolean.TRUE,
+<i>192</i>&nbsp;                Boolean.TRUE,
+<i>193</i>&nbsp;                Boolean.TRUE,
+<i>194</i>&nbsp;                Boolean.FALSE,
+<i>195</i>&nbsp;                Boolean.FALSE
+<i>196</i>&nbsp;    };
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;    /** Recognized properties. */
+<b class="nc"><i>199</i>&nbsp;    private static final String[] RECOGNIZED_PROPERTIES = {</b>
+<i>200</i>&nbsp;                SYMBOL_TABLE,
+<i>201</i>&nbsp;                ERROR_REPORTER,
+<i>202</i>&nbsp;                ENTITY_RESOLVER,
+<i>203</i>&nbsp;                VALIDATION_MANAGER,
+<i>204</i>&nbsp;                BUFFER_SIZE,
+<i>205</i>&nbsp;                SECURITY_MANAGER,
+<i>206</i>&nbsp;                XML_SECURITY_PROPERTY_MANAGER
+<i>207</i>&nbsp;    };
+<i>208</i>&nbsp;
+<i>209</i>&nbsp;    /** Property defaults. */
+<b class="nc"><i>210</i>&nbsp;    private static final Object[] PROPERTY_DEFAULTS = {</b>
+<i>211</i>&nbsp;                null,
+<i>212</i>&nbsp;                null,
+<i>213</i>&nbsp;                null,
+<i>214</i>&nbsp;                null,
+<i>215</i>&nbsp;                new Integer(DEFAULT_BUFFER_SIZE),
+<i>216</i>&nbsp;                null,
+<i>217</i>&nbsp;                null
+<i>218</i>&nbsp;    };
+<i>219</i>&nbsp;
+<b class="nc"><i>220</i>&nbsp;    private static final String XMLEntity = &quot;[xml]&quot;.intern();</b>
+<b class="nc"><i>221</i>&nbsp;    private static final String DTDEntity = &quot;[dtd]&quot;.intern();</b>
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;    // debugging
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;    /**
+<i>226</i>&nbsp;     * Debug printing of buffer. This debugging flag works best when you
+<i>227</i>&nbsp;     * resize the DEFAULT_BUFFER_SIZE down to something reasonable like
+<i>228</i>&nbsp;     * 64 characters.
+<i>229</i>&nbsp;     */
+<i>230</i>&nbsp;    private static final boolean DEBUG_BUFFER = false;
+<i>231</i>&nbsp;
+<i>232</i>&nbsp;    /** warn on duplicate Entity declaration.
+<i>233</i>&nbsp;     *  http://apache.org/xml/features/warn-on-duplicate-entitydef
+<i>234</i>&nbsp;     */
+<i>235</i>&nbsp;    protected boolean fWarnDuplicateEntityDef;
+<i>236</i>&nbsp;
+<i>237</i>&nbsp;    /** Debug some basic entities. */
+<i>238</i>&nbsp;    private static final boolean DEBUG_ENTITIES = false;
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;    /** Debug switching readers for encodings. */
+<i>241</i>&nbsp;    private static final boolean DEBUG_ENCODINGS = false;
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;    // should be diplayed trace resolving messages
+<i>244</i>&nbsp;    private static final boolean DEBUG_RESOLVER = false ;
+<i>245</i>&nbsp;
+<i>246</i>&nbsp;    //
+<i>247</i>&nbsp;    // Data
+<i>248</i>&nbsp;    //
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;    // features
+<i>251</i>&nbsp;
+<i>252</i>&nbsp;    /**
+<i>253</i>&nbsp;     * Validation. This feature identifier is:
+<i>254</i>&nbsp;     * http://xml.org/sax/features/validation
+<i>255</i>&nbsp;     */
+<i>256</i>&nbsp;    protected boolean fValidation;
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;    /**
+<i>259</i>&nbsp;     * External general entities. This feature identifier is:
+<i>260</i>&nbsp;     * http://xml.org/sax/features/external-general-entities
+<i>261</i>&nbsp;     */
+<i>262</i>&nbsp;    protected boolean fExternalGeneralEntities;
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;    /**
+<i>265</i>&nbsp;     * External parameter entities. This feature identifier is:
+<i>266</i>&nbsp;     * http://xml.org/sax/features/external-parameter-entities
+<i>267</i>&nbsp;     */
+<i>268</i>&nbsp;    protected boolean fExternalParameterEntities;
+<i>269</i>&nbsp;
+<i>270</i>&nbsp;    /**
+<i>271</i>&nbsp;     * Allow Java encoding names. This feature identifier is:
+<i>272</i>&nbsp;     * http://apache.org/xml/features/allow-java-encodings
+<i>273</i>&nbsp;     */
+<b class="nc"><i>274</i>&nbsp;    protected boolean fAllowJavaEncodings = true ;</b>
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;    /** Load external DTD. */
+<b class="nc"><i>277</i>&nbsp;    protected boolean fLoadExternalDTD = true;</b>
+<i>278</i>&nbsp;
+<i>279</i>&nbsp;    // properties
+<i>280</i>&nbsp;
+<i>281</i>&nbsp;    /**
+<i>282</i>&nbsp;     * Symbol table. This property identifier is:
+<i>283</i>&nbsp;     * http://apache.org/xml/properties/internal/symbol-table
+<i>284</i>&nbsp;     */
+<i>285</i>&nbsp;    protected SymbolTable fSymbolTable;
+<i>286</i>&nbsp;
+<i>287</i>&nbsp;    /**
+<i>288</i>&nbsp;     * Error reporter. This property identifier is:
+<i>289</i>&nbsp;     * http://apache.org/xml/properties/internal/error-reporter
+<i>290</i>&nbsp;     */
+<i>291</i>&nbsp;    protected XMLErrorReporter fErrorReporter;
+<i>292</i>&nbsp;
+<i>293</i>&nbsp;    /**
+<i>294</i>&nbsp;     * Entity resolver. This property identifier is:
+<i>295</i>&nbsp;     * http://apache.org/xml/properties/internal/entity-resolver
+<i>296</i>&nbsp;     */
+<i>297</i>&nbsp;    protected XMLEntityResolver fEntityResolver;
+<i>298</i>&nbsp;
+<i>299</i>&nbsp;    /** Stax Entity Resolver. This property identifier is XMLInputFactory.ENTITY_RESOLVER */
+<i>300</i>&nbsp;
+<i>301</i>&nbsp;    protected StaxEntityResolverWrapper fStaxEntityResolver;
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;    /** Property Manager. This is used from Stax */
+<i>304</i>&nbsp;    protected PropertyManager fPropertyManager ;
+<i>305</i>&nbsp;
+<i>306</i>&nbsp;    /** StAX properties */
+<b class="nc"><i>307</i>&nbsp;    boolean fSupportDTD = true;</b>
+<b class="nc"><i>308</i>&nbsp;    boolean fReplaceEntityReferences = true;</b>
+<b class="nc"><i>309</i>&nbsp;    boolean fSupportExternalEntities = true;</b>
+<i>310</i>&nbsp;
+<i>311</i>&nbsp;    /** used to restrict external access */
+<b class="nc"><i>312</i>&nbsp;    protected String fAccessExternalDTD = EXTERNAL_ACCESS_DEFAULT;</b>
+<i>313</i>&nbsp;
+<i>314</i>&nbsp;    // settings
+<i>315</i>&nbsp;
+<i>316</i>&nbsp;    /**
+<i>317</i>&nbsp;     * Validation manager. This property identifier is:
+<i>318</i>&nbsp;     * http://apache.org/xml/properties/internal/validation-manager
+<i>319</i>&nbsp;     */
+<i>320</i>&nbsp;    protected ValidationManager fValidationManager;
+<i>321</i>&nbsp;
+<i>322</i>&nbsp;    // settings
+<i>323</i>&nbsp;
+<i>324</i>&nbsp;    /**
+<i>325</i>&nbsp;     * Buffer size. We get this value from a property. The default size
+<i>326</i>&nbsp;     * is used if the input buffer size property is not specified.
+<i>327</i>&nbsp;     * REVISIT: do we need a property for internal entity buffer size?
+<i>328</i>&nbsp;     */
+<b class="nc"><i>329</i>&nbsp;    protected int fBufferSize = DEFAULT_BUFFER_SIZE;</b>
+<i>330</i>&nbsp;
+<i>331</i>&nbsp;    /** Security Manager */
+<b class="nc"><i>332</i>&nbsp;    protected XMLSecurityManager fSecurityManager = null;</b>
+<i>333</i>&nbsp;
+<b class="nc"><i>334</i>&nbsp;    protected XMLLimitAnalyzer fLimitAnalyzer = null;</b>
+<i>335</i>&nbsp;
+<i>336</i>&nbsp;    protected int entityExpansionIndex;
+<i>337</i>&nbsp;
+<i>338</i>&nbsp;    /**
+<i>339</i>&nbsp;     * True if the document entity is standalone. This should really
+<i>340</i>&nbsp;     * only be set by the document source (e.g. XMLDocumentScanner).
+<i>341</i>&nbsp;     */
+<i>342</i>&nbsp;    protected boolean fStandalone;
+<i>343</i>&nbsp;
+<i>344</i>&nbsp;    // are the entities being parsed in the external subset?
+<i>345</i>&nbsp;    // NOTE:  this *is not* the same as whether they&#39;re external entities!
+<b class="nc"><i>346</i>&nbsp;    protected boolean fInExternalSubset = false;</b>
+<i>347</i>&nbsp;
+<i>348</i>&nbsp;
+<i>349</i>&nbsp;    // handlers
+<i>350</i>&nbsp;    /** Entity handler. */
+<i>351</i>&nbsp;    protected XMLEntityHandler fEntityHandler;
+<i>352</i>&nbsp;
+<i>353</i>&nbsp;    /** Current entity scanner */
+<i>354</i>&nbsp;    protected XMLEntityScanner fEntityScanner ;
+<i>355</i>&nbsp;
+<i>356</i>&nbsp;    /** XML 1.0 entity scanner. */
+<i>357</i>&nbsp;    protected XMLEntityScanner fXML10EntityScanner;
+<i>358</i>&nbsp;
+<i>359</i>&nbsp;    /** XML 1.1 entity scanner. */
+<i>360</i>&nbsp;    protected XMLEntityScanner fXML11EntityScanner;
+<i>361</i>&nbsp;
+<i>362</i>&nbsp;    /** count of entities expanded: */
+<b class="nc"><i>363</i>&nbsp;    protected int fEntityExpansionCount = 0;</b>
+<i>364</i>&nbsp;
+<i>365</i>&nbsp;    // entities
+<i>366</i>&nbsp;
+<i>367</i>&nbsp;    /** Entities. */
+<b class="nc"><i>368</i>&nbsp;    protected Map&lt;String, Entity&gt; fEntities = new HashMap&lt;&gt;();</b>
+<i>369</i>&nbsp;
+<i>370</i>&nbsp;    /** Entity stack. */
+<b class="nc"><i>371</i>&nbsp;    protected Stack&lt;Entity&gt; fEntityStack = new Stack&lt;&gt;();</b>
+<i>372</i>&nbsp;
+<i>373</i>&nbsp;    /** Current entity. */
+<b class="nc"><i>374</i>&nbsp;    protected Entity.ScannedEntity fCurrentEntity = null;</b>
+<i>375</i>&nbsp;
+<i>376</i>&nbsp;    /** identify if the InputSource is created by a resolver */
+<b class="nc"><i>377</i>&nbsp;    boolean fISCreatedByResolver = false;</b>
+<i>378</i>&nbsp;
+<i>379</i>&nbsp;    // shared context
+<i>380</i>&nbsp;
+<i>381</i>&nbsp;    protected XMLEntityStorage fEntityStorage ;
+<i>382</i>&nbsp;
+<b class="nc"><i>383</i>&nbsp;    protected final Object [] defaultEncoding = new Object[]{&quot;UTF-8&quot;, null};</b>
+<i>384</i>&nbsp;
+<i>385</i>&nbsp;
+<i>386</i>&nbsp;    // temp vars
+<i>387</i>&nbsp;
+<i>388</i>&nbsp;    /** Resource identifer. */
+<b class="nc"><i>389</i>&nbsp;    private final XMLResourceIdentifierImpl fResourceIdentifier = new XMLResourceIdentifierImpl();</b>
+<i>390</i>&nbsp;
+<i>391</i>&nbsp;    /** Augmentations for entities. */
+<b class="nc"><i>392</i>&nbsp;    private final Augmentations fEntityAugs = new AugmentationsImpl();</b>
+<i>393</i>&nbsp;
+<i>394</i>&nbsp;    /** Pool of character buffers. */
+<b class="nc"><i>395</i>&nbsp;    private CharacterBufferPool fBufferPool = new CharacterBufferPool(fBufferSize, DEFAULT_INTERNAL_BUFFER_SIZE);</b>
+<i>396</i>&nbsp;
+<i>397</i>&nbsp;    //
+<i>398</i>&nbsp;    // Constructors
+<i>399</i>&nbsp;    //
+<i>400</i>&nbsp;
+<i>401</i>&nbsp;    /**
+<i>402</i>&nbsp;     * If this constructor is used to create the object, reset() should be invoked on this object
+<i>403</i>&nbsp;     */
+<b class="nc"><i>404</i>&nbsp;    public XMLEntityManager() {</b>
+<i>405</i>&nbsp;        //for entity managers not created by parsers
+<b class="nc"><i>406</i>&nbsp;        fSecurityManager = new XMLSecurityManager(true);</b>
+<b class="nc"><i>407</i>&nbsp;        fEntityStorage = new XMLEntityStorage(this) ;</b>
+<b class="nc"><i>408</i>&nbsp;        setScannerVersion(Constants.XML_VERSION_1_0);</b>
+<i>409</i>&nbsp;    } // &lt;init&gt;()
+<i>410</i>&nbsp;
+<i>411</i>&nbsp;    /** Default constructor. */
+<b class="nc"><i>412</i>&nbsp;    public XMLEntityManager(PropertyManager propertyManager) {</b>
+<b class="nc"><i>413</i>&nbsp;        fPropertyManager = propertyManager ;</b>
+<i>414</i>&nbsp;        //pass a reference to current entity being scanned
+<i>415</i>&nbsp;        //fEntityStorage = new XMLEntityStorage(fCurrentEntity) ;
+<b class="nc"><i>416</i>&nbsp;        fEntityStorage = new XMLEntityStorage(this) ;</b>
+<b class="nc"><i>417</i>&nbsp;        fEntityScanner = new XMLEntityScanner(propertyManager, this) ;</b>
+<b class="nc"><i>418</i>&nbsp;        reset(propertyManager);</b>
+<i>419</i>&nbsp;    } // &lt;init&gt;()
+<i>420</i>&nbsp;
+<i>421</i>&nbsp;    /**
+<i>422</i>&nbsp;     * Adds an internal entity declaration.
+<i>423</i>&nbsp;     * &lt;p&gt;
+<i>424</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt; This method ignores subsequent entity
+<i>425</i>&nbsp;     * declarations.
+<i>426</i>&nbsp;     * &lt;p&gt;
+<i>427</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt; The name should be a unique symbol. The
+<i>428</i>&nbsp;     * SymbolTable can be used for this purpose.
+<i>429</i>&nbsp;     *
+<i>430</i>&nbsp;     * @param name The name of the entity.
+<i>431</i>&nbsp;     * @param text The text of the entity.
+<i>432</i>&nbsp;     *
+<i>433</i>&nbsp;     * @see SymbolTable
+<i>434</i>&nbsp;     */
+<i>435</i>&nbsp;    public void addInternalEntity(String name, String text) {
+<b class="nc"><i>436</i>&nbsp;        if (!fEntities.containsKey(name)) {</b>
+<b class="nc"><i>437</i>&nbsp;            Entity entity = new Entity.InternalEntity(name, text, fInExternalSubset);</b>
+<b class="nc"><i>438</i>&nbsp;            fEntities.put(name, entity);</b>
+<b class="nc"><i>439</i>&nbsp;        } else{</b>
+<b class="nc"><i>440</i>&nbsp;            if(fWarnDuplicateEntityDef){</b>
+<b class="nc"><i>441</i>&nbsp;                fErrorReporter.reportError(XMLMessageFormatter.XML_DOMAIN,</b>
+<i>442</i>&nbsp;                        &quot;MSG_DUPLICATE_ENTITY_DEFINITION&quot;,
+<i>443</i>&nbsp;                        new Object[]{ name },
+<i>444</i>&nbsp;                        XMLErrorReporter.SEVERITY_WARNING );
+<i>445</i>&nbsp;            }
+<i>446</i>&nbsp;        }
+<i>447</i>&nbsp;
+<i>448</i>&nbsp;    } // addInternalEntity(String,String)
+<i>449</i>&nbsp;
+<i>450</i>&nbsp;    /**
+<i>451</i>&nbsp;     * Adds an external entity declaration.
+<i>452</i>&nbsp;     * &lt;p&gt;
+<i>453</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt; This method ignores subsequent entity
+<i>454</i>&nbsp;     * declarations.
+<i>455</i>&nbsp;     * &lt;p&gt;
+<i>456</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt; The name should be a unique symbol. The
+<i>457</i>&nbsp;     * SymbolTable can be used for this purpose.
+<i>458</i>&nbsp;     *
+<i>459</i>&nbsp;     * @param name         The name of the entity.
+<i>460</i>&nbsp;     * @param publicId     The public identifier of the entity.
+<i>461</i>&nbsp;     * @param literalSystemId     The system identifier of the entity.
+<i>462</i>&nbsp;     * @param baseSystemId The base system identifier of the entity.
+<i>463</i>&nbsp;     *                     This is the system identifier of the entity
+<i>464</i>&nbsp;     *                     where &lt;em&gt;the entity being added&lt;/em&gt; and
+<i>465</i>&nbsp;     *                     is used to expand the system identifier when
+<i>466</i>&nbsp;     *                     the system identifier is a relative URI.
+<i>467</i>&nbsp;     *                     When null the system identifier of the first
+<i>468</i>&nbsp;     *                     external entity on the stack is used instead.
+<i>469</i>&nbsp;     *
+<i>470</i>&nbsp;     * @see SymbolTable
+<i>471</i>&nbsp;     */
+<i>472</i>&nbsp;    public void addExternalEntity(String name,
+<i>473</i>&nbsp;            String publicId, String literalSystemId,
+<i>474</i>&nbsp;            String baseSystemId) throws IOException {
+<b class="nc"><i>475</i>&nbsp;        if (!fEntities.containsKey(name)) {</b>
+<b class="nc"><i>476</i>&nbsp;            if (baseSystemId == null) {</b>
+<i>477</i>&nbsp;                // search for the first external entity on the stack
+<b class="nc"><i>478</i>&nbsp;                int size = fEntityStack.size();</b>
+<b class="nc"><i>479</i>&nbsp;                if (size == 0 &amp;&amp; fCurrentEntity != null &amp;&amp; fCurrentEntity.entityLocation != null) {</b>
+<b class="nc"><i>480</i>&nbsp;                    baseSystemId = fCurrentEntity.entityLocation.getExpandedSystemId();</b>
+<i>481</i>&nbsp;                }
+<b class="nc"><i>482</i>&nbsp;                for (int i = size - 1; i &gt;= 0 ; i--) {</b>
+<b class="nc"><i>483</i>&nbsp;                    Entity.ScannedEntity externalEntity =</b>
+<b class="nc"><i>484</i>&nbsp;                            (Entity.ScannedEntity)fEntityStack.elementAt(i);</b>
+<b class="nc"><i>485</i>&nbsp;                    if (externalEntity.entityLocation != null &amp;&amp; externalEntity.entityLocation.getExpandedSystemId() != null) {</b>
+<b class="nc"><i>486</i>&nbsp;                        baseSystemId = externalEntity.entityLocation.getExpandedSystemId();</b>
+<b class="nc"><i>487</i>&nbsp;                        break;</b>
+<i>488</i>&nbsp;                    }
+<i>489</i>&nbsp;                }
+<i>490</i>&nbsp;            }
+<b class="nc"><i>491</i>&nbsp;            Entity entity = new Entity.ExternalEntity(name,</b>
+<i>492</i>&nbsp;                    new XMLEntityDescriptionImpl(name, publicId, literalSystemId, baseSystemId,
+<b class="nc"><i>493</i>&nbsp;                    expandSystemId(literalSystemId, baseSystemId, false)), null, fInExternalSubset);</b>
+<b class="nc"><i>494</i>&nbsp;            fEntities.put(name, entity);</b>
+<b class="nc"><i>495</i>&nbsp;        } else{</b>
+<b class="nc"><i>496</i>&nbsp;            if(fWarnDuplicateEntityDef){</b>
+<b class="nc"><i>497</i>&nbsp;                fErrorReporter.reportError(XMLMessageFormatter.XML_DOMAIN,</b>
+<i>498</i>&nbsp;                        &quot;MSG_DUPLICATE_ENTITY_DEFINITION&quot;,
+<i>499</i>&nbsp;                        new Object[]{ name },
+<i>500</i>&nbsp;                        XMLErrorReporter.SEVERITY_WARNING );
+<i>501</i>&nbsp;            }
+<i>502</i>&nbsp;        }
+<i>503</i>&nbsp;
+<i>504</i>&nbsp;    } // addExternalEntity(String,String,String,String)
+<i>505</i>&nbsp;
+<i>506</i>&nbsp;
+<i>507</i>&nbsp;    /**
+<i>508</i>&nbsp;     * Adds an unparsed entity declaration.
+<i>509</i>&nbsp;     * &lt;p&gt;
+<i>510</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt; This method ignores subsequent entity
+<i>511</i>&nbsp;     * declarations.
+<i>512</i>&nbsp;     * &lt;p&gt;
+<i>513</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt; The name should be a unique symbol. The
+<i>514</i>&nbsp;     * SymbolTable can be used for this purpose.
+<i>515</i>&nbsp;     *
+<i>516</i>&nbsp;     * @param name     The name of the entity.
+<i>517</i>&nbsp;     * @param publicId The public identifier of the entity.
+<i>518</i>&nbsp;     * @param systemId The system identifier of the entity.
+<i>519</i>&nbsp;     * @param notation The name of the notation.
+<i>520</i>&nbsp;     *
+<i>521</i>&nbsp;     * @see SymbolTable
+<i>522</i>&nbsp;     */
+<i>523</i>&nbsp;    public void addUnparsedEntity(String name,
+<i>524</i>&nbsp;            String publicId, String systemId,
+<i>525</i>&nbsp;            String baseSystemId, String notation) {
+<b class="nc"><i>526</i>&nbsp;        if (!fEntities.containsKey(name)) {</b>
+<b class="nc"><i>527</i>&nbsp;            Entity.ExternalEntity entity = new Entity.ExternalEntity(name,</b>
+<i>528</i>&nbsp;                    new XMLEntityDescriptionImpl(name, publicId, systemId, baseSystemId, null),
+<i>529</i>&nbsp;                    notation, fInExternalSubset);
+<b class="nc"><i>530</i>&nbsp;            fEntities.put(name, entity);</b>
+<b class="nc"><i>531</i>&nbsp;        } else{</b>
+<b class="nc"><i>532</i>&nbsp;            if(fWarnDuplicateEntityDef){</b>
+<b class="nc"><i>533</i>&nbsp;                fErrorReporter.reportError(XMLMessageFormatter.XML_DOMAIN,</b>
+<i>534</i>&nbsp;                        &quot;MSG_DUPLICATE_ENTITY_DEFINITION&quot;,
+<i>535</i>&nbsp;                        new Object[]{ name },
+<i>536</i>&nbsp;                        XMLErrorReporter.SEVERITY_WARNING );
+<i>537</i>&nbsp;            }
+<i>538</i>&nbsp;        }
+<i>539</i>&nbsp;    } // addUnparsedEntity(String,String,String,String)
+<i>540</i>&nbsp;
+<i>541</i>&nbsp;
+<i>542</i>&nbsp;    /** get the entity storage object from entity manager */
+<i>543</i>&nbsp;    public XMLEntityStorage getEntityStore(){
+<b class="nc"><i>544</i>&nbsp;        return fEntityStorage ;</b>
+<i>545</i>&nbsp;    }
+<i>546</i>&nbsp;
+<i>547</i>&nbsp;    /** return the entity responsible for reading the entity */
+<i>548</i>&nbsp;    public XMLEntityScanner getEntityScanner(){
+<b class="nc"><i>549</i>&nbsp;        if(fEntityScanner == null) {</b>
+<i>550</i>&nbsp;            // default to 1.0
+<b class="nc"><i>551</i>&nbsp;            if(fXML10EntityScanner == null) {</b>
+<b class="nc"><i>552</i>&nbsp;                fXML10EntityScanner = new XMLEntityScanner();</b>
+<i>553</i>&nbsp;            }
+<b class="nc"><i>554</i>&nbsp;            fXML10EntityScanner.reset(fSymbolTable, this, fErrorReporter);</b>
+<b class="nc"><i>555</i>&nbsp;            fEntityScanner = fXML10EntityScanner;</b>
+<i>556</i>&nbsp;        }
+<b class="nc"><i>557</i>&nbsp;        return fEntityScanner;</b>
+<i>558</i>&nbsp;
+<i>559</i>&nbsp;    }
+<i>560</i>&nbsp;
+<i>561</i>&nbsp;    public void setScannerVersion(short version) {
+<i>562</i>&nbsp;
+<b class="nc"><i>563</i>&nbsp;        if(version == Constants.XML_VERSION_1_0) {</b>
+<b class="nc"><i>564</i>&nbsp;            if(fXML10EntityScanner == null) {</b>
+<b class="nc"><i>565</i>&nbsp;                fXML10EntityScanner = new XMLEntityScanner();</b>
+<i>566</i>&nbsp;            }
+<b class="nc"><i>567</i>&nbsp;            fXML10EntityScanner.reset(fSymbolTable, this, fErrorReporter);</b>
+<b class="nc"><i>568</i>&nbsp;            fEntityScanner = fXML10EntityScanner;</b>
+<b class="nc"><i>569</i>&nbsp;            fEntityScanner.setCurrentEntity(fCurrentEntity);</b>
+<i>570</i>&nbsp;        } else {
+<b class="nc"><i>571</i>&nbsp;            if(fXML11EntityScanner == null) {</b>
+<b class="nc"><i>572</i>&nbsp;                fXML11EntityScanner = new XML11EntityScanner();</b>
+<i>573</i>&nbsp;            }
+<b class="nc"><i>574</i>&nbsp;            fXML11EntityScanner.reset(fSymbolTable, this, fErrorReporter);</b>
+<b class="nc"><i>575</i>&nbsp;            fEntityScanner = fXML11EntityScanner;</b>
+<b class="nc"><i>576</i>&nbsp;            fEntityScanner.setCurrentEntity(fCurrentEntity);</b>
+<i>577</i>&nbsp;        }
+<i>578</i>&nbsp;
+<i>579</i>&nbsp;    }
+<i>580</i>&nbsp;
+<i>581</i>&nbsp;    /**
+<i>582</i>&nbsp;     * This method uses the passed-in XMLInputSource to make
+<i>583</i>&nbsp;     * fCurrentEntity usable for reading.
+<i>584</i>&nbsp;     *
+<i>585</i>&nbsp;     * @param reference flag to indicate whether the entity is an Entity Reference.
+<i>586</i>&nbsp;     * @param name  name of the entity (XML is it&#39;s the document entity)
+<i>587</i>&nbsp;     * @param xmlInputSource    the input source, with sufficient information
+<i>588</i>&nbsp;     *      to begin scanning characters.
+<i>589</i>&nbsp;     * @param literal        True if this entity is started within a
+<i>590</i>&nbsp;     *                       literal value.
+<i>591</i>&nbsp;     * @param isExternal    whether this entity should be treated as an internal or external entity.
+<i>592</i>&nbsp;     * @throws IOException  if anything can&#39;t be read
+<i>593</i>&nbsp;     *  XNIException    If any parser-specific goes wrong.
+<i>594</i>&nbsp;     * @return the encoding of the new entity or null if a character stream was employed
+<i>595</i>&nbsp;     */
+<i>596</i>&nbsp;    public String setupCurrentEntity(boolean reference, String name, XMLInputSource xmlInputSource,
+<i>597</i>&nbsp;            boolean literal, boolean isExternal)
+<i>598</i>&nbsp;            throws IOException, XNIException {
+<i>599</i>&nbsp;        // get information
+<i>600</i>&nbsp;
+<b class="nc"><i>601</i>&nbsp;        final String publicId = xmlInputSource.getPublicId();</b>
+<b class="nc"><i>602</i>&nbsp;        String literalSystemId = xmlInputSource.getSystemId();</b>
+<b class="nc"><i>603</i>&nbsp;        String baseSystemId = xmlInputSource.getBaseSystemId();</b>
+<b class="nc"><i>604</i>&nbsp;        String encoding = xmlInputSource.getEncoding();</b>
+<b class="nc"><i>605</i>&nbsp;        final boolean encodingExternallySpecified = (encoding != null);</b>
+<b class="nc"><i>606</i>&nbsp;        Boolean isBigEndian = null;</b>
+<i>607</i>&nbsp;
+<i>608</i>&nbsp;        // create reader
+<b class="nc"><i>609</i>&nbsp;        InputStream stream = null;</b>
+<b class="nc"><i>610</i>&nbsp;        Reader reader = xmlInputSource.getCharacterStream();</b>
+<i>611</i>&nbsp;
+<i>612</i>&nbsp;        // First chance checking strict URI
+<b class="nc"><i>613</i>&nbsp;        String expandedSystemId = expandSystemId(literalSystemId, baseSystemId, fStrictURI);</b>
+<b class="nc"><i>614</i>&nbsp;        if (baseSystemId == null) {</b>
+<b class="nc"><i>615</i>&nbsp;            baseSystemId = expandedSystemId;</b>
+<i>616</i>&nbsp;        }
+<b class="nc"><i>617</i>&nbsp;        if (reader == null) {</b>
+<b class="nc"><i>618</i>&nbsp;            stream = xmlInputSource.getByteStream();</b>
+<b class="nc"><i>619</i>&nbsp;            if (stream == null) {</b>
+<b class="nc"><i>620</i>&nbsp;                URL location = new URL(expandedSystemId);</b>
+<b class="nc"><i>621</i>&nbsp;                URLConnection connect = location.openConnection();</b>
+<b class="nc"><i>622</i>&nbsp;                if (!(connect instanceof HttpURLConnection)) {</b>
+<b class="nc"><i>623</i>&nbsp;                    stream = connect.getInputStream();</b>
+<i>624</i>&nbsp;                }
+<i>625</i>&nbsp;                else {
+<b class="nc"><i>626</i>&nbsp;                    boolean followRedirects = true;</b>
+<i>627</i>&nbsp;
+<i>628</i>&nbsp;                    // setup URLConnection if we have an HTTPInputSource
+<b class="nc"><i>629</i>&nbsp;                    if (xmlInputSource instanceof HTTPInputSource) {</b>
+<b class="nc"><i>630</i>&nbsp;                        final HttpURLConnection urlConnection = (HttpURLConnection) connect;</b>
+<b class="nc"><i>631</i>&nbsp;                        final HTTPInputSource httpInputSource = (HTTPInputSource) xmlInputSource;</b>
+<i>632</i>&nbsp;
+<i>633</i>&nbsp;                        // set request properties
+<b class="nc"><i>634</i>&nbsp;                        Iterator&lt;Map.Entry&lt;String, String&gt;&gt; propIter = httpInputSource.getHTTPRequestProperties();</b>
+<b class="nc"><i>635</i>&nbsp;                        while (propIter.hasNext()) {</b>
+<b class="nc"><i>636</i>&nbsp;                            Map.Entry&lt;String, String&gt; entry = propIter.next();</b>
+<b class="nc"><i>637</i>&nbsp;                            urlConnection.setRequestProperty(entry.getKey(), entry.getValue());</b>
+<b class="nc"><i>638</i>&nbsp;                        }</b>
+<i>639</i>&nbsp;
+<i>640</i>&nbsp;                        // set preference for redirection
+<b class="nc"><i>641</i>&nbsp;                        followRedirects = httpInputSource.getFollowHTTPRedirects();</b>
+<b class="nc"><i>642</i>&nbsp;                        if (!followRedirects) {</b>
+<b class="nc"><i>643</i>&nbsp;                            setInstanceFollowRedirects(urlConnection, followRedirects);</b>
+<i>644</i>&nbsp;                        }
+<i>645</i>&nbsp;                    }
+<i>646</i>&nbsp;
+<b class="nc"><i>647</i>&nbsp;                    stream = connect.getInputStream();</b>
+<i>648</i>&nbsp;
+<i>649</i>&nbsp;                    // REVISIT: If the URLConnection has external encoding
+<i>650</i>&nbsp;                    // information, we should be reading it here. It&#39;s located
+<i>651</i>&nbsp;                    // in the charset parameter of Content-Type. -- mrglavas
+<i>652</i>&nbsp;
+<b class="nc"><i>653</i>&nbsp;                    if (followRedirects) {</b>
+<b class="nc"><i>654</i>&nbsp;                        String redirect = connect.getURL().toString();</b>
+<i>655</i>&nbsp;                        // E43: Check if the URL was redirected, and then
+<i>656</i>&nbsp;                        // update literal and expanded system IDs if needed.
+<b class="nc"><i>657</i>&nbsp;                        if (!redirect.equals(expandedSystemId)) {</b>
+<b class="nc"><i>658</i>&nbsp;                            literalSystemId = redirect;</b>
+<b class="nc"><i>659</i>&nbsp;                            expandedSystemId = redirect;</b>
+<i>660</i>&nbsp;                        }
+<i>661</i>&nbsp;                    }
+<i>662</i>&nbsp;                }
+<i>663</i>&nbsp;            }
+<i>664</i>&nbsp;
+<i>665</i>&nbsp;            // wrap this stream in RewindableInputStream
+<b class="nc"><i>666</i>&nbsp;            stream = new RewindableInputStream(stream);</b>
+<i>667</i>&nbsp;
+<i>668</i>&nbsp;            // perform auto-detect of encoding if necessary
+<b class="nc"><i>669</i>&nbsp;            if (encoding == null) {</b>
+<i>670</i>&nbsp;                // read first four bytes and determine encoding
+<b class="nc"><i>671</i>&nbsp;                final byte[] b4 = new byte[4];</b>
+<b class="nc"><i>672</i>&nbsp;                int count = 0;</b>
+<b class="nc"><i>673</i>&nbsp;                for (; count&lt;4; count++ ) {</b>
+<b class="nc"><i>674</i>&nbsp;                    b4[count] = (byte)stream.read();</b>
+<i>675</i>&nbsp;                }
+<b class="nc"><i>676</i>&nbsp;                if (count == 4) {</b>
+<b class="nc"><i>677</i>&nbsp;                    Object [] encodingDesc = getEncodingName(b4, count);</b>
+<b class="nc"><i>678</i>&nbsp;                    encoding = (String)(encodingDesc[0]);</b>
+<b class="nc"><i>679</i>&nbsp;                    isBigEndian = (Boolean)(encodingDesc[1]);</b>
+<i>680</i>&nbsp;
+<b class="nc"><i>681</i>&nbsp;                    stream.reset();</b>
+<i>682</i>&nbsp;                    // Special case UTF-8 files with BOM created by Microsoft
+<i>683</i>&nbsp;                    // tools. It&#39;s more efficient to consume the BOM than make
+<i>684</i>&nbsp;                    // the reader perform extra checks. -Ac
+<b class="nc"><i>685</i>&nbsp;                    if (count &gt; 2 &amp;&amp; encoding.equals(&quot;UTF-8&quot;)) {</b>
+<b class="nc"><i>686</i>&nbsp;                        int b0 = b4[0] &amp; 0xFF;</b>
+<b class="nc"><i>687</i>&nbsp;                        int b1 = b4[1] &amp; 0xFF;</b>
+<b class="nc"><i>688</i>&nbsp;                        int b2 = b4[2] &amp; 0xFF;</b>
+<b class="nc"><i>689</i>&nbsp;                        if (b0 == 0xEF &amp;&amp; b1 == 0xBB &amp;&amp; b2 == 0xBF) {</b>
+<i>690</i>&nbsp;                            // ignore first three bytes...
+<b class="nc"><i>691</i>&nbsp;                            stream.skip(3);</b>
+<i>692</i>&nbsp;                        }
+<i>693</i>&nbsp;                    }
+<b class="nc"><i>694</i>&nbsp;                    reader = createReader(stream, encoding, isBigEndian);</b>
+<b class="nc"><i>695</i>&nbsp;                } else {</b>
+<b class="nc"><i>696</i>&nbsp;                    reader = createReader(stream, encoding, isBigEndian);</b>
+<i>697</i>&nbsp;                }
+<b class="nc"><i>698</i>&nbsp;            }</b>
+<i>699</i>&nbsp;
+<i>700</i>&nbsp;            // use specified encoding
+<i>701</i>&nbsp;            else {
+<b class="nc"><i>702</i>&nbsp;                encoding = encoding.toUpperCase(Locale.ENGLISH);</b>
+<i>703</i>&nbsp;
+<i>704</i>&nbsp;                // If encoding is UTF-8, consume BOM if one is present.
+<b class="nc"><i>705</i>&nbsp;                if (encoding.equals(&quot;UTF-8&quot;)) {</b>
+<b class="nc"><i>706</i>&nbsp;                    final int[] b3 = new int[3];</b>
+<b class="nc"><i>707</i>&nbsp;                    int count = 0;</b>
+<b class="nc"><i>708</i>&nbsp;                    for (; count &lt; 3; ++count) {</b>
+<b class="nc"><i>709</i>&nbsp;                        b3[count] = stream.read();</b>
+<b class="nc"><i>710</i>&nbsp;                        if (b3[count] == -1)</b>
+<b class="nc"><i>711</i>&nbsp;                            break;</b>
+<i>712</i>&nbsp;                    }
+<b class="nc"><i>713</i>&nbsp;                    if (count == 3) {</b>
+<b class="nc"><i>714</i>&nbsp;                        if (b3[0] != 0xEF || b3[1] != 0xBB || b3[2] != 0xBF) {</b>
+<i>715</i>&nbsp;                            // First three bytes are not BOM, so reset.
+<b class="nc"><i>716</i>&nbsp;                            stream.reset();</b>
+<i>717</i>&nbsp;                        }
+<i>718</i>&nbsp;                    } else {
+<b class="nc"><i>719</i>&nbsp;                        stream.reset();</b>
+<i>720</i>&nbsp;                    }
+<b class="nc"><i>721</i>&nbsp;                }</b>
+<i>722</i>&nbsp;                // If encoding is UTF-16, we still need to read the first four bytes
+<i>723</i>&nbsp;                // in order to discover the byte order.
+<b class="nc"><i>724</i>&nbsp;                else if (encoding.equals(&quot;UTF-16&quot;)) {</b>
+<b class="nc"><i>725</i>&nbsp;                    final int[] b4 = new int[4];</b>
+<b class="nc"><i>726</i>&nbsp;                    int count = 0;</b>
+<b class="nc"><i>727</i>&nbsp;                    for (; count &lt; 4; ++count) {</b>
+<b class="nc"><i>728</i>&nbsp;                        b4[count] = stream.read();</b>
+<b class="nc"><i>729</i>&nbsp;                        if (b4[count] == -1)</b>
+<b class="nc"><i>730</i>&nbsp;                            break;</b>
+<i>731</i>&nbsp;                    }
+<b class="nc"><i>732</i>&nbsp;                    stream.reset();</b>
+<i>733</i>&nbsp;
+<b class="nc"><i>734</i>&nbsp;                    String utf16Encoding = &quot;UTF-16&quot;;</b>
+<b class="nc"><i>735</i>&nbsp;                    if (count &gt;= 2) {</b>
+<b class="nc"><i>736</i>&nbsp;                        final int b0 = b4[0];</b>
+<b class="nc"><i>737</i>&nbsp;                        final int b1 = b4[1];</b>
+<b class="nc"><i>738</i>&nbsp;                        if (b0 == 0xFE &amp;&amp; b1 == 0xFF) {</b>
+<i>739</i>&nbsp;                            // UTF-16, big-endian
+<b class="nc"><i>740</i>&nbsp;                            utf16Encoding = &quot;UTF-16BE&quot;;</b>
+<b class="nc"><i>741</i>&nbsp;                            isBigEndian = Boolean.TRUE;</b>
+<i>742</i>&nbsp;                        }
+<b class="nc"><i>743</i>&nbsp;                        else if (b0 == 0xFF &amp;&amp; b1 == 0xFE) {</b>
+<i>744</i>&nbsp;                            // UTF-16, little-endian
+<b class="nc"><i>745</i>&nbsp;                            utf16Encoding = &quot;UTF-16LE&quot;;</b>
+<b class="nc"><i>746</i>&nbsp;                            isBigEndian = Boolean.FALSE;</b>
+<i>747</i>&nbsp;                        }
+<b class="nc"><i>748</i>&nbsp;                        else if (count == 4) {</b>
+<b class="nc"><i>749</i>&nbsp;                            final int b2 = b4[2];</b>
+<b class="nc"><i>750</i>&nbsp;                            final int b3 = b4[3];</b>
+<b class="nc"><i>751</i>&nbsp;                            if (b0 == 0x00 &amp;&amp; b1 == 0x3C &amp;&amp; b2 == 0x00 &amp;&amp; b3 == 0x3F) {</b>
+<i>752</i>&nbsp;                                // UTF-16, big-endian, no BOM
+<b class="nc"><i>753</i>&nbsp;                                utf16Encoding = &quot;UTF-16BE&quot;;</b>
+<b class="nc"><i>754</i>&nbsp;                                isBigEndian = Boolean.TRUE;</b>
+<i>755</i>&nbsp;                            }
+<b class="nc"><i>756</i>&nbsp;                            if (b0 == 0x3C &amp;&amp; b1 == 0x00 &amp;&amp; b2 == 0x3F &amp;&amp; b3 == 0x00) {</b>
+<i>757</i>&nbsp;                                // UTF-16, little-endian, no BOM
+<b class="nc"><i>758</i>&nbsp;                                utf16Encoding = &quot;UTF-16LE&quot;;</b>
+<b class="nc"><i>759</i>&nbsp;                                isBigEndian = Boolean.FALSE;</b>
+<i>760</i>&nbsp;                            }
+<i>761</i>&nbsp;                        }
+<i>762</i>&nbsp;                    }
+<b class="nc"><i>763</i>&nbsp;                    reader = createReader(stream, utf16Encoding, isBigEndian);</b>
+<b class="nc"><i>764</i>&nbsp;                }</b>
+<i>765</i>&nbsp;                // If encoding is UCS-4, we still need to read the first four bytes
+<i>766</i>&nbsp;                // in order to discover the byte order.
+<b class="nc"><i>767</i>&nbsp;                else if (encoding.equals(&quot;ISO-10646-UCS-4&quot;)) {</b>
+<b class="nc"><i>768</i>&nbsp;                    final int[] b4 = new int[4];</b>
+<b class="nc"><i>769</i>&nbsp;                    int count = 0;</b>
+<b class="nc"><i>770</i>&nbsp;                    for (; count &lt; 4; ++count) {</b>
+<b class="nc"><i>771</i>&nbsp;                        b4[count] = stream.read();</b>
+<b class="nc"><i>772</i>&nbsp;                        if (b4[count] == -1)</b>
+<b class="nc"><i>773</i>&nbsp;                            break;</b>
+<i>774</i>&nbsp;                    }
+<b class="nc"><i>775</i>&nbsp;                    stream.reset();</b>
+<i>776</i>&nbsp;
+<i>777</i>&nbsp;                    // Ignore unusual octet order for now.
+<b class="nc"><i>778</i>&nbsp;                    if (count == 4) {</b>
+<i>779</i>&nbsp;                        // UCS-4, big endian (1234)
+<b class="nc"><i>780</i>&nbsp;                        if (b4[0] == 0x00 &amp;&amp; b4[1] == 0x00 &amp;&amp; b4[2] == 0x00 &amp;&amp; b4[3] == 0x3C) {</b>
+<b class="nc"><i>781</i>&nbsp;                            isBigEndian = Boolean.TRUE;</b>
+<i>782</i>&nbsp;                        }
+<i>783</i>&nbsp;                        // UCS-4, little endian (1234)
+<b class="nc"><i>784</i>&nbsp;                        else if (b4[0] == 0x3C &amp;&amp; b4[1] == 0x00 &amp;&amp; b4[2] == 0x00 &amp;&amp; b4[3] == 0x00) {</b>
+<b class="nc"><i>785</i>&nbsp;                            isBigEndian = Boolean.FALSE;</b>
+<i>786</i>&nbsp;                        }
+<i>787</i>&nbsp;                    }
+<b class="nc"><i>788</i>&nbsp;                }</b>
+<i>789</i>&nbsp;                // If encoding is UCS-2, we still need to read the first four bytes
+<i>790</i>&nbsp;                // in order to discover the byte order.
+<b class="nc"><i>791</i>&nbsp;                else if (encoding.equals(&quot;ISO-10646-UCS-2&quot;)) {</b>
+<b class="nc"><i>792</i>&nbsp;                    final int[] b4 = new int[4];</b>
+<b class="nc"><i>793</i>&nbsp;                    int count = 0;</b>
+<b class="nc"><i>794</i>&nbsp;                    for (; count &lt; 4; ++count) {</b>
+<b class="nc"><i>795</i>&nbsp;                        b4[count] = stream.read();</b>
+<b class="nc"><i>796</i>&nbsp;                        if (b4[count] == -1)</b>
+<b class="nc"><i>797</i>&nbsp;                            break;</b>
+<i>798</i>&nbsp;                    }
+<b class="nc"><i>799</i>&nbsp;                    stream.reset();</b>
+<i>800</i>&nbsp;
+<b class="nc"><i>801</i>&nbsp;                    if (count == 4) {</b>
+<i>802</i>&nbsp;                        // UCS-2, big endian
+<b class="nc"><i>803</i>&nbsp;                        if (b4[0] == 0x00 &amp;&amp; b4[1] == 0x3C &amp;&amp; b4[2] == 0x00 &amp;&amp; b4[3] == 0x3F) {</b>
+<b class="nc"><i>804</i>&nbsp;                            isBigEndian = Boolean.TRUE;</b>
+<i>805</i>&nbsp;                        }
+<i>806</i>&nbsp;                        // UCS-2, little endian
+<b class="nc"><i>807</i>&nbsp;                        else if (b4[0] == 0x3C &amp;&amp; b4[1] == 0x00 &amp;&amp; b4[2] == 0x3F &amp;&amp; b4[3] == 0x00) {</b>
+<b class="nc"><i>808</i>&nbsp;                            isBigEndian = Boolean.FALSE;</b>
+<i>809</i>&nbsp;                        }
+<i>810</i>&nbsp;                    }
+<i>811</i>&nbsp;                }
+<i>812</i>&nbsp;
+<b class="nc"><i>813</i>&nbsp;                reader = createReader(stream, encoding, isBigEndian);</b>
+<i>814</i>&nbsp;            }
+<i>815</i>&nbsp;
+<i>816</i>&nbsp;            // read one character at a time so we don&#39;t jump too far
+<i>817</i>&nbsp;            // ahead, converting characters from the byte stream in
+<i>818</i>&nbsp;            // the wrong encoding
+<i>819</i>&nbsp;            if (DEBUG_ENCODINGS) {
+<i>820</i>&nbsp;                System.out.println(&quot;$$$ no longer wrapping reader in OneCharReader&quot;);
+<i>821</i>&nbsp;            }
+<i>822</i>&nbsp;            //reader = new OneCharReader(reader);
+<i>823</i>&nbsp;        }
+<i>824</i>&nbsp;
+<i>825</i>&nbsp;        // We&#39;ve seen a new Reader.
+<i>826</i>&nbsp;        // Push it on the stack so we can close it later.
+<i>827</i>&nbsp;        //fOwnReaders.add(reader);
+<i>828</i>&nbsp;
+<i>829</i>&nbsp;        // push entity on stack
+<b class="nc"><i>830</i>&nbsp;        if (fCurrentEntity != null) {</b>
+<b class="nc"><i>831</i>&nbsp;            fEntityStack.push(fCurrentEntity);</b>
+<i>832</i>&nbsp;        }
+<i>833</i>&nbsp;
+<i>834</i>&nbsp;        // create entity
+<i>835</i>&nbsp;        /* if encoding is specified externally, &#39;encoding&#39; information present
+<i>836</i>&nbsp;         * in the prolog of the XML document is not considered. Hence, prolog can
+<i>837</i>&nbsp;         * be read in Chunks of data instead of byte by byte.
+<i>838</i>&nbsp;         */
+<b class="nc"><i>839</i>&nbsp;        fCurrentEntity = new Entity.ScannedEntity(reference, name,</b>
+<i>840</i>&nbsp;                new XMLResourceIdentifierImpl(publicId, literalSystemId, baseSystemId, expandedSystemId),
+<i>841</i>&nbsp;                stream, reader, encoding, literal, encodingExternallySpecified, isExternal);
+<b class="nc"><i>842</i>&nbsp;        fCurrentEntity.setEncodingExternallySpecified(encodingExternallySpecified);</b>
+<b class="nc"><i>843</i>&nbsp;        fEntityScanner.setCurrentEntity(fCurrentEntity);</b>
+<b class="nc"><i>844</i>&nbsp;        fResourceIdentifier.setValues(publicId, literalSystemId, baseSystemId, expandedSystemId);</b>
+<b class="nc"><i>845</i>&nbsp;        if (fLimitAnalyzer != null) {</b>
+<b class="nc"><i>846</i>&nbsp;            fLimitAnalyzer.startEntity(name);</b>
+<i>847</i>&nbsp;        }
+<b class="nc"><i>848</i>&nbsp;        return encoding;</b>
+<i>849</i>&nbsp;    } //setupCurrentEntity(String, XMLInputSource, boolean, boolean):  String
+<i>850</i>&nbsp;
+<i>851</i>&nbsp;
+<i>852</i>&nbsp;    /**
+<i>853</i>&nbsp;     * Checks whether an entity given by name is external.
+<i>854</i>&nbsp;     *
+<i>855</i>&nbsp;     * @param entityName The name of the entity to check.
+<i>856</i>&nbsp;     * @return True if the entity is external, false otherwise
+<i>857</i>&nbsp;     * (including when the entity is not declared).
+<i>858</i>&nbsp;     */
+<i>859</i>&nbsp;    public boolean isExternalEntity(String entityName) {
+<i>860</i>&nbsp;
+<b class="nc"><i>861</i>&nbsp;        Entity entity = fEntities.get(entityName);</b>
+<b class="nc"><i>862</i>&nbsp;        if (entity == null) {</b>
+<b class="nc"><i>863</i>&nbsp;            return false;</b>
+<i>864</i>&nbsp;        }
+<b class="nc"><i>865</i>&nbsp;        return entity.isExternal();</b>
+<i>866</i>&nbsp;    }
+<i>867</i>&nbsp;
+<i>868</i>&nbsp;    /**
+<i>869</i>&nbsp;     * Checks whether the declaration of an entity given by name is
+<i>870</i>&nbsp;     * // in the external subset.
+<i>871</i>&nbsp;     *
+<i>872</i>&nbsp;     * @param entityName The name of the entity to check.
+<i>873</i>&nbsp;     * @return True if the entity was declared in the external subset, false otherwise
+<i>874</i>&nbsp;     *           (including when the entity is not declared).
+<i>875</i>&nbsp;     */
+<i>876</i>&nbsp;    public boolean isEntityDeclInExternalSubset(String entityName) {
+<i>877</i>&nbsp;
+<b class="nc"><i>878</i>&nbsp;        Entity entity = fEntities.get(entityName);</b>
+<b class="nc"><i>879</i>&nbsp;        if (entity == null) {</b>
+<b class="nc"><i>880</i>&nbsp;            return false;</b>
+<i>881</i>&nbsp;        }
+<b class="nc"><i>882</i>&nbsp;        return entity.isEntityDeclInExternalSubset();</b>
+<i>883</i>&nbsp;    }
+<i>884</i>&nbsp;
+<i>885</i>&nbsp;
+<i>886</i>&nbsp;
+<i>887</i>&nbsp;    //
+<i>888</i>&nbsp;    // Public methods
+<i>889</i>&nbsp;    //
+<i>890</i>&nbsp;
+<i>891</i>&nbsp;    /**
+<i>892</i>&nbsp;     * Sets whether the document entity is standalone.
+<i>893</i>&nbsp;     *
+<i>894</i>&nbsp;     * @param standalone True if document entity is standalone.
+<i>895</i>&nbsp;     */
+<i>896</i>&nbsp;    public void setStandalone(boolean standalone) {
+<b class="nc"><i>897</i>&nbsp;        fStandalone = standalone;</b>
+<i>898</i>&nbsp;    }
+<i>899</i>&nbsp;    // setStandalone(boolean)
+<i>900</i>&nbsp;
+<i>901</i>&nbsp;    /** Returns true if the document entity is standalone. */
+<i>902</i>&nbsp;    public boolean isStandalone() {
+<b class="nc"><i>903</i>&nbsp;        return fStandalone;</b>
+<i>904</i>&nbsp;    }  //isStandalone():boolean
+<i>905</i>&nbsp;
+<i>906</i>&nbsp;    public boolean isDeclaredEntity(String entityName) {
+<i>907</i>&nbsp;
+<b class="nc"><i>908</i>&nbsp;        Entity entity = fEntities.get(entityName);</b>
+<b class="nc"><i>909</i>&nbsp;        return entity != null;</b>
+<i>910</i>&nbsp;    }
+<i>911</i>&nbsp;
+<i>912</i>&nbsp;    public boolean isUnparsedEntity(String entityName) {
+<i>913</i>&nbsp;
+<b class="nc"><i>914</i>&nbsp;        Entity entity = fEntities.get(entityName);</b>
+<b class="nc"><i>915</i>&nbsp;        if (entity == null) {</b>
+<b class="nc"><i>916</i>&nbsp;            return false;</b>
+<i>917</i>&nbsp;        }
+<b class="nc"><i>918</i>&nbsp;        return entity.isUnparsed();</b>
+<i>919</i>&nbsp;    }
+<i>920</i>&nbsp;
+<i>921</i>&nbsp;
+<i>922</i>&nbsp;
+<i>923</i>&nbsp;    // this simply returns the fResourceIdentifier object;
+<i>924</i>&nbsp;    // this should only be used with caution by callers that
+<i>925</i>&nbsp;    // carefully manage the entity manager&#39;s behaviour, so that
+<i>926</i>&nbsp;    // this doesn&#39;t returning meaningless or misleading data.
+<i>927</i>&nbsp;    // @return  a reference to the current fResourceIdentifier object
+<i>928</i>&nbsp;    public XMLResourceIdentifier getCurrentResourceIdentifier() {
+<b class="nc"><i>929</i>&nbsp;        return fResourceIdentifier;</b>
+<i>930</i>&nbsp;    }
+<i>931</i>&nbsp;
+<i>932</i>&nbsp;    /**
+<i>933</i>&nbsp;     * Sets the entity handler. When an entity starts and ends, the
+<i>934</i>&nbsp;     * entity handler is notified of the change.
+<i>935</i>&nbsp;     *
+<i>936</i>&nbsp;     * @param entityHandler The new entity handler.
+<i>937</i>&nbsp;     */
+<i>938</i>&nbsp;
+<i>939</i>&nbsp;    public void setEntityHandler(com.sun.org.apache.xerces.internal.impl.XMLEntityHandler entityHandler) {
+<b class="nc"><i>940</i>&nbsp;        fEntityHandler = (XMLEntityHandler) entityHandler;</b>
+<i>941</i>&nbsp;    } // setEntityHandler(XMLEntityHandler)
+<i>942</i>&nbsp;
+<i>943</i>&nbsp;    //this function returns StaxXMLInputSource
+<i>944</i>&nbsp;    public StaxXMLInputSource resolveEntityAsPerStax(XMLResourceIdentifier resourceIdentifier) throws java.io.IOException{
+<i>945</i>&nbsp;
+<b class="nc"><i>946</i>&nbsp;        if(resourceIdentifier == null ) return null;</b>
+<i>947</i>&nbsp;
+<b class="nc"><i>948</i>&nbsp;        String publicId = resourceIdentifier.getPublicId();</b>
+<b class="nc"><i>949</i>&nbsp;        String literalSystemId = resourceIdentifier.getLiteralSystemId();</b>
+<b class="nc"><i>950</i>&nbsp;        String baseSystemId = resourceIdentifier.getBaseSystemId();</b>
+<b class="nc"><i>951</i>&nbsp;        String expandedSystemId = resourceIdentifier.getExpandedSystemId();</b>
+<i>952</i>&nbsp;        // if no base systemId given, assume that it&#39;s relative
+<i>953</i>&nbsp;        // to the systemId of the current scanned entity
+<i>954</i>&nbsp;        // Sometimes the system id is not (properly) expanded.
+<i>955</i>&nbsp;        // We need to expand the system id if:
+<i>956</i>&nbsp;        // a. the expanded one was null; or
+<i>957</i>&nbsp;        // b. the base system id was null, but becomes non-null from the current entity.
+<b class="nc"><i>958</i>&nbsp;        boolean needExpand = (expandedSystemId == null);</b>
+<i>959</i>&nbsp;        // REVISIT:  why would the baseSystemId ever be null?  if we
+<i>960</i>&nbsp;        // didn&#39;t have to make this check we wouldn&#39;t have to reuse the
+<i>961</i>&nbsp;        // fXMLResourceIdentifier object...
+<b class="nc"><i>962</i>&nbsp;        if (baseSystemId == null &amp;&amp; fCurrentEntity != null &amp;&amp; fCurrentEntity.entityLocation != null) {</b>
+<b class="nc"><i>963</i>&nbsp;            baseSystemId = fCurrentEntity.entityLocation.getExpandedSystemId();</b>
+<b class="nc"><i>964</i>&nbsp;            if (baseSystemId != null)</b>
+<b class="nc"><i>965</i>&nbsp;                needExpand = true;</b>
+<i>966</i>&nbsp;        }
+<b class="nc"><i>967</i>&nbsp;        if (needExpand)</b>
+<b class="nc"><i>968</i>&nbsp;            expandedSystemId = expandSystemId(literalSystemId, baseSystemId,false);</b>
+<i>969</i>&nbsp;
+<i>970</i>&nbsp;        // give the entity resolver a chance
+<b class="nc"><i>971</i>&nbsp;        StaxXMLInputSource staxInputSource = null;</b>
+<b class="nc"><i>972</i>&nbsp;        XMLInputSource xmlInputSource = null;</b>
+<i>973</i>&nbsp;
+<b class="nc"><i>974</i>&nbsp;        XMLResourceIdentifierImpl ri = null;</b>
+<i>975</i>&nbsp;
+<b class="nc"><i>976</i>&nbsp;        if (resourceIdentifier instanceof XMLResourceIdentifierImpl) {</b>
+<b class="nc"><i>977</i>&nbsp;            ri = (XMLResourceIdentifierImpl)resourceIdentifier;</b>
+<i>978</i>&nbsp;        } else {
+<b class="nc"><i>979</i>&nbsp;            fResourceIdentifier.clear();</b>
+<b class="nc"><i>980</i>&nbsp;            ri = fResourceIdentifier;</b>
+<i>981</i>&nbsp;        }
+<b class="nc"><i>982</i>&nbsp;        ri.setValues(publicId, literalSystemId, baseSystemId, expandedSystemId);</b>
+<i>983</i>&nbsp;        if(DEBUG_RESOLVER){
+<i>984</i>&nbsp;            System.out.println(&quot;BEFORE Calling resolveEntity&quot;) ;
+<i>985</i>&nbsp;        }
+<i>986</i>&nbsp;
+<b class="nc"><i>987</i>&nbsp;        fISCreatedByResolver = false;</b>
+<i>988</i>&nbsp;        //either of Stax or Xerces would be null
+<b class="nc"><i>989</i>&nbsp;        if(fStaxEntityResolver != null){</b>
+<b class="nc"><i>990</i>&nbsp;            staxInputSource = fStaxEntityResolver.resolveEntity(ri);</b>
+<b class="nc"><i>991</i>&nbsp;            if(staxInputSource != null) {</b>
+<b class="nc"><i>992</i>&nbsp;                fISCreatedByResolver = true;</b>
+<i>993</i>&nbsp;            }
+<i>994</i>&nbsp;        }
+<i>995</i>&nbsp;
+<b class="nc"><i>996</i>&nbsp;        if(fEntityResolver != null){</b>
+<b class="nc"><i>997</i>&nbsp;            xmlInputSource = fEntityResolver.resolveEntity(ri);</b>
+<b class="nc"><i>998</i>&nbsp;            if(xmlInputSource != null) {</b>
+<b class="nc"><i>999</i>&nbsp;                fISCreatedByResolver = true;</b>
+<i>1000</i>&nbsp;            }
+<i>1001</i>&nbsp;        }
+<i>1002</i>&nbsp;
+<b class="nc"><i>1003</i>&nbsp;        if(xmlInputSource != null){</b>
+<i>1004</i>&nbsp;            //wrap this XMLInputSource to StaxInputSource
+<b class="nc"><i>1005</i>&nbsp;            staxInputSource = new StaxXMLInputSource(xmlInputSource, fISCreatedByResolver);</b>
+<i>1006</i>&nbsp;        }
+<i>1007</i>&nbsp;
+<i>1008</i>&nbsp;        // do default resolution
+<i>1009</i>&nbsp;        //this works for both stax &amp; Xerces, if staxInputSource is null, it means parser need to revert to default resolution
+<b class="nc"><i>1010</i>&nbsp;        if (staxInputSource == null) {</b>
+<i>1011</i>&nbsp;            // REVISIT: when systemId is null, I think we should return null.
+<i>1012</i>&nbsp;            //          is this the right solution? -SG
+<i>1013</i>&nbsp;            //if (systemId != null)
+<b class="nc"><i>1014</i>&nbsp;            staxInputSource = new StaxXMLInputSource(new XMLInputSource(publicId, literalSystemId, baseSystemId));</b>
+<b class="nc"><i>1015</i>&nbsp;        }else if(staxInputSource.hasXMLStreamOrXMLEventReader()){</b>
+<i>1016</i>&nbsp;            //Waiting for the clarification from EG. - nb
+<i>1017</i>&nbsp;        }
+<i>1018</i>&nbsp;
+<i>1019</i>&nbsp;        if (DEBUG_RESOLVER) {
+<i>1020</i>&nbsp;            System.err.println(&quot;XMLEntityManager.resolveEntity(&quot; + publicId + &quot;)&quot;);
+<i>1021</i>&nbsp;            System.err.println(&quot; = &quot; + xmlInputSource);
+<i>1022</i>&nbsp;        }
+<i>1023</i>&nbsp;
+<b class="nc"><i>1024</i>&nbsp;        return staxInputSource;</b>
+<i>1025</i>&nbsp;
+<i>1026</i>&nbsp;    }
+<i>1027</i>&nbsp;
+<i>1028</i>&nbsp;    /**
+<i>1029</i>&nbsp;     * Resolves the specified public and system identifiers. This
+<i>1030</i>&nbsp;     * method first attempts to resolve the entity based on the
+<i>1031</i>&nbsp;     * EntityResolver registered by the application. If no entity
+<i>1032</i>&nbsp;     * resolver is registered or if the registered entity handler
+<i>1033</i>&nbsp;     * is unable to resolve the entity, then default entity
+<i>1034</i>&nbsp;     * resolution will occur.
+<i>1035</i>&nbsp;     *
+<i>1036</i>&nbsp;     * @param publicId     The public identifier of the entity.
+<i>1037</i>&nbsp;     * @param systemId     The system identifier of the entity.
+<i>1038</i>&nbsp;     * @param baseSystemId The base system identifier of the entity.
+<i>1039</i>&nbsp;     *                     This is the system identifier of the current
+<i>1040</i>&nbsp;     *                     entity and is used to expand the system
+<i>1041</i>&nbsp;     *                     identifier when the system identifier is a
+<i>1042</i>&nbsp;     *                     relative URI.
+<i>1043</i>&nbsp;     *
+<i>1044</i>&nbsp;     * @return Returns an input source that wraps the resolved entity.
+<i>1045</i>&nbsp;     *         This method will never return null.
+<i>1046</i>&nbsp;     *
+<i>1047</i>&nbsp;     * @throws IOException  Thrown on i/o error.
+<i>1048</i>&nbsp;     * @throws XNIException Thrown by entity resolver to signal an error.
+<i>1049</i>&nbsp;     */
+<i>1050</i>&nbsp;    public XMLInputSource resolveEntity(XMLResourceIdentifier resourceIdentifier) throws IOException, XNIException {
+<b class="nc"><i>1051</i>&nbsp;        if(resourceIdentifier == null ) return null;</b>
+<b class="nc"><i>1052</i>&nbsp;        String publicId = resourceIdentifier.getPublicId();</b>
+<b class="nc"><i>1053</i>&nbsp;        String literalSystemId = resourceIdentifier.getLiteralSystemId();</b>
+<b class="nc"><i>1054</i>&nbsp;        String baseSystemId = resourceIdentifier.getBaseSystemId();</b>
+<b class="nc"><i>1055</i>&nbsp;        String expandedSystemId = resourceIdentifier.getExpandedSystemId();</b>
+<i>1056</i>&nbsp;
+<i>1057</i>&nbsp;        // if no base systemId given, assume that it&#39;s relative
+<i>1058</i>&nbsp;        // to the systemId of the current scanned entity
+<i>1059</i>&nbsp;        // Sometimes the system id is not (properly) expanded.
+<i>1060</i>&nbsp;        // We need to expand the system id if:
+<i>1061</i>&nbsp;        // a. the expanded one was null; or
+<i>1062</i>&nbsp;        // b. the base system id was null, but becomes non-null from the current entity.
+<b class="nc"><i>1063</i>&nbsp;        boolean needExpand = (expandedSystemId == null);</b>
+<i>1064</i>&nbsp;        // REVISIT:  why would the baseSystemId ever be null?  if we
+<i>1065</i>&nbsp;        // didn&#39;t have to make this check we wouldn&#39;t have to reuse the
+<i>1066</i>&nbsp;        // fXMLResourceIdentifier object...
+<b class="nc"><i>1067</i>&nbsp;        if (baseSystemId == null &amp;&amp; fCurrentEntity != null &amp;&amp; fCurrentEntity.entityLocation != null) {</b>
+<b class="nc"><i>1068</i>&nbsp;            baseSystemId = fCurrentEntity.entityLocation.getExpandedSystemId();</b>
+<b class="nc"><i>1069</i>&nbsp;            if (baseSystemId != null)</b>
+<b class="nc"><i>1070</i>&nbsp;                needExpand = true;</b>
+<i>1071</i>&nbsp;        }
+<b class="nc"><i>1072</i>&nbsp;        if (needExpand)</b>
+<b class="nc"><i>1073</i>&nbsp;            expandedSystemId = expandSystemId(literalSystemId, baseSystemId,false);</b>
+<i>1074</i>&nbsp;
+<i>1075</i>&nbsp;        // give the entity resolver a chance
+<b class="nc"><i>1076</i>&nbsp;        XMLInputSource xmlInputSource = null;</b>
+<i>1077</i>&nbsp;
+<b class="nc"><i>1078</i>&nbsp;        if (fEntityResolver != null) {</b>
+<b class="nc"><i>1079</i>&nbsp;            resourceIdentifier.setBaseSystemId(baseSystemId);</b>
+<b class="nc"><i>1080</i>&nbsp;            resourceIdentifier.setExpandedSystemId(expandedSystemId);</b>
+<b class="nc"><i>1081</i>&nbsp;            xmlInputSource = fEntityResolver.resolveEntity(resourceIdentifier);</b>
+<i>1082</i>&nbsp;        }
+<i>1083</i>&nbsp;
+<i>1084</i>&nbsp;        // do default resolution
+<i>1085</i>&nbsp;        // REVISIT: what&#39;s the correct behavior if the user provided an entity
+<i>1086</i>&nbsp;        // resolver (fEntityResolver != null), but resolveEntity doesn&#39;t return
+<i>1087</i>&nbsp;        // an input source (xmlInputSource == null)?
+<i>1088</i>&nbsp;        // do we do default resolution, or do we just return null? -SG
+<b class="nc"><i>1089</i>&nbsp;        if (xmlInputSource == null) {</b>
+<i>1090</i>&nbsp;            // REVISIT: when systemId is null, I think we should return null.
+<i>1091</i>&nbsp;            //          is this the right solution? -SG
+<i>1092</i>&nbsp;            //if (systemId != null)
+<b class="nc"><i>1093</i>&nbsp;            xmlInputSource = new XMLInputSource(publicId, literalSystemId, baseSystemId);</b>
+<i>1094</i>&nbsp;        }
+<i>1095</i>&nbsp;
+<i>1096</i>&nbsp;        if (DEBUG_RESOLVER) {
+<i>1097</i>&nbsp;            System.err.println(&quot;XMLEntityManager.resolveEntity(&quot; + publicId + &quot;)&quot;);
+<i>1098</i>&nbsp;            System.err.println(&quot; = &quot; + xmlInputSource);
+<i>1099</i>&nbsp;        }
+<i>1100</i>&nbsp;
+<b class="nc"><i>1101</i>&nbsp;        return xmlInputSource;</b>
+<i>1102</i>&nbsp;
+<i>1103</i>&nbsp;    } // resolveEntity(XMLResourceIdentifier):XMLInputSource
+<i>1104</i>&nbsp;
+<i>1105</i>&nbsp;    /**
+<i>1106</i>&nbsp;     * Starts a named entity.
+<i>1107</i>&nbsp;     *
+<i>1108</i>&nbsp;     * @param isGE flag to indicate whether the entity is a General Entity
+<i>1109</i>&nbsp;     * @param entityName The name of the entity to start.
+<i>1110</i>&nbsp;     * @param literal    True if this entity is started within a literal
+<i>1111</i>&nbsp;     *                   value.
+<i>1112</i>&nbsp;     *
+<i>1113</i>&nbsp;     * @throws IOException  Thrown on i/o error.
+<i>1114</i>&nbsp;     * @throws XNIException Thrown by entity handler to signal an error.
+<i>1115</i>&nbsp;     */
+<i>1116</i>&nbsp;    public void startEntity(boolean isGE, String entityName, boolean literal)
+<i>1117</i>&nbsp;    throws IOException, XNIException {
+<i>1118</i>&nbsp;
+<i>1119</i>&nbsp;        // was entity declared?
+<b class="nc"><i>1120</i>&nbsp;        Entity entity = fEntityStorage.getEntity(entityName);</b>
+<b class="nc"><i>1121</i>&nbsp;        if (entity == null) {</b>
+<b class="nc"><i>1122</i>&nbsp;            if (fEntityHandler != null) {</b>
+<b class="nc"><i>1123</i>&nbsp;                String encoding = null;</b>
+<b class="nc"><i>1124</i>&nbsp;                fResourceIdentifier.clear();</b>
+<b class="nc"><i>1125</i>&nbsp;                fEntityAugs.removeAllItems();</b>
+<b class="nc"><i>1126</i>&nbsp;                fEntityAugs.putItem(Constants.ENTITY_SKIPPED, Boolean.TRUE);</b>
+<b class="nc"><i>1127</i>&nbsp;                fEntityHandler.startEntity(entityName, fResourceIdentifier, encoding, fEntityAugs);</b>
+<b class="nc"><i>1128</i>&nbsp;                fEntityAugs.removeAllItems();</b>
+<b class="nc"><i>1129</i>&nbsp;                fEntityAugs.putItem(Constants.ENTITY_SKIPPED, Boolean.TRUE);</b>
+<b class="nc"><i>1130</i>&nbsp;                fEntityHandler.endEntity(entityName, fEntityAugs);</b>
+<i>1131</i>&nbsp;            }
+<i>1132</i>&nbsp;            return;
+<i>1133</i>&nbsp;        }
+<i>1134</i>&nbsp;
+<i>1135</i>&nbsp;        // should we skip external entities?
+<b class="nc"><i>1136</i>&nbsp;        boolean external = entity.isExternal();</b>
+<b class="nc"><i>1137</i>&nbsp;        Entity.ExternalEntity externalEntity = null;</b>
+<b class="nc"><i>1138</i>&nbsp;        String extLitSysId = null, extBaseSysId = null, expandedSystemId = null;</b>
+<b class="nc"><i>1139</i>&nbsp;        if (external) {</b>
+<b class="nc"><i>1140</i>&nbsp;            externalEntity = (Entity.ExternalEntity)entity;</b>
+<b class="nc"><i>1141</i>&nbsp;            extLitSysId = (externalEntity.entityLocation != null ? externalEntity.entityLocation.getLiteralSystemId() : null);</b>
+<b class="nc"><i>1142</i>&nbsp;            extBaseSysId = (externalEntity.entityLocation != null ? externalEntity.entityLocation.getBaseSystemId() : null);</b>
+<b class="nc"><i>1143</i>&nbsp;            expandedSystemId = expandSystemId(extLitSysId, extBaseSysId);</b>
+<b class="nc"><i>1144</i>&nbsp;            boolean unparsed = entity.isUnparsed();</b>
+<b class="nc"><i>1145</i>&nbsp;            boolean parameter = entityName.startsWith(&quot;%&quot;);</b>
+<b class="nc"><i>1146</i>&nbsp;            boolean general = !parameter;</b>
+<b class="nc"><i>1147</i>&nbsp;            if (unparsed || (general &amp;&amp; !fExternalGeneralEntities) ||</b>
+<i>1148</i>&nbsp;                    (parameter &amp;&amp; !fExternalParameterEntities) ||
+<i>1149</i>&nbsp;                    !fSupportDTD || !fSupportExternalEntities) {
+<i>1150</i>&nbsp;
+<b class="nc"><i>1151</i>&nbsp;                if (fEntityHandler != null) {</b>
+<b class="nc"><i>1152</i>&nbsp;                    fResourceIdentifier.clear();</b>
+<b class="nc"><i>1153</i>&nbsp;                    final String encoding = null;</b>
+<b class="nc"><i>1154</i>&nbsp;                    fResourceIdentifier.setValues(</b>
+<b class="nc"><i>1155</i>&nbsp;                            (externalEntity.entityLocation != null ? externalEntity.entityLocation.getPublicId() : null),</b>
+<i>1156</i>&nbsp;                            extLitSysId, extBaseSysId, expandedSystemId);
+<b class="nc"><i>1157</i>&nbsp;                    fEntityAugs.removeAllItems();</b>
+<b class="nc"><i>1158</i>&nbsp;                    fEntityAugs.putItem(Constants.ENTITY_SKIPPED, Boolean.TRUE);</b>
+<b class="nc"><i>1159</i>&nbsp;                    fEntityHandler.startEntity(entityName, fResourceIdentifier, encoding, fEntityAugs);</b>
+<b class="nc"><i>1160</i>&nbsp;                    fEntityAugs.removeAllItems();</b>
+<b class="nc"><i>1161</i>&nbsp;                    fEntityAugs.putItem(Constants.ENTITY_SKIPPED, Boolean.TRUE);</b>
+<b class="nc"><i>1162</i>&nbsp;                    fEntityHandler.endEntity(entityName, fEntityAugs);</b>
+<i>1163</i>&nbsp;                }
+<i>1164</i>&nbsp;                return;
+<i>1165</i>&nbsp;            }
+<i>1166</i>&nbsp;        }
+<i>1167</i>&nbsp;
+<i>1168</i>&nbsp;        // is entity recursive?
+<b class="nc"><i>1169</i>&nbsp;        int size = fEntityStack.size();</b>
+<b class="nc"><i>1170</i>&nbsp;        for (int i = size; i &gt;= 0; i--) {</b>
+<b class="nc"><i>1171</i>&nbsp;            Entity activeEntity = i == size</b>
+<i>1172</i>&nbsp;                    ? fCurrentEntity
+<b class="nc"><i>1173</i>&nbsp;                    : (Entity)fEntityStack.elementAt(i);</b>
+<b class="nc"><i>1174</i>&nbsp;            if (activeEntity.name == entityName) {</b>
+<b class="nc"><i>1175</i>&nbsp;                String path = entityName;</b>
+<b class="nc"><i>1176</i>&nbsp;                for (int j = i + 1; j &lt; size; j++) {</b>
+<b class="nc"><i>1177</i>&nbsp;                    activeEntity = (Entity)fEntityStack.elementAt(j);</b>
+<b class="nc"><i>1178</i>&nbsp;                    path = path + &quot; -&gt; &quot; + activeEntity.name;</b>
+<i>1179</i>&nbsp;                }
+<b class="nc"><i>1180</i>&nbsp;                path = path + &quot; -&gt; &quot; + fCurrentEntity.name;</b>
+<b class="nc"><i>1181</i>&nbsp;                path = path + &quot; -&gt; &quot; + entityName;</b>
+<b class="nc"><i>1182</i>&nbsp;                fErrorReporter.reportError(this.getEntityScanner(),XMLMessageFormatter.XML_DOMAIN,</b>
+<i>1183</i>&nbsp;                        &quot;RecursiveReference&quot;,
+<i>1184</i>&nbsp;                        new Object[] { entityName, path },
+<i>1185</i>&nbsp;                        XMLErrorReporter.SEVERITY_FATAL_ERROR);
+<i>1186</i>&nbsp;
+<b class="nc"><i>1187</i>&nbsp;                        if (fEntityHandler != null) {</b>
+<b class="nc"><i>1188</i>&nbsp;                            fResourceIdentifier.clear();</b>
+<b class="nc"><i>1189</i>&nbsp;                            final String encoding = null;</b>
+<b class="nc"><i>1190</i>&nbsp;                            if (external) {</b>
+<b class="nc"><i>1191</i>&nbsp;                                fResourceIdentifier.setValues(</b>
+<b class="nc"><i>1192</i>&nbsp;                                        (externalEntity.entityLocation != null ? externalEntity.entityLocation.getPublicId() : null),</b>
+<i>1193</i>&nbsp;                                        extLitSysId, extBaseSysId, expandedSystemId);
+<i>1194</i>&nbsp;                            }
+<b class="nc"><i>1195</i>&nbsp;                            fEntityAugs.removeAllItems();</b>
+<b class="nc"><i>1196</i>&nbsp;                            fEntityAugs.putItem(Constants.ENTITY_SKIPPED, Boolean.TRUE);</b>
+<b class="nc"><i>1197</i>&nbsp;                            fEntityHandler.startEntity(entityName, fResourceIdentifier, encoding, fEntityAugs);</b>
+<b class="nc"><i>1198</i>&nbsp;                            fEntityAugs.removeAllItems();</b>
+<b class="nc"><i>1199</i>&nbsp;                            fEntityAugs.putItem(Constants.ENTITY_SKIPPED, Boolean.TRUE);</b>
+<b class="nc"><i>1200</i>&nbsp;                            fEntityHandler.endEntity(entityName, fEntityAugs);</b>
+<i>1201</i>&nbsp;                        }
+<i>1202</i>&nbsp;
+<i>1203</i>&nbsp;                        return;
+<i>1204</i>&nbsp;            }
+<i>1205</i>&nbsp;        }
+<i>1206</i>&nbsp;
+<i>1207</i>&nbsp;        // resolve external entity
+<b class="nc"><i>1208</i>&nbsp;        StaxXMLInputSource staxInputSource = null;</b>
+<b class="nc"><i>1209</i>&nbsp;        XMLInputSource xmlInputSource = null ;</b>
+<i>1210</i>&nbsp;
+<b class="nc"><i>1211</i>&nbsp;        if (external) {</b>
+<b class="nc"><i>1212</i>&nbsp;            staxInputSource = resolveEntityAsPerStax(externalEntity.entityLocation);</b>
+<i>1213</i>&nbsp;            /** xxx:  Waiting from the EG
+<i>1214</i>&nbsp;             * //simply return if there was entity resolver registered and application
+<i>1215</i>&nbsp;             * //returns either XMLStreamReader or XMLEventReader.
+<i>1216</i>&nbsp;             * if(staxInputSource.hasXMLStreamOrXMLEventReader()) return ;
+<i>1217</i>&nbsp;             */
+<b class="nc"><i>1218</i>&nbsp;            xmlInputSource = staxInputSource.getXMLInputSource() ;</b>
+<b class="nc"><i>1219</i>&nbsp;            if (!fISCreatedByResolver) {</b>
+<i>1220</i>&nbsp;                //let the not-LoadExternalDTD or not-SupportDTD process to handle the situation
+<b class="nc"><i>1221</i>&nbsp;                if (fLoadExternalDTD) {</b>
+<b class="nc"><i>1222</i>&nbsp;                    String accessError = SecuritySupport.checkAccess(expandedSystemId, fAccessExternalDTD, Constants.ACCESS_EXTERNAL_ALL);</b>
+<b class="nc"><i>1223</i>&nbsp;                    if (accessError != null) {</b>
+<b class="nc"><i>1224</i>&nbsp;                        fErrorReporter.reportError(this.getEntityScanner(),XMLMessageFormatter.XML_DOMAIN,</b>
+<i>1225</i>&nbsp;                                &quot;AccessExternalEntity&quot;,
+<b class="nc"><i>1226</i>&nbsp;                                new Object[] { SecuritySupport.sanitizePath(expandedSystemId), accessError },</b>
+<i>1227</i>&nbsp;                                XMLErrorReporter.SEVERITY_FATAL_ERROR);
+<i>1228</i>&nbsp;                    }
+<b class="nc"><i>1229</i>&nbsp;                }</b>
+<i>1230</i>&nbsp;            }
+<i>1231</i>&nbsp;        }
+<i>1232</i>&nbsp;        // wrap internal entity
+<i>1233</i>&nbsp;        else {
+<b class="nc"><i>1234</i>&nbsp;            Entity.InternalEntity internalEntity = (Entity.InternalEntity)entity;</b>
+<b class="nc"><i>1235</i>&nbsp;            Reader reader = new StringReader(internalEntity.text);</b>
+<b class="nc"><i>1236</i>&nbsp;            xmlInputSource = new XMLInputSource(null, null, null, reader, null);</b>
+<i>1237</i>&nbsp;        }
+<i>1238</i>&nbsp;
+<i>1239</i>&nbsp;        // start the entity
+<b class="nc"><i>1240</i>&nbsp;        startEntity(isGE, entityName, xmlInputSource, literal, external);</b>
+<i>1241</i>&nbsp;
+<i>1242</i>&nbsp;    } // startEntity(String,boolean)
+<i>1243</i>&nbsp;
+<i>1244</i>&nbsp;    /**
+<i>1245</i>&nbsp;     * Starts the document entity. The document entity has the &quot;[xml]&quot;
+<i>1246</i>&nbsp;     * pseudo-name.
+<i>1247</i>&nbsp;     *
+<i>1248</i>&nbsp;     * @param xmlInputSource The input source of the document entity.
+<i>1249</i>&nbsp;     *
+<i>1250</i>&nbsp;     * @throws IOException  Thrown on i/o error.
+<i>1251</i>&nbsp;     * @throws XNIException Thrown by entity handler to signal an error.
+<i>1252</i>&nbsp;     */
+<i>1253</i>&nbsp;    public void startDocumentEntity(XMLInputSource xmlInputSource)
+<i>1254</i>&nbsp;    throws IOException, XNIException {
+<b class="nc"><i>1255</i>&nbsp;        startEntity(false, XMLEntity, xmlInputSource, false, true);</b>
+<i>1256</i>&nbsp;    } // startDocumentEntity(XMLInputSource)
+<i>1257</i>&nbsp;
+<i>1258</i>&nbsp;    //xxx these methods are not required.
+<i>1259</i>&nbsp;    /**
+<i>1260</i>&nbsp;     * Starts the DTD entity. The DTD entity has the &quot;[dtd]&quot;
+<i>1261</i>&nbsp;     * pseudo-name.
+<i>1262</i>&nbsp;     *
+<i>1263</i>&nbsp;     * @param xmlInputSource The input source of the DTD entity.
+<i>1264</i>&nbsp;     *
+<i>1265</i>&nbsp;     * @throws IOException  Thrown on i/o error.
+<i>1266</i>&nbsp;     * @throws XNIException Thrown by entity handler to signal an error.
+<i>1267</i>&nbsp;     */
+<i>1268</i>&nbsp;    public void startDTDEntity(XMLInputSource xmlInputSource)
+<i>1269</i>&nbsp;    throws IOException, XNIException {
+<b class="nc"><i>1270</i>&nbsp;        startEntity(false, DTDEntity, xmlInputSource, false, true);</b>
+<i>1271</i>&nbsp;    } // startDTDEntity(XMLInputSource)
+<i>1272</i>&nbsp;
+<i>1273</i>&nbsp;    // indicate start of external subset so that
+<i>1274</i>&nbsp;    // location of entity decls can be tracked
+<i>1275</i>&nbsp;    public void startExternalSubset() {
+<b class="nc"><i>1276</i>&nbsp;        fInExternalSubset = true;</b>
+<i>1277</i>&nbsp;    }
+<i>1278</i>&nbsp;
+<i>1279</i>&nbsp;    public void endExternalSubset() {
+<b class="nc"><i>1280</i>&nbsp;        fInExternalSubset = false;</b>
+<i>1281</i>&nbsp;    }
+<i>1282</i>&nbsp;
+<i>1283</i>&nbsp;    /**
+<i>1284</i>&nbsp;     * Starts an entity.
+<i>1285</i>&nbsp;     * &lt;p&gt;
+<i>1286</i>&nbsp;     * This method can be used to insert an application defined XML
+<i>1287</i>&nbsp;     * entity stream into the parsing stream.
+<i>1288</i>&nbsp;     *
+<i>1289</i>&nbsp;     * @param isGE flag to indicate whether the entity is a General Entity
+<i>1290</i>&nbsp;     * @param name           The name of the entity.
+<i>1291</i>&nbsp;     * @param xmlInputSource The input source of the entity.
+<i>1292</i>&nbsp;     * @param literal        True if this entity is started within a
+<i>1293</i>&nbsp;     *                       literal value.
+<i>1294</i>&nbsp;     * @param isExternal    whether this entity should be treated as an internal or external entity.
+<i>1295</i>&nbsp;     *
+<i>1296</i>&nbsp;     * @throws IOException  Thrown on i/o error.
+<i>1297</i>&nbsp;     * @throws XNIException Thrown by entity handler to signal an error.
+<i>1298</i>&nbsp;     */
+<i>1299</i>&nbsp;    public void startEntity(boolean isGE, String name,
+<i>1300</i>&nbsp;            XMLInputSource xmlInputSource,
+<i>1301</i>&nbsp;            boolean literal, boolean isExternal)
+<i>1302</i>&nbsp;            throws IOException, XNIException {
+<i>1303</i>&nbsp;
+<b class="nc"><i>1304</i>&nbsp;        String encoding = setupCurrentEntity(isGE, name, xmlInputSource, literal, isExternal);</b>
+<i>1305</i>&nbsp;
+<i>1306</i>&nbsp;        //when entity expansion limit is set by the Application, we need to
+<i>1307</i>&nbsp;        //check for the entity expansion limit set by the parser, if number of entity
+<i>1308</i>&nbsp;        //expansions exceeds the entity expansion limit, parser will throw fatal error.
+<i>1309</i>&nbsp;        // Note that this represents the nesting level of open entities.
+<b class="nc"><i>1310</i>&nbsp;        fEntityExpansionCount++;</b>
+<b class="nc"><i>1311</i>&nbsp;        if(fLimitAnalyzer != null) {</b>
+<b class="nc"><i>1312</i>&nbsp;           fLimitAnalyzer.addValue(entityExpansionIndex, name, 1);</b>
+<i>1313</i>&nbsp;        }
+<b class="nc"><i>1314</i>&nbsp;        if( fSecurityManager != null &amp;&amp; fSecurityManager.isOverLimit(entityExpansionIndex, fLimitAnalyzer)){</b>
+<b class="nc"><i>1315</i>&nbsp;            fSecurityManager.debugPrint(fLimitAnalyzer);</b>
+<b class="nc"><i>1316</i>&nbsp;            fErrorReporter.reportError(XMLMessageFormatter.XML_DOMAIN,&quot;EntityExpansionLimit&quot;,</b>
+<b class="nc"><i>1317</i>&nbsp;                    new Object[]{fSecurityManager.getLimitValueByIndex(entityExpansionIndex)},</b>
+<i>1318</i>&nbsp;                                             XMLErrorReporter.SEVERITY_FATAL_ERROR );
+<i>1319</i>&nbsp;            // is there anything better to do than reset the counter?
+<i>1320</i>&nbsp;            // at least one can envision debugging applications where this might
+<i>1321</i>&nbsp;            // be useful...
+<b class="nc"><i>1322</i>&nbsp;            fEntityExpansionCount = 0;</b>
+<i>1323</i>&nbsp;        }
+<i>1324</i>&nbsp;
+<i>1325</i>&nbsp;        // call handler
+<b class="nc"><i>1326</i>&nbsp;        if (fEntityHandler != null) {</b>
+<b class="nc"><i>1327</i>&nbsp;            fEntityHandler.startEntity(name, fResourceIdentifier, encoding, null);</b>
+<i>1328</i>&nbsp;        }
+<i>1329</i>&nbsp;
+<i>1330</i>&nbsp;    } // startEntity(String,XMLInputSource)
+<i>1331</i>&nbsp;
+<i>1332</i>&nbsp;    /**
+<i>1333</i>&nbsp;     * Return the current entity being scanned. Current entity is SET using startEntity function.
+<i>1334</i>&nbsp;     * @return Entity.ScannedEntity
+<i>1335</i>&nbsp;     */
+<i>1336</i>&nbsp;
+<i>1337</i>&nbsp;    public Entity.ScannedEntity getCurrentEntity(){
+<b class="nc"><i>1338</i>&nbsp;        return fCurrentEntity ;</b>
+<i>1339</i>&nbsp;    }
+<i>1340</i>&nbsp;
+<i>1341</i>&nbsp;    /**
+<i>1342</i>&nbsp;     * Return the top level entity handled by this manager, or null
+<i>1343</i>&nbsp;     * if no entity was added.
+<i>1344</i>&nbsp;     */
+<i>1345</i>&nbsp;    public Entity.ScannedEntity getTopLevelEntity() {
+<b class="nc"><i>1346</i>&nbsp;        return (Entity.ScannedEntity)</b>
+<b class="nc"><i>1347</i>&nbsp;            (fEntityStack.empty() ? null : fEntityStack.elementAt(0));</b>
+<i>1348</i>&nbsp;    }
+<i>1349</i>&nbsp;
+<i>1350</i>&nbsp;
+<i>1351</i>&nbsp;    /**
+<i>1352</i>&nbsp;     * Close all opened InputStreams and Readers opened by this parser.
+<i>1353</i>&nbsp;     */
+<i>1354</i>&nbsp;    public void closeReaders() {
+<i>1355</i>&nbsp;        /** this call actually does nothing, readers are closed in the endEntity method
+<i>1356</i>&nbsp;         * through the current entity.
+<i>1357</i>&nbsp;         * The change seems to have happened during the jdk6 development with the
+<i>1358</i>&nbsp;         * addition of StAX
+<i>1359</i>&nbsp;        **/
+<i>1360</i>&nbsp;    }
+<i>1361</i>&nbsp;
+<i>1362</i>&nbsp;    public void endEntity() throws IOException, XNIException {
+<i>1363</i>&nbsp;
+<i>1364</i>&nbsp;        // call handler
+<i>1365</i>&nbsp;        if (DEBUG_BUFFER) {
+<i>1366</i>&nbsp;            System.out.print(&quot;(endEntity: &quot;);
+<i>1367</i>&nbsp;            print();
+<i>1368</i>&nbsp;            System.out.println();
+<i>1369</i>&nbsp;        }
+<i>1370</i>&nbsp;        //pop the entity from the stack
+<b class="nc"><i>1371</i>&nbsp;        Entity.ScannedEntity entity = fEntityStack.size() &gt; 0 ? (Entity.ScannedEntity)fEntityStack.pop() : null ;</b>
+<i>1372</i>&nbsp;
+<i>1373</i>&nbsp;        /** need to close the reader first since the program can end
+<i>1374</i>&nbsp;         *  prematurely (e.g. fEntityHandler.endEntity may throw exception)
+<i>1375</i>&nbsp;         *  leaving the reader open
+<i>1376</i>&nbsp;         */
+<i>1377</i>&nbsp;        //close the reader
+<b class="nc"><i>1378</i>&nbsp;        if(fCurrentEntity != null){</b>
+<i>1379</i>&nbsp;            //close the reader
+<i>1380</i>&nbsp;            try{
+<b class="nc"><i>1381</i>&nbsp;                if (fLimitAnalyzer != null) {</b>
+<b class="nc"><i>1382</i>&nbsp;                    fLimitAnalyzer.endEntity(XMLSecurityManager.Limit.GENERAL_ENTITY_SIZE_LIMIT, fCurrentEntity.name);</b>
+<b class="nc"><i>1383</i>&nbsp;                    if (fCurrentEntity.name.equals(&quot;[xml]&quot;)) {</b>
+<b class="nc"><i>1384</i>&nbsp;                        fSecurityManager.debugPrint(fLimitAnalyzer);</b>
+<i>1385</i>&nbsp;                    }
+<i>1386</i>&nbsp;                }
+<b class="nc"><i>1387</i>&nbsp;                fCurrentEntity.close();</b>
+<b class="nc"><i>1388</i>&nbsp;            }catch(IOException ex){</b>
+<b class="nc"><i>1389</i>&nbsp;                throw new XNIException(ex);</b>
+<b class="nc"><i>1390</i>&nbsp;            }</b>
+<i>1391</i>&nbsp;        }
+<i>1392</i>&nbsp;
+<b class="nc"><i>1393</i>&nbsp;        if (fEntityHandler != null) {</b>
+<i>1394</i>&nbsp;            //so this is the last opened entity, signal it to current fEntityHandler using Augmentation
+<b class="nc"><i>1395</i>&nbsp;            if(entity == null){</b>
+<b class="nc"><i>1396</i>&nbsp;                fEntityAugs.removeAllItems();</b>
+<b class="nc"><i>1397</i>&nbsp;                fEntityAugs.putItem(Constants.LAST_ENTITY, Boolean.TRUE);</b>
+<b class="nc"><i>1398</i>&nbsp;                fEntityHandler.endEntity(fCurrentEntity.name, fEntityAugs);</b>
+<b class="nc"><i>1399</i>&nbsp;                fEntityAugs.removeAllItems();</b>
+<i>1400</i>&nbsp;            }else{
+<b class="nc"><i>1401</i>&nbsp;                fEntityHandler.endEntity(fCurrentEntity.name, null);</b>
+<i>1402</i>&nbsp;            }
+<i>1403</i>&nbsp;        }
+<i>1404</i>&nbsp;        //check if it is a document entity
+<b class="nc"><i>1405</i>&nbsp;        boolean documentEntity = fCurrentEntity.name == XMLEntity;</b>
+<i>1406</i>&nbsp;
+<i>1407</i>&nbsp;        //set popped entity as current entity
+<b class="nc"><i>1408</i>&nbsp;        fCurrentEntity = entity;</b>
+<b class="nc"><i>1409</i>&nbsp;        fEntityScanner.setCurrentEntity(fCurrentEntity);</b>
+<i>1410</i>&nbsp;
+<i>1411</i>&nbsp;        //check if there are any entity left in the stack -- if there are
+<i>1412</i>&nbsp;        //no entries EOF has been reached.
+<i>1413</i>&nbsp;        // throw exception when it is the last entity but it is not a document entity
+<i>1414</i>&nbsp;
+<b class="nc"><i>1415</i>&nbsp;        if(fCurrentEntity == null &amp; !documentEntity){</b>
+<b class="nc"><i>1416</i>&nbsp;            throw new EOFException() ;</b>
+<i>1417</i>&nbsp;        }
+<i>1418</i>&nbsp;
+<i>1419</i>&nbsp;        if (DEBUG_BUFFER) {
+<i>1420</i>&nbsp;            System.out.print(&quot;)endEntity: &quot;);
+<i>1421</i>&nbsp;            print();
+<i>1422</i>&nbsp;            System.out.println();
+<i>1423</i>&nbsp;        }
+<i>1424</i>&nbsp;
+<i>1425</i>&nbsp;    } // endEntity()
+<i>1426</i>&nbsp;
+<i>1427</i>&nbsp;
+<i>1428</i>&nbsp;    //
+<i>1429</i>&nbsp;    // XMLComponent methods
+<i>1430</i>&nbsp;    //
+<i>1431</i>&nbsp;    public void reset(PropertyManager propertyManager){
+<i>1432</i>&nbsp;        // xerces properties
+<b class="nc"><i>1433</i>&nbsp;        fSymbolTable = (SymbolTable)propertyManager.getProperty(Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY);</b>
+<b class="nc"><i>1434</i>&nbsp;        fErrorReporter = (XMLErrorReporter)propertyManager.getProperty(Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_REPORTER_PROPERTY);</b>
+<i>1435</i>&nbsp;        try {
+<b class="nc"><i>1436</i>&nbsp;            fStaxEntityResolver = (StaxEntityResolverWrapper)propertyManager.getProperty(STAX_ENTITY_RESOLVER);</b>
+<b class="nc"><i>1437</i>&nbsp;        } catch (XMLConfigurationException e) {</b>
+<b class="nc"><i>1438</i>&nbsp;            fStaxEntityResolver = null;</b>
+<b class="nc"><i>1439</i>&nbsp;        }</b>
+<i>1440</i>&nbsp;
+<b class="nc"><i>1441</i>&nbsp;        fSupportDTD = ((Boolean)propertyManager.getProperty(XMLInputFactory.SUPPORT_DTD)).booleanValue();</b>
+<b class="nc"><i>1442</i>&nbsp;        fReplaceEntityReferences = ((Boolean)propertyManager.getProperty(XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES)).booleanValue();</b>
+<b class="nc"><i>1443</i>&nbsp;        fSupportExternalEntities = ((Boolean)propertyManager.getProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES)).booleanValue();</b>
+<i>1444</i>&nbsp;
+<i>1445</i>&nbsp;        // Zephyr feature ignore-external-dtd is the opposite of Xerces&#39; load-external-dtd
+<b class="nc"><i>1446</i>&nbsp;        fLoadExternalDTD = !((Boolean)propertyManager.getProperty(Constants.ZEPHYR_PROPERTY_PREFIX + Constants.IGNORE_EXTERNAL_DTD)).booleanValue();</b>
+<i>1447</i>&nbsp;
+<i>1448</i>&nbsp;        // JAXP 1.5 feature
+<b class="nc"><i>1449</i>&nbsp;        XMLSecurityPropertyManager spm = (XMLSecurityPropertyManager) propertyManager.getProperty(XML_SECURITY_PROPERTY_MANAGER);</b>
+<b class="nc"><i>1450</i>&nbsp;        fAccessExternalDTD = spm.getValue(XMLSecurityPropertyManager.Property.ACCESS_EXTERNAL_DTD);</b>
+<i>1451</i>&nbsp;
+<b class="nc"><i>1452</i>&nbsp;        fSecurityManager = (XMLSecurityManager)propertyManager.getProperty(SECURITY_MANAGER);</b>
+<i>1453</i>&nbsp;
+<b class="nc"><i>1454</i>&nbsp;        fLimitAnalyzer = new XMLLimitAnalyzer();</b>
+<i>1455</i>&nbsp;        //reset fEntityStorage
+<b class="nc"><i>1456</i>&nbsp;        fEntityStorage.reset(propertyManager);</b>
+<i>1457</i>&nbsp;        //reset XMLEntityReaderImpl
+<b class="nc"><i>1458</i>&nbsp;        fEntityScanner.reset(propertyManager);</b>
+<i>1459</i>&nbsp;
+<i>1460</i>&nbsp;        // initialize state
+<i>1461</i>&nbsp;        //fStandalone = false;
+<b class="nc"><i>1462</i>&nbsp;        fEntities.clear();</b>
+<b class="nc"><i>1463</i>&nbsp;        fEntityStack.removeAllElements();</b>
+<b class="nc"><i>1464</i>&nbsp;        fCurrentEntity = null;</b>
+<b class="nc"><i>1465</i>&nbsp;        fValidation = false;</b>
+<b class="nc"><i>1466</i>&nbsp;        fExternalGeneralEntities = true;</b>
+<b class="nc"><i>1467</i>&nbsp;        fExternalParameterEntities = true;</b>
+<b class="nc"><i>1468</i>&nbsp;        fAllowJavaEncodings = true ;</b>
+<i>1469</i>&nbsp;    }
+<i>1470</i>&nbsp;
+<i>1471</i>&nbsp;    /**
+<i>1472</i>&nbsp;     * Resets the component. The component can query the component manager
+<i>1473</i>&nbsp;     * about any features and properties that affect the operation of the
+<i>1474</i>&nbsp;     * component.
+<i>1475</i>&nbsp;     *
+<i>1476</i>&nbsp;     * @param componentManager The component manager.
+<i>1477</i>&nbsp;     *
+<i>1478</i>&nbsp;     * @throws SAXException Thrown by component on initialization error.
+<i>1479</i>&nbsp;     *                      For example, if a feature or property is
+<i>1480</i>&nbsp;     *                      required for the operation of the component, the
+<i>1481</i>&nbsp;     *                      component manager may throw a
+<i>1482</i>&nbsp;     *                      SAXNotRecognizedException or a
+<i>1483</i>&nbsp;     *                      SAXNotSupportedException.
+<i>1484</i>&nbsp;     */
+<i>1485</i>&nbsp;    public void reset(XMLComponentManager componentManager)
+<i>1486</i>&nbsp;    throws XMLConfigurationException {
+<i>1487</i>&nbsp;
+<b class="nc"><i>1488</i>&nbsp;        boolean parser_settings = componentManager.getFeature(PARSER_SETTINGS, true);</b>
+<i>1489</i>&nbsp;
+<b class="nc"><i>1490</i>&nbsp;        if (!parser_settings) {</b>
+<i>1491</i>&nbsp;            // parser settings have not been changed
+<b class="nc"><i>1492</i>&nbsp;            reset();</b>
+<b class="nc"><i>1493</i>&nbsp;            if(fEntityScanner != null){</b>
+<b class="nc"><i>1494</i>&nbsp;                fEntityScanner.reset(componentManager);</b>
+<i>1495</i>&nbsp;            }
+<b class="nc"><i>1496</i>&nbsp;            if(fEntityStorage != null){</b>
+<b class="nc"><i>1497</i>&nbsp;                fEntityStorage.reset(componentManager);</b>
+<i>1498</i>&nbsp;            }
+<i>1499</i>&nbsp;            return;
+<i>1500</i>&nbsp;        }
+<i>1501</i>&nbsp;
+<i>1502</i>&nbsp;        // sax features
+<b class="nc"><i>1503</i>&nbsp;        fValidation = componentManager.getFeature(VALIDATION, false);</b>
+<b class="nc"><i>1504</i>&nbsp;        fExternalGeneralEntities = componentManager.getFeature(EXTERNAL_GENERAL_ENTITIES, true);</b>
+<b class="nc"><i>1505</i>&nbsp;        fExternalParameterEntities = componentManager.getFeature(EXTERNAL_PARAMETER_ENTITIES, true);</b>
+<i>1506</i>&nbsp;
+<i>1507</i>&nbsp;        // xerces features
+<b class="nc"><i>1508</i>&nbsp;        fAllowJavaEncodings = componentManager.getFeature(ALLOW_JAVA_ENCODINGS, false);</b>
+<b class="nc"><i>1509</i>&nbsp;        fWarnDuplicateEntityDef = componentManager.getFeature(WARN_ON_DUPLICATE_ENTITYDEF, false);</b>
+<b class="nc"><i>1510</i>&nbsp;        fStrictURI = componentManager.getFeature(STANDARD_URI_CONFORMANT, false);</b>
+<b class="nc"><i>1511</i>&nbsp;        fLoadExternalDTD = componentManager.getFeature(LOAD_EXTERNAL_DTD, true);</b>
+<i>1512</i>&nbsp;
+<i>1513</i>&nbsp;        // xerces properties
+<b class="nc"><i>1514</i>&nbsp;        fSymbolTable = (SymbolTable)componentManager.getProperty(SYMBOL_TABLE);</b>
+<b class="nc"><i>1515</i>&nbsp;        fErrorReporter = (XMLErrorReporter)componentManager.getProperty(ERROR_REPORTER);</b>
+<b class="nc"><i>1516</i>&nbsp;        fEntityResolver = (XMLEntityResolver)componentManager.getProperty(ENTITY_RESOLVER, null);</b>
+<b class="nc"><i>1517</i>&nbsp;        fStaxEntityResolver = (StaxEntityResolverWrapper)componentManager.getProperty(STAX_ENTITY_RESOLVER, null);</b>
+<b class="nc"><i>1518</i>&nbsp;        fValidationManager = (ValidationManager)componentManager.getProperty(VALIDATION_MANAGER, null);</b>
+<b class="nc"><i>1519</i>&nbsp;        fSecurityManager = (XMLSecurityManager)componentManager.getProperty(SECURITY_MANAGER, null);</b>
+<b class="nc"><i>1520</i>&nbsp;        entityExpansionIndex = fSecurityManager.getIndex(Constants.JDK_ENTITY_EXPANSION_LIMIT);</b>
+<i>1521</i>&nbsp;
+<i>1522</i>&nbsp;        //StAX Property
+<b class="nc"><i>1523</i>&nbsp;        fSupportDTD = true;</b>
+<b class="nc"><i>1524</i>&nbsp;        fReplaceEntityReferences = true;</b>
+<b class="nc"><i>1525</i>&nbsp;        fSupportExternalEntities = true;</b>
+<i>1526</i>&nbsp;
+<i>1527</i>&nbsp;        // JAXP 1.5 feature
+<b class="nc"><i>1528</i>&nbsp;        XMLSecurityPropertyManager spm = (XMLSecurityPropertyManager) componentManager.getProperty(XML_SECURITY_PROPERTY_MANAGER, null);</b>
+<b class="nc"><i>1529</i>&nbsp;        if (spm == null) {</b>
+<b class="nc"><i>1530</i>&nbsp;            spm = new XMLSecurityPropertyManager();</b>
+<i>1531</i>&nbsp;        }
+<b class="nc"><i>1532</i>&nbsp;        fAccessExternalDTD = spm.getValue(XMLSecurityPropertyManager.Property.ACCESS_EXTERNAL_DTD);</b>
+<i>1533</i>&nbsp;
+<i>1534</i>&nbsp;        //reset general state
+<b class="nc"><i>1535</i>&nbsp;        reset();</b>
+<i>1536</i>&nbsp;
+<b class="nc"><i>1537</i>&nbsp;        fEntityScanner.reset(componentManager);</b>
+<b class="nc"><i>1538</i>&nbsp;        fEntityStorage.reset(componentManager);</b>
+<i>1539</i>&nbsp;
+<i>1540</i>&nbsp;    } // reset(XMLComponentManager)
+<i>1541</i>&nbsp;
+<i>1542</i>&nbsp;    // reset general state.  Should not be called other than by
+<i>1543</i>&nbsp;    // a class acting as a component manager but not
+<i>1544</i>&nbsp;    // implementing that interface for whatever reason.
+<i>1545</i>&nbsp;    public void reset() {
+<b class="nc"><i>1546</i>&nbsp;        fLimitAnalyzer = new XMLLimitAnalyzer();</b>
+<i>1547</i>&nbsp;        // initialize state
+<b class="nc"><i>1548</i>&nbsp;        fStandalone = false;</b>
+<b class="nc"><i>1549</i>&nbsp;        fEntities.clear();</b>
+<b class="nc"><i>1550</i>&nbsp;        fEntityStack.removeAllElements();</b>
+<b class="nc"><i>1551</i>&nbsp;        fEntityExpansionCount = 0;</b>
+<i>1552</i>&nbsp;
+<b class="nc"><i>1553</i>&nbsp;        fCurrentEntity = null;</b>
+<i>1554</i>&nbsp;        // reset scanner
+<b class="nc"><i>1555</i>&nbsp;        if(fXML10EntityScanner != null){</b>
+<b class="nc"><i>1556</i>&nbsp;            fXML10EntityScanner.reset(fSymbolTable, this, fErrorReporter);</b>
+<i>1557</i>&nbsp;        }
+<b class="nc"><i>1558</i>&nbsp;        if(fXML11EntityScanner != null) {</b>
+<b class="nc"><i>1559</i>&nbsp;            fXML11EntityScanner.reset(fSymbolTable, this, fErrorReporter);</b>
+<i>1560</i>&nbsp;        }
+<i>1561</i>&nbsp;
+<i>1562</i>&nbsp;        // DEBUG
+<i>1563</i>&nbsp;        if (DEBUG_ENTITIES) {
+<i>1564</i>&nbsp;            addInternalEntity(&quot;text&quot;, &quot;Hello, World.&quot;);
+<i>1565</i>&nbsp;            addInternalEntity(&quot;empty-element&quot;, &quot;&lt;foo/&gt;&quot;);
+<i>1566</i>&nbsp;            addInternalEntity(&quot;balanced-element&quot;, &quot;&lt;foo&gt;&lt;/foo&gt;&quot;);
+<i>1567</i>&nbsp;            addInternalEntity(&quot;balanced-element-with-text&quot;, &quot;&lt;foo&gt;Hello, World&lt;/foo&gt;&quot;);
+<i>1568</i>&nbsp;            addInternalEntity(&quot;balanced-element-with-entity&quot;, &quot;&lt;foo&gt;&amp;text;&lt;/foo&gt;&quot;);
+<i>1569</i>&nbsp;            addInternalEntity(&quot;unbalanced-entity&quot;, &quot;&lt;foo&gt;&quot;);
+<i>1570</i>&nbsp;            addInternalEntity(&quot;recursive-entity&quot;, &quot;&lt;foo&gt;&amp;recursive-entity2;&lt;/foo&gt;&quot;);
+<i>1571</i>&nbsp;            addInternalEntity(&quot;recursive-entity2&quot;, &quot;&lt;bar&gt;&amp;recursive-entity3;&lt;/bar&gt;&quot;);
+<i>1572</i>&nbsp;            addInternalEntity(&quot;recursive-entity3&quot;, &quot;&lt;baz&gt;&amp;recursive-entity;&lt;/baz&gt;&quot;);
+<i>1573</i>&nbsp;            try {
+<i>1574</i>&nbsp;                addExternalEntity(&quot;external-text&quot;, null, &quot;external-text.ent&quot;, &quot;test/external-text.xml&quot;);
+<i>1575</i>&nbsp;                addExternalEntity(&quot;external-balanced-element&quot;, null, &quot;external-balanced-element.ent&quot;, &quot;test/external-balanced-element.xml&quot;);
+<i>1576</i>&nbsp;                addExternalEntity(&quot;one&quot;, null, &quot;ent/one.ent&quot;, &quot;test/external-entity.xml&quot;);
+<i>1577</i>&nbsp;                addExternalEntity(&quot;two&quot;, null, &quot;ent/two.ent&quot;, &quot;test/ent/one.xml&quot;);
+<i>1578</i>&nbsp;            }
+<i>1579</i>&nbsp;            catch (IOException ex) {
+<i>1580</i>&nbsp;                // should never happen
+<i>1581</i>&nbsp;            }
+<i>1582</i>&nbsp;        }
+<i>1583</i>&nbsp;
+<b class="nc"><i>1584</i>&nbsp;        fEntityHandler = null;</b>
+<i>1585</i>&nbsp;
+<i>1586</i>&nbsp;        // reset scanner
+<i>1587</i>&nbsp;        //if(fEntityScanner!=null)
+<i>1588</i>&nbsp;          //  fEntityScanner.reset(fSymbolTable, this,fErrorReporter);
+<i>1589</i>&nbsp;
+<i>1590</i>&nbsp;    }
+<i>1591</i>&nbsp;    /**
+<i>1592</i>&nbsp;     * Returns a list of feature identifiers that are recognized by
+<i>1593</i>&nbsp;     * this component. This method may return null if no features
+<i>1594</i>&nbsp;     * are recognized by this component.
+<i>1595</i>&nbsp;     */
+<i>1596</i>&nbsp;    public String[] getRecognizedFeatures() {
+<b class="nc"><i>1597</i>&nbsp;        return (String[])(RECOGNIZED_FEATURES.clone());</b>
+<i>1598</i>&nbsp;    } // getRecognizedFeatures():String[]
+<i>1599</i>&nbsp;
+<i>1600</i>&nbsp;    /**
+<i>1601</i>&nbsp;     * Sets the state of a feature. This method is called by the component
+<i>1602</i>&nbsp;     * manager any time after reset when a feature changes state.
+<i>1603</i>&nbsp;     * &lt;p&gt;
+<i>1604</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt; Components should silently ignore features
+<i>1605</i>&nbsp;     * that do not affect the operation of the component.
+<i>1606</i>&nbsp;     *
+<i>1607</i>&nbsp;     * @param featureId The feature identifier.
+<i>1608</i>&nbsp;     * @param state     The state of the feature.
+<i>1609</i>&nbsp;     *
+<i>1610</i>&nbsp;     * @throws SAXNotRecognizedException The component should not throw
+<i>1611</i>&nbsp;     *                                   this exception.
+<i>1612</i>&nbsp;     * @throws SAXNotSupportedException The component should not throw
+<i>1613</i>&nbsp;     *                                  this exception.
+<i>1614</i>&nbsp;     */
+<i>1615</i>&nbsp;    public void setFeature(String featureId, boolean state)
+<i>1616</i>&nbsp;    throws XMLConfigurationException {
+<i>1617</i>&nbsp;
+<i>1618</i>&nbsp;        // xerces features
+<b class="nc"><i>1619</i>&nbsp;        if (featureId.startsWith(Constants.XERCES_FEATURE_PREFIX)) {</b>
+<b class="nc"><i>1620</i>&nbsp;            final int suffixLength = featureId.length() - Constants.XERCES_FEATURE_PREFIX.length();</b>
+<b class="nc"><i>1621</i>&nbsp;            if (suffixLength == Constants.ALLOW_JAVA_ENCODINGS_FEATURE.length() &amp;&amp;</b>
+<b class="nc"><i>1622</i>&nbsp;                featureId.endsWith(Constants.ALLOW_JAVA_ENCODINGS_FEATURE)) {</b>
+<b class="nc"><i>1623</i>&nbsp;                fAllowJavaEncodings = state;</b>
+<i>1624</i>&nbsp;            }
+<b class="nc"><i>1625</i>&nbsp;            if (suffixLength == Constants.LOAD_EXTERNAL_DTD_FEATURE.length() &amp;&amp;</b>
+<b class="nc"><i>1626</i>&nbsp;                featureId.endsWith(Constants.LOAD_EXTERNAL_DTD_FEATURE)) {</b>
+<b class="nc"><i>1627</i>&nbsp;                fLoadExternalDTD = state;</b>
+<i>1628</i>&nbsp;                return;
+<i>1629</i>&nbsp;            }
+<i>1630</i>&nbsp;        }
+<i>1631</i>&nbsp;
+<i>1632</i>&nbsp;    } // setFeature(String,boolean)
+<i>1633</i>&nbsp;
+<i>1634</i>&nbsp;    /**
+<i>1635</i>&nbsp;     * Sets the value of a property. This method is called by the component
+<i>1636</i>&nbsp;     * manager any time after reset when a property changes value.
+<i>1637</i>&nbsp;     * &lt;p&gt;
+<i>1638</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt; Components should silently ignore properties
+<i>1639</i>&nbsp;     * that do not affect the operation of the component.
+<i>1640</i>&nbsp;     *
+<i>1641</i>&nbsp;     * @param propertyId The property identifier.
+<i>1642</i>&nbsp;     * @param value      The value of the property.
+<i>1643</i>&nbsp;     *
+<i>1644</i>&nbsp;     * @throws SAXNotRecognizedException The component should not throw
+<i>1645</i>&nbsp;     *                                   this exception.
+<i>1646</i>&nbsp;     * @throws SAXNotSupportedException The component should not throw
+<i>1647</i>&nbsp;     *                                  this exception.
+<i>1648</i>&nbsp;     */
+<i>1649</i>&nbsp;    public void setProperty(String propertyId, Object value){
+<i>1650</i>&nbsp;        // Xerces properties
+<b class="nc"><i>1651</i>&nbsp;        if (propertyId.startsWith(Constants.XERCES_PROPERTY_PREFIX)) {</b>
+<b class="nc"><i>1652</i>&nbsp;            final int suffixLength = propertyId.length() - Constants.XERCES_PROPERTY_PREFIX.length();</b>
+<i>1653</i>&nbsp;
+<b class="nc"><i>1654</i>&nbsp;            if (suffixLength == Constants.SYMBOL_TABLE_PROPERTY.length() &amp;&amp;</b>
+<b class="nc"><i>1655</i>&nbsp;                propertyId.endsWith(Constants.SYMBOL_TABLE_PROPERTY)) {</b>
+<b class="nc"><i>1656</i>&nbsp;                fSymbolTable = (SymbolTable)value;</b>
+<i>1657</i>&nbsp;                return;
+<i>1658</i>&nbsp;            }
+<b class="nc"><i>1659</i>&nbsp;            if (suffixLength == Constants.ERROR_REPORTER_PROPERTY.length() &amp;&amp;</b>
+<b class="nc"><i>1660</i>&nbsp;                propertyId.endsWith(Constants.ERROR_REPORTER_PROPERTY)) {</b>
+<b class="nc"><i>1661</i>&nbsp;                fErrorReporter = (XMLErrorReporter)value;</b>
+<i>1662</i>&nbsp;                return;
+<i>1663</i>&nbsp;            }
+<b class="nc"><i>1664</i>&nbsp;            if (suffixLength == Constants.ENTITY_RESOLVER_PROPERTY.length() &amp;&amp;</b>
+<b class="nc"><i>1665</i>&nbsp;                propertyId.endsWith(Constants.ENTITY_RESOLVER_PROPERTY)) {</b>
+<b class="nc"><i>1666</i>&nbsp;                fEntityResolver = (XMLEntityResolver)value;</b>
+<i>1667</i>&nbsp;                return;
+<i>1668</i>&nbsp;            }
+<b class="nc"><i>1669</i>&nbsp;            if (suffixLength == Constants.BUFFER_SIZE_PROPERTY.length() &amp;&amp;</b>
+<b class="nc"><i>1670</i>&nbsp;                propertyId.endsWith(Constants.BUFFER_SIZE_PROPERTY)) {</b>
+<b class="nc"><i>1671</i>&nbsp;                Integer bufferSize = (Integer)value;</b>
+<b class="nc"><i>1672</i>&nbsp;                if (bufferSize != null &amp;&amp;</b>
+<b class="nc"><i>1673</i>&nbsp;                    bufferSize.intValue() &gt; DEFAULT_XMLDECL_BUFFER_SIZE) {</b>
+<b class="nc"><i>1674</i>&nbsp;                    fBufferSize = bufferSize.intValue();</b>
+<b class="nc"><i>1675</i>&nbsp;                    fEntityScanner.setBufferSize(fBufferSize);</b>
+<b class="nc"><i>1676</i>&nbsp;                    fBufferPool.setExternalBufferSize(fBufferSize);</b>
+<i>1677</i>&nbsp;                }
+<i>1678</i>&nbsp;            }
+<b class="nc"><i>1679</i>&nbsp;            if (suffixLength == Constants.SECURITY_MANAGER_PROPERTY.length() &amp;&amp;</b>
+<b class="nc"><i>1680</i>&nbsp;                propertyId.endsWith(Constants.SECURITY_MANAGER_PROPERTY)) {</b>
+<b class="nc"><i>1681</i>&nbsp;                fSecurityManager = (XMLSecurityManager)value;</b>
+<i>1682</i>&nbsp;            }
+<i>1683</i>&nbsp;        }
+<i>1684</i>&nbsp;
+<i>1685</i>&nbsp;        //JAXP 1.5 properties
+<b class="nc"><i>1686</i>&nbsp;        if (propertyId.equals(XML_SECURITY_PROPERTY_MANAGER))</b>
+<i>1687</i>&nbsp;        {
+<b class="nc"><i>1688</i>&nbsp;            XMLSecurityPropertyManager spm = (XMLSecurityPropertyManager)value;</b>
+<b class="nc"><i>1689</i>&nbsp;            fAccessExternalDTD = spm.getValue(XMLSecurityPropertyManager.Property.ACCESS_EXTERNAL_DTD);</b>
+<i>1690</i>&nbsp;        }
+<i>1691</i>&nbsp;    }
+<i>1692</i>&nbsp;
+<i>1693</i>&nbsp;    public void setLimitAnalyzer(XMLLimitAnalyzer fLimitAnalyzer) {
+<b class="nc"><i>1694</i>&nbsp;        this.fLimitAnalyzer = fLimitAnalyzer;</b>
+<i>1695</i>&nbsp;    }
+<i>1696</i>&nbsp;
+<i>1697</i>&nbsp;    /**
+<i>1698</i>&nbsp;     * Returns a list of property identifiers that are recognized by
+<i>1699</i>&nbsp;     * this component. This method may return null if no properties
+<i>1700</i>&nbsp;     * are recognized by this component.
+<i>1701</i>&nbsp;     */
+<i>1702</i>&nbsp;    public String[] getRecognizedProperties() {
+<b class="nc"><i>1703</i>&nbsp;        return (String[])(RECOGNIZED_PROPERTIES.clone());</b>
+<i>1704</i>&nbsp;    } // getRecognizedProperties():String[]
+<i>1705</i>&nbsp;    /**
+<i>1706</i>&nbsp;     * Returns the default state for a feature, or null if this
+<i>1707</i>&nbsp;     * component does not want to report a default value for this
+<i>1708</i>&nbsp;     * feature.
+<i>1709</i>&nbsp;     *
+<i>1710</i>&nbsp;     * @param featureId The feature identifier.
+<i>1711</i>&nbsp;     *
+<i>1712</i>&nbsp;     * @since Xerces 2.2.0
+<i>1713</i>&nbsp;     */
+<i>1714</i>&nbsp;    public Boolean getFeatureDefault(String featureId) {
+<b class="nc"><i>1715</i>&nbsp;        for (int i = 0; i &lt; RECOGNIZED_FEATURES.length; i++) {</b>
+<b class="nc"><i>1716</i>&nbsp;            if (RECOGNIZED_FEATURES[i].equals(featureId)) {</b>
+<b class="nc"><i>1717</i>&nbsp;                return FEATURE_DEFAULTS[i];</b>
+<i>1718</i>&nbsp;            }
+<i>1719</i>&nbsp;        }
+<b class="nc"><i>1720</i>&nbsp;        return null;</b>
+<i>1721</i>&nbsp;    } // getFeatureDefault(String):Boolean
+<i>1722</i>&nbsp;
+<i>1723</i>&nbsp;    /**
+<i>1724</i>&nbsp;     * Returns the default state for a property, or null if this
+<i>1725</i>&nbsp;     * component does not want to report a default value for this
+<i>1726</i>&nbsp;     * property.
+<i>1727</i>&nbsp;     *
+<i>1728</i>&nbsp;     * @param propertyId The property identifier.
+<i>1729</i>&nbsp;     *
+<i>1730</i>&nbsp;     * @since Xerces 2.2.0
+<i>1731</i>&nbsp;     */
+<i>1732</i>&nbsp;    public Object getPropertyDefault(String propertyId) {
+<b class="nc"><i>1733</i>&nbsp;        for (int i = 0; i &lt; RECOGNIZED_PROPERTIES.length; i++) {</b>
+<b class="nc"><i>1734</i>&nbsp;            if (RECOGNIZED_PROPERTIES[i].equals(propertyId)) {</b>
+<b class="nc"><i>1735</i>&nbsp;                return PROPERTY_DEFAULTS[i];</b>
+<i>1736</i>&nbsp;            }
+<i>1737</i>&nbsp;        }
+<b class="nc"><i>1738</i>&nbsp;        return null;</b>
+<i>1739</i>&nbsp;    } // getPropertyDefault(String):Object
+<i>1740</i>&nbsp;
+<i>1741</i>&nbsp;    //
+<i>1742</i>&nbsp;    // Public static methods
+<i>1743</i>&nbsp;    //
+<i>1744</i>&nbsp;
+<i>1745</i>&nbsp;    /**
+<i>1746</i>&nbsp;     * Expands a system id and returns the system id as a URI, if
+<i>1747</i>&nbsp;     * it can be expanded. A return value of null means that the
+<i>1748</i>&nbsp;     * identifier is already expanded. An exception thrown
+<i>1749</i>&nbsp;     * indicates a failure to expand the id.
+<i>1750</i>&nbsp;     *
+<i>1751</i>&nbsp;     * @param systemId The systemId to be expanded.
+<i>1752</i>&nbsp;     *
+<i>1753</i>&nbsp;     * @return Returns the URI string representing the expanded system
+<i>1754</i>&nbsp;     *         identifier. A null value indicates that the given
+<i>1755</i>&nbsp;     *         system identifier is already expanded.
+<i>1756</i>&nbsp;     *
+<i>1757</i>&nbsp;     */
+<i>1758</i>&nbsp;    public static String expandSystemId(String systemId) {
+<b class="nc"><i>1759</i>&nbsp;        return expandSystemId(systemId, null);</b>
+<i>1760</i>&nbsp;    } // expandSystemId(String):String
+<i>1761</i>&nbsp;
+<i>1762</i>&nbsp;    //
+<i>1763</i>&nbsp;    // Public static methods
+<i>1764</i>&nbsp;    //
+<i>1765</i>&nbsp;
+<i>1766</i>&nbsp;    // current value of the &quot;user.dir&quot; property
+<i>1767</i>&nbsp;    private static String gUserDir;
+<i>1768</i>&nbsp;    // cached URI object for the current value of the escaped &quot;user.dir&quot; property stored as a URI
+<i>1769</i>&nbsp;    private static URI gUserDirURI;
+<i>1770</i>&nbsp;    // which ASCII characters need to be escaped
+<b class="nc"><i>1771</i>&nbsp;    private static boolean gNeedEscaping[] = new boolean[128];</b>
+<i>1772</i>&nbsp;    // the first hex character if a character needs to be escaped
+<b class="nc"><i>1773</i>&nbsp;    private static char gAfterEscaping1[] = new char[128];</b>
+<i>1774</i>&nbsp;    // the second hex character if a character needs to be escaped
+<b class="nc"><i>1775</i>&nbsp;    private static char gAfterEscaping2[] = new char[128];</b>
+<b class="nc"><i>1776</i>&nbsp;    private static char[] gHexChs = {&#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;6&#39;, &#39;7&#39;,</b>
+<i>1777</i>&nbsp;                                     &#39;8&#39;, &#39;9&#39;, &#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;, &#39;E&#39;, &#39;F&#39;};
+<i>1778</i>&nbsp;    // initialize the above 3 arrays
+<i>1779</i>&nbsp;    static {
+<b class="nc"><i>1780</i>&nbsp;        for (int i = 0; i &lt;= 0x1f; i++) {</b>
+<b class="nc"><i>1781</i>&nbsp;            gNeedEscaping[i] = true;</b>
+<b class="nc"><i>1782</i>&nbsp;            gAfterEscaping1[i] = gHexChs[i &gt;&gt; 4];</b>
+<b class="nc"><i>1783</i>&nbsp;            gAfterEscaping2[i] = gHexChs[i &amp; 0xf];</b>
+<i>1784</i>&nbsp;        }
+<b class="nc"><i>1785</i>&nbsp;        gNeedEscaping[0x7f] = true;</b>
+<b class="nc"><i>1786</i>&nbsp;        gAfterEscaping1[0x7f] = &#39;7&#39;;</b>
+<b class="nc"><i>1787</i>&nbsp;        gAfterEscaping2[0x7f] = &#39;F&#39;;</b>
+<b class="nc"><i>1788</i>&nbsp;        char[] escChs = {&#39; &#39;, &#39;&lt;&#39;, &#39;&gt;&#39;, &#39;#&#39;, &#39;%&#39;, &#39;&quot;&#39;, &#39;{&#39;, &#39;}&#39;,</b>
+<i>1789</i>&nbsp;                         &#39;|&#39;, &#39;\\&#39;, &#39;^&#39;, &#39;~&#39;, &#39;[&#39;, &#39;]&#39;, &#39;`&#39;};
+<b class="nc"><i>1790</i>&nbsp;        int len = escChs.length;</b>
+<i>1791</i>&nbsp;        char ch;
+<b class="nc"><i>1792</i>&nbsp;        for (int i = 0; i &lt; len; i++) {</b>
+<b class="nc"><i>1793</i>&nbsp;            ch = escChs[i];</b>
+<b class="nc"><i>1794</i>&nbsp;            gNeedEscaping[ch] = true;</b>
+<b class="nc"><i>1795</i>&nbsp;            gAfterEscaping1[ch] = gHexChs[ch &gt;&gt; 4];</b>
+<b class="nc"><i>1796</i>&nbsp;            gAfterEscaping2[ch] = gHexChs[ch &amp; 0xf];</b>
+<i>1797</i>&nbsp;        }
+<i>1798</i>&nbsp;    }
+<i>1799</i>&nbsp;
+<i>1800</i>&nbsp;    // To escape the &quot;user.dir&quot; system property, by using %HH to represent
+<i>1801</i>&nbsp;    // special ASCII characters: 0x00~0x1F, 0x7F, &#39; &#39;, &#39;&lt;&#39;, &#39;&gt;&#39;, &#39;#&#39;, &#39;%&#39;
+<i>1802</i>&nbsp;    // and &#39;&quot;&#39;. It&#39;s a static method, so needs to be synchronized.
+<i>1803</i>&nbsp;    // this method looks heavy, but since the system property isn&#39;t expected
+<i>1804</i>&nbsp;    // to change often, so in most cases, we only need to return the URI
+<i>1805</i>&nbsp;    // that was escaped before.
+<i>1806</i>&nbsp;    // According to the URI spec, non-ASCII characters (whose value &gt;= 128)
+<i>1807</i>&nbsp;    // need to be escaped too.
+<i>1808</i>&nbsp;    // REVISIT: don&#39;t know how to escape non-ASCII characters, especially
+<i>1809</i>&nbsp;    // which encoding to use. Leave them for now.
+<i>1810</i>&nbsp;    private static synchronized URI getUserDir() throws URI.MalformedURIException {
+<i>1811</i>&nbsp;        // get the user.dir property
+<b class="nc"><i>1812</i>&nbsp;        String userDir = &quot;&quot;;</b>
+<i>1813</i>&nbsp;        try {
+<b class="nc"><i>1814</i>&nbsp;            userDir = SecuritySupport.getSystemProperty(&quot;user.dir&quot;);</b>
+<i>1815</i>&nbsp;        }
+<b class="nc"><i>1816</i>&nbsp;        catch (SecurityException se) {</b>
+<b class="nc"><i>1817</i>&nbsp;        }</b>
+<i>1818</i>&nbsp;
+<i>1819</i>&nbsp;        // return empty string if property value is empty string.
+<b class="nc"><i>1820</i>&nbsp;        if (userDir.length() == 0)</b>
+<b class="nc"><i>1821</i>&nbsp;            return new URI(&quot;file&quot;, &quot;&quot;, &quot;&quot;, null, null);</b>
+<i>1822</i>&nbsp;        // compute the new escaped value if the new property value doesn&#39;t
+<i>1823</i>&nbsp;        // match the previous one
+<b class="nc"><i>1824</i>&nbsp;        if (gUserDirURI != null &amp;&amp; userDir.equals(gUserDir)) {</b>
+<b class="nc"><i>1825</i>&nbsp;            return gUserDirURI;</b>
+<i>1826</i>&nbsp;        }
+<i>1827</i>&nbsp;
+<i>1828</i>&nbsp;        // record the new value as the global property value
+<b class="nc"><i>1829</i>&nbsp;        gUserDir = userDir;</b>
+<i>1830</i>&nbsp;
+<b class="nc"><i>1831</i>&nbsp;        char separator = java.io.File.separatorChar;</b>
+<b class="nc"><i>1832</i>&nbsp;        userDir = userDir.replace(separator, &#39;/&#39;);</b>
+<i>1833</i>&nbsp;
+<b class="nc"><i>1834</i>&nbsp;        int len = userDir.length(), ch;</b>
+<b class="nc"><i>1835</i>&nbsp;        StringBuffer buffer = new StringBuffer(len*3);</b>
+<i>1836</i>&nbsp;        // change C:/blah to /C:/blah
+<b class="nc"><i>1837</i>&nbsp;        if (len &gt;= 2 &amp;&amp; userDir.charAt(1) == &#39;:&#39;) {</b>
+<b class="nc"><i>1838</i>&nbsp;            ch = Character.toUpperCase(userDir.charAt(0));</b>
+<b class="nc"><i>1839</i>&nbsp;            if (ch &gt;= &#39;A&#39; &amp;&amp; ch &lt;= &#39;Z&#39;) {</b>
+<b class="nc"><i>1840</i>&nbsp;                buffer.append(&#39;/&#39;);</b>
+<i>1841</i>&nbsp;            }
+<i>1842</i>&nbsp;        }
+<i>1843</i>&nbsp;
+<i>1844</i>&nbsp;        // for each character in the path
+<b class="nc"><i>1845</i>&nbsp;        int i = 0;</b>
+<b class="nc"><i>1846</i>&nbsp;        for (; i &lt; len; i++) {</b>
+<b class="nc"><i>1847</i>&nbsp;            ch = userDir.charAt(i);</b>
+<i>1848</i>&nbsp;            // if it&#39;s not an ASCII character, break here, and use UTF-8 encoding
+<b class="nc"><i>1849</i>&nbsp;            if (ch &gt;= 128)</b>
+<b class="nc"><i>1850</i>&nbsp;                break;</b>
+<b class="nc"><i>1851</i>&nbsp;            if (gNeedEscaping[ch]) {</b>
+<b class="nc"><i>1852</i>&nbsp;                buffer.append(&#39;%&#39;);</b>
+<b class="nc"><i>1853</i>&nbsp;                buffer.append(gAfterEscaping1[ch]);</b>
+<b class="nc"><i>1854</i>&nbsp;                buffer.append(gAfterEscaping2[ch]);</b>
+<i>1855</i>&nbsp;                // record the fact that it&#39;s escaped
+<i>1856</i>&nbsp;            }
+<i>1857</i>&nbsp;            else {
+<b class="nc"><i>1858</i>&nbsp;                buffer.append((char)ch);</b>
+<i>1859</i>&nbsp;            }
+<i>1860</i>&nbsp;        }
+<i>1861</i>&nbsp;
+<i>1862</i>&nbsp;        // we saw some non-ascii character
+<b class="nc"><i>1863</i>&nbsp;        if (i &lt; len) {</b>
+<i>1864</i>&nbsp;            // get UTF-8 bytes for the remaining sub-string
+<b class="nc"><i>1865</i>&nbsp;            byte[] bytes = null;</b>
+<i>1866</i>&nbsp;            byte b;
+<i>1867</i>&nbsp;            try {
+<b class="nc"><i>1868</i>&nbsp;                bytes = userDir.substring(i).getBytes(&quot;UTF-8&quot;);</b>
+<b class="nc"><i>1869</i>&nbsp;            } catch (java.io.UnsupportedEncodingException e) {</b>
+<i>1870</i>&nbsp;                // should never happen
+<b class="nc"><i>1871</i>&nbsp;                return new URI(&quot;file&quot;, &quot;&quot;, userDir, null, null);</b>
+<b class="nc"><i>1872</i>&nbsp;            }</b>
+<b class="nc"><i>1873</i>&nbsp;            len = bytes.length;</b>
+<i>1874</i>&nbsp;
+<i>1875</i>&nbsp;            // for each byte
+<b class="nc"><i>1876</i>&nbsp;            for (i = 0; i &lt; len; i++) {</b>
+<b class="nc"><i>1877</i>&nbsp;                b = bytes[i];</b>
+<i>1878</i>&nbsp;                // for non-ascii character: make it positive, then escape
+<b class="nc"><i>1879</i>&nbsp;                if (b &lt; 0) {</b>
+<b class="nc"><i>1880</i>&nbsp;                    ch = b + 256;</b>
+<b class="nc"><i>1881</i>&nbsp;                    buffer.append(&#39;%&#39;);</b>
+<b class="nc"><i>1882</i>&nbsp;                    buffer.append(gHexChs[ch &gt;&gt; 4]);</b>
+<b class="nc"><i>1883</i>&nbsp;                    buffer.append(gHexChs[ch &amp; 0xf]);</b>
+<i>1884</i>&nbsp;                }
+<b class="nc"><i>1885</i>&nbsp;                else if (gNeedEscaping[b]) {</b>
+<b class="nc"><i>1886</i>&nbsp;                    buffer.append(&#39;%&#39;);</b>
+<b class="nc"><i>1887</i>&nbsp;                    buffer.append(gAfterEscaping1[b]);</b>
+<b class="nc"><i>1888</i>&nbsp;                    buffer.append(gAfterEscaping2[b]);</b>
+<i>1889</i>&nbsp;                }
+<i>1890</i>&nbsp;                else {
+<b class="nc"><i>1891</i>&nbsp;                    buffer.append((char)b);</b>
+<i>1892</i>&nbsp;                }
+<i>1893</i>&nbsp;            }
+<i>1894</i>&nbsp;        }
+<i>1895</i>&nbsp;
+<i>1896</i>&nbsp;        // change blah/blah to blah/blah/
+<b class="nc"><i>1897</i>&nbsp;        if (!userDir.endsWith(&quot;/&quot;))</b>
+<b class="nc"><i>1898</i>&nbsp;            buffer.append(&#39;/&#39;);</b>
+<i>1899</i>&nbsp;
+<b class="nc"><i>1900</i>&nbsp;        gUserDirURI = new URI(&quot;file&quot;, &quot;&quot;, buffer.toString(), null, null);</b>
+<i>1901</i>&nbsp;
+<b class="nc"><i>1902</i>&nbsp;        return gUserDirURI;</b>
+<i>1903</i>&nbsp;    }
+<i>1904</i>&nbsp;
+<i>1905</i>&nbsp;    /**
+<i>1906</i>&nbsp;     * Absolutizes a URI using the current value
+<i>1907</i>&nbsp;     * of the &quot;user.dir&quot; property as the base URI. If
+<i>1908</i>&nbsp;     * the URI is already absolute, this is a no-op.
+<i>1909</i>&nbsp;     *
+<i>1910</i>&nbsp;     * @param uri the URI to absolutize
+<i>1911</i>&nbsp;     */
+<i>1912</i>&nbsp;    public static void absolutizeAgainstUserDir(URI uri)
+<i>1913</i>&nbsp;        throws URI.MalformedURIException {
+<b class="nc"><i>1914</i>&nbsp;        uri.absolutize(getUserDir());</b>
+<i>1915</i>&nbsp;    }
+<i>1916</i>&nbsp;
+<i>1917</i>&nbsp;    /**
+<i>1918</i>&nbsp;     * Expands a system id and returns the system id as a URI, if
+<i>1919</i>&nbsp;     * it can be expanded. A return value of null means that the
+<i>1920</i>&nbsp;     * identifier is already expanded. An exception thrown
+<i>1921</i>&nbsp;     * indicates a failure to expand the id.
+<i>1922</i>&nbsp;     *
+<i>1923</i>&nbsp;     * @param systemId The systemId to be expanded.
+<i>1924</i>&nbsp;     *
+<i>1925</i>&nbsp;     * @return Returns the URI string representing the expanded system
+<i>1926</i>&nbsp;     *         identifier. A null value indicates that the given
+<i>1927</i>&nbsp;     *         system identifier is already expanded.
+<i>1928</i>&nbsp;     *
+<i>1929</i>&nbsp;     */
+<i>1930</i>&nbsp;    public static String expandSystemId(String systemId, String baseSystemId) {
+<i>1931</i>&nbsp;
+<i>1932</i>&nbsp;        // check for bad parameters id
+<b class="nc"><i>1933</i>&nbsp;        if (systemId == null || systemId.length() == 0) {</b>
+<b class="nc"><i>1934</i>&nbsp;            return systemId;</b>
+<i>1935</i>&nbsp;        }
+<i>1936</i>&nbsp;        // if id already expanded, return
+<i>1937</i>&nbsp;        try {
+<b class="nc"><i>1938</i>&nbsp;            URI uri = new URI(systemId);</b>
+<b class="nc"><i>1939</i>&nbsp;            if (uri != null) {</b>
+<b class="nc"><i>1940</i>&nbsp;                return systemId;</b>
+<i>1941</i>&nbsp;            }
+<b class="nc"><i>1942</i>&nbsp;        } catch (URI.MalformedURIException e) {</b>
+<i>1943</i>&nbsp;            // continue on...
+<b class="nc"><i>1944</i>&nbsp;        }</b>
+<i>1945</i>&nbsp;        // normalize id
+<b class="nc"><i>1946</i>&nbsp;        String id = fixURI(systemId);</b>
+<i>1947</i>&nbsp;
+<i>1948</i>&nbsp;        // normalize base
+<b class="nc"><i>1949</i>&nbsp;        URI base = null;</b>
+<b class="nc"><i>1950</i>&nbsp;        URI uri = null;</b>
+<i>1951</i>&nbsp;        try {
+<b class="nc"><i>1952</i>&nbsp;            if (baseSystemId == null || baseSystemId.length() == 0 ||</b>
+<b class="nc"><i>1953</i>&nbsp;                    baseSystemId.equals(systemId)) {</b>
+<b class="nc"><i>1954</i>&nbsp;                String dir = getUserDir().toString();</b>
+<b class="nc"><i>1955</i>&nbsp;                base = new URI(&quot;file&quot;, &quot;&quot;, dir, null, null);</b>
+<b class="nc"><i>1956</i>&nbsp;            } else {</b>
+<i>1957</i>&nbsp;                try {
+<b class="nc"><i>1958</i>&nbsp;                    base = new URI(fixURI(baseSystemId));</b>
+<b class="nc"><i>1959</i>&nbsp;                } catch (URI.MalformedURIException e) {</b>
+<b class="nc"><i>1960</i>&nbsp;                    if (baseSystemId.indexOf(&#39;:&#39;) != -1) {</b>
+<i>1961</i>&nbsp;                        // for xml schemas we might have baseURI with
+<i>1962</i>&nbsp;                        // a specified drive
+<b class="nc"><i>1963</i>&nbsp;                        base = new URI(&quot;file&quot;, &quot;&quot;, fixURI(baseSystemId), null, null);</b>
+<i>1964</i>&nbsp;                    } else {
+<b class="nc"><i>1965</i>&nbsp;                        String dir = getUserDir().toString();</b>
+<b class="nc"><i>1966</i>&nbsp;                        dir = dir + fixURI(baseSystemId);</b>
+<b class="nc"><i>1967</i>&nbsp;                        base = new URI(&quot;file&quot;, &quot;&quot;, dir, null, null);</b>
+<i>1968</i>&nbsp;                    }
+<b class="nc"><i>1969</i>&nbsp;                }</b>
+<i>1970</i>&nbsp;            }
+<i>1971</i>&nbsp;            // expand id
+<b class="nc"><i>1972</i>&nbsp;            uri = new URI(base, id);</b>
+<b class="nc"><i>1973</i>&nbsp;        } catch (Exception e) {</b>
+<i>1974</i>&nbsp;            // let it go through
+<i>1975</i>&nbsp;
+<b class="nc"><i>1976</i>&nbsp;        }</b>
+<i>1977</i>&nbsp;
+<b class="nc"><i>1978</i>&nbsp;        if (uri == null) {</b>
+<b class="nc"><i>1979</i>&nbsp;            return systemId;</b>
+<i>1980</i>&nbsp;        }
+<b class="nc"><i>1981</i>&nbsp;        return uri.toString();</b>
+<i>1982</i>&nbsp;
+<i>1983</i>&nbsp;    } // expandSystemId(String,String):String
+<i>1984</i>&nbsp;
+<i>1985</i>&nbsp;    /**
+<i>1986</i>&nbsp;     * Expands a system id and returns the system id as a URI, if
+<i>1987</i>&nbsp;     * it can be expanded. A return value of null means that the
+<i>1988</i>&nbsp;     * identifier is already expanded. An exception thrown
+<i>1989</i>&nbsp;     * indicates a failure to expand the id.
+<i>1990</i>&nbsp;     *
+<i>1991</i>&nbsp;     * @param systemId The systemId to be expanded.
+<i>1992</i>&nbsp;     *
+<i>1993</i>&nbsp;     * @return Returns the URI string representing the expanded system
+<i>1994</i>&nbsp;     *         identifier. A null value indicates that the given
+<i>1995</i>&nbsp;     *         system identifier is already expanded.
+<i>1996</i>&nbsp;     *
+<i>1997</i>&nbsp;     */
+<i>1998</i>&nbsp;    public static String expandSystemId(String systemId, String baseSystemId,
+<i>1999</i>&nbsp;                                        boolean strict)
+<i>2000</i>&nbsp;            throws URI.MalformedURIException {
+<i>2001</i>&nbsp;
+<i>2002</i>&nbsp;        // check if there is a system id before
+<i>2003</i>&nbsp;        // trying to expand it.
+<b class="nc"><i>2004</i>&nbsp;        if (systemId == null) {</b>
+<b class="nc"><i>2005</i>&nbsp;            return null;</b>
+<i>2006</i>&nbsp;        }
+<i>2007</i>&nbsp;
+<i>2008</i>&nbsp;        // system id has to be a valid URI
+<b class="nc"><i>2009</i>&nbsp;        if (strict) {</b>
+<i>2010</i>&nbsp;            try {
+<i>2011</i>&nbsp;                // if it&#39;s already an absolute one, return it
+<b class="nc"><i>2012</i>&nbsp;                new URI(systemId);</b>
+<b class="nc"><i>2013</i>&nbsp;                return systemId;</b>
+<i>2014</i>&nbsp;            }
+<b class="nc"><i>2015</i>&nbsp;            catch (URI.MalformedURIException ex) {</b>
+<i>2016</i>&nbsp;            }
+<b class="nc"><i>2017</i>&nbsp;            URI base = null;</b>
+<i>2018</i>&nbsp;            // if there isn&#39;t a base uri, use the working directory
+<b class="nc"><i>2019</i>&nbsp;            if (baseSystemId == null || baseSystemId.length() == 0) {</b>
+<b class="nc"><i>2020</i>&nbsp;                base = new URI(&quot;file&quot;, &quot;&quot;, getUserDir().toString(), null, null);</b>
+<i>2021</i>&nbsp;            }
+<i>2022</i>&nbsp;            // otherwise, use the base uri
+<i>2023</i>&nbsp;            else {
+<i>2024</i>&nbsp;                try {
+<b class="nc"><i>2025</i>&nbsp;                    base = new URI(baseSystemId);</b>
+<i>2026</i>&nbsp;                }
+<b class="nc"><i>2027</i>&nbsp;                catch (URI.MalformedURIException e) {</b>
+<i>2028</i>&nbsp;                    // assume &quot;base&quot; is also a relative uri
+<b class="nc"><i>2029</i>&nbsp;                    String dir = getUserDir().toString();</b>
+<b class="nc"><i>2030</i>&nbsp;                    dir = dir + baseSystemId;</b>
+<b class="nc"><i>2031</i>&nbsp;                    base = new URI(&quot;file&quot;, &quot;&quot;, dir, null, null);</b>
+<b class="nc"><i>2032</i>&nbsp;                }</b>
+<i>2033</i>&nbsp;            }
+<i>2034</i>&nbsp;            // absolutize the system id using the base
+<b class="nc"><i>2035</i>&nbsp;            URI uri = new URI(base, systemId);</b>
+<i>2036</i>&nbsp;            // return the string rep of the new uri (an absolute one)
+<b class="nc"><i>2037</i>&nbsp;            return uri.toString();</b>
+<i>2038</i>&nbsp;
+<i>2039</i>&nbsp;            // if any exception is thrown, it&#39;ll get thrown to the caller.
+<i>2040</i>&nbsp;        }
+<i>2041</i>&nbsp;
+<i>2042</i>&nbsp;        // Assume the URIs are well-formed. If it turns out they&#39;re not, try fixing them up.
+<i>2043</i>&nbsp;        try {
+<b class="nc"><i>2044</i>&nbsp;             return expandSystemIdStrictOff(systemId, baseSystemId);</b>
+<i>2045</i>&nbsp;        }
+<b class="nc"><i>2046</i>&nbsp;        catch (URI.MalformedURIException e) {</b>
+<i>2047</i>&nbsp;            /** Xerces URI rejects unicode, try java.net.URI
+<i>2048</i>&nbsp;             * this is not ideal solution, but it covers known cases which either
+<i>2049</i>&nbsp;             * Xerces URI or java.net.URI can handle alone
+<i>2050</i>&nbsp;             * will file bug against java.net.URI
+<i>2051</i>&nbsp;             */
+<i>2052</i>&nbsp;            try {
+<b class="nc"><i>2053</i>&nbsp;                return expandSystemIdStrictOff1(systemId, baseSystemId);</b>
+<b class="nc"><i>2054</i>&nbsp;            } catch (URISyntaxException ex) {</b>
+<i>2055</i>&nbsp;                // continue on...
+<i>2056</i>&nbsp;            }
+<i>2057</i>&nbsp;        }
+<i>2058</i>&nbsp;        // check for bad parameters id
+<b class="nc"><i>2059</i>&nbsp;        if (systemId.length() == 0) {</b>
+<b class="nc"><i>2060</i>&nbsp;            return systemId;</b>
+<i>2061</i>&nbsp;        }
+<i>2062</i>&nbsp;
+<i>2063</i>&nbsp;        // normalize id
+<b class="nc"><i>2064</i>&nbsp;        String id = fixURI(systemId);</b>
+<i>2065</i>&nbsp;
+<i>2066</i>&nbsp;        // normalize base
+<b class="nc"><i>2067</i>&nbsp;        URI base = null;</b>
+<b class="nc"><i>2068</i>&nbsp;        URI uri = null;</b>
+<i>2069</i>&nbsp;        try {
+<b class="nc"><i>2070</i>&nbsp;            if (baseSystemId == null || baseSystemId.length() == 0 ||</b>
+<b class="nc"><i>2071</i>&nbsp;                baseSystemId.equals(systemId)) {</b>
+<b class="nc"><i>2072</i>&nbsp;                base = getUserDir();</b>
+<i>2073</i>&nbsp;            }
+<i>2074</i>&nbsp;            else {
+<i>2075</i>&nbsp;                try {
+<b class="nc"><i>2076</i>&nbsp;                    base = new URI(fixURI(baseSystemId).trim());</b>
+<i>2077</i>&nbsp;                }
+<b class="nc"><i>2078</i>&nbsp;                catch (URI.MalformedURIException e) {</b>
+<b class="nc"><i>2079</i>&nbsp;                    if (baseSystemId.indexOf(&#39;:&#39;) != -1) {</b>
+<i>2080</i>&nbsp;                        // for xml schemas we might have baseURI with
+<i>2081</i>&nbsp;                        // a specified drive
+<b class="nc"><i>2082</i>&nbsp;                        base = new URI(&quot;file&quot;, &quot;&quot;, fixURI(baseSystemId).trim(), null, null);</b>
+<i>2083</i>&nbsp;                    }
+<i>2084</i>&nbsp;                    else {
+<b class="nc"><i>2085</i>&nbsp;                        base = new URI(getUserDir(), fixURI(baseSystemId));</b>
+<i>2086</i>&nbsp;                    }
+<b class="nc"><i>2087</i>&nbsp;                }</b>
+<i>2088</i>&nbsp;             }
+<i>2089</i>&nbsp;             // expand id
+<b class="nc"><i>2090</i>&nbsp;             uri = new URI(base, id.trim());</b>
+<i>2091</i>&nbsp;        }
+<b class="nc"><i>2092</i>&nbsp;        catch (Exception e) {</b>
+<i>2093</i>&nbsp;            // let it go through
+<i>2094</i>&nbsp;
+<b class="nc"><i>2095</i>&nbsp;        }</b>
+<i>2096</i>&nbsp;
+<b class="nc"><i>2097</i>&nbsp;        if (uri == null) {</b>
+<b class="nc"><i>2098</i>&nbsp;            return systemId;</b>
+<i>2099</i>&nbsp;        }
+<b class="nc"><i>2100</i>&nbsp;        return uri.toString();</b>
+<i>2101</i>&nbsp;
+<i>2102</i>&nbsp;    } // expandSystemId(String,String,boolean):String
+<i>2103</i>&nbsp;
+<i>2104</i>&nbsp;    /**
+<i>2105</i>&nbsp;     * Helper method for expandSystemId(String,String,boolean):String
+<i>2106</i>&nbsp;     */
+<i>2107</i>&nbsp;    private static String expandSystemIdStrictOn(String systemId, String baseSystemId)
+<i>2108</i>&nbsp;        throws URI.MalformedURIException {
+<i>2109</i>&nbsp;
+<b class="nc"><i>2110</i>&nbsp;        URI systemURI = new URI(systemId, true);</b>
+<i>2111</i>&nbsp;        // If it&#39;s already an absolute one, return it
+<b class="nc"><i>2112</i>&nbsp;        if (systemURI.isAbsoluteURI()) {</b>
+<b class="nc"><i>2113</i>&nbsp;            return systemId;</b>
+<i>2114</i>&nbsp;        }
+<i>2115</i>&nbsp;
+<i>2116</i>&nbsp;        // If there isn&#39;t a base URI, use the working directory
+<b class="nc"><i>2117</i>&nbsp;        URI baseURI = null;</b>
+<b class="nc"><i>2118</i>&nbsp;        if (baseSystemId == null || baseSystemId.length() == 0) {</b>
+<b class="nc"><i>2119</i>&nbsp;            baseURI = getUserDir();</b>
+<i>2120</i>&nbsp;        }
+<i>2121</i>&nbsp;        else {
+<b class="nc"><i>2122</i>&nbsp;            baseURI = new URI(baseSystemId, true);</b>
+<b class="nc"><i>2123</i>&nbsp;            if (!baseURI.isAbsoluteURI()) {</b>
+<i>2124</i>&nbsp;                // assume &quot;base&quot; is also a relative uri
+<b class="nc"><i>2125</i>&nbsp;                baseURI.absolutize(getUserDir());</b>
+<i>2126</i>&nbsp;            }
+<i>2127</i>&nbsp;        }
+<i>2128</i>&nbsp;
+<i>2129</i>&nbsp;        // absolutize the system identifier using the base URI
+<b class="nc"><i>2130</i>&nbsp;        systemURI.absolutize(baseURI);</b>
+<i>2131</i>&nbsp;
+<i>2132</i>&nbsp;        // return the string rep of the new uri (an absolute one)
+<b class="nc"><i>2133</i>&nbsp;        return systemURI.toString();</b>
+<i>2134</i>&nbsp;
+<i>2135</i>&nbsp;        // if any exception is thrown, it&#39;ll get thrown to the caller.
+<i>2136</i>&nbsp;
+<i>2137</i>&nbsp;    } // expandSystemIdStrictOn(String,String):String
+<i>2138</i>&nbsp;
+<i>2139</i>&nbsp;    /**
+<i>2140</i>&nbsp;     * Attempt to set whether redirects will be followed for an &lt;code&gt;HttpURLConnection&lt;/code&gt;.
+<i>2141</i>&nbsp;     * This may fail on earlier JDKs which do not support setting this preference.
+<i>2142</i>&nbsp;     */
+<i>2143</i>&nbsp;    public static void setInstanceFollowRedirects(HttpURLConnection urlCon, boolean followRedirects) {
+<i>2144</i>&nbsp;        try {
+<b class="nc"><i>2145</i>&nbsp;            Method method = HttpURLConnection.class.getMethod(&quot;setInstanceFollowRedirects&quot;, new Class[] {Boolean.TYPE});</b>
+<b class="nc"><i>2146</i>&nbsp;            method.invoke(urlCon, new Object[] {followRedirects ? Boolean.TRUE : Boolean.FALSE});</b>
+<i>2147</i>&nbsp;        }
+<i>2148</i>&nbsp;        // setInstanceFollowRedirects doesn&#39;t exist.
+<b class="nc"><i>2149</i>&nbsp;        catch (Exception exc) {}</b>
+<i>2150</i>&nbsp;    }
+<i>2151</i>&nbsp;
+<i>2152</i>&nbsp;
+<i>2153</i>&nbsp;    /**
+<i>2154</i>&nbsp;     * Helper method for expandSystemId(String,String,boolean):String
+<i>2155</i>&nbsp;     */
+<i>2156</i>&nbsp;    private static String expandSystemIdStrictOff(String systemId, String baseSystemId)
+<i>2157</i>&nbsp;        throws URI.MalformedURIException {
+<i>2158</i>&nbsp;
+<b class="nc"><i>2159</i>&nbsp;        URI systemURI = new URI(systemId, true);</b>
+<i>2160</i>&nbsp;        // If it&#39;s already an absolute one, return it
+<b class="nc"><i>2161</i>&nbsp;        if (systemURI.isAbsoluteURI()) {</b>
+<b class="nc"><i>2162</i>&nbsp;            if (systemURI.getScheme().length() &gt; 1) {</b>
+<b class="nc"><i>2163</i>&nbsp;                return systemId;</b>
+<i>2164</i>&nbsp;            }
+<i>2165</i>&nbsp;            /**
+<i>2166</i>&nbsp;             * If the scheme&#39;s length is only one character,
+<i>2167</i>&nbsp;             * it&#39;s likely that this was intended as a file
+<i>2168</i>&nbsp;             * path. Fixing this up in expandSystemId to
+<i>2169</i>&nbsp;             * maintain backwards compatibility.
+<i>2170</i>&nbsp;             */
+<b class="nc"><i>2171</i>&nbsp;            throw new URI.MalformedURIException();</b>
+<i>2172</i>&nbsp;        }
+<i>2173</i>&nbsp;
+<i>2174</i>&nbsp;        // If there isn&#39;t a base URI, use the working directory
+<b class="nc"><i>2175</i>&nbsp;        URI baseURI = null;</b>
+<b class="nc"><i>2176</i>&nbsp;        if (baseSystemId == null || baseSystemId.length() == 0) {</b>
+<b class="nc"><i>2177</i>&nbsp;            baseURI = getUserDir();</b>
+<i>2178</i>&nbsp;        }
+<i>2179</i>&nbsp;        else {
+<b class="nc"><i>2180</i>&nbsp;            baseURI = new URI(baseSystemId, true);</b>
+<b class="nc"><i>2181</i>&nbsp;            if (!baseURI.isAbsoluteURI()) {</b>
+<i>2182</i>&nbsp;                // assume &quot;base&quot; is also a relative uri
+<b class="nc"><i>2183</i>&nbsp;                baseURI.absolutize(getUserDir());</b>
+<i>2184</i>&nbsp;            }
+<i>2185</i>&nbsp;        }
+<i>2186</i>&nbsp;
+<i>2187</i>&nbsp;        // absolutize the system identifier using the base URI
+<b class="nc"><i>2188</i>&nbsp;        systemURI.absolutize(baseURI);</b>
+<i>2189</i>&nbsp;
+<i>2190</i>&nbsp;        // return the string rep of the new uri (an absolute one)
+<b class="nc"><i>2191</i>&nbsp;        return systemURI.toString();</b>
+<i>2192</i>&nbsp;
+<i>2193</i>&nbsp;        // if any exception is thrown, it&#39;ll get thrown to the caller.
+<i>2194</i>&nbsp;
+<i>2195</i>&nbsp;    } // expandSystemIdStrictOff(String,String):String
+<i>2196</i>&nbsp;
+<i>2197</i>&nbsp;    private static String expandSystemIdStrictOff1(String systemId, String baseSystemId)
+<i>2198</i>&nbsp;        throws URISyntaxException, URI.MalformedURIException {
+<i>2199</i>&nbsp;
+<b class="nc"><i>2200</i>&nbsp;            java.net.URI systemURI = new java.net.URI(systemId);</b>
+<i>2201</i>&nbsp;        // If it&#39;s already an absolute one, return it
+<b class="nc"><i>2202</i>&nbsp;        if (systemURI.isAbsolute()) {</b>
+<b class="nc"><i>2203</i>&nbsp;            if (systemURI.getScheme().length() &gt; 1) {</b>
+<b class="nc"><i>2204</i>&nbsp;                return systemId;</b>
+<i>2205</i>&nbsp;            }
+<i>2206</i>&nbsp;            /**
+<i>2207</i>&nbsp;             * If the scheme&#39;s length is only one character,
+<i>2208</i>&nbsp;             * it&#39;s likely that this was intended as a file
+<i>2209</i>&nbsp;             * path. Fixing this up in expandSystemId to
+<i>2210</i>&nbsp;             * maintain backwards compatibility.
+<i>2211</i>&nbsp;             */
+<b class="nc"><i>2212</i>&nbsp;            throw new URISyntaxException(systemId, &quot;the scheme&#39;s length is only one character&quot;);</b>
+<i>2213</i>&nbsp;        }
+<i>2214</i>&nbsp;
+<i>2215</i>&nbsp;        // If there isn&#39;t a base URI, use the working directory
+<b class="nc"><i>2216</i>&nbsp;        URI baseURI = null;</b>
+<b class="nc"><i>2217</i>&nbsp;        if (baseSystemId == null || baseSystemId.length() == 0) {</b>
+<b class="nc"><i>2218</i>&nbsp;            baseURI = getUserDir();</b>
+<i>2219</i>&nbsp;        }
+<i>2220</i>&nbsp;        else {
+<b class="nc"><i>2221</i>&nbsp;            baseURI = new URI(baseSystemId, true);</b>
+<b class="nc"><i>2222</i>&nbsp;            if (!baseURI.isAbsoluteURI()) {</b>
+<i>2223</i>&nbsp;                // assume &quot;base&quot; is also a relative uri
+<b class="nc"><i>2224</i>&nbsp;                baseURI.absolutize(getUserDir());</b>
+<i>2225</i>&nbsp;            }
+<i>2226</i>&nbsp;        }
+<i>2227</i>&nbsp;
+<i>2228</i>&nbsp;        // absolutize the system identifier using the base URI
+<i>2229</i>&nbsp;//        systemURI.absolutize(baseURI);
+<b class="nc"><i>2230</i>&nbsp;        systemURI = (new java.net.URI(baseURI.toString())).resolve(systemURI);</b>
+<i>2231</i>&nbsp;
+<i>2232</i>&nbsp;        // return the string rep of the new uri (an absolute one)
+<b class="nc"><i>2233</i>&nbsp;        return systemURI.toString();</b>
+<i>2234</i>&nbsp;
+<i>2235</i>&nbsp;        // if any exception is thrown, it&#39;ll get thrown to the caller.
+<i>2236</i>&nbsp;
+<i>2237</i>&nbsp;    } // expandSystemIdStrictOff(String,String):String
+<i>2238</i>&nbsp;
+<i>2239</i>&nbsp;    //
+<i>2240</i>&nbsp;    // Protected methods
+<i>2241</i>&nbsp;    //
+<i>2242</i>&nbsp;
+<i>2243</i>&nbsp;
+<i>2244</i>&nbsp;    /**
+<i>2245</i>&nbsp;     * Returns the IANA encoding name that is auto-detected from
+<i>2246</i>&nbsp;     * the bytes specified, with the endian-ness of that encoding where appropriate.
+<i>2247</i>&nbsp;     *
+<i>2248</i>&nbsp;     * @param b4    The first four bytes of the input.
+<i>2249</i>&nbsp;     * @param count The number of bytes actually read.
+<i>2250</i>&nbsp;     * @return a 2-element array:  the first element, an IANA-encoding string,
+<i>2251</i>&nbsp;     *  the second element a Boolean which is true iff the document is big endian, false
+<i>2252</i>&nbsp;     *  if it&#39;s little-endian, and null if the distinction isn&#39;t relevant.
+<i>2253</i>&nbsp;     */
+<i>2254</i>&nbsp;    protected Object[] getEncodingName(byte[] b4, int count) {
+<i>2255</i>&nbsp;
+<b class="nc"><i>2256</i>&nbsp;        if (count &lt; 2) {</b>
+<b class="nc"><i>2257</i>&nbsp;            return defaultEncoding;</b>
+<i>2258</i>&nbsp;        }
+<i>2259</i>&nbsp;
+<i>2260</i>&nbsp;        // UTF-16, with BOM
+<b class="nc"><i>2261</i>&nbsp;        int b0 = b4[0] &amp; 0xFF;</b>
+<b class="nc"><i>2262</i>&nbsp;        int b1 = b4[1] &amp; 0xFF;</b>
+<b class="nc"><i>2263</i>&nbsp;        if (b0 == 0xFE &amp;&amp; b1 == 0xFF) {</b>
+<i>2264</i>&nbsp;            // UTF-16, big-endian
+<b class="nc"><i>2265</i>&nbsp;            return new Object [] {&quot;UTF-16BE&quot;, new Boolean(true)};</b>
+<i>2266</i>&nbsp;        }
+<b class="nc"><i>2267</i>&nbsp;        if (b0 == 0xFF &amp;&amp; b1 == 0xFE) {</b>
+<i>2268</i>&nbsp;            // UTF-16, little-endian
+<b class="nc"><i>2269</i>&nbsp;            return new Object [] {&quot;UTF-16LE&quot;, new Boolean(false)};</b>
+<i>2270</i>&nbsp;        }
+<i>2271</i>&nbsp;
+<i>2272</i>&nbsp;        // default to UTF-8 if we don&#39;t have enough bytes to make a
+<i>2273</i>&nbsp;        // good determination of the encoding
+<b class="nc"><i>2274</i>&nbsp;        if (count &lt; 3) {</b>
+<b class="nc"><i>2275</i>&nbsp;            return defaultEncoding;</b>
+<i>2276</i>&nbsp;        }
+<i>2277</i>&nbsp;
+<i>2278</i>&nbsp;        // UTF-8 with a BOM
+<b class="nc"><i>2279</i>&nbsp;        int b2 = b4[2] &amp; 0xFF;</b>
+<b class="nc"><i>2280</i>&nbsp;        if (b0 == 0xEF &amp;&amp; b1 == 0xBB &amp;&amp; b2 == 0xBF) {</b>
+<b class="nc"><i>2281</i>&nbsp;            return defaultEncoding;</b>
+<i>2282</i>&nbsp;        }
+<i>2283</i>&nbsp;
+<i>2284</i>&nbsp;        // default to UTF-8 if we don&#39;t have enough bytes to make a
+<i>2285</i>&nbsp;        // good determination of the encoding
+<b class="nc"><i>2286</i>&nbsp;        if (count &lt; 4) {</b>
+<b class="nc"><i>2287</i>&nbsp;            return defaultEncoding;</b>
+<i>2288</i>&nbsp;        }
+<i>2289</i>&nbsp;
+<i>2290</i>&nbsp;        // other encodings
+<b class="nc"><i>2291</i>&nbsp;        int b3 = b4[3] &amp; 0xFF;</b>
+<b class="nc"><i>2292</i>&nbsp;        if (b0 == 0x00 &amp;&amp; b1 == 0x00 &amp;&amp; b2 == 0x00 &amp;&amp; b3 == 0x3C) {</b>
+<i>2293</i>&nbsp;            // UCS-4, big endian (1234)
+<b class="nc"><i>2294</i>&nbsp;            return new Object [] {&quot;ISO-10646-UCS-4&quot;, new Boolean(true)};</b>
+<i>2295</i>&nbsp;        }
+<b class="nc"><i>2296</i>&nbsp;        if (b0 == 0x3C &amp;&amp; b1 == 0x00 &amp;&amp; b2 == 0x00 &amp;&amp; b3 == 0x00) {</b>
+<i>2297</i>&nbsp;            // UCS-4, little endian (4321)
+<b class="nc"><i>2298</i>&nbsp;            return new Object [] {&quot;ISO-10646-UCS-4&quot;, new Boolean(false)};</b>
+<i>2299</i>&nbsp;        }
+<b class="nc"><i>2300</i>&nbsp;        if (b0 == 0x00 &amp;&amp; b1 == 0x00 &amp;&amp; b2 == 0x3C &amp;&amp; b3 == 0x00) {</b>
+<i>2301</i>&nbsp;            // UCS-4, unusual octet order (2143)
+<i>2302</i>&nbsp;            // REVISIT: What should this be?
+<b class="nc"><i>2303</i>&nbsp;            return new Object [] {&quot;ISO-10646-UCS-4&quot;, null};</b>
+<i>2304</i>&nbsp;        }
+<b class="nc"><i>2305</i>&nbsp;        if (b0 == 0x00 &amp;&amp; b1 == 0x3C &amp;&amp; b2 == 0x00 &amp;&amp; b3 == 0x00) {</b>
+<i>2306</i>&nbsp;            // UCS-4, unusual octect order (3412)
+<i>2307</i>&nbsp;            // REVISIT: What should this be?
+<b class="nc"><i>2308</i>&nbsp;            return new Object [] {&quot;ISO-10646-UCS-4&quot;, null};</b>
+<i>2309</i>&nbsp;        }
+<b class="nc"><i>2310</i>&nbsp;        if (b0 == 0x00 &amp;&amp; b1 == 0x3C &amp;&amp; b2 == 0x00 &amp;&amp; b3 == 0x3F) {</b>
+<i>2311</i>&nbsp;            // UTF-16, big-endian, no BOM
+<i>2312</i>&nbsp;            // (or could turn out to be UCS-2...
+<i>2313</i>&nbsp;            // REVISIT: What should this be?
+<b class="nc"><i>2314</i>&nbsp;            return new Object [] {&quot;UTF-16BE&quot;, new Boolean(true)};</b>
+<i>2315</i>&nbsp;        }
+<b class="nc"><i>2316</i>&nbsp;        if (b0 == 0x3C &amp;&amp; b1 == 0x00 &amp;&amp; b2 == 0x3F &amp;&amp; b3 == 0x00) {</b>
+<i>2317</i>&nbsp;            // UTF-16, little-endian, no BOM
+<i>2318</i>&nbsp;            // (or could turn out to be UCS-2...
+<b class="nc"><i>2319</i>&nbsp;            return new Object [] {&quot;UTF-16LE&quot;, new Boolean(false)};</b>
+<i>2320</i>&nbsp;        }
+<b class="nc"><i>2321</i>&nbsp;        if (b0 == 0x4C &amp;&amp; b1 == 0x6F &amp;&amp; b2 == 0xA7 &amp;&amp; b3 == 0x94) {</b>
+<i>2322</i>&nbsp;            // EBCDIC
+<i>2323</i>&nbsp;            // a la xerces1, return CP037 instead of EBCDIC here
+<b class="nc"><i>2324</i>&nbsp;            return new Object [] {&quot;CP037&quot;, null};</b>
+<i>2325</i>&nbsp;        }
+<i>2326</i>&nbsp;
+<b class="nc"><i>2327</i>&nbsp;        return defaultEncoding;</b>
+<i>2328</i>&nbsp;
+<i>2329</i>&nbsp;    } // getEncodingName(byte[],int):Object[]
+<i>2330</i>&nbsp;
+<i>2331</i>&nbsp;    /**
+<i>2332</i>&nbsp;     * Creates a reader capable of reading the given input stream in
+<i>2333</i>&nbsp;     * the specified encoding.
+<i>2334</i>&nbsp;     *
+<i>2335</i>&nbsp;     * @param inputStream  The input stream.
+<i>2336</i>&nbsp;     * @param encoding     The encoding name that the input stream is
+<i>2337</i>&nbsp;     *                     encoded using. If the user has specified that
+<i>2338</i>&nbsp;     *                     Java encoding names are allowed, then the
+<i>2339</i>&nbsp;     *                     encoding name may be a Java encoding name;
+<i>2340</i>&nbsp;     *                     otherwise, it is an ianaEncoding name.
+<i>2341</i>&nbsp;     * @param isBigEndian   For encodings (like uCS-4), whose names cannot
+<i>2342</i>&nbsp;     *                      specify a byte order, this tells whether the order is bigEndian.  null menas
+<i>2343</i>&nbsp;     *                      unknown or not relevant.
+<i>2344</i>&nbsp;     *
+<i>2345</i>&nbsp;     * @return Returns a reader.
+<i>2346</i>&nbsp;     */
+<i>2347</i>&nbsp;    protected Reader createReader(InputStream inputStream, String encoding, Boolean isBigEndian)
+<i>2348</i>&nbsp;    throws IOException {
+<i>2349</i>&nbsp;
+<i>2350</i>&nbsp;        // normalize encoding name
+<b class="nc"><i>2351</i>&nbsp;        if (encoding == null) {</b>
+<b class="nc"><i>2352</i>&nbsp;            encoding = &quot;UTF-8&quot;;</b>
+<i>2353</i>&nbsp;        }
+<i>2354</i>&nbsp;
+<i>2355</i>&nbsp;        // try to use an optimized reader
+<b class="nc"><i>2356</i>&nbsp;        String ENCODING = encoding.toUpperCase(Locale.ENGLISH);</b>
+<b class="nc"><i>2357</i>&nbsp;        if (ENCODING.equals(&quot;UTF-8&quot;)) {</b>
+<i>2358</i>&nbsp;            if (DEBUG_ENCODINGS) {
+<i>2359</i>&nbsp;                System.out.println(&quot;$$$ creating UTF8Reader&quot;);
+<i>2360</i>&nbsp;            }
+<b class="nc"><i>2361</i>&nbsp;            return new UTF8Reader(inputStream, fBufferSize, fErrorReporter.getMessageFormatter(XMLMessageFormatter.XML_DOMAIN), fErrorReporter.getLocale() );</b>
+<i>2362</i>&nbsp;        }
+<b class="nc"><i>2363</i>&nbsp;        if (ENCODING.equals(&quot;US-ASCII&quot;)) {</b>
+<i>2364</i>&nbsp;            if (DEBUG_ENCODINGS) {
+<i>2365</i>&nbsp;                System.out.println(&quot;$$$ creating ASCIIReader&quot;);
+<i>2366</i>&nbsp;            }
+<b class="nc"><i>2367</i>&nbsp;            return new ASCIIReader(inputStream, fBufferSize, fErrorReporter.getMessageFormatter(XMLMessageFormatter.XML_DOMAIN), fErrorReporter.getLocale());</b>
+<i>2368</i>&nbsp;        }
+<b class="nc"><i>2369</i>&nbsp;        if(ENCODING.equals(&quot;ISO-10646-UCS-4&quot;)) {</b>
+<b class="nc"><i>2370</i>&nbsp;            if(isBigEndian != null) {</b>
+<b class="nc"><i>2371</i>&nbsp;                boolean isBE = isBigEndian.booleanValue();</b>
+<b class="nc"><i>2372</i>&nbsp;                if(isBE) {</b>
+<b class="nc"><i>2373</i>&nbsp;                    return new UCSReader(inputStream, UCSReader.UCS4BE);</b>
+<i>2374</i>&nbsp;                } else {
+<b class="nc"><i>2375</i>&nbsp;                    return new UCSReader(inputStream, UCSReader.UCS4LE);</b>
+<i>2376</i>&nbsp;                }
+<i>2377</i>&nbsp;            } else {
+<b class="nc"><i>2378</i>&nbsp;                fErrorReporter.reportError(this.getEntityScanner(),XMLMessageFormatter.XML_DOMAIN,</b>
+<i>2379</i>&nbsp;                        &quot;EncodingByteOrderUnsupported&quot;,
+<i>2380</i>&nbsp;                        new Object[] { encoding },
+<i>2381</i>&nbsp;                        XMLErrorReporter.SEVERITY_FATAL_ERROR);
+<i>2382</i>&nbsp;            }
+<i>2383</i>&nbsp;        }
+<b class="nc"><i>2384</i>&nbsp;        if(ENCODING.equals(&quot;ISO-10646-UCS-2&quot;)) {</b>
+<b class="nc"><i>2385</i>&nbsp;            if(isBigEndian != null) { // sould never happen with this encoding...</b>
+<b class="nc"><i>2386</i>&nbsp;                boolean isBE = isBigEndian.booleanValue();</b>
+<b class="nc"><i>2387</i>&nbsp;                if(isBE) {</b>
+<b class="nc"><i>2388</i>&nbsp;                    return new UCSReader(inputStream, UCSReader.UCS2BE);</b>
+<i>2389</i>&nbsp;                } else {
+<b class="nc"><i>2390</i>&nbsp;                    return new UCSReader(inputStream, UCSReader.UCS2LE);</b>
+<i>2391</i>&nbsp;                }
+<i>2392</i>&nbsp;            } else {
+<b class="nc"><i>2393</i>&nbsp;                fErrorReporter.reportError(this.getEntityScanner(),XMLMessageFormatter.XML_DOMAIN,</b>
+<i>2394</i>&nbsp;                        &quot;EncodingByteOrderUnsupported&quot;,
+<i>2395</i>&nbsp;                        new Object[] { encoding },
+<i>2396</i>&nbsp;                        XMLErrorReporter.SEVERITY_FATAL_ERROR);
+<i>2397</i>&nbsp;            }
+<i>2398</i>&nbsp;        }
+<i>2399</i>&nbsp;
+<i>2400</i>&nbsp;        // check for valid name
+<b class="nc"><i>2401</i>&nbsp;        boolean validIANA = XMLChar.isValidIANAEncoding(encoding);</b>
+<b class="nc"><i>2402</i>&nbsp;        boolean validJava = XMLChar.isValidJavaEncoding(encoding);</b>
+<b class="nc"><i>2403</i>&nbsp;        if (!validIANA || (fAllowJavaEncodings &amp;&amp; !validJava)) {</b>
+<b class="nc"><i>2404</i>&nbsp;            fErrorReporter.reportError(this.getEntityScanner(),XMLMessageFormatter.XML_DOMAIN,</b>
+<i>2405</i>&nbsp;                    &quot;EncodingDeclInvalid&quot;,
+<i>2406</i>&nbsp;                    new Object[] { encoding },
+<i>2407</i>&nbsp;                    XMLErrorReporter.SEVERITY_FATAL_ERROR);
+<i>2408</i>&nbsp;                    // NOTE: AndyH suggested that, on failure, we use ISO Latin 1
+<i>2409</i>&nbsp;                    //       because every byte is a valid ISO Latin 1 character.
+<i>2410</i>&nbsp;                    //       It may not translate correctly but if we failed on
+<i>2411</i>&nbsp;                    //       the encoding anyway, then we&#39;re expecting the content
+<i>2412</i>&nbsp;                    //       of the document to be bad. This will just prevent an
+<i>2413</i>&nbsp;                    //       invalid UTF-8 sequence to be detected. This is only
+<i>2414</i>&nbsp;                    //       important when continue-after-fatal-error is turned
+<i>2415</i>&nbsp;                    //       on. -Ac
+<b class="nc"><i>2416</i>&nbsp;                    encoding = &quot;ISO-8859-1&quot;;</b>
+<i>2417</i>&nbsp;        }
+<i>2418</i>&nbsp;
+<i>2419</i>&nbsp;        // try to use a Java reader
+<b class="nc"><i>2420</i>&nbsp;        String javaEncoding = EncodingMap.getIANA2JavaMapping(ENCODING);</b>
+<b class="nc"><i>2421</i>&nbsp;        if (javaEncoding == null) {</b>
+<b class="nc"><i>2422</i>&nbsp;            if(fAllowJavaEncodings) {</b>
+<b class="nc"><i>2423</i>&nbsp;                javaEncoding = encoding;</b>
+<i>2424</i>&nbsp;            } else {
+<b class="nc"><i>2425</i>&nbsp;                fErrorReporter.reportError(this.getEntityScanner(),XMLMessageFormatter.XML_DOMAIN,</b>
+<i>2426</i>&nbsp;                        &quot;EncodingDeclInvalid&quot;,
+<i>2427</i>&nbsp;                        new Object[] { encoding },
+<i>2428</i>&nbsp;                        XMLErrorReporter.SEVERITY_FATAL_ERROR);
+<i>2429</i>&nbsp;                        // see comment above.
+<b class="nc"><i>2430</i>&nbsp;                        javaEncoding = &quot;ISO8859_1&quot;;</b>
+<i>2431</i>&nbsp;            }
+<i>2432</i>&nbsp;        }
+<i>2433</i>&nbsp;        if (DEBUG_ENCODINGS) {
+<i>2434</i>&nbsp;            System.out.print(&quot;$$$ creating Java InputStreamReader: encoding=&quot;+javaEncoding);
+<i>2435</i>&nbsp;            if (javaEncoding == encoding) {
+<i>2436</i>&nbsp;                System.out.print(&quot; (IANA encoding)&quot;);
+<i>2437</i>&nbsp;            }
+<i>2438</i>&nbsp;            System.out.println();
+<i>2439</i>&nbsp;        }
+<b class="nc"><i>2440</i>&nbsp;        return new BufferedReader( new InputStreamReader(inputStream, javaEncoding));</b>
+<i>2441</i>&nbsp;
+<i>2442</i>&nbsp;    } // createReader(InputStream,String, Boolean): Reader
+<i>2443</i>&nbsp;
+<i>2444</i>&nbsp;
+<i>2445</i>&nbsp;    /**
+<i>2446</i>&nbsp;     * Return the public identifier for the current document event.
+<i>2447</i>&nbsp;     * &lt;p&gt;
+<i>2448</i>&nbsp;     * The return value is the public identifier of the document
+<i>2449</i>&nbsp;     * entity or of the external parsed entity in which the markup
+<i>2450</i>&nbsp;     * triggering the event appears.
+<i>2451</i>&nbsp;     *
+<i>2452</i>&nbsp;     * @return A string containing the public identifier, or
+<i>2453</i>&nbsp;     *         null if none is available.
+<i>2454</i>&nbsp;     */
+<i>2455</i>&nbsp;    public String getPublicId() {
+<b class="nc"><i>2456</i>&nbsp;        return (fCurrentEntity != null &amp;&amp; fCurrentEntity.entityLocation != null) ? fCurrentEntity.entityLocation.getPublicId() : null;</b>
+<i>2457</i>&nbsp;    } // getPublicId():String
+<i>2458</i>&nbsp;
+<i>2459</i>&nbsp;    /**
+<i>2460</i>&nbsp;     * Return the expanded system identifier for the current document event.
+<i>2461</i>&nbsp;     * &lt;p&gt;
+<i>2462</i>&nbsp;     * The return value is the expanded system identifier of the document
+<i>2463</i>&nbsp;     * entity or of the external parsed entity in which the markup
+<i>2464</i>&nbsp;     * triggering the event appears.
+<i>2465</i>&nbsp;     * &lt;p&gt;
+<i>2466</i>&nbsp;     * If the system identifier is a URL, the parser must resolve it
+<i>2467</i>&nbsp;     * fully before passing it to the application.
+<i>2468</i>&nbsp;     *
+<i>2469</i>&nbsp;     * @return A string containing the expanded system identifier, or null
+<i>2470</i>&nbsp;     *         if none is available.
+<i>2471</i>&nbsp;     */
+<i>2472</i>&nbsp;    public String getExpandedSystemId() {
+<b class="nc"><i>2473</i>&nbsp;        if (fCurrentEntity != null) {</b>
+<b class="nc"><i>2474</i>&nbsp;            if (fCurrentEntity.entityLocation != null &amp;&amp;</b>
+<b class="nc"><i>2475</i>&nbsp;                    fCurrentEntity.entityLocation.getExpandedSystemId() != null ) {</b>
+<b class="nc"><i>2476</i>&nbsp;                return fCurrentEntity.entityLocation.getExpandedSystemId();</b>
+<i>2477</i>&nbsp;            } else {
+<i>2478</i>&nbsp;                // search for the first external entity on the stack
+<b class="nc"><i>2479</i>&nbsp;                int size = fEntityStack.size();</b>
+<b class="nc"><i>2480</i>&nbsp;                for (int i = size - 1; i &gt;= 0 ; i--) {</b>
+<b class="nc"><i>2481</i>&nbsp;                    Entity.ScannedEntity externalEntity =</b>
+<b class="nc"><i>2482</i>&nbsp;                            (Entity.ScannedEntity)fEntityStack.elementAt(i);</b>
+<i>2483</i>&nbsp;
+<b class="nc"><i>2484</i>&nbsp;                    if (externalEntity.entityLocation != null &amp;&amp;</b>
+<b class="nc"><i>2485</i>&nbsp;                            externalEntity.entityLocation.getExpandedSystemId() != null) {</b>
+<b class="nc"><i>2486</i>&nbsp;                        return externalEntity.entityLocation.getExpandedSystemId();</b>
+<i>2487</i>&nbsp;                    }
+<i>2488</i>&nbsp;                }
+<i>2489</i>&nbsp;            }
+<i>2490</i>&nbsp;        }
+<b class="nc"><i>2491</i>&nbsp;        return null;</b>
+<i>2492</i>&nbsp;    } // getExpandedSystemId():String
+<i>2493</i>&nbsp;
+<i>2494</i>&nbsp;    /**
+<i>2495</i>&nbsp;     * Return the literal system identifier for the current document event.
+<i>2496</i>&nbsp;     * &lt;p&gt;
+<i>2497</i>&nbsp;     * The return value is the literal system identifier of the document
+<i>2498</i>&nbsp;     * entity or of the external parsed entity in which the markup
+<i>2499</i>&nbsp;     * triggering the event appears.
+<i>2500</i>&nbsp;     * &lt;p&gt;
+<i>2501</i>&nbsp;     * @return A string containing the literal system identifier, or null
+<i>2502</i>&nbsp;     *         if none is available.
+<i>2503</i>&nbsp;     */
+<i>2504</i>&nbsp;    public String getLiteralSystemId() {
+<b class="nc"><i>2505</i>&nbsp;        if (fCurrentEntity != null) {</b>
+<b class="nc"><i>2506</i>&nbsp;            if (fCurrentEntity.entityLocation != null &amp;&amp;</b>
+<b class="nc"><i>2507</i>&nbsp;                    fCurrentEntity.entityLocation.getLiteralSystemId() != null ) {</b>
+<b class="nc"><i>2508</i>&nbsp;                return fCurrentEntity.entityLocation.getLiteralSystemId();</b>
+<i>2509</i>&nbsp;            } else {
+<i>2510</i>&nbsp;                // search for the first external entity on the stack
+<b class="nc"><i>2511</i>&nbsp;                int size = fEntityStack.size();</b>
+<b class="nc"><i>2512</i>&nbsp;                for (int i = size - 1; i &gt;= 0 ; i--) {</b>
+<b class="nc"><i>2513</i>&nbsp;                    Entity.ScannedEntity externalEntity =</b>
+<b class="nc"><i>2514</i>&nbsp;                            (Entity.ScannedEntity)fEntityStack.elementAt(i);</b>
+<i>2515</i>&nbsp;
+<b class="nc"><i>2516</i>&nbsp;                    if (externalEntity.entityLocation != null &amp;&amp;</b>
+<b class="nc"><i>2517</i>&nbsp;                            externalEntity.entityLocation.getLiteralSystemId() != null) {</b>
+<b class="nc"><i>2518</i>&nbsp;                        return externalEntity.entityLocation.getLiteralSystemId();</b>
+<i>2519</i>&nbsp;                    }
+<i>2520</i>&nbsp;                }
+<i>2521</i>&nbsp;            }
+<i>2522</i>&nbsp;        }
+<b class="nc"><i>2523</i>&nbsp;        return null;</b>
+<i>2524</i>&nbsp;    } // getLiteralSystemId():String
+<i>2525</i>&nbsp;
+<i>2526</i>&nbsp;    /**
+<i>2527</i>&nbsp;     * Return the line number where the current document event ends.
+<i>2528</i>&nbsp;     * &lt;p&gt;
+<i>2529</i>&nbsp;     * &lt;strong&gt;Warning:&lt;/strong&gt; The return value from the method
+<i>2530</i>&nbsp;     * is intended only as an approximation for the sake of error
+<i>2531</i>&nbsp;     * reporting; it is not intended to provide sufficient information
+<i>2532</i>&nbsp;     * to edit the character content of the original XML document.
+<i>2533</i>&nbsp;     * &lt;p&gt;
+<i>2534</i>&nbsp;     * The return value is an approximation of the line number
+<i>2535</i>&nbsp;     * in the document entity or external parsed entity where the
+<i>2536</i>&nbsp;     * markup triggering the event appears.
+<i>2537</i>&nbsp;     * &lt;p&gt;
+<i>2538</i>&nbsp;     * If possible, the SAX driver should provide the line position
+<i>2539</i>&nbsp;     * of the first character after the text associated with the document
+<i>2540</i>&nbsp;     * event.  The first line in the document is line 1.
+<i>2541</i>&nbsp;     *
+<i>2542</i>&nbsp;     * @return The line number, or -1 if none is available.
+<i>2543</i>&nbsp;     */
+<i>2544</i>&nbsp;    public int getLineNumber() {
+<b class="nc"><i>2545</i>&nbsp;        if (fCurrentEntity != null) {</b>
+<b class="nc"><i>2546</i>&nbsp;            if (fCurrentEntity.isExternal()) {</b>
+<b class="nc"><i>2547</i>&nbsp;                return fCurrentEntity.lineNumber;</b>
+<i>2548</i>&nbsp;            } else {
+<i>2549</i>&nbsp;                // search for the first external entity on the stack
+<b class="nc"><i>2550</i>&nbsp;                int size = fEntityStack.size();</b>
+<b class="nc"><i>2551</i>&nbsp;                for (int i=size-1; i&gt;0 ; i--) {</b>
+<b class="nc"><i>2552</i>&nbsp;                    Entity.ScannedEntity firstExternalEntity = (Entity.ScannedEntity)fEntityStack.elementAt(i);</b>
+<b class="nc"><i>2553</i>&nbsp;                    if (firstExternalEntity.isExternal()) {</b>
+<b class="nc"><i>2554</i>&nbsp;                        return firstExternalEntity.lineNumber;</b>
+<i>2555</i>&nbsp;                    }
+<i>2556</i>&nbsp;                }
+<i>2557</i>&nbsp;            }
+<i>2558</i>&nbsp;        }
+<i>2559</i>&nbsp;
+<b class="nc"><i>2560</i>&nbsp;        return -1;</b>
+<i>2561</i>&nbsp;
+<i>2562</i>&nbsp;    } // getLineNumber():int
+<i>2563</i>&nbsp;
+<i>2564</i>&nbsp;    /**
+<i>2565</i>&nbsp;     * Return the column number where the current document event ends.
+<i>2566</i>&nbsp;     * &lt;p&gt;
+<i>2567</i>&nbsp;     * &lt;strong&gt;Warning:&lt;/strong&gt; The return value from the method
+<i>2568</i>&nbsp;     * is intended only as an approximation for the sake of error
+<i>2569</i>&nbsp;     * reporting; it is not intended to provide sufficient information
+<i>2570</i>&nbsp;     * to edit the character content of the original XML document.
+<i>2571</i>&nbsp;     * &lt;p&gt;
+<i>2572</i>&nbsp;     * The return value is an approximation of the column number
+<i>2573</i>&nbsp;     * in the document entity or external parsed entity where the
+<i>2574</i>&nbsp;     * markup triggering the event appears.
+<i>2575</i>&nbsp;     * &lt;p&gt;
+<i>2576</i>&nbsp;     * If possible, the SAX driver should provide the line position
+<i>2577</i>&nbsp;     * of the first character after the text associated with the document
+<i>2578</i>&nbsp;     * event.
+<i>2579</i>&nbsp;     * &lt;p&gt;
+<i>2580</i>&nbsp;     * If possible, the SAX driver should provide the line position
+<i>2581</i>&nbsp;     * of the first character after the text associated with the document
+<i>2582</i>&nbsp;     * event.  The first column in each line is column 1.
+<i>2583</i>&nbsp;     *
+<i>2584</i>&nbsp;     * @return The column number, or -1 if none is available.
+<i>2585</i>&nbsp;     */
+<i>2586</i>&nbsp;    public int getColumnNumber() {
+<b class="nc"><i>2587</i>&nbsp;        if (fCurrentEntity != null) {</b>
+<b class="nc"><i>2588</i>&nbsp;            if (fCurrentEntity.isExternal()) {</b>
+<b class="nc"><i>2589</i>&nbsp;                return fCurrentEntity.columnNumber;</b>
+<i>2590</i>&nbsp;            } else {
+<i>2591</i>&nbsp;                // search for the first external entity on the stack
+<b class="nc"><i>2592</i>&nbsp;                int size = fEntityStack.size();</b>
+<b class="nc"><i>2593</i>&nbsp;                for (int i=size-1; i&gt;0 ; i--) {</b>
+<b class="nc"><i>2594</i>&nbsp;                    Entity.ScannedEntity firstExternalEntity = (Entity.ScannedEntity)fEntityStack.elementAt(i);</b>
+<b class="nc"><i>2595</i>&nbsp;                    if (firstExternalEntity.isExternal()) {</b>
+<b class="nc"><i>2596</i>&nbsp;                        return firstExternalEntity.columnNumber;</b>
+<i>2597</i>&nbsp;                    }
+<i>2598</i>&nbsp;                }
+<i>2599</i>&nbsp;            }
+<i>2600</i>&nbsp;        }
+<i>2601</i>&nbsp;
+<b class="nc"><i>2602</i>&nbsp;        return -1;</b>
+<i>2603</i>&nbsp;    } // getColumnNumber():int
+<i>2604</i>&nbsp;
+<i>2605</i>&nbsp;
+<i>2606</i>&nbsp;    //
+<i>2607</i>&nbsp;    // Protected static methods
+<i>2608</i>&nbsp;    //
+<i>2609</i>&nbsp;
+<i>2610</i>&nbsp;    /**
+<i>2611</i>&nbsp;     * Fixes a platform dependent filename to standard URI form.
+<i>2612</i>&nbsp;     *
+<i>2613</i>&nbsp;     * @param str The string to fix.
+<i>2614</i>&nbsp;     *
+<i>2615</i>&nbsp;     * @return Returns the fixed URI string.
+<i>2616</i>&nbsp;     */
+<i>2617</i>&nbsp;    protected static String fixURI(String str) {
+<i>2618</i>&nbsp;
+<i>2619</i>&nbsp;        // handle platform dependent strings
+<b class="nc"><i>2620</i>&nbsp;        str = str.replace(java.io.File.separatorChar, &#39;/&#39;);</b>
+<i>2621</i>&nbsp;
+<i>2622</i>&nbsp;        // Windows fix
+<b class="nc"><i>2623</i>&nbsp;        if (str.length() &gt;= 2) {</b>
+<b class="nc"><i>2624</i>&nbsp;            char ch1 = str.charAt(1);</b>
+<i>2625</i>&nbsp;            // change &quot;C:blah&quot; to &quot;/C:blah&quot;
+<b class="nc"><i>2626</i>&nbsp;            if (ch1 == &#39;:&#39;) {</b>
+<b class="nc"><i>2627</i>&nbsp;                char ch0 = Character.toUpperCase(str.charAt(0));</b>
+<b class="nc"><i>2628</i>&nbsp;                if (ch0 &gt;= &#39;A&#39; &amp;&amp; ch0 &lt;= &#39;Z&#39;) {</b>
+<b class="nc"><i>2629</i>&nbsp;                    str = &quot;/&quot; + str;</b>
+<i>2630</i>&nbsp;                }
+<b class="nc"><i>2631</i>&nbsp;            }</b>
+<i>2632</i>&nbsp;            // change &quot;//blah&quot; to &quot;file://blah&quot;
+<b class="nc"><i>2633</i>&nbsp;            else if (ch1 == &#39;/&#39; &amp;&amp; str.charAt(0) == &#39;/&#39;) {</b>
+<b class="nc"><i>2634</i>&nbsp;                str = &quot;file:&quot; + str;</b>
+<i>2635</i>&nbsp;            }
+<i>2636</i>&nbsp;        }
+<i>2637</i>&nbsp;
+<i>2638</i>&nbsp;        // replace spaces in file names with %20.
+<i>2639</i>&nbsp;        // Original comment from JDK5: the following algorithm might not be
+<i>2640</i>&nbsp;        // very performant, but people who want to use invalid URI&#39;s have to
+<i>2641</i>&nbsp;        // pay the price.
+<b class="nc"><i>2642</i>&nbsp;        int pos = str.indexOf(&#39; &#39;);</b>
+<b class="nc"><i>2643</i>&nbsp;        if (pos &gt;= 0) {</b>
+<b class="nc"><i>2644</i>&nbsp;            StringBuilder sb = new StringBuilder(str.length());</b>
+<i>2645</i>&nbsp;            // put characters before &#39; &#39; into the string builder
+<b class="nc"><i>2646</i>&nbsp;            for (int i = 0; i &lt; pos; i++)</b>
+<b class="nc"><i>2647</i>&nbsp;                sb.append(str.charAt(i));</b>
+<i>2648</i>&nbsp;            // and %20 for the space
+<b class="nc"><i>2649</i>&nbsp;            sb.append(&quot;%20&quot;);</b>
+<i>2650</i>&nbsp;            // for the remamining part, also convert &#39; &#39; to &quot;%20&quot;.
+<b class="nc"><i>2651</i>&nbsp;            for (int i = pos+1; i &lt; str.length(); i++) {</b>
+<b class="nc"><i>2652</i>&nbsp;                if (str.charAt(i) == &#39; &#39;)</b>
+<b class="nc"><i>2653</i>&nbsp;                    sb.append(&quot;%20&quot;);</b>
+<i>2654</i>&nbsp;                else
+<b class="nc"><i>2655</i>&nbsp;                    sb.append(str.charAt(i));</b>
+<i>2656</i>&nbsp;            }
+<b class="nc"><i>2657</i>&nbsp;            str = sb.toString();</b>
+<i>2658</i>&nbsp;        }
+<i>2659</i>&nbsp;
+<i>2660</i>&nbsp;        // done
+<b class="nc"><i>2661</i>&nbsp;        return str;</b>
+<i>2662</i>&nbsp;
+<i>2663</i>&nbsp;    } // fixURI(String):String
+<i>2664</i>&nbsp;
+<i>2665</i>&nbsp;
+<i>2666</i>&nbsp;    //
+<i>2667</i>&nbsp;    // Package visible methods
+<i>2668</i>&nbsp;    //
+<i>2669</i>&nbsp;    /** Prints the contents of the buffer. */
+<i>2670</i>&nbsp;    final void print() {
+<i>2671</i>&nbsp;        if (DEBUG_BUFFER) {
+<i>2672</i>&nbsp;            if (fCurrentEntity != null) {
+<i>2673</i>&nbsp;                System.out.print(&#39;[&#39;);
+<i>2674</i>&nbsp;                System.out.print(fCurrentEntity.count);
+<i>2675</i>&nbsp;                System.out.print(&#39; &#39;);
+<i>2676</i>&nbsp;                System.out.print(fCurrentEntity.position);
+<i>2677</i>&nbsp;                if (fCurrentEntity.count &gt; 0) {
+<i>2678</i>&nbsp;                    System.out.print(&quot; \&quot;&quot;);
+<i>2679</i>&nbsp;                    for (int i = 0; i &lt; fCurrentEntity.count; i++) {
+<i>2680</i>&nbsp;                        if (i == fCurrentEntity.position) {
+<i>2681</i>&nbsp;                            System.out.print(&#39;^&#39;);
+<i>2682</i>&nbsp;                        }
+<i>2683</i>&nbsp;                        char c = fCurrentEntity.ch[i];
+<i>2684</i>&nbsp;                        switch (c) {
+<i>2685</i>&nbsp;                            case &#39;\n&#39;: {
+<i>2686</i>&nbsp;                                System.out.print(&quot;\\n&quot;);
+<i>2687</i>&nbsp;                                break;
+<i>2688</i>&nbsp;                            }
+<i>2689</i>&nbsp;                            case &#39;\r&#39;: {
+<i>2690</i>&nbsp;                                System.out.print(&quot;\\r&quot;);
+<i>2691</i>&nbsp;                                break;
+<i>2692</i>&nbsp;                            }
+<i>2693</i>&nbsp;                            case &#39;\t&#39;: {
+<i>2694</i>&nbsp;                                System.out.print(&quot;\\t&quot;);
+<i>2695</i>&nbsp;                                break;
+<i>2696</i>&nbsp;                            }
+<i>2697</i>&nbsp;                            case &#39;\\&#39;: {
+<i>2698</i>&nbsp;                                System.out.print(&quot;\\\\&quot;);
+<i>2699</i>&nbsp;                                break;
+<i>2700</i>&nbsp;                            }
+<i>2701</i>&nbsp;                            default: {
+<i>2702</i>&nbsp;                                System.out.print(c);
+<i>2703</i>&nbsp;                            }
+<i>2704</i>&nbsp;                        }
+<i>2705</i>&nbsp;                    }
+<i>2706</i>&nbsp;                    if (fCurrentEntity.position == fCurrentEntity.count) {
+<i>2707</i>&nbsp;                        System.out.print(&#39;^&#39;);
+<i>2708</i>&nbsp;                    }
+<i>2709</i>&nbsp;                    System.out.print(&#39;&quot;&#39;);
+<i>2710</i>&nbsp;                }
+<i>2711</i>&nbsp;                System.out.print(&#39;]&#39;);
+<i>2712</i>&nbsp;                System.out.print(&quot; @ &quot;);
+<i>2713</i>&nbsp;                System.out.print(fCurrentEntity.lineNumber);
+<i>2714</i>&nbsp;                System.out.print(&#39;,&#39;);
+<i>2715</i>&nbsp;                System.out.print(fCurrentEntity.columnNumber);
+<i>2716</i>&nbsp;            } else {
+<i>2717</i>&nbsp;                System.out.print(&quot;*NO CURRENT ENTITY*&quot;);
+<i>2718</i>&nbsp;            }
+<i>2719</i>&nbsp;        }
+<i>2720</i>&nbsp;    } // print()
+<i>2721</i>&nbsp;
+<i>2722</i>&nbsp;    /**
+<i>2723</i>&nbsp;     * Buffer used in entity manager to reuse character arrays instead
+<i>2724</i>&nbsp;     * of creating new ones every time.
+<i>2725</i>&nbsp;     *
+<i>2726</i>&nbsp;     * @xerces.internal
+<i>2727</i>&nbsp;     *
+<i>2728</i>&nbsp;     * @author Ankit Pasricha, IBM
+<i>2729</i>&nbsp;     */
+<b class="nc"><i>2730</i>&nbsp;    private static class CharacterBuffer {</b>
+<i>2731</i>&nbsp;
+<i>2732</i>&nbsp;        /** character buffer */
+<i>2733</i>&nbsp;        private char[] ch;
+<i>2734</i>&nbsp;
+<i>2735</i>&nbsp;        /** whether the buffer is for an external or internal scanned entity */
+<i>2736</i>&nbsp;        private boolean isExternal;
+<i>2737</i>&nbsp;
+<b class="nc"><i>2738</i>&nbsp;        public CharacterBuffer(boolean isExternal, int size) {</b>
+<b class="nc"><i>2739</i>&nbsp;            this.isExternal = isExternal;</b>
+<b class="nc"><i>2740</i>&nbsp;            ch = new char[size];</b>
+<i>2741</i>&nbsp;        }
+<i>2742</i>&nbsp;    }
+<i>2743</i>&nbsp;
+<i>2744</i>&nbsp;
+<i>2745</i>&nbsp;     /**
+<i>2746</i>&nbsp;     * Stores a number of character buffers and provides it to the entity
+<i>2747</i>&nbsp;     * manager to use when an entity is seen.
+<i>2748</i>&nbsp;     *
+<i>2749</i>&nbsp;     * @xerces.internal
+<i>2750</i>&nbsp;     *
+<i>2751</i>&nbsp;     * @author Ankit Pasricha, IBM
+<i>2752</i>&nbsp;     */
+<i>2753</i>&nbsp;    private static class CharacterBufferPool {
+<i>2754</i>&nbsp;
+<i>2755</i>&nbsp;        private static final int DEFAULT_POOL_SIZE = 3;
+<i>2756</i>&nbsp;
+<i>2757</i>&nbsp;        private CharacterBuffer[] fInternalBufferPool;
+<i>2758</i>&nbsp;        private CharacterBuffer[] fExternalBufferPool;
+<i>2759</i>&nbsp;
+<i>2760</i>&nbsp;        private int fExternalBufferSize;
+<i>2761</i>&nbsp;        private int fInternalBufferSize;
+<i>2762</i>&nbsp;        private int poolSize;
+<i>2763</i>&nbsp;
+<i>2764</i>&nbsp;        private int fInternalTop;
+<i>2765</i>&nbsp;        private int fExternalTop;
+<i>2766</i>&nbsp;
+<i>2767</i>&nbsp;        public CharacterBufferPool(int externalBufferSize, int internalBufferSize) {
+<b class="nc"><i>2768</i>&nbsp;            this(DEFAULT_POOL_SIZE, externalBufferSize, internalBufferSize);</b>
+<i>2769</i>&nbsp;        }
+<i>2770</i>&nbsp;
+<b class="nc"><i>2771</i>&nbsp;        public CharacterBufferPool(int poolSize, int externalBufferSize, int internalBufferSize) {</b>
+<b class="nc"><i>2772</i>&nbsp;            fExternalBufferSize = externalBufferSize;</b>
+<b class="nc"><i>2773</i>&nbsp;            fInternalBufferSize = internalBufferSize;</b>
+<b class="nc"><i>2774</i>&nbsp;            this.poolSize = poolSize;</b>
+<b class="nc"><i>2775</i>&nbsp;            init();</b>
+<i>2776</i>&nbsp;        }
+<i>2777</i>&nbsp;
+<i>2778</i>&nbsp;        /** Initializes buffer pool. **/
+<i>2779</i>&nbsp;        private void init() {
+<b class="nc"><i>2780</i>&nbsp;            fInternalBufferPool = new CharacterBuffer[poolSize];</b>
+<b class="nc"><i>2781</i>&nbsp;            fExternalBufferPool = new CharacterBuffer[poolSize];</b>
+<b class="nc"><i>2782</i>&nbsp;            fInternalTop = -1;</b>
+<b class="nc"><i>2783</i>&nbsp;            fExternalTop = -1;</b>
+<i>2784</i>&nbsp;        }
+<i>2785</i>&nbsp;
+<i>2786</i>&nbsp;        /** Retrieves buffer from pool. **/
+<i>2787</i>&nbsp;        public CharacterBuffer getBuffer(boolean external) {
+<b class="nc"><i>2788</i>&nbsp;            if (external) {</b>
+<b class="nc"><i>2789</i>&nbsp;                if (fExternalTop &gt; -1) {</b>
+<b class="nc"><i>2790</i>&nbsp;                    return (CharacterBuffer)fExternalBufferPool[fExternalTop--];</b>
+<i>2791</i>&nbsp;                }
+<i>2792</i>&nbsp;                else {
+<b class="nc"><i>2793</i>&nbsp;                    return new CharacterBuffer(true, fExternalBufferSize);</b>
+<i>2794</i>&nbsp;                }
+<i>2795</i>&nbsp;            }
+<i>2796</i>&nbsp;            else {
+<b class="nc"><i>2797</i>&nbsp;                if (fInternalTop &gt; -1) {</b>
+<b class="nc"><i>2798</i>&nbsp;                    return (CharacterBuffer)fInternalBufferPool[fInternalTop--];</b>
+<i>2799</i>&nbsp;                }
+<i>2800</i>&nbsp;                else {
+<b class="nc"><i>2801</i>&nbsp;                    return new CharacterBuffer(false, fInternalBufferSize);</b>
+<i>2802</i>&nbsp;                }
+<i>2803</i>&nbsp;            }
+<i>2804</i>&nbsp;        }
+<i>2805</i>&nbsp;
+<i>2806</i>&nbsp;        /** Returns buffer to pool. **/
+<i>2807</i>&nbsp;        public void returnToPool(CharacterBuffer buffer) {
+<b class="nc"><i>2808</i>&nbsp;            if (buffer.isExternal) {</b>
+<b class="nc"><i>2809</i>&nbsp;                if (fExternalTop &lt; fExternalBufferPool.length - 1) {</b>
+<b class="nc"><i>2810</i>&nbsp;                    fExternalBufferPool[++fExternalTop] = buffer;</b>
+<i>2811</i>&nbsp;                }
+<i>2812</i>&nbsp;            }
+<b class="nc"><i>2813</i>&nbsp;            else if (fInternalTop &lt; fInternalBufferPool.length - 1) {</b>
+<b class="nc"><i>2814</i>&nbsp;                fInternalBufferPool[++fInternalTop] = buffer;</b>
+<i>2815</i>&nbsp;            }
+<i>2816</i>&nbsp;        }
+<i>2817</i>&nbsp;
+<i>2818</i>&nbsp;        /** Sets the size of external buffers and dumps the old pool. **/
+<i>2819</i>&nbsp;        public void setExternalBufferSize(int bufferSize) {
+<b class="nc"><i>2820</i>&nbsp;            fExternalBufferSize = bufferSize;</b>
+<b class="nc"><i>2821</i>&nbsp;            fExternalBufferPool = new CharacterBuffer[poolSize];</b>
+<b class="nc"><i>2822</i>&nbsp;            fExternalTop = -1;</b>
+<i>2823</i>&nbsp;        }
+<i>2824</i>&nbsp;    }
+<i>2825</i>&nbsp;
+<i>2826</i>&nbsp;    /**
+<i>2827</i>&nbsp;    * This class wraps the byte inputstreams we&#39;re presented with.
+<i>2828</i>&nbsp;    * We need it because java.io.InputStreams don&#39;t provide
+<i>2829</i>&nbsp;    * functionality to reread processed bytes, and they have a habit
+<i>2830</i>&nbsp;    * of reading more than one character when you call their read()
+<i>2831</i>&nbsp;    * methods.  This means that, once we discover the true (declared)
+<i>2832</i>&nbsp;    * encoding of a document, we can neither backtrack to read the
+<i>2833</i>&nbsp;    * whole doc again nor start reading where we are with a new
+<i>2834</i>&nbsp;    * reader.
+<i>2835</i>&nbsp;    *
+<i>2836</i>&nbsp;    * This class allows rewinding an inputStream by allowing a mark
+<i>2837</i>&nbsp;    * to be set, and the stream reset to that position.  &lt;strong&gt;The
+<i>2838</i>&nbsp;    * class assumes that it needs to read one character per
+<i>2839</i>&nbsp;    * invocation when it&#39;s read() method is inovked, but uses the
+<i>2840</i>&nbsp;    * underlying InputStream&#39;s read(char[], offset length) method--it
+<i>2841</i>&nbsp;    * won&#39;t buffer data read this way!&lt;/strong&gt;
+<i>2842</i>&nbsp;    *
+<i>2843</i>&nbsp;    * @xerces.internal
+<i>2844</i>&nbsp;    *
+<i>2845</i>&nbsp;    * @author Neil Graham, IBM
+<i>2846</i>&nbsp;    * @author Glenn Marcy, IBM
+<i>2847</i>&nbsp;    */
+<i>2848</i>&nbsp;
+<i>2849</i>&nbsp;    protected final class RewindableInputStream extends InputStream {
+<i>2850</i>&nbsp;
+<i>2851</i>&nbsp;        private InputStream fInputStream;
+<i>2852</i>&nbsp;        private byte[] fData;
+<i>2853</i>&nbsp;        private int fStartOffset;
+<i>2854</i>&nbsp;        private int fEndOffset;
+<i>2855</i>&nbsp;        private int fOffset;
+<i>2856</i>&nbsp;        private int fLength;
+<i>2857</i>&nbsp;        private int fMark;
+<i>2858</i>&nbsp;
+<b class="nc"><i>2859</i>&nbsp;        public RewindableInputStream(InputStream is) {</b>
+<b class="nc"><i>2860</i>&nbsp;            fData = new byte[DEFAULT_XMLDECL_BUFFER_SIZE];</b>
+<b class="nc"><i>2861</i>&nbsp;            fInputStream = is;</b>
+<b class="nc"><i>2862</i>&nbsp;            fStartOffset = 0;</b>
+<b class="nc"><i>2863</i>&nbsp;            fEndOffset = -1;</b>
+<b class="nc"><i>2864</i>&nbsp;            fOffset = 0;</b>
+<b class="nc"><i>2865</i>&nbsp;            fLength = 0;</b>
+<b class="nc"><i>2866</i>&nbsp;            fMark = 0;</b>
+<i>2867</i>&nbsp;        }
+<i>2868</i>&nbsp;
+<i>2869</i>&nbsp;        public void setStartOffset(int offset) {
+<b class="nc"><i>2870</i>&nbsp;            fStartOffset = offset;</b>
+<i>2871</i>&nbsp;        }
+<i>2872</i>&nbsp;
+<i>2873</i>&nbsp;        public void rewind() {
+<b class="nc"><i>2874</i>&nbsp;            fOffset = fStartOffset;</b>
+<i>2875</i>&nbsp;        }
+<i>2876</i>&nbsp;
+<i>2877</i>&nbsp;        public int read() throws IOException {
+<b class="nc"><i>2878</i>&nbsp;            int b = 0;</b>
+<b class="nc"><i>2879</i>&nbsp;            if (fOffset &lt; fLength) {</b>
+<b class="nc"><i>2880</i>&nbsp;                return fData[fOffset++] &amp; 0xff;</b>
+<i>2881</i>&nbsp;            }
+<b class="nc"><i>2882</i>&nbsp;            if (fOffset == fEndOffset) {</b>
+<b class="nc"><i>2883</i>&nbsp;                return -1;</b>
+<i>2884</i>&nbsp;            }
+<b class="nc"><i>2885</i>&nbsp;            if (fOffset == fData.length) {</b>
+<b class="nc"><i>2886</i>&nbsp;                byte[] newData = new byte[fOffset &lt;&lt; 1];</b>
+<b class="nc"><i>2887</i>&nbsp;                System.arraycopy(fData, 0, newData, 0, fOffset);</b>
+<b class="nc"><i>2888</i>&nbsp;                fData = newData;</b>
+<i>2889</i>&nbsp;            }
+<b class="nc"><i>2890</i>&nbsp;            b = fInputStream.read();</b>
+<b class="nc"><i>2891</i>&nbsp;            if (b == -1) {</b>
+<b class="nc"><i>2892</i>&nbsp;                fEndOffset = fOffset;</b>
+<b class="nc"><i>2893</i>&nbsp;                return -1;</b>
+<i>2894</i>&nbsp;            }
+<b class="nc"><i>2895</i>&nbsp;            fData[fLength++] = (byte)b;</b>
+<b class="nc"><i>2896</i>&nbsp;            fOffset++;</b>
+<b class="nc"><i>2897</i>&nbsp;            return b &amp; 0xff;</b>
+<i>2898</i>&nbsp;        }
+<i>2899</i>&nbsp;
+<i>2900</i>&nbsp;        public int read(byte[] b, int off, int len) throws IOException {
+<b class="nc"><i>2901</i>&nbsp;            int bytesLeft = fLength - fOffset;</b>
+<b class="nc"><i>2902</i>&nbsp;            if (bytesLeft == 0) {</b>
+<b class="nc"><i>2903</i>&nbsp;                if (fOffset == fEndOffset) {</b>
+<b class="nc"><i>2904</i>&nbsp;                    return -1;</b>
+<i>2905</i>&nbsp;                }
+<i>2906</i>&nbsp;
+<i>2907</i>&nbsp;                /**
+<i>2908</i>&nbsp;                 * //System.out.println(&quot;fCurrentEntitty = &quot; + fCurrentEntity );
+<i>2909</i>&nbsp;                 * //System.out.println(&quot;fInputStream = &quot; + fInputStream );
+<i>2910</i>&nbsp;                 * // better get some more for the voracious reader... */
+<i>2911</i>&nbsp;
+<b class="nc"><i>2912</i>&nbsp;                if(fCurrentEntity.mayReadChunks || !fCurrentEntity.xmlDeclChunkRead) {</b>
+<i>2913</i>&nbsp;
+<b class="nc"><i>2914</i>&nbsp;                    if (!fCurrentEntity.xmlDeclChunkRead)</b>
+<i>2915</i>&nbsp;                    {
+<b class="nc"><i>2916</i>&nbsp;                        fCurrentEntity.xmlDeclChunkRead = true;</b>
+<b class="nc"><i>2917</i>&nbsp;                        len = Entity.ScannedEntity.DEFAULT_XMLDECL_BUFFER_SIZE;</b>
+<i>2918</i>&nbsp;                    }
+<b class="nc"><i>2919</i>&nbsp;                    return fInputStream.read(b, off, len);</b>
+<i>2920</i>&nbsp;                }
+<i>2921</i>&nbsp;
+<b class="nc"><i>2922</i>&nbsp;                int returnedVal = read();</b>
+<b class="nc"><i>2923</i>&nbsp;                if(returnedVal == -1) {</b>
+<b class="nc"><i>2924</i>&nbsp;                  fEndOffset = fOffset;</b>
+<b class="nc"><i>2925</i>&nbsp;                  return -1;</b>
+<i>2926</i>&nbsp;                }
+<b class="nc"><i>2927</i>&nbsp;                b[off] = (byte)returnedVal;</b>
+<b class="nc"><i>2928</i>&nbsp;                return 1;</b>
+<i>2929</i>&nbsp;
+<i>2930</i>&nbsp;            }
+<b class="nc"><i>2931</i>&nbsp;            if (len &lt; bytesLeft) {</b>
+<b class="nc"><i>2932</i>&nbsp;                if (len &lt;= 0) {</b>
+<b class="nc"><i>2933</i>&nbsp;                    return 0;</b>
+<i>2934</i>&nbsp;                }
+<i>2935</i>&nbsp;            } else {
+<b class="nc"><i>2936</i>&nbsp;                len = bytesLeft;</b>
+<i>2937</i>&nbsp;            }
+<b class="nc"><i>2938</i>&nbsp;            if (b != null) {</b>
+<b class="nc"><i>2939</i>&nbsp;                System.arraycopy(fData, fOffset, b, off, len);</b>
+<i>2940</i>&nbsp;            }
+<b class="nc"><i>2941</i>&nbsp;            fOffset += len;</b>
+<b class="nc"><i>2942</i>&nbsp;            return len;</b>
+<i>2943</i>&nbsp;        }
+<i>2944</i>&nbsp;
+<i>2945</i>&nbsp;        public long skip(long n)
+<i>2946</i>&nbsp;        throws IOException {
+<i>2947</i>&nbsp;            int bytesLeft;
+<b class="nc"><i>2948</i>&nbsp;            if (n &lt;= 0) {</b>
+<b class="nc"><i>2949</i>&nbsp;                return 0;</b>
+<i>2950</i>&nbsp;            }
+<b class="nc"><i>2951</i>&nbsp;            bytesLeft = fLength - fOffset;</b>
+<b class="nc"><i>2952</i>&nbsp;            if (bytesLeft == 0) {</b>
+<b class="nc"><i>2953</i>&nbsp;                if (fOffset == fEndOffset) {</b>
+<b class="nc"><i>2954</i>&nbsp;                    return 0;</b>
+<i>2955</i>&nbsp;                }
+<b class="nc"><i>2956</i>&nbsp;                return fInputStream.skip(n);</b>
+<i>2957</i>&nbsp;            }
+<b class="nc"><i>2958</i>&nbsp;            if (n &lt;= bytesLeft) {</b>
+<b class="nc"><i>2959</i>&nbsp;                fOffset += n;</b>
+<b class="nc"><i>2960</i>&nbsp;                return n;</b>
+<i>2961</i>&nbsp;            }
+<b class="nc"><i>2962</i>&nbsp;            fOffset += bytesLeft;</b>
+<b class="nc"><i>2963</i>&nbsp;            if (fOffset == fEndOffset) {</b>
+<b class="nc"><i>2964</i>&nbsp;                return bytesLeft;</b>
+<i>2965</i>&nbsp;            }
+<b class="nc"><i>2966</i>&nbsp;            n -= bytesLeft;</b>
+<i>2967</i>&nbsp;            /*
+<i>2968</i>&nbsp;            * In a manner of speaking, when this class isn&#39;t permitting more
+<i>2969</i>&nbsp;            * than one byte at a time to be read, it is &quot;blocking&quot;.  The
+<i>2970</i>&nbsp;            * available() method should indicate how much can be read without
+<i>2971</i>&nbsp;            * blocking, so while we&#39;re in this mode, it should only indicate
+<i>2972</i>&nbsp;            * that bytes in its buffer are available; otherwise, the result of
+<i>2973</i>&nbsp;            * available() on the underlying InputStream is appropriate.
+<i>2974</i>&nbsp;            */
+<b class="nc"><i>2975</i>&nbsp;            return fInputStream.skip(n) + bytesLeft;</b>
+<i>2976</i>&nbsp;        }
+<i>2977</i>&nbsp;
+<i>2978</i>&nbsp;        public int available() throws IOException {
+<b class="nc"><i>2979</i>&nbsp;            int bytesLeft = fLength - fOffset;</b>
+<b class="nc"><i>2980</i>&nbsp;            if (bytesLeft == 0) {</b>
+<b class="nc"><i>2981</i>&nbsp;                if (fOffset == fEndOffset) {</b>
+<b class="nc"><i>2982</i>&nbsp;                    return -1;</b>
+<i>2983</i>&nbsp;                }
+<b class="nc"><i>2984</i>&nbsp;                return fCurrentEntity.mayReadChunks ? fInputStream.available()</b>
+<i>2985</i>&nbsp;                : 0;
+<i>2986</i>&nbsp;            }
+<b class="nc"><i>2987</i>&nbsp;            return bytesLeft;</b>
+<i>2988</i>&nbsp;        }
+<i>2989</i>&nbsp;
+<i>2990</i>&nbsp;        public void mark(int howMuch) {
+<b class="nc"><i>2991</i>&nbsp;            fMark = fOffset;</b>
+<i>2992</i>&nbsp;        }
+<i>2993</i>&nbsp;
+<i>2994</i>&nbsp;        public void reset() {
+<b class="nc"><i>2995</i>&nbsp;            fOffset = fMark;</b>
+<i>2996</i>&nbsp;            //test();
+<i>2997</i>&nbsp;        }
+<i>2998</i>&nbsp;
+<i>2999</i>&nbsp;        public boolean markSupported() {
+<b class="nc"><i>3000</i>&nbsp;            return true;</b>
+<i>3001</i>&nbsp;        }
+<i>3002</i>&nbsp;
+<i>3003</i>&nbsp;        public void close() throws IOException {
+<b class="nc"><i>3004</i>&nbsp;            if (fInputStream != null) {</b>
+<b class="nc"><i>3005</i>&nbsp;                fInputStream.close();</b>
+<b class="nc"><i>3006</i>&nbsp;                fInputStream = null;</b>
+<i>3007</i>&nbsp;            }
+<i>3008</i>&nbsp;        }
+<i>3009</i>&nbsp;    } // end of RewindableInputStream class
+<i>3010</i>&nbsp;
+<i>3011</i>&nbsp;    public void test(){
+<i>3012</i>&nbsp;        //System.out.println(&quot;TESTING: Added familytree to entityManager&quot;);
+<i>3013</i>&nbsp;        //Usecase1
+<b class="nc"><i>3014</i>&nbsp;        fEntityStorage.addExternalEntity(&quot;entityUsecase1&quot;,null,</b>
+<i>3015</i>&nbsp;                &quot;/space/home/stax/sun/6thJan2004/zephyr/data/test.txt&quot;,
+<i>3016</i>&nbsp;                &quot;/space/home/stax/sun/6thJan2004/zephyr/data/entity.xml&quot;);
+<i>3017</i>&nbsp;
+<i>3018</i>&nbsp;        //Usecase2
+<b class="nc"><i>3019</i>&nbsp;        fEntityStorage.addInternalEntity(&quot;entityUsecase2&quot;,&quot;&lt;Test&gt;value&lt;/Test&gt;&quot;);</b>
+<b class="nc"><i>3020</i>&nbsp;        fEntityStorage.addInternalEntity(&quot;entityUsecase3&quot;,&quot;value3&quot;);</b>
+<b class="nc"><i>3021</i>&nbsp;        fEntityStorage.addInternalEntity(&quot;text&quot;, &quot;Hello World.&quot;);</b>
+<b class="nc"><i>3022</i>&nbsp;        fEntityStorage.addInternalEntity(&quot;empty-element&quot;, &quot;&lt;foo/&gt;&quot;);</b>
+<b class="nc"><i>3023</i>&nbsp;        fEntityStorage.addInternalEntity(&quot;balanced-element&quot;, &quot;&lt;foo&gt;&lt;/foo&gt;&quot;);</b>
+<b class="nc"><i>3024</i>&nbsp;        fEntityStorage.addInternalEntity(&quot;balanced-element-with-text&quot;, &quot;&lt;foo&gt;Hello, World&lt;/foo&gt;&quot;);</b>
+<b class="nc"><i>3025</i>&nbsp;        fEntityStorage.addInternalEntity(&quot;balanced-element-with-entity&quot;, &quot;&lt;foo&gt;&amp;text;&lt;/foo&gt;&quot;);</b>
+<b class="nc"><i>3026</i>&nbsp;        fEntityStorage.addInternalEntity(&quot;unbalanced-entity&quot;, &quot;&lt;foo&gt;&quot;);</b>
+<b class="nc"><i>3027</i>&nbsp;        fEntityStorage.addInternalEntity(&quot;recursive-entity&quot;, &quot;&lt;foo&gt;&amp;recursive-entity2;&lt;/foo&gt;&quot;);</b>
+<b class="nc"><i>3028</i>&nbsp;        fEntityStorage.addInternalEntity(&quot;recursive-entity2&quot;, &quot;&lt;bar&gt;&amp;recursive-entity3;&lt;/bar&gt;&quot;);</b>
+<b class="nc"><i>3029</i>&nbsp;        fEntityStorage.addInternalEntity(&quot;recursive-entity3&quot;, &quot;&lt;baz&gt;&amp;recursive-entity;&lt;/baz&gt;&quot;);</b>
+<b class="nc"><i>3030</i>&nbsp;        fEntityStorage.addInternalEntity(&quot;ch&quot;,&quot;&amp;#x00A9;&quot;);</b>
+<b class="nc"><i>3031</i>&nbsp;        fEntityStorage.addInternalEntity(&quot;ch1&quot;,&quot;&amp;#84;&quot;);</b>
+<b class="nc"><i>3032</i>&nbsp;        fEntityStorage.addInternalEntity(&quot;% ch2&quot;,&quot;param&quot;);</b>
+<i>3033</i>&nbsp;    }
+<i>3034</i>&nbsp;
+<i>3035</i>&nbsp;} // class XMLEntityManager
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

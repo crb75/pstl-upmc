@@ -1,0 +1,399 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: EncodingInfo</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.serialize</a> ]
+</div>
+
+<h1>Coverage Summary for Class: EncodingInfo (com.sun.org.apache.xml.internal.serialize)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EncodingInfo</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 55)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">EncodingInfo$CharsetMethods</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">EncodingInfo$CharToByteConverterMethods</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 90)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2000-2002,2004,2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xml.internal.serialize;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import java.io.OutputStream;
+<i>24</i>&nbsp;import java.io.OutputStreamWriter;
+<i>25</i>&nbsp;import java.io.UnsupportedEncodingException;
+<i>26</i>&nbsp;import java.io.Writer;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.util.EncodingMap;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;/**
+<i>30</i>&nbsp; * This class represents an encoding.
+<i>31</i>&nbsp; *
+<i>32</i>&nbsp; * @version $Id: EncodingInfo.java,v 1.6 2007/10/18 03:39:08 joehw Exp $
+<i>33</i>&nbsp; */
+<i>34</i>&nbsp;public class EncodingInfo {
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    // An array to hold the argument for a method of Charset, CharsetEncoder or CharToByteConverter.
+<b class="nc"><i>37</i>&nbsp;    private Object [] fArgsForMethod = null;</b>
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    // name of encoding as registered with IANA;
+<i>40</i>&nbsp;    // preferably a MIME name, but aliases are fine too.
+<i>41</i>&nbsp;    String ianaName;
+<i>42</i>&nbsp;    String javaName;
+<i>43</i>&nbsp;    int lastPrintable;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    // The CharsetEncoder with which we test unusual characters.
+<b class="nc"><i>46</i>&nbsp;    Object fCharsetEncoder = null;</b>
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    // The CharToByteConverter with which we test unusual characters.
+<b class="nc"><i>49</i>&nbsp;    Object fCharToByteConverter = null;</b>
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    // Is the converter null because it can&#39;t be instantiated
+<i>52</i>&nbsp;    // for some reason (perhaps we&#39;re running with insufficient authority as
+<i>53</i>&nbsp;    // an applet?
+<b class="nc"><i>54</i>&nbsp;    boolean fHaveTriedCToB = false;</b>
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    // Is the charset encoder usable or available.
+<b class="nc"><i>57</i>&nbsp;    boolean fHaveTriedCharsetEncoder = false;</b>
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    /**
+<i>60</i>&nbsp;     * Creates new &lt;code&gt;EncodingInfo&lt;/code&gt; instance.
+<i>61</i>&nbsp;     */
+<b class="nc"><i>62</i>&nbsp;    public EncodingInfo(String ianaName, String javaName, int lastPrintable) {</b>
+<b class="nc"><i>63</i>&nbsp;        this.ianaName = ianaName;</b>
+<b class="nc"><i>64</i>&nbsp;        this.javaName = EncodingMap.getIANA2JavaMapping(ianaName);</b>
+<b class="nc"><i>65</i>&nbsp;        this.lastPrintable = lastPrintable;</b>
+<i>66</i>&nbsp;    }
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    /**
+<i>69</i>&nbsp;     * Returns a MIME charset name of this encoding.
+<i>70</i>&nbsp;     */
+<i>71</i>&nbsp;    public String getIANAName() {
+<b class="nc"><i>72</i>&nbsp;        return this.ianaName;</b>
+<i>73</i>&nbsp;    }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    /**
+<i>76</i>&nbsp;     * Returns a writer for this encoding based on
+<i>77</i>&nbsp;     * an output stream.
+<i>78</i>&nbsp;     *
+<i>79</i>&nbsp;     * @return A suitable writer
+<i>80</i>&nbsp;     * @exception UnsupportedEncodingException There is no convertor
+<i>81</i>&nbsp;     *  to support this encoding
+<i>82</i>&nbsp;     */
+<i>83</i>&nbsp;    public Writer getWriter(OutputStream output)
+<i>84</i>&nbsp;        throws UnsupportedEncodingException {
+<i>85</i>&nbsp;        // this should always be true!
+<b class="nc"><i>86</i>&nbsp;        if (javaName != null)</b>
+<b class="nc"><i>87</i>&nbsp;            return new OutputStreamWriter(output, javaName);</b>
+<b class="nc"><i>88</i>&nbsp;        javaName = EncodingMap.getIANA2JavaMapping(ianaName);</b>
+<b class="nc"><i>89</i>&nbsp;        if(javaName == null)</b>
+<i>90</i>&nbsp;            // use UTF-8 as preferred encoding
+<b class="nc"><i>91</i>&nbsp;            return new OutputStreamWriter(output, &quot;UTF8&quot;);</b>
+<b class="nc"><i>92</i>&nbsp;        return new OutputStreamWriter(output, javaName);</b>
+<i>93</i>&nbsp;    }
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    /**
+<i>96</i>&nbsp;     * Checks whether the specified character is printable or not in this encoding.
+<i>97</i>&nbsp;     *
+<i>98</i>&nbsp;     * @param ch a code point (0-0x10ffff)
+<i>99</i>&nbsp;     */
+<i>100</i>&nbsp;    public boolean isPrintable(char ch) {
+<b class="nc"><i>101</i>&nbsp;        if (ch &lt;= this.lastPrintable) {</b>
+<b class="nc"><i>102</i>&nbsp;            return true;</b>
+<i>103</i>&nbsp;        }
+<b class="nc"><i>104</i>&nbsp;        return isPrintable0(ch);</b>
+<i>105</i>&nbsp;    }
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    /**
+<i>108</i>&nbsp;     * Checks whether the specified character is printable or not in this encoding.
+<i>109</i>&nbsp;     * This method accomplishes this using a java.nio.CharsetEncoder. If NIO isn&#39;t
+<i>110</i>&nbsp;     * available it will attempt use a sun.io.CharToByteConverter.
+<i>111</i>&nbsp;     *
+<i>112</i>&nbsp;     * @param ch a code point (0-0x10ffff)
+<i>113</i>&nbsp;     */
+<i>114</i>&nbsp;    private boolean isPrintable0(char ch) {
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;        // Attempt to get a CharsetEncoder for this encoding.
+<b class="nc"><i>117</i>&nbsp;        if (fCharsetEncoder == null &amp;&amp; CharsetMethods.fgNIOCharsetAvailable &amp;&amp; !fHaveTriedCharsetEncoder) {</b>
+<b class="nc"><i>118</i>&nbsp;            if (fArgsForMethod == null) {</b>
+<b class="nc"><i>119</i>&nbsp;                fArgsForMethod = new Object [1];</b>
+<i>120</i>&nbsp;            }
+<i>121</i>&nbsp;            // try and create the CharsetEncoder
+<i>122</i>&nbsp;            try {
+<b class="nc"><i>123</i>&nbsp;                fArgsForMethod[0] = javaName;</b>
+<b class="nc"><i>124</i>&nbsp;                Object charset = CharsetMethods.fgCharsetForNameMethod.invoke(null, fArgsForMethod);</b>
+<b class="nc"><i>125</i>&nbsp;                if (((Boolean) CharsetMethods.fgCharsetCanEncodeMethod.invoke(charset, (Object[]) null)).booleanValue()) {</b>
+<b class="nc"><i>126</i>&nbsp;                    fCharsetEncoder = CharsetMethods.fgCharsetNewEncoderMethod.invoke(charset, (Object[]) null);</b>
+<i>127</i>&nbsp;                }
+<i>128</i>&nbsp;                // This charset cannot be used for encoding, don&#39;t try it again...
+<i>129</i>&nbsp;                else {
+<b class="nc"><i>130</i>&nbsp;                    fHaveTriedCharsetEncoder = true;</b>
+<i>131</i>&nbsp;                }
+<i>132</i>&nbsp;            }
+<b class="nc"><i>133</i>&nbsp;            catch (Exception e) {</b>
+<i>134</i>&nbsp;                // don&#39;t try it again...
+<b class="nc"><i>135</i>&nbsp;                fHaveTriedCharsetEncoder = true;</b>
+<b class="nc"><i>136</i>&nbsp;            }</b>
+<i>137</i>&nbsp;        }
+<i>138</i>&nbsp;        // Attempt to use the CharsetEncoder to determine whether the character is printable.
+<b class="nc"><i>139</i>&nbsp;        if (fCharsetEncoder != null) {</b>
+<i>140</i>&nbsp;            try {
+<b class="nc"><i>141</i>&nbsp;                fArgsForMethod[0] = new Character(ch);</b>
+<b class="nc"><i>142</i>&nbsp;                return ((Boolean) CharsetMethods.fgCharsetEncoderCanEncodeMethod.invoke(fCharsetEncoder, fArgsForMethod)).booleanValue();</b>
+<i>143</i>&nbsp;            }
+<b class="nc"><i>144</i>&nbsp;            catch (Exception e) {</b>
+<i>145</i>&nbsp;                // obviously can&#39;t use this charset encoder; possibly a JDK bug
+<b class="nc"><i>146</i>&nbsp;                fCharsetEncoder = null;</b>
+<b class="nc"><i>147</i>&nbsp;                fHaveTriedCharsetEncoder = false;</b>
+<i>148</i>&nbsp;            }
+<i>149</i>&nbsp;        }
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;        // As a last resort try to use a sun.io.CharToByteConverter to
+<i>152</i>&nbsp;        // determine whether this character is printable. We will always
+<i>153</i>&nbsp;        // reach here on JDK 1.3 or below.
+<b class="nc"><i>154</i>&nbsp;        if (fCharToByteConverter == null) {</b>
+<b class="nc"><i>155</i>&nbsp;            if (fHaveTriedCToB || !CharToByteConverterMethods.fgConvertersAvailable) {</b>
+<i>156</i>&nbsp;                // forget it; nothing we can do...
+<b class="nc"><i>157</i>&nbsp;                return false;</b>
+<i>158</i>&nbsp;            }
+<b class="nc"><i>159</i>&nbsp;            if (fArgsForMethod == null) {</b>
+<b class="nc"><i>160</i>&nbsp;                fArgsForMethod = new Object [1];</b>
+<i>161</i>&nbsp;            }
+<i>162</i>&nbsp;            // try and create the CharToByteConverter
+<i>163</i>&nbsp;            try {
+<b class="nc"><i>164</i>&nbsp;                fArgsForMethod[0] = javaName;</b>
+<b class="nc"><i>165</i>&nbsp;                fCharToByteConverter = CharToByteConverterMethods.fgGetConverterMethod.invoke(null, fArgsForMethod);</b>
+<i>166</i>&nbsp;            }
+<b class="nc"><i>167</i>&nbsp;            catch (Exception e) {</b>
+<i>168</i>&nbsp;                // don&#39;t try it again...
+<b class="nc"><i>169</i>&nbsp;                fHaveTriedCToB = true;</b>
+<b class="nc"><i>170</i>&nbsp;                return false;</b>
+<b class="nc"><i>171</i>&nbsp;            }</b>
+<i>172</i>&nbsp;        }
+<i>173</i>&nbsp;        try {
+<b class="nc"><i>174</i>&nbsp;            fArgsForMethod[0] = new Character(ch);</b>
+<b class="nc"><i>175</i>&nbsp;            return ((Boolean) CharToByteConverterMethods.fgCanConvertMethod.invoke(fCharToByteConverter, fArgsForMethod)).booleanValue();</b>
+<i>176</i>&nbsp;        }
+<b class="nc"><i>177</i>&nbsp;        catch (Exception e) {</b>
+<i>178</i>&nbsp;            // obviously can&#39;t use this converter; probably some kind of
+<i>179</i>&nbsp;            // security restriction
+<b class="nc"><i>180</i>&nbsp;            fCharToByteConverter = null;</b>
+<b class="nc"><i>181</i>&nbsp;            fHaveTriedCToB = false;</b>
+<b class="nc"><i>182</i>&nbsp;            return false;</b>
+<i>183</i>&nbsp;        }
+<i>184</i>&nbsp;    }
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;    // is this an encoding name recognized by this JDK?
+<i>187</i>&nbsp;    // if not, will throw UnsupportedEncodingException
+<i>188</i>&nbsp;    public static void testJavaEncodingName(String name)  throws UnsupportedEncodingException {
+<b class="nc"><i>189</i>&nbsp;        final byte [] bTest = {(byte)&#39;v&#39;, (byte)&#39;a&#39;, (byte)&#39;l&#39;, (byte)&#39;i&#39;, (byte)&#39;d&#39;};</b>
+<b class="nc"><i>190</i>&nbsp;        String s = new String(bTest, name);</b>
+<i>191</i>&nbsp;    }
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;    /**
+<i>194</i>&nbsp;     * Holder of methods from java.nio.charset.Charset and java.nio.charset.CharsetEncoder.
+<i>195</i>&nbsp;     */
+<b class="nc"><i>196</i>&nbsp;    static class CharsetMethods {</b>
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;        // Method: java.nio.charset.Charset.forName(java.lang.String)
+<b class="nc"><i>199</i>&nbsp;        private static java.lang.reflect.Method fgCharsetForNameMethod = null;</b>
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;        // Method: java.nio.charset.Charset.canEncode()
+<b class="nc"><i>202</i>&nbsp;        private static java.lang.reflect.Method fgCharsetCanEncodeMethod = null;</b>
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;        // Method: java.nio.charset.Charset.newEncoder()
+<b class="nc"><i>205</i>&nbsp;        private static java.lang.reflect.Method fgCharsetNewEncoderMethod = null;</b>
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;        // Method: java.nio.charset.CharsetEncoder.canEncode(char)
+<b class="nc"><i>208</i>&nbsp;        private static java.lang.reflect.Method fgCharsetEncoderCanEncodeMethod = null;</b>
+<i>209</i>&nbsp;
+<i>210</i>&nbsp;        // Flag indicating whether or not java.nio.charset.* is available.
+<b class="nc"><i>211</i>&nbsp;        private static boolean fgNIOCharsetAvailable = false;</b>
+<i>212</i>&nbsp;
+<b class="nc"><i>213</i>&nbsp;        private CharsetMethods() {}</b>
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;        // Attempt to get methods for Charset and CharsetEncoder on class initialization.
+<i>216</i>&nbsp;        static {
+<i>217</i>&nbsp;            try {
+<b class="nc"><i>218</i>&nbsp;                Class charsetClass = Class.forName(&quot;java.nio.charset.Charset&quot;);</b>
+<b class="nc"><i>219</i>&nbsp;                Class charsetEncoderClass = Class.forName(&quot;java.nio.charset.CharsetEncoder&quot;);</b>
+<b class="nc"><i>220</i>&nbsp;                fgCharsetForNameMethod = charsetClass.getMethod(&quot;forName&quot;, new Class [] {String.class});</b>
+<b class="nc"><i>221</i>&nbsp;                fgCharsetCanEncodeMethod = charsetClass.getMethod(&quot;canEncode&quot;, new Class [] {});</b>
+<b class="nc"><i>222</i>&nbsp;                fgCharsetNewEncoderMethod = charsetClass.getMethod(&quot;newEncoder&quot;, new Class [] {});</b>
+<b class="nc"><i>223</i>&nbsp;                fgCharsetEncoderCanEncodeMethod = charsetEncoderClass.getMethod(&quot;canEncode&quot;, new Class [] {Character.TYPE});</b>
+<b class="nc"><i>224</i>&nbsp;                fgNIOCharsetAvailable = true;</b>
+<i>225</i>&nbsp;            }
+<i>226</i>&nbsp;            // ClassNotFoundException, NoSuchMethodException or SecurityException
+<i>227</i>&nbsp;            // Whatever the case, we cannot use java.nio.charset.*.
+<b class="nc"><i>228</i>&nbsp;            catch (Exception exc) {</b>
+<b class="nc"><i>229</i>&nbsp;                fgCharsetForNameMethod = null;</b>
+<b class="nc"><i>230</i>&nbsp;                fgCharsetCanEncodeMethod = null;</b>
+<b class="nc"><i>231</i>&nbsp;                fgCharsetEncoderCanEncodeMethod = null;</b>
+<b class="nc"><i>232</i>&nbsp;                fgCharsetNewEncoderMethod = null;</b>
+<b class="nc"><i>233</i>&nbsp;                fgNIOCharsetAvailable = false;</b>
+<b class="nc"><i>234</i>&nbsp;            }</b>
+<i>235</i>&nbsp;        }
+<i>236</i>&nbsp;    }
+<i>237</i>&nbsp;
+<i>238</i>&nbsp;    /**
+<i>239</i>&nbsp;     * Holder of methods from sun.io.CharToByteConverter.
+<i>240</i>&nbsp;     */
+<b class="nc"><i>241</i>&nbsp;    static class CharToByteConverterMethods {</b>
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;        // Method: sun.io.CharToByteConverter.getConverter(java.lang.String)
+<b class="nc"><i>244</i>&nbsp;        private static java.lang.reflect.Method fgGetConverterMethod = null;</b>
+<i>245</i>&nbsp;
+<i>246</i>&nbsp;        // Method: sun.io.CharToByteConverter.canConvert(char)
+<b class="nc"><i>247</i>&nbsp;        private static java.lang.reflect.Method fgCanConvertMethod = null;</b>
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;        // Flag indicating whether or not sun.io.CharToByteConverter is available.
+<b class="nc"><i>250</i>&nbsp;        private static boolean fgConvertersAvailable = false;</b>
+<i>251</i>&nbsp;
+<b class="nc"><i>252</i>&nbsp;        private CharToByteConverterMethods() {}</b>
+<i>253</i>&nbsp;
+<i>254</i>&nbsp;        // Attempt to get methods for char to byte converter on class initialization.
+<i>255</i>&nbsp;        static {
+<i>256</i>&nbsp;            try {
+<b class="nc"><i>257</i>&nbsp;                Class clazz = Class.forName(&quot;sun.io.CharToByteConverter&quot;);</b>
+<b class="nc"><i>258</i>&nbsp;                fgGetConverterMethod = clazz.getMethod(&quot;getConverter&quot;, new Class [] {String.class});</b>
+<b class="nc"><i>259</i>&nbsp;                fgCanConvertMethod = clazz.getMethod(&quot;canConvert&quot;, new Class [] {Character.TYPE});</b>
+<b class="nc"><i>260</i>&nbsp;                fgConvertersAvailable = true;</b>
+<i>261</i>&nbsp;            }
+<i>262</i>&nbsp;            // ClassNotFoundException, NoSuchMethodException or SecurityException
+<i>263</i>&nbsp;            // Whatever the case, we cannot use sun.io.CharToByteConverter.
+<b class="nc"><i>264</i>&nbsp;            catch (Exception exc) {</b>
+<b class="nc"><i>265</i>&nbsp;                fgGetConverterMethod = null;</b>
+<b class="nc"><i>266</i>&nbsp;                fgCanConvertMethod = null;</b>
+<b class="nc"><i>267</i>&nbsp;                fgConvertersAvailable = false;</b>
+<b class="nc"><i>268</i>&nbsp;            }</b>
+<i>269</i>&nbsp;        }
+<i>270</i>&nbsp;    }
+<i>271</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

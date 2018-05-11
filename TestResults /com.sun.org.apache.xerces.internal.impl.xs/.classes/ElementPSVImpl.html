@@ -1,0 +1,360 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ElementPSVImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.xs</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ElementPSVImpl (com.sun.org.apache.xerces.internal.impl.xs)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ElementPSVImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 51)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2000-2002,2004,2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.xs;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.ShortList;
+<i>24</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.StringList;
+<i>25</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSElementDeclaration;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSModel;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSNotationDeclaration;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
+<i>30</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.util.StringListImpl;
+<i>31</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.ElementPSVI;
+<i>32</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSConstants;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;/**
+<i>35</i>&nbsp; * Element PSV infoset augmentations implementation.
+<i>36</i>&nbsp; * The following information will be available at the startElement call:
+<i>37</i>&nbsp; * name, namespace, type, notation, validation context
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; * The following information will be available at the endElement call:
+<i>40</i>&nbsp; * nil, specified, normalized value, member type, validity, error codes,
+<i>41</i>&nbsp; * default
+<i>42</i>&nbsp; *
+<i>43</i>&nbsp; * @xerces.internal
+<i>44</i>&nbsp; *
+<i>45</i>&nbsp; * @author Elena Litani IBM
+<i>46</i>&nbsp; */
+<b class="nc"><i>47</i>&nbsp;public class ElementPSVImpl implements ElementPSVI {</b>
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    /** element declaration */
+<b class="nc"><i>50</i>&nbsp;    protected XSElementDeclaration fDeclaration = null;</b>
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    /** type of element, could be xsi:type */
+<b class="nc"><i>53</i>&nbsp;    protected XSTypeDefinition fTypeDecl = null;</b>
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    /** true if clause 3.2 of Element Locally Valid (Element) (3.3.4)
+<i>56</i>&nbsp;      * is satisfied, otherwise false
+<i>57</i>&nbsp;      */
+<b class="nc"><i>58</i>&nbsp;    protected boolean fNil = false;</b>
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    /** true if the element value was provided by the schema; false otherwise.
+<i>61</i>&nbsp;     */
+<b class="nc"><i>62</i>&nbsp;    protected boolean fSpecified = false;</b>
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    /** schema normalized value property */
+<b class="nc"><i>65</i>&nbsp;    protected String fNormalizedValue = null;</b>
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    /** schema actual value */
+<b class="nc"><i>68</i>&nbsp;    protected Object fActualValue = null;</b>
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    /** schema actual value type */
+<b class="nc"><i>71</i>&nbsp;    protected short fActualValueType = XSConstants.UNAVAILABLE_DT;</b>
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    /** actual value types if the value is a list */
+<b class="nc"><i>74</i>&nbsp;    protected ShortList fItemValueTypes = null;</b>
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;    /** http://www.w3.org/TR/xmlschema-1/#e-notation*/
+<b class="nc"><i>77</i>&nbsp;    protected XSNotationDeclaration fNotation = null;</b>
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    /** member type definition against which element was validated */
+<b class="nc"><i>80</i>&nbsp;    protected XSSimpleTypeDefinition fMemberType = null;</b>
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    /** validation attempted: none, partial, full */
+<b class="nc"><i>83</i>&nbsp;    protected short fValidationAttempted = ElementPSVI.VALIDATION_NONE;</b>
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    /** validity: valid, invalid, unknown */
+<b class="nc"><i>86</i>&nbsp;    protected short fValidity = ElementPSVI.VALIDITY_NOTKNOWN;</b>
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    /** error codes */
+<b class="nc"><i>89</i>&nbsp;    protected String[] fErrorCodes = null;</b>
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    /** validation context: could be QName or XPath expression*/
+<b class="nc"><i>92</i>&nbsp;    protected String fValidationContext = null;</b>
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    /** deferred XSModel **/
+<b class="nc"><i>95</i>&nbsp;    protected SchemaGrammar[] fGrammars = null;</b>
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    /** the schema information property */
+<b class="nc"><i>98</i>&nbsp;    protected XSModel fSchemaInformation = null;</b>
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;    //
+<i>101</i>&nbsp;    // ElementPSVI methods
+<i>102</i>&nbsp;    //
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    /**
+<i>105</i>&nbsp;     * [schema default]
+<i>106</i>&nbsp;     *
+<i>107</i>&nbsp;     * @return The canonical lexical representation of the declaration&#39;s {value constraint} value.
+<i>108</i>&nbsp;     * @see &lt;a href=&quot;http://www.w3.org/TR/xmlschema-1/#e-schema_default&gt;XML Schema Part 1: Structures [schema default]&lt;/a&gt;
+<i>109</i>&nbsp;     */
+<i>110</i>&nbsp;    public String getSchemaDefault() {
+<b class="nc"><i>111</i>&nbsp;        return fDeclaration == null ? null : fDeclaration.getConstraintValue();</b>
+<i>112</i>&nbsp;    }
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;    /**
+<i>115</i>&nbsp;     * [schema normalized value]
+<i>116</i>&nbsp;     *
+<i>117</i>&nbsp;     *
+<i>118</i>&nbsp;     * @see &lt;a href=&quot;http://www.w3.org/TR/xmlschema-1/#e-schema_normalized_value&gt;XML Schema Part 1: Structures [schema normalized value]&lt;/a&gt;
+<i>119</i>&nbsp;     * @return the normalized value of this item after validation
+<i>120</i>&nbsp;     */
+<i>121</i>&nbsp;    public String getSchemaNormalizedValue() {
+<b class="nc"><i>122</i>&nbsp;        return fNormalizedValue;</b>
+<i>123</i>&nbsp;    }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    /**
+<i>126</i>&nbsp;     * [schema specified]
+<i>127</i>&nbsp;     * @see &lt;a href=&quot;http://www.w3.org/TR/xmlschema-1/#e-schema_specified&quot;&gt;XML Schema Part 1: Structures [schema specified]&lt;/a&gt;
+<i>128</i>&nbsp;     * @return true - value was specified in schema, false - value comes from the infoset
+<i>129</i>&nbsp;     */
+<i>130</i>&nbsp;    public boolean getIsSchemaSpecified() {
+<b class="nc"><i>131</i>&nbsp;        return fSpecified;</b>
+<i>132</i>&nbsp;    }
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;    /**
+<i>135</i>&nbsp;     * Determines the extent to which the document has been validated
+<i>136</i>&nbsp;     *
+<i>137</i>&nbsp;     * @return return the [validation attempted] property. The possible values are
+<i>138</i>&nbsp;     *         NO_VALIDATION, PARTIAL_VALIDATION and FULL_VALIDATION
+<i>139</i>&nbsp;     */
+<i>140</i>&nbsp;    public short getValidationAttempted() {
+<b class="nc"><i>141</i>&nbsp;        return fValidationAttempted;</b>
+<i>142</i>&nbsp;    }
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;    /**
+<i>145</i>&nbsp;     * Determine the validity of the node with respect
+<i>146</i>&nbsp;     * to the validation being attempted
+<i>147</i>&nbsp;     *
+<i>148</i>&nbsp;     * @return return the [validity] property. Possible values are:
+<i>149</i>&nbsp;     *         UNKNOWN_VALIDITY, INVALID_VALIDITY, VALID_VALIDITY
+<i>150</i>&nbsp;     */
+<i>151</i>&nbsp;    public short getValidity() {
+<b class="nc"><i>152</i>&nbsp;        return fValidity;</b>
+<i>153</i>&nbsp;    }
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;    /**
+<i>156</i>&nbsp;     * A list of error codes generated from validation attempts.
+<i>157</i>&nbsp;     * Need to find all the possible subclause reports that need reporting
+<i>158</i>&nbsp;     *
+<i>159</i>&nbsp;     * @return Array of error codes
+<i>160</i>&nbsp;     */
+<i>161</i>&nbsp;    public StringList getErrorCodes() {
+<b class="nc"><i>162</i>&nbsp;        if (fErrorCodes == null)</b>
+<b class="nc"><i>163</i>&nbsp;            return null;</b>
+<b class="nc"><i>164</i>&nbsp;        return new StringListImpl(fErrorCodes, fErrorCodes.length);</b>
+<i>165</i>&nbsp;    }
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;    // This is the only information we can provide in a pipeline.
+<i>169</i>&nbsp;    public String getValidationContext() {
+<b class="nc"><i>170</i>&nbsp;        return fValidationContext;</b>
+<i>171</i>&nbsp;    }
+<i>172</i>&nbsp;
+<i>173</i>&nbsp;    /**
+<i>174</i>&nbsp;     * [nil]
+<i>175</i>&nbsp;     * @see &lt;a href=&quot;http://www.w3.org/TR/xmlschema-1/#e-nil&gt;XML Schema Part 1: Structures [nil]&lt;/a&gt;
+<i>176</i>&nbsp;     * @return true if clause 3.2 of Element Locally Valid (Element) (3.3.4) above is satisfied, otherwise false
+<i>177</i>&nbsp;     */
+<i>178</i>&nbsp;    public boolean getNil() {
+<b class="nc"><i>179</i>&nbsp;        return fNil;</b>
+<i>180</i>&nbsp;    }
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;    /**
+<i>183</i>&nbsp;     * [notation]
+<i>184</i>&nbsp;     * @see &lt;a href=&quot;http://www.w3.org/TR/xmlschema-1/#e-notation&gt;XML Schema Part 1: Structures [notation]&lt;/a&gt;
+<i>185</i>&nbsp;     * @return The notation declaration.
+<i>186</i>&nbsp;     */
+<i>187</i>&nbsp;    public XSNotationDeclaration getNotation() {
+<b class="nc"><i>188</i>&nbsp;        return fNotation;</b>
+<i>189</i>&nbsp;    }
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;    /**
+<i>192</i>&nbsp;     * An item isomorphic to the type definition used to validate this element.
+<i>193</i>&nbsp;     *
+<i>194</i>&nbsp;     * @return  a type declaration
+<i>195</i>&nbsp;     */
+<i>196</i>&nbsp;    public XSTypeDefinition getTypeDefinition() {
+<b class="nc"><i>197</i>&nbsp;        return fTypeDecl;</b>
+<i>198</i>&nbsp;    }
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;    /**
+<i>201</i>&nbsp;     * If and only if that type definition is a simple type definition
+<i>202</i>&nbsp;     * with {variety} union, or a complex type definition whose {content type}
+<i>203</i>&nbsp;     * is a simple thype definition with {variety} union, then an item isomorphic
+<i>204</i>&nbsp;     * to that member of the union&#39;s {member type definitions} which actually
+<i>205</i>&nbsp;     * validated the element item&#39;s normalized value.
+<i>206</i>&nbsp;     *
+<i>207</i>&nbsp;     * @return  a simple type declaration
+<i>208</i>&nbsp;     */
+<i>209</i>&nbsp;    public XSSimpleTypeDefinition getMemberTypeDefinition() {
+<b class="nc"><i>210</i>&nbsp;        return fMemberType;</b>
+<i>211</i>&nbsp;    }
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;    /**
+<i>214</i>&nbsp;     * An item isomorphic to the element declaration used to validate
+<i>215</i>&nbsp;     * this element.
+<i>216</i>&nbsp;     *
+<i>217</i>&nbsp;     * @return  an element declaration
+<i>218</i>&nbsp;     */
+<i>219</i>&nbsp;    public XSElementDeclaration getElementDeclaration() {
+<b class="nc"><i>220</i>&nbsp;        return fDeclaration;</b>
+<i>221</i>&nbsp;    }
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;    /**
+<i>224</i>&nbsp;     * [schema information]
+<i>225</i>&nbsp;     * @see &lt;a href=&quot;http://www.w3.org/TR/xmlschema-1/#e-schema_information&quot;&gt;XML Schema Part 1: Structures [schema information]&lt;/a&gt;
+<i>226</i>&nbsp;     * @return The schema information property if it&#39;s the validation root,
+<i>227</i>&nbsp;     *         null otherwise.
+<i>228</i>&nbsp;     */
+<i>229</i>&nbsp;    public synchronized XSModel getSchemaInformation() {
+<b class="nc"><i>230</i>&nbsp;        if (fSchemaInformation == null &amp;&amp; fGrammars != null) {</b>
+<b class="nc"><i>231</i>&nbsp;            fSchemaInformation = new XSModelImpl(fGrammars);</b>
+<i>232</i>&nbsp;        }
+<b class="nc"><i>233</i>&nbsp;        return fSchemaInformation;</b>
+<i>234</i>&nbsp;    }
+<i>235</i>&nbsp;
+<i>236</i>&nbsp;    /* (non-Javadoc)
+<i>237</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xs.ItemPSVI#getActualNormalizedValue()
+<i>238</i>&nbsp;     */
+<i>239</i>&nbsp;    public Object getActualNormalizedValue() {
+<b class="nc"><i>240</i>&nbsp;        return this.fActualValue;</b>
+<i>241</i>&nbsp;    }
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;    /* (non-Javadoc)
+<i>244</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xs.ItemPSVI#getActualNormalizedValueType()
+<i>245</i>&nbsp;     */
+<i>246</i>&nbsp;    public short getActualNormalizedValueType() {
+<b class="nc"><i>247</i>&nbsp;        return this.fActualValueType;</b>
+<i>248</i>&nbsp;    }
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;    /* (non-Javadoc)
+<i>251</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xs.ItemPSVI#getItemValueTypes()
+<i>252</i>&nbsp;     */
+<i>253</i>&nbsp;    public ShortList getItemValueTypes() {
+<b class="nc"><i>254</i>&nbsp;        return this.fItemValueTypes;</b>
+<i>255</i>&nbsp;    }
+<i>256</i>&nbsp;
+<i>257</i>&nbsp;    /**
+<i>258</i>&nbsp;     * Reset() should be called in validator startElement(..) method.
+<i>259</i>&nbsp;     */
+<i>260</i>&nbsp;    public void reset() {
+<b class="nc"><i>261</i>&nbsp;        fDeclaration = null;</b>
+<b class="nc"><i>262</i>&nbsp;        fTypeDecl = null;</b>
+<b class="nc"><i>263</i>&nbsp;        fNil = false;</b>
+<b class="nc"><i>264</i>&nbsp;        fSpecified = false;</b>
+<b class="nc"><i>265</i>&nbsp;        fNotation = null;</b>
+<b class="nc"><i>266</i>&nbsp;        fMemberType = null;</b>
+<b class="nc"><i>267</i>&nbsp;        fValidationAttempted = ElementPSVI.VALIDATION_NONE;</b>
+<b class="nc"><i>268</i>&nbsp;        fValidity = ElementPSVI.VALIDITY_NOTKNOWN;</b>
+<b class="nc"><i>269</i>&nbsp;        fErrorCodes = null;</b>
+<b class="nc"><i>270</i>&nbsp;        fValidationContext = null;</b>
+<b class="nc"><i>271</i>&nbsp;        fNormalizedValue = null;</b>
+<b class="nc"><i>272</i>&nbsp;        fActualValue = null;</b>
+<b class="nc"><i>273</i>&nbsp;        fActualValueType = XSConstants.UNAVAILABLE_DT;</b>
+<b class="nc"><i>274</i>&nbsp;        fItemValueTypes = null;</b>
+<i>275</i>&nbsp;    }
+<i>276</i>&nbsp;
+<i>277</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

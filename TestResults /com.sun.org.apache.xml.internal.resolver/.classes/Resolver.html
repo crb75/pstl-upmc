@@ -1,0 +1,777 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Resolver</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.resolver</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Resolver (com.sun.org.apache.xml.internal.resolver)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Resolver</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 216)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;// Resolver.java - Represents an extension of OASIS Open Catalog files.
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;/*
+<i>8</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation or its licensors,
+<i>9</i>&nbsp; * as applicable.
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>12</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>13</i>&nbsp; * You may obtain a copy of the License at
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>18</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>19</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>20</i>&nbsp; * See the License for the specific language governing permissions and
+<i>21</i>&nbsp; * limitations under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xml.internal.resolver;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.IOException;
+<i>27</i>&nbsp;import java.io.InputStream;
+<i>28</i>&nbsp;import java.io.FileNotFoundException;
+<i>29</i>&nbsp;import java.util.Enumeration;
+<i>30</i>&nbsp;import java.util.Vector;
+<i>31</i>&nbsp;import java.net.URL;
+<i>32</i>&nbsp;import java.net.URLConnection;
+<i>33</i>&nbsp;import java.net.MalformedURLException;
+<i>34</i>&nbsp;import javax.xml.parsers.SAXParserFactory;
+<i>35</i>&nbsp;import com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl;
+<i>36</i>&nbsp;import com.sun.org.apache.xerces.internal.utils.SecuritySupport;
+<i>37</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.readers.SAXCatalogReader;
+<i>38</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.readers.OASISXMLCatalogReader;
+<i>39</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.readers.TR9401CatalogReader;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;/**
+<i>42</i>&nbsp; * An extension to OASIS Open Catalog files, this class supports
+<i>43</i>&nbsp; * suffix-based matching and an external RFC2483 resolver.
+<i>44</i>&nbsp; *
+<i>45</i>&nbsp; * @see Catalog
+<i>46</i>&nbsp; *
+<i>47</i>&nbsp; * @author Norman Walsh
+<i>48</i>&nbsp; * &lt;a href=&quot;mailto:Norman.Walsh@Sun.COM&quot;&gt;Norman.Walsh@Sun.COM&lt;/a&gt;
+<i>49</i>&nbsp; *
+<i>50</i>&nbsp; * @version 1.0
+<i>51</i>&nbsp; */
+<b class="nc"><i>52</i>&nbsp;public class Resolver extends Catalog {</b>
+<i>53</i>&nbsp;  /**
+<i>54</i>&nbsp;   * The URISUFFIX Catalog Entry type.
+<i>55</i>&nbsp;   *
+<i>56</i>&nbsp;   * &lt;p&gt;URI suffix entries match URIs that end in a specified suffix.&lt;/p&gt;
+<i>57</i>&nbsp;   */
+<b class="nc"><i>58</i>&nbsp;  public static final int URISUFFIX = CatalogEntry.addEntryType(&quot;URISUFFIX&quot;, 2);</b>
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;  /**
+<i>61</i>&nbsp;   * The SYSTEMSUFFIX Catalog Entry type.
+<i>62</i>&nbsp;   *
+<i>63</i>&nbsp;   * &lt;p&gt;System suffix entries match system identifiers that end in a
+<i>64</i>&nbsp;   * specified suffix.&lt;/p&gt;
+<i>65</i>&nbsp;   */
+<b class="nc"><i>66</i>&nbsp;  public static final int SYSTEMSUFFIX = CatalogEntry.addEntryType(&quot;SYSTEMSUFFIX&quot;, 2);</b>
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;  /**
+<i>69</i>&nbsp;   * The RESOLVER Catalog Entry type.
+<i>70</i>&nbsp;   *
+<i>71</i>&nbsp;   * &lt;p&gt;A hook for providing support for web-based backup resolvers.&lt;/p&gt;
+<i>72</i>&nbsp;   */
+<b class="nc"><i>73</i>&nbsp;  public static final int RESOLVER = CatalogEntry.addEntryType(&quot;RESOLVER&quot;, 1);</b>
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;  /**
+<i>76</i>&nbsp;   * The SYSTEMREVERSE Catalog Entry type.
+<i>77</i>&nbsp;   *
+<i>78</i>&nbsp;   * &lt;p&gt;This is a bit of a hack. There&#39;s no actual SYSTEMREVERSE entry,
+<i>79</i>&nbsp;   * but this entry type is used to indicate that a reverse lookup is
+<i>80</i>&nbsp;   * being performed. (This allows the Resolver to implement
+<i>81</i>&nbsp;   * RFC2483 I2N and I2NS.)
+<i>82</i>&nbsp;   */
+<i>83</i>&nbsp;  public static final int SYSTEMREVERSE
+<b class="nc"><i>84</i>&nbsp;    = CatalogEntry.addEntryType(&quot;SYSTEMREVERSE&quot;, 1);</b>
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;  /**
+<i>87</i>&nbsp;   * Setup readers.
+<i>88</i>&nbsp;   */
+<i>89</i>&nbsp;  public void setupReaders() {
+<b class="nc"><i>90</i>&nbsp;    SAXParserFactory spf = catalogManager.useServicesMechanism() ?</b>
+<b class="nc"><i>91</i>&nbsp;                    SAXParserFactory.newInstance() : new SAXParserFactoryImpl();</b>
+<b class="nc"><i>92</i>&nbsp;    spf.setNamespaceAware(true);</b>
+<b class="nc"><i>93</i>&nbsp;    spf.setValidating(false);</b>
+<i>94</i>&nbsp;
+<b class="nc"><i>95</i>&nbsp;    SAXCatalogReader saxReader = new SAXCatalogReader(spf);</b>
+<i>96</i>&nbsp;
+<b class="nc"><i>97</i>&nbsp;    saxReader.setCatalogParser(null, &quot;XMLCatalog&quot;,</b>
+<i>98</i>&nbsp;                               &quot;com.sun.org.apache.xml.internal.resolver.readers.XCatalogReader&quot;);
+<i>99</i>&nbsp;
+<b class="nc"><i>100</i>&nbsp;    saxReader.setCatalogParser(OASISXMLCatalogReader.namespaceName,</b>
+<i>101</i>&nbsp;                               &quot;catalog&quot;,
+<i>102</i>&nbsp;                               &quot;com.sun.org.apache.xml.internal.resolver.readers.ExtendedXMLCatalogReader&quot;);
+<i>103</i>&nbsp;
+<b class="nc"><i>104</i>&nbsp;    addReader(&quot;application/xml&quot;, saxReader);</b>
+<i>105</i>&nbsp;
+<b class="nc"><i>106</i>&nbsp;    TR9401CatalogReader textReader = new TR9401CatalogReader();</b>
+<b class="nc"><i>107</i>&nbsp;    addReader(&quot;text/plain&quot;, textReader);</b>
+<i>108</i>&nbsp;  }
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;  /**
+<i>111</i>&nbsp;   * Cleanup and process a Catalog entry.
+<i>112</i>&nbsp;   *
+<i>113</i>&nbsp;   * &lt;p&gt;This method processes each Catalog entry, changing mapped
+<i>114</i>&nbsp;   * relative system identifiers into absolute ones (based on the current
+<i>115</i>&nbsp;   * base URI), and maintaining other information about the current
+<i>116</i>&nbsp;   * catalog.&lt;/p&gt;
+<i>117</i>&nbsp;   *
+<i>118</i>&nbsp;   * @param entry The CatalogEntry to process.
+<i>119</i>&nbsp;   */
+<i>120</i>&nbsp;  public void addEntry(CatalogEntry entry) {
+<b class="nc"><i>121</i>&nbsp;    int type = entry.getEntryType();</b>
+<i>122</i>&nbsp;
+<b class="nc"><i>123</i>&nbsp;    if (type == URISUFFIX) {</b>
+<b class="nc"><i>124</i>&nbsp;      String suffix = normalizeURI(entry.getEntryArg(0));</b>
+<b class="nc"><i>125</i>&nbsp;      String fsi = makeAbsolute(normalizeURI(entry.getEntryArg(1)));</b>
+<i>126</i>&nbsp;
+<b class="nc"><i>127</i>&nbsp;      entry.setEntryArg(1, fsi);</b>
+<i>128</i>&nbsp;
+<b class="nc"><i>129</i>&nbsp;      catalogManager.debug.message(4, &quot;URISUFFIX&quot;, suffix, fsi);</b>
+<b class="nc"><i>130</i>&nbsp;    } else if (type == SYSTEMSUFFIX) {</b>
+<b class="nc"><i>131</i>&nbsp;      String suffix = normalizeURI(entry.getEntryArg(0));</b>
+<b class="nc"><i>132</i>&nbsp;      String fsi = makeAbsolute(normalizeURI(entry.getEntryArg(1)));</b>
+<i>133</i>&nbsp;
+<b class="nc"><i>134</i>&nbsp;      entry.setEntryArg(1, fsi);</b>
+<i>135</i>&nbsp;
+<b class="nc"><i>136</i>&nbsp;      catalogManager.debug.message(4, &quot;SYSTEMSUFFIX&quot;, suffix, fsi);</b>
+<i>137</i>&nbsp;    }
+<i>138</i>&nbsp;
+<b class="nc"><i>139</i>&nbsp;    super.addEntry(entry);</b>
+<i>140</i>&nbsp;  }
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;  /**
+<i>143</i>&nbsp;   * Return the applicable URI.
+<i>144</i>&nbsp;   *
+<i>145</i>&nbsp;   * &lt;p&gt;If a URI entry exists in the Catalog
+<i>146</i>&nbsp;   * for the URI specified, return the mapped value.&lt;/p&gt;
+<i>147</i>&nbsp;   *
+<i>148</i>&nbsp;   * &lt;p&gt;In the Resolver (as opposed to the Catalog) class, if the
+<i>149</i>&nbsp;   * URI isn&#39;t found by the usual algorithm, URISUFFIX entries are
+<i>150</i>&nbsp;   * considered.&lt;/p&gt;
+<i>151</i>&nbsp;   *
+<i>152</i>&nbsp;   * &lt;p&gt;URI comparison is case sensitive.&lt;/p&gt;
+<i>153</i>&nbsp;   *
+<i>154</i>&nbsp;   * @param uri The URI to locate in the catalog.
+<i>155</i>&nbsp;   *
+<i>156</i>&nbsp;   * @return The resolved URI.
+<i>157</i>&nbsp;   *
+<i>158</i>&nbsp;   * @throws MalformedURLException The system identifier of a
+<i>159</i>&nbsp;   * subordinate catalog cannot be turned into a valid URL.
+<i>160</i>&nbsp;   * @throws IOException Error reading subordinate catalog file.
+<i>161</i>&nbsp;   */
+<i>162</i>&nbsp;  public String resolveURI(String uri)
+<i>163</i>&nbsp;    throws MalformedURLException, IOException {
+<i>164</i>&nbsp;
+<b class="nc"><i>165</i>&nbsp;    String resolved = super.resolveURI(uri);</b>
+<b class="nc"><i>166</i>&nbsp;    if (resolved != null) {</b>
+<b class="nc"><i>167</i>&nbsp;      return resolved;</b>
+<i>168</i>&nbsp;    }
+<i>169</i>&nbsp;
+<b class="nc"><i>170</i>&nbsp;    Enumeration en = catalogEntries.elements();</b>
+<b class="nc"><i>171</i>&nbsp;    while (en.hasMoreElements()) {</b>
+<b class="nc"><i>172</i>&nbsp;      CatalogEntry e = (CatalogEntry) en.nextElement();</b>
+<b class="nc"><i>173</i>&nbsp;      if (e.getEntryType() == RESOLVER) {</b>
+<b class="nc"><i>174</i>&nbsp;        resolved = resolveExternalSystem(uri, e.getEntryArg(0));</b>
+<b class="nc"><i>175</i>&nbsp;        if (resolved != null) {</b>
+<b class="nc"><i>176</i>&nbsp;          return resolved;</b>
+<i>177</i>&nbsp;        }
+<b class="nc"><i>178</i>&nbsp;      } else if (e.getEntryType() == URISUFFIX) {</b>
+<b class="nc"><i>179</i>&nbsp;        String suffix = e.getEntryArg(0);</b>
+<b class="nc"><i>180</i>&nbsp;        String result = e.getEntryArg(1);</b>
+<i>181</i>&nbsp;
+<b class="nc"><i>182</i>&nbsp;        if (suffix.length() &lt;= uri.length()</b>
+<b class="nc"><i>183</i>&nbsp;            &amp;&amp; uri.substring(uri.length()-suffix.length()).equals(suffix)) {</b>
+<b class="nc"><i>184</i>&nbsp;          return result;</b>
+<i>185</i>&nbsp;        }
+<i>186</i>&nbsp;      }
+<b class="nc"><i>187</i>&nbsp;    }</b>
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;    // Otherwise, look in the subordinate catalogs
+<b class="nc"><i>190</i>&nbsp;    return resolveSubordinateCatalogs(Catalog.URI,</b>
+<i>191</i>&nbsp;                                      null,
+<i>192</i>&nbsp;                                      null,
+<i>193</i>&nbsp;                                      uri);
+<i>194</i>&nbsp;  }
+<i>195</i>&nbsp;
+<i>196</i>&nbsp;  /**
+<i>197</i>&nbsp;   * Return the applicable SYSTEM system identifier, resorting
+<i>198</i>&nbsp;   * to external RESOLVERs if necessary.
+<i>199</i>&nbsp;   *
+<i>200</i>&nbsp;   * &lt;p&gt;If a SYSTEM entry exists in the Catalog
+<i>201</i>&nbsp;   * for the system ID specified, return the mapped value.&lt;/p&gt;
+<i>202</i>&nbsp;   *
+<i>203</i>&nbsp;   * &lt;p&gt;In the Resolver (as opposed to the Catalog) class, if the
+<i>204</i>&nbsp;   * URI isn&#39;t found by the usual algorithm, SYSTEMSUFFIX entries are
+<i>205</i>&nbsp;   * considered.&lt;/p&gt;
+<i>206</i>&nbsp;   *
+<i>207</i>&nbsp;   * &lt;p&gt;On Windows-based operating systems, the comparison between
+<i>208</i>&nbsp;   * the system identifier provided and the SYSTEM entries in the
+<i>209</i>&nbsp;   * Catalog is case-insensitive.&lt;/p&gt;
+<i>210</i>&nbsp;   *
+<i>211</i>&nbsp;   * @param systemId The system ID to locate in the catalog.
+<i>212</i>&nbsp;   *
+<i>213</i>&nbsp;   * @return The system identifier to use for systemId.
+<i>214</i>&nbsp;   *
+<i>215</i>&nbsp;   * @throws MalformedURLException The formal system identifier of a
+<i>216</i>&nbsp;   * subordinate catalog cannot be turned into a valid URL.
+<i>217</i>&nbsp;   * @throws IOException Error reading subordinate catalog file.
+<i>218</i>&nbsp;   */
+<i>219</i>&nbsp;  public String resolveSystem(String systemId)
+<i>220</i>&nbsp;    throws MalformedURLException, IOException {
+<i>221</i>&nbsp;
+<b class="nc"><i>222</i>&nbsp;    String resolved = super.resolveSystem(systemId);</b>
+<b class="nc"><i>223</i>&nbsp;    if (resolved != null) {</b>
+<b class="nc"><i>224</i>&nbsp;      return resolved;</b>
+<i>225</i>&nbsp;    }
+<i>226</i>&nbsp;
+<b class="nc"><i>227</i>&nbsp;    Enumeration en = catalogEntries.elements();</b>
+<b class="nc"><i>228</i>&nbsp;    while (en.hasMoreElements()) {</b>
+<b class="nc"><i>229</i>&nbsp;      CatalogEntry e = (CatalogEntry) en.nextElement();</b>
+<b class="nc"><i>230</i>&nbsp;      if (e.getEntryType() == RESOLVER) {</b>
+<b class="nc"><i>231</i>&nbsp;        resolved = resolveExternalSystem(systemId, e.getEntryArg(0));</b>
+<b class="nc"><i>232</i>&nbsp;        if (resolved != null) {</b>
+<b class="nc"><i>233</i>&nbsp;          return resolved;</b>
+<i>234</i>&nbsp;        }
+<b class="nc"><i>235</i>&nbsp;      } else if (e.getEntryType() == SYSTEMSUFFIX) {</b>
+<b class="nc"><i>236</i>&nbsp;        String suffix = e.getEntryArg(0);</b>
+<b class="nc"><i>237</i>&nbsp;        String result = e.getEntryArg(1);</b>
+<i>238</i>&nbsp;
+<b class="nc"><i>239</i>&nbsp;        if (suffix.length() &lt;= systemId.length()</b>
+<b class="nc"><i>240</i>&nbsp;            &amp;&amp; systemId.substring(systemId.length()-suffix.length()).equals(suffix)) {</b>
+<b class="nc"><i>241</i>&nbsp;          return result;</b>
+<i>242</i>&nbsp;        }
+<i>243</i>&nbsp;      }
+<b class="nc"><i>244</i>&nbsp;    }</b>
+<i>245</i>&nbsp;
+<b class="nc"><i>246</i>&nbsp;    return resolveSubordinateCatalogs(Catalog.SYSTEM,</b>
+<i>247</i>&nbsp;                                      null,
+<i>248</i>&nbsp;                                      null,
+<i>249</i>&nbsp;                                      systemId);
+<i>250</i>&nbsp;  }
+<i>251</i>&nbsp;
+<i>252</i>&nbsp;  /**
+<i>253</i>&nbsp;   * Return the applicable PUBLIC or SYSTEM identifier, resorting
+<i>254</i>&nbsp;   * to external resolvers if necessary.
+<i>255</i>&nbsp;   *
+<i>256</i>&nbsp;   * &lt;p&gt;This method searches the Catalog and returns the system
+<i>257</i>&nbsp;   * identifier specified for the given system or
+<i>258</i>&nbsp;   * public identifiers. If
+<i>259</i>&nbsp;   * no appropriate PUBLIC or SYSTEM entry is found in the Catalog,
+<i>260</i>&nbsp;   * null is returned.&lt;/p&gt;
+<i>261</i>&nbsp;   *
+<i>262</i>&nbsp;   * &lt;p&gt;Note that a system or public identifier in the current catalog
+<i>263</i>&nbsp;   * (or subordinate catalogs) will be used in preference to an
+<i>264</i>&nbsp;   * external resolver. Further, if a systemId is present, the external
+<i>265</i>&nbsp;   * resolver(s) will be queried for that before the publicId.&lt;/p&gt;
+<i>266</i>&nbsp;   *
+<i>267</i>&nbsp;   * @param publicId The public identifier to locate in the catalog.
+<i>268</i>&nbsp;   * Public identifiers are normalized before comparison.
+<i>269</i>&nbsp;   * @param systemId The nominal system identifier for the entity
+<i>270</i>&nbsp;   * in question (as provided in the source document).
+<i>271</i>&nbsp;   *
+<i>272</i>&nbsp;   * @throws MalformedURLException The formal system identifier of a
+<i>273</i>&nbsp;   * subordinate catalog cannot be turned into a valid URL.
+<i>274</i>&nbsp;   * @throws IOException Error reading subordinate catalog file.
+<i>275</i>&nbsp;   *
+<i>276</i>&nbsp;   * @return The system identifier to use.
+<i>277</i>&nbsp;   * Note that the nominal system identifier is not returned if a
+<i>278</i>&nbsp;   * match is not found in the catalog, instead null is returned
+<i>279</i>&nbsp;   * to indicate that no match was found.
+<i>280</i>&nbsp;   */
+<i>281</i>&nbsp;  public String resolvePublic(String publicId, String systemId)
+<i>282</i>&nbsp;    throws MalformedURLException, IOException {
+<i>283</i>&nbsp;
+<b class="nc"><i>284</i>&nbsp;    String resolved = super.resolvePublic(publicId, systemId);</b>
+<b class="nc"><i>285</i>&nbsp;    if (resolved != null) {</b>
+<b class="nc"><i>286</i>&nbsp;      return resolved;</b>
+<i>287</i>&nbsp;    }
+<i>288</i>&nbsp;
+<b class="nc"><i>289</i>&nbsp;    Enumeration en = catalogEntries.elements();</b>
+<b class="nc"><i>290</i>&nbsp;    while (en.hasMoreElements()) {</b>
+<b class="nc"><i>291</i>&nbsp;      CatalogEntry e = (CatalogEntry) en.nextElement();</b>
+<b class="nc"><i>292</i>&nbsp;      if (e.getEntryType() == RESOLVER) {</b>
+<b class="nc"><i>293</i>&nbsp;        if (systemId != null) {</b>
+<b class="nc"><i>294</i>&nbsp;          resolved = resolveExternalSystem(systemId,</b>
+<b class="nc"><i>295</i>&nbsp;                                           e.getEntryArg(0));</b>
+<b class="nc"><i>296</i>&nbsp;          if (resolved != null) {</b>
+<b class="nc"><i>297</i>&nbsp;            return resolved;</b>
+<i>298</i>&nbsp;          }
+<i>299</i>&nbsp;        }
+<b class="nc"><i>300</i>&nbsp;        resolved = resolveExternalPublic(publicId, e.getEntryArg(0));</b>
+<b class="nc"><i>301</i>&nbsp;        if (resolved != null) {</b>
+<b class="nc"><i>302</i>&nbsp;          return resolved;</b>
+<i>303</i>&nbsp;        }
+<i>304</i>&nbsp;      }
+<b class="nc"><i>305</i>&nbsp;    }</b>
+<i>306</i>&nbsp;
+<b class="nc"><i>307</i>&nbsp;    return resolveSubordinateCatalogs(Catalog.PUBLIC,</b>
+<i>308</i>&nbsp;                                      null,
+<i>309</i>&nbsp;                                      publicId,
+<i>310</i>&nbsp;                                      systemId);
+<i>311</i>&nbsp;  }
+<i>312</i>&nbsp;
+<i>313</i>&nbsp;    /**
+<i>314</i>&nbsp;     * Query an external RFC2483 resolver for a system identifier.
+<i>315</i>&nbsp;     *
+<i>316</i>&nbsp;     * @param systemId The system ID to locate.
+<i>317</i>&nbsp;     * @param resolver The name of the resolver to use.
+<i>318</i>&nbsp;     *
+<i>319</i>&nbsp;     * @return The system identifier to use for the systemId.
+<i>320</i>&nbsp;     */
+<i>321</i>&nbsp;    protected String resolveExternalSystem(String systemId, String resolver)
+<i>322</i>&nbsp;        throws MalformedURLException, IOException {
+<b class="nc"><i>323</i>&nbsp;        Resolver r = queryResolver(resolver, &quot;i2l&quot;, systemId, null);</b>
+<b class="nc"><i>324</i>&nbsp;        if (r != null) {</b>
+<b class="nc"><i>325</i>&nbsp;            return r.resolveSystem(systemId);</b>
+<i>326</i>&nbsp;        } else {
+<b class="nc"><i>327</i>&nbsp;            return null;</b>
+<i>328</i>&nbsp;        }
+<i>329</i>&nbsp;    }
+<i>330</i>&nbsp;
+<i>331</i>&nbsp;    /**
+<i>332</i>&nbsp;     * Query an external RFC2483 resolver for a public identifier.
+<i>333</i>&nbsp;     *
+<i>334</i>&nbsp;     * @param publicId The system ID to locate.
+<i>335</i>&nbsp;     * @param resolver The name of the resolver to use.
+<i>336</i>&nbsp;     *
+<i>337</i>&nbsp;     * @return The system identifier to use for the systemId.
+<i>338</i>&nbsp;     */
+<i>339</i>&nbsp;    protected String resolveExternalPublic(String publicId, String resolver)
+<i>340</i>&nbsp;        throws MalformedURLException, IOException {
+<b class="nc"><i>341</i>&nbsp;        Resolver r = queryResolver(resolver, &quot;fpi2l&quot;, publicId, null);</b>
+<b class="nc"><i>342</i>&nbsp;        if (r != null) {</b>
+<b class="nc"><i>343</i>&nbsp;            return r.resolvePublic(publicId, null);</b>
+<i>344</i>&nbsp;        } else {
+<b class="nc"><i>345</i>&nbsp;            return null;</b>
+<i>346</i>&nbsp;        }
+<i>347</i>&nbsp;    }
+<i>348</i>&nbsp;
+<i>349</i>&nbsp;    /**
+<i>350</i>&nbsp;     * Query an external RFC2483 resolver.
+<i>351</i>&nbsp;     *
+<i>352</i>&nbsp;     * @param resolver The URL of the RFC2483 resolver.
+<i>353</i>&nbsp;     * @param command The command to send the resolver.
+<i>354</i>&nbsp;     * @param arg1 The first argument to the resolver.
+<i>355</i>&nbsp;     * @param arg2 The second argument to the resolver, usually null.
+<i>356</i>&nbsp;     *
+<i>357</i>&nbsp;     * @return The Resolver constructed.
+<i>358</i>&nbsp;     */
+<i>359</i>&nbsp;    protected Resolver queryResolver(String resolver,
+<i>360</i>&nbsp;                                     String command,
+<i>361</i>&nbsp;                                     String arg1,
+<i>362</i>&nbsp;                                     String arg2) {
+<b class="nc"><i>363</i>&nbsp;        InputStream iStream = null;</b>
+<b class="nc"><i>364</i>&nbsp;        String RFC2483 = resolver + &quot;?command=&quot; + command</b>
+<i>365</i>&nbsp;            + &quot;&amp;format=tr9401&amp;uri=&quot; + arg1
+<i>366</i>&nbsp;            + &quot;&amp;uri2=&quot; + arg2;
+<b class="nc"><i>367</i>&nbsp;        String line = null;</b>
+<i>368</i>&nbsp;
+<i>369</i>&nbsp;        try {
+<b class="nc"><i>370</i>&nbsp;            URL url = new URL(RFC2483);</b>
+<i>371</i>&nbsp;
+<b class="nc"><i>372</i>&nbsp;            URLConnection urlCon = url.openConnection();</b>
+<i>373</i>&nbsp;
+<b class="nc"><i>374</i>&nbsp;            urlCon.setUseCaches(false);</b>
+<i>375</i>&nbsp;
+<b class="nc"><i>376</i>&nbsp;            Resolver r = (Resolver) newCatalog();</b>
+<i>377</i>&nbsp;
+<b class="nc"><i>378</i>&nbsp;            String cType = urlCon.getContentType();</b>
+<i>379</i>&nbsp;
+<i>380</i>&nbsp;            // I don&#39;t care about the character set or subtype
+<b class="nc"><i>381</i>&nbsp;            if (cType.indexOf(&quot;;&quot;) &gt; 0) {</b>
+<b class="nc"><i>382</i>&nbsp;                cType = cType.substring(0, cType.indexOf(&quot;;&quot;));</b>
+<i>383</i>&nbsp;            }
+<i>384</i>&nbsp;
+<b class="nc"><i>385</i>&nbsp;            r.parseCatalog(cType, urlCon.getInputStream());</b>
+<i>386</i>&nbsp;
+<b class="nc"><i>387</i>&nbsp;            return r;</b>
+<b class="nc"><i>388</i>&nbsp;        } catch (CatalogException cex) {</b>
+<b class="nc"><i>389</i>&nbsp;          if (cex.getExceptionType() == CatalogException.UNPARSEABLE) {</b>
+<b class="nc"><i>390</i>&nbsp;            catalogManager.debug.message(1, &quot;Unparseable catalog: &quot; + RFC2483);</b>
+<b class="nc"><i>391</i>&nbsp;          } else if (cex.getExceptionType()</b>
+<i>392</i>&nbsp;                     == CatalogException.UNKNOWN_FORMAT) {
+<b class="nc"><i>393</i>&nbsp;            catalogManager.debug.message(1, &quot;Unknown catalog format: &quot; + RFC2483);</b>
+<i>394</i>&nbsp;          }
+<b class="nc"><i>395</i>&nbsp;          return null;</b>
+<b class="nc"><i>396</i>&nbsp;        } catch (MalformedURLException mue) {</b>
+<b class="nc"><i>397</i>&nbsp;            catalogManager.debug.message(1, &quot;Malformed resolver URL: &quot; + RFC2483);</b>
+<b class="nc"><i>398</i>&nbsp;            return null;</b>
+<b class="nc"><i>399</i>&nbsp;        } catch (IOException ie) {</b>
+<b class="nc"><i>400</i>&nbsp;            catalogManager.debug.message(1, &quot;I/O Exception opening resolver: &quot; + RFC2483);</b>
+<b class="nc"><i>401</i>&nbsp;            return null;</b>
+<i>402</i>&nbsp;        }
+<i>403</i>&nbsp;    }
+<i>404</i>&nbsp;
+<i>405</i>&nbsp;    /**
+<i>406</i>&nbsp;     * Append two vectors, returning the result.
+<i>407</i>&nbsp;     *
+<i>408</i>&nbsp;     * @param vec The first vector
+<i>409</i>&nbsp;     * @param appvec The vector to be appended
+<i>410</i>&nbsp;     * @return The vector vec, with appvec&#39;s elements appended to it
+<i>411</i>&nbsp;     */
+<i>412</i>&nbsp;    private Vector appendVector(Vector vec, Vector appvec) {
+<b class="nc"><i>413</i>&nbsp;        if (appvec != null) {</b>
+<b class="nc"><i>414</i>&nbsp;            for (int count = 0; count &lt; appvec.size(); count++) {</b>
+<b class="nc"><i>415</i>&nbsp;                vec.addElement(appvec.elementAt(count));</b>
+<i>416</i>&nbsp;            }
+<i>417</i>&nbsp;        }
+<b class="nc"><i>418</i>&nbsp;        return vec;</b>
+<i>419</i>&nbsp;    }
+<i>420</i>&nbsp;
+<i>421</i>&nbsp;    /**
+<i>422</i>&nbsp;     * Find the URNs for a given system identifier in all catalogs.
+<i>423</i>&nbsp;     *
+<i>424</i>&nbsp;     * @param systemId The system ID to locate.
+<i>425</i>&nbsp;     *
+<i>426</i>&nbsp;     * @return A vector of URNs that map to the systemId.
+<i>427</i>&nbsp;     */
+<i>428</i>&nbsp;    public Vector resolveAllSystemReverse(String systemId)
+<i>429</i>&nbsp;        throws MalformedURLException, IOException {
+<b class="nc"><i>430</i>&nbsp;        Vector resolved = new Vector();</b>
+<i>431</i>&nbsp;
+<i>432</i>&nbsp;        // If there&#39;s a SYSTEM entry in this catalog, use it
+<b class="nc"><i>433</i>&nbsp;        if (systemId != null) {</b>
+<b class="nc"><i>434</i>&nbsp;            Vector localResolved = resolveLocalSystemReverse(systemId);</b>
+<b class="nc"><i>435</i>&nbsp;            resolved = appendVector(resolved, localResolved);</b>
+<i>436</i>&nbsp;        }
+<i>437</i>&nbsp;
+<i>438</i>&nbsp;        // Otherwise, look in the subordinate catalogs
+<b class="nc"><i>439</i>&nbsp;        Vector subResolved = resolveAllSubordinateCatalogs(SYSTEMREVERSE,</b>
+<i>440</i>&nbsp;                                                           null,
+<i>441</i>&nbsp;                                                           null,
+<i>442</i>&nbsp;                                                           systemId);
+<i>443</i>&nbsp;
+<b class="nc"><i>444</i>&nbsp;        return appendVector(resolved, subResolved);</b>
+<i>445</i>&nbsp;    }
+<i>446</i>&nbsp;
+<i>447</i>&nbsp;    /**
+<i>448</i>&nbsp;     * Find the URN for a given system identifier.
+<i>449</i>&nbsp;     *
+<i>450</i>&nbsp;     * @param systemId The system ID to locate.
+<i>451</i>&nbsp;     *
+<i>452</i>&nbsp;     * @return A (single) URN that maps to the systemId.
+<i>453</i>&nbsp;     */
+<i>454</i>&nbsp;    public String resolveSystemReverse(String systemId)
+<i>455</i>&nbsp;        throws MalformedURLException, IOException {
+<b class="nc"><i>456</i>&nbsp;        Vector resolved = resolveAllSystemReverse(systemId);</b>
+<b class="nc"><i>457</i>&nbsp;        if (resolved != null &amp;&amp; resolved.size() &gt; 0) {</b>
+<b class="nc"><i>458</i>&nbsp;            return (String) resolved.elementAt(0);</b>
+<i>459</i>&nbsp;        } else {
+<b class="nc"><i>460</i>&nbsp;            return null;</b>
+<i>461</i>&nbsp;        }
+<i>462</i>&nbsp;    }
+<i>463</i>&nbsp;
+<i>464</i>&nbsp;    /**
+<i>465</i>&nbsp;     * Return the applicable SYSTEM system identifiers.
+<i>466</i>&nbsp;     *
+<i>467</i>&nbsp;     * &lt;p&gt;If one or more SYSTEM entries exists in the Catalog
+<i>468</i>&nbsp;     * for the system ID specified, return the mapped values.&lt;/p&gt;
+<i>469</i>&nbsp;     *
+<i>470</i>&nbsp;     * &lt;p&gt;The caller is responsible for doing any necessary
+<i>471</i>&nbsp;     * normalization of the system identifier before calling
+<i>472</i>&nbsp;     * this method. For example, a relative system identifier in
+<i>473</i>&nbsp;     * a document might be converted to an absolute system identifier
+<i>474</i>&nbsp;     * before attempting to resolve it.&lt;/p&gt;
+<i>475</i>&nbsp;     *
+<i>476</i>&nbsp;     * &lt;p&gt;Note that this function will force all subordinate catalogs
+<i>477</i>&nbsp;     * to be loaded.&lt;/p&gt;
+<i>478</i>&nbsp;     *
+<i>479</i>&nbsp;     * &lt;p&gt;On Windows-based operating systems, the comparison between
+<i>480</i>&nbsp;     * the system identifier provided and the SYSTEM entries in the
+<i>481</i>&nbsp;     * Catalog is case-insensitive.&lt;/p&gt;
+<i>482</i>&nbsp;     *
+<i>483</i>&nbsp;     * @param systemId The system ID to locate in the catalog.
+<i>484</i>&nbsp;     *
+<i>485</i>&nbsp;     * @return The system identifier to use for the notation.
+<i>486</i>&nbsp;     *
+<i>487</i>&nbsp;     * @throws MalformedURLException The formal system identifier of a
+<i>488</i>&nbsp;     * subordinate catalog cannot be turned into a valid URL.
+<i>489</i>&nbsp;     * @throws IOException Error reading subordinate catalog file.
+<i>490</i>&nbsp;     */
+<i>491</i>&nbsp;    public Vector resolveAllSystem(String systemId)
+<i>492</i>&nbsp;        throws MalformedURLException, IOException {
+<b class="nc"><i>493</i>&nbsp;        Vector resolutions = new Vector();</b>
+<i>494</i>&nbsp;
+<i>495</i>&nbsp;        // If there are SYSTEM entries in this catalog, start with them
+<b class="nc"><i>496</i>&nbsp;        if (systemId != null) {</b>
+<b class="nc"><i>497</i>&nbsp;            Vector localResolutions = resolveAllLocalSystem(systemId);</b>
+<b class="nc"><i>498</i>&nbsp;            resolutions = appendVector(resolutions, localResolutions);</b>
+<i>499</i>&nbsp;        }
+<i>500</i>&nbsp;
+<i>501</i>&nbsp;        // Then look in the subordinate catalogs
+<b class="nc"><i>502</i>&nbsp;        Vector subResolutions = resolveAllSubordinateCatalogs(SYSTEM,</b>
+<i>503</i>&nbsp;                                                              null,
+<i>504</i>&nbsp;                                                              null,
+<i>505</i>&nbsp;                                                              systemId);
+<b class="nc"><i>506</i>&nbsp;        resolutions = appendVector(resolutions, subResolutions);</b>
+<i>507</i>&nbsp;
+<b class="nc"><i>508</i>&nbsp;        if (resolutions.size() &gt; 0) {</b>
+<b class="nc"><i>509</i>&nbsp;            return resolutions;</b>
+<i>510</i>&nbsp;        } else {
+<b class="nc"><i>511</i>&nbsp;            return null;</b>
+<i>512</i>&nbsp;        }
+<i>513</i>&nbsp;    }
+<i>514</i>&nbsp;
+<i>515</i>&nbsp;    /**
+<i>516</i>&nbsp;     * Return all applicable SYSTEM system identifiers in this
+<i>517</i>&nbsp;     * catalog.
+<i>518</i>&nbsp;     *
+<i>519</i>&nbsp;     * &lt;p&gt;If one or more SYSTEM entries exists in the catalog file
+<i>520</i>&nbsp;     * for the system ID specified, return the mapped values.&lt;/p&gt;
+<i>521</i>&nbsp;     *
+<i>522</i>&nbsp;     * @param systemId The system ID to locate in the catalog
+<i>523</i>&nbsp;     *
+<i>524</i>&nbsp;     * @return A vector of the mapped system identifiers or null
+<i>525</i>&nbsp;     */
+<i>526</i>&nbsp;    private Vector resolveAllLocalSystem(String systemId) {
+<b class="nc"><i>527</i>&nbsp;        Vector map = new Vector();</b>
+<b class="nc"><i>528</i>&nbsp;        String osname = SecuritySupport.getSystemProperty(&quot;os.name&quot;);</b>
+<b class="nc"><i>529</i>&nbsp;        boolean windows = (osname.indexOf(&quot;Windows&quot;) &gt;= 0);</b>
+<b class="nc"><i>530</i>&nbsp;        Enumeration en = catalogEntries.elements();</b>
+<b class="nc"><i>531</i>&nbsp;        while (en.hasMoreElements()) {</b>
+<b class="nc"><i>532</i>&nbsp;            CatalogEntry e = (CatalogEntry) en.nextElement();</b>
+<b class="nc"><i>533</i>&nbsp;            if (e.getEntryType() == SYSTEM</b>
+<b class="nc"><i>534</i>&nbsp;                &amp;&amp; (e.getEntryArg(0).equals(systemId)</b>
+<i>535</i>&nbsp;                    || (windows
+<b class="nc"><i>536</i>&nbsp;                        &amp;&amp; e.getEntryArg(0).equalsIgnoreCase(systemId)))) {</b>
+<b class="nc"><i>537</i>&nbsp;                map.addElement(e.getEntryArg(1));</b>
+<i>538</i>&nbsp;            }
+<b class="nc"><i>539</i>&nbsp;        }</b>
+<b class="nc"><i>540</i>&nbsp;        if (map.size() == 0) {</b>
+<b class="nc"><i>541</i>&nbsp;            return null;</b>
+<i>542</i>&nbsp;        } else {
+<b class="nc"><i>543</i>&nbsp;            return map;</b>
+<i>544</i>&nbsp;        }
+<i>545</i>&nbsp;    }
+<i>546</i>&nbsp;
+<i>547</i>&nbsp;    /**
+<i>548</i>&nbsp;     * Find the URNs for a given system identifier in the current catalog.
+<i>549</i>&nbsp;     *
+<i>550</i>&nbsp;     * @param systemId The system ID to locate.
+<i>551</i>&nbsp;     *
+<i>552</i>&nbsp;     * @return A vector of URNs that map to the systemId.
+<i>553</i>&nbsp;     */
+<i>554</i>&nbsp;    private Vector resolveLocalSystemReverse(String systemId) {
+<b class="nc"><i>555</i>&nbsp;        Vector map = new Vector();</b>
+<b class="nc"><i>556</i>&nbsp;        String osname = SecuritySupport.getSystemProperty(&quot;os.name&quot;);</b>
+<b class="nc"><i>557</i>&nbsp;        boolean windows = (osname.indexOf(&quot;Windows&quot;) &gt;= 0);</b>
+<b class="nc"><i>558</i>&nbsp;        Enumeration en = catalogEntries.elements();</b>
+<b class="nc"><i>559</i>&nbsp;        while (en.hasMoreElements()) {</b>
+<b class="nc"><i>560</i>&nbsp;            CatalogEntry e = (CatalogEntry) en.nextElement();</b>
+<b class="nc"><i>561</i>&nbsp;            if (e.getEntryType() == SYSTEM</b>
+<b class="nc"><i>562</i>&nbsp;                &amp;&amp; (e.getEntryArg(1).equals(systemId)</b>
+<i>563</i>&nbsp;                    || (windows
+<b class="nc"><i>564</i>&nbsp;                        &amp;&amp; e.getEntryArg(1).equalsIgnoreCase(systemId)))) {</b>
+<b class="nc"><i>565</i>&nbsp;                map.addElement(e.getEntryArg(0));</b>
+<i>566</i>&nbsp;            }
+<b class="nc"><i>567</i>&nbsp;        }</b>
+<b class="nc"><i>568</i>&nbsp;        if (map.size() == 0) {</b>
+<b class="nc"><i>569</i>&nbsp;            return null;</b>
+<i>570</i>&nbsp;        } else {
+<b class="nc"><i>571</i>&nbsp;            return map;</b>
+<i>572</i>&nbsp;        }
+<i>573</i>&nbsp;    }
+<i>574</i>&nbsp;
+<i>575</i>&nbsp;    /**
+<i>576</i>&nbsp;     * Search the subordinate catalogs, in order, looking for all
+<i>577</i>&nbsp;     * match.
+<i>578</i>&nbsp;     *
+<i>579</i>&nbsp;     * &lt;p&gt;This method searches the Catalog and returns all of the system
+<i>580</i>&nbsp;     * identifiers specified for the given entity type with the given
+<i>581</i>&nbsp;     * name, public, and system identifiers. In some contexts, these
+<i>582</i>&nbsp;     * may be null.&lt;/p&gt;
+<i>583</i>&nbsp;     *
+<i>584</i>&nbsp;     * @param entityType The CatalogEntry type for which this query is
+<i>585</i>&nbsp;     * being conducted. This is necessary in order to do the approprate
+<i>586</i>&nbsp;     * query on a subordinate catalog.
+<i>587</i>&nbsp;     * @param entityName The name of the entity being searched for, if
+<i>588</i>&nbsp;     * appropriate.
+<i>589</i>&nbsp;     * @param publicId The public identifier of the entity in question
+<i>590</i>&nbsp;     * (as provided in the source document).
+<i>591</i>&nbsp;     * @param systemId The nominal system identifier for the entity
+<i>592</i>&nbsp;     * in question (as provided in the source document).
+<i>593</i>&nbsp;     *
+<i>594</i>&nbsp;     * @throws MalformedURLException The formal system identifier of a
+<i>595</i>&nbsp;     * delegated catalog cannot be turned into a valid URL.
+<i>596</i>&nbsp;     * @throws IOException Error reading delegated catalog file.
+<i>597</i>&nbsp;     *
+<i>598</i>&nbsp;     * @return The system identifier to use.
+<i>599</i>&nbsp;     * Note that the nominal system identifier is not returned if a
+<i>600</i>&nbsp;     * match is not found in the catalog, instead null is returned
+<i>601</i>&nbsp;     * to indicate that no match was found.
+<i>602</i>&nbsp;     */
+<i>603</i>&nbsp;    private synchronized Vector resolveAllSubordinateCatalogs(int entityType,
+<i>604</i>&nbsp;                                              String entityName,
+<i>605</i>&nbsp;                                              String publicId,
+<i>606</i>&nbsp;                                              String systemId)
+<i>607</i>&nbsp;        throws MalformedURLException, IOException {
+<i>608</i>&nbsp;
+<b class="nc"><i>609</i>&nbsp;        Vector resolutions = new Vector();</b>
+<i>610</i>&nbsp;
+<b class="nc"><i>611</i>&nbsp;        for (int catPos = 0; catPos &lt; catalogs.size(); catPos++) {</b>
+<b class="nc"><i>612</i>&nbsp;            Resolver c = null;</b>
+<i>613</i>&nbsp;
+<i>614</i>&nbsp;            try {
+<b class="nc"><i>615</i>&nbsp;                c = (Resolver) catalogs.elementAt(catPos);</b>
+<b class="nc"><i>616</i>&nbsp;            } catch (ClassCastException e) {</b>
+<b class="nc"><i>617</i>&nbsp;                String catfile = (String) catalogs.elementAt(catPos);</b>
+<b class="nc"><i>618</i>&nbsp;                c = (Resolver) newCatalog();</b>
+<i>619</i>&nbsp;
+<i>620</i>&nbsp;                try {
+<b class="nc"><i>621</i>&nbsp;                    c.parseCatalog(catfile);</b>
+<b class="nc"><i>622</i>&nbsp;                } catch (MalformedURLException mue) {</b>
+<b class="nc"><i>623</i>&nbsp;                    catalogManager.debug.message(1, &quot;Malformed Catalog URL&quot;, catfile);</b>
+<b class="nc"><i>624</i>&nbsp;                } catch (FileNotFoundException fnfe) {</b>
+<b class="nc"><i>625</i>&nbsp;                    catalogManager.debug.message(1, &quot;Failed to load catalog, file not found&quot;,</b>
+<i>626</i>&nbsp;                          catfile);
+<b class="nc"><i>627</i>&nbsp;                } catch (IOException ioe) {</b>
+<b class="nc"><i>628</i>&nbsp;                    catalogManager.debug.message(1, &quot;Failed to load catalog, I/O error&quot;, catfile);</b>
+<b class="nc"><i>629</i>&nbsp;                }</b>
+<i>630</i>&nbsp;
+<b class="nc"><i>631</i>&nbsp;                catalogs.setElementAt(c, catPos);</b>
+<b class="nc"><i>632</i>&nbsp;            }</b>
+<i>633</i>&nbsp;
+<b class="nc"><i>634</i>&nbsp;            String resolved = null;</b>
+<i>635</i>&nbsp;
+<i>636</i>&nbsp;            // Ok, now what are we supposed to call here?
+<b class="nc"><i>637</i>&nbsp;            if (entityType == DOCTYPE) {</b>
+<b class="nc"><i>638</i>&nbsp;                resolved = c.resolveDoctype(entityName,</b>
+<i>639</i>&nbsp;                                            publicId,
+<i>640</i>&nbsp;                                            systemId);
+<b class="nc"><i>641</i>&nbsp;                if (resolved != null) {</b>
+<i>642</i>&nbsp;                    // Only find one DOCTYPE resolution
+<b class="nc"><i>643</i>&nbsp;                    resolutions.addElement(resolved);</b>
+<b class="nc"><i>644</i>&nbsp;                    return resolutions;</b>
+<i>645</i>&nbsp;                }
+<b class="nc"><i>646</i>&nbsp;            } else if (entityType == DOCUMENT) {</b>
+<b class="nc"><i>647</i>&nbsp;                resolved = c.resolveDocument();</b>
+<b class="nc"><i>648</i>&nbsp;                if (resolved != null) {</b>
+<i>649</i>&nbsp;                    // Only find one DOCUMENT resolution
+<b class="nc"><i>650</i>&nbsp;                    resolutions.addElement(resolved);</b>
+<b class="nc"><i>651</i>&nbsp;                    return resolutions;</b>
+<i>652</i>&nbsp;                }
+<b class="nc"><i>653</i>&nbsp;            } else if (entityType == ENTITY) {</b>
+<b class="nc"><i>654</i>&nbsp;                resolved = c.resolveEntity(entityName,</b>
+<i>655</i>&nbsp;                                           publicId,
+<i>656</i>&nbsp;                                           systemId);
+<b class="nc"><i>657</i>&nbsp;                if (resolved != null) {</b>
+<i>658</i>&nbsp;                    // Only find one ENTITY resolution
+<b class="nc"><i>659</i>&nbsp;                    resolutions.addElement(resolved);</b>
+<b class="nc"><i>660</i>&nbsp;                    return resolutions;</b>
+<i>661</i>&nbsp;                }
+<b class="nc"><i>662</i>&nbsp;            } else if (entityType == NOTATION) {</b>
+<b class="nc"><i>663</i>&nbsp;                resolved = c.resolveNotation(entityName,</b>
+<i>664</i>&nbsp;                                             publicId,
+<i>665</i>&nbsp;                                             systemId);
+<b class="nc"><i>666</i>&nbsp;                if (resolved != null) {</b>
+<i>667</i>&nbsp;                    // Only find one NOTATION resolution
+<b class="nc"><i>668</i>&nbsp;                    resolutions.addElement(resolved);</b>
+<b class="nc"><i>669</i>&nbsp;                    return resolutions;</b>
+<i>670</i>&nbsp;                }
+<b class="nc"><i>671</i>&nbsp;            } else if (entityType == PUBLIC) {</b>
+<b class="nc"><i>672</i>&nbsp;                resolved = c.resolvePublic(publicId, systemId);</b>
+<b class="nc"><i>673</i>&nbsp;                if (resolved != null) {</b>
+<i>674</i>&nbsp;                    // Only find one PUBLIC resolution
+<b class="nc"><i>675</i>&nbsp;                    resolutions.addElement(resolved);</b>
+<b class="nc"><i>676</i>&nbsp;                    return resolutions;</b>
+<i>677</i>&nbsp;                }
+<b class="nc"><i>678</i>&nbsp;            } else if (entityType == SYSTEM) {</b>
+<b class="nc"><i>679</i>&nbsp;                Vector localResolutions = c.resolveAllSystem(systemId);</b>
+<b class="nc"><i>680</i>&nbsp;                resolutions = appendVector(resolutions, localResolutions);</b>
+<b class="nc"><i>681</i>&nbsp;                break;</b>
+<b class="nc"><i>682</i>&nbsp;            } else if (entityType == SYSTEMREVERSE) {</b>
+<b class="nc"><i>683</i>&nbsp;                Vector localResolutions = c.resolveAllSystemReverse(systemId);</b>
+<b class="nc"><i>684</i>&nbsp;                resolutions = appendVector(resolutions, localResolutions);</b>
+<i>685</i>&nbsp;            }
+<i>686</i>&nbsp;        }
+<i>687</i>&nbsp;
+<b class="nc"><i>688</i>&nbsp;        if (resolutions != null) {</b>
+<b class="nc"><i>689</i>&nbsp;            return resolutions;</b>
+<i>690</i>&nbsp;        } else {
+<b class="nc"><i>691</i>&nbsp;            return null;</b>
+<i>692</i>&nbsp;        }
+<i>693</i>&nbsp;    }
+<i>694</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

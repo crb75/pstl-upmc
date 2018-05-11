@@ -1,0 +1,207 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Encodings</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.serialize</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Encodings (com.sun.org.apache.xml.internal.serialize)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Encodings</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 38)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package com.sun.org.apache.xml.internal.serialize;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xerces.internal.util.EncodingMap;
+<i>26</i>&nbsp;import java.io.UnsupportedEncodingException;
+<i>27</i>&nbsp;import java.util.Locale;
+<i>28</i>&nbsp;import java.util.Map;
+<i>29</i>&nbsp;import java.util.concurrent.ConcurrentHashMap;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;/**
+<i>33</i>&nbsp; * Provides information about encodings. Depends on the Java runtime
+<i>34</i>&nbsp; * to provides writers for the different encodings, but can be used
+<i>35</i>&nbsp; * to override encoding names and provide the last printable character
+<i>36</i>&nbsp; * for each encoding.
+<i>37</i>&nbsp; *
+<i>38</i>&nbsp; * @author &lt;a href=&quot;mailto:arkin@intalio.com&quot;&gt;Assaf Arkin&lt;/a&gt;
+<i>39</i>&nbsp; */
+<b class="nc"><i>40</i>&nbsp;class Encodings</b>
+<i>41</i>&nbsp;{
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    /**
+<i>45</i>&nbsp;     * The last printable character for unknown encodings.
+<i>46</i>&nbsp;     */
+<i>47</i>&nbsp;    static final int DEFAULT_LAST_PRINTABLE = 0x7F;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    // last printable character for Unicode-compatible encodings
+<i>50</i>&nbsp;    static final int LAST_PRINTABLE_UNICODE = 0xffff;
+<i>51</i>&nbsp;    // unicode-compliant encodings; can express plane 0
+<b class="nc"><i>52</i>&nbsp;    static final String[] UNICODE_ENCODINGS = {</b>
+<i>53</i>&nbsp;        &quot;Unicode&quot;, &quot;UnicodeBig&quot;, &quot;UnicodeLittle&quot;, &quot;GB2312&quot;, &quot;UTF8&quot;, &quot;UTF-16&quot;,
+<i>54</i>&nbsp;    };
+<i>55</i>&nbsp;    // default (Java) encoding if none supplied:
+<i>56</i>&nbsp;    static final String DEFAULT_ENCODING = &quot;UTF8&quot;;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    // note that the size of this Map
+<i>59</i>&nbsp;    // is bounded by the number of encodings recognized by EncodingMap;
+<i>60</i>&nbsp;    // therefore it poses no static mutability risk.
+<b class="nc"><i>61</i>&nbsp;    private static final Map&lt;String, EncodingInfo&gt; _encodings = new ConcurrentHashMap();</b>
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    /**
+<i>64</i>&nbsp;     * @param encoding a MIME charset name, or null.
+<i>65</i>&nbsp;     */
+<i>66</i>&nbsp;    static EncodingInfo getEncodingInfo(String encoding, boolean allowJavaNames) throws UnsupportedEncodingException {
+<b class="nc"><i>67</i>&nbsp;        EncodingInfo eInfo = null;</b>
+<b class="nc"><i>68</i>&nbsp;        if (encoding == null) {</b>
+<b class="nc"><i>69</i>&nbsp;            if((eInfo = _encodings.get(DEFAULT_ENCODING)) != null)</b>
+<b class="nc"><i>70</i>&nbsp;                return eInfo;</b>
+<b class="nc"><i>71</i>&nbsp;            eInfo = new EncodingInfo(EncodingMap.getJava2IANAMapping(DEFAULT_ENCODING), DEFAULT_ENCODING, LAST_PRINTABLE_UNICODE);</b>
+<b class="nc"><i>72</i>&nbsp;            _encodings.put(DEFAULT_ENCODING, eInfo);</b>
+<b class="nc"><i>73</i>&nbsp;            return eInfo;</b>
+<i>74</i>&nbsp;        }
+<i>75</i>&nbsp;        // need to convert it to upper case:
+<b class="nc"><i>76</i>&nbsp;        encoding = encoding.toUpperCase(Locale.ENGLISH);</b>
+<b class="nc"><i>77</i>&nbsp;        String jName = EncodingMap.getIANA2JavaMapping(encoding);</b>
+<b class="nc"><i>78</i>&nbsp;        if(jName == null) {</b>
+<i>79</i>&nbsp;            // see if the encoding passed in is a Java encoding name.
+<b class="nc"><i>80</i>&nbsp;            if(allowJavaNames ) {</b>
+<b class="nc"><i>81</i>&nbsp;                EncodingInfo.testJavaEncodingName(encoding);</b>
+<b class="nc"><i>82</i>&nbsp;                if((eInfo = _encodings.get(encoding)) != null)</b>
+<b class="nc"><i>83</i>&nbsp;                    return eInfo;</b>
+<i>84</i>&nbsp;                // is it known to be unicode-compliant?
+<b class="nc"><i>85</i>&nbsp;                int i=0;</b>
+<b class="nc"><i>86</i>&nbsp;                for(; i&lt;UNICODE_ENCODINGS.length; i++) {</b>
+<b class="nc"><i>87</i>&nbsp;                    if(UNICODE_ENCODINGS[i].equalsIgnoreCase(encoding)) {</b>
+<b class="nc"><i>88</i>&nbsp;                        eInfo = new EncodingInfo(EncodingMap.getJava2IANAMapping(encoding), encoding, LAST_PRINTABLE_UNICODE);</b>
+<b class="nc"><i>89</i>&nbsp;                        break;</b>
+<i>90</i>&nbsp;                    }
+<i>91</i>&nbsp;                }
+<b class="nc"><i>92</i>&nbsp;                if(i == UNICODE_ENCODINGS.length) {</b>
+<b class="nc"><i>93</i>&nbsp;                    eInfo = new EncodingInfo(EncodingMap.getJava2IANAMapping(encoding), encoding, DEFAULT_LAST_PRINTABLE);</b>
+<i>94</i>&nbsp;                }
+<b class="nc"><i>95</i>&nbsp;                _encodings.put(encoding, eInfo);</b>
+<b class="nc"><i>96</i>&nbsp;                return eInfo;</b>
+<i>97</i>&nbsp;            } else {
+<b class="nc"><i>98</i>&nbsp;                throw new UnsupportedEncodingException(encoding);</b>
+<i>99</i>&nbsp;            }
+<i>100</i>&nbsp;        }
+<b class="nc"><i>101</i>&nbsp;        if ((eInfo = _encodings.get(jName)) != null)</b>
+<b class="nc"><i>102</i>&nbsp;            return eInfo;</b>
+<i>103</i>&nbsp;        // have to create one...
+<i>104</i>&nbsp;        // is it known to be unicode-compliant?
+<b class="nc"><i>105</i>&nbsp;        int i=0;</b>
+<b class="nc"><i>106</i>&nbsp;        for(; i&lt;UNICODE_ENCODINGS.length; i++) {</b>
+<b class="nc"><i>107</i>&nbsp;            if(UNICODE_ENCODINGS[i].equalsIgnoreCase(jName)) {</b>
+<b class="nc"><i>108</i>&nbsp;                eInfo = new EncodingInfo(encoding, jName, LAST_PRINTABLE_UNICODE);</b>
+<b class="nc"><i>109</i>&nbsp;                break;</b>
+<i>110</i>&nbsp;            }
+<i>111</i>&nbsp;        }
+<b class="nc"><i>112</i>&nbsp;        if(i == UNICODE_ENCODINGS.length) {</b>
+<b class="nc"><i>113</i>&nbsp;            eInfo = new EncodingInfo(encoding, jName, DEFAULT_LAST_PRINTABLE);</b>
+<i>114</i>&nbsp;        }
+<b class="nc"><i>115</i>&nbsp;        _encodings.put(jName, eInfo);</b>
+<b class="nc"><i>116</i>&nbsp;        return eInfo;</b>
+<i>117</i>&nbsp;    }
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;    static final String JIS_DANGER_CHARS
+<i>120</i>&nbsp;    = &quot;\\\u007e\u007f\u00a2\u00a3\u00a5\u00ac&quot;
+<i>121</i>&nbsp;    +&quot;\u2014\u2015\u2016\u2026\u203e\u203e\u2225\u222f\u301c&quot;
+<i>122</i>&nbsp;    +&quot;\uff3c\uff5e\uffe0\uffe1\uffe2\uffe3&quot;;
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

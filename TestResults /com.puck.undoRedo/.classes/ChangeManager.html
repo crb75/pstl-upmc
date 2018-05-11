@@ -1,0 +1,374 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ChangeManager</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.puck.undoRedo</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ChangeManager (com.puck.undoRedo)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChangeManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 35)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ChangeManager$Node</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 43)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package com.puck.undoRedo;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;public class ChangeManager {
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;	
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;	//the current index node
+<i>8</i>&nbsp;
+<b class="nc"><i>9</i>&nbsp;	private Node currentIndex = null;</b>
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;	//the parent node far left node.
+<i>12</i>&nbsp;
+<b class="nc"><i>13</i>&nbsp;	private Node parentNode = new Node();</b>
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;	
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;	/**
+<i>18</i>&nbsp;
+<i>19</i>&nbsp;	 * Creates a new ChangeManager object which is initially empty.
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;	 */
+<i>22</i>&nbsp;
+<b class="nc"><i>23</i>&nbsp;	public ChangeManager(){</b>
+<i>24</i>&nbsp;
+<b class="nc"><i>25</i>&nbsp;		currentIndex = parentNode;</b>
+<i>26</i>&nbsp;
+<b class="nc"><i>27</i>&nbsp;	}</b>
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;	
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;	/**
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;	 * Creates a new ChangeManager which is a duplicate of the parameter in both contents and current index.
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;	 * @param manager
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;	 */
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;	public ChangeManager(ChangeManager manager){
+<i>40</i>&nbsp;
+<b class="nc"><i>41</i>&nbsp;		this();</b>
+<i>42</i>&nbsp;
+<b class="nc"><i>43</i>&nbsp;		currentIndex = manager.currentIndex;</b>
+<i>44</i>&nbsp;
+<b class="nc"><i>45</i>&nbsp;	}</b>
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;	
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;	
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;	/**
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;	 * Clears all Changables contained in this manager.
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;	 */
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;	public void clear(){
+<i>58</i>&nbsp;
+<b class="nc"><i>59</i>&nbsp;		currentIndex = parentNode;</b>
+<i>60</i>&nbsp;
+<b class="nc"><i>61</i>&nbsp;	}</b>
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;	
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;	/**
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;	 * Adds a Changeable to manage.
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;	 * @param changeable 
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;	 */
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;	public void addChangeable(Changeable changeable){
+<i>74</i>&nbsp;
+<b class="nc"><i>75</i>&nbsp;		Node node = new Node(changeable);</b>
+<i>76</i>&nbsp;
+<b class="nc"><i>77</i>&nbsp;		currentIndex.right = node;</b>
+<i>78</i>&nbsp;
+<b class="nc"><i>79</i>&nbsp;		node.left = currentIndex;</b>
+<i>80</i>&nbsp;
+<b class="nc"><i>81</i>&nbsp;		currentIndex = node;</b>
+<i>82</i>&nbsp;
+<b class="nc"><i>83</i>&nbsp;	}</b>
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;	
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;	/**
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;	 * Determines if an undo can be performed.
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;	 * @return
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;	 */
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;	public boolean canUndo(){
+<i>96</i>&nbsp;
+<b class="nc"><i>97</i>&nbsp;		return currentIndex != parentNode;</b>
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;	}
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;	
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;	/**
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;	 * Determines if a redo can be performed.
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;	 * @return
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;	 */
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;	public boolean canRedo(){
+<i>112</i>&nbsp;
+<b class="nc"><i>113</i>&nbsp;		return currentIndex.right != null;</b>
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;	}
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;	
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;	/**
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;	 * Undoes the Changeable at the current index. 
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;	 * @throws IllegalStateException if canUndo returns false. 
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;	 */
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;	public void undo(){
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;		//validate
+<i>130</i>&nbsp;
+<b class="nc"><i>131</i>&nbsp;		if ( !canUndo() ){</b>
+<i>132</i>&nbsp;
+<b class="nc"><i>133</i>&nbsp;			throw new IllegalStateException(&quot;Cannot undo. Index is out of range.&quot;);</b>
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;		}
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;		//undo
+<i>138</i>&nbsp;
+<b class="nc"><i>139</i>&nbsp;		currentIndex.changeable.undo();</b>
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;		//set index
+<i>142</i>&nbsp;
+<b class="nc"><i>143</i>&nbsp;		moveLeft();</b>
+<i>144</i>&nbsp;
+<b class="nc"><i>145</i>&nbsp;	}</b>
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;	
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;	/**
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;	 * Moves the internal pointer of the backed linked list to the left.
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;	 * @throws IllegalStateException If the left index is null.
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;	 */
+<i>156</i>&nbsp;
+<i>157</i>&nbsp;	private void moveLeft(){
+<i>158</i>&nbsp;
+<b class="nc"><i>159</i>&nbsp;		if ( currentIndex.left == null ){</b>
+<i>160</i>&nbsp;
+<b class="nc"><i>161</i>&nbsp;			throw new IllegalStateException(&quot;Internal index set to null.&quot;);</b>
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;		}
+<i>164</i>&nbsp;
+<b class="nc"><i>165</i>&nbsp;		currentIndex = currentIndex.left;</b>
+<i>166</i>&nbsp;
+<b class="nc"><i>167</i>&nbsp;	}</b>
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;	
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;	/**
+<i>172</i>&nbsp;
+<i>173</i>&nbsp;	 * Moves the internal pointer of the backed linked list to the right.
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;	 * @throws IllegalStateException If the right index is null.
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;	 */
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;	private void moveRight(){
+<i>180</i>&nbsp;
+<b class="nc"><i>181</i>&nbsp;		if ( currentIndex.right == null ){</b>
+<i>182</i>&nbsp;
+<b class="nc"><i>183</i>&nbsp;			throw new IllegalStateException(&quot;Internal index set to null.&quot;);</b>
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;		}
+<i>186</i>&nbsp;
+<b class="nc"><i>187</i>&nbsp;		currentIndex = currentIndex.right;</b>
+<i>188</i>&nbsp;
+<b class="nc"><i>189</i>&nbsp;	}</b>
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;	
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;	
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;	/**
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;	 * Redoes the Changable at the current index.
+<i>198</i>&nbsp;
+<i>199</i>&nbsp;	 * @throws IllegalStateException if canRedo returns false. 
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;	 */
+<i>202</i>&nbsp;
+<i>203</i>&nbsp;	public void redo(){
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;		//validate
+<i>206</i>&nbsp;
+<b class="nc"><i>207</i>&nbsp;		if ( !canRedo() ){</b>
+<i>208</i>&nbsp;
+<b class="nc"><i>209</i>&nbsp;			throw new IllegalStateException(&quot;Cannot redo. Index is out of range.&quot;);</b>
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;		}
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;		//reset index
+<i>214</i>&nbsp;
+<b class="nc"><i>215</i>&nbsp;		moveRight();</b>
+<i>216</i>&nbsp;
+<i>217</i>&nbsp;		//redo
+<i>218</i>&nbsp;
+<b class="nc"><i>219</i>&nbsp;		currentIndex.changeable.redo();</b>
+<i>220</i>&nbsp;
+<b class="nc"><i>221</i>&nbsp;	}</b>
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;	
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;	/**
+<i>226</i>&nbsp;
+<i>227</i>&nbsp;	 * Inner class to implement a doubly linked list for our queue of Changeables. 
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;	 * @author Greg Cope
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;	 *
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;	 */
+<i>234</i>&nbsp;
+<i>235</i>&nbsp;	private class Node {
+<i>236</i>&nbsp;
+<b class="nc"><i>237</i>&nbsp;		private Node left = null;</b>
+<i>238</i>&nbsp;
+<b class="nc"><i>239</i>&nbsp;		private Node right = null;</b>
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;		
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;		private final Changeable changeable;
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;		
+<i>246</i>&nbsp;
+<b class="nc"><i>247</i>&nbsp;		public Node(Changeable c){</b>
+<i>248</i>&nbsp;
+<b class="nc"><i>249</i>&nbsp;			changeable = c;</b>
+<i>250</i>&nbsp;
+<b class="nc"><i>251</i>&nbsp;		}</b>
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;		
+<i>254</i>&nbsp;
+<b class="nc"><i>255</i>&nbsp;		public Node(){</b>
+<i>256</i>&nbsp;
+<b class="nc"><i>257</i>&nbsp;			changeable = null;</b>
+<i>258</i>&nbsp;
+<b class="nc"><i>259</i>&nbsp;		}</b>
+<i>260</i>&nbsp;
+<i>261</i>&nbsp;	}
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;	
+<i>264</i>&nbsp;
+<i>265</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:55</div>
+</div>
+</body>
+</html>

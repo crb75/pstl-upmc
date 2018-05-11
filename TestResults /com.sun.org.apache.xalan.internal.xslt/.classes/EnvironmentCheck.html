@@ -1,0 +1,1336 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: EnvironmentCheck</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xslt</a> ]
+</div>
+
+<h1>Coverage Summary for Class: EnvironmentCheck (com.sun.org.apache.xalan.internal.xslt)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EnvironmentCheck</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 431)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: EnvironmentCheck.java,v 1.2.4.1 2005/09/09 07:13:59 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xalan.internal.xslt;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xalan.internal.utils.ObjectFactory;
+<i>26</i>&nbsp;import com.sun.org.apache.xalan.internal.utils.SecuritySupport;
+<i>27</i>&nbsp;import java.io.File;
+<i>28</i>&nbsp;import java.io.FileWriter;
+<i>29</i>&nbsp;import java.io.PrintWriter;
+<i>30</i>&nbsp;import java.lang.reflect.Field;
+<i>31</i>&nbsp;import java.lang.reflect.Method;
+<i>32</i>&nbsp;import java.util.ArrayList;
+<i>33</i>&nbsp;import java.util.Collections;
+<i>34</i>&nbsp;import java.util.HashMap;
+<i>35</i>&nbsp;import java.util.List;
+<i>36</i>&nbsp;import java.util.Map;
+<i>37</i>&nbsp;import java.util.StringTokenizer;
+<i>38</i>&nbsp;import org.w3c.dom.Document;
+<i>39</i>&nbsp;import org.w3c.dom.Element;
+<i>40</i>&nbsp;import org.w3c.dom.Node;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;/**
+<i>43</i>&nbsp; * Utility class to report simple information about the environment.
+<i>44</i>&nbsp; * Simplistic reporting about certain classes found in your JVM may
+<i>45</i>&nbsp; * help answer some FAQs for simple problems.
+<i>46</i>&nbsp; *
+<i>47</i>&nbsp; * &lt;p&gt;Usage-command line:
+<i>48</i>&nbsp; * &lt;code&gt;
+<i>49</i>&nbsp; * java com.sun.org.apache.xalan.internal.xslt.EnvironmentCheck [-out outFile]
+<i>50</i>&nbsp; * &lt;/code&gt;&lt;/p&gt;
+<i>51</i>&nbsp; *
+<i>52</i>&nbsp; * &lt;p&gt;Usage-from program:
+<i>53</i>&nbsp; * &lt;code&gt;
+<i>54</i>&nbsp; * boolean environmentOK =
+<i>55</i>&nbsp; * (new EnvironmentCheck()).checkEnvironment(yourPrintWriter);
+<i>56</i>&nbsp; * &lt;/code&gt;&lt;/p&gt;
+<i>57</i>&nbsp; *
+<i>58</i>&nbsp; * &lt;p&gt;Usage-from stylesheet:
+<i>59</i>&nbsp; * &lt;code&gt;&lt;pre&gt;
+<i>60</i>&nbsp; *    &amp;lt;?xml version=&quot;1.0&quot;?&amp;gt;
+<i>61</i>&nbsp; *    &amp;lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;1.0&quot;
+<i>62</i>&nbsp; *        xmlns:xalan=&quot;http://xml.apache.org/xalan&quot;
+<i>63</i>&nbsp; *        exclude-result-prefixes=&quot;xalan&quot;&amp;gt;
+<i>64</i>&nbsp; *    &amp;lt;xsl:output indent=&quot;yes&quot;/&amp;gt;
+<i>65</i>&nbsp; *    &amp;lt;xsl:template match=&quot;/&quot;&amp;gt;
+<i>66</i>&nbsp; *      &amp;lt;xsl:copy-of select=&quot;xalan:checkEnvironment()&quot;/&amp;gt;
+<i>67</i>&nbsp; *    &amp;lt;/xsl:template&amp;gt;
+<i>68</i>&nbsp; *    &amp;lt;/xsl:stylesheet&amp;gt;
+<i>69</i>&nbsp; * &lt;/pre&gt;&lt;/code&gt;&lt;/p&gt;
+<i>70</i>&nbsp; *
+<i>71</i>&nbsp; * &lt;p&gt;Xalan users reporting problems are encouraged to use this class
+<i>72</i>&nbsp; * to see if there are potential problems with their actual
+<i>73</i>&nbsp; * Java environment &lt;b&gt;before&lt;/b&gt; reporting a bug.  Note that you
+<i>74</i>&nbsp; * should both check from the JVM/JRE&#39;s command line as well as
+<i>75</i>&nbsp; * temporarily calling checkEnvironment() directly from your code,
+<i>76</i>&nbsp; * since the classpath may differ (especially for servlets, etc).&lt;/p&gt;
+<i>77</i>&nbsp; *
+<i>78</i>&nbsp; * &lt;p&gt;Also see http://xml.apache.org/xalan-j/faq.html&lt;/p&gt;
+<i>79</i>&nbsp; *
+<i>80</i>&nbsp; * &lt;p&gt;Note: This class is pretty simplistic:
+<i>81</i>&nbsp; * results are not necessarily definitive nor will it find all
+<i>82</i>&nbsp; * problems related to environment setup.  Also, you should avoid
+<i>83</i>&nbsp; * calling this in deployed production code, both because it is
+<i>84</i>&nbsp; * quite slow and because it forces classes to get loaded.&lt;/p&gt;
+<i>85</i>&nbsp; *
+<i>86</i>&nbsp; * &lt;p&gt;Note: This class explicitly has very limited compile-time
+<i>87</i>&nbsp; * dependencies to enable easy compilation and usage even when
+<i>88</i>&nbsp; * Xalan, DOM/SAX/JAXP, etc. are not present.&lt;/p&gt;
+<i>89</i>&nbsp; *
+<i>90</i>&nbsp; * &lt;p&gt;Note: for an improved version of this utility, please see
+<i>91</i>&nbsp; * the xml-commons&#39; project Which utility which does the same kind
+<i>92</i>&nbsp; * of thing but in a much simpler manner.&lt;/p&gt;
+<i>93</i>&nbsp; *
+<i>94</i>&nbsp; * @author Shane_Curcuru@us.ibm.com
+<i>95</i>&nbsp; * @version $Id: EnvironmentCheck.java,v 1.10 2010-11-01 04:34:13 joehw Exp $
+<i>96</i>&nbsp; */
+<b class="nc"><i>97</i>&nbsp;public class EnvironmentCheck</b>
+<i>98</i>&nbsp;{
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;  /**
+<i>101</i>&nbsp;   * Command line runnability: checks for [-out outFilename] arg.
+<i>102</i>&nbsp;   * &lt;p&gt;Command line entrypoint; Sets output and calls
+<i>103</i>&nbsp;   * {@link #checkEnvironment(PrintWriter)}.&lt;/p&gt;
+<i>104</i>&nbsp;   * @param args command line args
+<i>105</i>&nbsp;   */
+<i>106</i>&nbsp;  public static void main(String[] args)
+<i>107</i>&nbsp;  {
+<i>108</i>&nbsp;    // Default to System.out, autoflushing
+<b class="nc"><i>109</i>&nbsp;    PrintWriter sendOutputTo = new PrintWriter(System.out, true);</b>
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;    // Read our simplistic input args, if supplied
+<b class="nc"><i>112</i>&nbsp;    for (int i = 0; i &lt; args.length; i++)</b>
+<i>113</i>&nbsp;    {
+<b class="nc"><i>114</i>&nbsp;      if (&quot;-out&quot;.equalsIgnoreCase(args[i]))</b>
+<i>115</i>&nbsp;      {
+<b class="nc"><i>116</i>&nbsp;        i++;</b>
+<i>117</i>&nbsp;
+<b class="nc"><i>118</i>&nbsp;        if (i &lt; args.length)</b>
+<i>119</i>&nbsp;        {
+<i>120</i>&nbsp;          try
+<i>121</i>&nbsp;          {
+<b class="nc"><i>122</i>&nbsp;            sendOutputTo = new PrintWriter(new FileWriter(args[i], true));</b>
+<i>123</i>&nbsp;          }
+<b class="nc"><i>124</i>&nbsp;          catch (Exception e)</b>
+<i>125</i>&nbsp;          {
+<b class="nc"><i>126</i>&nbsp;            System.err.println(&quot;# WARNING: -out &quot; + args[i] + &quot; threw &quot;</b>
+<b class="nc"><i>127</i>&nbsp;                               + e.toString());</b>
+<b class="nc"><i>128</i>&nbsp;          }</b>
+<i>129</i>&nbsp;        }
+<i>130</i>&nbsp;        else
+<i>131</i>&nbsp;        {
+<b class="nc"><i>132</i>&nbsp;          System.err.println(</b>
+<i>133</i>&nbsp;            &quot;# WARNING: -out argument should have a filename, output sent to console&quot;);
+<i>134</i>&nbsp;        }
+<i>135</i>&nbsp;      }
+<i>136</i>&nbsp;    }
+<i>137</i>&nbsp;
+<b class="nc"><i>138</i>&nbsp;    EnvironmentCheck app = new EnvironmentCheck();</b>
+<b class="nc"><i>139</i>&nbsp;    app.checkEnvironment(sendOutputTo);</b>
+<i>140</i>&nbsp;  }
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;  /**
+<i>143</i>&nbsp;   * Programmatic entrypoint: Report on basic Java environment
+<i>144</i>&nbsp;   * and CLASSPATH settings that affect Xalan.
+<i>145</i>&nbsp;   *
+<i>146</i>&nbsp;   * &lt;p&gt;Note that this class is not advanced enough to tell you
+<i>147</i>&nbsp;   * everything about the environment that affects Xalan, and
+<i>148</i>&nbsp;   * sometimes reports errors that will not actually affect
+<i>149</i>&nbsp;   * Xalan&#39;s behavior.  Currently, it very simplistically
+<i>150</i>&nbsp;   * checks the JVM&#39;s environment for some basic properties and
+<i>151</i>&nbsp;   * logs them out; it will report a problem if it finds a setting
+<i>152</i>&nbsp;   * or .jar file that is &lt;i&gt;likely&lt;/i&gt; to cause problems.&lt;/p&gt;
+<i>153</i>&nbsp;   *
+<i>154</i>&nbsp;   * &lt;p&gt;Advanced users can peruse the code herein to help them
+<i>155</i>&nbsp;   * investigate potential environment problems found; other users
+<i>156</i>&nbsp;   * may simply send the output from this tool along with any bugs
+<i>157</i>&nbsp;   * they submit to help us in the debugging process.&lt;/p&gt;
+<i>158</i>&nbsp;   *
+<i>159</i>&nbsp;   * @param pw PrintWriter to send output to; can be sent to a
+<i>160</i>&nbsp;   * file that will look similar to a Properties file; defaults
+<i>161</i>&nbsp;   * to System.out if null
+<i>162</i>&nbsp;   * @return true if your environment appears to have no major
+<i>163</i>&nbsp;   * problems; false if potential environment problems found
+<i>164</i>&nbsp;   * @see #getEnvironmentHash()
+<i>165</i>&nbsp;   */
+<i>166</i>&nbsp;  public boolean checkEnvironment(PrintWriter pw)
+<i>167</i>&nbsp;  {
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;    // Use user-specified output writer if non-null
+<b class="nc"><i>170</i>&nbsp;    if (null != pw)</b>
+<b class="nc"><i>171</i>&nbsp;      outWriter = pw;</b>
+<i>172</i>&nbsp;
+<i>173</i>&nbsp;    // Setup a hash to store various environment information in
+<b class="nc"><i>174</i>&nbsp;    Map&lt;String, Object&gt; hash = getEnvironmentHash();</b>
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    // Check for ERROR keys in the hashtable, and print report
+<b class="nc"><i>177</i>&nbsp;    boolean environmentHasErrors = writeEnvironmentReport(hash);</b>
+<i>178</i>&nbsp;
+<b class="nc"><i>179</i>&nbsp;    if (environmentHasErrors)</b>
+<i>180</i>&nbsp;    {
+<i>181</i>&nbsp;      // Note: many logMsg calls have # at the start to
+<i>182</i>&nbsp;      //  fake a property-file like output
+<b class="nc"><i>183</i>&nbsp;      logMsg(&quot;# WARNING: Potential problems found in your environment!&quot;);</b>
+<b class="nc"><i>184</i>&nbsp;      logMsg(&quot;#    Check any &#39;ERROR&#39; items above against the Xalan FAQs&quot;);</b>
+<b class="nc"><i>185</i>&nbsp;      logMsg(&quot;#    to correct potential problems with your classes/jars&quot;);</b>
+<b class="nc"><i>186</i>&nbsp;      logMsg(&quot;#    http://xml.apache.org/xalan-j/faq.html&quot;);</b>
+<b class="nc"><i>187</i>&nbsp;      if (null != outWriter)</b>
+<b class="nc"><i>188</i>&nbsp;        outWriter.flush();</b>
+<b class="nc"><i>189</i>&nbsp;      return false;</b>
+<i>190</i>&nbsp;    }
+<i>191</i>&nbsp;    else
+<i>192</i>&nbsp;    {
+<b class="nc"><i>193</i>&nbsp;      logMsg(&quot;# YAHOO! Your environment seems to be OK.&quot;);</b>
+<b class="nc"><i>194</i>&nbsp;      if (null != outWriter)</b>
+<b class="nc"><i>195</i>&nbsp;        outWriter.flush();</b>
+<b class="nc"><i>196</i>&nbsp;      return true;</b>
+<i>197</i>&nbsp;    }
+<i>198</i>&nbsp;  }
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;  /**
+<i>201</i>&nbsp;   * Fill a hash with basic environment settings that affect Xalan.
+<i>202</i>&nbsp;   *
+<i>203</i>&nbsp;   * &lt;p&gt;Worker method called from various places.&lt;/p&gt;
+<i>204</i>&nbsp;   * &lt;p&gt;Various system and CLASSPATH, etc. properties are put into
+<i>205</i>&nbsp;   * the hash as keys with a brief description of the current state
+<i>206</i>&nbsp;   * of that item as the value.  Any serious problems will be put in
+<i>207</i>&nbsp;   * with a key that is prefixed with {@link #ERROR &#39;ERROR.&#39;} so it
+<i>208</i>&nbsp;   * stands out in any resulting report; also a key with just that
+<i>209</i>&nbsp;   * constant will be set as well for any error.&lt;/p&gt;
+<i>210</i>&nbsp;   * &lt;p&gt;Note that some legitimate cases are flaged as potential
+<i>211</i>&nbsp;   * errors - namely when a developer recompiles xalan.jar on their
+<i>212</i>&nbsp;   * own - and even a non-error state doesn&#39;t guaruntee that
+<i>213</i>&nbsp;   * everything in the environment is correct.  But this will help
+<i>214</i>&nbsp;   * point out the most common classpath and system property
+<i>215</i>&nbsp;   * problems that we&#39;ve seen.&lt;/p&gt;
+<i>216</i>&nbsp;   *
+<i>217</i>&nbsp;   * @return Map full of useful environment info about Xalan and related
+<i>218</i>&nbsp;   * system properties, etc.
+<i>219</i>&nbsp;   */
+<i>220</i>&nbsp;  public Map&lt;String, Object&gt; getEnvironmentHash()
+<i>221</i>&nbsp;  {
+<i>222</i>&nbsp;    // Setup a hash to store various environment information in
+<b class="nc"><i>223</i>&nbsp;    Map&lt;String, Object&gt; hash = new HashMap&lt;&gt;();</b>
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;    // Call various worker methods to fill in the hash
+<i>226</i>&nbsp;    //  These are explicitly separate for maintenance and so
+<i>227</i>&nbsp;    //  advanced users could call them standalone
+<b class="nc"><i>228</i>&nbsp;    checkJAXPVersion(hash);</b>
+<b class="nc"><i>229</i>&nbsp;    checkProcessorVersion(hash);</b>
+<b class="nc"><i>230</i>&nbsp;    checkParserVersion(hash);</b>
+<b class="nc"><i>231</i>&nbsp;    checkAntVersion(hash);</b>
+<b class="nc"><i>232</i>&nbsp;    if (!checkDOML3(hash)) {</b>
+<b class="nc"><i>233</i>&nbsp;    checkDOMVersion(hash);</b>
+<i>234</i>&nbsp;    }
+<b class="nc"><i>235</i>&nbsp;    checkSAXVersion(hash);</b>
+<b class="nc"><i>236</i>&nbsp;    checkSystemProperties(hash);</b>
+<i>237</i>&nbsp;
+<b class="nc"><i>238</i>&nbsp;    return hash;</b>
+<i>239</i>&nbsp;  }
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;  /**
+<i>242</i>&nbsp;   * Dump a basic Xalan environment report to outWriter.
+<i>243</i>&nbsp;   *
+<i>244</i>&nbsp;   * &lt;p&gt;This dumps a simple header and then each of the entries in
+<i>245</i>&nbsp;   * the Map to our PrintWriter; it does special processing
+<i>246</i>&nbsp;   * for entries that are .jars found in the classpath.&lt;/p&gt;
+<i>247</i>&nbsp;   *
+<i>248</i>&nbsp;   * @param h Map of items to report on; presumably
+<i>249</i>&nbsp;   * filled in by our various check*() methods
+<i>250</i>&nbsp;   * @return true if your environment appears to have no major
+<i>251</i>&nbsp;   * problems; false if potential environment problems found
+<i>252</i>&nbsp;   * @see #appendEnvironmentReport(Node, Document, Map)
+<i>253</i>&nbsp;   * for an equivalent that appends to a Node instead
+<i>254</i>&nbsp;   */
+<i>255</i>&nbsp;  protected boolean writeEnvironmentReport(Map&lt;String, Object&gt; h)
+<i>256</i>&nbsp;  {
+<i>257</i>&nbsp;
+<b class="nc"><i>258</i>&nbsp;    if (null == h)</b>
+<i>259</i>&nbsp;    {
+<b class="nc"><i>260</i>&nbsp;      logMsg(&quot;# ERROR: writeEnvironmentReport called with null Map&quot;);</b>
+<b class="nc"><i>261</i>&nbsp;      return false;</b>
+<i>262</i>&nbsp;    }
+<i>263</i>&nbsp;
+<b class="nc"><i>264</i>&nbsp;    boolean errors = false;</b>
+<i>265</i>&nbsp;
+<b class="nc"><i>266</i>&nbsp;    logMsg(</b>
+<i>267</i>&nbsp;      &quot;#---- BEGIN writeEnvironmentReport($Revision: 1.10 $): Useful stuff found: ----&quot;);
+<i>268</i>&nbsp;
+<i>269</i>&nbsp;    // Fake the Properties-like output
+<b class="nc"><i>270</i>&nbsp;    for (Map.Entry&lt;String, Object&gt; entry : h.entrySet()) {</b>
+<b class="nc"><i>271</i>&nbsp;        String keyStr = entry.getKey();</b>
+<i>272</i>&nbsp;        try {
+<i>273</i>&nbsp;            // Special processing for classes found..
+<b class="nc"><i>274</i>&nbsp;            if (keyStr.startsWith(FOUNDCLASSES)) {</b>
+<b class="nc"><i>275</i>&nbsp;                List&lt;Map&gt; v = (ArrayList&lt;Map&gt;)entry.getValue();</b>
+<b class="nc"><i>276</i>&nbsp;                errors |= logFoundJars(v, keyStr);</b>
+<b class="nc"><i>277</i>&nbsp;            }</b>
+<i>278</i>&nbsp;            // ..normal processing for all other entries
+<i>279</i>&nbsp;            else {
+<i>280</i>&nbsp;                // Note: we could just check for the ERROR key by itself,
+<i>281</i>&nbsp;                //    since we now set that, but since we have to go
+<i>282</i>&nbsp;                //    through the whole hash anyway, do it this way,
+<i>283</i>&nbsp;                //    which is safer for maintenance
+<b class="nc"><i>284</i>&nbsp;                if (keyStr.startsWith(ERROR)) {</b>
+<b class="nc"><i>285</i>&nbsp;                    errors = true;</b>
+<i>286</i>&nbsp;                }
+<b class="nc"><i>287</i>&nbsp;                logMsg(keyStr + &quot;=&quot; + h.get(keyStr));</b>
+<i>288</i>&nbsp;            }
+<b class="nc"><i>289</i>&nbsp;        } catch (Exception e) {</b>
+<b class="nc"><i>290</i>&nbsp;            logMsg(&quot;Reading-&quot; + keyStr + &quot;= threw: &quot; + e.toString());</b>
+<b class="nc"><i>291</i>&nbsp;        }</b>
+<b class="nc"><i>292</i>&nbsp;    }</b>
+<i>293</i>&nbsp;
+<b class="nc"><i>294</i>&nbsp;    logMsg(</b>
+<i>295</i>&nbsp;      &quot;#----- END writeEnvironmentReport: Useful properties found: -----&quot;);
+<i>296</i>&nbsp;
+<b class="nc"><i>297</i>&nbsp;    return errors;</b>
+<i>298</i>&nbsp;  }
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;  /** Prefixed to hash keys that signify serious problems.  */
+<i>301</i>&nbsp;  public static final String ERROR = &quot;ERROR.&quot;;
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;  /** Added to descriptions that signify potential problems.  */
+<i>304</i>&nbsp;  public static final String WARNING = &quot;WARNING.&quot;;
+<i>305</i>&nbsp;
+<i>306</i>&nbsp;  /** Value for any error found.  */
+<i>307</i>&nbsp;  public static final String ERROR_FOUND = &quot;At least one error was found!&quot;;
+<i>308</i>&nbsp;
+<i>309</i>&nbsp;  /** Prefixed to hash keys that signify version numbers.  */
+<i>310</i>&nbsp;  public static final String VERSION = &quot;version.&quot;;
+<i>311</i>&nbsp;
+<i>312</i>&nbsp;  /** Prefixed to hash keys that signify .jars found in classpath.  */
+<i>313</i>&nbsp;  public static final String FOUNDCLASSES = &quot;foundclasses.&quot;;
+<i>314</i>&nbsp;
+<i>315</i>&nbsp;  /** Marker that a class or .jar was found.  */
+<i>316</i>&nbsp;  public static final String CLASS_PRESENT = &quot;present-unknown-version&quot;;
+<i>317</i>&nbsp;
+<i>318</i>&nbsp;  /** Marker that a class or .jar was not found.  */
+<i>319</i>&nbsp;  public static final String CLASS_NOTPRESENT = &quot;not-present&quot;;
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;  /** Listing of common .jar files that include Xalan-related classes.  */
+<b class="nc"><i>322</i>&nbsp;  public String[] jarNames =</b>
+<i>323</i>&nbsp;  {
+<i>324</i>&nbsp;    &quot;xalan.jar&quot;, &quot;xalansamples.jar&quot;, &quot;xalanj1compat.jar&quot;, &quot;xalanservlet.jar&quot;,
+<i>325</i>&nbsp;    &quot;serializer.jar&quot;,   // Serializer (shared between Xalan &amp; Xerces)
+<i>326</i>&nbsp;    &quot;xerces.jar&quot;,       // Xerces-J 1.x
+<i>327</i>&nbsp;    &quot;xercesImpl.jar&quot;,   // Xerces-J 2.x
+<i>328</i>&nbsp;    &quot;testxsl.jar&quot;,
+<i>329</i>&nbsp;    &quot;crimson.jar&quot;,
+<i>330</i>&nbsp;    &quot;lotusxsl.jar&quot;,
+<i>331</i>&nbsp;    &quot;jaxp.jar&quot;, &quot;parser.jar&quot;, &quot;dom.jar&quot;, &quot;sax.jar&quot;, &quot;xml.jar&quot;,
+<i>332</i>&nbsp;    &quot;xml-apis.jar&quot;,
+<i>333</i>&nbsp;    &quot;xsltc.jar&quot;
+<i>334</i>&nbsp;  };
+<i>335</i>&nbsp;
+<i>336</i>&nbsp;  /**
+<i>337</i>&nbsp;   * Print out report of .jars found in a classpath.
+<i>338</i>&nbsp;   *
+<i>339</i>&nbsp;   * Takes the information encoded from a checkPathForJars()
+<i>340</i>&nbsp;   * call and dumps it out to our PrintWriter.
+<i>341</i>&nbsp;   *
+<i>342</i>&nbsp;   * @param v List of Maps of .jar file info
+<i>343</i>&nbsp;   * @param desc description to print out in header
+<i>344</i>&nbsp;   *
+<i>345</i>&nbsp;   * @return false if OK, true if any .jars were reported
+<i>346</i>&nbsp;   * as having errors
+<i>347</i>&nbsp;   * @see #checkPathForJars(String, String[])
+<i>348</i>&nbsp;   */
+<i>349</i>&nbsp;  protected boolean logFoundJars(List&lt;Map&gt; v, String desc)
+<i>350</i>&nbsp;  {
+<i>351</i>&nbsp;
+<b class="nc"><i>352</i>&nbsp;    if ((null == v) || (v.size() &lt; 1))</b>
+<b class="nc"><i>353</i>&nbsp;      return false;</b>
+<i>354</i>&nbsp;
+<b class="nc"><i>355</i>&nbsp;    boolean errors = false;</b>
+<i>356</i>&nbsp;
+<b class="nc"><i>357</i>&nbsp;    logMsg(&quot;#---- BEGIN Listing XML-related jars in: &quot; + desc + &quot; ----&quot;);</b>
+<i>358</i>&nbsp;
+<b class="nc"><i>359</i>&nbsp;    for (Map&lt;String, String&gt; v1 : v) {</b>
+<b class="nc"><i>360</i>&nbsp;        for (Map.Entry&lt;String, String&gt; entry : v1.entrySet()) {</b>
+<b class="nc"><i>361</i>&nbsp;            String keyStr = entry.getKey();</b>
+<i>362</i>&nbsp;            try {
+<b class="nc"><i>363</i>&nbsp;                if (keyStr.startsWith(ERROR)) {</b>
+<b class="nc"><i>364</i>&nbsp;                    errors = true;</b>
+<i>365</i>&nbsp;                }
+<b class="nc"><i>366</i>&nbsp;                logMsg(keyStr + &quot;=&quot; + entry.getValue());</b>
+<i>367</i>&nbsp;
+<b class="nc"><i>368</i>&nbsp;            } catch (Exception e) {</b>
+<b class="nc"><i>369</i>&nbsp;                errors = true;</b>
+<b class="nc"><i>370</i>&nbsp;                logMsg(&quot;Reading-&quot; + keyStr + &quot;= threw: &quot; + e.toString());</b>
+<b class="nc"><i>371</i>&nbsp;            }</b>
+<b class="nc"><i>372</i>&nbsp;        }</b>
+<b class="nc"><i>373</i>&nbsp;    }</b>
+<i>374</i>&nbsp;
+<b class="nc"><i>375</i>&nbsp;    logMsg(&quot;#----- END Listing XML-related jars in: &quot; + desc + &quot; -----&quot;);</b>
+<i>376</i>&nbsp;
+<b class="nc"><i>377</i>&nbsp;    return errors;</b>
+<i>378</i>&nbsp;  }
+<i>379</i>&nbsp;
+<i>380</i>&nbsp;  /**
+<i>381</i>&nbsp;   * Stylesheet extension entrypoint: Dump a basic Xalan
+<i>382</i>&nbsp;   * environment report from getEnvironmentHash() to a Node.
+<i>383</i>&nbsp;   *
+<i>384</i>&nbsp;   * &lt;p&gt;Copy of writeEnvironmentReport that creates a Node suitable
+<i>385</i>&nbsp;   * for other processing instead of a properties-like text output.
+<i>386</i>&nbsp;   * &lt;/p&gt;
+<i>387</i>&nbsp;   * @param container Node to append our report to
+<i>388</i>&nbsp;   * @param factory Document providing createElement, etc. services
+<i>389</i>&nbsp;   * @param h Hash presumably from {@link #getEnvironmentHash()}
+<i>390</i>&nbsp;   * @see #writeEnvironmentReport(Map)
+<i>391</i>&nbsp;   * for an equivalent that writes to a PrintWriter instead
+<i>392</i>&nbsp;   */
+<i>393</i>&nbsp;  public void appendEnvironmentReport(Node container, Document factory, Map&lt;String, Object&gt; h)
+<i>394</i>&nbsp;  {
+<b class="nc"><i>395</i>&nbsp;    if ((null == container) || (null == factory))</b>
+<i>396</i>&nbsp;    {
+<i>397</i>&nbsp;      return;
+<i>398</i>&nbsp;    }
+<i>399</i>&nbsp;
+<i>400</i>&nbsp;    try
+<i>401</i>&nbsp;    {
+<b class="nc"><i>402</i>&nbsp;      Element envCheckNode = factory.createElement(&quot;EnvironmentCheck&quot;);</b>
+<b class="nc"><i>403</i>&nbsp;      envCheckNode.setAttribute(&quot;version&quot;, &quot;$Revision: 1.10 $&quot;);</b>
+<b class="nc"><i>404</i>&nbsp;      container.appendChild(envCheckNode);</b>
+<i>405</i>&nbsp;
+<b class="nc"><i>406</i>&nbsp;      if (null == h)</b>
+<i>407</i>&nbsp;      {
+<b class="nc"><i>408</i>&nbsp;        Element statusNode = factory.createElement(&quot;status&quot;);</b>
+<b class="nc"><i>409</i>&nbsp;        statusNode.setAttribute(&quot;result&quot;, &quot;ERROR&quot;);</b>
+<b class="nc"><i>410</i>&nbsp;        statusNode.appendChild(factory.createTextNode(&quot;appendEnvironmentReport called with null Map!&quot;));</b>
+<b class="nc"><i>411</i>&nbsp;        envCheckNode.appendChild(statusNode);</b>
+<i>412</i>&nbsp;        return;
+<i>413</i>&nbsp;      }
+<i>414</i>&nbsp;
+<b class="nc"><i>415</i>&nbsp;      boolean errors = false;</b>
+<i>416</i>&nbsp;
+<b class="nc"><i>417</i>&nbsp;      Element hashNode = factory.createElement(&quot;environment&quot;);</b>
+<b class="nc"><i>418</i>&nbsp;      envCheckNode.appendChild(hashNode);</b>
+<i>419</i>&nbsp;
+<b class="nc"><i>420</i>&nbsp;      for (Map.Entry&lt;String, Object&gt; entry : h.entrySet()) {</b>
+<b class="nc"><i>421</i>&nbsp;          String keyStr = entry.getKey();</b>
+<i>422</i>&nbsp;          try {
+<i>423</i>&nbsp;              // Special processing for classes found..
+<b class="nc"><i>424</i>&nbsp;              if (keyStr.startsWith(FOUNDCLASSES)) {</b>
+<b class="nc"><i>425</i>&nbsp;                  List&lt;Map&gt; v = (List&lt;Map&gt;)entry.getValue();</b>
+<i>426</i>&nbsp;                  // errors |= logFoundJars(v, keyStr);
+<b class="nc"><i>427</i>&nbsp;                  errors |= appendFoundJars(hashNode, factory, v, keyStr);</b>
+<b class="nc"><i>428</i>&nbsp;              } // ..normal processing for all other entries</b>
+<i>429</i>&nbsp;              else {
+<i>430</i>&nbsp;                  // Note: we could just check for the ERROR key by itself,
+<i>431</i>&nbsp;                  //    since we now set that, but since we have to go
+<i>432</i>&nbsp;                  //    through the whole hash anyway, do it this way,
+<i>433</i>&nbsp;                  //    which is safer for maintenance
+<b class="nc"><i>434</i>&nbsp;                  if (keyStr.startsWith(ERROR)) {</b>
+<b class="nc"><i>435</i>&nbsp;                      errors = true;</b>
+<i>436</i>&nbsp;                  }
+<b class="nc"><i>437</i>&nbsp;                  Element node = factory.createElement(&quot;item&quot;);</b>
+<b class="nc"><i>438</i>&nbsp;                  node.setAttribute(&quot;key&quot;, keyStr);</b>
+<b class="nc"><i>439</i>&nbsp;                  node.appendChild(factory.createTextNode((String) h.get(keyStr)));</b>
+<b class="nc"><i>440</i>&nbsp;                  hashNode.appendChild(node);</b>
+<i>441</i>&nbsp;              }
+<b class="nc"><i>442</i>&nbsp;          } catch (Exception e) {</b>
+<b class="nc"><i>443</i>&nbsp;              errors = true;</b>
+<b class="nc"><i>444</i>&nbsp;              Element node = factory.createElement(&quot;item&quot;);</b>
+<b class="nc"><i>445</i>&nbsp;              node.setAttribute(&quot;key&quot;, keyStr);</b>
+<b class="nc"><i>446</i>&nbsp;              node.appendChild(factory.createTextNode(ERROR + &quot; Reading &quot; + keyStr + &quot; threw: &quot; + e.toString()));</b>
+<b class="nc"><i>447</i>&nbsp;              hashNode.appendChild(node);</b>
+<b class="nc"><i>448</i>&nbsp;          }</b>
+<b class="nc"><i>449</i>&nbsp;      } // end of for...</b>
+<i>450</i>&nbsp;
+<b class="nc"><i>451</i>&nbsp;      Element statusNode = factory.createElement(&quot;status&quot;);</b>
+<b class="nc"><i>452</i>&nbsp;      statusNode.setAttribute(&quot;result&quot;, (errors ? &quot;ERROR&quot; : &quot;OK&quot; ));</b>
+<b class="nc"><i>453</i>&nbsp;      envCheckNode.appendChild(statusNode);</b>
+<i>454</i>&nbsp;    }
+<b class="nc"><i>455</i>&nbsp;    catch (Exception e2)</b>
+<i>456</i>&nbsp;    {
+<b class="nc"><i>457</i>&nbsp;      System.err.println(&quot;appendEnvironmentReport threw: &quot; + e2.toString());</b>
+<b class="nc"><i>458</i>&nbsp;      e2.printStackTrace();</b>
+<b class="nc"><i>459</i>&nbsp;    }</b>
+<i>460</i>&nbsp;  }
+<i>461</i>&nbsp;
+<i>462</i>&nbsp;  /**
+<i>463</i>&nbsp;   * Print out report of .jars found in a classpath.
+<i>464</i>&nbsp;   *
+<i>465</i>&nbsp;   * Takes the information encoded from a checkPathForJars()
+<i>466</i>&nbsp;   * call and dumps it out to our PrintWriter.
+<i>467</i>&nbsp;   *
+<i>468</i>&nbsp;   * @param container Node to append our report to
+<i>469</i>&nbsp;   * @param factory Document providing createElement, etc. services
+<i>470</i>&nbsp;   * @param v Map of Maps of .jar file info
+<i>471</i>&nbsp;   * @param desc description to print out in header
+<i>472</i>&nbsp;   *
+<i>473</i>&nbsp;   * @return false if OK, true if any .jars were reported
+<i>474</i>&nbsp;   * as having errors
+<i>475</i>&nbsp;   * @see #checkPathForJars(String, String[])
+<i>476</i>&nbsp;   */
+<i>477</i>&nbsp;  protected boolean appendFoundJars(Node container, Document factory,
+<i>478</i>&nbsp;        List&lt;Map&gt; v, String desc)
+<i>479</i>&nbsp;  {
+<i>480</i>&nbsp;
+<b class="nc"><i>481</i>&nbsp;    if ((null == v) || (v.size() &lt; 1))</b>
+<b class="nc"><i>482</i>&nbsp;      return false;</b>
+<i>483</i>&nbsp;
+<b class="nc"><i>484</i>&nbsp;    boolean errors = false;</b>
+<i>485</i>&nbsp;
+<b class="nc"><i>486</i>&nbsp;    for (Map&lt;String, String&gt; v1 : v) {</b>
+<b class="nc"><i>487</i>&nbsp;        for (Map.Entry&lt;String, String&gt; entry : v1.entrySet()) {</b>
+<b class="nc"><i>488</i>&nbsp;            String keyStr = entry.getKey();</b>
+<i>489</i>&nbsp;            try {
+<b class="nc"><i>490</i>&nbsp;                if (keyStr.startsWith(ERROR)) {</b>
+<b class="nc"><i>491</i>&nbsp;                    errors = true;</b>
+<i>492</i>&nbsp;                }
+<b class="nc"><i>493</i>&nbsp;                Element node = factory.createElement(&quot;foundJar&quot;);</b>
+<b class="nc"><i>494</i>&nbsp;                node.setAttribute(&quot;name&quot;, keyStr.substring(0, keyStr.indexOf(&quot;-&quot;)));</b>
+<b class="nc"><i>495</i>&nbsp;                node.setAttribute(&quot;desc&quot;, keyStr.substring(keyStr.indexOf(&quot;-&quot;) + 1));</b>
+<b class="nc"><i>496</i>&nbsp;                node.appendChild(factory.createTextNode(entry.getValue()));</b>
+<b class="nc"><i>497</i>&nbsp;                container.appendChild(node);</b>
+<b class="nc"><i>498</i>&nbsp;            } catch (Exception e) {</b>
+<b class="nc"><i>499</i>&nbsp;                errors = true;</b>
+<b class="nc"><i>500</i>&nbsp;                Element node = factory.createElement(&quot;foundJar&quot;);</b>
+<b class="nc"><i>501</i>&nbsp;                node.appendChild(factory.createTextNode(ERROR + &quot; Reading &quot; + keyStr + &quot; threw: &quot; + e.toString()));</b>
+<b class="nc"><i>502</i>&nbsp;                container.appendChild(node);</b>
+<b class="nc"><i>503</i>&nbsp;            }</b>
+<b class="nc"><i>504</i>&nbsp;        }</b>
+<b class="nc"><i>505</i>&nbsp;    }</b>
+<b class="nc"><i>506</i>&nbsp;    return errors;</b>
+<i>507</i>&nbsp;  }
+<i>508</i>&nbsp;
+<i>509</i>&nbsp;  /**
+<i>510</i>&nbsp;   * Fillin hash with info about SystemProperties.
+<i>511</i>&nbsp;   *
+<i>512</i>&nbsp;   * Logs java.class.path and other likely paths; then attempts
+<i>513</i>&nbsp;   * to search those paths for .jar files with Xalan-related classes.
+<i>514</i>&nbsp;   *
+<i>515</i>&nbsp;   * //@todo NOTE: We don&#39;t actually search java.ext.dirs for
+<i>516</i>&nbsp;   * //  *.jar files therein! This should be updated
+<i>517</i>&nbsp;   *
+<i>518</i>&nbsp;   * @param h Map to put information in
+<i>519</i>&nbsp;   * @see #jarNames
+<i>520</i>&nbsp;   * @see #checkPathForJars(String, String[])
+<i>521</i>&nbsp;   */
+<i>522</i>&nbsp;  protected void checkSystemProperties(Map&lt;String, Object&gt; h)
+<i>523</i>&nbsp;  {
+<i>524</i>&nbsp;
+<b class="nc"><i>525</i>&nbsp;    if (null == h)</b>
+<b class="nc"><i>526</i>&nbsp;      h = new HashMap&lt;&gt;();</b>
+<i>527</i>&nbsp;
+<i>528</i>&nbsp;    // Grab java version for later use
+<i>529</i>&nbsp;    try
+<i>530</i>&nbsp;    {
+<b class="nc"><i>531</i>&nbsp;      String javaVersion = SecuritySupport.getSystemProperty(&quot;java.version&quot;);</b>
+<i>532</i>&nbsp;
+<b class="nc"><i>533</i>&nbsp;      h.put(&quot;java.version&quot;, javaVersion);</b>
+<i>534</i>&nbsp;    }
+<b class="nc"><i>535</i>&nbsp;    catch (SecurityException se)</b>
+<i>536</i>&nbsp;    {
+<i>537</i>&nbsp;
+<i>538</i>&nbsp;      // For applet context, etc.
+<b class="nc"><i>539</i>&nbsp;      h.put(</b>
+<i>540</i>&nbsp;        &quot;java.version&quot;,
+<i>541</i>&nbsp;        &quot;WARNING: SecurityException thrown accessing system version properties&quot;);
+<b class="nc"><i>542</i>&nbsp;    }</b>
+<i>543</i>&nbsp;
+<i>544</i>&nbsp;    // Printout jar files on classpath(s) that may affect operation
+<i>545</i>&nbsp;    //  Do this in order
+<i>546</i>&nbsp;    try
+<i>547</i>&nbsp;    {
+<i>548</i>&nbsp;
+<i>549</i>&nbsp;      // This is present in all JVM&#39;s
+<b class="nc"><i>550</i>&nbsp;      String cp = SecuritySupport.getSystemProperty(&quot;java.class.path&quot;);</b>
+<i>551</i>&nbsp;
+<b class="nc"><i>552</i>&nbsp;      h.put(&quot;java.class.path&quot;, cp);</b>
+<i>553</i>&nbsp;
+<b class="nc"><i>554</i>&nbsp;      List&lt;Map&gt; classpathJars = checkPathForJars(cp, jarNames);</b>
+<i>555</i>&nbsp;
+<b class="nc"><i>556</i>&nbsp;      if (null != classpathJars) {</b>
+<b class="nc"><i>557</i>&nbsp;          h.put(FOUNDCLASSES + &quot;java.class.path&quot;, classpathJars);</b>
+<i>558</i>&nbsp;      }
+<i>559</i>&nbsp;
+<i>560</i>&nbsp;      // Also check for JDK 1.2+ type classpaths
+<b class="nc"><i>561</i>&nbsp;      String othercp = SecuritySupport.getSystemProperty(&quot;sun.boot.class.path&quot;);</b>
+<i>562</i>&nbsp;
+<b class="nc"><i>563</i>&nbsp;      if (null != othercp) {</b>
+<b class="nc"><i>564</i>&nbsp;          h.put(&quot;sun.boot.class.path&quot;, othercp);</b>
+<b class="nc"><i>565</i>&nbsp;          classpathJars = checkPathForJars(othercp, jarNames);</b>
+<i>566</i>&nbsp;
+<b class="nc"><i>567</i>&nbsp;          if (null != classpathJars) {</b>
+<b class="nc"><i>568</i>&nbsp;              h.put(FOUNDCLASSES + &quot;sun.boot.class.path&quot;, classpathJars);</b>
+<i>569</i>&nbsp;          }
+<i>570</i>&nbsp;      }
+<i>571</i>&nbsp;
+<i>572</i>&nbsp;      //@todo NOTE: We don&#39;t actually search java.ext.dirs for
+<i>573</i>&nbsp;      //  *.jar files therein! This should be updated
+<b class="nc"><i>574</i>&nbsp;      othercp = SecuritySupport.getSystemProperty(&quot;java.ext.dirs&quot;);</b>
+<i>575</i>&nbsp;
+<b class="nc"><i>576</i>&nbsp;      if (null != othercp)</b>
+<i>577</i>&nbsp;      {
+<b class="nc"><i>578</i>&nbsp;        h.put(&quot;java.ext.dirs&quot;, othercp);</b>
+<i>579</i>&nbsp;
+<b class="nc"><i>580</i>&nbsp;        classpathJars = checkPathForJars(othercp, jarNames);</b>
+<i>581</i>&nbsp;
+<b class="nc"><i>582</i>&nbsp;        if (null != classpathJars)</b>
+<b class="nc"><i>583</i>&nbsp;          h.put(FOUNDCLASSES + &quot;java.ext.dirs&quot;, classpathJars);</b>
+<i>584</i>&nbsp;      }
+<i>585</i>&nbsp;
+<i>586</i>&nbsp;      //@todo also check other System properties&#39; paths?
+<i>587</i>&nbsp;      //  v2 = checkPathForJars(System.getProperty(&quot;sun.boot.library.path&quot;), jarNames);   // ?? may not be needed
+<i>588</i>&nbsp;      //  v3 = checkPathForJars(System.getProperty(&quot;java.library.path&quot;), jarNames);   // ?? may not be needed
+<i>589</i>&nbsp;    }
+<b class="nc"><i>590</i>&nbsp;    catch (SecurityException se2)</b>
+<i>591</i>&nbsp;    {
+<i>592</i>&nbsp;      // For applet context, etc.
+<b class="nc"><i>593</i>&nbsp;      h.put(</b>
+<i>594</i>&nbsp;        &quot;java.class.path&quot;,
+<i>595</i>&nbsp;        &quot;WARNING: SecurityException thrown accessing system classpath properties&quot;);
+<b class="nc"><i>596</i>&nbsp;    }</b>
+<i>597</i>&nbsp;  }
+<i>598</i>&nbsp;
+<i>599</i>&nbsp;  /**
+<i>600</i>&nbsp;   * Cheap-o listing of specified .jars found in the classpath.
+<i>601</i>&nbsp;   *
+<i>602</i>&nbsp;   * cp should be separated by the usual File.pathSeparator.  We
+<i>603</i>&nbsp;   * then do a simplistic search of the path for any requested
+<i>604</i>&nbsp;   * .jar filenames, and return a listing of their names and
+<i>605</i>&nbsp;   * where (apparently) they came from.
+<i>606</i>&nbsp;   *
+<i>607</i>&nbsp;   * @param cp classpath to search
+<i>608</i>&nbsp;   * @param jars array of .jar base filenames to look for
+<i>609</i>&nbsp;   *
+<i>610</i>&nbsp;   * @return List of Maps filled with info about found .jars
+<i>611</i>&nbsp;   * @see #jarNames
+<i>612</i>&nbsp;   * @see #logFoundJars(Map, String)
+<i>613</i>&nbsp;   * @see #appendFoundJars(Node, Document, Map, String )
+<i>614</i>&nbsp;   * @see #getApparentVersion(String, long)
+<i>615</i>&nbsp;   */
+<i>616</i>&nbsp;  protected List&lt;Map&gt; checkPathForJars(String cp, String[] jars)
+<i>617</i>&nbsp;  {
+<i>618</i>&nbsp;
+<b class="nc"><i>619</i>&nbsp;    if ((null == cp) || (null == jars) || (0 == cp.length())</b>
+<i>620</i>&nbsp;            || (0 == jars.length))
+<b class="nc"><i>621</i>&nbsp;      return null;</b>
+<i>622</i>&nbsp;
+<b class="nc"><i>623</i>&nbsp;    List&lt;Map&gt; v = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>624</i>&nbsp;    StringTokenizer st = new StringTokenizer(cp, File.pathSeparator);</b>
+<i>625</i>&nbsp;
+<b class="nc"><i>626</i>&nbsp;    while (st.hasMoreTokens())</b>
+<i>627</i>&nbsp;    {
+<i>628</i>&nbsp;
+<i>629</i>&nbsp;      // Look at each classpath entry for each of our requested jarNames
+<b class="nc"><i>630</i>&nbsp;      String filename = st.nextToken();</b>
+<i>631</i>&nbsp;
+<b class="nc"><i>632</i>&nbsp;      for (int i = 0; i &lt; jars.length; i++)</b>
+<i>633</i>&nbsp;      {
+<b class="nc"><i>634</i>&nbsp;        if (filename.indexOf(jars[i]) &gt; -1)</b>
+<i>635</i>&nbsp;        {
+<b class="nc"><i>636</i>&nbsp;          File f = new File(filename);</b>
+<i>637</i>&nbsp;
+<b class="nc"><i>638</i>&nbsp;          if (f.exists())</b>
+<i>639</i>&nbsp;          {
+<i>640</i>&nbsp;
+<i>641</i>&nbsp;            // If any requested jarName exists, report on
+<i>642</i>&nbsp;            //  the details of that .jar file
+<i>643</i>&nbsp;            try {
+<b class="nc"><i>644</i>&nbsp;                Map&lt;String, String&gt; h = new HashMap&lt;&gt;(2);</b>
+<i>645</i>&nbsp;                // Note &quot;-&quot; char is looked for in appendFoundJars
+<b class="nc"><i>646</i>&nbsp;                h.put(jars[i] + &quot;-path&quot;, f.getAbsolutePath());</b>
+<i>647</i>&nbsp;
+<i>648</i>&nbsp;                // We won&#39;t bother reporting on the xalan.jar apparent version
+<i>649</i>&nbsp;                // since this requires knowing the jar size of the xalan.jar
+<i>650</i>&nbsp;                // before we build it.
+<i>651</i>&nbsp;                // For other jars, eg. xml-apis.jar and xercesImpl.jar, we
+<i>652</i>&nbsp;                // report the apparent version of the file we&#39;ve found
+<b class="nc"><i>653</i>&nbsp;                if (!(&quot;xalan.jar&quot;.equalsIgnoreCase(jars[i]))) {</b>
+<b class="nc"><i>654</i>&nbsp;                    h.put(jars[i] + &quot;-apparent.version&quot;,</b>
+<b class="nc"><i>655</i>&nbsp;                            getApparentVersion(jars[i], f.length()));</b>
+<i>656</i>&nbsp;                }
+<b class="nc"><i>657</i>&nbsp;                v.add(h);</b>
+<b class="nc"><i>658</i>&nbsp;            } catch (Exception e) {</b>
+<i>659</i>&nbsp;
+<i>660</i>&nbsp;                /* no-op, don&#39;t add it  */
+<b class="nc"><i>661</i>&nbsp;            }</b>
+<i>662</i>&nbsp;          } else {
+<b class="nc"><i>663</i>&nbsp;            Map&lt;String, String&gt; h = new HashMap&lt;&gt;(2);</b>
+<i>664</i>&nbsp;            // Note &quot;-&quot; char is looked for in appendFoundJars
+<b class="nc"><i>665</i>&nbsp;            h.put(jars[i] + &quot;-path&quot;, WARNING + &quot; Classpath entry: &quot;</b>
+<i>666</i>&nbsp;                    + filename + &quot; does not exist&quot;);
+<b class="nc"><i>667</i>&nbsp;            h.put(jars[i] + &quot;-apparent.version&quot;, CLASS_NOTPRESENT);</b>
+<b class="nc"><i>668</i>&nbsp;            v.add(h);</b>
+<i>669</i>&nbsp;          }
+<i>670</i>&nbsp;        }
+<i>671</i>&nbsp;      }
+<b class="nc"><i>672</i>&nbsp;    }</b>
+<i>673</i>&nbsp;
+<b class="nc"><i>674</i>&nbsp;    return v;</b>
+<i>675</i>&nbsp;  }
+<i>676</i>&nbsp;
+<i>677</i>&nbsp;  /**
+<i>678</i>&nbsp;   * Cheap-o method to determine the product version of a .jar.
+<i>679</i>&nbsp;   *
+<i>680</i>&nbsp;   * Currently does a lookup into a local table of some recent
+<i>681</i>&nbsp;   * shipped Xalan builds to determine where the .jar probably
+<i>682</i>&nbsp;   * came from.  Note that if you recompile Xalan or Xerces
+<i>683</i>&nbsp;   * yourself this will likely report a potential error, since
+<i>684</i>&nbsp;   * we can&#39;t certify builds other than the ones we ship.
+<i>685</i>&nbsp;   * Only reports against selected posted Xalan-J builds.
+<i>686</i>&nbsp;   *
+<i>687</i>&nbsp;   * //@todo actually look up version info in manifests
+<i>688</i>&nbsp;   *
+<i>689</i>&nbsp;   * @param jarName base filename of the .jarfile
+<i>690</i>&nbsp;   * @param jarSize size of the .jarfile
+<i>691</i>&nbsp;   *
+<i>692</i>&nbsp;   * @return String describing where the .jar file probably
+<i>693</i>&nbsp;   * came from
+<i>694</i>&nbsp;   */
+<i>695</i>&nbsp;  protected String getApparentVersion(String jarName, long jarSize)
+<i>696</i>&nbsp;  {
+<i>697</i>&nbsp;    // If we found a matching size and it&#39;s for our
+<i>698</i>&nbsp;    //  jar, then return it&#39;s description
+<i>699</i>&nbsp;    // Lookup in static JARVERSIONS Map
+<b class="nc"><i>700</i>&nbsp;    String foundSize = JARVERSIONS.get(new Long(jarSize));</b>
+<i>701</i>&nbsp;
+<b class="nc"><i>702</i>&nbsp;    if ((null != foundSize) &amp;&amp; (foundSize.startsWith(jarName)))</b>
+<i>703</i>&nbsp;    {
+<b class="nc"><i>704</i>&nbsp;      return foundSize;</b>
+<i>705</i>&nbsp;    }
+<i>706</i>&nbsp;    else
+<i>707</i>&nbsp;    {
+<b class="nc"><i>708</i>&nbsp;      if (&quot;xerces.jar&quot;.equalsIgnoreCase(jarName)</b>
+<b class="nc"><i>709</i>&nbsp;              || &quot;xercesImpl.jar&quot;.equalsIgnoreCase(jarName))</b>
+<i>710</i>&nbsp;//              || &quot;xalan.jar&quot;.equalsIgnoreCase(jarName))
+<i>711</i>&nbsp;      {
+<i>712</i>&nbsp;
+<i>713</i>&nbsp;        // For xalan.jar and xerces.jar/xercesImpl.jar, which we ship together:
+<i>714</i>&nbsp;        // The jar is not from a shipped copy of xalan-j, so
+<i>715</i>&nbsp;        //  it&#39;s up to the user to ensure that it&#39;s compatible
+<b class="nc"><i>716</i>&nbsp;        return jarName + &quot; &quot; + WARNING + CLASS_PRESENT;</b>
+<i>717</i>&nbsp;      }
+<i>718</i>&nbsp;      else
+<i>719</i>&nbsp;      {
+<i>720</i>&nbsp;
+<i>721</i>&nbsp;        // Otherwise, it&#39;s just a jar we don&#39;t have the version info calculated for
+<b class="nc"><i>722</i>&nbsp;        return jarName + &quot; &quot; + CLASS_PRESENT;</b>
+<i>723</i>&nbsp;      }
+<i>724</i>&nbsp;    }
+<i>725</i>&nbsp;  }
+<i>726</i>&nbsp;
+<i>727</i>&nbsp;  /**
+<i>728</i>&nbsp;   * Report version information about JAXP interfaces.
+<i>729</i>&nbsp;   *
+<i>730</i>&nbsp;   * Currently distinguishes between JAXP 1.0.1 and JAXP 1.1,
+<i>731</i>&nbsp;   * and not found; only tests the interfaces, and does not
+<i>732</i>&nbsp;   * check for reference implementation versions.
+<i>733</i>&nbsp;   *
+<i>734</i>&nbsp;   * @param h Map to put information in
+<i>735</i>&nbsp;   */
+<i>736</i>&nbsp;  protected void checkJAXPVersion(Map&lt;String, Object&gt; h)
+<i>737</i>&nbsp;  {
+<i>738</i>&nbsp;
+<b class="nc"><i>739</i>&nbsp;    if (null == h)</b>
+<b class="nc"><i>740</i>&nbsp;      h = new HashMap&lt;&gt;();</b>
+<i>741</i>&nbsp;
+<b class="nc"><i>742</i>&nbsp;    Class clazz = null;</b>
+<i>743</i>&nbsp;
+<i>744</i>&nbsp;    try
+<i>745</i>&nbsp;    {
+<b class="nc"><i>746</i>&nbsp;      final String JAXP1_CLASS = &quot;javax.xml.stream.XMLStreamConstants&quot;;</b>
+<i>747</i>&nbsp;
+<b class="nc"><i>748</i>&nbsp;      clazz = ObjectFactory.findProviderClass(JAXP1_CLASS, true);</b>
+<i>749</i>&nbsp;
+<i>750</i>&nbsp;      // If we succeeded, we have JAXP 1.4 available
+<b class="nc"><i>751</i>&nbsp;      h.put(VERSION + &quot;JAXP&quot;, &quot;1.4&quot;);</b>
+<i>752</i>&nbsp;    }
+<b class="nc"><i>753</i>&nbsp;    catch (Exception e)</b>
+<i>754</i>&nbsp;    {
+<b class="nc"><i>755</i>&nbsp;        h.put(ERROR + VERSION + &quot;JAXP&quot;, &quot;1.3&quot;);</b>
+<b class="nc"><i>756</i>&nbsp;        h.put(ERROR, ERROR_FOUND);</b>
+<b class="nc"><i>757</i>&nbsp;      }</b>
+<i>758</i>&nbsp;      }
+<i>759</i>&nbsp;
+<i>760</i>&nbsp;  /**
+<i>761</i>&nbsp;   * Report product version information from Xalan-J.
+<i>762</i>&nbsp;   *
+<i>763</i>&nbsp;   * Looks for version info in xalan.jar from Xalan-J products.
+<i>764</i>&nbsp;   *
+<i>765</i>&nbsp;   * @param h Map to put information in
+<i>766</i>&nbsp;   */
+<i>767</i>&nbsp;  protected void checkProcessorVersion(Map&lt;String, Object&gt; h)
+<i>768</i>&nbsp;  {
+<i>769</i>&nbsp;
+<b class="nc"><i>770</i>&nbsp;    if (null == h)</b>
+<b class="nc"><i>771</i>&nbsp;      h = new HashMap&lt;&gt;();</b>
+<i>772</i>&nbsp;
+<i>773</i>&nbsp;    try
+<i>774</i>&nbsp;    {
+<b class="nc"><i>775</i>&nbsp;      final String XALAN1_VERSION_CLASS =</b>
+<i>776</i>&nbsp;        &quot;com.sun.org.apache.xalan.internal.xslt.XSLProcessorVersion&quot;;
+<i>777</i>&nbsp;
+<b class="nc"><i>778</i>&nbsp;      Class clazz = ObjectFactory.findProviderClass(XALAN1_VERSION_CLASS, true);</b>
+<i>779</i>&nbsp;
+<i>780</i>&nbsp;      // Found Xalan-J 1.x, grab it&#39;s version fields
+<b class="nc"><i>781</i>&nbsp;      StringBuffer buf = new StringBuffer();</b>
+<b class="nc"><i>782</i>&nbsp;      Field f = clazz.getField(&quot;PRODUCT&quot;);</b>
+<i>783</i>&nbsp;
+<b class="nc"><i>784</i>&nbsp;      buf.append(f.get(null));</b>
+<b class="nc"><i>785</i>&nbsp;      buf.append(&#39;;&#39;);</b>
+<i>786</i>&nbsp;
+<b class="nc"><i>787</i>&nbsp;      f = clazz.getField(&quot;LANGUAGE&quot;);</b>
+<i>788</i>&nbsp;
+<b class="nc"><i>789</i>&nbsp;      buf.append(f.get(null));</b>
+<b class="nc"><i>790</i>&nbsp;      buf.append(&#39;;&#39;);</b>
+<i>791</i>&nbsp;
+<b class="nc"><i>792</i>&nbsp;      f = clazz.getField(&quot;S_VERSION&quot;);</b>
+<i>793</i>&nbsp;
+<b class="nc"><i>794</i>&nbsp;      buf.append(f.get(null));</b>
+<b class="nc"><i>795</i>&nbsp;      buf.append(&#39;;&#39;);</b>
+<b class="nc"><i>796</i>&nbsp;      h.put(VERSION + &quot;xalan1&quot;, buf.toString());</b>
+<i>797</i>&nbsp;    }
+<b class="nc"><i>798</i>&nbsp;    catch (Exception e1)</b>
+<i>799</i>&nbsp;    {
+<b class="nc"><i>800</i>&nbsp;      h.put(VERSION + &quot;xalan1&quot;, CLASS_NOTPRESENT);</b>
+<b class="nc"><i>801</i>&nbsp;    }</b>
+<i>802</i>&nbsp;
+<i>803</i>&nbsp;    try
+<i>804</i>&nbsp;    {
+<i>805</i>&nbsp;      // NOTE: This is the old Xalan 2.0, 2.1, 2.2 version class,
+<i>806</i>&nbsp;      //    is being replaced by class below
+<b class="nc"><i>807</i>&nbsp;      final String XALAN2_VERSION_CLASS =</b>
+<i>808</i>&nbsp;        &quot;com.sun.org.apache.xalan.internal.processor.XSLProcessorVersion&quot;;
+<i>809</i>&nbsp;
+<b class="nc"><i>810</i>&nbsp;      Class clazz = ObjectFactory.findProviderClass(XALAN2_VERSION_CLASS, true);</b>
+<i>811</i>&nbsp;
+<i>812</i>&nbsp;      // Found Xalan-J 2.x, grab it&#39;s version fields
+<b class="nc"><i>813</i>&nbsp;      StringBuffer buf = new StringBuffer();</b>
+<b class="nc"><i>814</i>&nbsp;      Field f = clazz.getField(&quot;S_VERSION&quot;);</b>
+<b class="nc"><i>815</i>&nbsp;      buf.append(f.get(null));</b>
+<i>816</i>&nbsp;
+<b class="nc"><i>817</i>&nbsp;      h.put(VERSION + &quot;xalan2x&quot;, buf.toString());</b>
+<i>818</i>&nbsp;    }
+<b class="nc"><i>819</i>&nbsp;    catch (Exception e2)</b>
+<i>820</i>&nbsp;    {
+<b class="nc"><i>821</i>&nbsp;      h.put(VERSION + &quot;xalan2x&quot;, CLASS_NOTPRESENT);</b>
+<b class="nc"><i>822</i>&nbsp;    }</b>
+<i>823</i>&nbsp;    try
+<i>824</i>&nbsp;    {
+<i>825</i>&nbsp;      // NOTE: This is the new Xalan 2.2+ version class
+<b class="nc"><i>826</i>&nbsp;      final String XALAN2_2_VERSION_CLASS =</b>
+<i>827</i>&nbsp;        &quot;com.sun.org.apache.xalan.internal.Version&quot;;
+<b class="nc"><i>828</i>&nbsp;      final String XALAN2_2_VERSION_METHOD = &quot;getVersion&quot;;</b>
+<b class="nc"><i>829</i>&nbsp;      final Class noArgs[] = new Class[0];</b>
+<i>830</i>&nbsp;
+<b class="nc"><i>831</i>&nbsp;      Class clazz = ObjectFactory.findProviderClass(XALAN2_2_VERSION_CLASS, true);</b>
+<i>832</i>&nbsp;
+<b class="nc"><i>833</i>&nbsp;      Method method = clazz.getMethod(XALAN2_2_VERSION_METHOD, noArgs);</b>
+<b class="nc"><i>834</i>&nbsp;      Object returnValue = method.invoke(null, new Object[0]);</b>
+<i>835</i>&nbsp;
+<b class="nc"><i>836</i>&nbsp;      h.put(VERSION + &quot;xalan2_2&quot;, (String)returnValue);</b>
+<i>837</i>&nbsp;    }
+<b class="nc"><i>838</i>&nbsp;    catch (Exception e2)</b>
+<i>839</i>&nbsp;    {
+<b class="nc"><i>840</i>&nbsp;      h.put(VERSION + &quot;xalan2_2&quot;, CLASS_NOTPRESENT);</b>
+<b class="nc"><i>841</i>&nbsp;    }</b>
+<i>842</i>&nbsp;  }
+<i>843</i>&nbsp;
+<i>844</i>&nbsp;  /**
+<i>845</i>&nbsp;   * Report product version information from common parsers.
+<i>846</i>&nbsp;   *
+<i>847</i>&nbsp;   * Looks for version info in xerces.jar/xercesImpl.jar/crimson.jar.
+<i>848</i>&nbsp;   *
+<i>849</i>&nbsp;   * //@todo actually look up version info in crimson manifest
+<i>850</i>&nbsp;   *
+<i>851</i>&nbsp;   * @param h Map to put information in
+<i>852</i>&nbsp;   */
+<i>853</i>&nbsp;  protected void checkParserVersion(Map&lt;String, Object&gt; h)
+<i>854</i>&nbsp;  {
+<i>855</i>&nbsp;
+<b class="nc"><i>856</i>&nbsp;    if (null == h)</b>
+<b class="nc"><i>857</i>&nbsp;      h = new HashMap&lt;&gt;();</b>
+<i>858</i>&nbsp;
+<i>859</i>&nbsp;    try
+<i>860</i>&nbsp;    {
+<b class="nc"><i>861</i>&nbsp;      final String XERCES1_VERSION_CLASS = &quot;com.sun.org.apache.xerces.internal.framework.Version&quot;;</b>
+<i>862</i>&nbsp;
+<b class="nc"><i>863</i>&nbsp;      Class clazz = ObjectFactory.findProviderClass(XERCES1_VERSION_CLASS, true);</b>
+<i>864</i>&nbsp;
+<i>865</i>&nbsp;      // Found Xerces-J 1.x, grab it&#39;s version fields
+<b class="nc"><i>866</i>&nbsp;      Field f = clazz.getField(&quot;fVersion&quot;);</b>
+<b class="nc"><i>867</i>&nbsp;      String parserVersion = (String) f.get(null);</b>
+<i>868</i>&nbsp;
+<b class="nc"><i>869</i>&nbsp;      h.put(VERSION + &quot;xerces1&quot;, parserVersion);</b>
+<i>870</i>&nbsp;    }
+<b class="nc"><i>871</i>&nbsp;    catch (Exception e)</b>
+<i>872</i>&nbsp;    {
+<b class="nc"><i>873</i>&nbsp;      h.put(VERSION + &quot;xerces1&quot;, CLASS_NOTPRESENT);</b>
+<b class="nc"><i>874</i>&nbsp;    }</b>
+<i>875</i>&nbsp;
+<i>876</i>&nbsp;    // Look for xerces1 and xerces2 parsers separately
+<i>877</i>&nbsp;    try
+<i>878</i>&nbsp;    {
+<b class="nc"><i>879</i>&nbsp;      final String XERCES2_VERSION_CLASS = &quot;com.sun.org.apache.xerces.internal.impl.Version&quot;;</b>
+<i>880</i>&nbsp;
+<b class="nc"><i>881</i>&nbsp;      Class clazz = ObjectFactory.findProviderClass(XERCES2_VERSION_CLASS, true);</b>
+<i>882</i>&nbsp;
+<i>883</i>&nbsp;      // Found Xerces-J 2.x, grab it&#39;s version fields
+<b class="nc"><i>884</i>&nbsp;      Field f = clazz.getField(&quot;fVersion&quot;);</b>
+<b class="nc"><i>885</i>&nbsp;      String parserVersion = (String) f.get(null);</b>
+<i>886</i>&nbsp;
+<b class="nc"><i>887</i>&nbsp;      h.put(VERSION + &quot;xerces2&quot;, parserVersion);</b>
+<i>888</i>&nbsp;    }
+<b class="nc"><i>889</i>&nbsp;    catch (Exception e)</b>
+<i>890</i>&nbsp;    {
+<b class="nc"><i>891</i>&nbsp;      h.put(VERSION + &quot;xerces2&quot;, CLASS_NOTPRESENT);</b>
+<b class="nc"><i>892</i>&nbsp;    }</b>
+<i>893</i>&nbsp;
+<i>894</i>&nbsp;    try
+<i>895</i>&nbsp;    {
+<b class="nc"><i>896</i>&nbsp;      final String CRIMSON_CLASS = &quot;org.apache.crimson.parser.Parser2&quot;;</b>
+<i>897</i>&nbsp;
+<b class="nc"><i>898</i>&nbsp;      Class clazz = ObjectFactory.findProviderClass(CRIMSON_CLASS, true);</b>
+<i>899</i>&nbsp;
+<i>900</i>&nbsp;      //@todo determine specific crimson version
+<b class="nc"><i>901</i>&nbsp;      h.put(VERSION + &quot;crimson&quot;, CLASS_PRESENT);</b>
+<i>902</i>&nbsp;    }
+<b class="nc"><i>903</i>&nbsp;    catch (Exception e)</b>
+<i>904</i>&nbsp;    {
+<b class="nc"><i>905</i>&nbsp;      h.put(VERSION + &quot;crimson&quot;, CLASS_NOTPRESENT);</b>
+<b class="nc"><i>906</i>&nbsp;    }</b>
+<i>907</i>&nbsp;  }
+<i>908</i>&nbsp;
+<i>909</i>&nbsp;  /**
+<i>910</i>&nbsp;   * Report product version information from Ant.
+<i>911</i>&nbsp;   *
+<i>912</i>&nbsp;   * @param h Map to put information in
+<i>913</i>&nbsp;   */
+<i>914</i>&nbsp;  protected void checkAntVersion(Map&lt;String, Object&gt; h)
+<i>915</i>&nbsp;  {
+<i>916</i>&nbsp;
+<b class="nc"><i>917</i>&nbsp;    if (null == h)</b>
+<b class="nc"><i>918</i>&nbsp;      h = new HashMap&lt;&gt;();</b>
+<i>919</i>&nbsp;
+<i>920</i>&nbsp;    try
+<i>921</i>&nbsp;    {
+<b class="nc"><i>922</i>&nbsp;      final String ANT_VERSION_CLASS = &quot;org.apache.tools.ant.Main&quot;;</b>
+<b class="nc"><i>923</i>&nbsp;      final String ANT_VERSION_METHOD = &quot;getAntVersion&quot;; // noArgs</b>
+<b class="nc"><i>924</i>&nbsp;      final Class noArgs[] = new Class[0];</b>
+<i>925</i>&nbsp;
+<b class="nc"><i>926</i>&nbsp;      Class clazz = ObjectFactory.findProviderClass(ANT_VERSION_CLASS, true);</b>
+<i>927</i>&nbsp;
+<b class="nc"><i>928</i>&nbsp;      Method method = clazz.getMethod(ANT_VERSION_METHOD, noArgs);</b>
+<b class="nc"><i>929</i>&nbsp;      Object returnValue = method.invoke(null, new Object[0]);</b>
+<i>930</i>&nbsp;
+<b class="nc"><i>931</i>&nbsp;      h.put(VERSION + &quot;ant&quot;, (String)returnValue);</b>
+<i>932</i>&nbsp;    }
+<b class="nc"><i>933</i>&nbsp;    catch (Exception e)</b>
+<i>934</i>&nbsp;    {
+<b class="nc"><i>935</i>&nbsp;      h.put(VERSION + &quot;ant&quot;, CLASS_NOTPRESENT);</b>
+<b class="nc"><i>936</i>&nbsp;    }</b>
+<i>937</i>&nbsp;  }
+<i>938</i>&nbsp;
+<i>939</i>&nbsp;  /**
+<i>940</i>&nbsp;   * Report version info from DOM interfaces.
+<i>941</i>&nbsp;   *
+<i>942</i>&nbsp;   * @param h Map to put information in
+<i>943</i>&nbsp;   */
+<i>944</i>&nbsp;  protected boolean checkDOML3(Map&lt;String, Object&gt; h)
+<i>945</i>&nbsp;  {
+<i>946</i>&nbsp;
+<b class="nc"><i>947</i>&nbsp;    if (null == h)</b>
+<b class="nc"><i>948</i>&nbsp;      h = new HashMap&lt;&gt;();</b>
+<i>949</i>&nbsp;
+<b class="nc"><i>950</i>&nbsp;    final String DOM_CLASS = &quot;org.w3c.dom.Document&quot;;</b>
+<b class="nc"><i>951</i>&nbsp;    final String DOM_LEVEL3_METHOD = &quot;getDoctype&quot;;  // no parameter</b>
+<i>952</i>&nbsp;
+<i>953</i>&nbsp;    try
+<i>954</i>&nbsp;    {
+<b class="nc"><i>955</i>&nbsp;      Class clazz = ObjectFactory.findProviderClass(DOM_CLASS, true);</b>
+<i>956</i>&nbsp;
+<b class="nc"><i>957</i>&nbsp;      Method method = clazz.getMethod(DOM_LEVEL3_METHOD, (Class&lt;?&gt;[])null);</b>
+<i>958</i>&nbsp;
+<i>959</i>&nbsp;      // If we succeeded, we have loaded interfaces from a
+<i>960</i>&nbsp;      //  level 3 DOM somewhere
+<b class="nc"><i>961</i>&nbsp;      h.put(VERSION + &quot;DOM&quot;, &quot;3.0&quot;);</b>
+<b class="nc"><i>962</i>&nbsp;      return true;</b>
+<i>963</i>&nbsp;    }
+<b class="nc"><i>964</i>&nbsp;    catch (Exception e)</b>
+<i>965</i>&nbsp;    {
+<b class="nc"><i>966</i>&nbsp;      return false;</b>
+<i>967</i>&nbsp;    }
+<i>968</i>&nbsp;  }
+<i>969</i>&nbsp;
+<i>970</i>&nbsp;  /**
+<i>971</i>&nbsp;   * Report version info from DOM interfaces.
+<i>972</i>&nbsp;   *
+<i>973</i>&nbsp;   * Currently distinguishes between pre-DOM level 2, the DOM
+<i>974</i>&nbsp;   * level 2 working draft, the DOM level 2 final draft,
+<i>975</i>&nbsp;   * and not found.
+<i>976</i>&nbsp;   *
+<i>977</i>&nbsp;   * @param h Map to put information in
+<i>978</i>&nbsp;   */
+<i>979</i>&nbsp;  protected void checkDOMVersion(Map&lt;String, Object&gt; h)
+<i>980</i>&nbsp;  {
+<i>981</i>&nbsp;
+<b class="nc"><i>982</i>&nbsp;    if (null == h)</b>
+<b class="nc"><i>983</i>&nbsp;      h = new HashMap&lt;&gt;();</b>
+<i>984</i>&nbsp;
+<b class="nc"><i>985</i>&nbsp;    final String DOM_LEVEL2_CLASS = &quot;org.w3c.dom.Document&quot;;</b>
+<b class="nc"><i>986</i>&nbsp;    final String DOM_LEVEL2_METHOD = &quot;createElementNS&quot;;  // String, String</b>
+<b class="nc"><i>987</i>&nbsp;    final String DOM_LEVEL3_METHOD = &quot;getDoctype&quot;;  // no parameter</b>
+<b class="nc"><i>988</i>&nbsp;    final String DOM_LEVEL2WD_CLASS = &quot;org.w3c.dom.Node&quot;;</b>
+<b class="nc"><i>989</i>&nbsp;    final String DOM_LEVEL2WD_METHOD = &quot;supported&quot;;  // String, String</b>
+<b class="nc"><i>990</i>&nbsp;    final String DOM_LEVEL2FD_CLASS = &quot;org.w3c.dom.Node&quot;;</b>
+<b class="nc"><i>991</i>&nbsp;    final String DOM_LEVEL2FD_METHOD = &quot;isSupported&quot;;  // String, String</b>
+<b class="nc"><i>992</i>&nbsp;    final Class twoStringArgs[] = { java.lang.String.class,</b>
+<i>993</i>&nbsp;                                    java.lang.String.class };
+<i>994</i>&nbsp;
+<i>995</i>&nbsp;    try
+<i>996</i>&nbsp;    {
+<b class="nc"><i>997</i>&nbsp;      Class clazz = ObjectFactory.findProviderClass(DOM_LEVEL2_CLASS, true);</b>
+<i>998</i>&nbsp;
+<b class="nc"><i>999</i>&nbsp;      Method method = clazz.getMethod(DOM_LEVEL2_METHOD, twoStringArgs);</b>
+<i>1000</i>&nbsp;
+<i>1001</i>&nbsp;      // If we succeeded, we have loaded interfaces from a
+<i>1002</i>&nbsp;      //  level 2 DOM somewhere
+<b class="nc"><i>1003</i>&nbsp;      h.put(VERSION + &quot;DOM&quot;, &quot;2.0&quot;);</b>
+<i>1004</i>&nbsp;
+<i>1005</i>&nbsp;      try
+<i>1006</i>&nbsp;      {
+<i>1007</i>&nbsp;        // Check for the working draft version, which is
+<i>1008</i>&nbsp;        //  commonly found, but won&#39;t work anymore
+<b class="nc"><i>1009</i>&nbsp;        clazz = ObjectFactory.findProviderClass(DOM_LEVEL2WD_CLASS, true);</b>
+<i>1010</i>&nbsp;
+<b class="nc"><i>1011</i>&nbsp;        method = clazz.getMethod(DOM_LEVEL2WD_METHOD, twoStringArgs);</b>
+<i>1012</i>&nbsp;
+<b class="nc"><i>1013</i>&nbsp;        h.put(ERROR + VERSION + &quot;DOM.draftlevel&quot;, &quot;2.0wd&quot;);</b>
+<b class="nc"><i>1014</i>&nbsp;        h.put(ERROR, ERROR_FOUND);</b>
+<i>1015</i>&nbsp;      }
+<b class="nc"><i>1016</i>&nbsp;      catch (Exception e2)</b>
+<i>1017</i>&nbsp;      {
+<i>1018</i>&nbsp;        try
+<i>1019</i>&nbsp;        {
+<i>1020</i>&nbsp;          // Check for the final draft version as well
+<b class="nc"><i>1021</i>&nbsp;          clazz = ObjectFactory.findProviderClass(DOM_LEVEL2FD_CLASS, true);</b>
+<i>1022</i>&nbsp;
+<b class="nc"><i>1023</i>&nbsp;          method = clazz.getMethod(DOM_LEVEL2FD_METHOD, twoStringArgs);</b>
+<i>1024</i>&nbsp;
+<b class="nc"><i>1025</i>&nbsp;          h.put(VERSION + &quot;DOM.draftlevel&quot;, &quot;2.0fd&quot;);</b>
+<i>1026</i>&nbsp;        }
+<b class="nc"><i>1027</i>&nbsp;        catch (Exception e3)</b>
+<i>1028</i>&nbsp;        {
+<b class="nc"><i>1029</i>&nbsp;          h.put(ERROR + VERSION + &quot;DOM.draftlevel&quot;, &quot;2.0unknown&quot;);</b>
+<b class="nc"><i>1030</i>&nbsp;          h.put(ERROR, ERROR_FOUND);</b>
+<b class="nc"><i>1031</i>&nbsp;        }</b>
+<b class="nc"><i>1032</i>&nbsp;      }</b>
+<i>1033</i>&nbsp;    }
+<b class="nc"><i>1034</i>&nbsp;    catch (Exception e)</b>
+<i>1035</i>&nbsp;    {
+<b class="nc"><i>1036</i>&nbsp;      h.put(ERROR + VERSION + &quot;DOM&quot;,</b>
+<b class="nc"><i>1037</i>&nbsp;            &quot;ERROR attempting to load DOM level 2 class: &quot; + e.toString());</b>
+<b class="nc"><i>1038</i>&nbsp;      h.put(ERROR, ERROR_FOUND);</b>
+<b class="nc"><i>1039</i>&nbsp;    }</b>
+<i>1040</i>&nbsp;
+<i>1041</i>&nbsp;    //@todo load an actual DOM implmementation and query it as well
+<i>1042</i>&nbsp;    //@todo load an actual DOM implmementation and check if
+<i>1043</i>&nbsp;    //  isNamespaceAware() == true, which is needed to parse
+<i>1044</i>&nbsp;    //  xsl stylesheet files into a DOM
+<i>1045</i>&nbsp;  }
+<i>1046</i>&nbsp;
+<i>1047</i>&nbsp;  /**
+<i>1048</i>&nbsp;   * Report version info from SAX interfaces.
+<i>1049</i>&nbsp;   *
+<i>1050</i>&nbsp;   * Currently distinguishes between SAX 2, SAX 2.0beta2,
+<i>1051</i>&nbsp;   * SAX1, and not found.
+<i>1052</i>&nbsp;   *
+<i>1053</i>&nbsp;   * @param h Map to put information in
+<i>1054</i>&nbsp;   */
+<i>1055</i>&nbsp;  protected void checkSAXVersion(Map&lt;String, Object&gt; h)
+<i>1056</i>&nbsp;  {
+<i>1057</i>&nbsp;
+<b class="nc"><i>1058</i>&nbsp;    if (null == h)</b>
+<b class="nc"><i>1059</i>&nbsp;      h = new HashMap&lt;&gt;();</b>
+<i>1060</i>&nbsp;
+<b class="nc"><i>1061</i>&nbsp;    final String SAX_VERSION1_CLASS = &quot;org.xml.sax.Parser&quot;;</b>
+<b class="nc"><i>1062</i>&nbsp;    final String SAX_VERSION1_METHOD = &quot;parse&quot;;  // String</b>
+<b class="nc"><i>1063</i>&nbsp;    final String SAX_VERSION2_CLASS = &quot;org.xml.sax.XMLReader&quot;;</b>
+<b class="nc"><i>1064</i>&nbsp;    final String SAX_VERSION2_METHOD = &quot;parse&quot;;  // String</b>
+<b class="nc"><i>1065</i>&nbsp;    final String SAX_VERSION2BETA_CLASSNF = &quot;org.xml.sax.helpers.AttributesImpl&quot;;</b>
+<b class="nc"><i>1066</i>&nbsp;    final String SAX_VERSION2BETA_METHODNF = &quot;setAttributes&quot;;  // Attributes</b>
+<b class="nc"><i>1067</i>&nbsp;    final Class oneStringArg[] = { java.lang.String.class };</b>
+<i>1068</i>&nbsp;    // Note this introduces a minor compile dependency on SAX...
+<b class="nc"><i>1069</i>&nbsp;    final Class attributesArg[] = { org.xml.sax.Attributes.class };</b>
+<i>1070</i>&nbsp;
+<i>1071</i>&nbsp;    try
+<i>1072</i>&nbsp;    {
+<i>1073</i>&nbsp;      // This method was only added in the final SAX 2.0 release;
+<i>1074</i>&nbsp;      //  see changes.html &quot;Changes from SAX 2.0beta2 to SAX 2.0prerelease&quot;
+<b class="nc"><i>1075</i>&nbsp;      Class clazz = ObjectFactory.findProviderClass(SAX_VERSION2BETA_CLASSNF, true);</b>
+<i>1076</i>&nbsp;
+<b class="nc"><i>1077</i>&nbsp;      Method method = clazz.getMethod(SAX_VERSION2BETA_METHODNF, attributesArg);</b>
+<i>1078</i>&nbsp;
+<i>1079</i>&nbsp;      // If we succeeded, we have loaded interfaces from a
+<i>1080</i>&nbsp;      //  real, final SAX version 2.0 somewhere
+<b class="nc"><i>1081</i>&nbsp;      h.put(VERSION + &quot;SAX&quot;, &quot;2.0&quot;);</b>
+<i>1082</i>&nbsp;    }
+<b class="nc"><i>1083</i>&nbsp;    catch (Exception e)</b>
+<i>1084</i>&nbsp;    {
+<i>1085</i>&nbsp;      // If we didn&#39;t find the SAX 2.0 class, look for a 2.0beta2
+<b class="nc"><i>1086</i>&nbsp;      h.put(ERROR + VERSION + &quot;SAX&quot;,</b>
+<b class="nc"><i>1087</i>&nbsp;            &quot;ERROR attempting to load SAX version 2 class: &quot; + e.toString());</b>
+<b class="nc"><i>1088</i>&nbsp;      h.put(ERROR, ERROR_FOUND);</b>
+<i>1089</i>&nbsp;
+<i>1090</i>&nbsp;      try
+<i>1091</i>&nbsp;      {
+<b class="nc"><i>1092</i>&nbsp;        Class clazz = ObjectFactory.findProviderClass(SAX_VERSION2_CLASS, true);</b>
+<i>1093</i>&nbsp;
+<b class="nc"><i>1094</i>&nbsp;        Method method = clazz.getMethod(SAX_VERSION2_METHOD, oneStringArg);</b>
+<i>1095</i>&nbsp;
+<i>1096</i>&nbsp;        // If we succeeded, we have loaded interfaces from a
+<i>1097</i>&nbsp;        //  SAX version 2.0beta2 or earlier; these might work but
+<i>1098</i>&nbsp;        //  you should really have the final SAX 2.0
+<b class="nc"><i>1099</i>&nbsp;        h.put(VERSION + &quot;SAX-backlevel&quot;, &quot;2.0beta2-or-earlier&quot;);</b>
+<i>1100</i>&nbsp;      }
+<b class="nc"><i>1101</i>&nbsp;      catch (Exception e2)</b>
+<i>1102</i>&nbsp;      {
+<i>1103</i>&nbsp;        // If we didn&#39;t find the SAX 2.0beta2 class, look for a 1.0 one
+<b class="nc"><i>1104</i>&nbsp;        h.put(ERROR + VERSION + &quot;SAX&quot;,</b>
+<b class="nc"><i>1105</i>&nbsp;              &quot;ERROR attempting to load SAX version 2 class: &quot; + e.toString());</b>
+<b class="nc"><i>1106</i>&nbsp;        h.put(ERROR, ERROR_FOUND);</b>
+<i>1107</i>&nbsp;
+<i>1108</i>&nbsp;        try
+<i>1109</i>&nbsp;        {
+<b class="nc"><i>1110</i>&nbsp;          Class clazz = ObjectFactory.findProviderClass(SAX_VERSION1_CLASS, true);</b>
+<i>1111</i>&nbsp;
+<b class="nc"><i>1112</i>&nbsp;          Method method = clazz.getMethod(SAX_VERSION1_METHOD, oneStringArg);</b>
+<i>1113</i>&nbsp;
+<i>1114</i>&nbsp;          // If we succeeded, we have loaded interfaces from a
+<i>1115</i>&nbsp;          //  SAX version 1.0 somewhere; which won&#39;t work very
+<i>1116</i>&nbsp;          //  well for JAXP 1.1 or beyond!
+<b class="nc"><i>1117</i>&nbsp;          h.put(VERSION + &quot;SAX-backlevel&quot;, &quot;1.0&quot;);</b>
+<i>1118</i>&nbsp;        }
+<b class="nc"><i>1119</i>&nbsp;        catch (Exception e3)</b>
+<i>1120</i>&nbsp;        {
+<i>1121</i>&nbsp;          // If we didn&#39;t find the SAX 2.0 class, look for a 1.0 one
+<i>1122</i>&nbsp;          // Note that either 1.0 or no SAX are both errors
+<b class="nc"><i>1123</i>&nbsp;          h.put(ERROR + VERSION + &quot;SAX-backlevel&quot;,</b>
+<b class="nc"><i>1124</i>&nbsp;                &quot;ERROR attempting to load SAX version 1 class: &quot; + e3.toString());</b>
+<i>1125</i>&nbsp;
+<b class="nc"><i>1126</i>&nbsp;        }</b>
+<b class="nc"><i>1127</i>&nbsp;      }</b>
+<b class="nc"><i>1128</i>&nbsp;    }</b>
+<i>1129</i>&nbsp;  }
+<i>1130</i>&nbsp;
+<i>1131</i>&nbsp;  /**
+<i>1132</i>&nbsp;   * Manual table of known .jar sizes.
+<i>1133</i>&nbsp;   * Only includes shipped versions of certain projects.
+<i>1134</i>&nbsp;   * key=jarsize, value=jarname &#39; from &#39; distro name
+<i>1135</i>&nbsp;   * Note assumption: two jars cannot have the same size!
+<i>1136</i>&nbsp;   *
+<i>1137</i>&nbsp;   * @see #getApparentVersion(String, long)
+<i>1138</i>&nbsp;   */
+<i>1139</i>&nbsp;  private static final Map&lt;Long, String&gt; JARVERSIONS;
+<i>1140</i>&nbsp;
+<i>1141</i>&nbsp;  /**
+<i>1142</i>&nbsp;   * Static initializer for JARVERSIONS table.
+<i>1143</i>&nbsp;   * Doing this just once saves time and space.
+<i>1144</i>&nbsp;   *
+<i>1145</i>&nbsp;   * @see #getApparentVersion(String, long)
+<i>1146</i>&nbsp;   */
+<i>1147</i>&nbsp;  static
+<i>1148</i>&nbsp;  {
+<b class="nc"><i>1149</i>&nbsp;    Map&lt;Long, String&gt; jarVersions = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>1150</i>&nbsp;    jarVersions.put(new Long(857192), &quot;xalan.jar from xalan-j_1_1&quot;);</b>
+<b class="nc"><i>1151</i>&nbsp;    jarVersions.put(new Long(440237), &quot;xalan.jar from xalan-j_1_2&quot;);</b>
+<b class="nc"><i>1152</i>&nbsp;    jarVersions.put(new Long(436094), &quot;xalan.jar from xalan-j_1_2_1&quot;);</b>
+<b class="nc"><i>1153</i>&nbsp;    jarVersions.put(new Long(426249), &quot;xalan.jar from xalan-j_1_2_2&quot;);</b>
+<b class="nc"><i>1154</i>&nbsp;    jarVersions.put(new Long(702536), &quot;xalan.jar from xalan-j_2_0_0&quot;);</b>
+<b class="nc"><i>1155</i>&nbsp;    jarVersions.put(new Long(720930), &quot;xalan.jar from xalan-j_2_0_1&quot;);</b>
+<b class="nc"><i>1156</i>&nbsp;    jarVersions.put(new Long(732330), &quot;xalan.jar from xalan-j_2_1_0&quot;);</b>
+<b class="nc"><i>1157</i>&nbsp;    jarVersions.put(new Long(872241), &quot;xalan.jar from xalan-j_2_2_D10&quot;);</b>
+<b class="nc"><i>1158</i>&nbsp;    jarVersions.put(new Long(882739), &quot;xalan.jar from xalan-j_2_2_D11&quot;);</b>
+<b class="nc"><i>1159</i>&nbsp;    jarVersions.put(new Long(923866), &quot;xalan.jar from xalan-j_2_2_0&quot;);</b>
+<b class="nc"><i>1160</i>&nbsp;    jarVersions.put(new Long(905872), &quot;xalan.jar from xalan-j_2_3_D1&quot;);</b>
+<b class="nc"><i>1161</i>&nbsp;    jarVersions.put(new Long(906122), &quot;xalan.jar from xalan-j_2_3_0&quot;);</b>
+<b class="nc"><i>1162</i>&nbsp;    jarVersions.put(new Long(906248), &quot;xalan.jar from xalan-j_2_3_1&quot;);</b>
+<b class="nc"><i>1163</i>&nbsp;    jarVersions.put(new Long(983377), &quot;xalan.jar from xalan-j_2_4_D1&quot;);</b>
+<b class="nc"><i>1164</i>&nbsp;    jarVersions.put(new Long(997276), &quot;xalan.jar from xalan-j_2_4_0&quot;);</b>
+<b class="nc"><i>1165</i>&nbsp;    jarVersions.put(new Long(1031036), &quot;xalan.jar from xalan-j_2_4_1&quot;);</b>
+<i>1166</i>&nbsp;    // Stop recording xalan.jar sizes as of Xalan Java 2.5.0
+<i>1167</i>&nbsp;
+<b class="nc"><i>1168</i>&nbsp;    jarVersions.put(new Long(596540), &quot;xsltc.jar from xalan-j_2_2_0&quot;);</b>
+<b class="nc"><i>1169</i>&nbsp;    jarVersions.put(new Long(590247), &quot;xsltc.jar from xalan-j_2_3_D1&quot;);</b>
+<b class="nc"><i>1170</i>&nbsp;    jarVersions.put(new Long(589914), &quot;xsltc.jar from xalan-j_2_3_0&quot;);</b>
+<b class="nc"><i>1171</i>&nbsp;    jarVersions.put(new Long(589915), &quot;xsltc.jar from xalan-j_2_3_1&quot;);</b>
+<b class="nc"><i>1172</i>&nbsp;    jarVersions.put(new Long(1306667), &quot;xsltc.jar from xalan-j_2_4_D1&quot;);</b>
+<b class="nc"><i>1173</i>&nbsp;    jarVersions.put(new Long(1328227), &quot;xsltc.jar from xalan-j_2_4_0&quot;);</b>
+<b class="nc"><i>1174</i>&nbsp;    jarVersions.put(new Long(1344009), &quot;xsltc.jar from xalan-j_2_4_1&quot;);</b>
+<b class="nc"><i>1175</i>&nbsp;    jarVersions.put(new Long(1348361), &quot;xsltc.jar from xalan-j_2_5_D1&quot;);</b>
+<i>1176</i>&nbsp;    // Stop recording xsltc.jar sizes as of Xalan Java 2.5.0
+<i>1177</i>&nbsp;
+<b class="nc"><i>1178</i>&nbsp;    jarVersions.put(new Long(1268634), &quot;xsltc.jar-bundled from xalan-j_2_3_0&quot;);</b>
+<i>1179</i>&nbsp;
+<b class="nc"><i>1180</i>&nbsp;    jarVersions.put(new Long(100196), &quot;xml-apis.jar from xalan-j_2_2_0 or xalan-j_2_3_D1&quot;);</b>
+<b class="nc"><i>1181</i>&nbsp;    jarVersions.put(new Long(108484), &quot;xml-apis.jar from xalan-j_2_3_0, or xalan-j_2_3_1 from xml-commons-1.0.b2&quot;);</b>
+<b class="nc"><i>1182</i>&nbsp;    jarVersions.put(new Long(109049), &quot;xml-apis.jar from xalan-j_2_4_0 from xml-commons RIVERCOURT1 branch&quot;);</b>
+<b class="nc"><i>1183</i>&nbsp;    jarVersions.put(new Long(113749), &quot;xml-apis.jar from xalan-j_2_4_1 from factoryfinder-build of xml-commons RIVERCOURT1&quot;);</b>
+<b class="nc"><i>1184</i>&nbsp;    jarVersions.put(new Long(124704), &quot;xml-apis.jar from tck-jaxp-1_2_0 branch of xml-commons&quot;);</b>
+<b class="nc"><i>1185</i>&nbsp;    jarVersions.put(new Long(124724), &quot;xml-apis.jar from tck-jaxp-1_2_0 branch of xml-commons, tag: xml-commons-external_1_2_01&quot;);</b>
+<b class="nc"><i>1186</i>&nbsp;    jarVersions.put(new Long(194205), &quot;xml-apis.jar from head branch of xml-commons, tag: xml-commons-external_1_3_02&quot;);</b>
+<i>1187</i>&nbsp;
+<i>1188</i>&nbsp;    // If the below were more common I would update it to report
+<i>1189</i>&nbsp;    //  errors better; but this is so old hardly anyone has it
+<b class="nc"><i>1190</i>&nbsp;    jarVersions.put(new Long(424490), &quot;xalan.jar from Xerces Tools releases - ERROR:DO NOT USE!&quot;);</b>
+<i>1191</i>&nbsp;
+<b class="nc"><i>1192</i>&nbsp;    jarVersions.put(new Long(1591855), &quot;xerces.jar from xalan-j_1_1 from xerces-1...&quot;);</b>
+<b class="nc"><i>1193</i>&nbsp;    jarVersions.put(new Long(1498679), &quot;xerces.jar from xalan-j_1_2 from xerces-1_2_0.bin&quot;);</b>
+<b class="nc"><i>1194</i>&nbsp;    jarVersions.put(new Long(1484896), &quot;xerces.jar from xalan-j_1_2_1 from xerces-1_2_1.bin&quot;);</b>
+<b class="nc"><i>1195</i>&nbsp;    jarVersions.put(new Long(804460),  &quot;xerces.jar from xalan-j_1_2_2 from xerces-1_2_2.bin&quot;);</b>
+<b class="nc"><i>1196</i>&nbsp;    jarVersions.put(new Long(1499244), &quot;xerces.jar from xalan-j_2_0_0 from xerces-1_2_3.bin&quot;);</b>
+<b class="nc"><i>1197</i>&nbsp;    jarVersions.put(new Long(1605266), &quot;xerces.jar from xalan-j_2_0_1 from xerces-1_3_0.bin&quot;);</b>
+<b class="nc"><i>1198</i>&nbsp;    jarVersions.put(new Long(904030), &quot;xerces.jar from xalan-j_2_1_0 from xerces-1_4.bin&quot;);</b>
+<b class="nc"><i>1199</i>&nbsp;    jarVersions.put(new Long(904030), &quot;xerces.jar from xerces-1_4_0.bin&quot;);</b>
+<b class="nc"><i>1200</i>&nbsp;    jarVersions.put(new Long(1802885), &quot;xerces.jar from xerces-1_4_2.bin&quot;);</b>
+<b class="nc"><i>1201</i>&nbsp;    jarVersions.put(new Long(1734594), &quot;xerces.jar from Xerces-J-bin.2.0.0.beta3&quot;);</b>
+<b class="nc"><i>1202</i>&nbsp;    jarVersions.put(new Long(1808883), &quot;xerces.jar from xalan-j_2_2_D10,D11,D12 or xerces-1_4_3.bin&quot;);</b>
+<b class="nc"><i>1203</i>&nbsp;    jarVersions.put(new Long(1812019), &quot;xerces.jar from xalan-j_2_2_0&quot;);</b>
+<b class="nc"><i>1204</i>&nbsp;    jarVersions.put(new Long(1720292), &quot;xercesImpl.jar from xalan-j_2_3_D1&quot;);</b>
+<b class="nc"><i>1205</i>&nbsp;    jarVersions.put(new Long(1730053), &quot;xercesImpl.jar from xalan-j_2_3_0 or xalan-j_2_3_1 from xerces-2_0_0&quot;);</b>
+<b class="nc"><i>1206</i>&nbsp;    jarVersions.put(new Long(1728861), &quot;xercesImpl.jar from xalan-j_2_4_D1 from xerces-2_0_1&quot;);</b>
+<b class="nc"><i>1207</i>&nbsp;    jarVersions.put(new Long(972027), &quot;xercesImpl.jar from xalan-j_2_4_0 from xerces-2_1&quot;);</b>
+<b class="nc"><i>1208</i>&nbsp;    jarVersions.put(new Long(831587), &quot;xercesImpl.jar from xalan-j_2_4_1 from xerces-2_2&quot;);</b>
+<b class="nc"><i>1209</i>&nbsp;    jarVersions.put(new Long(891817), &quot;xercesImpl.jar from xalan-j_2_5_D1 from xerces-2_3&quot;);</b>
+<b class="nc"><i>1210</i>&nbsp;    jarVersions.put(new Long(895924), &quot;xercesImpl.jar from xerces-2_4&quot;);</b>
+<b class="nc"><i>1211</i>&nbsp;    jarVersions.put(new Long(1010806), &quot;xercesImpl.jar from Xerces-J-bin.2.6.2&quot;);</b>
+<b class="nc"><i>1212</i>&nbsp;    jarVersions.put(new Long(1203860), &quot;xercesImpl.jar from Xerces-J-bin.2.7.1&quot;);</b>
+<i>1213</i>&nbsp;
+<b class="nc"><i>1214</i>&nbsp;    jarVersions.put(new Long(37485), &quot;xalanj1compat.jar from xalan-j_2_0_0&quot;);</b>
+<b class="nc"><i>1215</i>&nbsp;    jarVersions.put(new Long(38100), &quot;xalanj1compat.jar from xalan-j_2_0_1&quot;);</b>
+<i>1216</i>&nbsp;
+<b class="nc"><i>1217</i>&nbsp;    jarVersions.put(new Long(18779), &quot;xalanservlet.jar from xalan-j_2_0_0&quot;);</b>
+<b class="nc"><i>1218</i>&nbsp;    jarVersions.put(new Long(21453), &quot;xalanservlet.jar from xalan-j_2_0_1&quot;);</b>
+<b class="nc"><i>1219</i>&nbsp;    jarVersions.put(new Long(24826), &quot;xalanservlet.jar from xalan-j_2_3_1 or xalan-j_2_4_1&quot;);</b>
+<b class="nc"><i>1220</i>&nbsp;    jarVersions.put(new Long(24831), &quot;xalanservlet.jar from xalan-j_2_4_1&quot;);</b>
+<i>1221</i>&nbsp;    // Stop recording xalanservlet.jar sizes as of Xalan Java 2.5.0; now a .war file
+<i>1222</i>&nbsp;
+<i>1223</i>&nbsp;    // For those who&#39;ve downloaded JAXP from sun
+<b class="nc"><i>1224</i>&nbsp;    jarVersions.put(new Long(5618), &quot;jaxp.jar from jaxp1.0.1&quot;);</b>
+<b class="nc"><i>1225</i>&nbsp;    jarVersions.put(new Long(136133), &quot;parser.jar from jaxp1.0.1&quot;);</b>
+<b class="nc"><i>1226</i>&nbsp;    jarVersions.put(new Long(28404), &quot;jaxp.jar from jaxp-1.1&quot;);</b>
+<b class="nc"><i>1227</i>&nbsp;    jarVersions.put(new Long(187162), &quot;crimson.jar from jaxp-1.1&quot;);</b>
+<b class="nc"><i>1228</i>&nbsp;    jarVersions.put(new Long(801714), &quot;xalan.jar from jaxp-1.1&quot;);</b>
+<b class="nc"><i>1229</i>&nbsp;    jarVersions.put(new Long(196399), &quot;crimson.jar from crimson-1.1.1&quot;);</b>
+<b class="nc"><i>1230</i>&nbsp;    jarVersions.put(new Long(33323), &quot;jaxp.jar from crimson-1.1.1 or jakarta-ant-1.4.1b1&quot;);</b>
+<b class="nc"><i>1231</i>&nbsp;    jarVersions.put(new Long(152717), &quot;crimson.jar from crimson-1.1.2beta2&quot;);</b>
+<b class="nc"><i>1232</i>&nbsp;    jarVersions.put(new Long(88143), &quot;xml-apis.jar from crimson-1.1.2beta2&quot;);</b>
+<b class="nc"><i>1233</i>&nbsp;    jarVersions.put(new Long(206384), &quot;crimson.jar from crimson-1.1.3 or jakarta-ant-1.4.1b1&quot;);</b>
+<i>1234</i>&nbsp;
+<i>1235</i>&nbsp;    // jakarta-ant: since many people use ant these days
+<b class="nc"><i>1236</i>&nbsp;    jarVersions.put(new Long(136198), &quot;parser.jar from jakarta-ant-1.3 or 1.2&quot;);</b>
+<b class="nc"><i>1237</i>&nbsp;    jarVersions.put(new Long(5537), &quot;jaxp.jar from jakarta-ant-1.3 or 1.2&quot;);</b>
+<i>1238</i>&nbsp;
+<b class="nc"><i>1239</i>&nbsp;    JARVERSIONS = Collections.unmodifiableMap(jarVersions);</b>
+<i>1240</i>&nbsp;  }
+<i>1241</i>&nbsp;
+<i>1242</i>&nbsp;  /** Simple PrintWriter we send output to; defaults to System.out.  */
+<b class="nc"><i>1243</i>&nbsp;  protected PrintWriter outWriter = new PrintWriter(System.out, true);</b>
+<i>1244</i>&nbsp;
+<i>1245</i>&nbsp;  /**
+<i>1246</i>&nbsp;   * Bottleneck output: calls outWriter.println(s).
+<i>1247</i>&nbsp;   * @param s String to print
+<i>1248</i>&nbsp;   */
+<i>1249</i>&nbsp;  protected void logMsg(String s)
+<i>1250</i>&nbsp;  {
+<b class="nc"><i>1251</i>&nbsp;    outWriter.println(s);</b>
+<i>1252</i>&nbsp;  }
+<i>1253</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

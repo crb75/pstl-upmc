@@ -1,0 +1,888 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: JndiLoginModule</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.security.auth.module</a> ]
+</div>
+
+<h1>Coverage Summary for Class: JndiLoginModule (com.sun.security.auth.module)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JndiLoginModule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 238)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">JndiLoginModule$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 240)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.security.auth.module;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import javax.security.auth.*;
+<i>29</i>&nbsp;import javax.security.auth.callback.*;
+<i>30</i>&nbsp;import javax.security.auth.login.*;
+<i>31</i>&nbsp;import javax.security.auth.spi.*;
+<i>32</i>&nbsp;import javax.naming.*;
+<i>33</i>&nbsp;import javax.naming.directory.*;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import java.security.AccessController;
+<i>36</i>&nbsp;import java.security.PrivilegedAction;
+<i>37</i>&nbsp;import java.util.Map;
+<i>38</i>&nbsp;import java.util.LinkedList;
+<i>39</i>&nbsp;import java.util.ResourceBundle;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import com.sun.security.auth.UnixPrincipal;
+<i>42</i>&nbsp;import com.sun.security.auth.UnixNumericUserPrincipal;
+<i>43</i>&nbsp;import com.sun.security.auth.UnixNumericGroupPrincipal;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;/**
+<i>47</i>&nbsp; * &lt;p&gt; The module prompts for a username and password
+<i>48</i>&nbsp; * and then verifies the password against the password stored in
+<i>49</i>&nbsp; * a directory service configured under JNDI.
+<i>50</i>&nbsp; *
+<i>51</i>&nbsp; * &lt;p&gt; This &lt;code&gt;LoginModule&lt;/code&gt; interoperates with
+<i>52</i>&nbsp; * any conformant JNDI service provider.  To direct this
+<i>53</i>&nbsp; * &lt;code&gt;LoginModule&lt;/code&gt; to use a specific JNDI service provider,
+<i>54</i>&nbsp; * two options must be specified in the login &lt;code&gt;Configuration&lt;/code&gt;
+<i>55</i>&nbsp; * for this &lt;code&gt;LoginModule&lt;/code&gt;.
+<i>56</i>&nbsp; * &lt;pre&gt;
+<i>57</i>&nbsp; *      user.provider.url=&lt;b&gt;name_service_url&lt;/b&gt;
+<i>58</i>&nbsp; *      group.provider.url=&lt;b&gt;name_service_url&lt;/b&gt;
+<i>59</i>&nbsp; * &lt;/pre&gt;
+<i>60</i>&nbsp; *
+<i>61</i>&nbsp; * &lt;b&gt;name_service_url&lt;/b&gt; specifies
+<i>62</i>&nbsp; * the directory service and path where this &lt;code&gt;LoginModule&lt;/code&gt;
+<i>63</i>&nbsp; * can access the relevant user and group information.  Because this
+<i>64</i>&nbsp; * &lt;code&gt;LoginModule&lt;/code&gt; only performs one-level searches to
+<i>65</i>&nbsp; * find the relevant user information, the &lt;code&gt;URL&lt;/code&gt;
+<i>66</i>&nbsp; * must point to a directory one level above where the user and group
+<i>67</i>&nbsp; * information is stored in the directory service.
+<i>68</i>&nbsp; * For example, to instruct this &lt;code&gt;LoginModule&lt;/code&gt;
+<i>69</i>&nbsp; * to contact a NIS server, the following URLs must be specified:
+<i>70</i>&nbsp; * &lt;pre&gt;
+<i>71</i>&nbsp; *    user.provider.url=&quot;nis://&lt;b&gt;NISServerHostName&lt;/b&gt;/&lt;b&gt;NISDomain&lt;/b&gt;/user&quot;
+<i>72</i>&nbsp; *    group.provider.url=&quot;nis://&lt;b&gt;NISServerHostName&lt;/b&gt;/&lt;b&gt;NISDomain&lt;/b&gt;/system/group&quot;
+<i>73</i>&nbsp; * &lt;/pre&gt;
+<i>74</i>&nbsp; *
+<i>75</i>&nbsp; * &lt;b&gt;NISServerHostName&lt;/b&gt; specifies the server host name of the
+<i>76</i>&nbsp; * NIS server (for example, &lt;i&gt;nis.sun.com&lt;/i&gt;, and &lt;b&gt;NISDomain&lt;/b&gt;
+<i>77</i>&nbsp; * specifies the domain for that NIS server (for example, &lt;i&gt;jaas.sun.com&lt;/i&gt;.
+<i>78</i>&nbsp; * To contact an LDAP server, the following URLs must be specified:
+<i>79</i>&nbsp; * &lt;pre&gt;
+<i>80</i>&nbsp; *    user.provider.url=&quot;ldap://&lt;b&gt;LDAPServerHostName&lt;/b&gt;/&lt;b&gt;LDAPName&lt;/b&gt;&quot;
+<i>81</i>&nbsp; *    group.provider.url=&quot;ldap://&lt;b&gt;LDAPServerHostName&lt;/b&gt;/&lt;b&gt;LDAPName&lt;/b&gt;&quot;
+<i>82</i>&nbsp; * &lt;/pre&gt;
+<i>83</i>&nbsp; *
+<i>84</i>&nbsp; * &lt;b&gt;LDAPServerHostName&lt;/b&gt; specifies the server host name of the
+<i>85</i>&nbsp; * LDAP server, which may include a port number
+<i>86</i>&nbsp; * (for example, &lt;i&gt;ldap.sun.com:389&lt;/i&gt;),
+<i>87</i>&nbsp; * and &lt;b&gt;LDAPName&lt;/b&gt; specifies the entry name in the LDAP directory
+<i>88</i>&nbsp; * (for example, &lt;i&gt;ou=People,o=Sun,c=US&lt;/i&gt; and &lt;i&gt;ou=Groups,o=Sun,c=US&lt;/i&gt;
+<i>89</i>&nbsp; * for user and group information, respectively).
+<i>90</i>&nbsp; *
+<i>91</i>&nbsp; * &lt;p&gt; The format in which the user&#39;s information must be stored in
+<i>92</i>&nbsp; * the directory service is specified in RFC 2307.  Specifically,
+<i>93</i>&nbsp; * this &lt;code&gt;LoginModule&lt;/code&gt; will search for the user&#39;s entry in the
+<i>94</i>&nbsp; * directory service using the user&#39;s &lt;i&gt;uid&lt;/i&gt; attribute,
+<i>95</i>&nbsp; * where &lt;i&gt;uid=&lt;b&gt;username&lt;/b&gt;&lt;/i&gt;.  If the search succeeds,
+<i>96</i>&nbsp; * this &lt;code&gt;LoginModule&lt;/code&gt; will then
+<i>97</i>&nbsp; * obtain the user&#39;s encrypted password from the retrieved entry
+<i>98</i>&nbsp; * using the &lt;i&gt;userPassword&lt;/i&gt; attribute.
+<i>99</i>&nbsp; * This &lt;code&gt;LoginModule&lt;/code&gt; assumes that the password is stored
+<i>100</i>&nbsp; * as a byte array, which when converted to a &lt;code&gt;String&lt;/code&gt;,
+<i>101</i>&nbsp; * has the following format:
+<i>102</i>&nbsp; * &lt;pre&gt;
+<i>103</i>&nbsp; *      &quot;{crypt}&lt;b&gt;encrypted_password&lt;/b&gt;&quot;
+<i>104</i>&nbsp; * &lt;/pre&gt;
+<i>105</i>&nbsp; *
+<i>106</i>&nbsp; * The LDAP directory server must be configured
+<i>107</i>&nbsp; * to permit read access to the userPassword attribute.
+<i>108</i>&nbsp; * If the user entered a valid username and password,
+<i>109</i>&nbsp; * this &lt;code&gt;LoginModule&lt;/code&gt; associates a
+<i>110</i>&nbsp; * &lt;code&gt;UnixPrincipal&lt;/code&gt;, &lt;code&gt;UnixNumericUserPrincipal&lt;/code&gt;,
+<i>111</i>&nbsp; * and the relevant UnixNumericGroupPrincipals with the
+<i>112</i>&nbsp; * &lt;code&gt;Subject&lt;/code&gt;.
+<i>113</i>&nbsp; *
+<i>114</i>&nbsp; * &lt;p&gt; This LoginModule also recognizes the following &lt;code&gt;Configuration&lt;/code&gt;
+<i>115</i>&nbsp; * options:
+<i>116</i>&nbsp; * &lt;pre&gt;
+<i>117</i>&nbsp; *    debug          if, true, debug messages are output to System.out.
+<i>118</i>&nbsp; *
+<i>119</i>&nbsp; *    useFirstPass   if, true, this LoginModule retrieves the
+<i>120</i>&nbsp; *                   username and password from the module&#39;s shared state,
+<i>121</i>&nbsp; *                   using &quot;javax.security.auth.login.name&quot; and
+<i>122</i>&nbsp; *                   &quot;javax.security.auth.login.password&quot; as the respective
+<i>123</i>&nbsp; *                   keys.  The retrieved values are used for authentication.
+<i>124</i>&nbsp; *                   If authentication fails, no attempt for a retry is made,
+<i>125</i>&nbsp; *                   and the failure is reported back to the calling
+<i>126</i>&nbsp; *                   application.
+<i>127</i>&nbsp; *
+<i>128</i>&nbsp; *    tryFirstPass   if, true, this LoginModule retrieves the
+<i>129</i>&nbsp; *                   the username and password from the module&#39;s shared state,
+<i>130</i>&nbsp; *                   using &quot;javax.security.auth.login.name&quot; and
+<i>131</i>&nbsp; *                   &quot;javax.security.auth.login.password&quot; as the respective
+<i>132</i>&nbsp; *                   keys.  The retrieved values are used for authentication.
+<i>133</i>&nbsp; *                   If authentication fails, the module uses the
+<i>134</i>&nbsp; *                   CallbackHandler to retrieve a new username and password,
+<i>135</i>&nbsp; *                   and another attempt to authenticate is made.
+<i>136</i>&nbsp; *                   If the authentication fails, the failure is reported
+<i>137</i>&nbsp; *                   back to the calling application.
+<i>138</i>&nbsp; *
+<i>139</i>&nbsp; *    storePass      if, true, this LoginModule stores the username and password
+<i>140</i>&nbsp; *                   obtained from the CallbackHandler in the module&#39;s
+<i>141</i>&nbsp; *                   shared state, using &quot;javax.security.auth.login.name&quot; and
+<i>142</i>&nbsp; *                   &quot;javax.security.auth.login.password&quot; as the respective
+<i>143</i>&nbsp; *                   keys.  This is not performed if existing values already
+<i>144</i>&nbsp; *                   exist for the username and password in the shared state,
+<i>145</i>&nbsp; *                   or if authentication fails.
+<i>146</i>&nbsp; *
+<i>147</i>&nbsp; *    clearPass     if, true, this &lt;code&gt;LoginModule&lt;/code&gt; clears the
+<i>148</i>&nbsp; *                  username and password stored in the module&#39;s shared state
+<i>149</i>&nbsp; *                  after both phases of authentication (login and commit)
+<i>150</i>&nbsp; *                  have completed.
+<i>151</i>&nbsp; * &lt;/pre&gt;
+<i>152</i>&nbsp; *
+<i>153</i>&nbsp; */
+<i>154</i>&nbsp;@jdk.Exported
+<b class="nc"><i>155</i>&nbsp;public class JndiLoginModule implements LoginModule {</b>
+<i>156</i>&nbsp;
+<b class="nc"><i>157</i>&nbsp;    private static final ResourceBundle rb = AccessController.doPrivileged(</b>
+<b class="nc"><i>158</i>&nbsp;            new PrivilegedAction&lt;ResourceBundle&gt;() {</b>
+<i>159</i>&nbsp;                public ResourceBundle run() {
+<b class="nc"><i>160</i>&nbsp;                    return ResourceBundle.getBundle(</b>
+<i>161</i>&nbsp;                            &quot;sun.security.util.AuthResources&quot;);
+<i>162</i>&nbsp;                }
+<i>163</i>&nbsp;            }
+<i>164</i>&nbsp;    );
+<i>165</i>&nbsp;
+<i>166</i>&nbsp;    /** JNDI Provider */
+<b class="nc"><i>167</i>&nbsp;    public final String USER_PROVIDER = &quot;user.provider.url&quot;;</b>
+<b class="nc"><i>168</i>&nbsp;    public final String GROUP_PROVIDER = &quot;group.provider.url&quot;;</b>
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;    // configurable options
+<b class="nc"><i>171</i>&nbsp;    private boolean debug = false;</b>
+<b class="nc"><i>172</i>&nbsp;    private boolean strongDebug = false;</b>
+<i>173</i>&nbsp;    private String userProvider;
+<i>174</i>&nbsp;    private String groupProvider;
+<b class="nc"><i>175</i>&nbsp;    private boolean useFirstPass = false;</b>
+<b class="nc"><i>176</i>&nbsp;    private boolean tryFirstPass = false;</b>
+<b class="nc"><i>177</i>&nbsp;    private boolean storePass = false;</b>
+<b class="nc"><i>178</i>&nbsp;    private boolean clearPass = false;</b>
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;    // the authentication status
+<b class="nc"><i>181</i>&nbsp;    private boolean succeeded = false;</b>
+<b class="nc"><i>182</i>&nbsp;    private boolean commitSucceeded = false;</b>
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;    // username, password, and JNDI context
+<i>185</i>&nbsp;    private String username;
+<i>186</i>&nbsp;    private char[] password;
+<i>187</i>&nbsp;    DirContext ctx;
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;    // the user (assume it is a UnixPrincipal)
+<i>190</i>&nbsp;    private UnixPrincipal userPrincipal;
+<i>191</i>&nbsp;    private UnixNumericUserPrincipal UIDPrincipal;
+<i>192</i>&nbsp;    private UnixNumericGroupPrincipal GIDPrincipal;
+<b class="nc"><i>193</i>&nbsp;    private LinkedList&lt;UnixNumericGroupPrincipal&gt; supplementaryGroups =</b>
+<i>194</i>&nbsp;                                new LinkedList&lt;&gt;();
+<i>195</i>&nbsp;
+<i>196</i>&nbsp;    // initial state
+<i>197</i>&nbsp;    private Subject subject;
+<i>198</i>&nbsp;    private CallbackHandler callbackHandler;
+<i>199</i>&nbsp;    private Map&lt;String, Object&gt; sharedState;
+<i>200</i>&nbsp;    private Map&lt;String, ?&gt; options;
+<i>201</i>&nbsp;
+<i>202</i>&nbsp;    private static final String CRYPT = &quot;{crypt}&quot;;
+<i>203</i>&nbsp;    private static final String USER_PWD = &quot;userPassword&quot;;
+<i>204</i>&nbsp;    private static final String USER_UID = &quot;uidNumber&quot;;
+<i>205</i>&nbsp;    private static final String USER_GID = &quot;gidNumber&quot;;
+<i>206</i>&nbsp;    private static final String GROUP_ID = &quot;gidNumber&quot;;
+<i>207</i>&nbsp;    private static final String NAME = &quot;javax.security.auth.login.name&quot;;
+<i>208</i>&nbsp;    private static final String PWD = &quot;javax.security.auth.login.password&quot;;
+<i>209</i>&nbsp;
+<i>210</i>&nbsp;    /**
+<i>211</i>&nbsp;     * Initialize this &lt;code&gt;LoginModule&lt;/code&gt;.
+<i>212</i>&nbsp;     *
+<i>213</i>&nbsp;     * &lt;p&gt;
+<i>214</i>&nbsp;     *
+<i>215</i>&nbsp;     * @param subject the &lt;code&gt;Subject&lt;/code&gt; to be authenticated. &lt;p&gt;
+<i>216</i>&nbsp;     *
+<i>217</i>&nbsp;     * @param callbackHandler a &lt;code&gt;CallbackHandler&lt;/code&gt; for communicating
+<i>218</i>&nbsp;     *                  with the end user (prompting for usernames and
+<i>219</i>&nbsp;     *                  passwords, for example). &lt;p&gt;
+<i>220</i>&nbsp;     *
+<i>221</i>&nbsp;     * @param sharedState shared &lt;code&gt;LoginModule&lt;/code&gt; state. &lt;p&gt;
+<i>222</i>&nbsp;     *
+<i>223</i>&nbsp;     * @param options options specified in the login
+<i>224</i>&nbsp;     *                  &lt;code&gt;Configuration&lt;/code&gt; for this particular
+<i>225</i>&nbsp;     *                  &lt;code&gt;LoginModule&lt;/code&gt;.
+<i>226</i>&nbsp;     */
+<i>227</i>&nbsp;    // Unchecked warning from (Map&lt;String, Object&gt;)sharedState is safe
+<i>228</i>&nbsp;    // since javax.security.auth.login.LoginContext passes a raw HashMap.
+<i>229</i>&nbsp;    // Unchecked warnings from options.get(String) are safe since we are
+<i>230</i>&nbsp;    // passing known keys.
+<i>231</i>&nbsp;    @SuppressWarnings(&quot;unchecked&quot;)
+<i>232</i>&nbsp;    public void initialize(Subject subject, CallbackHandler callbackHandler,
+<i>233</i>&nbsp;                           Map&lt;String,?&gt; sharedState,
+<i>234</i>&nbsp;                           Map&lt;String,?&gt; options) {
+<i>235</i>&nbsp;
+<b class="nc"><i>236</i>&nbsp;        this.subject = subject;</b>
+<b class="nc"><i>237</i>&nbsp;        this.callbackHandler = callbackHandler;</b>
+<b class="nc"><i>238</i>&nbsp;        this.sharedState = (Map&lt;String, Object&gt;)sharedState;</b>
+<b class="nc"><i>239</i>&nbsp;        this.options = options;</b>
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;        // initialize any configured options
+<b class="nc"><i>242</i>&nbsp;        debug = &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;debug&quot;));</b>
+<b class="nc"><i>243</i>&nbsp;        strongDebug =</b>
+<b class="nc"><i>244</i>&nbsp;                &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;strongDebug&quot;));</b>
+<b class="nc"><i>245</i>&nbsp;        userProvider = (String)options.get(USER_PROVIDER);</b>
+<b class="nc"><i>246</i>&nbsp;        groupProvider = (String)options.get(GROUP_PROVIDER);</b>
+<b class="nc"><i>247</i>&nbsp;        tryFirstPass =</b>
+<b class="nc"><i>248</i>&nbsp;                &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;tryFirstPass&quot;));</b>
+<b class="nc"><i>249</i>&nbsp;        useFirstPass =</b>
+<b class="nc"><i>250</i>&nbsp;                &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;useFirstPass&quot;));</b>
+<b class="nc"><i>251</i>&nbsp;        storePass =</b>
+<b class="nc"><i>252</i>&nbsp;                &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;storePass&quot;));</b>
+<b class="nc"><i>253</i>&nbsp;        clearPass =</b>
+<b class="nc"><i>254</i>&nbsp;                &quot;true&quot;.equalsIgnoreCase((String)options.get(&quot;clearPass&quot;));</b>
+<i>255</i>&nbsp;    }
+<i>256</i>&nbsp;
+<i>257</i>&nbsp;    /**
+<i>258</i>&nbsp;     * &lt;p&gt; Prompt for username and password.
+<i>259</i>&nbsp;     * Verify the password against the relevant name service.
+<i>260</i>&nbsp;     *
+<i>261</i>&nbsp;     * &lt;p&gt;
+<i>262</i>&nbsp;     *
+<i>263</i>&nbsp;     * @return true always, since this &lt;code&gt;LoginModule&lt;/code&gt;
+<i>264</i>&nbsp;     *          should not be ignored.
+<i>265</i>&nbsp;     *
+<i>266</i>&nbsp;     * @exception FailedLoginException if the authentication fails. &lt;p&gt;
+<i>267</i>&nbsp;     *
+<i>268</i>&nbsp;     * @exception LoginException if this &lt;code&gt;LoginModule&lt;/code&gt;
+<i>269</i>&nbsp;     *          is unable to perform the authentication.
+<i>270</i>&nbsp;     */
+<i>271</i>&nbsp;    public boolean login() throws LoginException {
+<i>272</i>&nbsp;
+<b class="nc"><i>273</i>&nbsp;        if (userProvider == null) {</b>
+<b class="nc"><i>274</i>&nbsp;            throw new LoginException</b>
+<i>275</i>&nbsp;                (&quot;Error: Unable to locate JNDI user provider&quot;);
+<i>276</i>&nbsp;        }
+<b class="nc"><i>277</i>&nbsp;        if (groupProvider == null) {</b>
+<b class="nc"><i>278</i>&nbsp;            throw new LoginException</b>
+<i>279</i>&nbsp;                (&quot;Error: Unable to locate JNDI group provider&quot;);
+<i>280</i>&nbsp;        }
+<i>281</i>&nbsp;
+<b class="nc"><i>282</i>&nbsp;        if (debug) {</b>
+<b class="nc"><i>283</i>&nbsp;            System.out.println(&quot;\t\t[JndiLoginModule] user provider: &quot; +</b>
+<i>284</i>&nbsp;                                userProvider);
+<b class="nc"><i>285</i>&nbsp;            System.out.println(&quot;\t\t[JndiLoginModule] group provider: &quot; +</b>
+<i>286</i>&nbsp;                                groupProvider);
+<i>287</i>&nbsp;        }
+<i>288</i>&nbsp;
+<i>289</i>&nbsp;        // attempt the authentication
+<b class="nc"><i>290</i>&nbsp;        if (tryFirstPass) {</b>
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;            try {
+<i>293</i>&nbsp;                // attempt the authentication by getting the
+<i>294</i>&nbsp;                // username and password from shared state
+<b class="nc"><i>295</i>&nbsp;                attemptAuthentication(true);</b>
+<i>296</i>&nbsp;
+<i>297</i>&nbsp;                // authentication succeeded
+<b class="nc"><i>298</i>&nbsp;                succeeded = true;</b>
+<b class="nc"><i>299</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>300</i>&nbsp;                    System.out.println(&quot;\t\t[JndiLoginModule] &quot; +</b>
+<i>301</i>&nbsp;                                &quot;tryFirstPass succeeded&quot;);
+<i>302</i>&nbsp;                }
+<b class="nc"><i>303</i>&nbsp;                return true;</b>
+<b class="nc"><i>304</i>&nbsp;            } catch (LoginException le) {</b>
+<i>305</i>&nbsp;                // authentication failed -- try again below by prompting
+<b class="nc"><i>306</i>&nbsp;                cleanState();</b>
+<b class="nc"><i>307</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>308</i>&nbsp;                    System.out.println(&quot;\t\t[JndiLoginModule] &quot; +</b>
+<i>309</i>&nbsp;                                &quot;tryFirstPass failed with:&quot; +
+<b class="nc"><i>310</i>&nbsp;                                le.toString());</b>
+<i>311</i>&nbsp;                }
+<b class="nc"><i>312</i>&nbsp;            }</b>
+<i>313</i>&nbsp;
+<b class="nc"><i>314</i>&nbsp;        } else if (useFirstPass) {</b>
+<i>315</i>&nbsp;
+<i>316</i>&nbsp;            try {
+<i>317</i>&nbsp;                // attempt the authentication by getting the
+<i>318</i>&nbsp;                // username and password from shared state
+<b class="nc"><i>319</i>&nbsp;                attemptAuthentication(true);</b>
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;                // authentication succeeded
+<b class="nc"><i>322</i>&nbsp;                succeeded = true;</b>
+<b class="nc"><i>323</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>324</i>&nbsp;                    System.out.println(&quot;\t\t[JndiLoginModule] &quot; +</b>
+<i>325</i>&nbsp;                                &quot;useFirstPass succeeded&quot;);
+<i>326</i>&nbsp;                }
+<b class="nc"><i>327</i>&nbsp;                return true;</b>
+<b class="nc"><i>328</i>&nbsp;            } catch (LoginException le) {</b>
+<i>329</i>&nbsp;                // authentication failed
+<b class="nc"><i>330</i>&nbsp;                cleanState();</b>
+<b class="nc"><i>331</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>332</i>&nbsp;                    System.out.println(&quot;\t\t[JndiLoginModule] &quot; +</b>
+<i>333</i>&nbsp;                                &quot;useFirstPass failed&quot;);
+<i>334</i>&nbsp;                }
+<b class="nc"><i>335</i>&nbsp;                throw le;</b>
+<i>336</i>&nbsp;            }
+<i>337</i>&nbsp;        }
+<i>338</i>&nbsp;
+<i>339</i>&nbsp;        // attempt the authentication by prompting for the username and pwd
+<i>340</i>&nbsp;        try {
+<b class="nc"><i>341</i>&nbsp;            attemptAuthentication(false);</b>
+<i>342</i>&nbsp;
+<i>343</i>&nbsp;            // authentication succeeded
+<b class="nc"><i>344</i>&nbsp;           succeeded = true;</b>
+<b class="nc"><i>345</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>346</i>&nbsp;                System.out.println(&quot;\t\t[JndiLoginModule] &quot; +</b>
+<i>347</i>&nbsp;                                &quot;regular authentication succeeded&quot;);
+<i>348</i>&nbsp;            }
+<b class="nc"><i>349</i>&nbsp;            return true;</b>
+<b class="nc"><i>350</i>&nbsp;        } catch (LoginException le) {</b>
+<b class="nc"><i>351</i>&nbsp;            cleanState();</b>
+<b class="nc"><i>352</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>353</i>&nbsp;                System.out.println(&quot;\t\t[JndiLoginModule] &quot; +</b>
+<i>354</i>&nbsp;                                &quot;regular authentication failed&quot;);
+<i>355</i>&nbsp;            }
+<b class="nc"><i>356</i>&nbsp;            throw le;</b>
+<i>357</i>&nbsp;        }
+<i>358</i>&nbsp;    }
+<i>359</i>&nbsp;
+<i>360</i>&nbsp;    /**
+<i>361</i>&nbsp;     * Abstract method to commit the authentication process (phase 2).
+<i>362</i>&nbsp;     *
+<i>363</i>&nbsp;     * &lt;p&gt; This method is called if the LoginContext&#39;s
+<i>364</i>&nbsp;     * overall authentication succeeded
+<i>365</i>&nbsp;     * (the relevant REQUIRED, REQUISITE, SUFFICIENT and OPTIONAL LoginModules
+<i>366</i>&nbsp;     * succeeded).
+<i>367</i>&nbsp;     *
+<i>368</i>&nbsp;     * &lt;p&gt; If this LoginModule&#39;s own authentication attempt
+<i>369</i>&nbsp;     * succeeded (checked by retrieving the private state saved by the
+<i>370</i>&nbsp;     * &lt;code&gt;login&lt;/code&gt; method), then this method associates a
+<i>371</i>&nbsp;     * &lt;code&gt;UnixPrincipal&lt;/code&gt;
+<i>372</i>&nbsp;     * with the &lt;code&gt;Subject&lt;/code&gt; located in the
+<i>373</i>&nbsp;     * &lt;code&gt;LoginModule&lt;/code&gt;.  If this LoginModule&#39;s own
+<i>374</i>&nbsp;     * authentication attempted failed, then this method removes
+<i>375</i>&nbsp;     * any state that was originally saved.
+<i>376</i>&nbsp;     *
+<i>377</i>&nbsp;     * &lt;p&gt;
+<i>378</i>&nbsp;     *
+<i>379</i>&nbsp;     * @exception LoginException if the commit fails
+<i>380</i>&nbsp;     *
+<i>381</i>&nbsp;     * @return true if this LoginModule&#39;s own login and commit
+<i>382</i>&nbsp;     *          attempts succeeded, or false otherwise.
+<i>383</i>&nbsp;     */
+<i>384</i>&nbsp;    public boolean commit() throws LoginException {
+<i>385</i>&nbsp;
+<b class="nc"><i>386</i>&nbsp;        if (succeeded == false) {</b>
+<b class="nc"><i>387</i>&nbsp;            return false;</b>
+<i>388</i>&nbsp;        } else {
+<b class="nc"><i>389</i>&nbsp;            if (subject.isReadOnly()) {</b>
+<b class="nc"><i>390</i>&nbsp;                cleanState();</b>
+<b class="nc"><i>391</i>&nbsp;                throw new LoginException (&quot;Subject is Readonly&quot;);</b>
+<i>392</i>&nbsp;            }
+<i>393</i>&nbsp;            // add Principals to the Subject
+<b class="nc"><i>394</i>&nbsp;            if (!subject.getPrincipals().contains(userPrincipal))</b>
+<b class="nc"><i>395</i>&nbsp;                subject.getPrincipals().add(userPrincipal);</b>
+<b class="nc"><i>396</i>&nbsp;            if (!subject.getPrincipals().contains(UIDPrincipal))</b>
+<b class="nc"><i>397</i>&nbsp;                subject.getPrincipals().add(UIDPrincipal);</b>
+<b class="nc"><i>398</i>&nbsp;            if (!subject.getPrincipals().contains(GIDPrincipal))</b>
+<b class="nc"><i>399</i>&nbsp;                subject.getPrincipals().add(GIDPrincipal);</b>
+<b class="nc"><i>400</i>&nbsp;            for (int i = 0; i &lt; supplementaryGroups.size(); i++) {</b>
+<b class="nc"><i>401</i>&nbsp;                if (!subject.getPrincipals().contains</b>
+<b class="nc"><i>402</i>&nbsp;                        (supplementaryGroups.get(i)))</b>
+<b class="nc"><i>403</i>&nbsp;                    subject.getPrincipals().add(supplementaryGroups.get(i));</b>
+<i>404</i>&nbsp;            }
+<i>405</i>&nbsp;
+<b class="nc"><i>406</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>407</i>&nbsp;                System.out.println(&quot;\t\t[JndiLoginModule]: &quot; +</b>
+<i>408</i>&nbsp;                                   &quot;added UnixPrincipal,&quot;);
+<b class="nc"><i>409</i>&nbsp;                System.out.println(&quot;\t\t\t\tUnixNumericUserPrincipal,&quot;);</b>
+<b class="nc"><i>410</i>&nbsp;                System.out.println(&quot;\t\t\t\tUnixNumericGroupPrincipal(s),&quot;);</b>
+<b class="nc"><i>411</i>&nbsp;                System.out.println(&quot;\t\t\t to Subject&quot;);</b>
+<i>412</i>&nbsp;            }
+<i>413</i>&nbsp;        }
+<i>414</i>&nbsp;        // in any case, clean out state
+<b class="nc"><i>415</i>&nbsp;        cleanState();</b>
+<b class="nc"><i>416</i>&nbsp;        commitSucceeded = true;</b>
+<b class="nc"><i>417</i>&nbsp;        return true;</b>
+<i>418</i>&nbsp;    }
+<i>419</i>&nbsp;
+<i>420</i>&nbsp;    /**
+<i>421</i>&nbsp;     * &lt;p&gt; This method is called if the LoginContext&#39;s
+<i>422</i>&nbsp;     * overall authentication failed.
+<i>423</i>&nbsp;     * (the relevant REQUIRED, REQUISITE, SUFFICIENT and OPTIONAL LoginModules
+<i>424</i>&nbsp;     * did not succeed).
+<i>425</i>&nbsp;     *
+<i>426</i>&nbsp;     * &lt;p&gt; If this LoginModule&#39;s own authentication attempt
+<i>427</i>&nbsp;     * succeeded (checked by retrieving the private state saved by the
+<i>428</i>&nbsp;     * &lt;code&gt;login&lt;/code&gt; and &lt;code&gt;commit&lt;/code&gt; methods),
+<i>429</i>&nbsp;     * then this method cleans up any state that was originally saved.
+<i>430</i>&nbsp;     *
+<i>431</i>&nbsp;     * &lt;p&gt;
+<i>432</i>&nbsp;     *
+<i>433</i>&nbsp;     * @exception LoginException if the abort fails.
+<i>434</i>&nbsp;     *
+<i>435</i>&nbsp;     * @return false if this LoginModule&#39;s own login and/or commit attempts
+<i>436</i>&nbsp;     *          failed, and true otherwise.
+<i>437</i>&nbsp;     */
+<i>438</i>&nbsp;    public boolean abort() throws LoginException {
+<b class="nc"><i>439</i>&nbsp;        if (debug)</b>
+<b class="nc"><i>440</i>&nbsp;            System.out.println(&quot;\t\t[JndiLoginModule]: &quot; +</b>
+<i>441</i>&nbsp;                &quot;aborted authentication failed&quot;);
+<i>442</i>&nbsp;
+<b class="nc"><i>443</i>&nbsp;        if (succeeded == false) {</b>
+<b class="nc"><i>444</i>&nbsp;            return false;</b>
+<b class="nc"><i>445</i>&nbsp;        } else if (succeeded == true &amp;&amp; commitSucceeded == false) {</b>
+<i>446</i>&nbsp;
+<i>447</i>&nbsp;            // Clean out state
+<b class="nc"><i>448</i>&nbsp;            succeeded = false;</b>
+<b class="nc"><i>449</i>&nbsp;            cleanState();</b>
+<i>450</i>&nbsp;
+<b class="nc"><i>451</i>&nbsp;            userPrincipal = null;</b>
+<b class="nc"><i>452</i>&nbsp;            UIDPrincipal = null;</b>
+<b class="nc"><i>453</i>&nbsp;            GIDPrincipal = null;</b>
+<b class="nc"><i>454</i>&nbsp;            supplementaryGroups = new LinkedList&lt;UnixNumericGroupPrincipal&gt;();</b>
+<i>455</i>&nbsp;        } else {
+<i>456</i>&nbsp;            // overall authentication succeeded and commit succeeded,
+<i>457</i>&nbsp;            // but someone else&#39;s commit failed
+<b class="nc"><i>458</i>&nbsp;            logout();</b>
+<i>459</i>&nbsp;        }
+<b class="nc"><i>460</i>&nbsp;        return true;</b>
+<i>461</i>&nbsp;    }
+<i>462</i>&nbsp;
+<i>463</i>&nbsp;    /**
+<i>464</i>&nbsp;     * Logout a user.
+<i>465</i>&nbsp;     *
+<i>466</i>&nbsp;     * &lt;p&gt; This method removes the Principals
+<i>467</i>&nbsp;     * that were added by the &lt;code&gt;commit&lt;/code&gt; method.
+<i>468</i>&nbsp;     *
+<i>469</i>&nbsp;     * &lt;p&gt;
+<i>470</i>&nbsp;     *
+<i>471</i>&nbsp;     * @exception LoginException if the logout fails.
+<i>472</i>&nbsp;     *
+<i>473</i>&nbsp;     * @return true in all cases since this &lt;code&gt;LoginModule&lt;/code&gt;
+<i>474</i>&nbsp;     *          should not be ignored.
+<i>475</i>&nbsp;     */
+<i>476</i>&nbsp;    public boolean logout() throws LoginException {
+<b class="nc"><i>477</i>&nbsp;        if (subject.isReadOnly()) {</b>
+<b class="nc"><i>478</i>&nbsp;            cleanState();</b>
+<b class="nc"><i>479</i>&nbsp;            throw new LoginException (&quot;Subject is Readonly&quot;);</b>
+<i>480</i>&nbsp;        }
+<b class="nc"><i>481</i>&nbsp;        subject.getPrincipals().remove(userPrincipal);</b>
+<b class="nc"><i>482</i>&nbsp;        subject.getPrincipals().remove(UIDPrincipal);</b>
+<b class="nc"><i>483</i>&nbsp;        subject.getPrincipals().remove(GIDPrincipal);</b>
+<b class="nc"><i>484</i>&nbsp;        for (int i = 0; i &lt; supplementaryGroups.size(); i++) {</b>
+<b class="nc"><i>485</i>&nbsp;            subject.getPrincipals().remove(supplementaryGroups.get(i));</b>
+<i>486</i>&nbsp;        }
+<i>487</i>&nbsp;
+<i>488</i>&nbsp;
+<i>489</i>&nbsp;        // clean out state
+<b class="nc"><i>490</i>&nbsp;        cleanState();</b>
+<b class="nc"><i>491</i>&nbsp;        succeeded = false;</b>
+<b class="nc"><i>492</i>&nbsp;        commitSucceeded = false;</b>
+<i>493</i>&nbsp;
+<b class="nc"><i>494</i>&nbsp;        userPrincipal = null;</b>
+<b class="nc"><i>495</i>&nbsp;        UIDPrincipal = null;</b>
+<b class="nc"><i>496</i>&nbsp;        GIDPrincipal = null;</b>
+<b class="nc"><i>497</i>&nbsp;        supplementaryGroups = new LinkedList&lt;UnixNumericGroupPrincipal&gt;();</b>
+<i>498</i>&nbsp;
+<b class="nc"><i>499</i>&nbsp;        if (debug) {</b>
+<b class="nc"><i>500</i>&nbsp;            System.out.println(&quot;\t\t[JndiLoginModule]: &quot; +</b>
+<i>501</i>&nbsp;                &quot;logged out Subject&quot;);
+<i>502</i>&nbsp;        }
+<b class="nc"><i>503</i>&nbsp;        return true;</b>
+<i>504</i>&nbsp;    }
+<i>505</i>&nbsp;
+<i>506</i>&nbsp;    /**
+<i>507</i>&nbsp;     * Attempt authentication
+<i>508</i>&nbsp;     *
+<i>509</i>&nbsp;     * &lt;p&gt;
+<i>510</i>&nbsp;     *
+<i>511</i>&nbsp;     * @param getPasswdFromSharedState boolean that tells this method whether
+<i>512</i>&nbsp;     *          to retrieve the password from the sharedState.
+<i>513</i>&nbsp;     */
+<i>514</i>&nbsp;    private void attemptAuthentication(boolean getPasswdFromSharedState)
+<i>515</i>&nbsp;    throws LoginException {
+<i>516</i>&nbsp;
+<b class="nc"><i>517</i>&nbsp;        String encryptedPassword = null;</b>
+<i>518</i>&nbsp;
+<i>519</i>&nbsp;        // first get the username and password
+<b class="nc"><i>520</i>&nbsp;        getUsernamePassword(getPasswdFromSharedState);</b>
+<i>521</i>&nbsp;
+<i>522</i>&nbsp;        try {
+<i>523</i>&nbsp;
+<i>524</i>&nbsp;            // get the user&#39;s passwd entry from the user provider URL
+<b class="nc"><i>525</i>&nbsp;            InitialContext iCtx = new InitialContext();</b>
+<b class="nc"><i>526</i>&nbsp;            ctx = (DirContext)iCtx.lookup(userProvider);</b>
+<i>527</i>&nbsp;
+<i>528</i>&nbsp;            /*
+<i>529</i>&nbsp;            SearchControls controls = new SearchControls
+<i>530</i>&nbsp;                                        (SearchControls.ONELEVEL_SCOPE,
+<i>531</i>&nbsp;                                        0,
+<i>532</i>&nbsp;                                        5000,
+<i>533</i>&nbsp;                                        new String[] { USER_PWD },
+<i>534</i>&nbsp;                                        false,
+<i>535</i>&nbsp;                                        false);
+<i>536</i>&nbsp;            */
+<i>537</i>&nbsp;
+<b class="nc"><i>538</i>&nbsp;            SearchControls controls = new SearchControls();</b>
+<b class="nc"><i>539</i>&nbsp;            NamingEnumeration&lt;SearchResult&gt; ne = ctx.search(&quot;&quot;,</b>
+<i>540</i>&nbsp;                                        &quot;(uid=&quot; + username + &quot;)&quot;,
+<i>541</i>&nbsp;                                        controls);
+<b class="nc"><i>542</i>&nbsp;            if (ne.hasMore()) {</b>
+<b class="nc"><i>543</i>&nbsp;                SearchResult result = ne.next();</b>
+<b class="nc"><i>544</i>&nbsp;                Attributes attributes = result.getAttributes();</b>
+<i>545</i>&nbsp;
+<i>546</i>&nbsp;                // get the password
+<i>547</i>&nbsp;
+<i>548</i>&nbsp;                // this module works only if the LDAP directory server
+<i>549</i>&nbsp;                // is configured to permit read access to the userPassword
+<i>550</i>&nbsp;                // attribute. The directory administrator need to grant
+<i>551</i>&nbsp;                // this access.
+<i>552</i>&nbsp;                //
+<i>553</i>&nbsp;                // A workaround would be to make the server do authentication
+<i>554</i>&nbsp;                // by setting the Context.SECURITY_PRINCIPAL
+<i>555</i>&nbsp;                // and Context.SECURITY_CREDENTIALS property.
+<i>556</i>&nbsp;                // However, this would make it not work with systems that
+<i>557</i>&nbsp;                // don&#39;t do authentication at the server (like NIS).
+<i>558</i>&nbsp;                //
+<i>559</i>&nbsp;                // Setting the SECURITY_* properties and using &quot;simple&quot;
+<i>560</i>&nbsp;                // authentication for LDAP is recommended only for secure
+<i>561</i>&nbsp;                // channels. For nonsecure channels, SSL is recommended.
+<i>562</i>&nbsp;
+<b class="nc"><i>563</i>&nbsp;                Attribute pwd = attributes.get(USER_PWD);</b>
+<b class="nc"><i>564</i>&nbsp;                String encryptedPwd = new String((byte[])pwd.get(), &quot;UTF8&quot;);</b>
+<b class="nc"><i>565</i>&nbsp;                encryptedPassword = encryptedPwd.substring(CRYPT.length());</b>
+<i>566</i>&nbsp;
+<i>567</i>&nbsp;                // check the password
+<b class="nc"><i>568</i>&nbsp;                if (verifyPassword</b>
+<b class="nc"><i>569</i>&nbsp;                    (encryptedPassword, new String(password)) == true) {</b>
+<i>570</i>&nbsp;
+<i>571</i>&nbsp;                    // authentication succeeded
+<b class="nc"><i>572</i>&nbsp;                    if (debug)</b>
+<b class="nc"><i>573</i>&nbsp;                        System.out.println(&quot;\t\t[JndiLoginModule] &quot; +</b>
+<i>574</i>&nbsp;                                &quot;attemptAuthentication() succeeded&quot;);
+<i>575</i>&nbsp;
+<i>576</i>&nbsp;                } else {
+<i>577</i>&nbsp;                    // authentication failed
+<b class="nc"><i>578</i>&nbsp;                    if (debug)</b>
+<b class="nc"><i>579</i>&nbsp;                        System.out.println(&quot;\t\t[JndiLoginModule] &quot; +</b>
+<i>580</i>&nbsp;                                &quot;attemptAuthentication() failed&quot;);
+<b class="nc"><i>581</i>&nbsp;                    throw new FailedLoginException(&quot;Login incorrect&quot;);</b>
+<i>582</i>&nbsp;                }
+<i>583</i>&nbsp;
+<i>584</i>&nbsp;                // save input as shared state only if
+<i>585</i>&nbsp;                // authentication succeeded
+<b class="nc"><i>586</i>&nbsp;                if (storePass &amp;&amp;</b>
+<b class="nc"><i>587</i>&nbsp;                    !sharedState.containsKey(NAME) &amp;&amp;</b>
+<b class="nc"><i>588</i>&nbsp;                    !sharedState.containsKey(PWD)) {</b>
+<b class="nc"><i>589</i>&nbsp;                    sharedState.put(NAME, username);</b>
+<b class="nc"><i>590</i>&nbsp;                    sharedState.put(PWD, password);</b>
+<i>591</i>&nbsp;                }
+<i>592</i>&nbsp;
+<i>593</i>&nbsp;                // create the user principal
+<b class="nc"><i>594</i>&nbsp;                userPrincipal = new UnixPrincipal(username);</b>
+<i>595</i>&nbsp;
+<i>596</i>&nbsp;                // get the UID
+<b class="nc"><i>597</i>&nbsp;                Attribute uid = attributes.get(USER_UID);</b>
+<b class="nc"><i>598</i>&nbsp;                String uidNumber = (String)uid.get();</b>
+<b class="nc"><i>599</i>&nbsp;                UIDPrincipal = new UnixNumericUserPrincipal(uidNumber);</b>
+<b class="nc"><i>600</i>&nbsp;                if (debug &amp;&amp; uidNumber != null) {</b>
+<b class="nc"><i>601</i>&nbsp;                    System.out.println(&quot;\t\t[JndiLoginModule] &quot; +</b>
+<i>602</i>&nbsp;                                &quot;user: &#39;&quot; + username + &quot;&#39; has UID: &quot; +
+<i>603</i>&nbsp;                                uidNumber);
+<i>604</i>&nbsp;                }
+<i>605</i>&nbsp;
+<i>606</i>&nbsp;                // get the GID
+<b class="nc"><i>607</i>&nbsp;                Attribute gid = attributes.get(USER_GID);</b>
+<b class="nc"><i>608</i>&nbsp;                String gidNumber = (String)gid.get();</b>
+<b class="nc"><i>609</i>&nbsp;                GIDPrincipal = new UnixNumericGroupPrincipal</b>
+<i>610</i>&nbsp;                                (gidNumber, true);
+<b class="nc"><i>611</i>&nbsp;                if (debug &amp;&amp; gidNumber != null) {</b>
+<b class="nc"><i>612</i>&nbsp;                    System.out.println(&quot;\t\t[JndiLoginModule] &quot; +</b>
+<i>613</i>&nbsp;                                &quot;user: &#39;&quot; + username + &quot;&#39; has GID: &quot; +
+<i>614</i>&nbsp;                                gidNumber);
+<i>615</i>&nbsp;                }
+<i>616</i>&nbsp;
+<i>617</i>&nbsp;                // get the supplementary groups from the group provider URL
+<b class="nc"><i>618</i>&nbsp;                ctx = (DirContext)iCtx.lookup(groupProvider);</b>
+<b class="nc"><i>619</i>&nbsp;                ne = ctx.search(&quot;&quot;, new BasicAttributes(&quot;memberUid&quot;, username));</b>
+<i>620</i>&nbsp;
+<b class="nc"><i>621</i>&nbsp;                while (ne.hasMore()) {</b>
+<b class="nc"><i>622</i>&nbsp;                    result = ne.next();</b>
+<b class="nc"><i>623</i>&nbsp;                    attributes = result.getAttributes();</b>
+<i>624</i>&nbsp;
+<b class="nc"><i>625</i>&nbsp;                    gid = attributes.get(GROUP_ID);</b>
+<b class="nc"><i>626</i>&nbsp;                    String suppGid = (String)gid.get();</b>
+<b class="nc"><i>627</i>&nbsp;                    if (!gidNumber.equals(suppGid)) {</b>
+<b class="nc"><i>628</i>&nbsp;                        UnixNumericGroupPrincipal suppPrincipal =</b>
+<i>629</i>&nbsp;                            new UnixNumericGroupPrincipal(suppGid, false);
+<b class="nc"><i>630</i>&nbsp;                        supplementaryGroups.add(suppPrincipal);</b>
+<b class="nc"><i>631</i>&nbsp;                        if (debug &amp;&amp; suppGid != null) {</b>
+<b class="nc"><i>632</i>&nbsp;                            System.out.println(&quot;\t\t[JndiLoginModule] &quot; +</b>
+<i>633</i>&nbsp;                                &quot;user: &#39;&quot; + username +
+<i>634</i>&nbsp;                                &quot;&#39; has Supplementary Group: &quot; +
+<i>635</i>&nbsp;                                suppGid);
+<i>636</i>&nbsp;                        }
+<i>637</i>&nbsp;                    }
+<b class="nc"><i>638</i>&nbsp;                }</b>
+<i>639</i>&nbsp;
+<b class="nc"><i>640</i>&nbsp;            } else {</b>
+<i>641</i>&nbsp;                // bad username
+<b class="nc"><i>642</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>643</i>&nbsp;                    System.out.println(&quot;\t\t[JndiLoginModule]: User not found&quot;);</b>
+<i>644</i>&nbsp;                }
+<b class="nc"><i>645</i>&nbsp;                throw new FailedLoginException(&quot;User not found&quot;);</b>
+<i>646</i>&nbsp;            }
+<b class="nc"><i>647</i>&nbsp;        } catch (NamingException ne) {</b>
+<i>648</i>&nbsp;            // bad username
+<b class="nc"><i>649</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>650</i>&nbsp;                System.out.println(&quot;\t\t[JndiLoginModule]:  User not found&quot;);</b>
+<b class="nc"><i>651</i>&nbsp;                ne.printStackTrace();</b>
+<i>652</i>&nbsp;            }
+<b class="nc"><i>653</i>&nbsp;            throw new FailedLoginException(&quot;User not found&quot;);</b>
+<b class="nc"><i>654</i>&nbsp;        } catch (java.io.UnsupportedEncodingException uee) {</b>
+<i>655</i>&nbsp;            // password stored in incorrect format
+<b class="nc"><i>656</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>657</i>&nbsp;                System.out.println(&quot;\t\t[JndiLoginModule]:  &quot; +</b>
+<i>658</i>&nbsp;                                &quot;password incorrectly encoded&quot;);
+<b class="nc"><i>659</i>&nbsp;                uee.printStackTrace();</b>
+<i>660</i>&nbsp;            }
+<b class="nc"><i>661</i>&nbsp;            throw new LoginException(&quot;Login failure due to incorrect &quot; +</b>
+<i>662</i>&nbsp;                                &quot;password encoding in the password database&quot;);
+<b class="nc"><i>663</i>&nbsp;        }</b>
+<i>664</i>&nbsp;
+<i>665</i>&nbsp;        // authentication succeeded
+<i>666</i>&nbsp;    }
+<i>667</i>&nbsp;
+<i>668</i>&nbsp;    /**
+<i>669</i>&nbsp;     * Get the username and password.
+<i>670</i>&nbsp;     * This method does not return any value.
+<i>671</i>&nbsp;     * Instead, it sets global name and password variables.
+<i>672</i>&nbsp;     *
+<i>673</i>&nbsp;     * &lt;p&gt; Also note that this method will set the username and password
+<i>674</i>&nbsp;     * values in the shared state in case subsequent LoginModules
+<i>675</i>&nbsp;     * want to use them via use/tryFirstPass.
+<i>676</i>&nbsp;     *
+<i>677</i>&nbsp;     * &lt;p&gt;
+<i>678</i>&nbsp;     *
+<i>679</i>&nbsp;     * @param getPasswdFromSharedState boolean that tells this method whether
+<i>680</i>&nbsp;     *          to retrieve the password from the sharedState.
+<i>681</i>&nbsp;     */
+<i>682</i>&nbsp;    private void getUsernamePassword(boolean getPasswdFromSharedState)
+<i>683</i>&nbsp;    throws LoginException {
+<i>684</i>&nbsp;
+<b class="nc"><i>685</i>&nbsp;        if (getPasswdFromSharedState) {</b>
+<i>686</i>&nbsp;            // use the password saved by the first module in the stack
+<b class="nc"><i>687</i>&nbsp;            username = (String)sharedState.get(NAME);</b>
+<b class="nc"><i>688</i>&nbsp;            password = (char[])sharedState.get(PWD);</b>
+<i>689</i>&nbsp;            return;
+<i>690</i>&nbsp;        }
+<i>691</i>&nbsp;
+<i>692</i>&nbsp;        // prompt for a username and password
+<b class="nc"><i>693</i>&nbsp;        if (callbackHandler == null)</b>
+<b class="nc"><i>694</i>&nbsp;            throw new LoginException(&quot;Error: no CallbackHandler available &quot; +</b>
+<i>695</i>&nbsp;                &quot;to garner authentication information from the user&quot;);
+<i>696</i>&nbsp;
+<b class="nc"><i>697</i>&nbsp;        String protocol = userProvider.substring(0, userProvider.indexOf(&quot;:&quot;));</b>
+<i>698</i>&nbsp;
+<b class="nc"><i>699</i>&nbsp;        Callback[] callbacks = new Callback[2];</b>
+<b class="nc"><i>700</i>&nbsp;        callbacks[0] = new NameCallback(protocol + &quot; &quot;</b>
+<b class="nc"><i>701</i>&nbsp;                                            + rb.getString(&quot;username.&quot;));</b>
+<b class="nc"><i>702</i>&nbsp;        callbacks[1] = new PasswordCallback(protocol + &quot; &quot; +</b>
+<b class="nc"><i>703</i>&nbsp;                                                rb.getString(&quot;password.&quot;),</b>
+<i>704</i>&nbsp;                                            false);
+<i>705</i>&nbsp;
+<i>706</i>&nbsp;        try {
+<b class="nc"><i>707</i>&nbsp;            callbackHandler.handle(callbacks);</b>
+<b class="nc"><i>708</i>&nbsp;            username = ((NameCallback)callbacks[0]).getName();</b>
+<b class="nc"><i>709</i>&nbsp;            char[] tmpPassword = ((PasswordCallback)callbacks[1]).getPassword();</b>
+<b class="nc"><i>710</i>&nbsp;            password = new char[tmpPassword.length];</b>
+<b class="nc"><i>711</i>&nbsp;            System.arraycopy(tmpPassword, 0,</b>
+<i>712</i>&nbsp;                                password, 0, tmpPassword.length);
+<b class="nc"><i>713</i>&nbsp;            ((PasswordCallback)callbacks[1]).clearPassword();</b>
+<i>714</i>&nbsp;
+<b class="nc"><i>715</i>&nbsp;        } catch (java.io.IOException ioe) {</b>
+<b class="nc"><i>716</i>&nbsp;            throw new LoginException(ioe.toString());</b>
+<b class="nc"><i>717</i>&nbsp;        } catch (UnsupportedCallbackException uce) {</b>
+<b class="nc"><i>718</i>&nbsp;            throw new LoginException(&quot;Error: &quot; + uce.getCallback().toString() +</b>
+<i>719</i>&nbsp;                        &quot; not available to garner authentication information &quot; +
+<i>720</i>&nbsp;                        &quot;from the user&quot;);
+<b class="nc"><i>721</i>&nbsp;        }</b>
+<i>722</i>&nbsp;
+<i>723</i>&nbsp;        // print debugging information
+<b class="nc"><i>724</i>&nbsp;        if (strongDebug) {</b>
+<b class="nc"><i>725</i>&nbsp;            System.out.println(&quot;\t\t[JndiLoginModule] &quot; +</b>
+<i>726</i>&nbsp;                                &quot;user entered username: &quot; +
+<i>727</i>&nbsp;                                username);
+<b class="nc"><i>728</i>&nbsp;            System.out.print(&quot;\t\t[JndiLoginModule] &quot; +</b>
+<i>729</i>&nbsp;                                &quot;user entered password: &quot;);
+<b class="nc"><i>730</i>&nbsp;            for (int i = 0; i &lt; password.length; i++)</b>
+<b class="nc"><i>731</i>&nbsp;                System.out.print(password[i]);</b>
+<b class="nc"><i>732</i>&nbsp;            System.out.println();</b>
+<i>733</i>&nbsp;        }
+<i>734</i>&nbsp;    }
+<i>735</i>&nbsp;
+<i>736</i>&nbsp;    /**
+<i>737</i>&nbsp;     * Verify a password against the encrypted passwd from /etc/shadow
+<i>738</i>&nbsp;     */
+<i>739</i>&nbsp;    private boolean verifyPassword(String encryptedPassword, String password) {
+<i>740</i>&nbsp;
+<b class="nc"><i>741</i>&nbsp;        if (encryptedPassword == null)</b>
+<b class="nc"><i>742</i>&nbsp;            return false;</b>
+<i>743</i>&nbsp;
+<b class="nc"><i>744</i>&nbsp;        Crypt c = new Crypt();</b>
+<i>745</i>&nbsp;        try {
+<b class="nc"><i>746</i>&nbsp;            byte oldCrypt[] = encryptedPassword.getBytes(&quot;UTF8&quot;);</b>
+<b class="nc"><i>747</i>&nbsp;            byte newCrypt[] = c.crypt(password.getBytes(&quot;UTF8&quot;),</b>
+<i>748</i>&nbsp;                                      oldCrypt);
+<b class="nc"><i>749</i>&nbsp;            if (newCrypt.length != oldCrypt.length)</b>
+<b class="nc"><i>750</i>&nbsp;                return false;</b>
+<b class="nc"><i>751</i>&nbsp;            for (int i = 0; i &lt; newCrypt.length; i++) {</b>
+<b class="nc"><i>752</i>&nbsp;                if (oldCrypt[i] != newCrypt[i])</b>
+<b class="nc"><i>753</i>&nbsp;                    return false;</b>
+<i>754</i>&nbsp;            }
+<b class="nc"><i>755</i>&nbsp;        } catch (java.io.UnsupportedEncodingException uee) {</b>
+<i>756</i>&nbsp;            // cannot happen, but return false just to be safe
+<b class="nc"><i>757</i>&nbsp;            return false;</b>
+<b class="nc"><i>758</i>&nbsp;        }</b>
+<b class="nc"><i>759</i>&nbsp;        return true;</b>
+<i>760</i>&nbsp;    }
+<i>761</i>&nbsp;
+<i>762</i>&nbsp;    /**
+<i>763</i>&nbsp;     * Clean out state because of a failed authentication attempt
+<i>764</i>&nbsp;     */
+<i>765</i>&nbsp;    private void cleanState() {
+<b class="nc"><i>766</i>&nbsp;        username = null;</b>
+<b class="nc"><i>767</i>&nbsp;        if (password != null) {</b>
+<b class="nc"><i>768</i>&nbsp;            for (int i = 0; i &lt; password.length; i++)</b>
+<b class="nc"><i>769</i>&nbsp;                password[i] = &#39; &#39;;</b>
+<b class="nc"><i>770</i>&nbsp;            password = null;</b>
+<i>771</i>&nbsp;        }
+<b class="nc"><i>772</i>&nbsp;        ctx = null;</b>
+<i>773</i>&nbsp;
+<b class="nc"><i>774</i>&nbsp;        if (clearPass) {</b>
+<b class="nc"><i>775</i>&nbsp;            sharedState.remove(NAME);</b>
+<b class="nc"><i>776</i>&nbsp;            sharedState.remove(PWD);</b>
+<i>777</i>&nbsp;        }
+<i>778</i>&nbsp;    }
+<i>779</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

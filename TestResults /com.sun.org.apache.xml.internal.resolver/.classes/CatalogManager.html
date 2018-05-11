@@ -1,0 +1,929 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CatalogManager</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.resolver</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CatalogManager (com.sun.org.apache.xml.internal.resolver)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CatalogManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 42)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 235)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;// CatalogManager.java - Access CatalogManager.properties
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;/*
+<i>8</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation or its licensors,
+<i>9</i>&nbsp; * as applicable.
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>12</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>13</i>&nbsp; * You may obtain a copy of the License at
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>18</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>19</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>20</i>&nbsp; * See the License for the specific language governing permissions and
+<i>21</i>&nbsp; * limitations under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xml.internal.resolver;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.utils.SecuritySupport;
+<i>27</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.helpers.BootstrapResolver;
+<i>28</i>&nbsp;import com.sun.org.apache.xml.internal.resolver.helpers.Debug;
+<i>29</i>&nbsp;import java.io.InputStream;
+<i>30</i>&nbsp;import java.net.MalformedURLException;
+<i>31</i>&nbsp;import java.net.URL;
+<i>32</i>&nbsp;import java.util.MissingResourceException;
+<i>33</i>&nbsp;import java.util.PropertyResourceBundle;
+<i>34</i>&nbsp;import java.util.ResourceBundle;
+<i>35</i>&nbsp;import java.util.StringTokenizer;
+<i>36</i>&nbsp;import java.util.Vector;
+<i>37</i>&nbsp;import sun.reflect.misc.ReflectUtil;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**
+<i>40</i>&nbsp; * CatalogManager provides an interface to the catalog properties.
+<i>41</i>&nbsp; *
+<i>42</i>&nbsp; * &lt;p&gt;Properties can come from two places: from system properties or
+<i>43</i>&nbsp; * from a &lt;i&gt;CatalogManager.properties&lt;/i&gt; file. This class provides a transparent
+<i>44</i>&nbsp; * interface to both, with system properties preferred over property file values.&lt;/p&gt;
+<i>45</i>&nbsp; *
+<i>46</i>&nbsp; * &lt;p&gt;The following table summarizes the properties:&lt;/p&gt;
+<i>47</i>&nbsp; *
+<i>48</i>&nbsp; * &lt;table border=&quot;1&quot;&gt;
+<i>49</i>&nbsp; * &lt;thead&gt;
+<i>50</i>&nbsp; * &lt;tr&gt;
+<i>51</i>&nbsp; * &lt;td&gt;System Property&lt;/td&gt;
+<i>52</i>&nbsp; * &lt;td&gt;CatalogManager.properties&lt;br/&gt;Property&lt;/td&gt;
+<i>53</i>&nbsp; * &lt;td&gt;Description&lt;/td&gt;
+<i>54</i>&nbsp; * &lt;/tr&gt;
+<i>55</i>&nbsp; * &lt;/thead&gt;
+<i>56</i>&nbsp; * &lt;tbody&gt;
+<i>57</i>&nbsp; * &lt;tr&gt;
+<i>58</i>&nbsp; * &lt;td&gt;xml.catalog.ignoreMissing&lt;/td&gt;
+<i>59</i>&nbsp; * &lt;td&gt;&amp;#160;&lt;/td&gt;
+<i>60</i>&nbsp; * &lt;td&gt;If true, a missing &lt;i&gt;CatalogManager.properties&lt;/i&gt; file or missing properties
+<i>61</i>&nbsp; * within that file will not generate warning messages. See also the
+<i>62</i>&nbsp; * &lt;i&gt;ignoreMissingProperties&lt;/i&gt; method.&lt;/td&gt;
+<i>63</i>&nbsp; * &lt;/tr&gt;
+<i>64</i>&nbsp; *
+<i>65</i>&nbsp; * &lt;tr&gt;
+<i>66</i>&nbsp; * &lt;td&gt;xml.catalog.files&lt;/td&gt;
+<i>67</i>&nbsp; * &lt;td&gt;catalogs&lt;/td&gt;
+<i>68</i>&nbsp; * &lt;td&gt;The &lt;emph&gt;semicolon-delimited&lt;/emph&gt; list of catalog files.&lt;/td&gt;
+<i>69</i>&nbsp; * &lt;/tr&gt;
+<i>70</i>&nbsp; *
+<i>71</i>&nbsp; * &lt;tr&gt;
+<i>72</i>&nbsp; * &lt;td&gt;&amp;#160;&lt;/td&gt;
+<i>73</i>&nbsp; * &lt;td&gt;relative-catalogs&lt;/td&gt;
+<i>74</i>&nbsp; * &lt;td&gt;If false, relative catalog URIs are made absolute with respect to the base URI of
+<i>75</i>&nbsp; * the &lt;i&gt;CatalogManager.properties&lt;/i&gt; file. This setting only applies to catalog
+<i>76</i>&nbsp; * URIs obtained from the &lt;i&gt;catalogs&lt;/i&gt; property &lt;emph&gt;in the&lt;/emph&gt;
+<i>77</i>&nbsp; * &lt;i&gt;CatalogManager.properties&lt;/i&gt; file&lt;/td&gt;
+<i>78</i>&nbsp; * &lt;/tr&gt;
+<i>79</i>&nbsp; *
+<i>80</i>&nbsp; * &lt;tr&gt;
+<i>81</i>&nbsp; * &lt;td&gt;xml.catalog.verbosity&lt;/td&gt;
+<i>82</i>&nbsp; * &lt;td&gt;verbosity&lt;/td&gt;
+<i>83</i>&nbsp; * &lt;td&gt;If non-zero, the Catalog classes will print informative and debugging messages.
+<i>84</i>&nbsp; * The higher the number, the more messages.&lt;/td&gt;
+<i>85</i>&nbsp; * &lt;/tr&gt;
+<i>86</i>&nbsp; *
+<i>87</i>&nbsp; * &lt;tr&gt;
+<i>88</i>&nbsp; * &lt;td&gt;xml.catalog.prefer&lt;/td&gt;
+<i>89</i>&nbsp; * &lt;td&gt;prefer&lt;/td&gt;
+<i>90</i>&nbsp; * &lt;td&gt;Which identifier is preferred, &quot;public&quot; or &quot;system&quot;?&lt;/td&gt;
+<i>91</i>&nbsp; * &lt;/tr&gt;
+<i>92</i>&nbsp; *
+<i>93</i>&nbsp; * &lt;tr&gt;
+<i>94</i>&nbsp; * &lt;td&gt;xml.catalog.staticCatalog&lt;/td&gt;
+<i>95</i>&nbsp; * &lt;td&gt;static-catalog&lt;/td&gt;
+<i>96</i>&nbsp; * &lt;td&gt;Should a single catalog be constructed for all parsing, or should a different
+<i>97</i>&nbsp; * catalog be created for each parser?&lt;/td&gt;
+<i>98</i>&nbsp; * &lt;/tr&gt;
+<i>99</i>&nbsp; *
+<i>100</i>&nbsp; * &lt;tr&gt;
+<i>101</i>&nbsp; * &lt;td&gt;xml.catalog.allowPI&lt;/td&gt;
+<i>102</i>&nbsp; * &lt;td&gt;allow-oasis-xml-catalog-pi&lt;/td&gt;
+<i>103</i>&nbsp; * &lt;td&gt;If the source document contains &quot;oasis-xml-catalog&quot; processing instructions,
+<i>104</i>&nbsp; * should they be used?&lt;/td&gt;
+<i>105</i>&nbsp; * &lt;/tr&gt;
+<i>106</i>&nbsp; *
+<i>107</i>&nbsp; * &lt;tr&gt;
+<i>108</i>&nbsp; * &lt;td&gt;xml.catalog.className&lt;/td&gt;
+<i>109</i>&nbsp; * &lt;td&gt;catalog-class-name&lt;/td&gt;
+<i>110</i>&nbsp; * &lt;td&gt;If you&#39;re using the convenience classes
+<i>111</i>&nbsp; * &lt;tt&gt;com.sun.org.apache.xml.internal.resolver.tools.*&lt;/tt&gt;), this setting
+<i>112</i>&nbsp; * allows you to specify an alternate class name to use for the underlying
+<i>113</i>&nbsp; * catalog.&lt;/td&gt;
+<i>114</i>&nbsp; * &lt;/tr&gt;
+<i>115</i>&nbsp; * &lt;/tbody&gt;
+<i>116</i>&nbsp; * &lt;/table&gt;
+<i>117</i>&nbsp; *
+<i>118</i>&nbsp; * @see Catalog
+<i>119</i>&nbsp; *
+<i>120</i>&nbsp; * @author Norman Walsh
+<i>121</i>&nbsp; * &lt;a href=&quot;mailto:Norman.Walsh@Sun.COM&quot;&gt;Norman.Walsh@Sun.COM&lt;/a&gt;
+<i>122</i>&nbsp; *
+<i>123</i>&nbsp; * @version 1.0
+<i>124</i>&nbsp; */
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;public class CatalogManager {
+<b class="nc"><i>127</i>&nbsp;  private static String pFiles         = &quot;xml.catalog.files&quot;;</b>
+<b class="nc"><i>128</i>&nbsp;  private static String pVerbosity     = &quot;xml.catalog.verbosity&quot;;</b>
+<b class="nc"><i>129</i>&nbsp;  private static String pPrefer        = &quot;xml.catalog.prefer&quot;;</b>
+<b class="nc"><i>130</i>&nbsp;  private static String pStatic        = &quot;xml.catalog.staticCatalog&quot;;</b>
+<b class="nc"><i>131</i>&nbsp;  private static String pAllowPI       = &quot;xml.catalog.allowPI&quot;;</b>
+<b class="nc"><i>132</i>&nbsp;  private static String pClassname     = &quot;xml.catalog.className&quot;;</b>
+<b class="nc"><i>133</i>&nbsp;  private static String pIgnoreMissing = &quot;xml.catalog.ignoreMissing&quot;;</b>
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;  /** A static CatalogManager instance for sharing */
+<b class="nc"><i>136</i>&nbsp;  private static CatalogManager staticManager = new CatalogManager();</b>
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;  /** The bootstrap resolver to use when loading XML Catalogs. */
+<b class="nc"><i>139</i>&nbsp;  private BootstrapResolver bResolver = new BootstrapResolver();</b>
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;  /** Flag to ignore missing property files and/or properties */
+<b class="nc"><i>142</i>&nbsp;  private boolean ignoreMissingProperties</b>
+<b class="nc"><i>143</i>&nbsp;    = (SecuritySupport.getSystemProperty(pIgnoreMissing) != null</b>
+<b class="nc"><i>144</i>&nbsp;       || SecuritySupport.getSystemProperty(pFiles) != null);</b>
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;  /** Holds the resources after they are loaded from the file. */
+<i>147</i>&nbsp;  private ResourceBundle resources;
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;  /** The name of the CatalogManager properties file. */
+<b class="nc"><i>150</i>&nbsp;  private String propertyFile = &quot;CatalogManager.properties&quot;;</b>
+<i>151</i>&nbsp;
+<i>152</i>&nbsp;  /** The location of the propertyFile */
+<b class="nc"><i>153</i>&nbsp;  private URL propertyFileURI = null;</b>
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;  /** Default catalog files list. */
+<b class="nc"><i>156</i>&nbsp;  private String defaultCatalogFiles = &quot;./xcatalog&quot;;</b>
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;  /** Current catalog files list. */
+<b class="nc"><i>159</i>&nbsp;  private String catalogFiles = null;</b>
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;  /** Did the catalogFiles come from the properties file? */
+<b class="nc"><i>162</i>&nbsp;  private boolean fromPropertiesFile = false;</b>
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;  /** Default verbosity level if there is no property setting for it. */
+<b class="nc"><i>165</i>&nbsp;  private int defaultVerbosity = 1;</b>
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;  /** Current verbosity level. */
+<b class="nc"><i>168</i>&nbsp;  private Integer verbosity = null;</b>
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;  /** Default preference setting. */
+<b class="nc"><i>171</i>&nbsp;  private boolean defaultPreferPublic = true;</b>
+<i>172</i>&nbsp;
+<i>173</i>&nbsp;  /** Current preference setting. */
+<b class="nc"><i>174</i>&nbsp;  private Boolean preferPublic = null;</b>
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;  /** Default setting of the static catalog flag. */
+<b class="nc"><i>177</i>&nbsp;  private boolean defaultUseStaticCatalog = true;</b>
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;  /** Current setting of the static catalog flag. */
+<b class="nc"><i>180</i>&nbsp;  private Boolean useStaticCatalog = null;</b>
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;  /** The static catalog used by this manager. */
+<b class="nc"><i>183</i>&nbsp;  private static Catalog staticCatalog = null;</b>
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;  /** Default setting of the oasisXMLCatalogPI flag. */
+<b class="nc"><i>186</i>&nbsp;  private boolean defaultOasisXMLCatalogPI = true;</b>
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;  /** Current setting of the oasisXMLCatalogPI flag. */
+<b class="nc"><i>189</i>&nbsp;  private Boolean oasisXMLCatalogPI = null;</b>
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;  /** Default setting of the relativeCatalogs flag. */
+<b class="nc"><i>192</i>&nbsp;  private boolean defaultRelativeCatalogs = true;</b>
+<i>193</i>&nbsp;
+<i>194</i>&nbsp;  /** Current setting of the relativeCatalogs flag. */
+<b class="nc"><i>195</i>&nbsp;  private Boolean relativeCatalogs = null;</b>
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;  /** Current catalog class name. */
+<b class="nc"><i>198</i>&nbsp;  private String catalogClassName = null;</b>
+<i>199</i>&nbsp;    /**
+<i>200</i>&nbsp;     * Indicates whether implementation parts should use
+<i>201</i>&nbsp;     *   service loader (or similar).
+<i>202</i>&nbsp;     * Note the default value (false) is the safe option..
+<i>203</i>&nbsp;     */
+<i>204</i>&nbsp;    private boolean useServicesMechanism;
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;  /** The manager&#39;s debug object. Used for printing debugging messages.
+<i>207</i>&nbsp;   *
+<i>208</i>&nbsp;   * &lt;p&gt;This field is public so that objects that have access to this
+<i>209</i>&nbsp;   * CatalogManager can use this debug object.&lt;/p&gt;
+<i>210</i>&nbsp;   */
+<b class="nc"><i>211</i>&nbsp;  public Debug debug = null;</b>
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;  /** Constructor. */
+<b class="nc"><i>214</i>&nbsp;  public CatalogManager() {</b>
+<b class="nc"><i>215</i>&nbsp;    init();</b>
+<i>216</i>&nbsp;  }
+<i>217</i>&nbsp;
+<i>218</i>&nbsp;  /** Constructor that specifies an explicit property file. */
+<b class="nc"><i>219</i>&nbsp;  public CatalogManager(String propertyFile) {</b>
+<b class="nc"><i>220</i>&nbsp;    this.propertyFile = propertyFile;</b>
+<b class="nc"><i>221</i>&nbsp;    init();</b>
+<i>222</i>&nbsp;  }
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;  private void init() {
+<b class="nc"><i>225</i>&nbsp;    debug = new Debug();</b>
+<i>226</i>&nbsp;    // Note that we don&#39;t setDebug() here; we do that lazily. Either the
+<i>227</i>&nbsp;    // user will set it explicitly, or we&#39;ll do it automagically if they
+<i>228</i>&nbsp;    // read from the propertyFile for some other reason. That way, there&#39;s
+<i>229</i>&nbsp;    // no attempt to read from the file before the caller has had a chance
+<i>230</i>&nbsp;    // to avoid it.
+<b class="nc"><i>231</i>&nbsp;    if (System.getSecurityManager() == null) {</b>
+<b class="nc"><i>232</i>&nbsp;        useServicesMechanism = true;</b>
+<i>233</i>&nbsp;    }
+<i>234</i>&nbsp;  }
+<i>235</i>&nbsp;  /** Set the bootstrap resolver.*/
+<i>236</i>&nbsp;  public void setBootstrapResolver(BootstrapResolver resolver) {
+<b class="nc"><i>237</i>&nbsp;    bResolver = resolver;</b>
+<i>238</i>&nbsp;  }
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;  /** Get the bootstrap resolver.*/
+<i>241</i>&nbsp;  public BootstrapResolver getBootstrapResolver() {
+<b class="nc"><i>242</i>&nbsp;    return bResolver;</b>
+<i>243</i>&nbsp;  }
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;  /**
+<i>246</i>&nbsp;   * Load the properties from the propertyFile and build the
+<i>247</i>&nbsp;   * resources from it.
+<i>248</i>&nbsp;   */
+<i>249</i>&nbsp;  private synchronized void readProperties() {
+<i>250</i>&nbsp;    try {
+<b class="nc"><i>251</i>&nbsp;      propertyFileURI = CatalogManager.class.getResource(&quot;/&quot;+propertyFile);</b>
+<b class="nc"><i>252</i>&nbsp;      InputStream in =</b>
+<b class="nc"><i>253</i>&nbsp;        CatalogManager.class.getResourceAsStream(&quot;/&quot;+propertyFile);</b>
+<b class="nc"><i>254</i>&nbsp;      if (in==null) {</b>
+<b class="nc"><i>255</i>&nbsp;        if (!ignoreMissingProperties) {</b>
+<b class="nc"><i>256</i>&nbsp;          System.err.println(&quot;Cannot find &quot;+propertyFile);</b>
+<i>257</i>&nbsp;          // there&#39;s no reason to give this warning more than once
+<b class="nc"><i>258</i>&nbsp;          ignoreMissingProperties = true;</b>
+<i>259</i>&nbsp;        }
+<i>260</i>&nbsp;        return;
+<i>261</i>&nbsp;      }
+<b class="nc"><i>262</i>&nbsp;      resources = new PropertyResourceBundle(in);</b>
+<b class="nc"><i>263</i>&nbsp;    } catch (MissingResourceException mre) {</b>
+<b class="nc"><i>264</i>&nbsp;      if (!ignoreMissingProperties) {</b>
+<b class="nc"><i>265</i>&nbsp;        System.err.println(&quot;Cannot read &quot;+propertyFile);</b>
+<i>266</i>&nbsp;      }
+<b class="nc"><i>267</i>&nbsp;    } catch (java.io.IOException e) {</b>
+<b class="nc"><i>268</i>&nbsp;      if (!ignoreMissingProperties) {</b>
+<b class="nc"><i>269</i>&nbsp;        System.err.println(&quot;Failure trying to read &quot;+propertyFile);</b>
+<i>270</i>&nbsp;      }
+<b class="nc"><i>271</i>&nbsp;    }</b>
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;    // This is a bit of a hack. After we&#39;ve successfully read the properties,
+<i>274</i>&nbsp;    // use them to set the default debug level, if the user hasn&#39;t already set
+<i>275</i>&nbsp;    // the default debug level.
+<b class="nc"><i>276</i>&nbsp;    if (verbosity == null) {</b>
+<i>277</i>&nbsp;      try {
+<b class="nc"><i>278</i>&nbsp;        String verbStr = resources.getString(&quot;verbosity&quot;);</b>
+<b class="nc"><i>279</i>&nbsp;        int verb = Integer.parseInt(verbStr.trim());</b>
+<b class="nc"><i>280</i>&nbsp;        debug.setDebug(verb);</b>
+<b class="nc"><i>281</i>&nbsp;        verbosity = new Integer(verb);</b>
+<b class="nc"><i>282</i>&nbsp;      } catch (Exception e) {</b>
+<i>283</i>&nbsp;        // nop
+<b class="nc"><i>284</i>&nbsp;      }</b>
+<i>285</i>&nbsp;    }
+<i>286</i>&nbsp;  }
+<i>287</i>&nbsp;
+<i>288</i>&nbsp;  /**
+<i>289</i>&nbsp;   * Allow access to the static CatalogManager
+<i>290</i>&nbsp;   */
+<i>291</i>&nbsp;  public static CatalogManager getStaticManager() {
+<b class="nc"><i>292</i>&nbsp;    return staticManager;</b>
+<i>293</i>&nbsp;  }
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;  /**
+<i>296</i>&nbsp;   * How are missing properties handled?
+<i>297</i>&nbsp;   *
+<i>298</i>&nbsp;   * &lt;p&gt;If true, missing or unreadable property files will
+<i>299</i>&nbsp;   * not be reported. Otherwise, a message will be sent to System.err.
+<i>300</i>&nbsp;   * &lt;/p&gt;
+<i>301</i>&nbsp;   */
+<i>302</i>&nbsp;  public boolean getIgnoreMissingProperties() {
+<b class="nc"><i>303</i>&nbsp;    return ignoreMissingProperties;</b>
+<i>304</i>&nbsp;  }
+<i>305</i>&nbsp;
+<i>306</i>&nbsp;  /**
+<i>307</i>&nbsp;   * How should missing properties be handled?
+<i>308</i>&nbsp;   *
+<i>309</i>&nbsp;   * &lt;p&gt;If ignore is true, missing or unreadable property files will
+<i>310</i>&nbsp;   * not be reported. Otherwise, a message will be sent to System.err.
+<i>311</i>&nbsp;   * &lt;/p&gt;
+<i>312</i>&nbsp;   */
+<i>313</i>&nbsp;  public void setIgnoreMissingProperties(boolean ignore) {
+<b class="nc"><i>314</i>&nbsp;    ignoreMissingProperties = ignore;</b>
+<i>315</i>&nbsp;  }
+<i>316</i>&nbsp;
+<i>317</i>&nbsp;  /**
+<i>318</i>&nbsp;   * How are missing properties handled?
+<i>319</i>&nbsp;   *
+<i>320</i>&nbsp;   * &lt;p&gt;If ignore is true, missing or unreadable property files will
+<i>321</i>&nbsp;   * not be reported. Otherwise, a message will be sent to System.err.
+<i>322</i>&nbsp;   * &lt;/p&gt;
+<i>323</i>&nbsp;   *
+<i>324</i>&nbsp;   * @deprecated No longer static; use get/set methods.
+<i>325</i>&nbsp;   */
+<i>326</i>&nbsp;  public void ignoreMissingProperties(boolean ignore) {
+<b class="nc"><i>327</i>&nbsp;    setIgnoreMissingProperties(ignore);</b>
+<i>328</i>&nbsp;  }
+<i>329</i>&nbsp;
+<i>330</i>&nbsp;  /**
+<i>331</i>&nbsp;   * Obtain the verbosity setting from the properties.
+<i>332</i>&nbsp;   *
+<i>333</i>&nbsp;   * @return The verbosity level from the propertyFile or the
+<i>334</i>&nbsp;   * defaultVerbosity.
+<i>335</i>&nbsp;   */
+<i>336</i>&nbsp;  private int queryVerbosity () {
+<b class="nc"><i>337</i>&nbsp;    String defaultVerbStr = Integer.toString(defaultVerbosity);</b>
+<i>338</i>&nbsp;
+<b class="nc"><i>339</i>&nbsp;    String verbStr = SecuritySupport.getSystemProperty(pVerbosity);</b>
+<i>340</i>&nbsp;
+<b class="nc"><i>341</i>&nbsp;    if (verbStr == null) {</b>
+<b class="nc"><i>342</i>&nbsp;      if (resources==null) readProperties();</b>
+<b class="nc"><i>343</i>&nbsp;      if (resources != null) {</b>
+<i>344</i>&nbsp;        try {
+<b class="nc"><i>345</i>&nbsp;          verbStr = resources.getString(&quot;verbosity&quot;);</b>
+<b class="nc"><i>346</i>&nbsp;        } catch (MissingResourceException e) {</b>
+<b class="nc"><i>347</i>&nbsp;          verbStr = defaultVerbStr;</b>
+<b class="nc"><i>348</i>&nbsp;        }</b>
+<i>349</i>&nbsp;      } else {
+<b class="nc"><i>350</i>&nbsp;        verbStr = defaultVerbStr;</b>
+<i>351</i>&nbsp;      }
+<i>352</i>&nbsp;    }
+<i>353</i>&nbsp;
+<b class="nc"><i>354</i>&nbsp;    int verb = defaultVerbosity;</b>
+<i>355</i>&nbsp;
+<i>356</i>&nbsp;    try {
+<b class="nc"><i>357</i>&nbsp;      verb = Integer.parseInt(verbStr.trim());</b>
+<b class="nc"><i>358</i>&nbsp;    } catch (Exception e) {</b>
+<b class="nc"><i>359</i>&nbsp;      System.err.println(&quot;Cannot parse verbosity: \&quot;&quot; + verbStr + &quot;\&quot;&quot;);</b>
+<b class="nc"><i>360</i>&nbsp;    }</b>
+<i>361</i>&nbsp;
+<i>362</i>&nbsp;    // This is a bit of a hack. After we&#39;ve successfully got the verbosity,
+<i>363</i>&nbsp;    // we have to use it to set the default debug level,
+<i>364</i>&nbsp;    // if the user hasn&#39;t already set the default debug level.
+<b class="nc"><i>365</i>&nbsp;    if (verbosity == null) {</b>
+<b class="nc"><i>366</i>&nbsp;      debug.setDebug(verb);</b>
+<b class="nc"><i>367</i>&nbsp;      verbosity = new Integer(verb);</b>
+<i>368</i>&nbsp;    }
+<i>369</i>&nbsp;
+<b class="nc"><i>370</i>&nbsp;    return verb;</b>
+<i>371</i>&nbsp;  }
+<i>372</i>&nbsp;
+<i>373</i>&nbsp;  /**
+<i>374</i>&nbsp;   * What is the current verbosity?
+<i>375</i>&nbsp;   */
+<i>376</i>&nbsp;  public int getVerbosity() {
+<b class="nc"><i>377</i>&nbsp;    if (verbosity == null) {</b>
+<b class="nc"><i>378</i>&nbsp;      verbosity = new Integer(queryVerbosity());</b>
+<i>379</i>&nbsp;    }
+<i>380</i>&nbsp;
+<b class="nc"><i>381</i>&nbsp;    return verbosity.intValue();</b>
+<i>382</i>&nbsp;  }
+<i>383</i>&nbsp;
+<i>384</i>&nbsp;  /**
+<i>385</i>&nbsp;   * Set the current verbosity.
+<i>386</i>&nbsp;   */
+<i>387</i>&nbsp;  public void setVerbosity (int verbosity) {
+<b class="nc"><i>388</i>&nbsp;    this.verbosity = new Integer(verbosity);</b>
+<b class="nc"><i>389</i>&nbsp;    debug.setDebug(verbosity);</b>
+<i>390</i>&nbsp;  }
+<i>391</i>&nbsp;
+<i>392</i>&nbsp;  /**
+<i>393</i>&nbsp;   * What is the current verbosity?
+<i>394</i>&nbsp;   *
+<i>395</i>&nbsp;   * @deprecated No longer static; use get/set methods.
+<i>396</i>&nbsp;   */
+<i>397</i>&nbsp;  public int verbosity () {
+<b class="nc"><i>398</i>&nbsp;    return getVerbosity();</b>
+<i>399</i>&nbsp;  }
+<i>400</i>&nbsp;
+<i>401</i>&nbsp;  /**
+<i>402</i>&nbsp;   * Obtain the relativeCatalogs setting from the properties.
+<i>403</i>&nbsp;   *
+<i>404</i>&nbsp;   * @return The relativeCatalogs setting from the propertyFile or the
+<i>405</i>&nbsp;   * defaultRelativeCatalogs.
+<i>406</i>&nbsp;   */
+<i>407</i>&nbsp;  private boolean queryRelativeCatalogs () {
+<b class="nc"><i>408</i>&nbsp;    if (resources==null) readProperties();</b>
+<i>409</i>&nbsp;
+<b class="nc"><i>410</i>&nbsp;    if (resources==null) return defaultRelativeCatalogs;</b>
+<i>411</i>&nbsp;
+<i>412</i>&nbsp;    try {
+<b class="nc"><i>413</i>&nbsp;      String allow = resources.getString(&quot;relative-catalogs&quot;);</b>
+<b class="nc"><i>414</i>&nbsp;      return (allow.equalsIgnoreCase(&quot;true&quot;)</b>
+<b class="nc"><i>415</i>&nbsp;              || allow.equalsIgnoreCase(&quot;yes&quot;)</b>
+<b class="nc"><i>416</i>&nbsp;              || allow.equalsIgnoreCase(&quot;1&quot;));</b>
+<b class="nc"><i>417</i>&nbsp;    } catch (MissingResourceException e) {</b>
+<b class="nc"><i>418</i>&nbsp;      return defaultRelativeCatalogs;</b>
+<i>419</i>&nbsp;    }
+<i>420</i>&nbsp;  }
+<i>421</i>&nbsp;
+<i>422</i>&nbsp;  /**
+<i>423</i>&nbsp;   * Get the relativeCatalogs setting.
+<i>424</i>&nbsp;   *
+<i>425</i>&nbsp;   * &lt;p&gt;This property is used when the catalogFiles property is
+<i>426</i>&nbsp;   * interrogated. If true, then relative catalog entry file names
+<i>427</i>&nbsp;   * are returned. If false, relative catalog entry file names are
+<i>428</i>&nbsp;   * made absolute with respect to the properties file before returning
+<i>429</i>&nbsp;   * them.&lt;/p&gt;
+<i>430</i>&nbsp;   *
+<i>431</i>&nbsp;   * &lt;p&gt;This property &lt;emph&gt;only applies&lt;/emph&gt; when the catalog files
+<i>432</i>&nbsp;   * come from a properties file. If they come from a system property or
+<i>433</i>&nbsp;   * the default list, they are never considered relative. (What would
+<i>434</i>&nbsp;   * they be relative to?)&lt;/p&gt;
+<i>435</i>&nbsp;   *
+<i>436</i>&nbsp;   * &lt;p&gt;In the properties, a value of &#39;yes&#39;, &#39;true&#39;, or &#39;1&#39; is considered
+<i>437</i>&nbsp;   * true, anything else is false.&lt;/p&gt;
+<i>438</i>&nbsp;   *
+<i>439</i>&nbsp;   * @return The relativeCatalogs setting from the propertyFile or the
+<i>440</i>&nbsp;   * defaultRelativeCatalogs.
+<i>441</i>&nbsp;   */
+<i>442</i>&nbsp;  public boolean getRelativeCatalogs () {
+<b class="nc"><i>443</i>&nbsp;    if (relativeCatalogs == null) {</b>
+<b class="nc"><i>444</i>&nbsp;      relativeCatalogs = new Boolean(queryRelativeCatalogs());</b>
+<i>445</i>&nbsp;    }
+<i>446</i>&nbsp;
+<b class="nc"><i>447</i>&nbsp;    return relativeCatalogs.booleanValue();</b>
+<i>448</i>&nbsp;  }
+<i>449</i>&nbsp;
+<i>450</i>&nbsp;  /**
+<i>451</i>&nbsp;   * Set the relativeCatalogs setting.
+<i>452</i>&nbsp;   *
+<i>453</i>&nbsp;   * @see #getRelativeCatalogs()
+<i>454</i>&nbsp;   */
+<i>455</i>&nbsp;  public void setRelativeCatalogs (boolean relative) {
+<b class="nc"><i>456</i>&nbsp;    relativeCatalogs = new Boolean(relative);</b>
+<i>457</i>&nbsp;  }
+<i>458</i>&nbsp;
+<i>459</i>&nbsp;  /**
+<i>460</i>&nbsp;   * Get the relativeCatalogs setting.
+<i>461</i>&nbsp;   *
+<i>462</i>&nbsp;   * @deprecated No longer static; use get/set methods.
+<i>463</i>&nbsp;   */
+<i>464</i>&nbsp;  public boolean relativeCatalogs () {
+<b class="nc"><i>465</i>&nbsp;    return getRelativeCatalogs();</b>
+<i>466</i>&nbsp;  }
+<i>467</i>&nbsp;
+<i>468</i>&nbsp;  /**
+<i>469</i>&nbsp;   * Obtain the list of catalog files from the properties.
+<i>470</i>&nbsp;   *
+<i>471</i>&nbsp;   * @return A semicolon delimited list of catlog file URIs
+<i>472</i>&nbsp;   */
+<i>473</i>&nbsp;  private String queryCatalogFiles () {
+<b class="nc"><i>474</i>&nbsp;    String catalogList = SecuritySupport.getSystemProperty(pFiles);</b>
+<b class="nc"><i>475</i>&nbsp;    fromPropertiesFile = false;</b>
+<i>476</i>&nbsp;
+<b class="nc"><i>477</i>&nbsp;    if (catalogList == null) {</b>
+<b class="nc"><i>478</i>&nbsp;      if (resources == null) readProperties();</b>
+<b class="nc"><i>479</i>&nbsp;      if (resources != null) {</b>
+<i>480</i>&nbsp;        try {
+<b class="nc"><i>481</i>&nbsp;          catalogList = resources.getString(&quot;catalogs&quot;);</b>
+<b class="nc"><i>482</i>&nbsp;          fromPropertiesFile = true;</b>
+<b class="nc"><i>483</i>&nbsp;        } catch (MissingResourceException e) {</b>
+<b class="nc"><i>484</i>&nbsp;          System.err.println(propertyFile + &quot;: catalogs not found.&quot;);</b>
+<b class="nc"><i>485</i>&nbsp;          catalogList = null;</b>
+<b class="nc"><i>486</i>&nbsp;        }</b>
+<i>487</i>&nbsp;      }
+<i>488</i>&nbsp;    }
+<i>489</i>&nbsp;
+<b class="nc"><i>490</i>&nbsp;    if (catalogList == null) {</b>
+<b class="nc"><i>491</i>&nbsp;      catalogList = defaultCatalogFiles;</b>
+<i>492</i>&nbsp;    }
+<i>493</i>&nbsp;
+<b class="nc"><i>494</i>&nbsp;    return catalogList;</b>
+<i>495</i>&nbsp;  }
+<i>496</i>&nbsp;
+<i>497</i>&nbsp;  /**
+<i>498</i>&nbsp;   * Return the current list of catalog files.
+<i>499</i>&nbsp;   *
+<i>500</i>&nbsp;   * @return A vector of the catalog file names or null if no catalogs
+<i>501</i>&nbsp;   * are available in the properties.
+<i>502</i>&nbsp;   */
+<i>503</i>&nbsp;  public Vector getCatalogFiles() {
+<b class="nc"><i>504</i>&nbsp;    if (catalogFiles == null) {</b>
+<b class="nc"><i>505</i>&nbsp;      catalogFiles = queryCatalogFiles();</b>
+<i>506</i>&nbsp;    }
+<i>507</i>&nbsp;
+<b class="nc"><i>508</i>&nbsp;    StringTokenizer files = new StringTokenizer(catalogFiles, &quot;;&quot;);</b>
+<b class="nc"><i>509</i>&nbsp;    Vector catalogs = new Vector();</b>
+<b class="nc"><i>510</i>&nbsp;    while (files.hasMoreTokens()) {</b>
+<b class="nc"><i>511</i>&nbsp;      String catalogFile = files.nextToken();</b>
+<b class="nc"><i>512</i>&nbsp;      URL absURI = null;</b>
+<i>513</i>&nbsp;
+<b class="nc"><i>514</i>&nbsp;      if (fromPropertiesFile &amp;&amp; !relativeCatalogs()) {</b>
+<i>515</i>&nbsp;        try {
+<b class="nc"><i>516</i>&nbsp;          absURI = new URL(propertyFileURI, catalogFile);</b>
+<b class="nc"><i>517</i>&nbsp;          catalogFile = absURI.toString();</b>
+<b class="nc"><i>518</i>&nbsp;        } catch (MalformedURLException mue) {</b>
+<b class="nc"><i>519</i>&nbsp;          absURI = null;</b>
+<b class="nc"><i>520</i>&nbsp;        }</b>
+<i>521</i>&nbsp;      }
+<i>522</i>&nbsp;
+<b class="nc"><i>523</i>&nbsp;      catalogs.add(catalogFile);</b>
+<b class="nc"><i>524</i>&nbsp;    }</b>
+<i>525</i>&nbsp;
+<b class="nc"><i>526</i>&nbsp;    return catalogs;</b>
+<i>527</i>&nbsp;  }
+<i>528</i>&nbsp;
+<i>529</i>&nbsp;  /**
+<i>530</i>&nbsp;   * Set the list of catalog files.
+<i>531</i>&nbsp;   */
+<i>532</i>&nbsp;  public void setCatalogFiles(String fileList) {
+<b class="nc"><i>533</i>&nbsp;    catalogFiles = fileList;</b>
+<b class="nc"><i>534</i>&nbsp;    fromPropertiesFile = false;</b>
+<i>535</i>&nbsp;  }
+<i>536</i>&nbsp;
+<i>537</i>&nbsp;  /**
+<i>538</i>&nbsp;   * Return the current list of catalog files.
+<i>539</i>&nbsp;   *
+<i>540</i>&nbsp;   * @return A vector of the catalog file names or null if no catalogs
+<i>541</i>&nbsp;   * are available in the properties.
+<i>542</i>&nbsp;   *
+<i>543</i>&nbsp;   * @deprecated No longer static; use get/set methods.
+<i>544</i>&nbsp;   */
+<i>545</i>&nbsp;  public Vector catalogFiles() {
+<b class="nc"><i>546</i>&nbsp;    return getCatalogFiles();</b>
+<i>547</i>&nbsp;  }
+<i>548</i>&nbsp;
+<i>549</i>&nbsp;  /**
+<i>550</i>&nbsp;   * Obtain the preferPublic setting from the properties.
+<i>551</i>&nbsp;   *
+<i>552</i>&nbsp;   * &lt;p&gt;In the properties, a value of &#39;public&#39; is true,
+<i>553</i>&nbsp;   * anything else is false.&lt;/p&gt;
+<i>554</i>&nbsp;   *
+<i>555</i>&nbsp;   * @return True if prefer is public or the
+<i>556</i>&nbsp;   * defaultPreferSetting.
+<i>557</i>&nbsp;   */
+<i>558</i>&nbsp;  private boolean queryPreferPublic () {
+<b class="nc"><i>559</i>&nbsp;    String prefer = SecuritySupport.getSystemProperty(pPrefer);</b>
+<i>560</i>&nbsp;
+<b class="nc"><i>561</i>&nbsp;    if (prefer == null) {</b>
+<b class="nc"><i>562</i>&nbsp;      if (resources==null) readProperties();</b>
+<b class="nc"><i>563</i>&nbsp;      if (resources==null) return defaultPreferPublic;</b>
+<i>564</i>&nbsp;      try {
+<b class="nc"><i>565</i>&nbsp;        prefer = resources.getString(&quot;prefer&quot;);</b>
+<b class="nc"><i>566</i>&nbsp;      } catch (MissingResourceException e) {</b>
+<b class="nc"><i>567</i>&nbsp;        return defaultPreferPublic;</b>
+<b class="nc"><i>568</i>&nbsp;      }</b>
+<i>569</i>&nbsp;    }
+<i>570</i>&nbsp;
+<b class="nc"><i>571</i>&nbsp;    if (prefer == null) {</b>
+<b class="nc"><i>572</i>&nbsp;      return defaultPreferPublic;</b>
+<i>573</i>&nbsp;    }
+<i>574</i>&nbsp;
+<b class="nc"><i>575</i>&nbsp;    return (prefer.equalsIgnoreCase(&quot;public&quot;));</b>
+<i>576</i>&nbsp;  }
+<i>577</i>&nbsp;
+<i>578</i>&nbsp;  /**
+<i>579</i>&nbsp;   * Return the current prefer public setting.
+<i>580</i>&nbsp;   *
+<i>581</i>&nbsp;   * @return True if public identifiers are preferred.
+<i>582</i>&nbsp;   */
+<i>583</i>&nbsp;  public boolean getPreferPublic () {
+<b class="nc"><i>584</i>&nbsp;    if (preferPublic == null) {</b>
+<b class="nc"><i>585</i>&nbsp;      preferPublic = new Boolean(queryPreferPublic());</b>
+<i>586</i>&nbsp;    }
+<b class="nc"><i>587</i>&nbsp;    return preferPublic.booleanValue();</b>
+<i>588</i>&nbsp;  }
+<i>589</i>&nbsp;
+<i>590</i>&nbsp;  /**
+<i>591</i>&nbsp;   * Set the prefer public setting.
+<i>592</i>&nbsp;   */
+<i>593</i>&nbsp;  public void setPreferPublic (boolean preferPublic) {
+<b class="nc"><i>594</i>&nbsp;    this.preferPublic = new Boolean(preferPublic);</b>
+<i>595</i>&nbsp;  }
+<i>596</i>&nbsp;
+<i>597</i>&nbsp;  /**
+<i>598</i>&nbsp;   * Return the current prefer public setting.
+<i>599</i>&nbsp;   *
+<i>600</i>&nbsp;   * @return True if public identifiers are preferred.
+<i>601</i>&nbsp;   *
+<i>602</i>&nbsp;   * @deprecated No longer static; use get/set methods.
+<i>603</i>&nbsp;   */
+<i>604</i>&nbsp;  public boolean preferPublic () {
+<b class="nc"><i>605</i>&nbsp;    return getPreferPublic();</b>
+<i>606</i>&nbsp;  }
+<i>607</i>&nbsp;
+<i>608</i>&nbsp;  /**
+<i>609</i>&nbsp;   * Obtain the static-catalog setting from the properties.
+<i>610</i>&nbsp;   *
+<i>611</i>&nbsp;   * &lt;p&gt;In the properties, a value of &#39;yes&#39;, &#39;true&#39;, or &#39;1&#39; is considered
+<i>612</i>&nbsp;   * true, anything else is false.&lt;/p&gt;
+<i>613</i>&nbsp;   *
+<i>614</i>&nbsp;   * @return The static-catalog setting from the propertyFile or the
+<i>615</i>&nbsp;   * defaultUseStaticCatalog.
+<i>616</i>&nbsp;   */
+<i>617</i>&nbsp;  private boolean queryUseStaticCatalog () {
+<b class="nc"><i>618</i>&nbsp;    String staticCatalog = SecuritySupport.getSystemProperty(pStatic);</b>
+<i>619</i>&nbsp;
+<b class="nc"><i>620</i>&nbsp;    if (staticCatalog == null) {</b>
+<b class="nc"><i>621</i>&nbsp;      if (resources==null) readProperties();</b>
+<b class="nc"><i>622</i>&nbsp;      if (resources==null) return defaultUseStaticCatalog;</b>
+<i>623</i>&nbsp;      try {
+<b class="nc"><i>624</i>&nbsp;        staticCatalog = resources.getString(&quot;static-catalog&quot;);</b>
+<b class="nc"><i>625</i>&nbsp;      } catch (MissingResourceException e) {</b>
+<b class="nc"><i>626</i>&nbsp;        return defaultUseStaticCatalog;</b>
+<b class="nc"><i>627</i>&nbsp;      }</b>
+<i>628</i>&nbsp;    }
+<i>629</i>&nbsp;
+<b class="nc"><i>630</i>&nbsp;    if (staticCatalog == null) {</b>
+<b class="nc"><i>631</i>&nbsp;      return defaultUseStaticCatalog;</b>
+<i>632</i>&nbsp;    }
+<i>633</i>&nbsp;
+<b class="nc"><i>634</i>&nbsp;    return (staticCatalog.equalsIgnoreCase(&quot;true&quot;)</b>
+<b class="nc"><i>635</i>&nbsp;            || staticCatalog.equalsIgnoreCase(&quot;yes&quot;)</b>
+<b class="nc"><i>636</i>&nbsp;            || staticCatalog.equalsIgnoreCase(&quot;1&quot;));</b>
+<i>637</i>&nbsp;  }
+<i>638</i>&nbsp;
+<i>639</i>&nbsp;  /**
+<i>640</i>&nbsp;   * Get the current use static catalog setting.
+<i>641</i>&nbsp;   */
+<i>642</i>&nbsp;  public boolean getUseStaticCatalog() {
+<b class="nc"><i>643</i>&nbsp;    if (useStaticCatalog == null) {</b>
+<b class="nc"><i>644</i>&nbsp;      useStaticCatalog = new Boolean(queryUseStaticCatalog());</b>
+<i>645</i>&nbsp;    }
+<i>646</i>&nbsp;
+<b class="nc"><i>647</i>&nbsp;    return useStaticCatalog.booleanValue();</b>
+<i>648</i>&nbsp;  }
+<i>649</i>&nbsp;
+<i>650</i>&nbsp;  /**
+<i>651</i>&nbsp;   * Set the use static catalog setting.
+<i>652</i>&nbsp;   */
+<i>653</i>&nbsp;  public void setUseStaticCatalog(boolean useStatic) {
+<b class="nc"><i>654</i>&nbsp;    useStaticCatalog = new Boolean(useStatic);</b>
+<i>655</i>&nbsp;  }
+<i>656</i>&nbsp;
+<i>657</i>&nbsp;  /**
+<i>658</i>&nbsp;   * Get the current use static catalog setting.
+<i>659</i>&nbsp;   *
+<i>660</i>&nbsp;   * @deprecated No longer static; use get/set methods.
+<i>661</i>&nbsp;   */
+<i>662</i>&nbsp;  public boolean staticCatalog() {
+<b class="nc"><i>663</i>&nbsp;    return getUseStaticCatalog();</b>
+<i>664</i>&nbsp;  }
+<i>665</i>&nbsp;
+<i>666</i>&nbsp;  /**
+<i>667</i>&nbsp;   * Get a new catalog instance.
+<i>668</i>&nbsp;   *
+<i>669</i>&nbsp;   * This method always returns a new instance of the underlying catalog class.
+<i>670</i>&nbsp;   */
+<i>671</i>&nbsp;  public Catalog getPrivateCatalog() {
+<b class="nc"><i>672</i>&nbsp;    Catalog catalog = staticCatalog;</b>
+<i>673</i>&nbsp;
+<b class="nc"><i>674</i>&nbsp;    if (useStaticCatalog == null) {</b>
+<b class="nc"><i>675</i>&nbsp;      useStaticCatalog = new Boolean(getUseStaticCatalog());</b>
+<i>676</i>&nbsp;    }
+<i>677</i>&nbsp;
+<b class="nc"><i>678</i>&nbsp;    if (catalog == null || !useStaticCatalog.booleanValue()) {</b>
+<i>679</i>&nbsp;
+<i>680</i>&nbsp;      try {
+<b class="nc"><i>681</i>&nbsp;        String catalogClassName = getCatalogClassName();</b>
+<i>682</i>&nbsp;
+<b class="nc"><i>683</i>&nbsp;        if (catalogClassName == null) {</b>
+<b class="nc"><i>684</i>&nbsp;          catalog = new Catalog();</b>
+<i>685</i>&nbsp;        } else {
+<i>686</i>&nbsp;          try {
+<b class="nc"><i>687</i>&nbsp;            catalog = (Catalog) ReflectUtil.forName(catalogClassName).newInstance();</b>
+<b class="nc"><i>688</i>&nbsp;          } catch (ClassNotFoundException cnfe) {</b>
+<b class="nc"><i>689</i>&nbsp;            debug.message(1,&quot;Catalog class named &#39;&quot;</b>
+<i>690</i>&nbsp;                          + catalogClassName
+<i>691</i>&nbsp;                          + &quot;&#39; could not be found. Using default.&quot;);
+<b class="nc"><i>692</i>&nbsp;            catalog = new Catalog();</b>
+<b class="nc"><i>693</i>&nbsp;          } catch (ClassCastException cnfe) {</b>
+<b class="nc"><i>694</i>&nbsp;            debug.message(1,&quot;Class named &#39;&quot;</b>
+<i>695</i>&nbsp;                          + catalogClassName
+<i>696</i>&nbsp;                          + &quot;&#39; is not a Catalog. Using default.&quot;);
+<b class="nc"><i>697</i>&nbsp;            catalog = new Catalog();</b>
+<b class="nc"><i>698</i>&nbsp;          }</b>
+<i>699</i>&nbsp;        }
+<i>700</i>&nbsp;
+<b class="nc"><i>701</i>&nbsp;        catalog.setCatalogManager(this);</b>
+<b class="nc"><i>702</i>&nbsp;        catalog.setupReaders();</b>
+<b class="nc"><i>703</i>&nbsp;        catalog.loadSystemCatalogs();</b>
+<b class="nc"><i>704</i>&nbsp;      } catch (Exception ex) {</b>
+<b class="nc"><i>705</i>&nbsp;        ex.printStackTrace();</b>
+<b class="nc"><i>706</i>&nbsp;      }</b>
+<i>707</i>&nbsp;
+<b class="nc"><i>708</i>&nbsp;      if (useStaticCatalog.booleanValue()) {</b>
+<b class="nc"><i>709</i>&nbsp;        staticCatalog = catalog;</b>
+<i>710</i>&nbsp;      }
+<i>711</i>&nbsp;    }
+<i>712</i>&nbsp;
+<b class="nc"><i>713</i>&nbsp;    return catalog;</b>
+<i>714</i>&nbsp;  }
+<i>715</i>&nbsp;
+<i>716</i>&nbsp;  /**
+<i>717</i>&nbsp;   * Get a catalog instance.
+<i>718</i>&nbsp;   *
+<i>719</i>&nbsp;   * If this manager uses static catalogs, the same static catalog will
+<i>720</i>&nbsp;   * always be returned. Otherwise a new catalog will be returned.
+<i>721</i>&nbsp;   */
+<i>722</i>&nbsp;  public Catalog getCatalog() {
+<b class="nc"><i>723</i>&nbsp;    Catalog catalog = staticCatalog;</b>
+<i>724</i>&nbsp;
+<b class="nc"><i>725</i>&nbsp;    if (useStaticCatalog == null) {</b>
+<b class="nc"><i>726</i>&nbsp;      useStaticCatalog = new Boolean(getUseStaticCatalog());</b>
+<i>727</i>&nbsp;    }
+<i>728</i>&nbsp;
+<b class="nc"><i>729</i>&nbsp;    if (catalog == null || !useStaticCatalog.booleanValue()) {</b>
+<b class="nc"><i>730</i>&nbsp;      catalog = getPrivateCatalog();</b>
+<b class="nc"><i>731</i>&nbsp;      if (useStaticCatalog.booleanValue()) {</b>
+<b class="nc"><i>732</i>&nbsp;        staticCatalog = catalog;</b>
+<i>733</i>&nbsp;      }
+<i>734</i>&nbsp;    }
+<i>735</i>&nbsp;
+<b class="nc"><i>736</i>&nbsp;    return catalog;</b>
+<i>737</i>&nbsp;  }
+<i>738</i>&nbsp;
+<i>739</i>&nbsp;  /**
+<i>740</i>&nbsp;   * &lt;p&gt;Obtain the oasisXMLCatalogPI setting from the properties.&lt;/p&gt;
+<i>741</i>&nbsp;   *
+<i>742</i>&nbsp;   * &lt;p&gt;In the properties, a value of &#39;yes&#39;, &#39;true&#39;, or &#39;1&#39; is considered
+<i>743</i>&nbsp;   * true, anything else is false.&lt;/p&gt;
+<i>744</i>&nbsp;   *
+<i>745</i>&nbsp;   * @return The oasisXMLCatalogPI setting from the propertyFile or the
+<i>746</i>&nbsp;   * defaultOasisXMLCatalogPI.
+<i>747</i>&nbsp;   */
+<i>748</i>&nbsp;  public boolean queryAllowOasisXMLCatalogPI () {
+<b class="nc"><i>749</i>&nbsp;    String allow = SecuritySupport.getSystemProperty(pAllowPI);</b>
+<i>750</i>&nbsp;
+<b class="nc"><i>751</i>&nbsp;    if (allow == null) {</b>
+<b class="nc"><i>752</i>&nbsp;      if (resources==null) readProperties();</b>
+<b class="nc"><i>753</i>&nbsp;      if (resources==null) return defaultOasisXMLCatalogPI;</b>
+<i>754</i>&nbsp;      try {
+<b class="nc"><i>755</i>&nbsp;        allow = resources.getString(&quot;allow-oasis-xml-catalog-pi&quot;);</b>
+<b class="nc"><i>756</i>&nbsp;      } catch (MissingResourceException e) {</b>
+<b class="nc"><i>757</i>&nbsp;        return defaultOasisXMLCatalogPI;</b>
+<b class="nc"><i>758</i>&nbsp;      }</b>
+<i>759</i>&nbsp;    }
+<i>760</i>&nbsp;
+<b class="nc"><i>761</i>&nbsp;    if (allow == null) {</b>
+<b class="nc"><i>762</i>&nbsp;      return defaultOasisXMLCatalogPI;</b>
+<i>763</i>&nbsp;    }
+<i>764</i>&nbsp;
+<b class="nc"><i>765</i>&nbsp;    return (allow.equalsIgnoreCase(&quot;true&quot;)</b>
+<b class="nc"><i>766</i>&nbsp;            || allow.equalsIgnoreCase(&quot;yes&quot;)</b>
+<b class="nc"><i>767</i>&nbsp;            || allow.equalsIgnoreCase(&quot;1&quot;));</b>
+<i>768</i>&nbsp;  }
+<i>769</i>&nbsp;
+<i>770</i>&nbsp;  /**
+<i>771</i>&nbsp;   * Get the current XML Catalog PI setting.
+<i>772</i>&nbsp;   */
+<i>773</i>&nbsp;  public boolean getAllowOasisXMLCatalogPI () {
+<b class="nc"><i>774</i>&nbsp;    if (oasisXMLCatalogPI == null) {</b>
+<b class="nc"><i>775</i>&nbsp;      oasisXMLCatalogPI = new Boolean(queryAllowOasisXMLCatalogPI());</b>
+<i>776</i>&nbsp;    }
+<i>777</i>&nbsp;
+<b class="nc"><i>778</i>&nbsp;    return oasisXMLCatalogPI.booleanValue();</b>
+<i>779</i>&nbsp;  }
+<i>780</i>&nbsp;
+<i>781</i>&nbsp;  public boolean useServicesMechanism() {
+<b class="nc"><i>782</i>&nbsp;      return useServicesMechanism;</b>
+<i>783</i>&nbsp;  }
+<i>784</i>&nbsp;  /**
+<i>785</i>&nbsp;   * Set the XML Catalog PI setting
+<i>786</i>&nbsp;   */
+<i>787</i>&nbsp;  public void setAllowOasisXMLCatalogPI(boolean allowPI) {
+<b class="nc"><i>788</i>&nbsp;    oasisXMLCatalogPI = new Boolean(allowPI);</b>
+<i>789</i>&nbsp;  }
+<i>790</i>&nbsp;
+<i>791</i>&nbsp;  /**
+<i>792</i>&nbsp;   * Get the current XML Catalog PI setting.
+<i>793</i>&nbsp;   *
+<i>794</i>&nbsp;   * @deprecated No longer static; use get/set methods.
+<i>795</i>&nbsp;   */
+<i>796</i>&nbsp;  public boolean allowOasisXMLCatalogPI() {
+<b class="nc"><i>797</i>&nbsp;    return getAllowOasisXMLCatalogPI();</b>
+<i>798</i>&nbsp;  }
+<i>799</i>&nbsp;
+<i>800</i>&nbsp;  /**
+<i>801</i>&nbsp;   * Obtain the Catalog class name setting from the properties.
+<i>802</i>&nbsp;   *
+<i>803</i>&nbsp;   */
+<i>804</i>&nbsp;  public String queryCatalogClassName () {
+<b class="nc"><i>805</i>&nbsp;    String className = SecuritySupport.getSystemProperty(pClassname);</b>
+<i>806</i>&nbsp;
+<b class="nc"><i>807</i>&nbsp;    if (className == null) {</b>
+<b class="nc"><i>808</i>&nbsp;      if (resources==null) readProperties();</b>
+<b class="nc"><i>809</i>&nbsp;      if (resources==null) return null;</b>
+<i>810</i>&nbsp;      try {
+<b class="nc"><i>811</i>&nbsp;        return resources.getString(&quot;catalog-class-name&quot;);</b>
+<b class="nc"><i>812</i>&nbsp;      } catch (MissingResourceException e) {</b>
+<b class="nc"><i>813</i>&nbsp;        return null;</b>
+<i>814</i>&nbsp;      }
+<i>815</i>&nbsp;    }
+<i>816</i>&nbsp;
+<b class="nc"><i>817</i>&nbsp;    return className;</b>
+<i>818</i>&nbsp;  }
+<i>819</i>&nbsp;
+<i>820</i>&nbsp;  /**
+<i>821</i>&nbsp;   * Get the current Catalog class name.
+<i>822</i>&nbsp;   */
+<i>823</i>&nbsp;  public String getCatalogClassName() {
+<b class="nc"><i>824</i>&nbsp;    if (catalogClassName == null) {</b>
+<b class="nc"><i>825</i>&nbsp;      catalogClassName = queryCatalogClassName();</b>
+<i>826</i>&nbsp;    }
+<i>827</i>&nbsp;
+<b class="nc"><i>828</i>&nbsp;    return catalogClassName;</b>
+<i>829</i>&nbsp;  }
+<i>830</i>&nbsp;
+<i>831</i>&nbsp;  /**
+<i>832</i>&nbsp;   * Set the Catalog class name.
+<i>833</i>&nbsp;   */
+<i>834</i>&nbsp;  public void setCatalogClassName(String className) {
+<b class="nc"><i>835</i>&nbsp;    catalogClassName = className;</b>
+<i>836</i>&nbsp;  }
+<i>837</i>&nbsp;
+<i>838</i>&nbsp;  /**
+<i>839</i>&nbsp;   * Get the current Catalog class name.
+<i>840</i>&nbsp;   *
+<i>841</i>&nbsp;   * @deprecated No longer static; use get/set methods.
+<i>842</i>&nbsp;   */
+<i>843</i>&nbsp;  public String catalogClassName() {
+<b class="nc"><i>844</i>&nbsp;    return getCatalogClassName();</b>
+<i>845</i>&nbsp;  }
+<i>846</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

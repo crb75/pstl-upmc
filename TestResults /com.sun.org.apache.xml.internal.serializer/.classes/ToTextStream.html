@@ -1,0 +1,719 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ToTextStream</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.serializer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ToTextStream (com.sun.org.apache.xml.internal.serializer)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ToTextStream</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 92)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: ToTextStream.java,v 1.2.4.1 2005/09/21 10:35:34 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.serializer;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.io.IOException;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.utils.MsgKey;
+<i>28</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.utils.Utils;
+<i>29</i>&nbsp;import org.xml.sax.Attributes;
+<i>30</i>&nbsp;import org.xml.sax.SAXException;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;/**
+<i>33</i>&nbsp; * This class is not a public API.
+<i>34</i>&nbsp; * It is only public because it is used in other packages.
+<i>35</i>&nbsp; * This class converts SAX or SAX-like calls to a
+<i>36</i>&nbsp; * serialized document for xsl:output method of &quot;text&quot;.
+<i>37</i>&nbsp; * @xsl.usage internal
+<i>38</i>&nbsp; */
+<i>39</i>&nbsp;public final class ToTextStream extends ToStream
+<i>40</i>&nbsp;{
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;  /**
+<i>44</i>&nbsp;   * Default constructor.
+<i>45</i>&nbsp;   */
+<i>46</i>&nbsp;  public ToTextStream()
+<i>47</i>&nbsp;  {
+<b class="nc"><i>48</i>&nbsp;    super();</b>
+<i>49</i>&nbsp;  }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;  /**
+<i>54</i>&nbsp;   * Receive notification of the beginning of a document.
+<i>55</i>&nbsp;   *
+<i>56</i>&nbsp;   * &lt;p&gt;The SAX parser will invoke this method only once, before any
+<i>57</i>&nbsp;   * other methods in this interface or in DTDHandler (except for
+<i>58</i>&nbsp;   * setDocumentLocator).&lt;/p&gt;
+<i>59</i>&nbsp;   *
+<i>60</i>&nbsp;   * @throws org.xml.sax.SAXException Any SAX exception, possibly
+<i>61</i>&nbsp;   *            wrapping another exception.
+<i>62</i>&nbsp;   *
+<i>63</i>&nbsp;   * @throws org.xml.sax.SAXException
+<i>64</i>&nbsp;   */
+<i>65</i>&nbsp;  protected void startDocumentInternal() throws org.xml.sax.SAXException
+<i>66</i>&nbsp;  {
+<b class="nc"><i>67</i>&nbsp;    super.startDocumentInternal();</b>
+<i>68</i>&nbsp;
+<b class="nc"><i>69</i>&nbsp;    m_needToCallStartDocument = false;</b>
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    // No action for the moment.
+<i>72</i>&nbsp;  }
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;  /**
+<i>75</i>&nbsp;   * Receive notification of the end of a document.
+<i>76</i>&nbsp;   *
+<i>77</i>&nbsp;   * &lt;p&gt;The SAX parser will invoke this method only once, and it will
+<i>78</i>&nbsp;   * be the last method invoked during the parse.  The parser shall
+<i>79</i>&nbsp;   * not invoke this method until it has either abandoned parsing
+<i>80</i>&nbsp;   * (because of an unrecoverable error) or reached the end of
+<i>81</i>&nbsp;   * input.&lt;/p&gt;
+<i>82</i>&nbsp;   *
+<i>83</i>&nbsp;   * @throws org.xml.sax.SAXException Any SAX exception, possibly
+<i>84</i>&nbsp;   *            wrapping another exception.
+<i>85</i>&nbsp;   *
+<i>86</i>&nbsp;   * @throws org.xml.sax.SAXException
+<i>87</i>&nbsp;   */
+<i>88</i>&nbsp;  public void endDocument() throws org.xml.sax.SAXException
+<i>89</i>&nbsp;  {
+<b class="nc"><i>90</i>&nbsp;    flushPending();</b>
+<b class="nc"><i>91</i>&nbsp;    flushWriter();</b>
+<b class="nc"><i>92</i>&nbsp;    if (m_tracer != null)</b>
+<b class="nc"><i>93</i>&nbsp;        super.fireEndDoc();</b>
+<i>94</i>&nbsp;  }
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;  /**
+<i>97</i>&nbsp;   * Receive notification of the beginning of an element.
+<i>98</i>&nbsp;   *
+<i>99</i>&nbsp;   * &lt;p&gt;The Parser will invoke this method at the beginning of every
+<i>100</i>&nbsp;   * element in the XML document; there will be a corresponding
+<i>101</i>&nbsp;   * endElement() event for every startElement() event (even when the
+<i>102</i>&nbsp;   * element is empty). All of the element&#39;s content will be
+<i>103</i>&nbsp;   * reported, in order, before the corresponding endElement()
+<i>104</i>&nbsp;   * event.&lt;/p&gt;
+<i>105</i>&nbsp;   *
+<i>106</i>&nbsp;   * &lt;p&gt;If the element name has a namespace prefix, the prefix will
+<i>107</i>&nbsp;   * still be attached.  Note that the attribute list provided will
+<i>108</i>&nbsp;   * contain only attributes with explicit values (specified or
+<i>109</i>&nbsp;   * defaulted): #IMPLIED attributes will be omitted.&lt;/p&gt;
+<i>110</i>&nbsp;   *
+<i>111</i>&nbsp;   *
+<i>112</i>&nbsp;   * @param namespaceURI The Namespace URI, or the empty string if the
+<i>113</i>&nbsp;   *        element has no Namespace URI or if Namespace
+<i>114</i>&nbsp;   *        processing is not being performed.
+<i>115</i>&nbsp;   * @param localName The local name (without prefix), or the
+<i>116</i>&nbsp;   *        empty string if Namespace processing is not being
+<i>117</i>&nbsp;   *        performed.
+<i>118</i>&nbsp;   * @param name The qualified name (with prefix), or the
+<i>119</i>&nbsp;   *        empty string if qualified names are not available.
+<i>120</i>&nbsp;   * @param atts The attributes attached to the element, if any.
+<i>121</i>&nbsp;   * @throws org.xml.sax.SAXException Any SAX exception, possibly
+<i>122</i>&nbsp;   *            wrapping another exception.
+<i>123</i>&nbsp;   * @see #endElement
+<i>124</i>&nbsp;   * @see org.xml.sax.AttributeList
+<i>125</i>&nbsp;   *
+<i>126</i>&nbsp;   * @throws org.xml.sax.SAXException
+<i>127</i>&nbsp;   */
+<i>128</i>&nbsp;  public void startElement(
+<i>129</i>&nbsp;          String namespaceURI, String localName, String name, Attributes atts)
+<i>130</i>&nbsp;            throws org.xml.sax.SAXException
+<i>131</i>&nbsp;  {
+<i>132</i>&nbsp;    // time to fire off startElement event
+<b class="nc"><i>133</i>&nbsp;    if (m_tracer != null) {</b>
+<b class="nc"><i>134</i>&nbsp;        super.fireStartElem(name);</b>
+<b class="nc"><i>135</i>&nbsp;        this.firePseudoAttributes();</b>
+<i>136</i>&nbsp;    }
+<i>137</i>&nbsp;    return;
+<i>138</i>&nbsp;  }
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;  /**
+<i>141</i>&nbsp;   * Receive notification of the end of an element.
+<i>142</i>&nbsp;   *
+<i>143</i>&nbsp;   * &lt;p&gt;The SAX parser will invoke this method at the end of every
+<i>144</i>&nbsp;   * element in the XML document; there will be a corresponding
+<i>145</i>&nbsp;   * startElement() event for every endElement() event (even when the
+<i>146</i>&nbsp;   * element is empty).&lt;/p&gt;
+<i>147</i>&nbsp;   *
+<i>148</i>&nbsp;   * &lt;p&gt;If the element name has a namespace prefix, the prefix will
+<i>149</i>&nbsp;   * still be attached to the name.&lt;/p&gt;
+<i>150</i>&nbsp;   *
+<i>151</i>&nbsp;   *
+<i>152</i>&nbsp;   * @param namespaceURI The Namespace URI, or the empty string if the
+<i>153</i>&nbsp;   *        element has no Namespace URI or if Namespace
+<i>154</i>&nbsp;   *        processing is not being performed.
+<i>155</i>&nbsp;   * @param localName The local name (without prefix), or the
+<i>156</i>&nbsp;   *        empty string if Namespace processing is not being
+<i>157</i>&nbsp;   *        performed.
+<i>158</i>&nbsp;   * @param name The qualified name (with prefix), or the
+<i>159</i>&nbsp;   *        empty string if qualified names are not available.
+<i>160</i>&nbsp;   * @throws org.xml.sax.SAXException Any SAX exception, possibly
+<i>161</i>&nbsp;   *            wrapping another exception.
+<i>162</i>&nbsp;   *
+<i>163</i>&nbsp;   * @throws org.xml.sax.SAXException
+<i>164</i>&nbsp;   */
+<i>165</i>&nbsp;  public void endElement(String namespaceURI, String localName, String name)
+<i>166</i>&nbsp;          throws org.xml.sax.SAXException
+<i>167</i>&nbsp;  {
+<b class="nc"><i>168</i>&nbsp;        if (m_tracer != null)</b>
+<b class="nc"><i>169</i>&nbsp;            super.fireEndElem(name);</b>
+<i>170</i>&nbsp;  }
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;  /**
+<i>173</i>&nbsp;   * Receive notification of character data.
+<i>174</i>&nbsp;   *
+<i>175</i>&nbsp;   * &lt;p&gt;The Parser will call this method to report each chunk of
+<i>176</i>&nbsp;   * character data.  SAX parsers may return all contiguous character
+<i>177</i>&nbsp;   * data in a single chunk, or they may split it into several
+<i>178</i>&nbsp;   * chunks; however, all of the characters in any single event
+<i>179</i>&nbsp;   * must come from the same external entity, so that the Locator
+<i>180</i>&nbsp;   * provides useful information.&lt;/p&gt;
+<i>181</i>&nbsp;   *
+<i>182</i>&nbsp;   * &lt;p&gt;The application must not attempt to read from the array
+<i>183</i>&nbsp;   * outside of the specified range.&lt;/p&gt;
+<i>184</i>&nbsp;   *
+<i>185</i>&nbsp;   * &lt;p&gt;Note that some parsers will report whitespace using the
+<i>186</i>&nbsp;   * ignorableWhitespace() method rather than this one (validating
+<i>187</i>&nbsp;   * parsers must do so).&lt;/p&gt;
+<i>188</i>&nbsp;   *
+<i>189</i>&nbsp;   * @param ch The characters from the XML document.
+<i>190</i>&nbsp;   * @param start The start position in the array.
+<i>191</i>&nbsp;   * @param length The number of characters to read from the array.
+<i>192</i>&nbsp;   * @throws org.xml.sax.SAXException Any SAX exception, possibly
+<i>193</i>&nbsp;   *            wrapping another exception.
+<i>194</i>&nbsp;   * @see #ignorableWhitespace
+<i>195</i>&nbsp;   * @see org.xml.sax.Locator
+<i>196</i>&nbsp;   */
+<i>197</i>&nbsp;  public void characters(char ch[], int start, int length)
+<i>198</i>&nbsp;          throws org.xml.sax.SAXException
+<i>199</i>&nbsp;  {
+<i>200</i>&nbsp;
+<b class="nc"><i>201</i>&nbsp;    flushPending();</b>
+<i>202</i>&nbsp;
+<i>203</i>&nbsp;    try
+<i>204</i>&nbsp;    {
+<b class="nc"><i>205</i>&nbsp;        if (inTemporaryOutputState()) {</b>
+<i>206</i>&nbsp;            /* leave characters un-processed as we are
+<i>207</i>&nbsp;             * creating temporary output, the output generated by
+<i>208</i>&nbsp;             * this serializer will be input to a final serializer
+<i>209</i>&nbsp;             * later on and it will do the processing in final
+<i>210</i>&nbsp;             * output state (not temporary output state).
+<i>211</i>&nbsp;             *
+<i>212</i>&nbsp;             * A &quot;temporary&quot; ToTextStream serializer is used to
+<i>213</i>&nbsp;             * evaluate attribute value templates (for example),
+<i>214</i>&nbsp;             * and the result of evaluating such a thing
+<i>215</i>&nbsp;             * is fed into a final serializer later on.
+<i>216</i>&nbsp;             */
+<b class="nc"><i>217</i>&nbsp;            m_writer.write(ch, start, length);</b>
+<i>218</i>&nbsp;        }
+<i>219</i>&nbsp;        else {
+<i>220</i>&nbsp;            // In final output state we do process the characters!
+<b class="nc"><i>221</i>&nbsp;            writeNormalizedChars(ch, start, length, m_lineSepUse);</b>
+<i>222</i>&nbsp;        }
+<i>223</i>&nbsp;
+<b class="nc"><i>224</i>&nbsp;        if (m_tracer != null)</b>
+<b class="nc"><i>225</i>&nbsp;            super.fireCharEvent(ch, start, length);</b>
+<i>226</i>&nbsp;    }
+<b class="nc"><i>227</i>&nbsp;    catch(IOException ioe)</b>
+<i>228</i>&nbsp;    {
+<b class="nc"><i>229</i>&nbsp;      throw new SAXException(ioe);</b>
+<b class="nc"><i>230</i>&nbsp;    }</b>
+<i>231</i>&nbsp;  }
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;  /**
+<i>234</i>&nbsp;   * If available, when the disable-output-escaping attribute is used,
+<i>235</i>&nbsp;   * output raw text without escaping.
+<i>236</i>&nbsp;   *
+<i>237</i>&nbsp;   * @param ch The characters from the XML document.
+<i>238</i>&nbsp;   * @param start The start position in the array.
+<i>239</i>&nbsp;   * @param length The number of characters to read from the array.
+<i>240</i>&nbsp;   *
+<i>241</i>&nbsp;   * @throws org.xml.sax.SAXException Any SAX exception, possibly
+<i>242</i>&nbsp;   *            wrapping another exception.
+<i>243</i>&nbsp;   */
+<i>244</i>&nbsp;  public void charactersRaw(char ch[], int start, int length)
+<i>245</i>&nbsp;          throws org.xml.sax.SAXException
+<i>246</i>&nbsp;  {
+<i>247</i>&nbsp;
+<i>248</i>&nbsp;    try
+<i>249</i>&nbsp;    {
+<b class="nc"><i>250</i>&nbsp;      writeNormalizedChars(ch, start, length, m_lineSepUse);</b>
+<i>251</i>&nbsp;    }
+<b class="nc"><i>252</i>&nbsp;    catch(IOException ioe)</b>
+<i>253</i>&nbsp;    {
+<b class="nc"><i>254</i>&nbsp;      throw new SAXException(ioe);</b>
+<b class="nc"><i>255</i>&nbsp;    }</b>
+<i>256</i>&nbsp;  }
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;    /**
+<i>259</i>&nbsp;     * Normalize the characters, but don&#39;t escape.  Different from
+<i>260</i>&nbsp;     * SerializerToXML#writeNormalizedChars because it does not attempt to do
+<i>261</i>&nbsp;     * XML escaping at all.
+<i>262</i>&nbsp;     *
+<i>263</i>&nbsp;     * @param ch The characters from the XML document.
+<i>264</i>&nbsp;     * @param start The start position in the array.
+<i>265</i>&nbsp;     * @param length The number of characters to read from the array.
+<i>266</i>&nbsp;     * @param useLineSep true if the operating systems
+<i>267</i>&nbsp;     * end-of-line separator should be output rather than a new-line character.
+<i>268</i>&nbsp;     *
+<i>269</i>&nbsp;     * @throws IOException
+<i>270</i>&nbsp;     * @throws org.xml.sax.SAXException
+<i>271</i>&nbsp;     */
+<i>272</i>&nbsp;    void writeNormalizedChars(
+<i>273</i>&nbsp;        final char ch[],
+<i>274</i>&nbsp;            final int start,
+<i>275</i>&nbsp;            final int length,
+<i>276</i>&nbsp;            final boolean useLineSep)
+<i>277</i>&nbsp;            throws IOException, org.xml.sax.SAXException
+<i>278</i>&nbsp;    {
+<b class="nc"><i>279</i>&nbsp;        final String encoding = getEncoding();</b>
+<b class="nc"><i>280</i>&nbsp;        final java.io.Writer writer = m_writer;</b>
+<b class="nc"><i>281</i>&nbsp;        final int end = start + length;</b>
+<i>282</i>&nbsp;
+<i>283</i>&nbsp;        /* copy a few &quot;constants&quot; before the loop for performance */
+<b class="nc"><i>284</i>&nbsp;        final char S_LINEFEED = CharInfo.S_LINEFEED;</b>
+<i>285</i>&nbsp;
+<i>286</i>&nbsp;        // This for() loop always increments i by one at the end
+<i>287</i>&nbsp;        // of the loop.  Additional increments of i adjust for when
+<i>288</i>&nbsp;        // two input characters (a high/low UTF16 surrogate pair)
+<i>289</i>&nbsp;        // are processed.
+<b class="nc"><i>290</i>&nbsp;        for (int i = start; i &lt; end; i++) {</b>
+<b class="nc"><i>291</i>&nbsp;            final char c = ch[i];</b>
+<i>292</i>&nbsp;
+<b class="nc"><i>293</i>&nbsp;            if (S_LINEFEED == c &amp;&amp; useLineSep) {</b>
+<b class="nc"><i>294</i>&nbsp;                writer.write(m_lineSep, 0, m_lineSepLen);</b>
+<i>295</i>&nbsp;                // one input char processed
+<b class="nc"><i>296</i>&nbsp;            } else if (m_encodingInfo.isInEncoding(c)) {</b>
+<b class="nc"><i>297</i>&nbsp;                writer.write(c);</b>
+<i>298</i>&nbsp;                // one input char processed
+<b class="nc"><i>299</i>&nbsp;            } else if (Encodings.isHighUTF16Surrogate(c)) {</b>
+<b class="nc"><i>300</i>&nbsp;                final int codePoint = writeUTF16Surrogate(c, ch, i, end);</b>
+<b class="nc"><i>301</i>&nbsp;                if (codePoint != 0) {</b>
+<i>302</i>&nbsp;                    // I think we can just emit the message,
+<i>303</i>&nbsp;                    // not crash and burn.
+<b class="nc"><i>304</i>&nbsp;                    final String integralValue = Integer.toString(codePoint);</b>
+<b class="nc"><i>305</i>&nbsp;                    final String msg = Utils.messages.createMessage(</b>
+<i>306</i>&nbsp;                        MsgKey.ER_ILLEGAL_CHARACTER,
+<i>307</i>&nbsp;                        new Object[] { integralValue, encoding });
+<i>308</i>&nbsp;
+<i>309</i>&nbsp;                    //Older behavior was to throw the message,
+<i>310</i>&nbsp;                    //but newer gentler behavior is to write a message to System.err
+<i>311</i>&nbsp;                    //throw new SAXException(msg);
+<b class="nc"><i>312</i>&nbsp;                    System.err.println(msg);</b>
+<i>313</i>&nbsp;
+<i>314</i>&nbsp;                }
+<b class="nc"><i>315</i>&nbsp;                i++; // two input chars processed</b>
+<b class="nc"><i>316</i>&nbsp;            } else {</b>
+<i>317</i>&nbsp;                // Don&#39;t know what to do with this char, it is
+<i>318</i>&nbsp;                // not in the encoding and not a high char in
+<i>319</i>&nbsp;                // a surrogate pair, so write out as an entity ref
+<b class="nc"><i>320</i>&nbsp;                if (encoding != null) {</b>
+<i>321</i>&nbsp;                    /* The output encoding is known,
+<i>322</i>&nbsp;                     * so somthing is wrong.
+<i>323</i>&nbsp;                     */
+<i>324</i>&nbsp;
+<i>325</i>&nbsp;                    // not in the encoding, so write out a character reference
+<b class="nc"><i>326</i>&nbsp;                    writer.write(&#39;&amp;&#39;);</b>
+<b class="nc"><i>327</i>&nbsp;                    writer.write(&#39;#&#39;);</b>
+<b class="nc"><i>328</i>&nbsp;                    writer.write(Integer.toString(c));</b>
+<b class="nc"><i>329</i>&nbsp;                    writer.write(&#39;;&#39;);</b>
+<i>330</i>&nbsp;
+<i>331</i>&nbsp;                    // I think we can just emit the message,
+<i>332</i>&nbsp;                    // not crash and burn.
+<b class="nc"><i>333</i>&nbsp;                    final String integralValue = Integer.toString(c);</b>
+<b class="nc"><i>334</i>&nbsp;                    final String msg = Utils.messages.createMessage(</b>
+<i>335</i>&nbsp;                        MsgKey.ER_ILLEGAL_CHARACTER,
+<i>336</i>&nbsp;                        new Object[] { integralValue, encoding });
+<i>337</i>&nbsp;
+<i>338</i>&nbsp;                    //Older behavior was to throw the message,
+<i>339</i>&nbsp;                    //but newer gentler behavior is to write a message to System.err
+<i>340</i>&nbsp;                    //throw new SAXException(msg);
+<b class="nc"><i>341</i>&nbsp;                    System.err.println(msg);</b>
+<b class="nc"><i>342</i>&nbsp;                } else {</b>
+<i>343</i>&nbsp;                    /* The output encoding is not known,
+<i>344</i>&nbsp;                     * so just write it out as-is.
+<i>345</i>&nbsp;                     */
+<b class="nc"><i>346</i>&nbsp;                    writer.write(c);</b>
+<i>347</i>&nbsp;                }
+<i>348</i>&nbsp;
+<i>349</i>&nbsp;                // one input char was processed
+<i>350</i>&nbsp;            }
+<i>351</i>&nbsp;        }
+<i>352</i>&nbsp;    }
+<i>353</i>&nbsp;
+<i>354</i>&nbsp;  /**
+<i>355</i>&nbsp;   * Receive notification of cdata.
+<i>356</i>&nbsp;   *
+<i>357</i>&nbsp;   * &lt;p&gt;The Parser will call this method to report each chunk of
+<i>358</i>&nbsp;   * character data.  SAX parsers may return all contiguous character
+<i>359</i>&nbsp;   * data in a single chunk, or they may split it into several
+<i>360</i>&nbsp;   * chunks; however, all of the characters in any single event
+<i>361</i>&nbsp;   * must come from the same external entity, so that the Locator
+<i>362</i>&nbsp;   * provides useful information.&lt;/p&gt;
+<i>363</i>&nbsp;   *
+<i>364</i>&nbsp;   * &lt;p&gt;The application must not attempt to read from the array
+<i>365</i>&nbsp;   * outside of the specified range.&lt;/p&gt;
+<i>366</i>&nbsp;   *
+<i>367</i>&nbsp;   * &lt;p&gt;Note that some parsers will report whitespace using the
+<i>368</i>&nbsp;   * ignorableWhitespace() method rather than this one (validating
+<i>369</i>&nbsp;   * parsers must do so).&lt;/p&gt;
+<i>370</i>&nbsp;   *
+<i>371</i>&nbsp;   * @param ch The characters from the XML document.
+<i>372</i>&nbsp;   * @param start The start position in the array.
+<i>373</i>&nbsp;   * @param length The number of characters to read from the array.
+<i>374</i>&nbsp;   * @throws org.xml.sax.SAXException Any SAX exception, possibly
+<i>375</i>&nbsp;   *            wrapping another exception.
+<i>376</i>&nbsp;   * @see #ignorableWhitespace
+<i>377</i>&nbsp;   * @see org.xml.sax.Locator
+<i>378</i>&nbsp;   */
+<i>379</i>&nbsp;  public void cdata(char ch[], int start, int length)
+<i>380</i>&nbsp;          throws org.xml.sax.SAXException
+<i>381</i>&nbsp;  {
+<i>382</i>&nbsp;    try
+<i>383</i>&nbsp;    {
+<b class="nc"><i>384</i>&nbsp;        writeNormalizedChars(ch, start, length, m_lineSepUse);</b>
+<b class="nc"><i>385</i>&nbsp;        if (m_tracer != null)</b>
+<b class="nc"><i>386</i>&nbsp;            super.fireCDATAEvent(ch, start, length);</b>
+<i>387</i>&nbsp;    }
+<b class="nc"><i>388</i>&nbsp;    catch(IOException ioe)</b>
+<i>389</i>&nbsp;    {
+<b class="nc"><i>390</i>&nbsp;      throw new SAXException(ioe);</b>
+<b class="nc"><i>391</i>&nbsp;    }</b>
+<i>392</i>&nbsp;  }
+<i>393</i>&nbsp;
+<i>394</i>&nbsp;  /**
+<i>395</i>&nbsp;   * Receive notification of ignorable whitespace in element content.
+<i>396</i>&nbsp;   *
+<i>397</i>&nbsp;   * &lt;p&gt;Validating Parsers must use this method to report each chunk
+<i>398</i>&nbsp;   * of ignorable whitespace (see the W3C XML 1.0 recommendation,
+<i>399</i>&nbsp;   * section 2.10): non-validating parsers may also use this method
+<i>400</i>&nbsp;   * if they are capable of parsing and using content models.&lt;/p&gt;
+<i>401</i>&nbsp;   *
+<i>402</i>&nbsp;   * &lt;p&gt;SAX parsers may return all contiguous whitespace in a single
+<i>403</i>&nbsp;   * chunk, or they may split it into several chunks; however, all of
+<i>404</i>&nbsp;   * the characters in any single event must come from the same
+<i>405</i>&nbsp;   * external entity, so that the Locator provides useful
+<i>406</i>&nbsp;   * information.&lt;/p&gt;
+<i>407</i>&nbsp;   *
+<i>408</i>&nbsp;   * &lt;p&gt;The application must not attempt to read from the array
+<i>409</i>&nbsp;   * outside of the specified range.&lt;/p&gt;
+<i>410</i>&nbsp;   *
+<i>411</i>&nbsp;   * @param ch The characters from the XML document.
+<i>412</i>&nbsp;   * @param start The start position in the array.
+<i>413</i>&nbsp;   * @param length The number of characters to read from the array.
+<i>414</i>&nbsp;   * @throws org.xml.sax.SAXException Any SAX exception, possibly
+<i>415</i>&nbsp;   *            wrapping another exception.
+<i>416</i>&nbsp;   * @see #characters
+<i>417</i>&nbsp;   *
+<i>418</i>&nbsp;   * @throws org.xml.sax.SAXException
+<i>419</i>&nbsp;   */
+<i>420</i>&nbsp;  public void ignorableWhitespace(char ch[], int start, int length)
+<i>421</i>&nbsp;          throws org.xml.sax.SAXException
+<i>422</i>&nbsp;  {
+<i>423</i>&nbsp;
+<i>424</i>&nbsp;    try
+<i>425</i>&nbsp;    {
+<b class="nc"><i>426</i>&nbsp;      writeNormalizedChars(ch, start, length, m_lineSepUse);</b>
+<i>427</i>&nbsp;    }
+<b class="nc"><i>428</i>&nbsp;    catch(IOException ioe)</b>
+<i>429</i>&nbsp;    {
+<b class="nc"><i>430</i>&nbsp;      throw new SAXException(ioe);</b>
+<b class="nc"><i>431</i>&nbsp;    }</b>
+<i>432</i>&nbsp;  }
+<i>433</i>&nbsp;
+<i>434</i>&nbsp;  /**
+<i>435</i>&nbsp;   * Receive notification of a processing instruction.
+<i>436</i>&nbsp;   *
+<i>437</i>&nbsp;   * &lt;p&gt;The Parser will invoke this method once for each processing
+<i>438</i>&nbsp;   * instruction found: note that processing instructions may occur
+<i>439</i>&nbsp;   * before or after the main document element.&lt;/p&gt;
+<i>440</i>&nbsp;   *
+<i>441</i>&nbsp;   * &lt;p&gt;A SAX parser should never report an XML declaration (XML 1.0,
+<i>442</i>&nbsp;   * section 2.8) or a text declaration (XML 1.0, section 4.3.1)
+<i>443</i>&nbsp;   * using this method.&lt;/p&gt;
+<i>444</i>&nbsp;   *
+<i>445</i>&nbsp;   * @param target The processing instruction target.
+<i>446</i>&nbsp;   * @param data The processing instruction data, or null if
+<i>447</i>&nbsp;   *        none was supplied.
+<i>448</i>&nbsp;   * @throws org.xml.sax.SAXException Any SAX exception, possibly
+<i>449</i>&nbsp;   *            wrapping another exception.
+<i>450</i>&nbsp;   *
+<i>451</i>&nbsp;   * @throws org.xml.sax.SAXException
+<i>452</i>&nbsp;   */
+<i>453</i>&nbsp;  public void processingInstruction(String target, String data)
+<i>454</i>&nbsp;          throws org.xml.sax.SAXException
+<i>455</i>&nbsp;  {
+<i>456</i>&nbsp;    // flush anything pending first
+<b class="nc"><i>457</i>&nbsp;    flushPending();</b>
+<i>458</i>&nbsp;
+<b class="nc"><i>459</i>&nbsp;    if (m_tracer != null)</b>
+<b class="nc"><i>460</i>&nbsp;        super.fireEscapingEvent(target, data);</b>
+<i>461</i>&nbsp;  }
+<i>462</i>&nbsp;
+<i>463</i>&nbsp;  /**
+<i>464</i>&nbsp;   * Called when a Comment is to be constructed.
+<i>465</i>&nbsp;   * Note that Xalan will normally invoke the other version of this method.
+<i>466</i>&nbsp;   * %REVIEW% In fact, is this one ever needed, or was it a mistake?
+<i>467</i>&nbsp;   *
+<i>468</i>&nbsp;   * @param   data  The comment data.
+<i>469</i>&nbsp;   * @throws org.xml.sax.SAXException Any SAX exception, possibly
+<i>470</i>&nbsp;   *            wrapping another exception.
+<i>471</i>&nbsp;   */
+<i>472</i>&nbsp;  public void comment(String data) throws org.xml.sax.SAXException
+<i>473</i>&nbsp;  {
+<b class="nc"><i>474</i>&nbsp;      final int length = data.length();</b>
+<b class="nc"><i>475</i>&nbsp;      if (length &gt; m_charsBuff.length)</b>
+<i>476</i>&nbsp;      {
+<b class="nc"><i>477</i>&nbsp;          m_charsBuff = new char[length*2 + 1];</b>
+<i>478</i>&nbsp;      }
+<b class="nc"><i>479</i>&nbsp;      data.getChars(0, length, m_charsBuff, 0);</b>
+<b class="nc"><i>480</i>&nbsp;      comment(m_charsBuff, 0, length);</b>
+<i>481</i>&nbsp;  }
+<i>482</i>&nbsp;
+<i>483</i>&nbsp;  /**
+<i>484</i>&nbsp;   * Report an XML comment anywhere in the document.
+<i>485</i>&nbsp;   *
+<i>486</i>&nbsp;   * This callback will be used for comments inside or outside the
+<i>487</i>&nbsp;   * document element, including comments in the external DTD
+<i>488</i>&nbsp;   * subset (if read).
+<i>489</i>&nbsp;   *
+<i>490</i>&nbsp;   * @param ch An array holding the characters in the comment.
+<i>491</i>&nbsp;   * @param start The starting position in the array.
+<i>492</i>&nbsp;   * @param length The number of characters to use from the array.
+<i>493</i>&nbsp;   * @throws org.xml.sax.SAXException The application may raise an exception.
+<i>494</i>&nbsp;   */
+<i>495</i>&nbsp;  public void comment(char ch[], int start, int length)
+<i>496</i>&nbsp;          throws org.xml.sax.SAXException
+<i>497</i>&nbsp;  {
+<i>498</i>&nbsp;
+<b class="nc"><i>499</i>&nbsp;    flushPending();</b>
+<b class="nc"><i>500</i>&nbsp;    if (m_tracer != null)</b>
+<b class="nc"><i>501</i>&nbsp;        super.fireCommentEvent(ch, start, length);</b>
+<i>502</i>&nbsp;  }
+<i>503</i>&nbsp;
+<i>504</i>&nbsp;  /**
+<i>505</i>&nbsp;   * Receive notivication of a entityReference.
+<i>506</i>&nbsp;   *
+<i>507</i>&nbsp;   * @param name non-null reference to the name of the entity.
+<i>508</i>&nbsp;   *
+<i>509</i>&nbsp;   * @throws org.xml.sax.SAXException
+<i>510</i>&nbsp;   */
+<i>511</i>&nbsp;  public void entityReference(String name) throws org.xml.sax.SAXException
+<i>512</i>&nbsp;  {
+<b class="nc"><i>513</i>&nbsp;        if (m_tracer != null)</b>
+<b class="nc"><i>514</i>&nbsp;            super.fireEntityReference(name);</b>
+<i>515</i>&nbsp;  }
+<i>516</i>&nbsp;
+<i>517</i>&nbsp;    /**
+<i>518</i>&nbsp;     * @see ExtendedContentHandler#addAttribute(String, String, String, String, String)
+<i>519</i>&nbsp;     */
+<i>520</i>&nbsp;    public void addAttribute(
+<i>521</i>&nbsp;        String uri,
+<i>522</i>&nbsp;        String localName,
+<i>523</i>&nbsp;        String rawName,
+<i>524</i>&nbsp;        String type,
+<i>525</i>&nbsp;        String value,
+<i>526</i>&nbsp;        boolean XSLAttribute)
+<i>527</i>&nbsp;    {
+<i>528</i>&nbsp;        // do nothing, just forget all about the attribute
+<i>529</i>&nbsp;    }
+<i>530</i>&nbsp;
+<i>531</i>&nbsp;    /**
+<i>532</i>&nbsp;     * @see org.xml.sax.ext.LexicalHandler#endCDATA()
+<i>533</i>&nbsp;     */
+<i>534</i>&nbsp;    public void endCDATA() throws SAXException
+<i>535</i>&nbsp;    {
+<i>536</i>&nbsp;        // do nothing
+<i>537</i>&nbsp;    }
+<i>538</i>&nbsp;
+<i>539</i>&nbsp;    /**
+<i>540</i>&nbsp;     * @see ExtendedContentHandler#endElement(String)
+<i>541</i>&nbsp;     */
+<i>542</i>&nbsp;    public void endElement(String elemName) throws SAXException
+<i>543</i>&nbsp;    {
+<b class="nc"><i>544</i>&nbsp;        if (m_tracer != null)</b>
+<b class="nc"><i>545</i>&nbsp;            super.fireEndElem(elemName);</b>
+<i>546</i>&nbsp;    }
+<i>547</i>&nbsp;
+<i>548</i>&nbsp;    /**
+<i>549</i>&nbsp;     * From XSLTC
+<i>550</i>&nbsp;     */
+<i>551</i>&nbsp;    public void startElement(
+<i>552</i>&nbsp;    String elementNamespaceURI,
+<i>553</i>&nbsp;    String elementLocalName,
+<i>554</i>&nbsp;    String elementName)
+<i>555</i>&nbsp;    throws SAXException
+<i>556</i>&nbsp;    {
+<b class="nc"><i>557</i>&nbsp;        if (m_needToCallStartDocument)</b>
+<b class="nc"><i>558</i>&nbsp;            startDocumentInternal();</b>
+<i>559</i>&nbsp;        // time to fire off startlement event.
+<b class="nc"><i>560</i>&nbsp;        if (m_tracer != null) {</b>
+<b class="nc"><i>561</i>&nbsp;            super.fireStartElem(elementName);</b>
+<b class="nc"><i>562</i>&nbsp;            this.firePseudoAttributes();</b>
+<i>563</i>&nbsp;        }
+<i>564</i>&nbsp;
+<i>565</i>&nbsp;        return;
+<i>566</i>&nbsp;    }
+<i>567</i>&nbsp;
+<i>568</i>&nbsp;
+<i>569</i>&nbsp;    /**
+<i>570</i>&nbsp;     * From XSLTC
+<i>571</i>&nbsp;     */
+<i>572</i>&nbsp;    public void characters(String characters)
+<i>573</i>&nbsp;    throws SAXException
+<i>574</i>&nbsp;    {
+<b class="nc"><i>575</i>&nbsp;        final int length = characters.length();</b>
+<b class="nc"><i>576</i>&nbsp;        if (length &gt; m_charsBuff.length)</b>
+<i>577</i>&nbsp;        {
+<b class="nc"><i>578</i>&nbsp;            m_charsBuff = new char[length*2 + 1];</b>
+<i>579</i>&nbsp;        }
+<b class="nc"><i>580</i>&nbsp;        characters.getChars(0, length, m_charsBuff, 0);</b>
+<b class="nc"><i>581</i>&nbsp;        characters(m_charsBuff, 0, length);</b>
+<i>582</i>&nbsp;    }
+<i>583</i>&nbsp;
+<i>584</i>&nbsp;
+<i>585</i>&nbsp;    /**
+<i>586</i>&nbsp;     * From XSLTC
+<i>587</i>&nbsp;     */
+<i>588</i>&nbsp;    public void addAttribute(String name, String value)
+<i>589</i>&nbsp;    {
+<i>590</i>&nbsp;        // do nothing, forget about the attribute
+<i>591</i>&nbsp;    }
+<i>592</i>&nbsp;
+<i>593</i>&nbsp;    /**
+<i>594</i>&nbsp;     * Add a unique attribute
+<i>595</i>&nbsp;     */
+<i>596</i>&nbsp;    public void addUniqueAttribute(String qName, String value, int flags)
+<i>597</i>&nbsp;        throws SAXException
+<i>598</i>&nbsp;    {
+<i>599</i>&nbsp;        // do nothing, forget about the attribute
+<i>600</i>&nbsp;    }
+<i>601</i>&nbsp;
+<i>602</i>&nbsp;    public boolean startPrefixMapping(
+<i>603</i>&nbsp;        String prefix,
+<i>604</i>&nbsp;        String uri,
+<i>605</i>&nbsp;        boolean shouldFlush)
+<i>606</i>&nbsp;        throws SAXException
+<i>607</i>&nbsp;    {
+<i>608</i>&nbsp;        // no namespace support for HTML
+<b class="nc"><i>609</i>&nbsp;        return false;</b>
+<i>610</i>&nbsp;    }
+<i>611</i>&nbsp;
+<i>612</i>&nbsp;
+<i>613</i>&nbsp;    public void startPrefixMapping(String prefix, String uri)
+<i>614</i>&nbsp;        throws org.xml.sax.SAXException
+<i>615</i>&nbsp;    {
+<i>616</i>&nbsp;        // no namespace support for HTML
+<i>617</i>&nbsp;    }
+<i>618</i>&nbsp;
+<i>619</i>&nbsp;
+<i>620</i>&nbsp;    public void namespaceAfterStartElement(
+<i>621</i>&nbsp;        final String prefix,
+<i>622</i>&nbsp;        final String uri)
+<i>623</i>&nbsp;        throws SAXException
+<i>624</i>&nbsp;    {
+<i>625</i>&nbsp;        // no namespace support for HTML
+<i>626</i>&nbsp;    }
+<i>627</i>&nbsp;
+<i>628</i>&nbsp;    public void flushPending() throws org.xml.sax.SAXException
+<i>629</i>&nbsp;    {
+<b class="nc"><i>630</i>&nbsp;            if (m_needToCallStartDocument)</b>
+<i>631</i>&nbsp;            {
+<b class="nc"><i>632</i>&nbsp;                startDocumentInternal();</b>
+<b class="nc"><i>633</i>&nbsp;                m_needToCallStartDocument = false;</b>
+<i>634</i>&nbsp;            }
+<i>635</i>&nbsp;    }
+<i>636</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

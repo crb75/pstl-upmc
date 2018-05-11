@@ -1,0 +1,418 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DQTMarkerSegment</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.imageio.plugins.jpeg</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DQTMarkerSegment (com.sun.imageio.plugins.jpeg)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DQTMarkerSegment</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 63)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">DQTMarkerSegment$Qtable</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 66)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 129)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2001, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.imageio.plugins.jpeg;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import javax.imageio.IIOException;
+<i>29</i>&nbsp;import javax.imageio.metadata.IIOInvalidTreeException;
+<i>30</i>&nbsp;import javax.imageio.metadata.IIOMetadataNode;
+<i>31</i>&nbsp;import javax.imageio.stream.ImageOutputStream;
+<i>32</i>&nbsp;import javax.imageio.plugins.jpeg.JPEGQTable;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import java.io.IOException;
+<i>35</i>&nbsp;import java.util.List;
+<i>36</i>&nbsp;import java.util.ArrayList;
+<i>37</i>&nbsp;import java.util.Iterator;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;import org.w3c.dom.Node;
+<i>40</i>&nbsp;import org.w3c.dom.NodeList;
+<i>41</i>&nbsp;import org.w3c.dom.NamedNodeMap;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;/**
+<i>44</i>&nbsp; * A DQT (Define Quantization Table) marker segment.
+<i>45</i>&nbsp; */
+<i>46</i>&nbsp;class DQTMarkerSegment extends MarkerSegment {
+<b class="nc"><i>47</i>&nbsp;    List tables = new ArrayList();  // Could be 1 to 4</b>
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    DQTMarkerSegment(float quality, boolean needTwo) {
+<b class="nc"><i>50</i>&nbsp;        super(JPEG.DQT);</b>
+<b class="nc"><i>51</i>&nbsp;        tables.add(new Qtable(true, quality));</b>
+<b class="nc"><i>52</i>&nbsp;        if (needTwo) {</b>
+<b class="nc"><i>53</i>&nbsp;            tables.add(new Qtable(false, quality));</b>
+<i>54</i>&nbsp;        }
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    DQTMarkerSegment(JPEGBuffer buffer) throws IOException {
+<b class="nc"><i>58</i>&nbsp;        super(buffer);</b>
+<b class="nc"><i>59</i>&nbsp;        int count = length;</b>
+<b class="nc"><i>60</i>&nbsp;        while (count &gt; 0) {</b>
+<b class="nc"><i>61</i>&nbsp;            Qtable newGuy = new Qtable(buffer);</b>
+<b class="nc"><i>62</i>&nbsp;            tables.add(newGuy);</b>
+<b class="nc"><i>63</i>&nbsp;            count -= newGuy.data.length+1;</b>
+<b class="nc"><i>64</i>&nbsp;        }</b>
+<b class="nc"><i>65</i>&nbsp;        buffer.bufAvail -= length;</b>
+<i>66</i>&nbsp;    }
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    DQTMarkerSegment(JPEGQTable[] qtables) {
+<b class="nc"><i>69</i>&nbsp;        super(JPEG.DQT);</b>
+<b class="nc"><i>70</i>&nbsp;        for (int i = 0; i &lt; qtables.length; i++) {</b>
+<b class="nc"><i>71</i>&nbsp;            tables.add(new Qtable(qtables[i], i));</b>
+<i>72</i>&nbsp;        }
+<i>73</i>&nbsp;    }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    DQTMarkerSegment(Node node) throws IIOInvalidTreeException {
+<b class="nc"><i>76</i>&nbsp;        super(JPEG.DQT);</b>
+<b class="nc"><i>77</i>&nbsp;        NodeList children = node.getChildNodes();</b>
+<b class="nc"><i>78</i>&nbsp;        int size = children.getLength();</b>
+<b class="nc"><i>79</i>&nbsp;        if ((size &lt; 1) || (size &gt; 4)) {</b>
+<b class="nc"><i>80</i>&nbsp;            throw new IIOInvalidTreeException(&quot;Invalid DQT node&quot;, node);</b>
+<i>81</i>&nbsp;        }
+<b class="nc"><i>82</i>&nbsp;        for (int i = 0; i &lt; size; i++) {</b>
+<b class="nc"><i>83</i>&nbsp;            tables.add(new Qtable(children.item(i)));</b>
+<i>84</i>&nbsp;        }
+<i>85</i>&nbsp;    }
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    protected Object clone() {
+<b class="nc"><i>88</i>&nbsp;        DQTMarkerSegment newGuy = (DQTMarkerSegment) super.clone();</b>
+<b class="nc"><i>89</i>&nbsp;        newGuy.tables = new ArrayList(tables.size());</b>
+<b class="nc"><i>90</i>&nbsp;        Iterator iter = tables.iterator();</b>
+<b class="nc"><i>91</i>&nbsp;        while (iter.hasNext()) {</b>
+<b class="nc"><i>92</i>&nbsp;            Qtable table = (Qtable) iter.next();</b>
+<b class="nc"><i>93</i>&nbsp;            newGuy.tables.add(table.clone());</b>
+<b class="nc"><i>94</i>&nbsp;        }</b>
+<b class="nc"><i>95</i>&nbsp;        return newGuy;</b>
+<i>96</i>&nbsp;    }
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;    IIOMetadataNode getNativeNode() {
+<b class="nc"><i>99</i>&nbsp;        IIOMetadataNode node = new IIOMetadataNode(&quot;dqt&quot;);</b>
+<b class="nc"><i>100</i>&nbsp;        for (int i= 0; i&lt;tables.size(); i++) {</b>
+<b class="nc"><i>101</i>&nbsp;            Qtable table = (Qtable) tables.get(i);</b>
+<b class="nc"><i>102</i>&nbsp;            node.appendChild(table.getNativeNode());</b>
+<i>103</i>&nbsp;        }
+<b class="nc"><i>104</i>&nbsp;        return node;</b>
+<i>105</i>&nbsp;    }
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    /**
+<i>108</i>&nbsp;     * Writes the data for this segment to the stream in
+<i>109</i>&nbsp;     * valid JPEG format.
+<i>110</i>&nbsp;     */
+<i>111</i>&nbsp;    void write(ImageOutputStream ios) throws IOException {
+<i>112</i>&nbsp;        // We don&#39;t write DQT segments; the IJG library does.
+<i>113</i>&nbsp;    }
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;    void print() {
+<b class="nc"><i>116</i>&nbsp;        printTag(&quot;DQT&quot;);</b>
+<b class="nc"><i>117</i>&nbsp;        System.out.println(&quot;Num tables: &quot;</b>
+<b class="nc"><i>118</i>&nbsp;                           + Integer.toString(tables.size()));</b>
+<b class="nc"><i>119</i>&nbsp;        for (int i= 0; i&lt;tables.size(); i++) {</b>
+<b class="nc"><i>120</i>&nbsp;            Qtable table = (Qtable) tables.get(i);</b>
+<b class="nc"><i>121</i>&nbsp;            table.print();</b>
+<i>122</i>&nbsp;        }
+<b class="nc"><i>123</i>&nbsp;        System.out.println();</b>
+<i>124</i>&nbsp;    }
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;    /**
+<i>127</i>&nbsp;     * Assuming the given table was generated by scaling the &quot;standard&quot;
+<i>128</i>&nbsp;     * visually lossless luminance table, extract the scale factor that
+<i>129</i>&nbsp;     * was used.
+<i>130</i>&nbsp;     */
+<i>131</i>&nbsp;    Qtable getChromaForLuma(Qtable luma) {
+<b class="nc"><i>132</i>&nbsp;        Qtable newGuy = null;</b>
+<i>133</i>&nbsp;        // Determine if the table is all the same values
+<i>134</i>&nbsp;        // if so, use the same table
+<b class="nc"><i>135</i>&nbsp;        boolean allSame = true;</b>
+<b class="nc"><i>136</i>&nbsp;        for (int i = 1; i &lt; luma.QTABLE_SIZE; i++) {</b>
+<b class="nc"><i>137</i>&nbsp;            if (luma.data[i] != luma.data[i-1]) {</b>
+<b class="nc"><i>138</i>&nbsp;                allSame = false;</b>
+<b class="nc"><i>139</i>&nbsp;                break;</b>
+<i>140</i>&nbsp;            }
+<i>141</i>&nbsp;        }
+<b class="nc"><i>142</i>&nbsp;        if (allSame) {</b>
+<b class="nc"><i>143</i>&nbsp;            newGuy = (Qtable) luma.clone();</b>
+<b class="nc"><i>144</i>&nbsp;            newGuy.tableID = 1;</b>
+<i>145</i>&nbsp;        } else {
+<i>146</i>&nbsp;            // Otherwise, find the largest coefficient less than 255.  This is
+<i>147</i>&nbsp;            // the largest value that we know did not clamp on scaling.
+<b class="nc"><i>148</i>&nbsp;            int largestPos = 0;</b>
+<b class="nc"><i>149</i>&nbsp;            for (int i = 1; i &lt; luma.QTABLE_SIZE; i++) {</b>
+<b class="nc"><i>150</i>&nbsp;                if (luma.data[i] &gt; luma.data[largestPos]) {</b>
+<b class="nc"><i>151</i>&nbsp;                    largestPos = i;</b>
+<i>152</i>&nbsp;                }
+<i>153</i>&nbsp;            }
+<i>154</i>&nbsp;            // Compute the scale factor by dividing it by the value in the
+<i>155</i>&nbsp;            // same position from the &quot;standard&quot; table.
+<i>156</i>&nbsp;            // If the given table was not generated by scaling the standard,
+<i>157</i>&nbsp;            // the resulting table will still be reasonable, as it will reflect
+<i>158</i>&nbsp;            // a comparable scaling of chrominance frequency response of the
+<i>159</i>&nbsp;            // eye.
+<b class="nc"><i>160</i>&nbsp;            float scaleFactor = ((float)(luma.data[largestPos]))</b>
+<b class="nc"><i>161</i>&nbsp;                / ((float)(JPEGQTable.K1Div2Luminance.getTable()[largestPos]));</b>
+<i>162</i>&nbsp;            //    generate a new table
+<b class="nc"><i>163</i>&nbsp;            JPEGQTable jpegTable =</b>
+<b class="nc"><i>164</i>&nbsp;                JPEGQTable.K2Div2Chrominance.getScaledInstance(scaleFactor,</b>
+<i>165</i>&nbsp;                                                               true);
+<b class="nc"><i>166</i>&nbsp;            newGuy = new Qtable(jpegTable, 1);</b>
+<i>167</i>&nbsp;        }
+<b class="nc"><i>168</i>&nbsp;        return newGuy;</b>
+<i>169</i>&nbsp;    }
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;    Qtable getQtableFromNode(Node node) throws IIOInvalidTreeException {
+<b class="nc"><i>172</i>&nbsp;        return new Qtable(node);</b>
+<i>173</i>&nbsp;    }
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;    /**
+<i>176</i>&nbsp;     * A quantization table within a DQT marker segment.
+<i>177</i>&nbsp;     */
+<i>178</i>&nbsp;    class Qtable implements Cloneable {
+<i>179</i>&nbsp;        int elementPrecision;
+<i>180</i>&nbsp;        int tableID;
+<b class="nc"><i>181</i>&nbsp;        final int QTABLE_SIZE = 64;</b>
+<i>182</i>&nbsp;        int [] data; // 64 elements, in natural order
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;        /**
+<i>185</i>&nbsp;         * The zigzag-order position of the i&#39;th element
+<i>186</i>&nbsp;         * of a DCT block read in natural order.
+<i>187</i>&nbsp;         */
+<b class="nc"><i>188</i>&nbsp;        private final int [] zigzag = {</b>
+<i>189</i>&nbsp;            0,  1,  5,  6, 14, 15, 27, 28,
+<i>190</i>&nbsp;            2,  4,  7, 13, 16, 26, 29, 42,
+<i>191</i>&nbsp;            3,  8, 12, 17, 25, 30, 41, 43,
+<i>192</i>&nbsp;            9, 11, 18, 24, 31, 40, 44, 53,
+<i>193</i>&nbsp;            10, 19, 23, 32, 39, 45, 52, 54,
+<i>194</i>&nbsp;            20, 22, 33, 38, 46, 51, 55, 60,
+<i>195</i>&nbsp;            21, 34, 37, 47, 50, 56, 59, 61,
+<i>196</i>&nbsp;            35, 36, 48, 49, 57, 58, 62, 63
+<i>197</i>&nbsp;        };
+<i>198</i>&nbsp;
+<b class="nc"><i>199</i>&nbsp;        Qtable(boolean wantLuma, float quality) {</b>
+<b class="nc"><i>200</i>&nbsp;            elementPrecision = 0;</b>
+<b class="nc"><i>201</i>&nbsp;            JPEGQTable base = null;</b>
+<b class="nc"><i>202</i>&nbsp;            if (wantLuma) {</b>
+<b class="nc"><i>203</i>&nbsp;                tableID = 0;</b>
+<b class="nc"><i>204</i>&nbsp;                base = JPEGQTable.K1Div2Luminance;</b>
+<i>205</i>&nbsp;            } else {
+<b class="nc"><i>206</i>&nbsp;                tableID = 1;</b>
+<b class="nc"><i>207</i>&nbsp;                base = JPEGQTable.K2Div2Chrominance;</b>
+<i>208</i>&nbsp;            }
+<b class="nc"><i>209</i>&nbsp;            if (quality != JPEG.DEFAULT_QUALITY) {</b>
+<b class="nc"><i>210</i>&nbsp;                quality = JPEG.convertToLinearQuality(quality);</b>
+<b class="nc"><i>211</i>&nbsp;                if (wantLuma) {</b>
+<b class="nc"><i>212</i>&nbsp;                    base = JPEGQTable.K1Luminance.getScaledInstance</b>
+<b class="nc"><i>213</i>&nbsp;                        (quality, true);</b>
+<i>214</i>&nbsp;                } else {
+<b class="nc"><i>215</i>&nbsp;                    base = JPEGQTable.K2Div2Chrominance.getScaledInstance</b>
+<b class="nc"><i>216</i>&nbsp;                        (quality, true);</b>
+<i>217</i>&nbsp;                }
+<i>218</i>&nbsp;            }
+<b class="nc"><i>219</i>&nbsp;            data = base.getTable();</b>
+<i>220</i>&nbsp;        }
+<i>221</i>&nbsp;
+<b class="nc"><i>222</i>&nbsp;        Qtable(JPEGBuffer buffer) throws IIOException {</b>
+<b class="nc"><i>223</i>&nbsp;            elementPrecision = buffer.buf[buffer.bufPtr] &gt;&gt;&gt; 4;</b>
+<b class="nc"><i>224</i>&nbsp;            tableID = buffer.buf[buffer.bufPtr++] &amp; 0xf;</b>
+<b class="nc"><i>225</i>&nbsp;            if (elementPrecision != 0) {</b>
+<i>226</i>&nbsp;                // IJG is compiled for 8-bits, so this shouldn&#39;t happen
+<b class="nc"><i>227</i>&nbsp;                throw new IIOException (&quot;Unsupported element precision&quot;);</b>
+<i>228</i>&nbsp;            }
+<b class="nc"><i>229</i>&nbsp;            data = new int [QTABLE_SIZE];</b>
+<i>230</i>&nbsp;            // Read from zig-zag order to natural order
+<b class="nc"><i>231</i>&nbsp;            for (int i = 0; i &lt; QTABLE_SIZE; i++) {</b>
+<b class="nc"><i>232</i>&nbsp;                data[i] = buffer.buf[buffer.bufPtr+zigzag[i]] &amp; 0xff;</b>
+<i>233</i>&nbsp;            }
+<b class="nc"><i>234</i>&nbsp;            buffer.bufPtr += QTABLE_SIZE;</b>
+<i>235</i>&nbsp;        }
+<i>236</i>&nbsp;
+<b class="nc"><i>237</i>&nbsp;        Qtable(JPEGQTable table, int id) {</b>
+<b class="nc"><i>238</i>&nbsp;            elementPrecision = 0;</b>
+<b class="nc"><i>239</i>&nbsp;            tableID = id;</b>
+<b class="nc"><i>240</i>&nbsp;            data = table.getTable();</b>
+<i>241</i>&nbsp;        }
+<i>242</i>&nbsp;
+<b class="nc"><i>243</i>&nbsp;        Qtable(Node node) throws IIOInvalidTreeException {</b>
+<b class="nc"><i>244</i>&nbsp;            if (node.getNodeName().equals(&quot;dqtable&quot;)) {</b>
+<b class="nc"><i>245</i>&nbsp;                NamedNodeMap attrs = node.getAttributes();</b>
+<b class="nc"><i>246</i>&nbsp;                int count = attrs.getLength();</b>
+<b class="nc"><i>247</i>&nbsp;                if ((count &lt; 1) || (count &gt; 2)) {</b>
+<b class="nc"><i>248</i>&nbsp;                    throw new IIOInvalidTreeException</b>
+<i>249</i>&nbsp;                        (&quot;dqtable node must have 1 or 2 attributes&quot;, node);
+<i>250</i>&nbsp;                }
+<b class="nc"><i>251</i>&nbsp;                elementPrecision = 0;</b>
+<b class="nc"><i>252</i>&nbsp;                tableID = getAttributeValue(node, attrs, &quot;qtableId&quot;, 0, 3, true);</b>
+<b class="nc"><i>253</i>&nbsp;                if (node instanceof IIOMetadataNode) {</b>
+<b class="nc"><i>254</i>&nbsp;                    IIOMetadataNode ourNode = (IIOMetadataNode) node;</b>
+<b class="nc"><i>255</i>&nbsp;                    JPEGQTable table = (JPEGQTable) ourNode.getUserObject();</b>
+<b class="nc"><i>256</i>&nbsp;                    if (table == null) {</b>
+<b class="nc"><i>257</i>&nbsp;                        throw new IIOInvalidTreeException</b>
+<i>258</i>&nbsp;                            (&quot;dqtable node must have user object&quot;, node);
+<i>259</i>&nbsp;                    }
+<b class="nc"><i>260</i>&nbsp;                    data = table.getTable();</b>
+<b class="nc"><i>261</i>&nbsp;                } else {</b>
+<b class="nc"><i>262</i>&nbsp;                    throw new IIOInvalidTreeException</b>
+<i>263</i>&nbsp;                        (&quot;dqtable node must have user object&quot;, node);
+<i>264</i>&nbsp;                }
+<b class="nc"><i>265</i>&nbsp;            } else {</b>
+<b class="nc"><i>266</i>&nbsp;                throw new IIOInvalidTreeException</b>
+<i>267</i>&nbsp;                    (&quot;Invalid node, expected dqtable&quot;, node);
+<i>268</i>&nbsp;            }
+<i>269</i>&nbsp;        }
+<i>270</i>&nbsp;
+<i>271</i>&nbsp;        protected Object clone() {
+<b class="nc"><i>272</i>&nbsp;            Qtable newGuy = null;</b>
+<i>273</i>&nbsp;            try {
+<b class="nc"><i>274</i>&nbsp;                newGuy = (Qtable) super.clone();</b>
+<b class="nc"><i>275</i>&nbsp;            } catch (CloneNotSupportedException e) {} // won&#39;t happen</b>
+<b class="nc"><i>276</i>&nbsp;            if (data != null) {</b>
+<b class="nc"><i>277</i>&nbsp;                newGuy.data = (int []) data.clone();</b>
+<i>278</i>&nbsp;            }
+<b class="nc"><i>279</i>&nbsp;            return newGuy;</b>
+<i>280</i>&nbsp;        }
+<i>281</i>&nbsp;
+<i>282</i>&nbsp;        IIOMetadataNode getNativeNode() {
+<b class="nc"><i>283</i>&nbsp;            IIOMetadataNode node = new IIOMetadataNode(&quot;dqtable&quot;);</b>
+<b class="nc"><i>284</i>&nbsp;            node.setAttribute(&quot;elementPrecision&quot;,</b>
+<b class="nc"><i>285</i>&nbsp;                              Integer.toString(elementPrecision));</b>
+<b class="nc"><i>286</i>&nbsp;            node.setAttribute(&quot;qtableId&quot;,</b>
+<b class="nc"><i>287</i>&nbsp;                              Integer.toString(tableID));</b>
+<b class="nc"><i>288</i>&nbsp;            node.setUserObject(new JPEGQTable(data));</b>
+<b class="nc"><i>289</i>&nbsp;            return node;</b>
+<i>290</i>&nbsp;        }
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;        void print() {
+<b class="nc"><i>293</i>&nbsp;            System.out.println(&quot;Table id: &quot; + Integer.toString(tableID));</b>
+<b class="nc"><i>294</i>&nbsp;            System.out.println(&quot;Element precision: &quot;</b>
+<b class="nc"><i>295</i>&nbsp;                               + Integer.toString(elementPrecision));</b>
+<i>296</i>&nbsp;
+<b class="nc"><i>297</i>&nbsp;            (new JPEGQTable(data)).toString();</b>
+<i>298</i>&nbsp;            /*
+<i>299</i>&nbsp;              for (int i = 0; i &lt; 64; i++) {
+<i>300</i>&nbsp;              if (i % 8 == 0) {
+<i>301</i>&nbsp;              System.out.println();
+<i>302</i>&nbsp;              }
+<i>303</i>&nbsp;              System.out.print(&quot; &quot; + Integer.toString(data[i]));
+<i>304</i>&nbsp;              }
+<i>305</i>&nbsp;              System.out.println();
+<i>306</i>&nbsp;            */
+<i>307</i>&nbsp;        }
+<i>308</i>&nbsp;    }
+<i>309</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

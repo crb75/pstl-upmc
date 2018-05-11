@@ -1,0 +1,316 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PangoFonts</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.java.swing.plaf.gtk</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PangoFonts (com.sun.java.swing.plaf.gtk)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PangoFonts</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 65)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2002, 2010, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.java.swing.plaf.gtk;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.awt.*;
+<i>29</i>&nbsp;import java.awt.geom.AffineTransform;
+<i>30</i>&nbsp;import javax.swing.plaf.FontUIResource;
+<i>31</i>&nbsp;import java.util.StringTokenizer;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import sun.font.FontConfigManager;
+<i>34</i>&nbsp;import sun.font.FontUtilities;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; * @author Shannon Hickey
+<i>38</i>&nbsp; * @author Leif Samuelsson
+<i>39</i>&nbsp; */
+<i>40</i>&nbsp;class PangoFonts {
+<b class="nc"><i>41</i>&nbsp;</b>
+<i>42</i>&nbsp;    public static final String CHARS_DIGITS = &quot;0123456789&quot;;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    /**
+<i>45</i>&nbsp;     * Calculate a default scale factor for fonts in this L&amp;F to match
+<i>46</i>&nbsp;     * the reported resolution of the screen.
+<i>47</i>&nbsp;     * Java 2D specified a default user-space scale of 72dpi.
+<i>48</i>&nbsp;     * This is unlikely to correspond to that of the real screen.
+<i>49</i>&nbsp;     * The Xserver reports a value which may be used to adjust for this.
+<i>50</i>&nbsp;     * and Java 2D exposes it via a normalizing transform.
+<i>51</i>&nbsp;     * However many Xservers report a hard-coded 90dpi whilst others report a
+<i>52</i>&nbsp;     * calculated value based on possibly incorrect data.
+<i>53</i>&nbsp;     * That is something that must be solved at the X11 level
+<i>54</i>&nbsp;     * Note that in an X11 multi-screen environment, the default screen
+<i>55</i>&nbsp;     * is the one used by the JRE so it is safe to use it here.
+<i>56</i>&nbsp;     */
+<i>57</i>&nbsp;    private static double fontScale;
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    static {
+<i>60</i>&nbsp;        fontScale = 1.0d;
+<b class="nc"><i>61</i>&nbsp;        GraphicsEnvironment ge =</b>
+<i>62</i>&nbsp;           GraphicsEnvironment.getLocalGraphicsEnvironment();
+<b class="nc"><i>63</i>&nbsp;</b>
+<i>64</i>&nbsp;        if (!ge.isHeadless()) {
+<b class="nc"><i>65</i>&nbsp;            GraphicsConfiguration gc =</b>
+<b class="nc"><i>66</i>&nbsp;                ge.getDefaultScreenDevice().getDefaultConfiguration();</b>
+<b class="nc"><i>67</i>&nbsp;            AffineTransform at = gc.getNormalizingTransform();</b>
+<b class="nc"><i>68</i>&nbsp;            fontScale = at.getScaleY();</b>
+<b class="nc"><i>69</i>&nbsp;        }</b>
+<i>70</i>&nbsp;    }
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    /**
+<i>74</i>&nbsp;     * Parses a String containing a pango font description and returns
+<i>75</i>&nbsp;     * a Font object.
+<i>76</i>&nbsp;     *
+<i>77</i>&nbsp;     * @param pangoName a String describing a pango font
+<i>78</i>&nbsp;     *                  e.g. &quot;Sans Italic 10&quot;
+<i>79</i>&nbsp;     * @return a Font object as a FontUIResource
+<i>80</i>&nbsp;     *         or null if no suitable font could be created.
+<i>81</i>&nbsp;     */
+<i>82</i>&nbsp;    static Font lookupFont(String pangoName) {
+<i>83</i>&nbsp;        String family = &quot;&quot;;
+<b class="nc"><i>84</i>&nbsp;        int style = Font.PLAIN;</b>
+<b class="nc"><i>85</i>&nbsp;        int size = 10;</b>
+<b class="nc"><i>86</i>&nbsp;</b>
+<i>87</i>&nbsp;        StringTokenizer tok = new StringTokenizer(pangoName);
+<b class="nc"><i>88</i>&nbsp;</b>
+<i>89</i>&nbsp;        while (tok.hasMoreTokens()) {
+<b class="nc"><i>90</i>&nbsp;            String word = tok.nextToken();</b>
+<b class="nc"><i>91</i>&nbsp;</b>
+<i>92</i>&nbsp;            if (word.equalsIgnoreCase(&quot;italic&quot;)) {
+<b class="nc"><i>93</i>&nbsp;                style |= Font.ITALIC;</b>
+<b class="nc"><i>94</i>&nbsp;            } else if (word.equalsIgnoreCase(&quot;bold&quot;)) {</b>
+<b class="nc"><i>95</i>&nbsp;                style |= Font.BOLD;</b>
+<b class="nc"><i>96</i>&nbsp;            } else if (CHARS_DIGITS.indexOf(word.charAt(0)) != -1) {</b>
+<b class="nc"><i>97</i>&nbsp;                try {</b>
+<i>98</i>&nbsp;                    size = Integer.parseInt(word);
+<b class="nc"><i>99</i>&nbsp;                } catch (NumberFormatException ex) {</b>
+<b class="nc"><i>100</i>&nbsp;                }</b>
+<b class="nc"><i>101</i>&nbsp;            } else {</b>
+<i>102</i>&nbsp;                if (family.length() &gt; 0) {
+<b class="nc"><i>103</i>&nbsp;                    family += &quot; &quot;;</b>
+<b class="nc"><i>104</i>&nbsp;                }</b>
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;                family += word;
+<b class="nc"><i>107</i>&nbsp;            }</b>
+<i>108</i>&nbsp;        }
+<b class="nc"><i>109</i>&nbsp;</b>
+<i>110</i>&nbsp;        /*
+<i>111</i>&nbsp;         * Java 2D font point sizes are in a user-space scale of 72dpi.
+<i>112</i>&nbsp;         * GTK allows a user to configure a &quot;dpi&quot; property used to scale
+<i>113</i>&nbsp;         * the fonts used to match a user&#39;s preference.
+<i>114</i>&nbsp;         * To match the font size of GTK apps we need to obtain this DPI and
+<i>115</i>&nbsp;         * adjust as follows:
+<i>116</i>&nbsp;         * Some versions of GTK use XSETTINGS if available to dynamically
+<i>117</i>&nbsp;         * monitor user-initiated changes in the DPI to be used by GTK
+<i>118</i>&nbsp;         * apps. This value is also made available as the Xft.dpi X resource.
+<i>119</i>&nbsp;         * This is presumably a function of the font preferences API and/or
+<i>120</i>&nbsp;         * the manner in which it requests the toolkit to update the default
+<i>121</i>&nbsp;         * for the desktop. This dual approach is probably necessary since
+<i>122</i>&nbsp;         * other versions of GTK - or perhaps some apps - determine the size
+<i>123</i>&nbsp;         * to use only at start-up from that X resource.
+<i>124</i>&nbsp;         * If that resource is not set then GTK scales for the DPI resolution
+<i>125</i>&nbsp;         * reported by the Xserver using the formula
+<i>126</i>&nbsp;         * DisplayHeight(dpy, screen) / DisplayHeightMM(dpy, screen) * 25.4
+<i>127</i>&nbsp;         * (25.4mm == 1 inch).
+<i>128</i>&nbsp;         * JDK tracks the Xft.dpi XSETTINGS property directly so it can
+<i>129</i>&nbsp;         * dynamically change font size by tracking just that value.
+<i>130</i>&nbsp;         * If that resource is not available use the same fall back formula
+<i>131</i>&nbsp;         * as GTK (see calculation for fontScale).
+<i>132</i>&nbsp;         *
+<i>133</i>&nbsp;         * GTK&#39;s default setting for Xft.dpi is 96 dpi (and it seems -1
+<i>134</i>&nbsp;         * apparently also can mean that &quot;default&quot;). However this default
+<i>135</i>&nbsp;         * isn&#39;t used if there&#39;s no property set. The real default in the
+<i>136</i>&nbsp;         * absence of a resource is the Xserver reported dpi.
+<i>137</i>&nbsp;         * Finally this DPI is used to calculate the nearest Java 2D font
+<i>138</i>&nbsp;         * 72 dpi font size.
+<i>139</i>&nbsp;         * There are cases in which JDK behaviour may not exactly mimic
+<i>140</i>&nbsp;         * GTK native app behaviour :
+<i>141</i>&nbsp;         * 1) When a GTK app is not able to dynamically track the changes
+<i>142</i>&nbsp;         * (does not use XSETTINGS), JDK will resize but other apps will
+<i>143</i>&nbsp;         * not. This is OK as JDK is exhibiting preferred behaviour and
+<i>144</i>&nbsp;         * this is probably how all later GTK apps will behave
+<i>145</i>&nbsp;         * 2) When a GTK app does not use XSETTINGS and for some reason
+<i>146</i>&nbsp;         * the XRDB property is not present. JDK will pick up XSETTINGS
+<i>147</i>&nbsp;         * and the GTK app will use the Xserver default. Since its
+<i>148</i>&nbsp;         * impossible for JDK to know that some other GTK app is not
+<i>149</i>&nbsp;         * using XSETTINGS its impossible to account for this and in any
+<i>150</i>&nbsp;         * case for it to be a problem the values would have to be different.
+<i>151</i>&nbsp;         * It also seems unlikely to arise except when a user explicitly
+<i>152</i>&nbsp;         * deletes the X resource database entry.
+<i>153</i>&nbsp;         * There also some other issues to be aware of for the future:
+<i>154</i>&nbsp;         * GTK specifies the Xft.dpi value as server-wide which when used
+<i>155</i>&nbsp;         * on systems with 2 distinct X screens with different physical DPI
+<i>156</i>&nbsp;         * the font sizes will inevitably appear different. It would have
+<i>157</i>&nbsp;         * been a more user-friendly design to further adjust that one
+<i>158</i>&nbsp;         * setting depending on the screen resolution to achieve perceived
+<i>159</i>&nbsp;         * equivalent sizes. If such a change were ever to be made in GTK
+<i>160</i>&nbsp;         * we would need to update for that.
+<i>161</i>&nbsp;         */
+<i>162</i>&nbsp;        double dsize = size;
+<b class="nc"><i>163</i>&nbsp;        int dpi = 96;</b>
+<b class="nc"><i>164</i>&nbsp;        Object value =</b>
+<b class="nc"><i>165</i>&nbsp;            Toolkit.getDefaultToolkit().getDesktopProperty(&quot;gnome.Xft/DPI&quot;);</b>
+<b class="nc"><i>166</i>&nbsp;        if (value instanceof Integer) {</b>
+<i>167</i>&nbsp;            dpi = ((Integer)value).intValue() / 1024;
+<b class="nc"><i>168</i>&nbsp;            if (dpi == -1) {</b>
+<b class="nc"><i>169</i>&nbsp;              dpi = 96;</b>
+<i>170</i>&nbsp;            }
+<b class="nc"><i>171</i>&nbsp;            if (dpi &lt; 50) { /* 50 dpi is the minimum value gnome allows */</b>
+<b class="nc"><i>172</i>&nbsp;                dpi = 50;</b>
+<b class="nc"><i>173</i>&nbsp;            }</b>
+<b class="nc"><i>174</i>&nbsp;            /* The Java rasteriser assumes pts are in a user space of</b>
+<i>175</i>&nbsp;             * 72 dpi, so we need to adjust for that.
+<b class="nc"><i>176</i>&nbsp;             */</b>
+<b class="nc"><i>177</i>&nbsp;            dsize = ((double)(dpi * size)/ 72.0);</b>
+<i>178</i>&nbsp;        } else {
+<i>179</i>&nbsp;            /* If there&#39;s no property, GTK scales for the resolution
+<i>180</i>&nbsp;             * reported by the Xserver using the formula listed above.
+<i>181</i>&nbsp;             * fontScale already accounts for the 72 dpi Java 2D space.
+<b class="nc"><i>182</i>&nbsp;             */</b>
+<i>183</i>&nbsp;            dsize = size * fontScale;
+<b class="nc"><i>184</i>&nbsp;        }</b>
+<i>185</i>&nbsp;
+<b class="nc"><i>186</i>&nbsp;        /* Round size to nearest integer pt size */</b>
+<b class="nc"><i>187</i>&nbsp;        size = (int)(dsize + 0.5);</b>
+<i>188</i>&nbsp;        if (size &lt; 1) {
+<i>189</i>&nbsp;            size = 1;
+<i>190</i>&nbsp;        }
+<i>191</i>&nbsp;
+<i>192</i>&nbsp;        String fcFamilyLC = family.toLowerCase();
+<i>193</i>&nbsp;        if (FontUtilities.mapFcName(fcFamilyLC) != null) {
+<b class="nc"><i>194</i>&nbsp;            /* family is a Fc/Pango logical font which we need to expand. */</b>
+<i>195</i>&nbsp;            Font font =  FontUtilities.getFontConfigFUIR(fcFamilyLC, style, size);
+<i>196</i>&nbsp;            font = font.deriveFont(style, (float)dsize);
+<i>197</i>&nbsp;            return new FontUIResource(font);
+<b class="nc"><i>198</i>&nbsp;        } else {</b>
+<b class="nc"><i>199</i>&nbsp;            /* It&#39;s a physical font which we will create with a fallback */</b>
+<b class="nc"><i>200</i>&nbsp;            Font font = new Font(family, style, size);</b>
+<i>201</i>&nbsp;            /* a roundabout way to set the font size in floating points */
+<i>202</i>&nbsp;            font = font.deriveFont(style, (float)dsize);
+<b class="nc"><i>203</i>&nbsp;            FontUIResource fuir = new FontUIResource(font);</b>
+<b class="nc"><i>204</i>&nbsp;            return FontUtilities.getCompositeFontUIResource(fuir);</b>
+<i>205</i>&nbsp;        }
+<b class="nc"><i>206</i>&nbsp;    }</b>
+<b class="nc"><i>207</i>&nbsp;</b>
+<b class="nc"><i>208</i>&nbsp;    /**</b>
+<i>209</i>&nbsp;     * Parses a String containing a pango font description and returns
+<i>210</i>&nbsp;     * the (unscaled) font size as an integer.
+<b class="nc"><i>211</i>&nbsp;     *</b>
+<i>212</i>&nbsp;     * @param pangoName a String describing a pango font
+<b class="nc"><i>213</i>&nbsp;     * @return the size of the font described by pangoName (e.g. if</b>
+<b class="nc"><i>214</i>&nbsp;     *         pangoName is &quot;Sans Italic 10&quot;, then this method returns 10)</b>
+<b class="nc"><i>215</i>&nbsp;     */</b>
+<i>216</i>&nbsp;    static int getFontSize(String pangoName) {
+<i>217</i>&nbsp;        int size = 10;
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;        StringTokenizer tok = new StringTokenizer(pangoName);
+<i>220</i>&nbsp;        while (tok.hasMoreTokens()) {
+<i>221</i>&nbsp;            String word = tok.nextToken();
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;            if (CHARS_DIGITS.indexOf(word.charAt(0)) != -1) {
+<i>224</i>&nbsp;                try {
+<i>225</i>&nbsp;                    size = Integer.parseInt(word);
+<i>226</i>&nbsp;                } catch (NumberFormatException ex) {
+<i>227</i>&nbsp;                }
+<b class="nc"><i>228</i>&nbsp;            }</b>
+<i>229</i>&nbsp;        }
+<b class="nc"><i>230</i>&nbsp;</b>
+<b class="nc"><i>231</i>&nbsp;        return size;</b>
+<b class="nc"><i>232</i>&nbsp;    }</b>
+<i>233</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

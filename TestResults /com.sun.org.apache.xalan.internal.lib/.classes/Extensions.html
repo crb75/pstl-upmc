@@ -1,0 +1,471 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Extensions</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.lib</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Extensions (com.sun.org.apache.xalan.internal.lib)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Extensions</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 71)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; */
+<i>4</i>&nbsp;/*
+<i>5</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one or more
+<i>6</i>&nbsp; * contributor license agreements.  See the NOTICE file distributed with
+<i>7</i>&nbsp; * this work for additional information regarding copyright ownership.
+<i>8</i>&nbsp; * The ASF licenses this file to You under the Apache License, Version 2.0
+<i>9</i>&nbsp; * (the &quot;License&quot;); you may not use this file except in compliance with
+<i>10</i>&nbsp; * the License.  You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: Extensions.java,v 1.2.4.1 2005/09/10 18:53:32 jeffsuttor Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xalan.internal.lib;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xalan.internal.extensions.ExpressionContext;
+<i>26</i>&nbsp;import com.sun.org.apache.xalan.internal.utils.ObjectFactory;
+<i>27</i>&nbsp;import com.sun.org.apache.xalan.internal.xslt.EnvironmentCheck;
+<i>28</i>&nbsp;import com.sun.org.apache.xpath.internal.NodeSet;
+<i>29</i>&nbsp;import com.sun.org.apache.xpath.internal.objects.XBoolean;
+<i>30</i>&nbsp;import com.sun.org.apache.xpath.internal.objects.XNumber;
+<i>31</i>&nbsp;import com.sun.org.apache.xpath.internal.objects.XObject;
+<i>32</i>&nbsp;import java.util.Hashtable;
+<i>33</i>&nbsp;import java.util.Map;
+<i>34</i>&nbsp;import java.util.StringTokenizer;
+<i>35</i>&nbsp;import javax.xml.parsers.DocumentBuilderFactory;
+<i>36</i>&nbsp;import javax.xml.parsers.ParserConfigurationException;
+<i>37</i>&nbsp;import org.w3c.dom.Document;
+<i>38</i>&nbsp;import org.w3c.dom.DocumentFragment;
+<i>39</i>&nbsp;import org.w3c.dom.Node;
+<i>40</i>&nbsp;import org.w3c.dom.NodeList;
+<i>41</i>&nbsp;import org.w3c.dom.Text;
+<i>42</i>&nbsp;import org.w3c.dom.traversal.NodeIterator;
+<i>43</i>&nbsp;import org.xml.sax.SAXNotSupportedException;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;/**
+<i>46</i>&nbsp; * This class contains many of the Xalan-supplied extensions.
+<i>47</i>&nbsp; * It is accessed by specifying a namespace URI as follows:
+<i>48</i>&nbsp; * &lt;pre&gt;
+<i>49</i>&nbsp; *    xmlns:xalan=&quot;http://xml.apache.org/xalan&quot;
+<i>50</i>&nbsp; * &lt;/pre&gt;
+<i>51</i>&nbsp; * @xsl.usage general
+<i>52</i>&nbsp; */
+<i>53</i>&nbsp;public class Extensions
+<i>54</i>&nbsp;{
+<i>55</i>&nbsp;    static final String JDK_DEFAULT_DOM = &quot;com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl&quot;;
+<i>56</i>&nbsp;  /**
+<i>57</i>&nbsp;   * Constructor Extensions
+<i>58</i>&nbsp;   *
+<i>59</i>&nbsp;   */
+<b class="nc"><i>60</i>&nbsp;  private Extensions(){}  // Make sure class cannot be instantiated</b>
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;  /**
+<i>63</i>&nbsp;   * This method is an extension that implements as a Xalan extension
+<i>64</i>&nbsp;   * the node-set function also found in xt and saxon.
+<i>65</i>&nbsp;   * If the argument is a Result Tree Fragment, then &lt;code&gt;nodeset&lt;/code&gt;
+<i>66</i>&nbsp;   * returns a node-set consisting of a single root node as described in
+<i>67</i>&nbsp;   * section 11.1 of the XSLT 1.0 Recommendation.  If the argument is a
+<i>68</i>&nbsp;   * node-set, &lt;code&gt;nodeset&lt;/code&gt; returns a node-set.  If the argument
+<i>69</i>&nbsp;   * is a string, number, or boolean, then &lt;code&gt;nodeset&lt;/code&gt; returns
+<i>70</i>&nbsp;   * a node-set consisting of a single root node with a single text node
+<i>71</i>&nbsp;   * child that is the result of calling the XPath string() function on the
+<i>72</i>&nbsp;   * passed parameter.  If the argument is anything else, then a node-set
+<i>73</i>&nbsp;   * is returned consisting of a single root node with a single text node
+<i>74</i>&nbsp;   * child that is the result of calling the java &lt;code&gt;toString()&lt;/code&gt;
+<i>75</i>&nbsp;   * method on the passed argument.
+<i>76</i>&nbsp;   * Most of the
+<i>77</i>&nbsp;   * actual work here is done in &lt;code&gt;MethodResolver&lt;/code&gt; and
+<i>78</i>&nbsp;   * &lt;code&gt;XRTreeFrag&lt;/code&gt;.
+<i>79</i>&nbsp;   * @param myProcessor Context passed by the extension processor
+<i>80</i>&nbsp;   * @param rtf Argument in the stylesheet to the nodeset extension function
+<i>81</i>&nbsp;   *
+<i>82</i>&nbsp;   * NEEDSDOC ($objectName$) @return
+<i>83</i>&nbsp;   */
+<i>84</i>&nbsp;  public static NodeSet nodeset(ExpressionContext myProcessor, Object rtf)
+<i>85</i>&nbsp;  {
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    String textNodeValue;
+<i>88</i>&nbsp;
+<b class="nc"><i>89</i>&nbsp;    if (rtf instanceof NodeIterator)</b>
+<i>90</i>&nbsp;    {
+<b class="nc"><i>91</i>&nbsp;      return new NodeSet((NodeIterator) rtf);</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;    else
+<i>94</i>&nbsp;    {
+<b class="nc"><i>95</i>&nbsp;      if (rtf instanceof String)</b>
+<i>96</i>&nbsp;      {
+<b class="nc"><i>97</i>&nbsp;        textNodeValue = (String) rtf;</b>
+<i>98</i>&nbsp;      }
+<b class="nc"><i>99</i>&nbsp;      else if (rtf instanceof Boolean)</b>
+<i>100</i>&nbsp;      {
+<b class="nc"><i>101</i>&nbsp;        textNodeValue = new XBoolean(((Boolean) rtf).booleanValue()).str();</b>
+<i>102</i>&nbsp;      }
+<b class="nc"><i>103</i>&nbsp;      else if (rtf instanceof Double)</b>
+<i>104</i>&nbsp;      {
+<b class="nc"><i>105</i>&nbsp;        textNodeValue = new XNumber(((Double) rtf).doubleValue()).str();</b>
+<i>106</i>&nbsp;      }
+<i>107</i>&nbsp;      else
+<i>108</i>&nbsp;      {
+<b class="nc"><i>109</i>&nbsp;        textNodeValue = rtf.toString();</b>
+<i>110</i>&nbsp;      }
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;      // This no longer will work right since the DTM.
+<i>113</i>&nbsp;      // Document myDoc = myProcessor.getContextNode().getOwnerDocument();
+<b class="nc"><i>114</i>&nbsp;      Document myDoc = getDocument();</b>
+<i>115</i>&nbsp;
+<b class="nc"><i>116</i>&nbsp;        Text textNode = myDoc.createTextNode(textNodeValue);</b>
+<b class="nc"><i>117</i>&nbsp;        DocumentFragment docFrag = myDoc.createDocumentFragment();</b>
+<i>118</i>&nbsp;
+<b class="nc"><i>119</i>&nbsp;        docFrag.appendChild(textNode);</b>
+<i>120</i>&nbsp;
+<b class="nc"><i>121</i>&nbsp;      return new NodeSet(docFrag);</b>
+<i>122</i>&nbsp;    }
+<i>123</i>&nbsp;  }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;  /**
+<i>126</i>&nbsp;   * Returns the intersection of two node-sets.
+<i>127</i>&nbsp;   *
+<i>128</i>&nbsp;   * @param nl1 NodeList for first node-set
+<i>129</i>&nbsp;   * @param nl2 NodeList for second node-set
+<i>130</i>&nbsp;   * @return a NodeList containing the nodes in nl1 that are also in nl2
+<i>131</i>&nbsp;   *
+<i>132</i>&nbsp;   * Note: The usage of this extension function in the xalan namespace
+<i>133</i>&nbsp;   * is deprecated. Please use the same function in the EXSLT sets extension
+<i>134</i>&nbsp;   * (http://exslt.org/sets).
+<i>135</i>&nbsp;   */
+<i>136</i>&nbsp;  public static NodeList intersection(NodeList nl1, NodeList nl2)
+<i>137</i>&nbsp;  {
+<b class="nc"><i>138</i>&nbsp;    return ExsltSets.intersection(nl1, nl2);</b>
+<i>139</i>&nbsp;  }
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;  /**
+<i>142</i>&nbsp;   * Returns the difference between two node-sets.
+<i>143</i>&nbsp;   *
+<i>144</i>&nbsp;   * @param nl1 NodeList for first node-set
+<i>145</i>&nbsp;   * @param nl2 NodeList for second node-set
+<i>146</i>&nbsp;   * @return a NodeList containing the nodes in nl1 that are not in nl2
+<i>147</i>&nbsp;   *
+<i>148</i>&nbsp;   * Note: The usage of this extension function in the xalan namespace
+<i>149</i>&nbsp;   * is deprecated. Please use the same function in the EXSLT sets extension
+<i>150</i>&nbsp;   * (http://exslt.org/sets).
+<i>151</i>&nbsp;   */
+<i>152</i>&nbsp;  public static NodeList difference(NodeList nl1, NodeList nl2)
+<i>153</i>&nbsp;  {
+<b class="nc"><i>154</i>&nbsp;    return ExsltSets.difference(nl1, nl2);</b>
+<i>155</i>&nbsp;  }
+<i>156</i>&nbsp;
+<i>157</i>&nbsp;  /**
+<i>158</i>&nbsp;   * Returns node-set containing distinct string values.
+<i>159</i>&nbsp;   *
+<i>160</i>&nbsp;   * @param nl NodeList for node-set
+<i>161</i>&nbsp;   * @return a NodeList with nodes from nl containing distinct string values.
+<i>162</i>&nbsp;   * In other words, if more than one node in nl contains the same string value,
+<i>163</i>&nbsp;   * only include the first such node found.
+<i>164</i>&nbsp;   *
+<i>165</i>&nbsp;   * Note: The usage of this extension function in the xalan namespace
+<i>166</i>&nbsp;   * is deprecated. Please use the same function in the EXSLT sets extension
+<i>167</i>&nbsp;   * (http://exslt.org/sets).
+<i>168</i>&nbsp;   */
+<i>169</i>&nbsp;  public static NodeList distinct(NodeList nl)
+<i>170</i>&nbsp;  {
+<b class="nc"><i>171</i>&nbsp;    return ExsltSets.distinct(nl);</b>
+<i>172</i>&nbsp;  }
+<i>173</i>&nbsp;
+<i>174</i>&nbsp;  /**
+<i>175</i>&nbsp;   * Returns true if both node-sets contain the same set of nodes.
+<i>176</i>&nbsp;   *
+<i>177</i>&nbsp;   * @param nl1 NodeList for first node-set
+<i>178</i>&nbsp;   * @param nl2 NodeList for second node-set
+<i>179</i>&nbsp;   * @return true if nl1 and nl2 contain exactly the same set of nodes.
+<i>180</i>&nbsp;   */
+<i>181</i>&nbsp;  public static boolean hasSameNodes(NodeList nl1, NodeList nl2)
+<i>182</i>&nbsp;  {
+<i>183</i>&nbsp;
+<b class="nc"><i>184</i>&nbsp;    NodeSet ns1 = new NodeSet(nl1);</b>
+<b class="nc"><i>185</i>&nbsp;    NodeSet ns2 = new NodeSet(nl2);</b>
+<i>186</i>&nbsp;
+<b class="nc"><i>187</i>&nbsp;    if (ns1.getLength() != ns2.getLength())</b>
+<b class="nc"><i>188</i>&nbsp;      return false;</b>
+<i>189</i>&nbsp;
+<b class="nc"><i>190</i>&nbsp;    for (int i = 0; i &lt; ns1.getLength(); i++)</b>
+<i>191</i>&nbsp;    {
+<b class="nc"><i>192</i>&nbsp;      Node n = ns1.elementAt(i);</b>
+<i>193</i>&nbsp;
+<b class="nc"><i>194</i>&nbsp;      if (!ns2.contains(n))</b>
+<b class="nc"><i>195</i>&nbsp;        return false;</b>
+<i>196</i>&nbsp;    }
+<i>197</i>&nbsp;
+<b class="nc"><i>198</i>&nbsp;    return true;</b>
+<i>199</i>&nbsp;  }
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;  /**
+<i>202</i>&nbsp;   * Returns the result of evaluating the argument as a string containing
+<i>203</i>&nbsp;   * an XPath expression.  Used where the XPath expression is not known until
+<i>204</i>&nbsp;   * run-time.  The expression is evaluated as if the run-time value of the
+<i>205</i>&nbsp;   * argument appeared in place of the evaluate function call at compile time.
+<i>206</i>&nbsp;   *
+<i>207</i>&nbsp;   * @param myContext an &lt;code&gt;ExpressionContext&lt;/code&gt; passed in by the
+<i>208</i>&nbsp;   *                  extension mechanism.  This must be an XPathContext.
+<i>209</i>&nbsp;   * @param xpathExpr The XPath expression to be evaluated.
+<i>210</i>&nbsp;   * @return the XObject resulting from evaluating the XPath
+<i>211</i>&nbsp;   *
+<i>212</i>&nbsp;   * @throws SAXNotSupportedException
+<i>213</i>&nbsp;   *
+<i>214</i>&nbsp;   * Note: The usage of this extension function in the xalan namespace
+<i>215</i>&nbsp;   * is deprecated. Please use the same function in the EXSLT dynamic extension
+<i>216</i>&nbsp;   * (http://exslt.org/dynamic).
+<i>217</i>&nbsp;   */
+<i>218</i>&nbsp;  public static XObject evaluate(ExpressionContext myContext, String xpathExpr)
+<i>219</i>&nbsp;         throws SAXNotSupportedException
+<i>220</i>&nbsp;  {
+<b class="nc"><i>221</i>&nbsp;    return ExsltDynamic.evaluate(myContext, xpathExpr);</b>
+<i>222</i>&nbsp;  }
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;  /**
+<i>225</i>&nbsp;   * Returns a NodeSet containing one text node for each token in the first argument.
+<i>226</i>&nbsp;   * Delimiters are specified in the second argument.
+<i>227</i>&nbsp;   * Tokens are determined by a call to &lt;code&gt;StringTokenizer&lt;/code&gt;.
+<i>228</i>&nbsp;   * If the first argument is an empty string or contains only delimiters, the result
+<i>229</i>&nbsp;   * will be an empty NodeSet.
+<i>230</i>&nbsp;   *
+<i>231</i>&nbsp;   * Contributed to XalanJ1 by &lt;a href=&quot;mailto:benoit.cerrina@writeme.com&quot;&gt;Benoit Cerrina&lt;/a&gt;.
+<i>232</i>&nbsp;   *
+<i>233</i>&nbsp;   * @param toTokenize The string to be split into text tokens.
+<i>234</i>&nbsp;   * @param delims The delimiters to use.
+<i>235</i>&nbsp;   * @return a NodeSet as described above.
+<i>236</i>&nbsp;   */
+<i>237</i>&nbsp;  public static NodeList tokenize(String toTokenize, String delims)
+<i>238</i>&nbsp;  {
+<i>239</i>&nbsp;
+<b class="nc"><i>240</i>&nbsp;    Document doc = getDocument();</b>
+<i>241</i>&nbsp;
+<b class="nc"><i>242</i>&nbsp;    StringTokenizer lTokenizer = new StringTokenizer(toTokenize, delims);</b>
+<b class="nc"><i>243</i>&nbsp;    NodeSet resultSet = new NodeSet();</b>
+<i>244</i>&nbsp;
+<b class="nc"><i>245</i>&nbsp;    synchronized (doc)</b>
+<i>246</i>&nbsp;    {
+<b class="nc"><i>247</i>&nbsp;      while (lTokenizer.hasMoreTokens())</b>
+<i>248</i>&nbsp;      {
+<b class="nc"><i>249</i>&nbsp;        resultSet.addNode(doc.createTextNode(lTokenizer.nextToken()));</b>
+<i>250</i>&nbsp;      }
+<b class="nc"><i>251</i>&nbsp;    }</b>
+<i>252</i>&nbsp;
+<b class="nc"><i>253</i>&nbsp;    return resultSet;</b>
+<i>254</i>&nbsp;  }
+<i>255</i>&nbsp;
+<i>256</i>&nbsp;  /**
+<i>257</i>&nbsp;   * Returns a NodeSet containing one text node for each token in the first argument.
+<i>258</i>&nbsp;   * Delimiters are whitespace.  That is, the delimiters that are used are tab (&amp;#x09),
+<i>259</i>&nbsp;   * linefeed (&amp;#x0A), return (&amp;#x0D), and space (&amp;#x20).
+<i>260</i>&nbsp;   * Tokens are determined by a call to &lt;code&gt;StringTokenizer&lt;/code&gt;.
+<i>261</i>&nbsp;   * If the first argument is an empty string or contains only delimiters, the result
+<i>262</i>&nbsp;   * will be an empty NodeSet.
+<i>263</i>&nbsp;   *
+<i>264</i>&nbsp;   * Contributed to XalanJ1 by &lt;a href=&quot;mailto:benoit.cerrina@writeme.com&quot;&gt;Benoit Cerrina&lt;/a&gt;.
+<i>265</i>&nbsp;   *
+<i>266</i>&nbsp;   * @param toTokenize The string to be split into text tokens.
+<i>267</i>&nbsp;   * @return a NodeSet as described above.
+<i>268</i>&nbsp;   */
+<i>269</i>&nbsp;  public static NodeList tokenize(String toTokenize)
+<i>270</i>&nbsp;  {
+<b class="nc"><i>271</i>&nbsp;    return tokenize(toTokenize, &quot; \t\n\r&quot;);</b>
+<i>272</i>&nbsp;  }
+<i>273</i>&nbsp;
+<i>274</i>&nbsp;  /**
+<i>275</i>&nbsp;   * Return a Node of basic debugging information from the
+<i>276</i>&nbsp;   * EnvironmentCheck utility about the Java environment.
+<i>277</i>&nbsp;   *
+<i>278</i>&nbsp;   * &lt;p&gt;Simply calls the {@link com.sun.org.apache.xalan.internal.xslt.EnvironmentCheck}
+<i>279</i>&nbsp;   * utility to grab info about the Java environment and CLASSPATH,
+<i>280</i>&nbsp;   * etc., and then returns the resulting Node.  Stylesheets can
+<i>281</i>&nbsp;   * then maniuplate this data or simply xsl:copy-of the Node.  Note
+<i>282</i>&nbsp;   * that we first attempt to load the more advanced
+<i>283</i>&nbsp;   * org.apache.env.Which utility by reflection; only if that fails
+<i>284</i>&nbsp;   * to we still use the internal version.  Which is available from
+<i>285</i>&nbsp;   * &lt;a href=&quot;http://xml.apache.org/commons/&quot;&gt;http://xml.apache.org/commons/&lt;/a&gt;.&lt;/p&gt;
+<i>286</i>&nbsp;   *
+<i>287</i>&nbsp;   * &lt;p&gt;We throw a WrappedRuntimeException in the unlikely case
+<i>288</i>&nbsp;   * that reading information from the environment throws us an
+<i>289</i>&nbsp;   * exception. (Is this really the best thing to do?)&lt;/p&gt;
+<i>290</i>&nbsp;   *
+<i>291</i>&nbsp;   * @param myContext an &lt;code&gt;ExpressionContext&lt;/code&gt; passed in by the
+<i>292</i>&nbsp;   *                  extension mechanism.  This must be an XPathContext.
+<i>293</i>&nbsp;   * @return a Node as described above.
+<i>294</i>&nbsp;   */
+<i>295</i>&nbsp;  public static Node checkEnvironment(ExpressionContext myContext)
+<i>296</i>&nbsp;  {
+<i>297</i>&nbsp;
+<b class="nc"><i>298</i>&nbsp;    Document factoryDocument = getDocument();</b>
+<i>299</i>&nbsp;
+<b class="nc"><i>300</i>&nbsp;    Node resultNode = null;</b>
+<i>301</i>&nbsp;    try
+<i>302</i>&nbsp;    {
+<i>303</i>&nbsp;      // First use reflection to try to load Which, which is a
+<i>304</i>&nbsp;      //  better version of EnvironmentCheck
+<b class="nc"><i>305</i>&nbsp;      resultNode = checkEnvironmentUsingWhich(myContext, factoryDocument);</b>
+<i>306</i>&nbsp;
+<b class="nc"><i>307</i>&nbsp;      if (null != resultNode)</b>
+<b class="nc"><i>308</i>&nbsp;        return resultNode;</b>
+<i>309</i>&nbsp;
+<i>310</i>&nbsp;      // If reflection failed, fallback to our internal EnvironmentCheck
+<b class="nc"><i>311</i>&nbsp;      EnvironmentCheck envChecker = new EnvironmentCheck();</b>
+<b class="nc"><i>312</i>&nbsp;      Map&lt;String, Object&gt; h = envChecker.getEnvironmentHash();</b>
+<b class="nc"><i>313</i>&nbsp;      resultNode = factoryDocument.createElement(&quot;checkEnvironmentExtension&quot;);</b>
+<b class="nc"><i>314</i>&nbsp;      envChecker.appendEnvironmentReport(resultNode, factoryDocument, h);</b>
+<b class="nc"><i>315</i>&nbsp;      envChecker = null;</b>
+<i>316</i>&nbsp;    }
+<b class="nc"><i>317</i>&nbsp;    catch(Exception e)</b>
+<i>318</i>&nbsp;    {
+<b class="nc"><i>319</i>&nbsp;      throw new com.sun.org.apache.xml.internal.utils.WrappedRuntimeException(e);</b>
+<b class="nc"><i>320</i>&nbsp;    }</b>
+<i>321</i>&nbsp;
+<b class="nc"><i>322</i>&nbsp;    return resultNode;</b>
+<i>323</i>&nbsp;  }
+<i>324</i>&nbsp;
+<i>325</i>&nbsp;  /**
+<i>326</i>&nbsp;   * Private worker method to attempt to use org.apache.env.Which.
+<i>327</i>&nbsp;   *
+<i>328</i>&nbsp;   * @param myContext an &lt;code&gt;ExpressionContext&lt;/code&gt; passed in by the
+<i>329</i>&nbsp;   *                  extension mechanism.  This must be an XPathContext.
+<i>330</i>&nbsp;   * @param factoryDocument providing createElement services, etc.
+<i>331</i>&nbsp;   * @return a Node with environment info; null if any error
+<i>332</i>&nbsp;   */
+<i>333</i>&nbsp;  private static Node checkEnvironmentUsingWhich(ExpressionContext myContext,
+<i>334</i>&nbsp;        Document factoryDocument)
+<i>335</i>&nbsp;  {
+<b class="nc"><i>336</i>&nbsp;    final String WHICH_CLASSNAME = &quot;org.apache.env.Which&quot;;</b>
+<b class="nc"><i>337</i>&nbsp;    final String WHICH_METHODNAME = &quot;which&quot;;</b>
+<b class="nc"><i>338</i>&nbsp;    final Class WHICH_METHOD_ARGS[] = { java.util.Hashtable.class,</b>
+<i>339</i>&nbsp;                                        java.lang.String.class,
+<i>340</i>&nbsp;                                        java.lang.String.class };
+<i>341</i>&nbsp;    try
+<i>342</i>&nbsp;    {
+<i>343</i>&nbsp;      // Use reflection to try to find xml-commons utility &#39;Which&#39;
+<b class="nc"><i>344</i>&nbsp;      Class clazz = ObjectFactory.findProviderClass(WHICH_CLASSNAME, true);</b>
+<b class="nc"><i>345</i>&nbsp;      if (null == clazz)</b>
+<b class="nc"><i>346</i>&nbsp;        return null;</b>
+<i>347</i>&nbsp;
+<i>348</i>&nbsp;      // Fully qualify names since this is the only method they&#39;re used in
+<b class="nc"><i>349</i>&nbsp;      java.lang.reflect.Method method = clazz.getMethod(WHICH_METHODNAME, WHICH_METHOD_ARGS);</b>
+<b class="nc"><i>350</i>&nbsp;      Hashtable report = new Hashtable();</b>
+<i>351</i>&nbsp;
+<i>352</i>&nbsp;      // Call the method with our Hashtable, common options, and ignore return value
+<b class="nc"><i>353</i>&nbsp;      Object[] methodArgs = { report, &quot;XmlCommons;Xalan;Xerces;Crimson;Ant&quot;, &quot;&quot; };</b>
+<b class="nc"><i>354</i>&nbsp;      Object returnValue = method.invoke(null, methodArgs);</b>
+<i>355</i>&nbsp;
+<i>356</i>&nbsp;      // Create a parent to hold the report and append hash to it
+<b class="nc"><i>357</i>&nbsp;      Node resultNode = factoryDocument.createElement(&quot;checkEnvironmentExtension&quot;);</b>
+<b class="nc"><i>358</i>&nbsp;      com.sun.org.apache.xml.internal.utils.Hashtree2Node.appendHashToNode(report, &quot;whichReport&quot;,</b>
+<i>359</i>&nbsp;            resultNode, factoryDocument);
+<i>360</i>&nbsp;
+<b class="nc"><i>361</i>&nbsp;      return resultNode;</b>
+<i>362</i>&nbsp;    }
+<b class="nc"><i>363</i>&nbsp;    catch (Throwable t)</b>
+<i>364</i>&nbsp;    {
+<i>365</i>&nbsp;      // Simply return null; no need to report error
+<b class="nc"><i>366</i>&nbsp;      return null;</b>
+<i>367</i>&nbsp;    }
+<i>368</i>&nbsp;  }
+<i>369</i>&nbsp;
+<i>370</i>&nbsp;    /**
+<i>371</i>&nbsp;   * @return an instance of DOM Document
+<i>372</i>&nbsp;     */
+<i>373</i>&nbsp;   private static Document getDocument()
+<i>374</i>&nbsp;   {
+<i>375</i>&nbsp;        try
+<i>376</i>&nbsp;        {
+<b class="nc"><i>377</i>&nbsp;            if (System.getSecurityManager() == null) {</b>
+<b class="nc"><i>378</i>&nbsp;                return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();</b>
+<i>379</i>&nbsp;            } else {
+<b class="nc"><i>380</i>&nbsp;                return DocumentBuilderFactory.newInstance(JDK_DEFAULT_DOM, null).newDocumentBuilder().newDocument();</b>
+<i>381</i>&nbsp;            }
+<i>382</i>&nbsp;        }
+<b class="nc"><i>383</i>&nbsp;        catch(ParserConfigurationException pce)</b>
+<i>384</i>&nbsp;        {
+<b class="nc"><i>385</i>&nbsp;            throw new com.sun.org.apache.xml.internal.utils.WrappedRuntimeException(pce);</b>
+<i>386</i>&nbsp;        }
+<i>387</i>&nbsp;    }
+<i>388</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

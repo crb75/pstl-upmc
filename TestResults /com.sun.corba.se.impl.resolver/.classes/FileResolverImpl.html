@@ -1,0 +1,193 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: FileResolverImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.resolver</a> ]
+</div>
+
+<h1>Coverage Summary for Class: FileResolverImpl (com.sun.corba.se.impl.resolver)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FileResolverImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 31)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.resolver ;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import org.omg.CORBA.ORBPackage.InvalidName;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import com.sun.corba.se.spi.resolver.Resolver ;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import java.util.Enumeration;
+<i>33</i>&nbsp;import java.util.Properties;
+<i>34</i>&nbsp;import java.util.Set;
+<i>35</i>&nbsp;import java.util.HashSet;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import java.io.File;
+<i>38</i>&nbsp;import java.io.FileInputStream;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import com.sun.corba.se.spi.orb.ORB ;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import com.sun.corba.se.impl.orbutil.CorbaResourceUtil ;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;public class FileResolverImpl implements Resolver
+<i>45</i>&nbsp;{
+<i>46</i>&nbsp;    private ORB orb ;
+<i>47</i>&nbsp;    private File file ;
+<i>48</i>&nbsp;    private Properties savedProps ;
+<b class="nc"><i>49</i>&nbsp;    private long fileModified = 0 ;</b>
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    public FileResolverImpl( ORB orb, File file )
+<b class="nc"><i>52</i>&nbsp;    {</b>
+<b class="nc"><i>53</i>&nbsp;        this.orb = orb ;</b>
+<b class="nc"><i>54</i>&nbsp;        this.file = file ;</b>
+<b class="nc"><i>55</i>&nbsp;        savedProps = new Properties() ;</b>
+<i>56</i>&nbsp;    }
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    public org.omg.CORBA.Object resolve( String name )
+<i>59</i>&nbsp;    {
+<b class="nc"><i>60</i>&nbsp;        check() ;</b>
+<b class="nc"><i>61</i>&nbsp;        String stringifiedObject = savedProps.getProperty( name ) ;</b>
+<b class="nc"><i>62</i>&nbsp;        if (stringifiedObject == null) {</b>
+<b class="nc"><i>63</i>&nbsp;            return null;</b>
+<i>64</i>&nbsp;        }
+<b class="nc"><i>65</i>&nbsp;        return orb.string_to_object( stringifiedObject ) ;</b>
+<i>66</i>&nbsp;    }
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    public java.util.Set list()
+<i>69</i>&nbsp;    {
+<b class="nc"><i>70</i>&nbsp;        check() ;</b>
+<i>71</i>&nbsp;
+<b class="nc"><i>72</i>&nbsp;        Set result = new HashSet() ;</b>
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;        // Obtain all the keys from the property object
+<b class="nc"><i>75</i>&nbsp;        Enumeration theKeys = savedProps.propertyNames();</b>
+<b class="nc"><i>76</i>&nbsp;        while (theKeys.hasMoreElements()) {</b>
+<b class="nc"><i>77</i>&nbsp;            result.add( theKeys.nextElement() ) ;</b>
+<i>78</i>&nbsp;        }
+<i>79</i>&nbsp;
+<b class="nc"><i>80</i>&nbsp;        return result ;</b>
+<i>81</i>&nbsp;    }
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    /**
+<i>84</i>&nbsp;    * Checks the lastModified() timestamp of the file and optionally
+<i>85</i>&nbsp;    * re-reads the Properties object from the file if newer.
+<i>86</i>&nbsp;    */
+<i>87</i>&nbsp;    private void check()
+<i>88</i>&nbsp;    {
+<b class="nc"><i>89</i>&nbsp;        if (file == null)</b>
+<i>90</i>&nbsp;            return;
+<i>91</i>&nbsp;
+<b class="nc"><i>92</i>&nbsp;        long lastMod = file.lastModified();</b>
+<b class="nc"><i>93</i>&nbsp;        if (lastMod &gt; fileModified) {</b>
+<i>94</i>&nbsp;            try {
+<b class="nc"><i>95</i>&nbsp;                FileInputStream fileIS = new FileInputStream(file);</b>
+<b class="nc"><i>96</i>&nbsp;                savedProps.clear();</b>
+<b class="nc"><i>97</i>&nbsp;                savedProps.load(fileIS);</b>
+<b class="nc"><i>98</i>&nbsp;                fileIS.close();</b>
+<b class="nc"><i>99</i>&nbsp;                fileModified = lastMod;</b>
+<b class="nc"><i>100</i>&nbsp;            } catch (java.io.FileNotFoundException e) {</b>
+<b class="nc"><i>101</i>&nbsp;                System.err.println( CorbaResourceUtil.getText(</b>
+<b class="nc"><i>102</i>&nbsp;                    &quot;bootstrap.filenotfound&quot;, file.getAbsolutePath()));</b>
+<b class="nc"><i>103</i>&nbsp;            } catch (java.io.IOException e) {</b>
+<b class="nc"><i>104</i>&nbsp;                System.err.println( CorbaResourceUtil.getText(</b>
+<i>105</i>&nbsp;                    &quot;bootstrap.exception&quot;,
+<b class="nc"><i>106</i>&nbsp;                    file.getAbsolutePath(), e.toString()));</b>
+<b class="nc"><i>107</i>&nbsp;            }</b>
+<i>108</i>&nbsp;        }
+<i>109</i>&nbsp;    }
+<i>110</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

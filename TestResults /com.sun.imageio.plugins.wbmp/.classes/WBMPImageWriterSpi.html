@@ -1,0 +1,176 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: WBMPImageWriterSpi</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.imageio.plugins.wbmp</a> ]
+</div>
+
+<h1>Coverage Summary for Class: WBMPImageWriterSpi (com.sun.imageio.plugins.wbmp)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WBMPImageWriterSpi</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2003, 2010, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.imageio.plugins.wbmp;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import javax.imageio.spi.ImageWriterSpi;
+<i>29</i>&nbsp;import javax.imageio.spi.ServiceRegistry;
+<i>30</i>&nbsp;import javax.imageio.spi.IIORegistry;
+<i>31</i>&nbsp;import javax.imageio.stream.ImageOutputStream;
+<i>32</i>&nbsp;import javax.imageio.ImageWriter;
+<i>33</i>&nbsp;import javax.imageio.ImageTypeSpecifier;
+<i>34</i>&nbsp;import javax.imageio.IIOException;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import java.awt.image.ColorModel;
+<i>37</i>&nbsp;import java.awt.image.IndexColorModel;
+<i>38</i>&nbsp;import java.awt.image.MultiPixelPackedSampleModel;
+<i>39</i>&nbsp;import java.awt.image.SampleModel;
+<i>40</i>&nbsp;import java.util.Locale;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;public class WBMPImageWriterSpi extends ImageWriterSpi {
+<b class="nc"><i>43</i>&nbsp;    private static String [] readerSpiNames =</b>
+<i>44</i>&nbsp;        {&quot;com.sun.imageio.plugins.wbmp.WBMPImageReaderSpi&quot;};
+<b class="nc"><i>45</i>&nbsp;    private static String[] formatNames = {&quot;wbmp&quot;, &quot;WBMP&quot;};</b>
+<b class="nc"><i>46</i>&nbsp;    private static String[] entensions = {&quot;wbmp&quot;};</b>
+<b class="nc"><i>47</i>&nbsp;    private static String[] mimeType = {&quot;image/vnd.wap.wbmp&quot;};</b>
+<i>48</i>&nbsp;
+<b class="nc"><i>49</i>&nbsp;    private boolean registered = false;</b>
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    public WBMPImageWriterSpi() {
+<b class="nc"><i>52</i>&nbsp;        super(&quot;Oracle Corporation&quot;,</b>
+<i>53</i>&nbsp;              &quot;1.0&quot;,
+<i>54</i>&nbsp;              formatNames,
+<i>55</i>&nbsp;              entensions,
+<i>56</i>&nbsp;              mimeType,
+<i>57</i>&nbsp;              &quot;com.sun.imageio.plugins.wbmp.WBMPImageWriter&quot;,
+<i>58</i>&nbsp;              new Class[] { ImageOutputStream.class },
+<i>59</i>&nbsp;              readerSpiNames,
+<i>60</i>&nbsp;              true,
+<i>61</i>&nbsp;              null, null, null, null,
+<i>62</i>&nbsp;              true,
+<i>63</i>&nbsp;              null, null, null, null);
+<i>64</i>&nbsp;    }
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    public String getDescription(Locale locale) {
+<b class="nc"><i>67</i>&nbsp;        return &quot;Standard WBMP Image Writer&quot;;</b>
+<i>68</i>&nbsp;    }
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    public void onRegistration(ServiceRegistry registry,
+<i>71</i>&nbsp;                               Class&lt;?&gt; category) {
+<b class="nc"><i>72</i>&nbsp;        if (registered) {</b>
+<i>73</i>&nbsp;            return;
+<i>74</i>&nbsp;        }
+<i>75</i>&nbsp;
+<b class="nc"><i>76</i>&nbsp;        registered = true;</b>
+<i>77</i>&nbsp;    }
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    public boolean canEncodeImage(ImageTypeSpecifier type) {
+<b class="nc"><i>80</i>&nbsp;        SampleModel sm = type.getSampleModel();</b>
+<b class="nc"><i>81</i>&nbsp;        if (!(sm instanceof MultiPixelPackedSampleModel))</b>
+<b class="nc"><i>82</i>&nbsp;            return false;</b>
+<b class="nc"><i>83</i>&nbsp;        if (sm.getSampleSize(0) != 1)</b>
+<b class="nc"><i>84</i>&nbsp;            return false;</b>
+<i>85</i>&nbsp;
+<b class="nc"><i>86</i>&nbsp;        return true;</b>
+<i>87</i>&nbsp;    }
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    public ImageWriter createWriterInstance(Object extension)
+<i>90</i>&nbsp;        throws IIOException {
+<b class="nc"><i>91</i>&nbsp;        return new WBMPImageWriter(this);</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

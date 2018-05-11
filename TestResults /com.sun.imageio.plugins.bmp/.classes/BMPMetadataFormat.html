@@ -1,0 +1,291 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BMPMetadataFormat</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.imageio.plugins.bmp</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BMPMetadataFormat (com.sun.imageio.plugins.bmp)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BMPMetadataFormat</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 53)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2003, 2004, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.imageio.plugins.bmp;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.util.Arrays;
+<i>29</i>&nbsp;import javax.imageio.ImageTypeSpecifier;
+<i>30</i>&nbsp;import javax.imageio.metadata.IIOMetadataFormat;
+<i>31</i>&nbsp;import javax.imageio.metadata.IIOMetadataFormatImpl;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;public class BMPMetadataFormat extends IIOMetadataFormatImpl {
+<i>34</i>&nbsp;
+<b class="nc"><i>35</i>&nbsp;    private static IIOMetadataFormat instance = null;</b>
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;    private BMPMetadataFormat() {
+<b class="nc"><i>38</i>&nbsp;        super(BMPMetadata.nativeMetadataFormatName,</b>
+<i>39</i>&nbsp;              CHILD_POLICY_SOME);
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;        // root -&gt; ImageDescriptor
+<b class="nc"><i>42</i>&nbsp;        addElement(&quot;ImageDescriptor&quot;,</b>
+<i>43</i>&nbsp;                   BMPMetadata.nativeMetadataFormatName,
+<i>44</i>&nbsp;                   CHILD_POLICY_EMPTY);
+<b class="nc"><i>45</i>&nbsp;        addAttribute(&quot;ImageDescriptor&quot;, &quot;bmpVersion&quot;,</b>
+<i>46</i>&nbsp;                     DATATYPE_STRING, true, null);
+<b class="nc"><i>47</i>&nbsp;        addAttribute(&quot;ImageDescriptor&quot;, &quot;width&quot;,</b>
+<i>48</i>&nbsp;                     DATATYPE_INTEGER, true, null,
+<i>49</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>50</i>&nbsp;        addAttribute(&quot;ImageDescriptor&quot;, &quot;height&quot;,</b>
+<i>51</i>&nbsp;                     DATATYPE_INTEGER, true, null,
+<i>52</i>&nbsp;                     &quot;1&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>53</i>&nbsp;        addAttribute(&quot;ImageDescriptor&quot;, &quot;bitsPerPixel&quot;,</b>
+<i>54</i>&nbsp;                     DATATYPE_INTEGER, true, null,
+<i>55</i>&nbsp;                     &quot;1&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>56</i>&nbsp;        addAttribute(&quot;ImageDescriptor&quot;, &quot;compression&quot;,</b>
+<i>57</i>&nbsp;                      DATATYPE_INTEGER, false, null);
+<b class="nc"><i>58</i>&nbsp;        addAttribute(&quot;ImageDescriptor&quot;, &quot;imageSize&quot;,</b>
+<i>59</i>&nbsp;                     DATATYPE_INTEGER, true, null,
+<i>60</i>&nbsp;                     &quot;1&quot;, &quot;65535&quot;, true, true);
+<i>61</i>&nbsp;
+<b class="nc"><i>62</i>&nbsp;        addElement(&quot;PixelsPerMeter&quot;,</b>
+<i>63</i>&nbsp;                   BMPMetadata.nativeMetadataFormatName,
+<i>64</i>&nbsp;                   CHILD_POLICY_EMPTY);
+<b class="nc"><i>65</i>&nbsp;        addAttribute(&quot;PixelsPerMeter&quot;, &quot;X&quot;,</b>
+<i>66</i>&nbsp;                     DATATYPE_INTEGER, false, null,
+<i>67</i>&nbsp;                     &quot;1&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>68</i>&nbsp;        addAttribute(&quot;PixelsPerMeter&quot;, &quot;Y&quot;,</b>
+<i>69</i>&nbsp;                     DATATYPE_INTEGER, false, null,
+<i>70</i>&nbsp;                     &quot;1&quot;, &quot;65535&quot;, true, true);
+<i>71</i>&nbsp;
+<b class="nc"><i>72</i>&nbsp;        addElement(&quot;ColorsUsed&quot;,</b>
+<i>73</i>&nbsp;                   BMPMetadata.nativeMetadataFormatName,
+<i>74</i>&nbsp;                   CHILD_POLICY_EMPTY);
+<b class="nc"><i>75</i>&nbsp;        addAttribute(&quot;ColorsUsed&quot;, &quot;value&quot;,</b>
+<i>76</i>&nbsp;                     DATATYPE_INTEGER, true, null,
+<i>77</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<i>78</i>&nbsp;
+<b class="nc"><i>79</i>&nbsp;        addElement(&quot;ColorsImportant&quot;,</b>
+<i>80</i>&nbsp;                   BMPMetadata.nativeMetadataFormatName,
+<i>81</i>&nbsp;                   CHILD_POLICY_EMPTY);
+<b class="nc"><i>82</i>&nbsp;        addAttribute(&quot;ColorsImportant&quot;, &quot;value&quot;,</b>
+<i>83</i>&nbsp;                     DATATYPE_INTEGER, false, null,
+<i>84</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<i>85</i>&nbsp;
+<b class="nc"><i>86</i>&nbsp;        addElement(&quot;BI_BITFIELDS_Mask&quot;,</b>
+<i>87</i>&nbsp;                   BMPMetadata.nativeMetadataFormatName,
+<i>88</i>&nbsp;                   CHILD_POLICY_EMPTY);
+<b class="nc"><i>89</i>&nbsp;        addAttribute(&quot;BI_BITFIELDS_Mask&quot;, &quot;red&quot;,</b>
+<i>90</i>&nbsp;                     DATATYPE_INTEGER, false, null,
+<i>91</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>92</i>&nbsp;        addAttribute(&quot;BI_BITFIELDS_Mask&quot;, &quot;green&quot;,</b>
+<i>93</i>&nbsp;                     DATATYPE_INTEGER, false, null,
+<i>94</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>95</i>&nbsp;        addAttribute(&quot;BI_BITFIELDS_Mask&quot;, &quot;blue&quot;,</b>
+<i>96</i>&nbsp;                     DATATYPE_INTEGER, false, null,
+<i>97</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<i>98</i>&nbsp;
+<b class="nc"><i>99</i>&nbsp;        addElement(&quot;ColorSpace&quot;,</b>
+<i>100</i>&nbsp;                   BMPMetadata.nativeMetadataFormatName,
+<i>101</i>&nbsp;                   CHILD_POLICY_EMPTY);
+<b class="nc"><i>102</i>&nbsp;        addAttribute(&quot;ColorSpace&quot;, &quot;value&quot;,</b>
+<i>103</i>&nbsp;                     DATATYPE_INTEGER, false, null,
+<i>104</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<i>105</i>&nbsp;
+<b class="nc"><i>106</i>&nbsp;        addElement(&quot;LCS_CALIBRATED_RGB&quot;,</b>
+<i>107</i>&nbsp;                   BMPMetadata.nativeMetadataFormatName,
+<i>108</i>&nbsp;                   CHILD_POLICY_EMPTY);
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;        /// Should the max value be 1.7976931348623157e+308 ?
+<b class="nc"><i>111</i>&nbsp;        addAttribute(&quot;LCS_CALIBRATED_RGB&quot;, &quot;redX&quot;,</b>
+<i>112</i>&nbsp;                     DATATYPE_DOUBLE, false, null,
+<i>113</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>114</i>&nbsp;        addAttribute(&quot;LCS_CALIBRATED_RGB&quot;, &quot;redY&quot;,</b>
+<i>115</i>&nbsp;                     DATATYPE_DOUBLE, false, null,
+<i>116</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>117</i>&nbsp;        addAttribute(&quot;LCS_CALIBRATED_RGB&quot;, &quot;redZ&quot;,</b>
+<i>118</i>&nbsp;                     DATATYPE_DOUBLE, false, null,
+<i>119</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>120</i>&nbsp;        addAttribute(&quot;LCS_CALIBRATED_RGB&quot;, &quot;greenX&quot;,</b>
+<i>121</i>&nbsp;                     DATATYPE_DOUBLE, false, null,
+<i>122</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>123</i>&nbsp;        addAttribute(&quot;LCS_CALIBRATED_RGB&quot;, &quot;greenY&quot;,</b>
+<i>124</i>&nbsp;                     DATATYPE_DOUBLE, false, null,
+<i>125</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>126</i>&nbsp;        addAttribute(&quot;LCS_CALIBRATED_RGB&quot;, &quot;greenZ&quot;,</b>
+<i>127</i>&nbsp;                     DATATYPE_DOUBLE, false, null,
+<i>128</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>129</i>&nbsp;        addAttribute(&quot;LCS_CALIBRATED_RGB&quot;, &quot;blueX&quot;,</b>
+<i>130</i>&nbsp;                     DATATYPE_DOUBLE, false, null,
+<i>131</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>132</i>&nbsp;        addAttribute(&quot;LCS_CALIBRATED_RGB&quot;, &quot;blueY&quot;,</b>
+<i>133</i>&nbsp;                     DATATYPE_DOUBLE, false, null,
+<i>134</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>135</i>&nbsp;        addAttribute(&quot;LCS_CALIBRATED_RGB&quot;, &quot;blueZ&quot;,</b>
+<i>136</i>&nbsp;                     DATATYPE_DOUBLE, false, null,
+<i>137</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<i>138</i>&nbsp;
+<b class="nc"><i>139</i>&nbsp;        addElement(&quot;LCS_CALIBRATED_RGB_GAMMA&quot;,</b>
+<i>140</i>&nbsp;                   BMPMetadata.nativeMetadataFormatName,
+<i>141</i>&nbsp;                   CHILD_POLICY_EMPTY);
+<b class="nc"><i>142</i>&nbsp;        addAttribute(&quot;LCS_CALIBRATED_RGB_GAMMA&quot;,&quot;red&quot;,</b>
+<i>143</i>&nbsp;                     DATATYPE_INTEGER, false, null,
+<i>144</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>145</i>&nbsp;        addAttribute(&quot;LCS_CALIBRATED_RGB_GAMMA&quot;,&quot;green&quot;,</b>
+<i>146</i>&nbsp;                     DATATYPE_INTEGER, false, null,
+<i>147</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<b class="nc"><i>148</i>&nbsp;        addAttribute(&quot;LCS_CALIBRATED_RGB_GAMMA&quot;,&quot;blue&quot;,</b>
+<i>149</i>&nbsp;                     DATATYPE_INTEGER, false, null,
+<i>150</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<i>151</i>&nbsp;
+<b class="nc"><i>152</i>&nbsp;        addElement(&quot;Intent&quot;,</b>
+<i>153</i>&nbsp;                   BMPMetadata.nativeMetadataFormatName,
+<i>154</i>&nbsp;                   CHILD_POLICY_EMPTY);
+<b class="nc"><i>155</i>&nbsp;        addAttribute(&quot;Intent&quot;, &quot;value&quot;,</b>
+<i>156</i>&nbsp;                     DATATYPE_INTEGER, false, null,
+<i>157</i>&nbsp;                     &quot;0&quot;, &quot;65535&quot;, true, true);
+<i>158</i>&nbsp;
+<i>159</i>&nbsp;        // root -&gt; Palette
+<b class="nc"><i>160</i>&nbsp;        addElement(&quot;Palette&quot;,</b>
+<i>161</i>&nbsp;                   BMPMetadata.nativeMetadataFormatName,
+<i>162</i>&nbsp;                   2, 256);
+<b class="nc"><i>163</i>&nbsp;        addAttribute(&quot;Palette&quot;, &quot;sizeOfPalette&quot;,</b>
+<i>164</i>&nbsp;                     DATATYPE_INTEGER, true, null);
+<b class="nc"><i>165</i>&nbsp;        addBooleanAttribute(&quot;Palette&quot;, &quot;sortFlag&quot;,</b>
+<i>166</i>&nbsp;                            false, false);
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;        // root -&gt; Palette -&gt; PaletteEntry
+<b class="nc"><i>169</i>&nbsp;        addElement(&quot;PaletteEntry&quot;, &quot;Palette&quot;,</b>
+<i>170</i>&nbsp;                   CHILD_POLICY_EMPTY);
+<b class="nc"><i>171</i>&nbsp;        addAttribute(&quot;PaletteEntry&quot;, &quot;index&quot;,</b>
+<i>172</i>&nbsp;                     DATATYPE_INTEGER, true, null,
+<i>173</i>&nbsp;                     &quot;0&quot;, &quot;255&quot;, true, true);
+<b class="nc"><i>174</i>&nbsp;        addAttribute(&quot;PaletteEntry&quot;, &quot;red&quot;,</b>
+<i>175</i>&nbsp;                     DATATYPE_INTEGER, true, null,
+<i>176</i>&nbsp;                     &quot;0&quot;, &quot;255&quot;, true, true);
+<b class="nc"><i>177</i>&nbsp;        addAttribute(&quot;PaletteEntry&quot;, &quot;green&quot;,</b>
+<i>178</i>&nbsp;                     DATATYPE_INTEGER, true, null,
+<i>179</i>&nbsp;                     &quot;0&quot;, &quot;255&quot;, true, true);
+<b class="nc"><i>180</i>&nbsp;        addAttribute(&quot;PaletteEntry&quot;, &quot;blue&quot;,</b>
+<i>181</i>&nbsp;                     DATATYPE_INTEGER, true, null,
+<i>182</i>&nbsp;                     &quot;0&quot;, &quot;255&quot;, true, true);
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;        // root -&gt; CommentExtensions
+<b class="nc"><i>186</i>&nbsp;        addElement(&quot;CommentExtensions&quot;,</b>
+<i>187</i>&nbsp;                   BMPMetadata.nativeMetadataFormatName,
+<i>188</i>&nbsp;                   1, Integer.MAX_VALUE);
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;        // root -&gt; CommentExtensions -&gt; CommentExtension
+<b class="nc"><i>191</i>&nbsp;        addElement(&quot;CommentExtension&quot;, &quot;CommentExtensions&quot;,</b>
+<i>192</i>&nbsp;                   CHILD_POLICY_EMPTY);
+<b class="nc"><i>193</i>&nbsp;        addAttribute(&quot;CommentExtension&quot;, &quot;value&quot;,</b>
+<i>194</i>&nbsp;                     DATATYPE_STRING, true, null);
+<i>195</i>&nbsp;    }
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;    public boolean canNodeAppear(String elementName,
+<i>198</i>&nbsp;                                 ImageTypeSpecifier imageType) {
+<b class="nc"><i>199</i>&nbsp;        return true;</b>
+<i>200</i>&nbsp;    }
+<i>201</i>&nbsp;
+<i>202</i>&nbsp;    public static synchronized IIOMetadataFormat getInstance() {
+<b class="nc"><i>203</i>&nbsp;        if (instance == null) {</b>
+<b class="nc"><i>204</i>&nbsp;            instance = new BMPMetadataFormat();</b>
+<i>205</i>&nbsp;        }
+<b class="nc"><i>206</i>&nbsp;        return instance;</b>
+<i>207</i>&nbsp;    }
+<i>208</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

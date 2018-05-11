@@ -1,0 +1,3208 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XIncludeHandler</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.xinclude</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XIncludeHandler (com.sun.org.apache.xerces.internal.xinclude)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XIncludeHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 112)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 997)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">XIncludeHandler$Notation</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">XIncludeHandler$UnparsedEntity</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 120)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1018)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2003-2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;package com.sun.org.apache.xerces.internal.xinclude;
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;import java.io.CharConversionException;
+<i>23</i>&nbsp;import java.io.IOException;
+<i>24</i>&nbsp;import java.util.ArrayList;
+<i>25</i>&nbsp;import java.util.Enumeration;
+<i>26</i>&nbsp;import java.util.Locale;
+<i>27</i>&nbsp;import java.util.Stack;
+<i>28</i>&nbsp;import java.util.StringTokenizer;
+<i>29</i>&nbsp;import javax.xml.XMLConstants;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.Constants;
+<i>32</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.XMLEntityManager;
+<i>33</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.XMLErrorReporter;
+<i>34</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.io.MalformedByteSequenceException;
+<i>35</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.msg.XMLMessageFormatter;
+<i>36</i>&nbsp;import com.sun.org.apache.xerces.internal.util.AugmentationsImpl;
+<i>37</i>&nbsp;import com.sun.org.apache.xerces.internal.util.HTTPInputSource;
+<i>38</i>&nbsp;import com.sun.org.apache.xerces.internal.util.IntStack;
+<i>39</i>&nbsp;import com.sun.org.apache.xerces.internal.util.ParserConfigurationSettings;
+<i>40</i>&nbsp;import com.sun.org.apache.xerces.internal.util.SymbolTable;
+<i>41</i>&nbsp;import com.sun.org.apache.xerces.internal.util.URI;
+<i>42</i>&nbsp;import com.sun.org.apache.xerces.internal.util.XMLAttributesImpl;
+<i>43</i>&nbsp;import com.sun.org.apache.xerces.internal.util.XMLResourceIdentifierImpl;
+<i>44</i>&nbsp;import com.sun.org.apache.xerces.internal.util.XMLChar;
+<i>45</i>&nbsp;import com.sun.org.apache.xerces.internal.util.XMLSymbols;
+<i>46</i>&nbsp;import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
+<i>47</i>&nbsp;import com.sun.org.apache.xerces.internal.utils.XMLSecurityManager;
+<i>48</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.Augmentations;
+<i>49</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.NamespaceContext;
+<i>50</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.QName;
+<i>51</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLAttributes;
+<i>52</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLDTDHandler;
+<i>53</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLDocumentHandler;
+<i>54</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLLocator;
+<i>55</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
+<i>56</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XMLString;
+<i>57</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.XNIException;
+<i>58</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLComponent;
+<i>59</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLComponentManager;
+<i>60</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException;
+<i>61</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLDTDFilter;
+<i>62</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLDTDSource;
+<i>63</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentFilter;
+<i>64</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentSource;
+<i>65</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLEntityResolver;
+<i>66</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
+<i>67</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLParserConfiguration;
+<i>68</i>&nbsp;import com.sun.org.apache.xerces.internal.xpointer.XPointerHandler;
+<i>69</i>&nbsp;import com.sun.org.apache.xerces.internal.xpointer.XPointerProcessor;
+<i>70</i>&nbsp;import com.sun.org.apache.xerces.internal.utils.ObjectFactory;
+<i>71</i>&nbsp;import com.sun.org.apache.xerces.internal.utils.XMLSecurityPropertyManager;
+<i>72</i>&nbsp;import java.util.Objects;
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;/**
+<i>75</i>&nbsp; * &lt;p&gt;
+<i>76</i>&nbsp; * This is a pipeline component which performs XInclude handling, according to the
+<i>77</i>&nbsp; * W3C specification for XML Inclusions.
+<i>78</i>&nbsp; * &lt;/p&gt;
+<i>79</i>&nbsp; * &lt;p&gt;
+<i>80</i>&nbsp; * This component analyzes each event in the pipeline, looking for &amp;lt;include&amp;gt;
+<i>81</i>&nbsp; * elements. An &amp;lt;include&amp;gt; element is one which has a namespace of
+<i>82</i>&nbsp; * &lt;code&gt;http://www.w3.org/2001/XInclude&lt;/code&gt; and a localname of &lt;code&gt;include&lt;/code&gt;.
+<i>83</i>&nbsp; * When it finds an &amp;lt;include&amp;gt; element, it attempts to include the file specified
+<i>84</i>&nbsp; * in the &lt;code&gt;href&lt;/code&gt; attribute of the element.  If inclusion succeeds, all
+<i>85</i>&nbsp; * children of the &amp;lt;include&amp;gt; element are ignored (with the exception of
+<i>86</i>&nbsp; * checking for invalid children as outlined in the specification).  If the inclusion
+<i>87</i>&nbsp; * fails, the &amp;lt;fallback&amp;gt; child of the &amp;lt;include&amp;gt; element is processed.
+<i>88</i>&nbsp; * &lt;/p&gt;
+<i>89</i>&nbsp; * &lt;p&gt;
+<i>90</i>&nbsp; * See the &lt;a href=&quot;http://www.w3.org/TR/xinclude/&quot;&gt;XInclude specification&lt;/a&gt; for
+<i>91</i>&nbsp; * more information on how XInclude is to be used.
+<i>92</i>&nbsp; * &lt;/p&gt;
+<i>93</i>&nbsp; * &lt;p&gt;
+<i>94</i>&nbsp; * This component requires the following features and properties from the
+<i>95</i>&nbsp; * component manager that uses it:
+<i>96</i>&nbsp; * &lt;ul&gt;
+<i>97</i>&nbsp; *  &lt;li&gt;http://xml.org/sax/features/allow-dtd-events-after-endDTD&lt;/li&gt;
+<i>98</i>&nbsp; *  &lt;li&gt;http://apache.org/xml/properties/internal/error-reporter&lt;/li&gt;
+<i>99</i>&nbsp; *  &lt;li&gt;http://apache.org/xml/properties/internal/entity-resolver&lt;/li&gt;
+<i>100</i>&nbsp; * &lt;/ul&gt;
+<i>101</i>&nbsp; * Optional property:
+<i>102</i>&nbsp; * &lt;ul&gt;
+<i>103</i>&nbsp; *  &lt;li&gt;http://apache.org/xml/properties/input-buffer-size&lt;/li&gt;
+<i>104</i>&nbsp; * &lt;/ul&gt;
+<i>105</i>&nbsp; *
+<i>106</i>&nbsp; * Furthermore, the &lt;code&gt;NamespaceContext&lt;/code&gt; used in the pipeline is required
+<i>107</i>&nbsp; * to be an instance of &lt;code&gt;XIncludeNamespaceSupport&lt;/code&gt;.
+<i>108</i>&nbsp; * &lt;/p&gt;
+<i>109</i>&nbsp; * &lt;p&gt;
+<i>110</i>&nbsp; * Currently, this implementation has only partial support for the XInclude specification.
+<i>111</i>&nbsp; * Specifically, it is missing support for XPointer document fragments.  Thus, only whole
+<i>112</i>&nbsp; * documents can be included using this component in the pipeline.
+<i>113</i>&nbsp; * &lt;/p&gt;
+<i>114</i>&nbsp; *
+<i>115</i>&nbsp; * @author Peter McCracken, IBM
+<i>116</i>&nbsp; * @author Michael Glavassevich, IBM
+<i>117</i>&nbsp; *
+<i>118</i>&nbsp; * @version $Id: XIncludeHandler.java,v 1.7 2010-11-01 04:40:18 joehw Exp $
+<i>119</i>&nbsp; *
+<i>120</i>&nbsp; * @see XIncludeNamespaceSupport
+<i>121</i>&nbsp; */
+<i>122</i>&nbsp;public class XIncludeHandler
+<i>123</i>&nbsp;    implements XMLComponent, XMLDocumentFilter, XMLDTDFilter {
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    public final static String XINCLUDE_DEFAULT_CONFIGURATION =
+<i>126</i>&nbsp;        &quot;com.sun.org.apache.xerces.internal.parsers.XIncludeParserConfiguration&quot;;
+<i>127</i>&nbsp;    public final static String HTTP_ACCEPT = &quot;Accept&quot;;
+<i>128</i>&nbsp;    public final static String HTTP_ACCEPT_LANGUAGE = &quot;Accept-Language&quot;;
+<i>129</i>&nbsp;    public final static String XPOINTER = &quot;xpointer&quot;;
+<i>130</i>&nbsp;
+<b class="nc"><i>131</i>&nbsp;    public final static String XINCLUDE_NS_URI =</b>
+<b class="nc"><i>132</i>&nbsp;        &quot;http://www.w3.org/2001/XInclude&quot;.intern();</b>
+<b class="nc"><i>133</i>&nbsp;    public final static String XINCLUDE_INCLUDE = &quot;include&quot;.intern();</b>
+<b class="nc"><i>134</i>&nbsp;    public final static String XINCLUDE_FALLBACK = &quot;fallback&quot;.intern();</b>
+<i>135</i>&nbsp;
+<b class="nc"><i>136</i>&nbsp;    public final static String XINCLUDE_PARSE_XML = &quot;xml&quot;.intern();</b>
+<b class="nc"><i>137</i>&nbsp;    public final static String XINCLUDE_PARSE_TEXT = &quot;text&quot;.intern();</b>
+<i>138</i>&nbsp;
+<b class="nc"><i>139</i>&nbsp;    public final static String XINCLUDE_ATTR_HREF = &quot;href&quot;.intern();</b>
+<b class="nc"><i>140</i>&nbsp;    public final static String XINCLUDE_ATTR_PARSE = &quot;parse&quot;.intern();</b>
+<b class="nc"><i>141</i>&nbsp;    public final static String XINCLUDE_ATTR_ENCODING = &quot;encoding&quot;.intern();</b>
+<b class="nc"><i>142</i>&nbsp;    public final static String XINCLUDE_ATTR_ACCEPT = &quot;accept&quot;.intern();</b>
+<b class="nc"><i>143</i>&nbsp;    public final static String XINCLUDE_ATTR_ACCEPT_LANGUAGE = &quot;accept-language&quot;.intern();</b>
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;    // Top Level Information Items have [included] property in infoset
+<b class="nc"><i>146</i>&nbsp;    public final static String XINCLUDE_INCLUDED = &quot;[included]&quot;.intern();</b>
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;    /** The identifier for the Augmentation that contains the current base URI */
+<i>149</i>&nbsp;    public final static String CURRENT_BASE_URI = &quot;currentBaseURI&quot;;
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;    // used for adding [base URI] attributes
+<b class="nc"><i>152</i>&nbsp;    public final static String XINCLUDE_BASE = &quot;base&quot;.intern();</b>
+<b class="nc"><i>153</i>&nbsp;    public final static QName XML_BASE_QNAME =</b>
+<i>154</i>&nbsp;        new QName(
+<i>155</i>&nbsp;            XMLSymbols.PREFIX_XML,
+<i>156</i>&nbsp;            XINCLUDE_BASE,
+<b class="nc"><i>157</i>&nbsp;            (XMLSymbols.PREFIX_XML + &quot;:&quot; + XINCLUDE_BASE).intern(),</b>
+<i>158</i>&nbsp;            NamespaceContext.XML_URI);
+<i>159</i>&nbsp;
+<i>160</i>&nbsp;    // used for adding [language] attributes
+<b class="nc"><i>161</i>&nbsp;    public final static String XINCLUDE_LANG = &quot;lang&quot;.intern();</b>
+<b class="nc"><i>162</i>&nbsp;    public final static QName XML_LANG_QNAME =</b>
+<i>163</i>&nbsp;        new QName(
+<i>164</i>&nbsp;            XMLSymbols.PREFIX_XML,
+<i>165</i>&nbsp;            XINCLUDE_LANG,
+<b class="nc"><i>166</i>&nbsp;            (XMLSymbols.PREFIX_XML + &quot;:&quot; + XINCLUDE_LANG).intern(),</b>
+<i>167</i>&nbsp;            NamespaceContext.XML_URI);
+<i>168</i>&nbsp;
+<b class="nc"><i>169</i>&nbsp;    public final static QName NEW_NS_ATTR_QNAME =</b>
+<i>170</i>&nbsp;        new QName(
+<i>171</i>&nbsp;            XMLSymbols.PREFIX_XMLNS,
+<i>172</i>&nbsp;            &quot;&quot;,
+<i>173</i>&nbsp;            XMLSymbols.PREFIX_XMLNS + &quot;:&quot;,
+<i>174</i>&nbsp;            NamespaceContext.XMLNS_URI);
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    // Processing States
+<i>177</i>&nbsp;    private final static int STATE_NORMAL_PROCESSING = 1;
+<i>178</i>&nbsp;    // we go into this state after a successful include (thus we ignore the children
+<i>179</i>&nbsp;    // of the include) or after a fallback
+<i>180</i>&nbsp;    private final static int STATE_IGNORE = 2;
+<i>181</i>&nbsp;    // we go into this state after a failed include.  If we don&#39;t encounter a fallback
+<i>182</i>&nbsp;    // before we reach the end include tag, it&#39;s a fatal error
+<i>183</i>&nbsp;    private final static int STATE_EXPECT_FALLBACK = 3;
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;    // recognized features and properties
+<i>186</i>&nbsp;
+<i>187</i>&nbsp;    /** Feature identifier: validation. */
+<i>188</i>&nbsp;    protected static final String VALIDATION =
+<i>189</i>&nbsp;        Constants.SAX_FEATURE_PREFIX + Constants.VALIDATION_FEATURE;
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;    /** Feature identifier: schema validation. */
+<i>192</i>&nbsp;    protected static final String SCHEMA_VALIDATION =
+<i>193</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.SCHEMA_VALIDATION_FEATURE;
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;    /** Feature identifier: dynamic validation. */
+<i>196</i>&nbsp;    protected static final String DYNAMIC_VALIDATION =
+<i>197</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.DYNAMIC_VALIDATION_FEATURE;
+<i>198</i>&nbsp;
+<i>199</i>&nbsp;    /** Feature identifier: allow notation and unparsed entity events to be sent out of order. */
+<i>200</i>&nbsp;    protected static final String ALLOW_UE_AND_NOTATION_EVENTS =
+<i>201</i>&nbsp;        Constants.SAX_FEATURE_PREFIX
+<i>202</i>&nbsp;            + Constants.ALLOW_DTD_EVENTS_AFTER_ENDDTD_FEATURE;
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;    /** Feature identifier: fixup base URIs. */
+<i>205</i>&nbsp;    protected static final String XINCLUDE_FIXUP_BASE_URIS =
+<i>206</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FIXUP_BASE_URIS_FEATURE;
+<i>207</i>&nbsp;
+<i>208</i>&nbsp;    /** Feature identifier: fixup language. */
+<i>209</i>&nbsp;    protected static final String XINCLUDE_FIXUP_LANGUAGE =
+<i>210</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FIXUP_LANGUAGE_FEATURE;
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;    /** Property identifier: symbol table. */
+<i>213</i>&nbsp;    protected static final String SYMBOL_TABLE =
+<i>214</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY;
+<i>215</i>&nbsp;
+<i>216</i>&nbsp;    /** Property identifier: error reporter. */
+<i>217</i>&nbsp;    protected static final String ERROR_REPORTER =
+<i>218</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_REPORTER_PROPERTY;
+<i>219</i>&nbsp;
+<i>220</i>&nbsp;    /** Property identifier: entity resolver. */
+<i>221</i>&nbsp;    protected static final String ENTITY_RESOLVER =
+<i>222</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.ENTITY_RESOLVER_PROPERTY;
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;    /** property identifier: security manager. */
+<i>225</i>&nbsp;    protected static final String SECURITY_MANAGER =
+<i>226</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.SECURITY_MANAGER_PROPERTY;
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;    /** property identifier: buffer size. */
+<i>229</i>&nbsp;    public static final String BUFFER_SIZE =
+<i>230</i>&nbsp;        Constants.XERCES_PROPERTY_PREFIX + Constants.BUFFER_SIZE_PROPERTY;
+<i>231</i>&nbsp;
+<i>232</i>&nbsp;    protected static final String PARSER_SETTINGS =
+<i>233</i>&nbsp;        Constants.XERCES_FEATURE_PREFIX + Constants.PARSER_SETTINGS;
+<i>234</i>&nbsp;
+<i>235</i>&nbsp;    /** property identifier: XML security property manager. */
+<i>236</i>&nbsp;    protected static final String XML_SECURITY_PROPERTY_MANAGER =
+<i>237</i>&nbsp;            Constants.XML_SECURITY_PROPERTY_MANAGER;
+<i>238</i>&nbsp;
+<i>239</i>&nbsp;    /** Recognized features. */
+<b class="nc"><i>240</i>&nbsp;    private static final String[] RECOGNIZED_FEATURES =</b>
+<i>241</i>&nbsp;        { ALLOW_UE_AND_NOTATION_EVENTS, XINCLUDE_FIXUP_BASE_URIS, XINCLUDE_FIXUP_LANGUAGE };
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;    /** Feature defaults. */
+<b class="nc"><i>244</i>&nbsp;    private static final Boolean[] FEATURE_DEFAULTS = { Boolean.TRUE, Boolean.TRUE, Boolean.TRUE };</b>
+<i>245</i>&nbsp;
+<i>246</i>&nbsp;    /** Recognized properties. */
+<b class="nc"><i>247</i>&nbsp;    private static final String[] RECOGNIZED_PROPERTIES =</b>
+<i>248</i>&nbsp;        { ERROR_REPORTER, ENTITY_RESOLVER, SECURITY_MANAGER, BUFFER_SIZE };
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;    /** Property defaults. */
+<b class="nc"><i>251</i>&nbsp;    private static final Object[] PROPERTY_DEFAULTS = { null, null, null, new Integer(XMLEntityManager.DEFAULT_BUFFER_SIZE) };</b>
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;    // instance variables
+<i>254</i>&nbsp;
+<i>255</i>&nbsp;    // for XMLDocumentFilter
+<i>256</i>&nbsp;    protected XMLDocumentHandler fDocumentHandler;
+<i>257</i>&nbsp;    protected XMLDocumentSource fDocumentSource;
+<i>258</i>&nbsp;
+<i>259</i>&nbsp;    // for XMLDTDFilter
+<i>260</i>&nbsp;    protected XMLDTDHandler fDTDHandler;
+<i>261</i>&nbsp;    protected XMLDTDSource fDTDSource;
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;    // for XIncludeHandler
+<i>264</i>&nbsp;    protected XIncludeHandler fParentXIncludeHandler;
+<i>265</i>&nbsp;
+<i>266</i>&nbsp;    // for buffer size in XIncludeTextReader
+<b class="nc"><i>267</i>&nbsp;    protected int fBufferSize = XMLEntityManager.DEFAULT_BUFFER_SIZE;</b>
+<i>268</i>&nbsp;
+<i>269</i>&nbsp;    // It &quot;feels wrong&quot; to store this value here.  However,
+<i>270</i>&nbsp;    // calculating it can be time consuming, so we cache it.
+<i>271</i>&nbsp;    // It&#39;s never going to change in the lifetime of this XIncludeHandler
+<i>272</i>&nbsp;    protected String fParentRelativeURI;
+<i>273</i>&nbsp;
+<i>274</i>&nbsp;    // we cache the child parser configuration, so we don&#39;t have to re-create
+<i>275</i>&nbsp;    // the objects when the parser is re-used
+<i>276</i>&nbsp;    protected XMLParserConfiguration fChildConfig;
+<i>277</i>&nbsp;
+<i>278</i>&nbsp;    // The cached child parser configuration, may contain a
+<i>279</i>&nbsp;    // XInclude or XPointer Handler.  Cache both these
+<i>280</i>&nbsp;    protected XMLParserConfiguration fXIncludeChildConfig;
+<i>281</i>&nbsp;    protected XMLParserConfiguration fXPointerChildConfig;
+<i>282</i>&nbsp;
+<i>283</i>&nbsp;    // The XPointerProcessor
+<b class="nc"><i>284</i>&nbsp;    protected XPointerProcessor fXPtrProcessor = null;</b>
+<i>285</i>&nbsp;
+<i>286</i>&nbsp;    protected XMLLocator fDocLocation;
+<b class="nc"><i>287</i>&nbsp;    protected XIncludeMessageFormatter fXIncludeMessageFormatter = new XIncludeMessageFormatter();</b>
+<i>288</i>&nbsp;    protected XIncludeNamespaceSupport fNamespaceContext;
+<i>289</i>&nbsp;    protected SymbolTable fSymbolTable;
+<i>290</i>&nbsp;    protected XMLErrorReporter fErrorReporter;
+<i>291</i>&nbsp;    protected XMLEntityResolver fEntityResolver;
+<i>292</i>&nbsp;    protected XMLSecurityManager fSecurityManager;
+<i>293</i>&nbsp;    protected XMLSecurityPropertyManager fSecurityPropertyMgr;
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;    // these are needed for text include processing
+<i>296</i>&nbsp;    protected XIncludeTextReader fXInclude10TextReader;
+<i>297</i>&nbsp;    protected XIncludeTextReader fXInclude11TextReader;
+<i>298</i>&nbsp;
+<i>299</i>&nbsp;    // these are needed for XML Base processing
+<i>300</i>&nbsp;    protected XMLResourceIdentifier fCurrentBaseURI;
+<i>301</i>&nbsp;    protected IntStack fBaseURIScope;
+<i>302</i>&nbsp;    protected Stack fBaseURI;
+<i>303</i>&nbsp;    protected Stack fLiteralSystemID;
+<i>304</i>&nbsp;    protected Stack fExpandedSystemID;
+<i>305</i>&nbsp;
+<i>306</i>&nbsp;    // these are needed for Language Fixup
+<i>307</i>&nbsp;    protected IntStack fLanguageScope;
+<i>308</i>&nbsp;    protected Stack fLanguageStack;
+<i>309</i>&nbsp;    protected String fCurrentLanguage;
+<i>310</i>&nbsp;
+<i>311</i>&nbsp;    // used for passing features on to child XIncludeHandler objects
+<i>312</i>&nbsp;    protected ParserConfigurationSettings fSettings;
+<i>313</i>&nbsp;
+<i>314</i>&nbsp;    // The current element depth.  We start at depth 0 (before we&#39;ve reached any elements).
+<i>315</i>&nbsp;    // The first element is at depth 1.
+<i>316</i>&nbsp;    private int fDepth;
+<i>317</i>&nbsp;
+<i>318</i>&nbsp;    // The current element depth of the result infoset.
+<i>319</i>&nbsp;    private int fResultDepth;
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;    // this value must be at least 1
+<i>322</i>&nbsp;    private static final int INITIAL_SIZE = 8;
+<i>323</i>&nbsp;
+<i>324</i>&nbsp;    // Used to ensure that fallbacks are always children of include elements,
+<i>325</i>&nbsp;    // and that include elements are never children of other include elements.
+<i>326</i>&nbsp;    // An index contains true if the ancestor of the current element which resides
+<i>327</i>&nbsp;    // at that depth was an include element.
+<b class="nc"><i>328</i>&nbsp;    private boolean[] fSawInclude = new boolean[INITIAL_SIZE];</b>
+<i>329</i>&nbsp;
+<i>330</i>&nbsp;    // Ensures that only one fallback element can be at a single depth.
+<i>331</i>&nbsp;    // An index contains true if we have seen any fallback elements at that depth,
+<i>332</i>&nbsp;    // and it is only reset to false when the end tag of the parent is encountered.
+<b class="nc"><i>333</i>&nbsp;    private boolean[] fSawFallback = new boolean[INITIAL_SIZE];</b>
+<i>334</i>&nbsp;
+<i>335</i>&nbsp;    // The state of the processor at each given depth.
+<b class="nc"><i>336</i>&nbsp;    private int[] fState = new int[INITIAL_SIZE];</b>
+<i>337</i>&nbsp;
+<i>338</i>&nbsp;    // buffering the necessary DTD events
+<i>339</i>&nbsp;    private ArrayList fNotations;
+<i>340</i>&nbsp;    private ArrayList fUnparsedEntities;
+<i>341</i>&nbsp;
+<i>342</i>&nbsp;    // flags which control whether base URI or language fixup is performed.
+<b class="nc"><i>343</i>&nbsp;    private boolean fFixupBaseURIs = true;</b>
+<b class="nc"><i>344</i>&nbsp;    private boolean fFixupLanguage = true;</b>
+<i>345</i>&nbsp;
+<i>346</i>&nbsp;    // for SAX compatibility.
+<i>347</i>&nbsp;    // Has the value of the ALLOW_UE_AND_NOTATION_EVENTS feature
+<i>348</i>&nbsp;    private boolean fSendUEAndNotationEvents;
+<i>349</i>&nbsp;
+<i>350</i>&nbsp;    // track the version of the document being parsed
+<i>351</i>&nbsp;    private boolean fIsXML11;
+<i>352</i>&nbsp;
+<i>353</i>&nbsp;    // track whether a DTD is being parsed
+<i>354</i>&nbsp;    private boolean fInDTD;
+<i>355</i>&nbsp;
+<i>356</i>&nbsp;    // track whether the root element of the result infoset has been processed
+<i>357</i>&nbsp;    private boolean fSeenRootElement;
+<i>358</i>&nbsp;
+<i>359</i>&nbsp;    // track whether the child config needs its features refreshed
+<b class="nc"><i>360</i>&nbsp;    private boolean fNeedCopyFeatures = true;</b>
+<i>361</i>&nbsp;
+<i>362</i>&nbsp;    // Constructors
+<i>363</i>&nbsp;
+<b class="nc"><i>364</i>&nbsp;    public XIncludeHandler() {</b>
+<b class="nc"><i>365</i>&nbsp;        fDepth = 0;</b>
+<i>366</i>&nbsp;
+<b class="nc"><i>367</i>&nbsp;        fSawFallback[fDepth] = false;</b>
+<b class="nc"><i>368</i>&nbsp;        fSawInclude[fDepth] = false;</b>
+<b class="nc"><i>369</i>&nbsp;        fState[fDepth] = STATE_NORMAL_PROCESSING;</b>
+<b class="nc"><i>370</i>&nbsp;        fNotations = new ArrayList();</b>
+<b class="nc"><i>371</i>&nbsp;        fUnparsedEntities = new ArrayList();</b>
+<i>372</i>&nbsp;
+<b class="nc"><i>373</i>&nbsp;        fBaseURIScope = new IntStack();</b>
+<b class="nc"><i>374</i>&nbsp;        fBaseURI = new Stack();</b>
+<b class="nc"><i>375</i>&nbsp;        fLiteralSystemID = new Stack();</b>
+<b class="nc"><i>376</i>&nbsp;        fExpandedSystemID = new Stack();</b>
+<b class="nc"><i>377</i>&nbsp;        fCurrentBaseURI = new XMLResourceIdentifierImpl();</b>
+<i>378</i>&nbsp;
+<b class="nc"><i>379</i>&nbsp;        fLanguageScope = new IntStack();</b>
+<b class="nc"><i>380</i>&nbsp;        fLanguageStack = new Stack();</b>
+<b class="nc"><i>381</i>&nbsp;        fCurrentLanguage = null;</b>
+<i>382</i>&nbsp;    }
+<i>383</i>&nbsp;
+<i>384</i>&nbsp;    // XMLComponent methods
+<i>385</i>&nbsp;
+<i>386</i>&nbsp;    @Override
+<i>387</i>&nbsp;    public void reset(XMLComponentManager componentManager)
+<i>388</i>&nbsp;        throws XNIException {
+<b class="nc"><i>389</i>&nbsp;        fNamespaceContext = null;</b>
+<b class="nc"><i>390</i>&nbsp;        fDepth = 0;</b>
+<b class="nc"><i>391</i>&nbsp;        fResultDepth = isRootDocument() ? 0 : fParentXIncludeHandler.getResultDepth();</b>
+<b class="nc"><i>392</i>&nbsp;        fNotations.clear();</b>
+<b class="nc"><i>393</i>&nbsp;        fUnparsedEntities.clear();</b>
+<b class="nc"><i>394</i>&nbsp;        fParentRelativeURI = null;</b>
+<b class="nc"><i>395</i>&nbsp;        fIsXML11 = false;</b>
+<b class="nc"><i>396</i>&nbsp;        fInDTD = false;</b>
+<b class="nc"><i>397</i>&nbsp;        fSeenRootElement = false;</b>
+<i>398</i>&nbsp;
+<b class="nc"><i>399</i>&nbsp;        fBaseURIScope.clear();</b>
+<b class="nc"><i>400</i>&nbsp;        fBaseURI.clear();</b>
+<b class="nc"><i>401</i>&nbsp;        fLiteralSystemID.clear();</b>
+<b class="nc"><i>402</i>&nbsp;        fExpandedSystemID.clear();</b>
+<b class="nc"><i>403</i>&nbsp;        fLanguageScope.clear();</b>
+<b class="nc"><i>404</i>&nbsp;        fLanguageStack.clear();</b>
+<i>405</i>&nbsp;
+<i>406</i>&nbsp;        // REVISIT: Find a better method for maintaining
+<i>407</i>&nbsp;        // the state of the XInclude processor. These arrays
+<i>408</i>&nbsp;        // can potentially grow quite large. Cleaning them
+<i>409</i>&nbsp;        // out on reset may be very time consuming. -- mrglavas
+<i>410</i>&nbsp;        //
+<i>411</i>&nbsp;        // clear the previous settings from the arrays
+<b class="nc"><i>412</i>&nbsp;        for (int i = 0; i &lt; fState.length; ++i) {</b>
+<b class="nc"><i>413</i>&nbsp;            fState[i] = STATE_NORMAL_PROCESSING;</b>
+<i>414</i>&nbsp;        }
+<b class="nc"><i>415</i>&nbsp;        for (int i = 0; i &lt; fSawFallback.length; ++i) {</b>
+<b class="nc"><i>416</i>&nbsp;            fSawFallback[i] = false;</b>
+<i>417</i>&nbsp;        }
+<b class="nc"><i>418</i>&nbsp;        for (int i = 0; i &lt; fSawInclude.length; ++i) {</b>
+<b class="nc"><i>419</i>&nbsp;            fSawInclude[i] = false;</b>
+<i>420</i>&nbsp;        }
+<i>421</i>&nbsp;
+<i>422</i>&nbsp;        try {
+<b class="nc"><i>423</i>&nbsp;            if (!componentManager.getFeature(PARSER_SETTINGS)) {</b>
+<i>424</i>&nbsp;                // if parser settings have not changed return.
+<i>425</i>&nbsp;                return;
+<i>426</i>&nbsp;            }
+<i>427</i>&nbsp;        }
+<b class="nc"><i>428</i>&nbsp;        catch (XMLConfigurationException e) {}</b>
+<i>429</i>&nbsp;
+<i>430</i>&nbsp;        // parser settings changed. Need to refresh features on child config.
+<b class="nc"><i>431</i>&nbsp;        fNeedCopyFeatures = true;</b>
+<i>432</i>&nbsp;
+<i>433</i>&nbsp;        try {
+<b class="nc"><i>434</i>&nbsp;            fSendUEAndNotationEvents =</b>
+<b class="nc"><i>435</i>&nbsp;                componentManager.getFeature(ALLOW_UE_AND_NOTATION_EVENTS);</b>
+<b class="nc"><i>436</i>&nbsp;            if (fChildConfig != null) {</b>
+<b class="nc"><i>437</i>&nbsp;                fChildConfig.setFeature(</b>
+<i>438</i>&nbsp;                    ALLOW_UE_AND_NOTATION_EVENTS,
+<i>439</i>&nbsp;                    fSendUEAndNotationEvents);
+<i>440</i>&nbsp;            }
+<i>441</i>&nbsp;        }
+<b class="nc"><i>442</i>&nbsp;        catch (XMLConfigurationException e) {</b>
+<b class="nc"><i>443</i>&nbsp;        }</b>
+<i>444</i>&nbsp;
+<i>445</i>&nbsp;        try {
+<b class="nc"><i>446</i>&nbsp;            fFixupBaseURIs =</b>
+<b class="nc"><i>447</i>&nbsp;                componentManager.getFeature(XINCLUDE_FIXUP_BASE_URIS);</b>
+<b class="nc"><i>448</i>&nbsp;            if (fChildConfig != null) {</b>
+<b class="nc"><i>449</i>&nbsp;                fChildConfig.setFeature(</b>
+<i>450</i>&nbsp;                    XINCLUDE_FIXUP_BASE_URIS,
+<i>451</i>&nbsp;                    fFixupBaseURIs);
+<i>452</i>&nbsp;            }
+<i>453</i>&nbsp;        }
+<b class="nc"><i>454</i>&nbsp;        catch (XMLConfigurationException e) {</b>
+<b class="nc"><i>455</i>&nbsp;            fFixupBaseURIs = true;</b>
+<b class="nc"><i>456</i>&nbsp;        }</b>
+<i>457</i>&nbsp;
+<i>458</i>&nbsp;        try {
+<b class="nc"><i>459</i>&nbsp;            fFixupLanguage =</b>
+<b class="nc"><i>460</i>&nbsp;                componentManager.getFeature(XINCLUDE_FIXUP_LANGUAGE);</b>
+<b class="nc"><i>461</i>&nbsp;            if (fChildConfig != null) {</b>
+<b class="nc"><i>462</i>&nbsp;                fChildConfig.setFeature(</b>
+<i>463</i>&nbsp;                    XINCLUDE_FIXUP_LANGUAGE,
+<i>464</i>&nbsp;                    fFixupLanguage);
+<i>465</i>&nbsp;            }
+<i>466</i>&nbsp;        }
+<b class="nc"><i>467</i>&nbsp;        catch (XMLConfigurationException e) {</b>
+<b class="nc"><i>468</i>&nbsp;            fFixupLanguage = true;</b>
+<b class="nc"><i>469</i>&nbsp;        }</b>
+<i>470</i>&nbsp;
+<i>471</i>&nbsp;        // Get symbol table.
+<i>472</i>&nbsp;        try {
+<b class="nc"><i>473</i>&nbsp;            SymbolTable value =</b>
+<b class="nc"><i>474</i>&nbsp;                (SymbolTable)componentManager.getProperty(SYMBOL_TABLE);</b>
+<b class="nc"><i>475</i>&nbsp;            if (value != null) {</b>
+<b class="nc"><i>476</i>&nbsp;                fSymbolTable = value;</b>
+<b class="nc"><i>477</i>&nbsp;                if (fChildConfig != null) {</b>
+<b class="nc"><i>478</i>&nbsp;                    fChildConfig.setProperty(SYMBOL_TABLE, value);</b>
+<i>479</i>&nbsp;                }
+<i>480</i>&nbsp;            }
+<i>481</i>&nbsp;        }
+<b class="nc"><i>482</i>&nbsp;        catch (XMLConfigurationException e) {</b>
+<b class="nc"><i>483</i>&nbsp;            fSymbolTable = null;</b>
+<b class="nc"><i>484</i>&nbsp;        }</b>
+<i>485</i>&nbsp;
+<i>486</i>&nbsp;        // Get error reporter.
+<i>487</i>&nbsp;        try {
+<b class="nc"><i>488</i>&nbsp;            XMLErrorReporter value =</b>
+<b class="nc"><i>489</i>&nbsp;                (XMLErrorReporter)componentManager.getProperty(ERROR_REPORTER);</b>
+<b class="nc"><i>490</i>&nbsp;            if (value != null) {</b>
+<b class="nc"><i>491</i>&nbsp;                setErrorReporter(value);</b>
+<b class="nc"><i>492</i>&nbsp;                if (fChildConfig != null) {</b>
+<b class="nc"><i>493</i>&nbsp;                    fChildConfig.setProperty(ERROR_REPORTER, value);</b>
+<i>494</i>&nbsp;                }
+<i>495</i>&nbsp;            }
+<i>496</i>&nbsp;        }
+<b class="nc"><i>497</i>&nbsp;        catch (XMLConfigurationException e) {</b>
+<b class="nc"><i>498</i>&nbsp;            fErrorReporter = null;</b>
+<b class="nc"><i>499</i>&nbsp;        }</b>
+<i>500</i>&nbsp;
+<i>501</i>&nbsp;        // Get entity resolver.
+<i>502</i>&nbsp;        try {
+<b class="nc"><i>503</i>&nbsp;            XMLEntityResolver value =</b>
+<b class="nc"><i>504</i>&nbsp;                (XMLEntityResolver)componentManager.getProperty(</b>
+<i>505</i>&nbsp;                    ENTITY_RESOLVER);
+<i>506</i>&nbsp;
+<b class="nc"><i>507</i>&nbsp;            if (value != null) {</b>
+<b class="nc"><i>508</i>&nbsp;                fEntityResolver = value;</b>
+<b class="nc"><i>509</i>&nbsp;                if (fChildConfig != null) {</b>
+<b class="nc"><i>510</i>&nbsp;                    fChildConfig.setProperty(ENTITY_RESOLVER, value);</b>
+<i>511</i>&nbsp;                }
+<i>512</i>&nbsp;            }
+<i>513</i>&nbsp;        }
+<b class="nc"><i>514</i>&nbsp;        catch (XMLConfigurationException e) {</b>
+<b class="nc"><i>515</i>&nbsp;            fEntityResolver = null;</b>
+<b class="nc"><i>516</i>&nbsp;        }</b>
+<i>517</i>&nbsp;
+<i>518</i>&nbsp;        // Get security manager.
+<i>519</i>&nbsp;        try {
+<b class="nc"><i>520</i>&nbsp;            XMLSecurityManager value =</b>
+<b class="nc"><i>521</i>&nbsp;                (XMLSecurityManager)componentManager.getProperty(</b>
+<i>522</i>&nbsp;                    SECURITY_MANAGER);
+<i>523</i>&nbsp;
+<b class="nc"><i>524</i>&nbsp;            if (value != null) {</b>
+<b class="nc"><i>525</i>&nbsp;                fSecurityManager = value;</b>
+<b class="nc"><i>526</i>&nbsp;                if (fChildConfig != null) {</b>
+<b class="nc"><i>527</i>&nbsp;                    fChildConfig.setProperty(SECURITY_MANAGER, value);</b>
+<i>528</i>&nbsp;                }
+<i>529</i>&nbsp;            }
+<i>530</i>&nbsp;        }
+<b class="nc"><i>531</i>&nbsp;        catch (XMLConfigurationException e) {</b>
+<b class="nc"><i>532</i>&nbsp;            fSecurityManager = null;</b>
+<b class="nc"><i>533</i>&nbsp;        }</b>
+<i>534</i>&nbsp;
+<b class="nc"><i>535</i>&nbsp;        fSecurityPropertyMgr = (XMLSecurityPropertyManager)</b>
+<b class="nc"><i>536</i>&nbsp;                componentManager.getProperty(Constants.XML_SECURITY_PROPERTY_MANAGER);</b>
+<i>537</i>&nbsp;
+<i>538</i>&nbsp;        // Get buffer size.
+<i>539</i>&nbsp;        try {
+<b class="nc"><i>540</i>&nbsp;            Integer value =</b>
+<b class="nc"><i>541</i>&nbsp;                (Integer)componentManager.getProperty(</b>
+<i>542</i>&nbsp;                    BUFFER_SIZE);
+<i>543</i>&nbsp;
+<b class="nc"><i>544</i>&nbsp;            if (value != null &amp;&amp; value.intValue() &gt; 0) {</b>
+<b class="nc"><i>545</i>&nbsp;                fBufferSize = value.intValue();</b>
+<b class="nc"><i>546</i>&nbsp;                if (fChildConfig != null) {</b>
+<b class="nc"><i>547</i>&nbsp;                    fChildConfig.setProperty(BUFFER_SIZE, value);</b>
+<i>548</i>&nbsp;                }
+<i>549</i>&nbsp;            }
+<i>550</i>&nbsp;            else {
+<b class="nc"><i>551</i>&nbsp;                fBufferSize = ((Integer)getPropertyDefault(BUFFER_SIZE)).intValue();</b>
+<i>552</i>&nbsp;            }
+<i>553</i>&nbsp;        }
+<b class="nc"><i>554</i>&nbsp;        catch (XMLConfigurationException e) {</b>
+<b class="nc"><i>555</i>&nbsp;                fBufferSize = ((Integer)getPropertyDefault(BUFFER_SIZE)).intValue();</b>
+<b class="nc"><i>556</i>&nbsp;        }</b>
+<i>557</i>&nbsp;
+<i>558</i>&nbsp;        // Reset XML 1.0 text reader.
+<b class="nc"><i>559</i>&nbsp;        if (fXInclude10TextReader != null) {</b>
+<b class="nc"><i>560</i>&nbsp;                fXInclude10TextReader.setBufferSize(fBufferSize);</b>
+<i>561</i>&nbsp;        }
+<i>562</i>&nbsp;        // Reset XML 1.1 text reader.
+<b class="nc"><i>563</i>&nbsp;        if (fXInclude11TextReader != null) {</b>
+<b class="nc"><i>564</i>&nbsp;            fXInclude11TextReader.setBufferSize(fBufferSize);</b>
+<i>565</i>&nbsp;        }
+<i>566</i>&nbsp;
+<b class="nc"><i>567</i>&nbsp;        fSettings = new ParserConfigurationSettings();</b>
+<b class="nc"><i>568</i>&nbsp;        copyFeatures(componentManager, fSettings);</b>
+<i>569</i>&nbsp;
+<i>570</i>&nbsp;        // We don&#39;t want a schema validator on the new pipeline,
+<i>571</i>&nbsp;        // so if it was enabled, we set the feature to false. If
+<i>572</i>&nbsp;        // the validation feature was also enabled we turn on
+<i>573</i>&nbsp;        // dynamic validation, so that DTD validation is performed
+<i>574</i>&nbsp;        // on the included documents only if they have a DOCTYPE.
+<i>575</i>&nbsp;        // This is consistent with the behaviour on the main pipeline.
+<i>576</i>&nbsp;        try {
+<b class="nc"><i>577</i>&nbsp;            if (componentManager.getFeature(SCHEMA_VALIDATION)) {</b>
+<b class="nc"><i>578</i>&nbsp;                fSettings.setFeature(SCHEMA_VALIDATION, false);</b>
+<b class="nc"><i>579</i>&nbsp;                if (componentManager.getFeature(VALIDATION)) {</b>
+<b class="nc"><i>580</i>&nbsp;                    fSettings.setFeature(DYNAMIC_VALIDATION, true);</b>
+<i>581</i>&nbsp;                }
+<i>582</i>&nbsp;            }
+<i>583</i>&nbsp;        }
+<b class="nc"><i>584</i>&nbsp;        catch (XMLConfigurationException e) {}</b>
+<i>585</i>&nbsp;
+<i>586</i>&nbsp;        // Don&#39;t reset fChildConfig -- we don&#39;t want it to share the same components.
+<i>587</i>&nbsp;        // It will be reset when it is actually used to parse something.
+<i>588</i>&nbsp;    } // reset(XMLComponentManager)
+<i>589</i>&nbsp;
+<i>590</i>&nbsp;    /**
+<i>591</i>&nbsp;     * Returns a list of feature identifiers that are recognized by
+<i>592</i>&nbsp;     * this component. This method may return null if no features
+<i>593</i>&nbsp;     * are recognized by this component.
+<i>594</i>&nbsp;     */
+<i>595</i>&nbsp;    @Override
+<i>596</i>&nbsp;    public String[] getRecognizedFeatures() {
+<b class="nc"><i>597</i>&nbsp;        return (String[])(RECOGNIZED_FEATURES.clone());</b>
+<i>598</i>&nbsp;    } // getRecognizedFeatures():String[]
+<i>599</i>&nbsp;
+<i>600</i>&nbsp;    /**
+<i>601</i>&nbsp;     * Sets the state of a feature. This method is called by the component
+<i>602</i>&nbsp;     * manager any time after reset when a feature changes state.
+<i>603</i>&nbsp;     * &lt;p&gt;
+<i>604</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt; Components should silently ignore features
+<i>605</i>&nbsp;     * that do not affect the operation of the component.
+<i>606</i>&nbsp;     *
+<i>607</i>&nbsp;     * @param featureId The feature identifier.
+<i>608</i>&nbsp;     * @param state     The state of the feature.
+<i>609</i>&nbsp;     *
+<i>610</i>&nbsp;     * @throws SAXNotRecognizedException The component should not throw
+<i>611</i>&nbsp;     *                                   this exception.
+<i>612</i>&nbsp;     * @throws SAXNotSupportedException The component should not throw
+<i>613</i>&nbsp;     *                                  this exception.
+<i>614</i>&nbsp;     */
+<i>615</i>&nbsp;    @Override
+<i>616</i>&nbsp;    public void setFeature(String featureId, boolean state)
+<i>617</i>&nbsp;        throws XMLConfigurationException {
+<b class="nc"><i>618</i>&nbsp;        if (featureId.equals(ALLOW_UE_AND_NOTATION_EVENTS)) {</b>
+<b class="nc"><i>619</i>&nbsp;            fSendUEAndNotationEvents = state;</b>
+<i>620</i>&nbsp;        }
+<b class="nc"><i>621</i>&nbsp;        if (fSettings != null) {</b>
+<b class="nc"><i>622</i>&nbsp;            fNeedCopyFeatures = true;</b>
+<b class="nc"><i>623</i>&nbsp;            fSettings.setFeature(featureId, state);</b>
+<i>624</i>&nbsp;        }
+<i>625</i>&nbsp;    } // setFeature(String,boolean)
+<i>626</i>&nbsp;
+<i>627</i>&nbsp;    /**
+<i>628</i>&nbsp;     * Returns a list of property identifiers that are recognized by
+<i>629</i>&nbsp;     * this component. This method may return null if no properties
+<i>630</i>&nbsp;     * are recognized by this component.
+<i>631</i>&nbsp;     */
+<i>632</i>&nbsp;    @Override
+<i>633</i>&nbsp;    public String[] getRecognizedProperties() {
+<b class="nc"><i>634</i>&nbsp;        return (String[])(RECOGNIZED_PROPERTIES.clone());</b>
+<i>635</i>&nbsp;    } // getRecognizedProperties():String[]
+<i>636</i>&nbsp;
+<i>637</i>&nbsp;    /**
+<i>638</i>&nbsp;     * Sets the value of a property. This method is called by the component
+<i>639</i>&nbsp;     * manager any time after reset when a property changes value.
+<i>640</i>&nbsp;     * &lt;p&gt;
+<i>641</i>&nbsp;     * &lt;strong&gt;Note:&lt;/strong&gt; Components should silently ignore properties
+<i>642</i>&nbsp;     * that do not affect the operation of the component.
+<i>643</i>&nbsp;     *
+<i>644</i>&nbsp;     * @param propertyId The property identifier.
+<i>645</i>&nbsp;     * @param value      The value of the property.
+<i>646</i>&nbsp;     *
+<i>647</i>&nbsp;     * @throws SAXNotRecognizedException The component should not throw
+<i>648</i>&nbsp;     *                                   this exception.
+<i>649</i>&nbsp;     * @throws SAXNotSupportedException The component should not throw
+<i>650</i>&nbsp;     *                                  this exception.
+<i>651</i>&nbsp;     */
+<i>652</i>&nbsp;    @Override
+<i>653</i>&nbsp;    public void setProperty(String propertyId, Object value)
+<i>654</i>&nbsp;        throws XMLConfigurationException {
+<b class="nc"><i>655</i>&nbsp;        if (propertyId.equals(SYMBOL_TABLE)) {</b>
+<b class="nc"><i>656</i>&nbsp;            fSymbolTable = (SymbolTable)value;</b>
+<b class="nc"><i>657</i>&nbsp;            if (fChildConfig != null) {</b>
+<b class="nc"><i>658</i>&nbsp;                fChildConfig.setProperty(propertyId, value);</b>
+<i>659</i>&nbsp;            }
+<i>660</i>&nbsp;            return;
+<i>661</i>&nbsp;        }
+<b class="nc"><i>662</i>&nbsp;        if (propertyId.equals(ERROR_REPORTER)) {</b>
+<b class="nc"><i>663</i>&nbsp;            setErrorReporter((XMLErrorReporter)value);</b>
+<b class="nc"><i>664</i>&nbsp;            if (fChildConfig != null) {</b>
+<b class="nc"><i>665</i>&nbsp;                fChildConfig.setProperty(propertyId, value);</b>
+<i>666</i>&nbsp;            }
+<i>667</i>&nbsp;            return;
+<i>668</i>&nbsp;        }
+<b class="nc"><i>669</i>&nbsp;        if (propertyId.equals(ENTITY_RESOLVER)) {</b>
+<b class="nc"><i>670</i>&nbsp;            fEntityResolver = (XMLEntityResolver)value;</b>
+<b class="nc"><i>671</i>&nbsp;            if (fChildConfig != null) {</b>
+<b class="nc"><i>672</i>&nbsp;                fChildConfig.setProperty(propertyId, value);</b>
+<i>673</i>&nbsp;            }
+<i>674</i>&nbsp;            return;
+<i>675</i>&nbsp;        }
+<b class="nc"><i>676</i>&nbsp;        if (propertyId.equals(SECURITY_MANAGER)) {</b>
+<b class="nc"><i>677</i>&nbsp;            fSecurityManager = (XMLSecurityManager)value;</b>
+<b class="nc"><i>678</i>&nbsp;            if (fChildConfig != null) {</b>
+<b class="nc"><i>679</i>&nbsp;                fChildConfig.setProperty(propertyId, value);</b>
+<i>680</i>&nbsp;            }
+<i>681</i>&nbsp;            return;
+<i>682</i>&nbsp;        }
+<b class="nc"><i>683</i>&nbsp;        if (propertyId.equals(XML_SECURITY_PROPERTY_MANAGER)) {</b>
+<b class="nc"><i>684</i>&nbsp;            fSecurityPropertyMgr = (XMLSecurityPropertyManager)value;</b>
+<i>685</i>&nbsp;
+<b class="nc"><i>686</i>&nbsp;            if (fChildConfig != null) {</b>
+<b class="nc"><i>687</i>&nbsp;                fChildConfig.setProperty(XML_SECURITY_PROPERTY_MANAGER, value);</b>
+<i>688</i>&nbsp;            }
+<i>689</i>&nbsp;
+<i>690</i>&nbsp;            return;
+<i>691</i>&nbsp;        }
+<i>692</i>&nbsp;
+<b class="nc"><i>693</i>&nbsp;        if (propertyId.equals(BUFFER_SIZE)) {</b>
+<b class="nc"><i>694</i>&nbsp;            Integer bufferSize = (Integer) value;</b>
+<b class="nc"><i>695</i>&nbsp;            if (fChildConfig != null) {</b>
+<b class="nc"><i>696</i>&nbsp;                fChildConfig.setProperty(propertyId, value);</b>
+<i>697</i>&nbsp;            }
+<b class="nc"><i>698</i>&nbsp;            if (bufferSize != null &amp;&amp; bufferSize.intValue() &gt; 0) {</b>
+<b class="nc"><i>699</i>&nbsp;                fBufferSize = bufferSize.intValue();</b>
+<i>700</i>&nbsp;                // Reset XML 1.0 text reader.
+<b class="nc"><i>701</i>&nbsp;                if (fXInclude10TextReader != null) {</b>
+<b class="nc"><i>702</i>&nbsp;                    fXInclude10TextReader.setBufferSize(fBufferSize);</b>
+<i>703</i>&nbsp;                }
+<i>704</i>&nbsp;                // Reset XML 1.1 text reader.
+<b class="nc"><i>705</i>&nbsp;                if (fXInclude11TextReader != null) {</b>
+<b class="nc"><i>706</i>&nbsp;                    fXInclude11TextReader.setBufferSize(fBufferSize);</b>
+<i>707</i>&nbsp;                }
+<i>708</i>&nbsp;            }
+<i>709</i>&nbsp;            return;
+<i>710</i>&nbsp;        }
+<i>711</i>&nbsp;
+<i>712</i>&nbsp;    } // setProperty(String,Object)
+<i>713</i>&nbsp;
+<i>714</i>&nbsp;    /**
+<i>715</i>&nbsp;     * Returns the default state for a feature, or null if this
+<i>716</i>&nbsp;     * component does not want to report a default value for this
+<i>717</i>&nbsp;     * feature.
+<i>718</i>&nbsp;     *
+<i>719</i>&nbsp;     * @param featureId The feature identifier.
+<i>720</i>&nbsp;     *
+<i>721</i>&nbsp;     * @since Xerces 2.2.0
+<i>722</i>&nbsp;     */
+<i>723</i>&nbsp;    @Override
+<i>724</i>&nbsp;    public Boolean getFeatureDefault(String featureId) {
+<b class="nc"><i>725</i>&nbsp;        for (int i = 0; i &lt; RECOGNIZED_FEATURES.length; i++) {</b>
+<b class="nc"><i>726</i>&nbsp;            if (RECOGNIZED_FEATURES[i].equals(featureId)) {</b>
+<b class="nc"><i>727</i>&nbsp;                return FEATURE_DEFAULTS[i];</b>
+<i>728</i>&nbsp;            }
+<i>729</i>&nbsp;        }
+<b class="nc"><i>730</i>&nbsp;        return null;</b>
+<i>731</i>&nbsp;    } // getFeatureDefault(String):Boolean
+<i>732</i>&nbsp;
+<i>733</i>&nbsp;    /**
+<i>734</i>&nbsp;     * Returns the default state for a property, or null if this
+<i>735</i>&nbsp;     * component does not want to report a default value for this
+<i>736</i>&nbsp;     * property.
+<i>737</i>&nbsp;     *
+<i>738</i>&nbsp;     * @param propertyId The property identifier.
+<i>739</i>&nbsp;     *
+<i>740</i>&nbsp;     * @since Xerces 2.2.0
+<i>741</i>&nbsp;     */
+<i>742</i>&nbsp;    @Override
+<i>743</i>&nbsp;    public Object getPropertyDefault(String propertyId) {
+<b class="nc"><i>744</i>&nbsp;        for (int i = 0; i &lt; RECOGNIZED_PROPERTIES.length; i++) {</b>
+<b class="nc"><i>745</i>&nbsp;            if (RECOGNIZED_PROPERTIES[i].equals(propertyId)) {</b>
+<b class="nc"><i>746</i>&nbsp;                return PROPERTY_DEFAULTS[i];</b>
+<i>747</i>&nbsp;            }
+<i>748</i>&nbsp;        }
+<b class="nc"><i>749</i>&nbsp;        return null;</b>
+<i>750</i>&nbsp;    } // getPropertyDefault(String):Object
+<i>751</i>&nbsp;
+<i>752</i>&nbsp;    @Override
+<i>753</i>&nbsp;    public void setDocumentHandler(XMLDocumentHandler handler) {
+<b class="nc"><i>754</i>&nbsp;        fDocumentHandler = handler;</b>
+<i>755</i>&nbsp;    }
+<i>756</i>&nbsp;
+<i>757</i>&nbsp;    @Override
+<i>758</i>&nbsp;    public XMLDocumentHandler getDocumentHandler() {
+<b class="nc"><i>759</i>&nbsp;        return fDocumentHandler;</b>
+<i>760</i>&nbsp;    }
+<i>761</i>&nbsp;
+<i>762</i>&nbsp;    // XMLDocumentHandler methods
+<i>763</i>&nbsp;
+<i>764</i>&nbsp;    /**
+<i>765</i>&nbsp;     * Event sent at the start of the document.
+<i>766</i>&nbsp;     *
+<i>767</i>&nbsp;     * A fatal error will occur here, if it is detected that this document has been processed
+<i>768</i>&nbsp;     * before.
+<i>769</i>&nbsp;     *
+<i>770</i>&nbsp;     * This event is only passed on to the document handler if this is the root document.
+<i>771</i>&nbsp;     */
+<i>772</i>&nbsp;    @Override
+<i>773</i>&nbsp;    public void startDocument(
+<i>774</i>&nbsp;        XMLLocator locator,
+<i>775</i>&nbsp;        String encoding,
+<i>776</i>&nbsp;        NamespaceContext namespaceContext,
+<i>777</i>&nbsp;        Augmentations augs)
+<i>778</i>&nbsp;        throws XNIException {
+<i>779</i>&nbsp;
+<i>780</i>&nbsp;        // we do this to ensure that the proper location is reported in errors
+<i>781</i>&nbsp;        // otherwise, the locator from the root document would always be used
+<b class="nc"><i>782</i>&nbsp;        fErrorReporter.setDocumentLocator(locator);</b>
+<i>783</i>&nbsp;
+<b class="nc"><i>784</i>&nbsp;        if (!isRootDocument()</b>
+<b class="nc"><i>785</i>&nbsp;            &amp;&amp; fParentXIncludeHandler.searchForRecursiveIncludes(locator)) {</b>
+<b class="nc"><i>786</i>&nbsp;            reportFatalError(</b>
+<i>787</i>&nbsp;                &quot;RecursiveInclude&quot;,
+<b class="nc"><i>788</i>&nbsp;                new Object[] { locator.getExpandedSystemId()});</b>
+<i>789</i>&nbsp;        }
+<i>790</i>&nbsp;
+<b class="nc"><i>791</i>&nbsp;        if (!(namespaceContext instanceof XIncludeNamespaceSupport)) {</b>
+<b class="nc"><i>792</i>&nbsp;            reportFatalError(&quot;IncompatibleNamespaceContext&quot;);</b>
+<i>793</i>&nbsp;        }
+<b class="nc"><i>794</i>&nbsp;        fNamespaceContext = (XIncludeNamespaceSupport)namespaceContext;</b>
+<b class="nc"><i>795</i>&nbsp;        fDocLocation = locator;</b>
+<i>796</i>&nbsp;
+<i>797</i>&nbsp;        // initialize the current base URI
+<b class="nc"><i>798</i>&nbsp;        fCurrentBaseURI.setBaseSystemId(locator.getBaseSystemId());</b>
+<b class="nc"><i>799</i>&nbsp;        fCurrentBaseURI.setExpandedSystemId(locator.getExpandedSystemId());</b>
+<b class="nc"><i>800</i>&nbsp;        fCurrentBaseURI.setLiteralSystemId(locator.getLiteralSystemId());</b>
+<b class="nc"><i>801</i>&nbsp;        saveBaseURI();</b>
+<b class="nc"><i>802</i>&nbsp;        if (augs == null) {</b>
+<b class="nc"><i>803</i>&nbsp;            augs = new AugmentationsImpl();</b>
+<i>804</i>&nbsp;        }
+<b class="nc"><i>805</i>&nbsp;        augs.putItem(CURRENT_BASE_URI, fCurrentBaseURI);</b>
+<i>806</i>&nbsp;
+<i>807</i>&nbsp;        // initialize the current language
+<b class="nc"><i>808</i>&nbsp;        fCurrentLanguage = XMLSymbols.EMPTY_STRING;</b>
+<b class="nc"><i>809</i>&nbsp;        saveLanguage(fCurrentLanguage);</b>
+<i>810</i>&nbsp;
+<b class="nc"><i>811</i>&nbsp;        if (isRootDocument() &amp;&amp; fDocumentHandler != null) {</b>
+<b class="nc"><i>812</i>&nbsp;            fDocumentHandler.startDocument(</b>
+<i>813</i>&nbsp;                locator,
+<i>814</i>&nbsp;                encoding,
+<i>815</i>&nbsp;                namespaceContext,
+<i>816</i>&nbsp;                augs);
+<i>817</i>&nbsp;        }
+<i>818</i>&nbsp;    }
+<i>819</i>&nbsp;
+<i>820</i>&nbsp;    @Override
+<i>821</i>&nbsp;    public void xmlDecl(
+<i>822</i>&nbsp;        String version,
+<i>823</i>&nbsp;        String encoding,
+<i>824</i>&nbsp;        String standalone,
+<i>825</i>&nbsp;        Augmentations augs)
+<i>826</i>&nbsp;        throws XNIException {
+<b class="nc"><i>827</i>&nbsp;        fIsXML11 = &quot;1.1&quot;.equals(version);</b>
+<b class="nc"><i>828</i>&nbsp;        if (isRootDocument() &amp;&amp; fDocumentHandler != null) {</b>
+<b class="nc"><i>829</i>&nbsp;            fDocumentHandler.xmlDecl(version, encoding, standalone, augs);</b>
+<i>830</i>&nbsp;        }
+<i>831</i>&nbsp;    }
+<i>832</i>&nbsp;
+<i>833</i>&nbsp;    @Override
+<i>834</i>&nbsp;    public void doctypeDecl(
+<i>835</i>&nbsp;        String rootElement,
+<i>836</i>&nbsp;        String publicId,
+<i>837</i>&nbsp;        String systemId,
+<i>838</i>&nbsp;        Augmentations augs)
+<i>839</i>&nbsp;        throws XNIException {
+<b class="nc"><i>840</i>&nbsp;        if (isRootDocument() &amp;&amp; fDocumentHandler != null) {</b>
+<b class="nc"><i>841</i>&nbsp;            fDocumentHandler.doctypeDecl(rootElement, publicId, systemId, augs);</b>
+<i>842</i>&nbsp;        }
+<i>843</i>&nbsp;    }
+<i>844</i>&nbsp;
+<i>845</i>&nbsp;    @Override
+<i>846</i>&nbsp;    public void comment(XMLString text, Augmentations augs)
+<i>847</i>&nbsp;        throws XNIException {
+<b class="nc"><i>848</i>&nbsp;        if (!fInDTD) {</b>
+<b class="nc"><i>849</i>&nbsp;            if (fDocumentHandler != null</b>
+<b class="nc"><i>850</i>&nbsp;                &amp;&amp; getState() == STATE_NORMAL_PROCESSING) {</b>
+<b class="nc"><i>851</i>&nbsp;                fDepth++;</b>
+<b class="nc"><i>852</i>&nbsp;                augs = modifyAugmentations(augs);</b>
+<b class="nc"><i>853</i>&nbsp;                fDocumentHandler.comment(text, augs);</b>
+<b class="nc"><i>854</i>&nbsp;                fDepth--;</b>
+<i>855</i>&nbsp;            }
+<i>856</i>&nbsp;        }
+<b class="nc"><i>857</i>&nbsp;        else if (fDTDHandler != null) {</b>
+<b class="nc"><i>858</i>&nbsp;            fDTDHandler.comment(text, augs);</b>
+<i>859</i>&nbsp;        }
+<i>860</i>&nbsp;    }
+<i>861</i>&nbsp;
+<i>862</i>&nbsp;    @Override
+<i>863</i>&nbsp;    public void processingInstruction(
+<i>864</i>&nbsp;        String target,
+<i>865</i>&nbsp;        XMLString data,
+<i>866</i>&nbsp;        Augmentations augs)
+<i>867</i>&nbsp;        throws XNIException {
+<b class="nc"><i>868</i>&nbsp;        if (!fInDTD) {</b>
+<b class="nc"><i>869</i>&nbsp;            if (fDocumentHandler != null</b>
+<b class="nc"><i>870</i>&nbsp;                &amp;&amp; getState() == STATE_NORMAL_PROCESSING) {</b>
+<i>871</i>&nbsp;                // we need to change the depth like this so that modifyAugmentations() works
+<b class="nc"><i>872</i>&nbsp;                fDepth++;</b>
+<b class="nc"><i>873</i>&nbsp;                augs = modifyAugmentations(augs);</b>
+<b class="nc"><i>874</i>&nbsp;                fDocumentHandler.processingInstruction(target, data, augs);</b>
+<b class="nc"><i>875</i>&nbsp;                fDepth--;</b>
+<i>876</i>&nbsp;            }
+<i>877</i>&nbsp;        }
+<b class="nc"><i>878</i>&nbsp;        else if (fDTDHandler != null) {</b>
+<b class="nc"><i>879</i>&nbsp;            fDTDHandler.processingInstruction(target, data, augs);</b>
+<i>880</i>&nbsp;        }
+<i>881</i>&nbsp;    }
+<i>882</i>&nbsp;
+<i>883</i>&nbsp;    @Override
+<i>884</i>&nbsp;    public void startElement(
+<i>885</i>&nbsp;        QName element,
+<i>886</i>&nbsp;        XMLAttributes attributes,
+<i>887</i>&nbsp;        Augmentations augs)
+<i>888</i>&nbsp;        throws XNIException {
+<b class="nc"><i>889</i>&nbsp;        fDepth++;</b>
+<b class="nc"><i>890</i>&nbsp;        int lastState = getState(fDepth - 1);</b>
+<i>891</i>&nbsp;        // If the last two states were fallback then this must be a descendant of an include
+<i>892</i>&nbsp;        // child which isn&#39;t a fallback. The specification says we should ignore such elements
+<i>893</i>&nbsp;        // and their children.
+<b class="nc"><i>894</i>&nbsp;        if (lastState == STATE_EXPECT_FALLBACK &amp;&amp; getState(fDepth - 2) == STATE_EXPECT_FALLBACK) {</b>
+<b class="nc"><i>895</i>&nbsp;            setState(STATE_IGNORE);</b>
+<i>896</i>&nbsp;        }
+<i>897</i>&nbsp;        else {
+<b class="nc"><i>898</i>&nbsp;            setState(lastState);</b>
+<i>899</i>&nbsp;        }
+<i>900</i>&nbsp;
+<i>901</i>&nbsp;        // we process the xml:base and xml:lang attributes regardless
+<i>902</i>&nbsp;        // of what type of element it is.
+<b class="nc"><i>903</i>&nbsp;        processXMLBaseAttributes(attributes);</b>
+<b class="nc"><i>904</i>&nbsp;        if (fFixupLanguage) {</b>
+<b class="nc"><i>905</i>&nbsp;            processXMLLangAttributes(attributes);</b>
+<i>906</i>&nbsp;        }
+<i>907</i>&nbsp;
+<b class="nc"><i>908</i>&nbsp;        if (isIncludeElement(element)) {</b>
+<b class="nc"><i>909</i>&nbsp;            boolean success = this.handleIncludeElement(attributes);</b>
+<b class="nc"><i>910</i>&nbsp;            if (success) {</b>
+<b class="nc"><i>911</i>&nbsp;                setState(STATE_IGNORE);</b>
+<i>912</i>&nbsp;            }
+<i>913</i>&nbsp;            else {
+<b class="nc"><i>914</i>&nbsp;                setState(STATE_EXPECT_FALLBACK);</b>
+<i>915</i>&nbsp;            }
+<b class="nc"><i>916</i>&nbsp;        }</b>
+<b class="nc"><i>917</i>&nbsp;        else if (isFallbackElement(element)) {</b>
+<b class="nc"><i>918</i>&nbsp;            this.handleFallbackElement();</b>
+<i>919</i>&nbsp;        }
+<b class="nc"><i>920</i>&nbsp;        else if (hasXIncludeNamespace(element)) {</b>
+<b class="nc"><i>921</i>&nbsp;            if (getSawInclude(fDepth - 1)) {</b>
+<b class="nc"><i>922</i>&nbsp;                reportFatalError(</b>
+<i>923</i>&nbsp;                    &quot;IncludeChild&quot;,
+<i>924</i>&nbsp;                    new Object[] { element.rawname });
+<i>925</i>&nbsp;            }
+<b class="nc"><i>926</i>&nbsp;            if (getSawFallback(fDepth - 1)) {</b>
+<b class="nc"><i>927</i>&nbsp;                reportFatalError(</b>
+<i>928</i>&nbsp;                    &quot;FallbackChild&quot;,
+<i>929</i>&nbsp;                    new Object[] { element.rawname });
+<i>930</i>&nbsp;            }
+<b class="nc"><i>931</i>&nbsp;            if (getState() == STATE_NORMAL_PROCESSING) {</b>
+<b class="nc"><i>932</i>&nbsp;                if (fResultDepth++ == 0) {</b>
+<b class="nc"><i>933</i>&nbsp;                    checkMultipleRootElements();</b>
+<i>934</i>&nbsp;                }
+<b class="nc"><i>935</i>&nbsp;                if (fDocumentHandler != null) {</b>
+<b class="nc"><i>936</i>&nbsp;                    augs = modifyAugmentations(augs);</b>
+<b class="nc"><i>937</i>&nbsp;                    attributes = processAttributes(attributes);</b>
+<b class="nc"><i>938</i>&nbsp;                    fDocumentHandler.startElement(element, attributes, augs);</b>
+<i>939</i>&nbsp;                }
+<i>940</i>&nbsp;            }
+<i>941</i>&nbsp;        }
+<b class="nc"><i>942</i>&nbsp;        else if (getState() == STATE_NORMAL_PROCESSING) {</b>
+<b class="nc"><i>943</i>&nbsp;            if (fResultDepth++ == 0) {</b>
+<b class="nc"><i>944</i>&nbsp;                checkMultipleRootElements();</b>
+<i>945</i>&nbsp;            }
+<b class="nc"><i>946</i>&nbsp;            if (fDocumentHandler != null) {</b>
+<b class="nc"><i>947</i>&nbsp;                augs = modifyAugmentations(augs);</b>
+<b class="nc"><i>948</i>&nbsp;                attributes = processAttributes(attributes);</b>
+<b class="nc"><i>949</i>&nbsp;                fDocumentHandler.startElement(element, attributes, augs);</b>
+<i>950</i>&nbsp;            }
+<i>951</i>&nbsp;        }
+<i>952</i>&nbsp;    }
+<i>953</i>&nbsp;
+<i>954</i>&nbsp;    @Override
+<i>955</i>&nbsp;    public void emptyElement(
+<i>956</i>&nbsp;        QName element,
+<i>957</i>&nbsp;        XMLAttributes attributes,
+<i>958</i>&nbsp;        Augmentations augs)
+<i>959</i>&nbsp;        throws XNIException {
+<b class="nc"><i>960</i>&nbsp;        fDepth++;</b>
+<b class="nc"><i>961</i>&nbsp;        int lastState = getState(fDepth - 1);</b>
+<i>962</i>&nbsp;        // If the last two states were fallback then this must be a descendant of an include
+<i>963</i>&nbsp;        // child which isn&#39;t a fallback. The specification says we should ignore such elements
+<i>964</i>&nbsp;        // and their children.
+<b class="nc"><i>965</i>&nbsp;        if (lastState == STATE_EXPECT_FALLBACK &amp;&amp; getState(fDepth - 2) == STATE_EXPECT_FALLBACK) {</b>
+<b class="nc"><i>966</i>&nbsp;            setState(STATE_IGNORE);</b>
+<i>967</i>&nbsp;        }
+<i>968</i>&nbsp;        else {
+<b class="nc"><i>969</i>&nbsp;            setState(lastState);</b>
+<i>970</i>&nbsp;        }
+<i>971</i>&nbsp;
+<i>972</i>&nbsp;        // we process the xml:base and xml:lang attributes regardless
+<i>973</i>&nbsp;        // of what type of element it is.
+<b class="nc"><i>974</i>&nbsp;        processXMLBaseAttributes(attributes);</b>
+<b class="nc"><i>975</i>&nbsp;        if (fFixupLanguage) {</b>
+<b class="nc"><i>976</i>&nbsp;            processXMLLangAttributes(attributes);</b>
+<i>977</i>&nbsp;        }
+<i>978</i>&nbsp;
+<b class="nc"><i>979</i>&nbsp;        if (isIncludeElement(element)) {</b>
+<b class="nc"><i>980</i>&nbsp;            boolean success = this.handleIncludeElement(attributes);</b>
+<b class="nc"><i>981</i>&nbsp;            if (success) {</b>
+<b class="nc"><i>982</i>&nbsp;                setState(STATE_IGNORE);</b>
+<i>983</i>&nbsp;            }
+<i>984</i>&nbsp;            else {
+<b class="nc"><i>985</i>&nbsp;                reportFatalError(&quot;NoFallback&quot;,</b>
+<b class="nc"><i>986</i>&nbsp;                    new Object[] { attributes.getValue(null, &quot;href&quot;) });</b>
+<i>987</i>&nbsp;            }
+<b class="nc"><i>988</i>&nbsp;        }</b>
+<b class="nc"><i>989</i>&nbsp;        else if (isFallbackElement(element)) {</b>
+<b class="nc"><i>990</i>&nbsp;            this.handleFallbackElement();</b>
+<i>991</i>&nbsp;        }
+<b class="nc"><i>992</i>&nbsp;        else if (hasXIncludeNamespace(element)) {</b>
+<b class="nc"><i>993</i>&nbsp;            if (getSawInclude(fDepth - 1)) {</b>
+<b class="nc"><i>994</i>&nbsp;                reportFatalError(</b>
+<i>995</i>&nbsp;                    &quot;IncludeChild&quot;,
+<i>996</i>&nbsp;                    new Object[] { element.rawname });
+<i>997</i>&nbsp;            }
+<b class="nc"><i>998</i>&nbsp;            if (getSawFallback(fDepth - 1)) {</b>
+<b class="nc"><i>999</i>&nbsp;                reportFatalError(</b>
+<i>1000</i>&nbsp;                    &quot;FallbackChild&quot;,
+<i>1001</i>&nbsp;                    new Object[] { element.rawname });
+<i>1002</i>&nbsp;            }
+<b class="nc"><i>1003</i>&nbsp;            if (getState() == STATE_NORMAL_PROCESSING) {</b>
+<b class="nc"><i>1004</i>&nbsp;                if (fResultDepth == 0) {</b>
+<b class="nc"><i>1005</i>&nbsp;                    checkMultipleRootElements();</b>
+<i>1006</i>&nbsp;                }
+<b class="nc"><i>1007</i>&nbsp;                if (fDocumentHandler != null) {</b>
+<b class="nc"><i>1008</i>&nbsp;                    augs = modifyAugmentations(augs);</b>
+<b class="nc"><i>1009</i>&nbsp;                    attributes = processAttributes(attributes);</b>
+<b class="nc"><i>1010</i>&nbsp;                    fDocumentHandler.emptyElement(element, attributes, augs);</b>
+<i>1011</i>&nbsp;                }
+<i>1012</i>&nbsp;            }
+<i>1013</i>&nbsp;        }
+<b class="nc"><i>1014</i>&nbsp;        else if (getState() == STATE_NORMAL_PROCESSING) {</b>
+<b class="nc"><i>1015</i>&nbsp;            if (fResultDepth == 0) {</b>
+<b class="nc"><i>1016</i>&nbsp;                checkMultipleRootElements();</b>
+<i>1017</i>&nbsp;            }
+<b class="nc"><i>1018</i>&nbsp;            if (fDocumentHandler != null) {</b>
+<b class="nc"><i>1019</i>&nbsp;                augs = modifyAugmentations(augs);</b>
+<b class="nc"><i>1020</i>&nbsp;                attributes = processAttributes(attributes);</b>
+<b class="nc"><i>1021</i>&nbsp;                fDocumentHandler.emptyElement(element, attributes, augs);</b>
+<i>1022</i>&nbsp;            }
+<i>1023</i>&nbsp;        }
+<i>1024</i>&nbsp;        // reset the out of scope stack elements
+<b class="nc"><i>1025</i>&nbsp;        setSawFallback(fDepth + 1, false);</b>
+<b class="nc"><i>1026</i>&nbsp;        setSawInclude(fDepth, false);</b>
+<i>1027</i>&nbsp;
+<i>1028</i>&nbsp;        // check if an xml:base has gone out of scope
+<b class="nc"><i>1029</i>&nbsp;        if (fBaseURIScope.size() &gt; 0 &amp;&amp; fDepth == fBaseURIScope.peek()) {</b>
+<i>1030</i>&nbsp;            // pop the values from the stack
+<b class="nc"><i>1031</i>&nbsp;            restoreBaseURI();</b>
+<i>1032</i>&nbsp;        }
+<b class="nc"><i>1033</i>&nbsp;        fDepth--;</b>
+<i>1034</i>&nbsp;    }
+<i>1035</i>&nbsp;
+<i>1036</i>&nbsp;    @Override
+<i>1037</i>&nbsp;    public void endElement(QName element, Augmentations augs)
+<i>1038</i>&nbsp;        throws XNIException {
+<i>1039</i>&nbsp;
+<b class="nc"><i>1040</i>&nbsp;        if (isIncludeElement(element)) {</b>
+<i>1041</i>&nbsp;            // if we&#39;re ending an include element, and we were expecting a fallback
+<i>1042</i>&nbsp;            // we check to see if the children of this include element contained a fallback
+<b class="nc"><i>1043</i>&nbsp;            if (getState() == STATE_EXPECT_FALLBACK</b>
+<b class="nc"><i>1044</i>&nbsp;                &amp;&amp; !getSawFallback(fDepth + 1)) {</b>
+<b class="nc"><i>1045</i>&nbsp;                reportFatalError(&quot;NoFallback&quot;,</b>
+<i>1046</i>&nbsp;                    new Object[] { &quot;unknown&quot; });
+<i>1047</i>&nbsp;            }
+<i>1048</i>&nbsp;        }
+<b class="nc"><i>1049</i>&nbsp;        if (isFallbackElement(element)) {</b>
+<i>1050</i>&nbsp;            // the state would have been set to normal processing if we were expecting the fallback element
+<i>1051</i>&nbsp;            // now that we&#39;re done processing it, we should ignore all the other children of the include element
+<b class="nc"><i>1052</i>&nbsp;            if (getState() == STATE_NORMAL_PROCESSING) {</b>
+<b class="nc"><i>1053</i>&nbsp;                setState(STATE_IGNORE);</b>
+<i>1054</i>&nbsp;            }
+<i>1055</i>&nbsp;        }
+<b class="nc"><i>1056</i>&nbsp;        else if (getState() == STATE_NORMAL_PROCESSING) {</b>
+<b class="nc"><i>1057</i>&nbsp;            --fResultDepth;</b>
+<b class="nc"><i>1058</i>&nbsp;            if (fDocumentHandler != null) {</b>
+<b class="nc"><i>1059</i>&nbsp;                fDocumentHandler.endElement(element, augs);</b>
+<i>1060</i>&nbsp;            }
+<i>1061</i>&nbsp;        }
+<i>1062</i>&nbsp;
+<i>1063</i>&nbsp;        // reset the out of scope stack elements
+<b class="nc"><i>1064</i>&nbsp;        setSawFallback(fDepth + 1, false);</b>
+<b class="nc"><i>1065</i>&nbsp;        setSawInclude(fDepth, false);</b>
+<i>1066</i>&nbsp;
+<i>1067</i>&nbsp;        // check if an xml:base has gone out of scope
+<b class="nc"><i>1068</i>&nbsp;        if (fBaseURIScope.size() &gt; 0 &amp;&amp; fDepth == fBaseURIScope.peek()) {</b>
+<i>1069</i>&nbsp;            // pop the values from the stack
+<b class="nc"><i>1070</i>&nbsp;            restoreBaseURI();</b>
+<i>1071</i>&nbsp;        }
+<i>1072</i>&nbsp;
+<i>1073</i>&nbsp;        // check if an xml:lang has gone out of scope
+<b class="nc"><i>1074</i>&nbsp;        if (fLanguageScope.size() &gt; 0 &amp;&amp; fDepth == fLanguageScope.peek()) {</b>
+<i>1075</i>&nbsp;            // pop the language from the stack
+<b class="nc"><i>1076</i>&nbsp;            fCurrentLanguage = restoreLanguage();</b>
+<i>1077</i>&nbsp;        }
+<i>1078</i>&nbsp;
+<b class="nc"><i>1079</i>&nbsp;        fDepth--;</b>
+<i>1080</i>&nbsp;    }
+<i>1081</i>&nbsp;
+<i>1082</i>&nbsp;    @Override
+<i>1083</i>&nbsp;    public void startGeneralEntity(
+<i>1084</i>&nbsp;        String name,
+<i>1085</i>&nbsp;        XMLResourceIdentifier resId,
+<i>1086</i>&nbsp;        String encoding,
+<i>1087</i>&nbsp;        Augmentations augs)
+<i>1088</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1089</i>&nbsp;        if (getState() == STATE_NORMAL_PROCESSING) {</b>
+<b class="nc"><i>1090</i>&nbsp;            if (fResultDepth == 0) {</b>
+<b class="nc"><i>1091</i>&nbsp;                if (augs != null &amp;&amp; Boolean.TRUE.equals(augs.getItem(Constants.ENTITY_SKIPPED))) {</b>
+<b class="nc"><i>1092</i>&nbsp;                    reportFatalError(&quot;UnexpandedEntityReferenceIllegal&quot;);</b>
+<i>1093</i>&nbsp;                }
+<i>1094</i>&nbsp;            }
+<b class="nc"><i>1095</i>&nbsp;            else if (fDocumentHandler != null) {</b>
+<b class="nc"><i>1096</i>&nbsp;                fDocumentHandler.startGeneralEntity(name, resId, encoding, augs);</b>
+<i>1097</i>&nbsp;            }
+<i>1098</i>&nbsp;        }
+<i>1099</i>&nbsp;    }
+<i>1100</i>&nbsp;
+<i>1101</i>&nbsp;    @Override
+<i>1102</i>&nbsp;    public void textDecl(String version, String encoding, Augmentations augs)
+<i>1103</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1104</i>&nbsp;        if (fDocumentHandler != null</b>
+<b class="nc"><i>1105</i>&nbsp;            &amp;&amp; getState() == STATE_NORMAL_PROCESSING) {</b>
+<b class="nc"><i>1106</i>&nbsp;            fDocumentHandler.textDecl(version, encoding, augs);</b>
+<i>1107</i>&nbsp;        }
+<i>1108</i>&nbsp;    }
+<i>1109</i>&nbsp;
+<i>1110</i>&nbsp;    @Override
+<i>1111</i>&nbsp;    public void endGeneralEntity(String name, Augmentations augs)
+<i>1112</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1113</i>&nbsp;        if (fDocumentHandler != null</b>
+<b class="nc"><i>1114</i>&nbsp;            &amp;&amp; getState() == STATE_NORMAL_PROCESSING</b>
+<i>1115</i>&nbsp;            &amp;&amp; fResultDepth != 0) {
+<b class="nc"><i>1116</i>&nbsp;            fDocumentHandler.endGeneralEntity(name, augs);</b>
+<i>1117</i>&nbsp;        }
+<i>1118</i>&nbsp;    }
+<i>1119</i>&nbsp;
+<i>1120</i>&nbsp;    @Override
+<i>1121</i>&nbsp;    public void characters(XMLString text, Augmentations augs)
+<i>1122</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1123</i>&nbsp;        if (getState() == STATE_NORMAL_PROCESSING) {</b>
+<b class="nc"><i>1124</i>&nbsp;            if (fResultDepth == 0) {</b>
+<b class="nc"><i>1125</i>&nbsp;                checkWhitespace(text);</b>
+<i>1126</i>&nbsp;            }
+<b class="nc"><i>1127</i>&nbsp;            else if (fDocumentHandler != null) {</b>
+<i>1128</i>&nbsp;                // we need to change the depth like this so that modifyAugmentations() works
+<b class="nc"><i>1129</i>&nbsp;                fDepth++;</b>
+<b class="nc"><i>1130</i>&nbsp;                augs = modifyAugmentations(augs);</b>
+<b class="nc"><i>1131</i>&nbsp;                fDocumentHandler.characters(text, augs);</b>
+<b class="nc"><i>1132</i>&nbsp;                fDepth--;</b>
+<i>1133</i>&nbsp;            }
+<i>1134</i>&nbsp;        }
+<i>1135</i>&nbsp;    }
+<i>1136</i>&nbsp;
+<i>1137</i>&nbsp;    @Override
+<i>1138</i>&nbsp;    public void ignorableWhitespace(XMLString text, Augmentations augs)
+<i>1139</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1140</i>&nbsp;        if (fDocumentHandler != null</b>
+<b class="nc"><i>1141</i>&nbsp;            &amp;&amp; getState() == STATE_NORMAL_PROCESSING</b>
+<i>1142</i>&nbsp;            &amp;&amp; fResultDepth != 0) {
+<b class="nc"><i>1143</i>&nbsp;            fDocumentHandler.ignorableWhitespace(text, augs);</b>
+<i>1144</i>&nbsp;        }
+<i>1145</i>&nbsp;    }
+<i>1146</i>&nbsp;
+<i>1147</i>&nbsp;    @Override
+<i>1148</i>&nbsp;    public void startCDATA(Augmentations augs) throws XNIException {
+<b class="nc"><i>1149</i>&nbsp;        if (fDocumentHandler != null</b>
+<b class="nc"><i>1150</i>&nbsp;            &amp;&amp; getState() == STATE_NORMAL_PROCESSING</b>
+<i>1151</i>&nbsp;            &amp;&amp; fResultDepth != 0) {
+<b class="nc"><i>1152</i>&nbsp;            fDocumentHandler.startCDATA(augs);</b>
+<i>1153</i>&nbsp;        }
+<i>1154</i>&nbsp;    }
+<i>1155</i>&nbsp;
+<i>1156</i>&nbsp;    @Override
+<i>1157</i>&nbsp;    public void endCDATA(Augmentations augs) throws XNIException {
+<b class="nc"><i>1158</i>&nbsp;        if (fDocumentHandler != null</b>
+<b class="nc"><i>1159</i>&nbsp;            &amp;&amp; getState() == STATE_NORMAL_PROCESSING</b>
+<i>1160</i>&nbsp;            &amp;&amp; fResultDepth != 0) {
+<b class="nc"><i>1161</i>&nbsp;            fDocumentHandler.endCDATA(augs);</b>
+<i>1162</i>&nbsp;        }
+<i>1163</i>&nbsp;    }
+<i>1164</i>&nbsp;
+<i>1165</i>&nbsp;    @Override
+<i>1166</i>&nbsp;    public void endDocument(Augmentations augs) throws XNIException {
+<b class="nc"><i>1167</i>&nbsp;        if (isRootDocument()) {</b>
+<b class="nc"><i>1168</i>&nbsp;            if (!fSeenRootElement) {</b>
+<b class="nc"><i>1169</i>&nbsp;                reportFatalError(&quot;RootElementRequired&quot;);</b>
+<i>1170</i>&nbsp;            }
+<b class="nc"><i>1171</i>&nbsp;            if (fDocumentHandler != null) {</b>
+<b class="nc"><i>1172</i>&nbsp;                fDocumentHandler.endDocument(augs);</b>
+<i>1173</i>&nbsp;            }
+<i>1174</i>&nbsp;        }
+<i>1175</i>&nbsp;    }
+<i>1176</i>&nbsp;
+<i>1177</i>&nbsp;    @Override
+<i>1178</i>&nbsp;    public void setDocumentSource(XMLDocumentSource source) {
+<b class="nc"><i>1179</i>&nbsp;        fDocumentSource = source;</b>
+<i>1180</i>&nbsp;    }
+<i>1181</i>&nbsp;
+<i>1182</i>&nbsp;    @Override
+<i>1183</i>&nbsp;    public XMLDocumentSource getDocumentSource() {
+<b class="nc"><i>1184</i>&nbsp;        return fDocumentSource;</b>
+<i>1185</i>&nbsp;    }
+<i>1186</i>&nbsp;
+<i>1187</i>&nbsp;    // DTDHandler methods
+<i>1188</i>&nbsp;    // We are only interested in the notation and unparsed entity declarations,
+<i>1189</i>&nbsp;    // the rest we just pass on
+<i>1190</i>&nbsp;
+<i>1191</i>&nbsp;    /* (non-Javadoc)
+<i>1192</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#attributeDecl(java.lang.String, java.lang.String, java.lang.String, java.lang.String[], java.lang.String, com.sun.org.apache.xerces.internal.xni.XMLString, com.sun.org.apache.xerces.internal.xni.XMLString, com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1193</i>&nbsp;     */
+<i>1194</i>&nbsp;    @Override
+<i>1195</i>&nbsp;    public void attributeDecl(
+<i>1196</i>&nbsp;        String elementName,
+<i>1197</i>&nbsp;        String attributeName,
+<i>1198</i>&nbsp;        String type,
+<i>1199</i>&nbsp;        String[] enumeration,
+<i>1200</i>&nbsp;        String defaultType,
+<i>1201</i>&nbsp;        XMLString defaultValue,
+<i>1202</i>&nbsp;        XMLString nonNormalizedDefaultValue,
+<i>1203</i>&nbsp;        Augmentations augmentations)
+<i>1204</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1205</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1206</i>&nbsp;            fDTDHandler.attributeDecl(</b>
+<i>1207</i>&nbsp;                elementName,
+<i>1208</i>&nbsp;                attributeName,
+<i>1209</i>&nbsp;                type,
+<i>1210</i>&nbsp;                enumeration,
+<i>1211</i>&nbsp;                defaultType,
+<i>1212</i>&nbsp;                defaultValue,
+<i>1213</i>&nbsp;                nonNormalizedDefaultValue,
+<i>1214</i>&nbsp;                augmentations);
+<i>1215</i>&nbsp;        }
+<i>1216</i>&nbsp;    }
+<i>1217</i>&nbsp;
+<i>1218</i>&nbsp;    /* (non-Javadoc)
+<i>1219</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#elementDecl(java.lang.String, java.lang.String, com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1220</i>&nbsp;     */
+<i>1221</i>&nbsp;    @Override
+<i>1222</i>&nbsp;    public void elementDecl(
+<i>1223</i>&nbsp;        String name,
+<i>1224</i>&nbsp;        String contentModel,
+<i>1225</i>&nbsp;        Augmentations augmentations)
+<i>1226</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1227</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1228</i>&nbsp;            fDTDHandler.elementDecl(name, contentModel, augmentations);</b>
+<i>1229</i>&nbsp;        }
+<i>1230</i>&nbsp;    }
+<i>1231</i>&nbsp;
+<i>1232</i>&nbsp;    /* (non-Javadoc)
+<i>1233</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#endAttlist(com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1234</i>&nbsp;     */
+<i>1235</i>&nbsp;    @Override
+<i>1236</i>&nbsp;    public void endAttlist(Augmentations augmentations) throws XNIException {
+<b class="nc"><i>1237</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1238</i>&nbsp;            fDTDHandler.endAttlist(augmentations);</b>
+<i>1239</i>&nbsp;        }
+<i>1240</i>&nbsp;    }
+<i>1241</i>&nbsp;
+<i>1242</i>&nbsp;    /* (non-Javadoc)
+<i>1243</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#endConditional(com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1244</i>&nbsp;     */
+<i>1245</i>&nbsp;    @Override
+<i>1246</i>&nbsp;    public void endConditional(Augmentations augmentations)
+<i>1247</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1248</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1249</i>&nbsp;            fDTDHandler.endConditional(augmentations);</b>
+<i>1250</i>&nbsp;        }
+<i>1251</i>&nbsp;    }
+<i>1252</i>&nbsp;
+<i>1253</i>&nbsp;    /* (non-Javadoc)
+<i>1254</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#endDTD(com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1255</i>&nbsp;     */
+<i>1256</i>&nbsp;    @Override
+<i>1257</i>&nbsp;    public void endDTD(Augmentations augmentations) throws XNIException {
+<b class="nc"><i>1258</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1259</i>&nbsp;            fDTDHandler.endDTD(augmentations);</b>
+<i>1260</i>&nbsp;        }
+<b class="nc"><i>1261</i>&nbsp;        fInDTD = false;</b>
+<i>1262</i>&nbsp;    }
+<i>1263</i>&nbsp;
+<i>1264</i>&nbsp;    /* (non-Javadoc)
+<i>1265</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#endExternalSubset(com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1266</i>&nbsp;     */
+<i>1267</i>&nbsp;    @Override
+<i>1268</i>&nbsp;    public void endExternalSubset(Augmentations augmentations)
+<i>1269</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1270</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1271</i>&nbsp;            fDTDHandler.endExternalSubset(augmentations);</b>
+<i>1272</i>&nbsp;        }
+<i>1273</i>&nbsp;    }
+<i>1274</i>&nbsp;
+<i>1275</i>&nbsp;    /* (non-Javadoc)
+<i>1276</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#endParameterEntity(java.lang.String, com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1277</i>&nbsp;     */
+<i>1278</i>&nbsp;    @Override
+<i>1279</i>&nbsp;    public void endParameterEntity(String name, Augmentations augmentations)
+<i>1280</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1281</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1282</i>&nbsp;            fDTDHandler.endParameterEntity(name, augmentations);</b>
+<i>1283</i>&nbsp;        }
+<i>1284</i>&nbsp;    }
+<i>1285</i>&nbsp;
+<i>1286</i>&nbsp;    /* (non-Javadoc)
+<i>1287</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#externalEntityDecl(java.lang.String, com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier, com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1288</i>&nbsp;     */
+<i>1289</i>&nbsp;    @Override
+<i>1290</i>&nbsp;    public void externalEntityDecl(
+<i>1291</i>&nbsp;        String name,
+<i>1292</i>&nbsp;        XMLResourceIdentifier identifier,
+<i>1293</i>&nbsp;        Augmentations augmentations)
+<i>1294</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1295</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1296</i>&nbsp;            fDTDHandler.externalEntityDecl(name, identifier, augmentations);</b>
+<i>1297</i>&nbsp;        }
+<i>1298</i>&nbsp;    }
+<i>1299</i>&nbsp;
+<i>1300</i>&nbsp;    /* (non-Javadoc)
+<i>1301</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#getDTDSource()
+<i>1302</i>&nbsp;     */
+<i>1303</i>&nbsp;    @Override
+<i>1304</i>&nbsp;    public XMLDTDSource getDTDSource() {
+<b class="nc"><i>1305</i>&nbsp;        return fDTDSource;</b>
+<i>1306</i>&nbsp;    }
+<i>1307</i>&nbsp;
+<i>1308</i>&nbsp;    /* (non-Javadoc)
+<i>1309</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#ignoredCharacters(com.sun.org.apache.xerces.internal.xni.XMLString, com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1310</i>&nbsp;     */
+<i>1311</i>&nbsp;    @Override
+<i>1312</i>&nbsp;    public void ignoredCharacters(XMLString text, Augmentations augmentations)
+<i>1313</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1314</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1315</i>&nbsp;            fDTDHandler.ignoredCharacters(text, augmentations);</b>
+<i>1316</i>&nbsp;        }
+<i>1317</i>&nbsp;    }
+<i>1318</i>&nbsp;
+<i>1319</i>&nbsp;    /* (non-Javadoc)
+<i>1320</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#internalEntityDecl(java.lang.String, com.sun.org.apache.xerces.internal.xni.XMLString, com.sun.org.apache.xerces.internal.xni.XMLString, com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1321</i>&nbsp;     */
+<i>1322</i>&nbsp;    @Override
+<i>1323</i>&nbsp;    public void internalEntityDecl(
+<i>1324</i>&nbsp;        String name,
+<i>1325</i>&nbsp;        XMLString text,
+<i>1326</i>&nbsp;        XMLString nonNormalizedText,
+<i>1327</i>&nbsp;        Augmentations augmentations)
+<i>1328</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1329</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1330</i>&nbsp;            fDTDHandler.internalEntityDecl(</b>
+<i>1331</i>&nbsp;                name,
+<i>1332</i>&nbsp;                text,
+<i>1333</i>&nbsp;                nonNormalizedText,
+<i>1334</i>&nbsp;                augmentations);
+<i>1335</i>&nbsp;        }
+<i>1336</i>&nbsp;    }
+<i>1337</i>&nbsp;
+<i>1338</i>&nbsp;    /* (non-Javadoc)
+<i>1339</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#notationDecl(java.lang.String, com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier, com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1340</i>&nbsp;     */
+<i>1341</i>&nbsp;    @Override
+<i>1342</i>&nbsp;    public void notationDecl(
+<i>1343</i>&nbsp;        String name,
+<i>1344</i>&nbsp;        XMLResourceIdentifier identifier,
+<i>1345</i>&nbsp;        Augmentations augmentations)
+<i>1346</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1347</i>&nbsp;        this.addNotation(name, identifier, augmentations);</b>
+<b class="nc"><i>1348</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1349</i>&nbsp;            fDTDHandler.notationDecl(name, identifier, augmentations);</b>
+<i>1350</i>&nbsp;        }
+<i>1351</i>&nbsp;    }
+<i>1352</i>&nbsp;
+<i>1353</i>&nbsp;    /* (non-Javadoc)
+<i>1354</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#setDTDSource(com.sun.org.apache.xerces.internal.xni.parser.XMLDTDSource)
+<i>1355</i>&nbsp;     */
+<i>1356</i>&nbsp;    @Override
+<i>1357</i>&nbsp;    public void setDTDSource(XMLDTDSource source) {
+<b class="nc"><i>1358</i>&nbsp;        fDTDSource = source;</b>
+<i>1359</i>&nbsp;    }
+<i>1360</i>&nbsp;
+<i>1361</i>&nbsp;    /* (non-Javadoc)
+<i>1362</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#startAttlist(java.lang.String, com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1363</i>&nbsp;     */
+<i>1364</i>&nbsp;    @Override
+<i>1365</i>&nbsp;    public void startAttlist(String elementName, Augmentations augmentations)
+<i>1366</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1367</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1368</i>&nbsp;            fDTDHandler.startAttlist(elementName, augmentations);</b>
+<i>1369</i>&nbsp;        }
+<i>1370</i>&nbsp;    }
+<i>1371</i>&nbsp;
+<i>1372</i>&nbsp;    /* (non-Javadoc)
+<i>1373</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#startConditional(short, com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1374</i>&nbsp;     */
+<i>1375</i>&nbsp;    @Override
+<i>1376</i>&nbsp;    public void startConditional(short type, Augmentations augmentations)
+<i>1377</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1378</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1379</i>&nbsp;            fDTDHandler.startConditional(type, augmentations);</b>
+<i>1380</i>&nbsp;        }
+<i>1381</i>&nbsp;    }
+<i>1382</i>&nbsp;
+<i>1383</i>&nbsp;    /* (non-Javadoc)
+<i>1384</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#startDTD(com.sun.org.apache.xerces.internal.xni.XMLLocator, com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1385</i>&nbsp;     */
+<i>1386</i>&nbsp;    @Override
+<i>1387</i>&nbsp;    public void startDTD(XMLLocator locator, Augmentations augmentations)
+<i>1388</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1389</i>&nbsp;        fInDTD = true;</b>
+<b class="nc"><i>1390</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1391</i>&nbsp;            fDTDHandler.startDTD(locator, augmentations);</b>
+<i>1392</i>&nbsp;        }
+<i>1393</i>&nbsp;    }
+<i>1394</i>&nbsp;
+<i>1395</i>&nbsp;    /* (non-Javadoc)
+<i>1396</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#startExternalSubset(com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier, com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1397</i>&nbsp;     */
+<i>1398</i>&nbsp;    @Override
+<i>1399</i>&nbsp;    public void startExternalSubset(
+<i>1400</i>&nbsp;        XMLResourceIdentifier identifier,
+<i>1401</i>&nbsp;        Augmentations augmentations)
+<i>1402</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1403</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1404</i>&nbsp;            fDTDHandler.startExternalSubset(identifier, augmentations);</b>
+<i>1405</i>&nbsp;        }
+<i>1406</i>&nbsp;    }
+<i>1407</i>&nbsp;
+<i>1408</i>&nbsp;    /* (non-Javadoc)
+<i>1409</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#startParameterEntity(java.lang.String, com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier, java.lang.String, com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1410</i>&nbsp;     */
+<i>1411</i>&nbsp;    @Override
+<i>1412</i>&nbsp;    public void startParameterEntity(
+<i>1413</i>&nbsp;        String name,
+<i>1414</i>&nbsp;        XMLResourceIdentifier identifier,
+<i>1415</i>&nbsp;        String encoding,
+<i>1416</i>&nbsp;        Augmentations augmentations)
+<i>1417</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1418</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1419</i>&nbsp;            fDTDHandler.startParameterEntity(</b>
+<i>1420</i>&nbsp;                name,
+<i>1421</i>&nbsp;                identifier,
+<i>1422</i>&nbsp;                encoding,
+<i>1423</i>&nbsp;                augmentations);
+<i>1424</i>&nbsp;        }
+<i>1425</i>&nbsp;    }
+<i>1426</i>&nbsp;
+<i>1427</i>&nbsp;    /* (non-Javadoc)
+<i>1428</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.XMLDTDHandler#unparsedEntityDecl(java.lang.String, com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier, java.lang.String, com.sun.org.apache.xerces.internal.xni.Augmentations)
+<i>1429</i>&nbsp;     */
+<i>1430</i>&nbsp;    @Override
+<i>1431</i>&nbsp;    public void unparsedEntityDecl(
+<i>1432</i>&nbsp;        String name,
+<i>1433</i>&nbsp;        XMLResourceIdentifier identifier,
+<i>1434</i>&nbsp;        String notation,
+<i>1435</i>&nbsp;        Augmentations augmentations)
+<i>1436</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1437</i>&nbsp;        this.addUnparsedEntity(name, identifier, notation, augmentations);</b>
+<b class="nc"><i>1438</i>&nbsp;        if (fDTDHandler != null) {</b>
+<b class="nc"><i>1439</i>&nbsp;            fDTDHandler.unparsedEntityDecl(</b>
+<i>1440</i>&nbsp;                name,
+<i>1441</i>&nbsp;                identifier,
+<i>1442</i>&nbsp;                notation,
+<i>1443</i>&nbsp;                augmentations);
+<i>1444</i>&nbsp;        }
+<i>1445</i>&nbsp;    }
+<i>1446</i>&nbsp;
+<i>1447</i>&nbsp;    /* (non-Javadoc)
+<i>1448</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.parser.XMLDTDSource#getDTDHandler()
+<i>1449</i>&nbsp;     */
+<i>1450</i>&nbsp;    @Override
+<i>1451</i>&nbsp;    public XMLDTDHandler getDTDHandler() {
+<b class="nc"><i>1452</i>&nbsp;        return fDTDHandler;</b>
+<i>1453</i>&nbsp;    }
+<i>1454</i>&nbsp;
+<i>1455</i>&nbsp;    /* (non-Javadoc)
+<i>1456</i>&nbsp;     * @see com.sun.org.apache.xerces.internal.xni.parser.XMLDTDSource#setDTDHandler(com.sun.org.apache.xerces.internal.xni.XMLDTDHandler)
+<i>1457</i>&nbsp;     */
+<i>1458</i>&nbsp;    @Override
+<i>1459</i>&nbsp;    public void setDTDHandler(XMLDTDHandler handler) {
+<b class="nc"><i>1460</i>&nbsp;        fDTDHandler = handler;</b>
+<i>1461</i>&nbsp;    }
+<i>1462</i>&nbsp;
+<i>1463</i>&nbsp;    // XIncludeHandler methods
+<i>1464</i>&nbsp;
+<i>1465</i>&nbsp;    private void setErrorReporter(XMLErrorReporter reporter) {
+<b class="nc"><i>1466</i>&nbsp;        fErrorReporter = reporter;</b>
+<b class="nc"><i>1467</i>&nbsp;        if (fErrorReporter != null) {</b>
+<b class="nc"><i>1468</i>&nbsp;            fErrorReporter.putMessageFormatter(</b>
+<i>1469</i>&nbsp;                XIncludeMessageFormatter.XINCLUDE_DOMAIN, fXIncludeMessageFormatter);
+<i>1470</i>&nbsp;            // this ensures the proper location is displayed in error messages
+<b class="nc"><i>1471</i>&nbsp;            if (fDocLocation != null) {</b>
+<b class="nc"><i>1472</i>&nbsp;                fErrorReporter.setDocumentLocator(fDocLocation);</b>
+<i>1473</i>&nbsp;            }
+<i>1474</i>&nbsp;        }
+<i>1475</i>&nbsp;    }
+<i>1476</i>&nbsp;
+<i>1477</i>&nbsp;    protected void handleFallbackElement() {
+<b class="nc"><i>1478</i>&nbsp;        if (!getSawInclude(fDepth - 1)) {</b>
+<b class="nc"><i>1479</i>&nbsp;            if (getState() == STATE_IGNORE) {</b>
+<i>1480</i>&nbsp;                return;
+<i>1481</i>&nbsp;            }
+<b class="nc"><i>1482</i>&nbsp;            reportFatalError(&quot;FallbackParent&quot;);</b>
+<i>1483</i>&nbsp;        }
+<i>1484</i>&nbsp;
+<b class="nc"><i>1485</i>&nbsp;        setSawInclude(fDepth, false);</b>
+<b class="nc"><i>1486</i>&nbsp;        fNamespaceContext.setContextInvalid();</b>
+<i>1487</i>&nbsp;
+<b class="nc"><i>1488</i>&nbsp;        if (getSawFallback(fDepth)) {</b>
+<b class="nc"><i>1489</i>&nbsp;            reportFatalError(&quot;MultipleFallbacks&quot;);</b>
+<i>1490</i>&nbsp;        }
+<i>1491</i>&nbsp;        else {
+<b class="nc"><i>1492</i>&nbsp;            setSawFallback(fDepth, true);</b>
+<i>1493</i>&nbsp;        }
+<i>1494</i>&nbsp;
+<i>1495</i>&nbsp;        // Either the state is STATE_EXPECT_FALLBACK or it&#39;s STATE_IGNORE.
+<i>1496</i>&nbsp;        // If we&#39;re ignoring, we want to stay ignoring. But if we&#39;re expecting this fallback element,
+<i>1497</i>&nbsp;        // we want to signal that we should process the children.
+<b class="nc"><i>1498</i>&nbsp;        if (getState() == STATE_EXPECT_FALLBACK) {</b>
+<b class="nc"><i>1499</i>&nbsp;            setState(STATE_NORMAL_PROCESSING);</b>
+<i>1500</i>&nbsp;        }
+<i>1501</i>&nbsp;    }
+<i>1502</i>&nbsp;
+<i>1503</i>&nbsp;    protected boolean handleIncludeElement(XMLAttributes attributes)
+<i>1504</i>&nbsp;        throws XNIException {
+<b class="nc"><i>1505</i>&nbsp;        if (getSawInclude(fDepth - 1)) {</b>
+<b class="nc"><i>1506</i>&nbsp;            reportFatalError(&quot;IncludeChild&quot;, new Object[] { XINCLUDE_INCLUDE });</b>
+<i>1507</i>&nbsp;        }
+<b class="nc"><i>1508</i>&nbsp;        if (getState() == STATE_IGNORE) {</b>
+<b class="nc"><i>1509</i>&nbsp;            return true;</b>
+<i>1510</i>&nbsp;        }
+<b class="nc"><i>1511</i>&nbsp;        setSawInclude(fDepth, true);</b>
+<b class="nc"><i>1512</i>&nbsp;        fNamespaceContext.setContextInvalid();</b>
+<i>1513</i>&nbsp;
+<i>1514</i>&nbsp;        // TODO: does Java use IURIs by default?
+<i>1515</i>&nbsp;        //       [Definition: An internationalized URI reference, or IURI, is a URI reference that directly uses [Unicode] characters.]
+<i>1516</i>&nbsp;        // TODO: figure out what section 4.1.1 of the XInclude spec is talking about
+<i>1517</i>&nbsp;        //       has to do with disallowed ASCII character escaping
+<i>1518</i>&nbsp;        //       this ties in with the above IURI section, but I suspect Java already does it
+<i>1519</i>&nbsp;
+<b class="nc"><i>1520</i>&nbsp;        String href = attributes.getValue(XINCLUDE_ATTR_HREF);</b>
+<b class="nc"><i>1521</i>&nbsp;        String parse = attributes.getValue(XINCLUDE_ATTR_PARSE);</b>
+<b class="nc"><i>1522</i>&nbsp;        String xpointer =  attributes.getValue(XPOINTER);</b>
+<b class="nc"><i>1523</i>&nbsp;        String accept = attributes.getValue(XINCLUDE_ATTR_ACCEPT);</b>
+<b class="nc"><i>1524</i>&nbsp;        String acceptLanguage = attributes.getValue(XINCLUDE_ATTR_ACCEPT_LANGUAGE);</b>
+<i>1525</i>&nbsp;
+<b class="nc"><i>1526</i>&nbsp;        if (parse == null) {</b>
+<b class="nc"><i>1527</i>&nbsp;            parse = XINCLUDE_PARSE_XML;</b>
+<i>1528</i>&nbsp;        }
+<b class="nc"><i>1529</i>&nbsp;        if (href == null) {</b>
+<b class="nc"><i>1530</i>&nbsp;            href = XMLSymbols.EMPTY_STRING;</b>
+<i>1531</i>&nbsp;        }
+<b class="nc"><i>1532</i>&nbsp;        if (href.length() == 0 &amp;&amp; XINCLUDE_PARSE_XML.equals(parse)) {</b>
+<b class="nc"><i>1533</i>&nbsp;            if (xpointer == null) {</b>
+<b class="nc"><i>1534</i>&nbsp;                reportFatalError(&quot;XpointerMissing&quot;);</b>
+<i>1535</i>&nbsp;            }
+<i>1536</i>&nbsp;            else {
+<i>1537</i>&nbsp;                // When parse=&quot;xml&quot; and an xpointer is specified treat
+<i>1538</i>&nbsp;                // all absences of the href attribute as a resource error.
+<b class="nc"><i>1539</i>&nbsp;                Locale locale = (fErrorReporter != null) ? fErrorReporter.getLocale() : null;</b>
+<b class="nc"><i>1540</i>&nbsp;                String reason = fXIncludeMessageFormatter.formatMessage(locale, &quot;XPointerStreamability&quot;, null);</b>
+<b class="nc"><i>1541</i>&nbsp;                reportResourceError(&quot;XMLResourceError&quot;, new Object[] { href, reason });</b>
+<b class="nc"><i>1542</i>&nbsp;                return false;</b>
+<i>1543</i>&nbsp;            }
+<i>1544</i>&nbsp;        }
+<i>1545</i>&nbsp;
+<b class="nc"><i>1546</i>&nbsp;        URI hrefURI = null;</b>
+<i>1547</i>&nbsp;
+<i>1548</i>&nbsp;        // Check whether href is correct and perform escaping as per section 4.1.1 of the XInclude spec.
+<i>1549</i>&nbsp;        // Report fatal error if the href value contains a fragment identifier or if the value after
+<i>1550</i>&nbsp;        // escaping is a syntactically invalid URI or IRI.
+<i>1551</i>&nbsp;        try {
+<b class="nc"><i>1552</i>&nbsp;            hrefURI = new URI(href, true);</b>
+<b class="nc"><i>1553</i>&nbsp;            if (hrefURI.getFragment() != null) {</b>
+<b class="nc"><i>1554</i>&nbsp;                reportFatalError(&quot;HrefFragmentIdentifierIllegal&quot;, new Object[] {href});</b>
+<i>1555</i>&nbsp;            }
+<i>1556</i>&nbsp;        }
+<b class="nc"><i>1557</i>&nbsp;        catch (URI.MalformedURIException exc) {</b>
+<b class="nc"><i>1558</i>&nbsp;            String newHref = escapeHref(href);</b>
+<b class="nc"><i>1559</i>&nbsp;            if (href != newHref) {</b>
+<b class="nc"><i>1560</i>&nbsp;                href = newHref;</b>
+<i>1561</i>&nbsp;                try {
+<b class="nc"><i>1562</i>&nbsp;                    hrefURI = new URI(href, true);</b>
+<b class="nc"><i>1563</i>&nbsp;                    if (hrefURI.getFragment() != null) {</b>
+<b class="nc"><i>1564</i>&nbsp;                        reportFatalError(&quot;HrefFragmentIdentifierIllegal&quot;, new Object[] {href});</b>
+<i>1565</i>&nbsp;                    }
+<i>1566</i>&nbsp;                }
+<b class="nc"><i>1567</i>&nbsp;                catch (URI.MalformedURIException exc2) {</b>
+<b class="nc"><i>1568</i>&nbsp;                    reportFatalError(&quot;HrefSyntacticallyInvalid&quot;, new Object[] {href});</b>
+<b class="nc"><i>1569</i>&nbsp;                }</b>
+<i>1570</i>&nbsp;            }
+<i>1571</i>&nbsp;            else {
+<b class="nc"><i>1572</i>&nbsp;                reportFatalError(&quot;HrefSyntacticallyInvalid&quot;, new Object[] {href});</b>
+<i>1573</i>&nbsp;            }
+<b class="nc"><i>1574</i>&nbsp;        }</b>
+<i>1575</i>&nbsp;
+<i>1576</i>&nbsp;        // Verify that if an accept and/or an accept-language attribute exist
+<i>1577</i>&nbsp;        // that the value(s) don&#39;t contain disallowed characters.
+<b class="nc"><i>1578</i>&nbsp;        if (accept != null &amp;&amp; !isValidInHTTPHeader(accept)) {</b>
+<b class="nc"><i>1579</i>&nbsp;            reportFatalError(&quot;AcceptMalformed&quot;, null);</b>
+<b class="nc"><i>1580</i>&nbsp;            accept = null;</b>
+<i>1581</i>&nbsp;        }
+<b class="nc"><i>1582</i>&nbsp;        if (acceptLanguage != null &amp;&amp; !isValidInHTTPHeader(acceptLanguage)) {</b>
+<b class="nc"><i>1583</i>&nbsp;            reportFatalError(&quot;AcceptLanguageMalformed&quot;, null);</b>
+<b class="nc"><i>1584</i>&nbsp;            acceptLanguage = null;</b>
+<i>1585</i>&nbsp;        }
+<i>1586</i>&nbsp;
+<b class="nc"><i>1587</i>&nbsp;        XMLInputSource includedSource = null;</b>
+<b class="nc"><i>1588</i>&nbsp;        if (fEntityResolver != null) {</b>
+<i>1589</i>&nbsp;            try {
+<b class="nc"><i>1590</i>&nbsp;                XMLResourceIdentifier resourceIdentifier =</b>
+<i>1591</i>&nbsp;                    new XMLResourceIdentifierImpl(
+<i>1592</i>&nbsp;                        null,
+<i>1593</i>&nbsp;                        href,
+<b class="nc"><i>1594</i>&nbsp;                        fCurrentBaseURI.getExpandedSystemId(),</b>
+<b class="nc"><i>1595</i>&nbsp;                        XMLEntityManager.expandSystemId(</b>
+<i>1596</i>&nbsp;                            href,
+<b class="nc"><i>1597</i>&nbsp;                            fCurrentBaseURI.getExpandedSystemId(),</b>
+<i>1598</i>&nbsp;                            false));
+<i>1599</i>&nbsp;
+<b class="nc"><i>1600</i>&nbsp;                includedSource =</b>
+<b class="nc"><i>1601</i>&nbsp;                    fEntityResolver.resolveEntity(resourceIdentifier);</b>
+<i>1602</i>&nbsp;
+<b class="nc"><i>1603</i>&nbsp;                if (includedSource != null &amp;&amp;</b>
+<i>1604</i>&nbsp;                    !(includedSource instanceof HTTPInputSource) &amp;&amp;
+<i>1605</i>&nbsp;                    (accept != null || acceptLanguage != null) &amp;&amp;
+<b class="nc"><i>1606</i>&nbsp;                    includedSource.getCharacterStream() == null &amp;&amp;</b>
+<b class="nc"><i>1607</i>&nbsp;                    includedSource.getByteStream() == null) {</b>
+<i>1608</i>&nbsp;
+<b class="nc"><i>1609</i>&nbsp;                    includedSource = createInputSource(includedSource.getPublicId(), includedSource.getSystemId(),</b>
+<b class="nc"><i>1610</i>&nbsp;                        includedSource.getBaseSystemId(), accept, acceptLanguage);</b>
+<i>1611</i>&nbsp;                }
+<i>1612</i>&nbsp;            }
+<b class="nc"><i>1613</i>&nbsp;            catch (IOException e) {</b>
+<b class="nc"><i>1614</i>&nbsp;                reportResourceError(</b>
+<i>1615</i>&nbsp;                    &quot;XMLResourceError&quot;,
+<b class="nc"><i>1616</i>&nbsp;                    new Object[] { href, e.getMessage()});</b>
+<b class="nc"><i>1617</i>&nbsp;                return false;</b>
+<b class="nc"><i>1618</i>&nbsp;            }</b>
+<i>1619</i>&nbsp;        }
+<i>1620</i>&nbsp;
+<b class="nc"><i>1621</i>&nbsp;        if (includedSource == null) {</b>
+<i>1622</i>&nbsp;            // setup an HTTPInputSource if either of the content negotation attributes were specified.
+<b class="nc"><i>1623</i>&nbsp;            if (accept != null || acceptLanguage != null) {</b>
+<b class="nc"><i>1624</i>&nbsp;                includedSource = createInputSource(null, href, fCurrentBaseURI.getExpandedSystemId(), accept, acceptLanguage);</b>
+<i>1625</i>&nbsp;            }
+<i>1626</i>&nbsp;            else {
+<b class="nc"><i>1627</i>&nbsp;                includedSource = new XMLInputSource(null, href, fCurrentBaseURI.getExpandedSystemId());</b>
+<i>1628</i>&nbsp;            }
+<i>1629</i>&nbsp;        }
+<i>1630</i>&nbsp;
+<b class="nc"><i>1631</i>&nbsp;        if (parse.equals(XINCLUDE_PARSE_XML)) {</b>
+<i>1632</i>&nbsp;            // Instead of always creating a new configuration, the first one can be reused
+<b class="nc"><i>1633</i>&nbsp;            if ((xpointer != null &amp;&amp; fXPointerChildConfig == null)</b>
+<i>1634</i>&nbsp;                        || (xpointer == null &amp;&amp; fXIncludeChildConfig == null) ) {
+<i>1635</i>&nbsp;
+<b class="nc"><i>1636</i>&nbsp;                String parserName = XINCLUDE_DEFAULT_CONFIGURATION;</b>
+<b class="nc"><i>1637</i>&nbsp;                if (xpointer != null)</b>
+<b class="nc"><i>1638</i>&nbsp;                        parserName = &quot;com.sun.org.apache.xerces.internal.parsers.XPointerParserConfiguration&quot;;</b>
+<i>1639</i>&nbsp;
+<b class="nc"><i>1640</i>&nbsp;                fChildConfig =</b>
+<b class="nc"><i>1641</i>&nbsp;                    (XMLParserConfiguration)ObjectFactory.newInstance(</b>
+<i>1642</i>&nbsp;                        parserName,
+<i>1643</i>&nbsp;                        true);
+<i>1644</i>&nbsp;
+<i>1645</i>&nbsp;                // use the same symbol table, error reporter, entity resolver, security manager and buffer size.
+<b class="nc"><i>1646</i>&nbsp;                if (fSymbolTable != null) fChildConfig.setProperty(SYMBOL_TABLE, fSymbolTable);</b>
+<b class="nc"><i>1647</i>&nbsp;                if (fErrorReporter != null) fChildConfig.setProperty(ERROR_REPORTER, fErrorReporter);</b>
+<b class="nc"><i>1648</i>&nbsp;                if (fEntityResolver != null) fChildConfig.setProperty(ENTITY_RESOLVER, fEntityResolver);</b>
+<b class="nc"><i>1649</i>&nbsp;                fChildConfig.setProperty(SECURITY_MANAGER, fSecurityManager);</b>
+<b class="nc"><i>1650</i>&nbsp;                fChildConfig.setProperty(XML_SECURITY_PROPERTY_MANAGER, fSecurityPropertyMgr);</b>
+<b class="nc"><i>1651</i>&nbsp;                fChildConfig.setProperty(BUFFER_SIZE, new Integer(fBufferSize));</b>
+<i>1652</i>&nbsp;
+<i>1653</i>&nbsp;                // features must be copied to child configuration
+<b class="nc"><i>1654</i>&nbsp;                fNeedCopyFeatures = true;</b>
+<i>1655</i>&nbsp;
+<i>1656</i>&nbsp;                // use the same namespace context
+<b class="nc"><i>1657</i>&nbsp;                fChildConfig.setProperty(</b>
+<i>1658</i>&nbsp;                    Constants.XERCES_PROPERTY_PREFIX
+<i>1659</i>&nbsp;                        + Constants.NAMESPACE_CONTEXT_PROPERTY,
+<i>1660</i>&nbsp;                    fNamespaceContext);
+<i>1661</i>&nbsp;
+<b class="nc"><i>1662</i>&nbsp;                fChildConfig.setFeature(</b>
+<i>1663</i>&nbsp;                            XINCLUDE_FIXUP_BASE_URIS,
+<i>1664</i>&nbsp;                            fFixupBaseURIs);
+<i>1665</i>&nbsp;
+<b class="nc"><i>1666</i>&nbsp;                fChildConfig.setFeature(</b>
+<i>1667</i>&nbsp;                            XINCLUDE_FIXUP_LANGUAGE,
+<i>1668</i>&nbsp;                            fFixupLanguage);
+<i>1669</i>&nbsp;
+<i>1670</i>&nbsp;
+<i>1671</i>&nbsp;                // If the xpointer attribute is present
+<b class="nc"><i>1672</i>&nbsp;                if (xpointer != null ) {</b>
+<i>1673</i>&nbsp;
+<b class="nc"><i>1674</i>&nbsp;                    XPointerHandler newHandler =</b>
+<b class="nc"><i>1675</i>&nbsp;                        (XPointerHandler)fChildConfig.getProperty(</b>
+<i>1676</i>&nbsp;                            Constants.XERCES_PROPERTY_PREFIX
+<i>1677</i>&nbsp;                                + Constants.XPOINTER_HANDLER_PROPERTY);
+<i>1678</i>&nbsp;
+<b class="nc"><i>1679</i>&nbsp;                        fXPtrProcessor = newHandler;</b>
+<i>1680</i>&nbsp;
+<i>1681</i>&nbsp;                        // ???
+<b class="nc"><i>1682</i>&nbsp;                        ((XPointerHandler)fXPtrProcessor).setProperty(</b>
+<i>1683</i>&nbsp;                            Constants.XERCES_PROPERTY_PREFIX
+<i>1684</i>&nbsp;                            + Constants.NAMESPACE_CONTEXT_PROPERTY,
+<i>1685</i>&nbsp;                        fNamespaceContext);
+<i>1686</i>&nbsp;
+<b class="nc"><i>1687</i>&nbsp;                    ((XPointerHandler)fXPtrProcessor).setProperty(XINCLUDE_FIXUP_BASE_URIS,</b>
+<b class="nc"><i>1688</i>&nbsp;                            fFixupBaseURIs);</b>
+<i>1689</i>&nbsp;
+<b class="nc"><i>1690</i>&nbsp;                    ((XPointerHandler)fXPtrProcessor).setProperty(</b>
+<b class="nc"><i>1691</i>&nbsp;                            XINCLUDE_FIXUP_LANGUAGE, fFixupLanguage);</b>
+<i>1692</i>&nbsp;
+<b class="nc"><i>1693</i>&nbsp;                    if (fErrorReporter != null)</b>
+<b class="nc"><i>1694</i>&nbsp;                        ((XPointerHandler)fXPtrProcessor).setProperty(ERROR_REPORTER, fErrorReporter);</b>
+<i>1695</i>&nbsp;                        // ???
+<i>1696</i>&nbsp;
+<b class="nc"><i>1697</i>&nbsp;                    newHandler.setParent(this);</b>
+<b class="nc"><i>1698</i>&nbsp;                    newHandler.setDocumentHandler(this.getDocumentHandler());</b>
+<b class="nc"><i>1699</i>&nbsp;                    fXPointerChildConfig = fChildConfig;</b>
+<b class="nc"><i>1700</i>&nbsp;                } else {</b>
+<b class="nc"><i>1701</i>&nbsp;                    XIncludeHandler newHandler =</b>
+<b class="nc"><i>1702</i>&nbsp;                        (XIncludeHandler)fChildConfig.getProperty(</b>
+<i>1703</i>&nbsp;                            Constants.XERCES_PROPERTY_PREFIX
+<i>1704</i>&nbsp;                                + Constants.XINCLUDE_HANDLER_PROPERTY);
+<i>1705</i>&nbsp;
+<b class="nc"><i>1706</i>&nbsp;                        newHandler.setParent(this);</b>
+<b class="nc"><i>1707</i>&nbsp;                    newHandler.setDocumentHandler(this.getDocumentHandler());</b>
+<b class="nc"><i>1708</i>&nbsp;                    fXIncludeChildConfig = fChildConfig;</b>
+<i>1709</i>&nbsp;                }
+<i>1710</i>&nbsp;            }
+<i>1711</i>&nbsp;
+<i>1712</i>&nbsp;            // If an xpointer attribute is present
+<b class="nc"><i>1713</i>&nbsp;            if (xpointer != null ) {</b>
+<b class="nc"><i>1714</i>&nbsp;                fChildConfig = fXPointerChildConfig ;</b>
+<i>1715</i>&nbsp;
+<i>1716</i>&nbsp;                // Parse the XPointer expression
+<i>1717</i>&nbsp;                try {
+<b class="nc"><i>1718</i>&nbsp;                    ((XPointerProcessor)fXPtrProcessor).parseXPointer(xpointer);</b>
+<i>1719</i>&nbsp;
+<b class="nc"><i>1720</i>&nbsp;                } catch (XNIException ex) {</b>
+<i>1721</i>&nbsp;                    // report the XPointer error as a resource error
+<b class="nc"><i>1722</i>&nbsp;                    reportResourceError(</b>
+<i>1723</i>&nbsp;                            &quot;XMLResourceError&quot;,
+<b class="nc"><i>1724</i>&nbsp;                            new Object[] { href, ex.getMessage()});</b>
+<b class="nc"><i>1725</i>&nbsp;                        return false;</b>
+<b class="nc"><i>1726</i>&nbsp;                }</b>
+<i>1727</i>&nbsp;            } else {
+<b class="nc"><i>1728</i>&nbsp;                fChildConfig = fXIncludeChildConfig;</b>
+<i>1729</i>&nbsp;            }
+<i>1730</i>&nbsp;
+<i>1731</i>&nbsp;            // set all features on parserConfig to match this parser configuration
+<b class="nc"><i>1732</i>&nbsp;            if (fNeedCopyFeatures) {</b>
+<b class="nc"><i>1733</i>&nbsp;                copyFeatures(fSettings, fChildConfig);</b>
+<i>1734</i>&nbsp;            }
+<b class="nc"><i>1735</i>&nbsp;            fNeedCopyFeatures = false;</b>
+<i>1736</i>&nbsp;
+<i>1737</i>&nbsp;            try {
+<b class="nc"><i>1738</i>&nbsp;                fNamespaceContext.pushScope();</b>
+<i>1739</i>&nbsp;
+<b class="nc"><i>1740</i>&nbsp;                fChildConfig.parse(includedSource);</b>
+<i>1741</i>&nbsp;                // necessary to make sure proper location is reported in errors
+<b class="nc"><i>1742</i>&nbsp;                if (fErrorReporter != null) {</b>
+<b class="nc"><i>1743</i>&nbsp;                    fErrorReporter.setDocumentLocator(fDocLocation);</b>
+<i>1744</i>&nbsp;                }
+<i>1745</i>&nbsp;
+<i>1746</i>&nbsp;                // If the xpointer attribute is present
+<b class="nc"><i>1747</i>&nbsp;                if (xpointer != null ) {</b>
+<i>1748</i>&nbsp;                        // and it was not resolved
+<b class="nc"><i>1749</i>&nbsp;                        if (!((XPointerProcessor)fXPtrProcessor).isXPointerResolved()) {</b>
+<b class="nc"><i>1750</i>&nbsp;                        Locale locale = (fErrorReporter != null) ? fErrorReporter.getLocale() : null;</b>
+<b class="nc"><i>1751</i>&nbsp;                        String reason = fXIncludeMessageFormatter.formatMessage(locale, &quot;XPointerResolutionUnsuccessful&quot;, null);</b>
+<b class="nc"><i>1752</i>&nbsp;                        reportResourceError(&quot;XMLResourceError&quot;, new Object[] {href, reason});</b>
+<i>1753</i>&nbsp;                                // use the fallback
+<b class="nc"><i>1754</i>&nbsp;                                return false;</b>
+<i>1755</i>&nbsp;                        }
+<i>1756</i>&nbsp;                }
+<i>1757</i>&nbsp;            }
+<b class="nc"><i>1758</i>&nbsp;            catch (XNIException e) {</b>
+<i>1759</i>&nbsp;                // necessary to make sure proper location is reported in errors
+<b class="nc"><i>1760</i>&nbsp;                if (fErrorReporter != null) {</b>
+<b class="nc"><i>1761</i>&nbsp;                    fErrorReporter.setDocumentLocator(fDocLocation);</b>
+<i>1762</i>&nbsp;                }
+<b class="nc"><i>1763</i>&nbsp;                reportFatalError(&quot;XMLParseError&quot;, new Object[] { href, e.getMessage() });</b>
+<i>1764</i>&nbsp;            }
+<b class="nc"><i>1765</i>&nbsp;            catch (IOException e) {</b>
+<i>1766</i>&nbsp;                // necessary to make sure proper location is reported in errors
+<b class="nc"><i>1767</i>&nbsp;                if (fErrorReporter != null) {</b>
+<b class="nc"><i>1768</i>&nbsp;                    fErrorReporter.setDocumentLocator(fDocLocation);</b>
+<i>1769</i>&nbsp;                }
+<i>1770</i>&nbsp;                // An IOException indicates that we had trouble reading the file, not
+<i>1771</i>&nbsp;                // that it was an invalid XML file.  So we send a resource error, not a
+<i>1772</i>&nbsp;                // fatal error.
+<b class="nc"><i>1773</i>&nbsp;                reportResourceError(</b>
+<i>1774</i>&nbsp;                    &quot;XMLResourceError&quot;,
+<b class="nc"><i>1775</i>&nbsp;                    new Object[] { href, e.getMessage()});</b>
+<b class="nc"><i>1776</i>&nbsp;                return false;</b>
+<i>1777</i>&nbsp;            }
+<i>1778</i>&nbsp;            finally {
+<b class="nc"><i>1779</i>&nbsp;                fNamespaceContext.popScope();</b>
+<b class="nc"><i>1780</i>&nbsp;            }</b>
+<i>1781</i>&nbsp;        }
+<b class="nc"><i>1782</i>&nbsp;        else if (parse.equals(XINCLUDE_PARSE_TEXT)) {</b>
+<i>1783</i>&nbsp;            // we only care about encoding for parse=&quot;text&quot;
+<b class="nc"><i>1784</i>&nbsp;            String encoding = attributes.getValue(XINCLUDE_ATTR_ENCODING);</b>
+<b class="nc"><i>1785</i>&nbsp;            includedSource.setEncoding(encoding);</b>
+<b class="nc"><i>1786</i>&nbsp;            XIncludeTextReader textReader = null;</b>
+<i>1787</i>&nbsp;
+<i>1788</i>&nbsp;            try {
+<i>1789</i>&nbsp;                // Setup the appropriate text reader.
+<b class="nc"><i>1790</i>&nbsp;                if (!fIsXML11) {</b>
+<b class="nc"><i>1791</i>&nbsp;                    if (fXInclude10TextReader == null) {</b>
+<b class="nc"><i>1792</i>&nbsp;                        fXInclude10TextReader = new XIncludeTextReader(includedSource, this, fBufferSize);</b>
+<i>1793</i>&nbsp;                    }
+<i>1794</i>&nbsp;                    else {
+<b class="nc"><i>1795</i>&nbsp;                        fXInclude10TextReader.setInputSource(includedSource);</b>
+<i>1796</i>&nbsp;                    }
+<b class="nc"><i>1797</i>&nbsp;                    textReader = fXInclude10TextReader;</b>
+<i>1798</i>&nbsp;                }
+<i>1799</i>&nbsp;                else {
+<b class="nc"><i>1800</i>&nbsp;                    if (fXInclude11TextReader == null) {</b>
+<b class="nc"><i>1801</i>&nbsp;                        fXInclude11TextReader = new XInclude11TextReader(includedSource, this, fBufferSize);</b>
+<i>1802</i>&nbsp;                    }
+<i>1803</i>&nbsp;                    else {
+<b class="nc"><i>1804</i>&nbsp;                        fXInclude11TextReader.setInputSource(includedSource);</b>
+<i>1805</i>&nbsp;                    }
+<b class="nc"><i>1806</i>&nbsp;                    textReader = fXInclude11TextReader;</b>
+<i>1807</i>&nbsp;                }
+<b class="nc"><i>1808</i>&nbsp;                textReader.setErrorReporter(fErrorReporter);</b>
+<b class="nc"><i>1809</i>&nbsp;                textReader.parse();</b>
+<i>1810</i>&nbsp;            }
+<i>1811</i>&nbsp;            // encoding errors
+<b class="nc"><i>1812</i>&nbsp;            catch (MalformedByteSequenceException ex) {</b>
+<b class="nc"><i>1813</i>&nbsp;                fErrorReporter.reportError(ex.getDomain(), ex.getKey(),</b>
+<b class="nc"><i>1814</i>&nbsp;                    ex.getArguments(), XMLErrorReporter.SEVERITY_FATAL_ERROR);</b>
+<i>1815</i>&nbsp;            }
+<b class="nc"><i>1816</i>&nbsp;            catch (CharConversionException e) {</b>
+<b class="nc"><i>1817</i>&nbsp;                fErrorReporter.reportError(XMLMessageFormatter.XML_DOMAIN,</b>
+<i>1818</i>&nbsp;                    &quot;CharConversionFailure&quot;, null, XMLErrorReporter.SEVERITY_FATAL_ERROR);
+<i>1819</i>&nbsp;            }
+<b class="nc"><i>1820</i>&nbsp;            catch (IOException e) {</b>
+<b class="nc"><i>1821</i>&nbsp;                reportResourceError(</b>
+<i>1822</i>&nbsp;                    &quot;TextResourceError&quot;,
+<b class="nc"><i>1823</i>&nbsp;                    new Object[] { href, e.getMessage()});</b>
+<b class="nc"><i>1824</i>&nbsp;                return false;</b>
+<i>1825</i>&nbsp;            }
+<i>1826</i>&nbsp;            finally {
+<b class="nc"><i>1827</i>&nbsp;                if (textReader != null) {</b>
+<i>1828</i>&nbsp;                    try {
+<b class="nc"><i>1829</i>&nbsp;                        textReader.close();</b>
+<i>1830</i>&nbsp;                    }
+<b class="nc"><i>1831</i>&nbsp;                    catch (IOException e) {</b>
+<b class="nc"><i>1832</i>&nbsp;                        reportResourceError(</b>
+<i>1833</i>&nbsp;                            &quot;TextResourceError&quot;,
+<b class="nc"><i>1834</i>&nbsp;                            new Object[] { href, e.getMessage()});</b>
+<b class="nc"><i>1835</i>&nbsp;                        return false;</b>
+<b class="nc"><i>1836</i>&nbsp;                    }</b>
+<i>1837</i>&nbsp;                }
+<i>1838</i>&nbsp;            }
+<b class="nc"><i>1839</i>&nbsp;        }</b>
+<i>1840</i>&nbsp;        else {
+<b class="nc"><i>1841</i>&nbsp;            reportFatalError(&quot;InvalidParseValue&quot;, new Object[] { parse });</b>
+<i>1842</i>&nbsp;        }
+<b class="nc"><i>1843</i>&nbsp;        return true;</b>
+<i>1844</i>&nbsp;    }
+<i>1845</i>&nbsp;
+<i>1846</i>&nbsp;    /**
+<i>1847</i>&nbsp;     * Returns true if the element has the namespace &quot;http://www.w3.org/2001/XInclude&quot;
+<i>1848</i>&nbsp;     * @param element the element to check
+<i>1849</i>&nbsp;     * @return true if the element has the namespace &quot;http://www.w3.org/2001/XInclude&quot;
+<i>1850</i>&nbsp;     */
+<i>1851</i>&nbsp;    protected boolean hasXIncludeNamespace(QName element) {
+<i>1852</i>&nbsp;        // REVISIT: The namespace of this element should be bound
+<i>1853</i>&nbsp;        // already. Why are we looking it up from the namespace
+<i>1854</i>&nbsp;        // context? -- mrglavas
+<b class="nc"><i>1855</i>&nbsp;        return element.uri == XINCLUDE_NS_URI</b>
+<b class="nc"><i>1856</i>&nbsp;            || fNamespaceContext.getURI(element.prefix) == XINCLUDE_NS_URI;</b>
+<i>1857</i>&nbsp;    }
+<i>1858</i>&nbsp;
+<i>1859</i>&nbsp;    /**
+<i>1860</i>&nbsp;     * Checks if the element is an &amp;lt;include&amp;gt; element.  The element must have
+<i>1861</i>&nbsp;     * the XInclude namespace, and a local name of &quot;include&quot;.
+<i>1862</i>&nbsp;     *
+<i>1863</i>&nbsp;     * @param element the element to check
+<i>1864</i>&nbsp;     * @return true if the element is an &amp;lt;include&amp;gt; element
+<i>1865</i>&nbsp;     * @see #hasXIncludeNamespace(QName)
+<i>1866</i>&nbsp;     */
+<i>1867</i>&nbsp;    protected boolean isIncludeElement(QName element) {
+<b class="nc"><i>1868</i>&nbsp;        return element.localpart.equals(XINCLUDE_INCLUDE) &amp;&amp;</b>
+<b class="nc"><i>1869</i>&nbsp;            hasXIncludeNamespace(element);</b>
+<i>1870</i>&nbsp;    }
+<i>1871</i>&nbsp;
+<i>1872</i>&nbsp;    /**
+<i>1873</i>&nbsp;     * Checks if the element is an &amp;lt;fallback&amp;gt; element.  The element must have
+<i>1874</i>&nbsp;     * the XInclude namespace, and a local name of &quot;fallback&quot;.
+<i>1875</i>&nbsp;     *
+<i>1876</i>&nbsp;     * @param element the element to check
+<i>1877</i>&nbsp;     * @return true if the element is an &amp;lt;fallback; element
+<i>1878</i>&nbsp;     * @see #hasXIncludeNamespace(QName)
+<i>1879</i>&nbsp;     */
+<i>1880</i>&nbsp;    protected boolean isFallbackElement(QName element) {
+<b class="nc"><i>1881</i>&nbsp;        return element.localpart.equals(XINCLUDE_FALLBACK) &amp;&amp;</b>
+<b class="nc"><i>1882</i>&nbsp;            hasXIncludeNamespace(element);</b>
+<i>1883</i>&nbsp;    }
+<i>1884</i>&nbsp;
+<i>1885</i>&nbsp;    /**
+<i>1886</i>&nbsp;     * Returns true if the current [base URI] is the same as the [base URI] that
+<i>1887</i>&nbsp;     * was in effect on the include parent.  This method should &lt;em&gt;only&lt;/em&gt; be called
+<i>1888</i>&nbsp;     * when the current element is a top level included element, i.e. the direct child
+<i>1889</i>&nbsp;     * of a fallback element, or the root elements in an included document.
+<i>1890</i>&nbsp;     * The &quot;include parent&quot; is the element which, in the result infoset, will be the
+<i>1891</i>&nbsp;     * direct parent of the current element.
+<i>1892</i>&nbsp;     * @return true if the [base URIs] are the same string
+<i>1893</i>&nbsp;     */
+<i>1894</i>&nbsp;    protected boolean sameBaseURIAsIncludeParent() {
+<b class="nc"><i>1895</i>&nbsp;        String parentBaseURI = getIncludeParentBaseURI();</b>
+<b class="nc"><i>1896</i>&nbsp;        String baseURI = fCurrentBaseURI.getExpandedSystemId();</b>
+<i>1897</i>&nbsp;        // REVISIT: should we use File#sameFile() ?
+<i>1898</i>&nbsp;        //          I think the benefit of using it is that it resolves host names
+<i>1899</i>&nbsp;        //          instead of just doing a string comparison.
+<i>1900</i>&nbsp;        // TODO: [base URI] is still an open issue with the working group.
+<i>1901</i>&nbsp;        //       They&#39;re deciding if xml:base should be added if the [base URI] is different in terms
+<i>1902</i>&nbsp;        //       of resolving relative references, or if it should be added if they are different at all.
+<i>1903</i>&nbsp;        //       Revisit this after a final decision has been made.
+<i>1904</i>&nbsp;        //       The decision also affects whether we output the file name of the URI, or just the path.
+<b class="nc"><i>1905</i>&nbsp;        return parentBaseURI != null &amp;&amp; parentBaseURI.equals(baseURI);</b>
+<i>1906</i>&nbsp;    }
+<i>1907</i>&nbsp;
+<i>1908</i>&nbsp;    /**
+<i>1909</i>&nbsp;     * Returns true if the current [language] is equivalent to the [language] that
+<i>1910</i>&nbsp;     * was in effect on the include parent, taking case-insensitivity into account
+<i>1911</i>&nbsp;     * as per [RFC 3066].  This method should &lt;em&gt;only&lt;/em&gt; be called when the
+<i>1912</i>&nbsp;     * current element is a top level included element, i.e. the direct child
+<i>1913</i>&nbsp;     * of a fallback element, or the root elements in an included document.
+<i>1914</i>&nbsp;     * The &quot;include parent&quot; is the element which, in the result infoset, will be the
+<i>1915</i>&nbsp;     * direct parent of the current element.
+<i>1916</i>&nbsp;     *
+<i>1917</i>&nbsp;     * @return true if the [language] properties have the same value
+<i>1918</i>&nbsp;     * taking case-insensitivity into account as per [RFC 3066].
+<i>1919</i>&nbsp;     */
+<i>1920</i>&nbsp;    protected boolean sameLanguageAsIncludeParent() {
+<b class="nc"><i>1921</i>&nbsp;        String parentLanguage = getIncludeParentLanguage();</b>
+<b class="nc"><i>1922</i>&nbsp;        return parentLanguage != null &amp;&amp; parentLanguage.equalsIgnoreCase(fCurrentLanguage);</b>
+<i>1923</i>&nbsp;    }
+<i>1924</i>&nbsp;
+<i>1925</i>&nbsp;    /**
+<i>1926</i>&nbsp;     * Checks if the file indicated by the given XMLLocator has already been included
+<i>1927</i>&nbsp;     * in the current stack.
+<i>1928</i>&nbsp;     * @param includedSource the source to check for inclusion
+<i>1929</i>&nbsp;     * @return true if the source has already been included
+<i>1930</i>&nbsp;     */
+<i>1931</i>&nbsp;    protected boolean searchForRecursiveIncludes(XMLLocator includedSource) {
+<b class="nc"><i>1932</i>&nbsp;        String includedSystemId = includedSource.getExpandedSystemId();</b>
+<i>1933</i>&nbsp;
+<b class="nc"><i>1934</i>&nbsp;        if (includedSystemId == null) {</b>
+<i>1935</i>&nbsp;            try {
+<b class="nc"><i>1936</i>&nbsp;                includedSystemId =</b>
+<b class="nc"><i>1937</i>&nbsp;                    XMLEntityManager.expandSystemId(</b>
+<b class="nc"><i>1938</i>&nbsp;                        includedSource.getLiteralSystemId(),</b>
+<b class="nc"><i>1939</i>&nbsp;                        includedSource.getBaseSystemId(),</b>
+<i>1940</i>&nbsp;                        false);
+<i>1941</i>&nbsp;            }
+<b class="nc"><i>1942</i>&nbsp;            catch (MalformedURIException e) {</b>
+<b class="nc"><i>1943</i>&nbsp;                reportFatalError(&quot;ExpandedSystemId&quot;);</b>
+<b class="nc"><i>1944</i>&nbsp;            }</b>
+<i>1945</i>&nbsp;        }
+<i>1946</i>&nbsp;
+<b class="nc"><i>1947</i>&nbsp;        if (includedSystemId.equals(fCurrentBaseURI.getExpandedSystemId())) {</b>
+<b class="nc"><i>1948</i>&nbsp;            return true;</b>
+<i>1949</i>&nbsp;        }
+<i>1950</i>&nbsp;
+<b class="nc"><i>1951</i>&nbsp;        if (fParentXIncludeHandler == null) {</b>
+<b class="nc"><i>1952</i>&nbsp;            return false;</b>
+<i>1953</i>&nbsp;        }
+<b class="nc"><i>1954</i>&nbsp;        return fParentXIncludeHandler.searchForRecursiveIncludes(</b>
+<i>1955</i>&nbsp;            includedSource);
+<i>1956</i>&nbsp;    }
+<i>1957</i>&nbsp;
+<i>1958</i>&nbsp;    /**
+<i>1959</i>&nbsp;     * Returns true if the current element is a top level included item.  This means
+<i>1960</i>&nbsp;     * it&#39;s either the child of a fallback element, or the top level item in an
+<i>1961</i>&nbsp;     * included document
+<i>1962</i>&nbsp;     * @return true if the current element is a top level included item
+<i>1963</i>&nbsp;     */
+<i>1964</i>&nbsp;    protected boolean isTopLevelIncludedItem() {
+<b class="nc"><i>1965</i>&nbsp;        return isTopLevelIncludedItemViaInclude()</b>
+<b class="nc"><i>1966</i>&nbsp;            || isTopLevelIncludedItemViaFallback();</b>
+<i>1967</i>&nbsp;    }
+<i>1968</i>&nbsp;
+<i>1969</i>&nbsp;    protected boolean isTopLevelIncludedItemViaInclude() {
+<b class="nc"><i>1970</i>&nbsp;        return fDepth == 1 &amp;&amp; !isRootDocument();</b>
+<i>1971</i>&nbsp;    }
+<i>1972</i>&nbsp;
+<i>1973</i>&nbsp;    protected boolean isTopLevelIncludedItemViaFallback() {
+<i>1974</i>&nbsp;        // Technically, this doesn&#39;t check if the parent was a fallback, it also
+<i>1975</i>&nbsp;        // would return true if any of the parent&#39;s sibling elements were fallbacks.
+<i>1976</i>&nbsp;        // However, this doesn&#39;t matter, since we will always be ignoring elements
+<i>1977</i>&nbsp;        // whose parent&#39;s siblings were fallbacks.
+<b class="nc"><i>1978</i>&nbsp;        return getSawFallback(fDepth - 1);</b>
+<i>1979</i>&nbsp;    }
+<i>1980</i>&nbsp;
+<i>1981</i>&nbsp;    /**
+<i>1982</i>&nbsp;     * Processes the XMLAttributes object of startElement() calls.  Performs the following tasks:
+<i>1983</i>&nbsp;     * &lt;ul&gt;
+<i>1984</i>&nbsp;     * &lt;li&gt; If the element is a top level included item whose [base URI] is different from the
+<i>1985</i>&nbsp;     * [base URI] of the include parent, then an xml:base attribute is added to specify the
+<i>1986</i>&nbsp;     * true [base URI]
+<i>1987</i>&nbsp;     * &lt;li&gt; For all namespace prefixes which are in-scope in an included item, but not in scope
+<i>1988</i>&nbsp;     * in the include parent, a xmlns:prefix attribute is added
+<i>1989</i>&nbsp;     * &lt;li&gt; For all attributes with a type of ENTITY, ENTITIES or NOTATIONS, the notations and
+<i>1990</i>&nbsp;     * unparsed entities are processed as described in the spec, sections 4.5.1 and 4.5.2
+<i>1991</i>&nbsp;     * &lt;/ul&gt;
+<i>1992</i>&nbsp;     * @param attributes
+<i>1993</i>&nbsp;     * @return
+<i>1994</i>&nbsp;     */
+<i>1995</i>&nbsp;    protected XMLAttributes processAttributes(XMLAttributes attributes) {
+<b class="nc"><i>1996</i>&nbsp;        if (isTopLevelIncludedItem()) {</b>
+<i>1997</i>&nbsp;            // Modify attributes to fix the base URI (spec 4.5.5).
+<i>1998</i>&nbsp;            // We only do it to top level included elements, which have a different
+<i>1999</i>&nbsp;            // base URI than their include parent.
+<b class="nc"><i>2000</i>&nbsp;            if (fFixupBaseURIs &amp;&amp; !sameBaseURIAsIncludeParent()) {</b>
+<b class="nc"><i>2001</i>&nbsp;                if (attributes == null) {</b>
+<b class="nc"><i>2002</i>&nbsp;                    attributes = new XMLAttributesImpl();</b>
+<i>2003</i>&nbsp;                }
+<i>2004</i>&nbsp;
+<i>2005</i>&nbsp;                // This causes errors with schema validation, if the schema doesn&#39;t
+<i>2006</i>&nbsp;                // specify that these elements can have an xml:base attribute
+<b class="nc"><i>2007</i>&nbsp;                String uri = null;</b>
+<i>2008</i>&nbsp;                try {
+<b class="nc"><i>2009</i>&nbsp;                    uri = this.getRelativeBaseURI();</b>
+<i>2010</i>&nbsp;                }
+<b class="nc"><i>2011</i>&nbsp;                catch (MalformedURIException e) {</b>
+<i>2012</i>&nbsp;                    // this shouldn&#39;t ever happen, since by definition, we had to traverse
+<i>2013</i>&nbsp;                    // the same URIs to even get to this place
+<b class="nc"><i>2014</i>&nbsp;                    uri = fCurrentBaseURI.getExpandedSystemId();</b>
+<b class="nc"><i>2015</i>&nbsp;                }</b>
+<b class="nc"><i>2016</i>&nbsp;                int index =</b>
+<b class="nc"><i>2017</i>&nbsp;                    attributes.addAttribute(</b>
+<i>2018</i>&nbsp;                        XML_BASE_QNAME,
+<i>2019</i>&nbsp;                        XMLSymbols.fCDATASymbol,
+<i>2020</i>&nbsp;                        uri);
+<b class="nc"><i>2021</i>&nbsp;                attributes.setSpecified(index, true);</b>
+<i>2022</i>&nbsp;            }
+<i>2023</i>&nbsp;
+<i>2024</i>&nbsp;            // Modify attributes to perform language-fixup (spec 4.5.6).
+<i>2025</i>&nbsp;            // We only do it to top level included elements, which have a different
+<i>2026</i>&nbsp;            // [language] than their include parent.
+<b class="nc"><i>2027</i>&nbsp;            if (fFixupLanguage &amp;&amp; !sameLanguageAsIncludeParent()) {</b>
+<b class="nc"><i>2028</i>&nbsp;                if (attributes == null) {</b>
+<b class="nc"><i>2029</i>&nbsp;                    attributes = new XMLAttributesImpl();</b>
+<i>2030</i>&nbsp;                }
+<b class="nc"><i>2031</i>&nbsp;                int index =</b>
+<b class="nc"><i>2032</i>&nbsp;                    attributes.addAttribute(</b>
+<i>2033</i>&nbsp;                        XML_LANG_QNAME,
+<i>2034</i>&nbsp;                        XMLSymbols.fCDATASymbol,
+<i>2035</i>&nbsp;                        fCurrentLanguage);
+<b class="nc"><i>2036</i>&nbsp;                attributes.setSpecified(index, true);</b>
+<i>2037</i>&nbsp;            }
+<i>2038</i>&nbsp;
+<i>2039</i>&nbsp;            // Modify attributes of included items to do namespace-fixup. (spec 4.5.4)
+<b class="nc"><i>2040</i>&nbsp;            Enumeration inscopeNS = fNamespaceContext.getAllPrefixes();</b>
+<b class="nc"><i>2041</i>&nbsp;            while (inscopeNS.hasMoreElements()) {</b>
+<b class="nc"><i>2042</i>&nbsp;                String prefix = (String)inscopeNS.nextElement();</b>
+<b class="nc"><i>2043</i>&nbsp;                String parentURI =</b>
+<b class="nc"><i>2044</i>&nbsp;                    fNamespaceContext.getURIFromIncludeParent(prefix);</b>
+<b class="nc"><i>2045</i>&nbsp;                String uri = fNamespaceContext.getURI(prefix);</b>
+<b class="nc"><i>2046</i>&nbsp;                if (parentURI != uri &amp;&amp; attributes != null) {</b>
+<b class="nc"><i>2047</i>&nbsp;                    if (prefix == XMLSymbols.EMPTY_STRING) {</b>
+<b class="nc"><i>2048</i>&nbsp;                        if (attributes</b>
+<b class="nc"><i>2049</i>&nbsp;                            .getValue(</b>
+<i>2050</i>&nbsp;                                NamespaceContext.XMLNS_URI,
+<i>2051</i>&nbsp;                                XMLSymbols.PREFIX_XMLNS)
+<i>2052</i>&nbsp;                            == null) {
+<b class="nc"><i>2053</i>&nbsp;                            if (attributes == null) {</b>
+<b class="nc"><i>2054</i>&nbsp;                                attributes = new XMLAttributesImpl();</b>
+<i>2055</i>&nbsp;                            }
+<i>2056</i>&nbsp;
+<b class="nc"><i>2057</i>&nbsp;                            QName ns = (QName)NEW_NS_ATTR_QNAME.clone();</b>
+<b class="nc"><i>2058</i>&nbsp;                            ns.prefix = null;</b>
+<b class="nc"><i>2059</i>&nbsp;                            ns.localpart = XMLSymbols.PREFIX_XMLNS;</b>
+<b class="nc"><i>2060</i>&nbsp;                            ns.rawname = XMLSymbols.PREFIX_XMLNS;</b>
+<b class="nc"><i>2061</i>&nbsp;                            int index =</b>
+<b class="nc"><i>2062</i>&nbsp;                                attributes.addAttribute(</b>
+<i>2063</i>&nbsp;                                    ns,
+<i>2064</i>&nbsp;                                    XMLSymbols.fCDATASymbol,
+<i>2065</i>&nbsp;                                    uri != null ? uri : XMLSymbols.EMPTY_STRING);
+<b class="nc"><i>2066</i>&nbsp;                            attributes.setSpecified(index, true);</b>
+<i>2067</i>&nbsp;                            // Need to re-declare this prefix in the current context
+<i>2068</i>&nbsp;                            // in order for the SAX parser to report the appropriate
+<i>2069</i>&nbsp;                            // start and end prefix mapping events. -- mrglavas
+<b class="nc"><i>2070</i>&nbsp;                            fNamespaceContext.declarePrefix(prefix, uri);</b>
+<b class="nc"><i>2071</i>&nbsp;                        }</b>
+<i>2072</i>&nbsp;                    }
+<b class="nc"><i>2073</i>&nbsp;                    else if (</b>
+<b class="nc"><i>2074</i>&nbsp;                        attributes.getValue(NamespaceContext.XMLNS_URI, prefix)</b>
+<i>2075</i>&nbsp;                            == null) {
+<b class="nc"><i>2076</i>&nbsp;                        if (attributes == null) {</b>
+<b class="nc"><i>2077</i>&nbsp;                            attributes = new XMLAttributesImpl();</b>
+<i>2078</i>&nbsp;                        }
+<i>2079</i>&nbsp;
+<b class="nc"><i>2080</i>&nbsp;                        QName ns = (QName)NEW_NS_ATTR_QNAME.clone();</b>
+<b class="nc"><i>2081</i>&nbsp;                        ns.localpart = prefix;</b>
+<b class="nc"><i>2082</i>&nbsp;                        ns.rawname += prefix;</b>
+<b class="nc"><i>2083</i>&nbsp;                        ns.rawname = (fSymbolTable != null) ?</b>
+<b class="nc"><i>2084</i>&nbsp;                            fSymbolTable.addSymbol(ns.rawname) :</b>
+<b class="nc"><i>2085</i>&nbsp;                            ns.rawname.intern();</b>
+<b class="nc"><i>2086</i>&nbsp;                        int index =</b>
+<b class="nc"><i>2087</i>&nbsp;                            attributes.addAttribute(</b>
+<i>2088</i>&nbsp;                                ns,
+<i>2089</i>&nbsp;                                XMLSymbols.fCDATASymbol,
+<i>2090</i>&nbsp;                                uri != null ? uri : XMLSymbols.EMPTY_STRING);
+<b class="nc"><i>2091</i>&nbsp;                        attributes.setSpecified(index, true);</b>
+<i>2092</i>&nbsp;                        // Need to re-declare this prefix in the current context
+<i>2093</i>&nbsp;                        // in order for the SAX parser to report the appropriate
+<i>2094</i>&nbsp;                        // start and end prefix mapping events. -- mrglavas
+<b class="nc"><i>2095</i>&nbsp;                        fNamespaceContext.declarePrefix(prefix, uri);</b>
+<i>2096</i>&nbsp;                    }
+<i>2097</i>&nbsp;                }
+<b class="nc"><i>2098</i>&nbsp;            }</b>
+<i>2099</i>&nbsp;        }
+<i>2100</i>&nbsp;
+<b class="nc"><i>2101</i>&nbsp;        if (attributes != null) {</b>
+<b class="nc"><i>2102</i>&nbsp;            int length = attributes.getLength();</b>
+<b class="nc"><i>2103</i>&nbsp;            for (int i = 0; i &lt; length; i++) {</b>
+<b class="nc"><i>2104</i>&nbsp;                String type = attributes.getType(i);</b>
+<b class="nc"><i>2105</i>&nbsp;                String value = attributes.getValue(i);</b>
+<b class="nc"><i>2106</i>&nbsp;                if (type == XMLSymbols.fENTITYSymbol) {</b>
+<b class="nc"><i>2107</i>&nbsp;                    this.checkUnparsedEntity(value);</b>
+<i>2108</i>&nbsp;                }
+<b class="nc"><i>2109</i>&nbsp;                if (type == XMLSymbols.fENTITIESSymbol) {</b>
+<i>2110</i>&nbsp;                    // 4.5.1 - Unparsed Entities
+<b class="nc"><i>2111</i>&nbsp;                    StringTokenizer st = new StringTokenizer(value);</b>
+<b class="nc"><i>2112</i>&nbsp;                    while (st.hasMoreTokens()) {</b>
+<b class="nc"><i>2113</i>&nbsp;                        String entName = st.nextToken();</b>
+<b class="nc"><i>2114</i>&nbsp;                        this.checkUnparsedEntity(entName);</b>
+<b class="nc"><i>2115</i>&nbsp;                    }</b>
+<b class="nc"><i>2116</i>&nbsp;                }</b>
+<b class="nc"><i>2117</i>&nbsp;                else if (type == XMLSymbols.fNOTATIONSymbol) {</b>
+<i>2118</i>&nbsp;                    // 4.5.2 - Notations
+<b class="nc"><i>2119</i>&nbsp;                    this.checkNotation(value);</b>
+<i>2120</i>&nbsp;                }
+<i>2121</i>&nbsp;                /* We actually don&#39;t need to do anything for 4.5.3, because at this stage the
+<i>2122</i>&nbsp;                 * value of the attribute is just a string. It will be taken care of later
+<i>2123</i>&nbsp;                 * in the pipeline, when the IDREFs are actually resolved against IDs.
+<i>2124</i>&nbsp;                 *
+<i>2125</i>&nbsp;                 * if (type == XMLSymbols.fIDREFSymbol || type == XMLSymbols.fIDREFSSymbol) { }
+<i>2126</i>&nbsp;                 */
+<i>2127</i>&nbsp;            }
+<i>2128</i>&nbsp;        }
+<i>2129</i>&nbsp;
+<b class="nc"><i>2130</i>&nbsp;        return attributes;</b>
+<i>2131</i>&nbsp;    }
+<i>2132</i>&nbsp;
+<i>2133</i>&nbsp;    /**
+<i>2134</i>&nbsp;     * Returns a URI, relative to the include parent&#39;s base URI, of the current
+<i>2135</i>&nbsp;     * [base URI].  For instance, if the current [base URI] was &quot;dir1/dir2/file.xml&quot;
+<i>2136</i>&nbsp;     * and the include parent&#39;s [base URI] was &quot;dir/&quot;, this would return &quot;dir2/file.xml&quot;.
+<i>2137</i>&nbsp;     * @return the relative URI
+<i>2138</i>&nbsp;     */
+<i>2139</i>&nbsp;    protected String getRelativeBaseURI() throws MalformedURIException {
+<b class="nc"><i>2140</i>&nbsp;        int includeParentDepth = getIncludeParentDepth();</b>
+<b class="nc"><i>2141</i>&nbsp;        String relativeURI = this.getRelativeURI(includeParentDepth);</b>
+<b class="nc"><i>2142</i>&nbsp;        if (isRootDocument()) {</b>
+<b class="nc"><i>2143</i>&nbsp;            return relativeURI;</b>
+<i>2144</i>&nbsp;        }
+<i>2145</i>&nbsp;        else {
+<b class="nc"><i>2146</i>&nbsp;            if (relativeURI.equals(&quot;&quot;)) {</b>
+<b class="nc"><i>2147</i>&nbsp;                relativeURI = fCurrentBaseURI.getLiteralSystemId();</b>
+<i>2148</i>&nbsp;            }
+<i>2149</i>&nbsp;
+<b class="nc"><i>2150</i>&nbsp;            if (includeParentDepth == 0) {</b>
+<b class="nc"><i>2151</i>&nbsp;                if (fParentRelativeURI == null) {</b>
+<b class="nc"><i>2152</i>&nbsp;                    fParentRelativeURI =</b>
+<b class="nc"><i>2153</i>&nbsp;                        fParentXIncludeHandler.getRelativeBaseURI();</b>
+<i>2154</i>&nbsp;                }
+<b class="nc"><i>2155</i>&nbsp;                if (fParentRelativeURI.equals(&quot;&quot;)) {</b>
+<b class="nc"><i>2156</i>&nbsp;                    return relativeURI;</b>
+<i>2157</i>&nbsp;                }
+<i>2158</i>&nbsp;
+<b class="nc"><i>2159</i>&nbsp;                URI base = new URI(fParentRelativeURI, true);</b>
+<b class="nc"><i>2160</i>&nbsp;                URI uri = new URI(base, relativeURI);</b>
+<i>2161</i>&nbsp;
+<i>2162</i>&nbsp;                /** Check whether the scheme components are equal. */
+<b class="nc"><i>2163</i>&nbsp;                final String baseScheme = base.getScheme();</b>
+<b class="nc"><i>2164</i>&nbsp;                final String literalScheme = uri.getScheme();</b>
+<b class="nc"><i>2165</i>&nbsp;                if (!Objects.equals(baseScheme, literalScheme)) {</b>
+<b class="nc"><i>2166</i>&nbsp;                    return relativeURI;</b>
+<i>2167</i>&nbsp;                }
+<i>2168</i>&nbsp;
+<i>2169</i>&nbsp;                /** Check whether the authority components are equal. */
+<b class="nc"><i>2170</i>&nbsp;                final String baseAuthority = base.getAuthority();</b>
+<b class="nc"><i>2171</i>&nbsp;                final String literalAuthority = uri.getAuthority();</b>
+<b class="nc"><i>2172</i>&nbsp;                if (!Objects.equals(baseAuthority, literalAuthority)) {</b>
+<b class="nc"><i>2173</i>&nbsp;                    return uri.getSchemeSpecificPart();</b>
+<i>2174</i>&nbsp;                }
+<i>2175</i>&nbsp;
+<i>2176</i>&nbsp;                /**
+<i>2177</i>&nbsp;                 * The scheme and authority components are equal,
+<i>2178</i>&nbsp;                 * return the path and the possible query and/or
+<i>2179</i>&nbsp;                 * fragment which follow.
+<i>2180</i>&nbsp;                 */
+<b class="nc"><i>2181</i>&nbsp;                final String literalPath = uri.getPath();</b>
+<b class="nc"><i>2182</i>&nbsp;                final String literalQuery = uri.getQueryString();</b>
+<b class="nc"><i>2183</i>&nbsp;                final String literalFragment = uri.getFragment();</b>
+<b class="nc"><i>2184</i>&nbsp;                if (literalQuery != null || literalFragment != null) {</b>
+<b class="nc"><i>2185</i>&nbsp;                    final StringBuilder buffer = new StringBuilder();</b>
+<b class="nc"><i>2186</i>&nbsp;                    if (literalPath != null) {</b>
+<b class="nc"><i>2187</i>&nbsp;                        buffer.append(literalPath);</b>
+<i>2188</i>&nbsp;                    }
+<b class="nc"><i>2189</i>&nbsp;                    if (literalQuery != null) {</b>
+<b class="nc"><i>2190</i>&nbsp;                        buffer.append(&#39;?&#39;);</b>
+<b class="nc"><i>2191</i>&nbsp;                        buffer.append(literalQuery);</b>
+<i>2192</i>&nbsp;                    }
+<b class="nc"><i>2193</i>&nbsp;                    if (literalFragment != null) {</b>
+<b class="nc"><i>2194</i>&nbsp;                        buffer.append(&#39;#&#39;);</b>
+<b class="nc"><i>2195</i>&nbsp;                        buffer.append(literalFragment);</b>
+<i>2196</i>&nbsp;                    }
+<b class="nc"><i>2197</i>&nbsp;                    return buffer.toString();</b>
+<i>2198</i>&nbsp;                }
+<b class="nc"><i>2199</i>&nbsp;                return literalPath;</b>
+<i>2200</i>&nbsp;            }
+<i>2201</i>&nbsp;            else {
+<b class="nc"><i>2202</i>&nbsp;                return relativeURI;</b>
+<i>2203</i>&nbsp;            }
+<i>2204</i>&nbsp;        }
+<i>2205</i>&nbsp;    }
+<i>2206</i>&nbsp;
+<i>2207</i>&nbsp;    /**
+<i>2208</i>&nbsp;     * Returns the [base URI] of the include parent.
+<i>2209</i>&nbsp;     * @return the base URI of the include parent.
+<i>2210</i>&nbsp;     */
+<i>2211</i>&nbsp;    private String getIncludeParentBaseURI() {
+<b class="nc"><i>2212</i>&nbsp;        int depth = getIncludeParentDepth();</b>
+<b class="nc"><i>2213</i>&nbsp;        if (!isRootDocument() &amp;&amp; depth == 0) {</b>
+<b class="nc"><i>2214</i>&nbsp;            return fParentXIncludeHandler.getIncludeParentBaseURI();</b>
+<i>2215</i>&nbsp;        }
+<i>2216</i>&nbsp;        else {
+<b class="nc"><i>2217</i>&nbsp;            return this.getBaseURI(depth);</b>
+<i>2218</i>&nbsp;        }
+<i>2219</i>&nbsp;    }
+<i>2220</i>&nbsp;
+<i>2221</i>&nbsp;    /**
+<i>2222</i>&nbsp;     * Returns the [language] of the include parent.
+<i>2223</i>&nbsp;     *
+<i>2224</i>&nbsp;     * @return the language property of the include parent.
+<i>2225</i>&nbsp;     */
+<i>2226</i>&nbsp;    private String getIncludeParentLanguage() {
+<b class="nc"><i>2227</i>&nbsp;        int depth = getIncludeParentDepth();</b>
+<b class="nc"><i>2228</i>&nbsp;        if (!isRootDocument() &amp;&amp; depth == 0) {</b>
+<b class="nc"><i>2229</i>&nbsp;            return fParentXIncludeHandler.getIncludeParentLanguage();</b>
+<i>2230</i>&nbsp;        }
+<i>2231</i>&nbsp;        else {
+<b class="nc"><i>2232</i>&nbsp;            return getLanguage(depth);</b>
+<i>2233</i>&nbsp;        }
+<i>2234</i>&nbsp;    }
+<i>2235</i>&nbsp;
+<i>2236</i>&nbsp;    /**
+<i>2237</i>&nbsp;     * Returns the depth of the include parent.  Here, the include parent is
+<i>2238</i>&nbsp;     * calculated as the last non-include or non-fallback element. It is assumed
+<i>2239</i>&nbsp;     * this method is called when the current element is a top level included item.
+<i>2240</i>&nbsp;     * Returning 0 indicates that the top level element in this document
+<i>2241</i>&nbsp;     * was an include element.
+<i>2242</i>&nbsp;     * @return the depth of the top level include element
+<i>2243</i>&nbsp;     */
+<i>2244</i>&nbsp;    private int getIncludeParentDepth() {
+<i>2245</i>&nbsp;        // We don&#39;t start at fDepth, since it is either the top level included item,
+<i>2246</i>&nbsp;        // or an include element, when this method is called.
+<b class="nc"><i>2247</i>&nbsp;        for (int i = fDepth - 1; i &gt;= 0; i--) {</b>
+<i>2248</i>&nbsp;            // This technically might not always return the first non-include/fallback
+<i>2249</i>&nbsp;            // element that it comes to, since sawFallback() returns true if a fallback
+<i>2250</i>&nbsp;            // was ever encountered at that depth.  However, if a fallback was encountered
+<i>2251</i>&nbsp;            // at that depth, and it wasn&#39;t the direct descendant of the current element
+<i>2252</i>&nbsp;            // then we can&#39;t be in a situation where we&#39;re calling this method (because
+<i>2253</i>&nbsp;            // we&#39;ll always be in STATE_IGNORE)
+<b class="nc"><i>2254</i>&nbsp;            if (!getSawInclude(i) &amp;&amp; !getSawFallback(i)) {</b>
+<b class="nc"><i>2255</i>&nbsp;                return i;</b>
+<i>2256</i>&nbsp;            }
+<i>2257</i>&nbsp;        }
+<i>2258</i>&nbsp;        // shouldn&#39;t get here, since depth 0 should never have an include element or
+<i>2259</i>&nbsp;        // a fallback element
+<b class="nc"><i>2260</i>&nbsp;        return 0;</b>
+<i>2261</i>&nbsp;    }
+<i>2262</i>&nbsp;
+<i>2263</i>&nbsp;    /**
+<i>2264</i>&nbsp;     * Returns the current element depth of the result infoset.
+<i>2265</i>&nbsp;     */
+<i>2266</i>&nbsp;    private int getResultDepth() {
+<b class="nc"><i>2267</i>&nbsp;        return fResultDepth;</b>
+<i>2268</i>&nbsp;    }
+<i>2269</i>&nbsp;
+<i>2270</i>&nbsp;    /**
+<i>2271</i>&nbsp;     * Modify the augmentations.  Add an [included] infoset item, if the current
+<i>2272</i>&nbsp;     * element is a top level included item.
+<i>2273</i>&nbsp;     * @param augs the Augmentations to modify.
+<i>2274</i>&nbsp;     * @return the modified Augmentations
+<i>2275</i>&nbsp;     */
+<i>2276</i>&nbsp;    protected Augmentations modifyAugmentations(Augmentations augs) {
+<b class="nc"><i>2277</i>&nbsp;        return modifyAugmentations(augs, false);</b>
+<i>2278</i>&nbsp;    }
+<i>2279</i>&nbsp;
+<i>2280</i>&nbsp;    /**
+<i>2281</i>&nbsp;     * Modify the augmentations.  Add an [included] infoset item, if &lt;code&gt;force&lt;/code&gt;
+<i>2282</i>&nbsp;     * is true, or if the current element is a top level included item.
+<i>2283</i>&nbsp;     * @param augs the Augmentations to modify.
+<i>2284</i>&nbsp;     * @param force whether to force modification
+<i>2285</i>&nbsp;     * @return the modified Augmentations
+<i>2286</i>&nbsp;     */
+<i>2287</i>&nbsp;    protected Augmentations modifyAugmentations(
+<i>2288</i>&nbsp;        Augmentations augs,
+<i>2289</i>&nbsp;        boolean force) {
+<b class="nc"><i>2290</i>&nbsp;        if (force || isTopLevelIncludedItem()) {</b>
+<b class="nc"><i>2291</i>&nbsp;            if (augs == null) {</b>
+<b class="nc"><i>2292</i>&nbsp;                augs = new AugmentationsImpl();</b>
+<i>2293</i>&nbsp;            }
+<b class="nc"><i>2294</i>&nbsp;            augs.putItem(XINCLUDE_INCLUDED, Boolean.TRUE);</b>
+<i>2295</i>&nbsp;        }
+<b class="nc"><i>2296</i>&nbsp;        return augs;</b>
+<i>2297</i>&nbsp;    }
+<i>2298</i>&nbsp;
+<i>2299</i>&nbsp;    protected int getState(int depth) {
+<b class="nc"><i>2300</i>&nbsp;        return fState[depth];</b>
+<i>2301</i>&nbsp;    }
+<i>2302</i>&nbsp;
+<i>2303</i>&nbsp;    protected int getState() {
+<b class="nc"><i>2304</i>&nbsp;        return fState[fDepth];</b>
+<i>2305</i>&nbsp;    }
+<i>2306</i>&nbsp;
+<i>2307</i>&nbsp;    protected void setState(int state) {
+<b class="nc"><i>2308</i>&nbsp;        if (fDepth &gt;= fState.length) {</b>
+<b class="nc"><i>2309</i>&nbsp;            int[] newarray = new int[fDepth * 2];</b>
+<b class="nc"><i>2310</i>&nbsp;            System.arraycopy(fState, 0, newarray, 0, fState.length);</b>
+<b class="nc"><i>2311</i>&nbsp;            fState = newarray;</b>
+<i>2312</i>&nbsp;        }
+<b class="nc"><i>2313</i>&nbsp;        fState[fDepth] = state;</b>
+<i>2314</i>&nbsp;    }
+<i>2315</i>&nbsp;
+<i>2316</i>&nbsp;    /**
+<i>2317</i>&nbsp;     * Records that an &amp;lt;fallback&amp;gt; was encountered at the specified depth,
+<i>2318</i>&nbsp;     * as an ancestor of the current element, or as a sibling of an ancestor of the
+<i>2319</i>&nbsp;     * current element.
+<i>2320</i>&nbsp;     *
+<i>2321</i>&nbsp;     * @param depth
+<i>2322</i>&nbsp;     * @param val
+<i>2323</i>&nbsp;     */
+<i>2324</i>&nbsp;    protected void setSawFallback(int depth, boolean val) {
+<b class="nc"><i>2325</i>&nbsp;        if (depth &gt;= fSawFallback.length) {</b>
+<b class="nc"><i>2326</i>&nbsp;            boolean[] newarray = new boolean[depth * 2];</b>
+<b class="nc"><i>2327</i>&nbsp;            System.arraycopy(fSawFallback, 0, newarray, 0, fSawFallback.length);</b>
+<b class="nc"><i>2328</i>&nbsp;            fSawFallback = newarray;</b>
+<i>2329</i>&nbsp;        }
+<b class="nc"><i>2330</i>&nbsp;        fSawFallback[depth] = val;</b>
+<i>2331</i>&nbsp;    }
+<i>2332</i>&nbsp;
+<i>2333</i>&nbsp;    /**
+<i>2334</i>&nbsp;     * Returns whether an &amp;lt;fallback&amp;gt; was encountered at the specified depth,
+<i>2335</i>&nbsp;     * as an ancestor of the current element, or as a sibling of an ancestor of the
+<i>2336</i>&nbsp;     * current element.
+<i>2337</i>&nbsp;     *
+<i>2338</i>&nbsp;     * @param depth
+<i>2339</i>&nbsp;     */
+<i>2340</i>&nbsp;    protected boolean getSawFallback(int depth) {
+<b class="nc"><i>2341</i>&nbsp;        if (depth &gt;= fSawFallback.length) {</b>
+<b class="nc"><i>2342</i>&nbsp;            return false;</b>
+<i>2343</i>&nbsp;        }
+<b class="nc"><i>2344</i>&nbsp;        return fSawFallback[depth];</b>
+<i>2345</i>&nbsp;    }
+<i>2346</i>&nbsp;
+<i>2347</i>&nbsp;    /**
+<i>2348</i>&nbsp;     * Records that an &amp;lt;include&amp;gt; was encountered at the specified depth,
+<i>2349</i>&nbsp;     * as an ancestor of the current item.
+<i>2350</i>&nbsp;     *
+<i>2351</i>&nbsp;     * @param depth
+<i>2352</i>&nbsp;     * @param val
+<i>2353</i>&nbsp;     */
+<i>2354</i>&nbsp;    protected void setSawInclude(int depth, boolean val) {
+<b class="nc"><i>2355</i>&nbsp;        if (depth &gt;= fSawInclude.length) {</b>
+<b class="nc"><i>2356</i>&nbsp;            boolean[] newarray = new boolean[depth * 2];</b>
+<b class="nc"><i>2357</i>&nbsp;            System.arraycopy(fSawInclude, 0, newarray, 0, fSawInclude.length);</b>
+<b class="nc"><i>2358</i>&nbsp;            fSawInclude = newarray;</b>
+<i>2359</i>&nbsp;        }
+<b class="nc"><i>2360</i>&nbsp;        fSawInclude[depth] = val;</b>
+<i>2361</i>&nbsp;    }
+<i>2362</i>&nbsp;
+<i>2363</i>&nbsp;    /**
+<i>2364</i>&nbsp;     * Return whether an &amp;lt;include&amp;gt; was encountered at the specified depth,
+<i>2365</i>&nbsp;     * as an ancestor of the current item.
+<i>2366</i>&nbsp;     *
+<i>2367</i>&nbsp;     * @param depth
+<i>2368</i>&nbsp;     * @return
+<i>2369</i>&nbsp;     */
+<i>2370</i>&nbsp;    protected boolean getSawInclude(int depth) {
+<b class="nc"><i>2371</i>&nbsp;        if (depth &gt;= fSawInclude.length) {</b>
+<b class="nc"><i>2372</i>&nbsp;            return false;</b>
+<i>2373</i>&nbsp;        }
+<b class="nc"><i>2374</i>&nbsp;        return fSawInclude[depth];</b>
+<i>2375</i>&nbsp;    }
+<i>2376</i>&nbsp;
+<i>2377</i>&nbsp;    protected void reportResourceError(String key) {
+<b class="nc"><i>2378</i>&nbsp;        this.reportFatalError(key, null);</b>
+<i>2379</i>&nbsp;    }
+<i>2380</i>&nbsp;
+<i>2381</i>&nbsp;    protected void reportResourceError(String key, Object[] args) {
+<b class="nc"><i>2382</i>&nbsp;        this.reportError(key, args, XMLErrorReporter.SEVERITY_WARNING);</b>
+<i>2383</i>&nbsp;    }
+<i>2384</i>&nbsp;
+<i>2385</i>&nbsp;    protected void reportFatalError(String key) {
+<b class="nc"><i>2386</i>&nbsp;        this.reportFatalError(key, null);</b>
+<i>2387</i>&nbsp;    }
+<i>2388</i>&nbsp;
+<i>2389</i>&nbsp;    protected void reportFatalError(String key, Object[] args) {
+<b class="nc"><i>2390</i>&nbsp;        this.reportError(key, args, XMLErrorReporter.SEVERITY_FATAL_ERROR);</b>
+<i>2391</i>&nbsp;    }
+<i>2392</i>&nbsp;
+<i>2393</i>&nbsp;    private void reportError(String key, Object[] args, short severity) {
+<b class="nc"><i>2394</i>&nbsp;        if (fErrorReporter != null) {</b>
+<b class="nc"><i>2395</i>&nbsp;            fErrorReporter.reportError(</b>
+<i>2396</i>&nbsp;                XIncludeMessageFormatter.XINCLUDE_DOMAIN,
+<i>2397</i>&nbsp;                key,
+<i>2398</i>&nbsp;                args,
+<i>2399</i>&nbsp;                severity);
+<i>2400</i>&nbsp;        }
+<i>2401</i>&nbsp;        // we won&#39;t worry about when error reporter is null, since there should always be
+<i>2402</i>&nbsp;        // at least the default error reporter
+<i>2403</i>&nbsp;    }
+<i>2404</i>&nbsp;
+<i>2405</i>&nbsp;    /**
+<i>2406</i>&nbsp;     * Set the parent of this XIncludeHandler in the tree
+<i>2407</i>&nbsp;     * @param parent
+<i>2408</i>&nbsp;     */
+<i>2409</i>&nbsp;    protected void setParent(XIncludeHandler parent) {
+<b class="nc"><i>2410</i>&nbsp;        fParentXIncludeHandler = parent;</b>
+<i>2411</i>&nbsp;    }
+<i>2412</i>&nbsp;
+<i>2413</i>&nbsp;    // used to know whether to pass declarations to the document handler
+<i>2414</i>&nbsp;    protected boolean isRootDocument() {
+<b class="nc"><i>2415</i>&nbsp;        return fParentXIncludeHandler == null;</b>
+<i>2416</i>&nbsp;    }
+<i>2417</i>&nbsp;
+<i>2418</i>&nbsp;    /**
+<i>2419</i>&nbsp;     * Caches an unparsed entity.
+<i>2420</i>&nbsp;     * @param name the name of the unparsed entity
+<i>2421</i>&nbsp;     * @param identifier the location of the unparsed entity
+<i>2422</i>&nbsp;     * @param augmentations any Augmentations that were on the original unparsed entity declaration
+<i>2423</i>&nbsp;     */
+<i>2424</i>&nbsp;    protected void addUnparsedEntity(
+<i>2425</i>&nbsp;        String name,
+<i>2426</i>&nbsp;        XMLResourceIdentifier identifier,
+<i>2427</i>&nbsp;        String notation,
+<i>2428</i>&nbsp;        Augmentations augmentations) {
+<b class="nc"><i>2429</i>&nbsp;        UnparsedEntity ent = new UnparsedEntity();</b>
+<b class="nc"><i>2430</i>&nbsp;        ent.name = name;</b>
+<b class="nc"><i>2431</i>&nbsp;        ent.systemId = identifier.getLiteralSystemId();</b>
+<b class="nc"><i>2432</i>&nbsp;        ent.publicId = identifier.getPublicId();</b>
+<b class="nc"><i>2433</i>&nbsp;        ent.baseURI = identifier.getBaseSystemId();</b>
+<b class="nc"><i>2434</i>&nbsp;        ent.expandedSystemId = identifier.getExpandedSystemId();</b>
+<b class="nc"><i>2435</i>&nbsp;        ent.notation = notation;</b>
+<b class="nc"><i>2436</i>&nbsp;        ent.augmentations = augmentations;</b>
+<b class="nc"><i>2437</i>&nbsp;        fUnparsedEntities.add(ent);</b>
+<i>2438</i>&nbsp;    }
+<i>2439</i>&nbsp;
+<i>2440</i>&nbsp;    /**
+<i>2441</i>&nbsp;     * Caches a notation.
+<i>2442</i>&nbsp;     * @param name the name of the notation
+<i>2443</i>&nbsp;     * @param identifier the location of the notation
+<i>2444</i>&nbsp;     * @param augmentations any Augmentations that were on the original notation declaration
+<i>2445</i>&nbsp;     */
+<i>2446</i>&nbsp;    protected void addNotation(
+<i>2447</i>&nbsp;        String name,
+<i>2448</i>&nbsp;        XMLResourceIdentifier identifier,
+<i>2449</i>&nbsp;        Augmentations augmentations) {
+<b class="nc"><i>2450</i>&nbsp;        Notation not = new Notation();</b>
+<b class="nc"><i>2451</i>&nbsp;        not.name = name;</b>
+<b class="nc"><i>2452</i>&nbsp;        not.systemId = identifier.getLiteralSystemId();</b>
+<b class="nc"><i>2453</i>&nbsp;        not.publicId = identifier.getPublicId();</b>
+<b class="nc"><i>2454</i>&nbsp;        not.baseURI = identifier.getBaseSystemId();</b>
+<b class="nc"><i>2455</i>&nbsp;        not.expandedSystemId = identifier.getExpandedSystemId();</b>
+<b class="nc"><i>2456</i>&nbsp;        not.augmentations = augmentations;</b>
+<b class="nc"><i>2457</i>&nbsp;        fNotations.add(not);</b>
+<i>2458</i>&nbsp;    }
+<i>2459</i>&nbsp;
+<i>2460</i>&nbsp;    /**
+<i>2461</i>&nbsp;     * Checks if an UnparsedEntity with the given name was declared in the DTD of the document
+<i>2462</i>&nbsp;     * for the current pipeline.  If so, then the notation for the UnparsedEntity is checked.
+<i>2463</i>&nbsp;     * If that turns out okay, then the UnparsedEntity is passed to the root pipeline to
+<i>2464</i>&nbsp;     * be checked for conflicts, and sent to the root DTDHandler.
+<i>2465</i>&nbsp;     *
+<i>2466</i>&nbsp;     * @param entName the name of the UnparsedEntity to check
+<i>2467</i>&nbsp;     */
+<i>2468</i>&nbsp;    protected void checkUnparsedEntity(String entName) {
+<b class="nc"><i>2469</i>&nbsp;        UnparsedEntity ent = new UnparsedEntity();</b>
+<b class="nc"><i>2470</i>&nbsp;        ent.name = entName;</b>
+<b class="nc"><i>2471</i>&nbsp;        int index = fUnparsedEntities.indexOf(ent);</b>
+<b class="nc"><i>2472</i>&nbsp;        if (index != -1) {</b>
+<b class="nc"><i>2473</i>&nbsp;            ent = (UnparsedEntity)fUnparsedEntities.get(index);</b>
+<i>2474</i>&nbsp;            // first check the notation of the unparsed entity
+<b class="nc"><i>2475</i>&nbsp;            checkNotation(ent.notation);</b>
+<b class="nc"><i>2476</i>&nbsp;            checkAndSendUnparsedEntity(ent);</b>
+<i>2477</i>&nbsp;        }
+<i>2478</i>&nbsp;    }
+<i>2479</i>&nbsp;
+<i>2480</i>&nbsp;    /**
+<i>2481</i>&nbsp;     * Checks if a Notation with the given name was declared in the DTD of the document
+<i>2482</i>&nbsp;     * for the current pipeline.  If so, that Notation is passed to the root pipeline to
+<i>2483</i>&nbsp;     * be checked for conflicts, and sent to the root DTDHandler
+<i>2484</i>&nbsp;     *
+<i>2485</i>&nbsp;     * @param notName the name of the Notation to check
+<i>2486</i>&nbsp;     */
+<i>2487</i>&nbsp;    protected void checkNotation(String notName) {
+<b class="nc"><i>2488</i>&nbsp;        Notation not = new Notation();</b>
+<b class="nc"><i>2489</i>&nbsp;        not.name = notName;</b>
+<b class="nc"><i>2490</i>&nbsp;        int index = fNotations.indexOf(not);</b>
+<b class="nc"><i>2491</i>&nbsp;        if (index != -1) {</b>
+<b class="nc"><i>2492</i>&nbsp;            not = (Notation)fNotations.get(index);</b>
+<b class="nc"><i>2493</i>&nbsp;            checkAndSendNotation(not);</b>
+<i>2494</i>&nbsp;        }
+<i>2495</i>&nbsp;    }
+<i>2496</i>&nbsp;
+<i>2497</i>&nbsp;    /**
+<i>2498</i>&nbsp;     * The purpose of this method is to check if an UnparsedEntity conflicts with a previously
+<i>2499</i>&nbsp;     * declared entity in the current pipeline stack.  If there is no conflict, the
+<i>2500</i>&nbsp;     * UnparsedEntity is sent by the root pipeline.
+<i>2501</i>&nbsp;     *
+<i>2502</i>&nbsp;     * @param ent the UnparsedEntity to check for conflicts
+<i>2503</i>&nbsp;     */
+<i>2504</i>&nbsp;    protected void checkAndSendUnparsedEntity(UnparsedEntity ent) {
+<b class="nc"><i>2505</i>&nbsp;        if (isRootDocument()) {</b>
+<b class="nc"><i>2506</i>&nbsp;            int index = fUnparsedEntities.indexOf(ent);</b>
+<b class="nc"><i>2507</i>&nbsp;            if (index == -1) {</b>
+<i>2508</i>&nbsp;                // There is no unparsed entity with the same name that we have sent.
+<i>2509</i>&nbsp;                // Calling unparsedEntityDecl() will add the entity to our local store,
+<i>2510</i>&nbsp;                // and also send the unparsed entity to the DTDHandler
+<b class="nc"><i>2511</i>&nbsp;                XMLResourceIdentifier id =</b>
+<i>2512</i>&nbsp;                    new XMLResourceIdentifierImpl(
+<i>2513</i>&nbsp;                        ent.publicId,
+<i>2514</i>&nbsp;                        ent.systemId,
+<i>2515</i>&nbsp;                        ent.baseURI,
+<i>2516</i>&nbsp;                        ent.expandedSystemId);
+<b class="nc"><i>2517</i>&nbsp;                addUnparsedEntity(</b>
+<i>2518</i>&nbsp;                    ent.name,
+<i>2519</i>&nbsp;                    id,
+<i>2520</i>&nbsp;                    ent.notation,
+<i>2521</i>&nbsp;                    ent.augmentations);
+<b class="nc"><i>2522</i>&nbsp;                if (fSendUEAndNotationEvents &amp;&amp; fDTDHandler != null) {</b>
+<b class="nc"><i>2523</i>&nbsp;                    fDTDHandler.unparsedEntityDecl(</b>
+<i>2524</i>&nbsp;                        ent.name,
+<i>2525</i>&nbsp;                        id,
+<i>2526</i>&nbsp;                        ent.notation,
+<i>2527</i>&nbsp;                        ent.augmentations);
+<i>2528</i>&nbsp;                }
+<b class="nc"><i>2529</i>&nbsp;            }</b>
+<i>2530</i>&nbsp;            else {
+<b class="nc"><i>2531</i>&nbsp;                UnparsedEntity localEntity =</b>
+<b class="nc"><i>2532</i>&nbsp;                    (UnparsedEntity)fUnparsedEntities.get(index);</b>
+<b class="nc"><i>2533</i>&nbsp;                if (!ent.isDuplicate(localEntity)) {</b>
+<b class="nc"><i>2534</i>&nbsp;                    reportFatalError(</b>
+<i>2535</i>&nbsp;                        &quot;NonDuplicateUnparsedEntity&quot;,
+<i>2536</i>&nbsp;                        new Object[] { ent.name });
+<i>2537</i>&nbsp;                }
+<i>2538</i>&nbsp;            }
+<b class="nc"><i>2539</i>&nbsp;        }</b>
+<i>2540</i>&nbsp;        else {
+<b class="nc"><i>2541</i>&nbsp;            fParentXIncludeHandler.checkAndSendUnparsedEntity(ent);</b>
+<i>2542</i>&nbsp;        }
+<i>2543</i>&nbsp;    }
+<i>2544</i>&nbsp;
+<i>2545</i>&nbsp;    /**
+<i>2546</i>&nbsp;     * The purpose of this method is to check if a Notation conflicts with a previously
+<i>2547</i>&nbsp;     * declared notation in the current pipeline stack.  If there is no conflict, the
+<i>2548</i>&nbsp;     * Notation is sent by the root pipeline.
+<i>2549</i>&nbsp;     *
+<i>2550</i>&nbsp;     * @param not the Notation to check for conflicts
+<i>2551</i>&nbsp;     */
+<i>2552</i>&nbsp;    protected void checkAndSendNotation(Notation not) {
+<b class="nc"><i>2553</i>&nbsp;        if (isRootDocument()) {</b>
+<b class="nc"><i>2554</i>&nbsp;            int index = fNotations.indexOf(not);</b>
+<b class="nc"><i>2555</i>&nbsp;            if (index == -1) {</b>
+<i>2556</i>&nbsp;                // There is no notation with the same name that we have sent.
+<b class="nc"><i>2557</i>&nbsp;                XMLResourceIdentifier id =</b>
+<i>2558</i>&nbsp;                    new XMLResourceIdentifierImpl(
+<i>2559</i>&nbsp;                        not.publicId,
+<i>2560</i>&nbsp;                        not.systemId,
+<i>2561</i>&nbsp;                        not.baseURI,
+<i>2562</i>&nbsp;                        not.expandedSystemId);
+<b class="nc"><i>2563</i>&nbsp;                addNotation(not.name, id, not.augmentations);</b>
+<b class="nc"><i>2564</i>&nbsp;                if (fSendUEAndNotationEvents &amp;&amp; fDTDHandler != null) {</b>
+<b class="nc"><i>2565</i>&nbsp;                    fDTDHandler.notationDecl(not.name, id, not.augmentations);</b>
+<i>2566</i>&nbsp;                }
+<b class="nc"><i>2567</i>&nbsp;            }</b>
+<i>2568</i>&nbsp;            else {
+<b class="nc"><i>2569</i>&nbsp;                Notation localNotation = (Notation)fNotations.get(index);</b>
+<b class="nc"><i>2570</i>&nbsp;                if (!not.isDuplicate(localNotation)) {</b>
+<b class="nc"><i>2571</i>&nbsp;                    reportFatalError(</b>
+<i>2572</i>&nbsp;                        &quot;NonDuplicateNotation&quot;,
+<i>2573</i>&nbsp;                        new Object[] { not.name });
+<i>2574</i>&nbsp;                }
+<i>2575</i>&nbsp;            }
+<b class="nc"><i>2576</i>&nbsp;        }</b>
+<i>2577</i>&nbsp;        else {
+<b class="nc"><i>2578</i>&nbsp;            fParentXIncludeHandler.checkAndSendNotation(not);</b>
+<i>2579</i>&nbsp;        }
+<i>2580</i>&nbsp;    }
+<i>2581</i>&nbsp;
+<i>2582</i>&nbsp;    /**
+<i>2583</i>&nbsp;     * Checks whether the string only contains white space characters.
+<i>2584</i>&nbsp;     *
+<i>2585</i>&nbsp;     * @param value the text to check
+<i>2586</i>&nbsp;     */
+<i>2587</i>&nbsp;    private void checkWhitespace(XMLString value) {
+<b class="nc"><i>2588</i>&nbsp;        int end = value.offset + value.length;</b>
+<b class="nc"><i>2589</i>&nbsp;        for (int i = value.offset; i &lt; end; ++i) {</b>
+<b class="nc"><i>2590</i>&nbsp;            if (!XMLChar.isSpace(value.ch[i])) {</b>
+<b class="nc"><i>2591</i>&nbsp;                reportFatalError(&quot;ContentIllegalAtTopLevel&quot;);</b>
+<i>2592</i>&nbsp;                return;
+<i>2593</i>&nbsp;            }
+<i>2594</i>&nbsp;        }
+<i>2595</i>&nbsp;    }
+<i>2596</i>&nbsp;
+<i>2597</i>&nbsp;    /**
+<i>2598</i>&nbsp;     * Checks whether the root element has already been processed.
+<i>2599</i>&nbsp;     */
+<i>2600</i>&nbsp;    private void checkMultipleRootElements() {
+<b class="nc"><i>2601</i>&nbsp;        if (getRootElementProcessed()) {</b>
+<b class="nc"><i>2602</i>&nbsp;            reportFatalError(&quot;MultipleRootElements&quot;);</b>
+<i>2603</i>&nbsp;        }
+<b class="nc"><i>2604</i>&nbsp;        setRootElementProcessed(true);</b>
+<i>2605</i>&nbsp;    }
+<i>2606</i>&nbsp;
+<i>2607</i>&nbsp;    /**
+<i>2608</i>&nbsp;     * Sets whether the root element has been processed.
+<i>2609</i>&nbsp;     */
+<i>2610</i>&nbsp;    private void setRootElementProcessed(boolean seenRoot) {
+<b class="nc"><i>2611</i>&nbsp;        if (isRootDocument()) {</b>
+<b class="nc"><i>2612</i>&nbsp;            fSeenRootElement = seenRoot;</b>
+<i>2613</i>&nbsp;            return;
+<i>2614</i>&nbsp;        }
+<b class="nc"><i>2615</i>&nbsp;        fParentXIncludeHandler.setRootElementProcessed(seenRoot);</b>
+<i>2616</i>&nbsp;    }
+<i>2617</i>&nbsp;
+<i>2618</i>&nbsp;    /**
+<i>2619</i>&nbsp;     * Returns whether the root element has been processed.
+<i>2620</i>&nbsp;     */
+<i>2621</i>&nbsp;    private boolean getRootElementProcessed() {
+<b class="nc"><i>2622</i>&nbsp;        return isRootDocument() ? fSeenRootElement : fParentXIncludeHandler.getRootElementProcessed();</b>
+<i>2623</i>&nbsp;    }
+<i>2624</i>&nbsp;
+<i>2625</i>&nbsp;    // It would be nice if we didn&#39;t have to repeat code like this, but there&#39;s no interface that has
+<i>2626</i>&nbsp;    // setFeature() and addRecognizedFeatures() that the objects have in common.
+<i>2627</i>&nbsp;    protected void copyFeatures(
+<i>2628</i>&nbsp;        XMLComponentManager from,
+<i>2629</i>&nbsp;        ParserConfigurationSettings to) {
+<b class="nc"><i>2630</i>&nbsp;        Enumeration features = Constants.getXercesFeatures();</b>
+<b class="nc"><i>2631</i>&nbsp;        copyFeatures1(features, Constants.XERCES_FEATURE_PREFIX, from, to);</b>
+<b class="nc"><i>2632</i>&nbsp;        features = Constants.getSAXFeatures();</b>
+<b class="nc"><i>2633</i>&nbsp;        copyFeatures1(features, Constants.SAX_FEATURE_PREFIX, from, to);</b>
+<i>2634</i>&nbsp;    }
+<i>2635</i>&nbsp;
+<i>2636</i>&nbsp;    protected void copyFeatures(
+<i>2637</i>&nbsp;        XMLComponentManager from,
+<i>2638</i>&nbsp;        XMLParserConfiguration to) {
+<b class="nc"><i>2639</i>&nbsp;        Enumeration features = Constants.getXercesFeatures();</b>
+<b class="nc"><i>2640</i>&nbsp;        copyFeatures1(features, Constants.XERCES_FEATURE_PREFIX, from, to);</b>
+<b class="nc"><i>2641</i>&nbsp;        features = Constants.getSAXFeatures();</b>
+<b class="nc"><i>2642</i>&nbsp;        copyFeatures1(features, Constants.SAX_FEATURE_PREFIX, from, to);</b>
+<i>2643</i>&nbsp;    }
+<i>2644</i>&nbsp;
+<i>2645</i>&nbsp;    private void copyFeatures1(
+<i>2646</i>&nbsp;        Enumeration features,
+<i>2647</i>&nbsp;        String featurePrefix,
+<i>2648</i>&nbsp;        XMLComponentManager from,
+<i>2649</i>&nbsp;        ParserConfigurationSettings to) {
+<b class="nc"><i>2650</i>&nbsp;        while (features.hasMoreElements()) {</b>
+<b class="nc"><i>2651</i>&nbsp;            String featureId = featurePrefix + (String)features.nextElement();</b>
+<i>2652</i>&nbsp;
+<b class="nc"><i>2653</i>&nbsp;            to.addRecognizedFeatures(new String[] { featureId });</b>
+<i>2654</i>&nbsp;
+<i>2655</i>&nbsp;            try {
+<b class="nc"><i>2656</i>&nbsp;                to.setFeature(featureId, from.getFeature(featureId));</b>
+<i>2657</i>&nbsp;            }
+<b class="nc"><i>2658</i>&nbsp;            catch (XMLConfigurationException e) {</b>
+<i>2659</i>&nbsp;                // componentManager doesn&#39;t support this feature,
+<i>2660</i>&nbsp;                // so we won&#39;t worry about it
+<b class="nc"><i>2661</i>&nbsp;            }</b>
+<b class="nc"><i>2662</i>&nbsp;        }</b>
+<i>2663</i>&nbsp;    }
+<i>2664</i>&nbsp;
+<i>2665</i>&nbsp;    private void copyFeatures1(
+<i>2666</i>&nbsp;        Enumeration features,
+<i>2667</i>&nbsp;        String featurePrefix,
+<i>2668</i>&nbsp;        XMLComponentManager from,
+<i>2669</i>&nbsp;        XMLParserConfiguration to) {
+<b class="nc"><i>2670</i>&nbsp;        while (features.hasMoreElements()) {</b>
+<b class="nc"><i>2671</i>&nbsp;            String featureId = featurePrefix + (String)features.nextElement();</b>
+<b class="nc"><i>2672</i>&nbsp;            boolean value = from.getFeature(featureId);</b>
+<i>2673</i>&nbsp;
+<i>2674</i>&nbsp;            try {
+<b class="nc"><i>2675</i>&nbsp;                to.setFeature(featureId, value);</b>
+<i>2676</i>&nbsp;            }
+<b class="nc"><i>2677</i>&nbsp;            catch (XMLConfigurationException e) {</b>
+<i>2678</i>&nbsp;                // componentManager doesn&#39;t support this feature,
+<i>2679</i>&nbsp;                // so we won&#39;t worry about it
+<b class="nc"><i>2680</i>&nbsp;            }</b>
+<b class="nc"><i>2681</i>&nbsp;        }</b>
+<i>2682</i>&nbsp;    }
+<i>2683</i>&nbsp;
+<i>2684</i>&nbsp;    // This is a storage class to hold information about the notations.
+<i>2685</i>&nbsp;    // We&#39;re not using XMLNotationDecl because we don&#39;t want to lose the augmentations.
+<b class="nc"><i>2686</i>&nbsp;    protected static class Notation {</b>
+<i>2687</i>&nbsp;        public String name;
+<i>2688</i>&nbsp;        public String systemId;
+<i>2689</i>&nbsp;        public String baseURI;
+<i>2690</i>&nbsp;        public String publicId;
+<i>2691</i>&nbsp;        public String expandedSystemId;
+<i>2692</i>&nbsp;        public Augmentations augmentations;
+<i>2693</i>&nbsp;
+<i>2694</i>&nbsp;        // equals() returns true if two Notations have the same name.
+<i>2695</i>&nbsp;        // Useful for searching Vectors for notations with the same name
+<i>2696</i>&nbsp;        @Override
+<i>2697</i>&nbsp;        public boolean equals(Object obj) {
+<b class="nc"><i>2698</i>&nbsp;            return obj == this || obj instanceof Notation</b>
+<b class="nc"><i>2699</i>&nbsp;                    &amp;&amp; Objects.equals(name, ((Notation)obj).name);</b>
+<i>2700</i>&nbsp;        }
+<i>2701</i>&nbsp;
+<i>2702</i>&nbsp;        @Override
+<i>2703</i>&nbsp;        public int hashCode() {
+<b class="nc"><i>2704</i>&nbsp;            return Objects.hashCode(name);</b>
+<i>2705</i>&nbsp;        }
+<i>2706</i>&nbsp;
+<i>2707</i>&nbsp;        // from 4.5.2
+<i>2708</i>&nbsp;        // Notation items with the same [name], [system identifier],
+<i>2709</i>&nbsp;        // [public identifier], and [declaration base URI] are considered
+<i>2710</i>&nbsp;        // to be duplicate. An application may also be able to detect that
+<i>2711</i>&nbsp;        // notations are duplicate through other means. For instance, the URI
+<i>2712</i>&nbsp;        // resulting from combining the system identifier and the declaration
+<i>2713</i>&nbsp;        // base URI is the same.
+<i>2714</i>&nbsp;        public boolean isDuplicate(Object obj) {
+<b class="nc"><i>2715</i>&nbsp;            if (obj != null &amp;&amp; obj instanceof Notation) {</b>
+<b class="nc"><i>2716</i>&nbsp;                Notation other = (Notation)obj;</b>
+<b class="nc"><i>2717</i>&nbsp;                return Objects.equals(name, other.name)</b>
+<b class="nc"><i>2718</i>&nbsp;                &amp;&amp; Objects.equals(publicId, other.publicId)</b>
+<b class="nc"><i>2719</i>&nbsp;                &amp;&amp; Objects.equals(expandedSystemId, other.expandedSystemId);</b>
+<i>2720</i>&nbsp;            }
+<b class="nc"><i>2721</i>&nbsp;            return false;</b>
+<i>2722</i>&nbsp;        }
+<i>2723</i>&nbsp;    }
+<i>2724</i>&nbsp;
+<i>2725</i>&nbsp;    // This is a storage class to hold information about the unparsed entities.
+<i>2726</i>&nbsp;    // We&#39;re not using XMLEntityDecl because we don&#39;t want to lose the augmentations.
+<b class="nc"><i>2727</i>&nbsp;    protected static class UnparsedEntity {</b>
+<i>2728</i>&nbsp;        public String name;
+<i>2729</i>&nbsp;        public String systemId;
+<i>2730</i>&nbsp;        public String baseURI;
+<i>2731</i>&nbsp;        public String publicId;
+<i>2732</i>&nbsp;        public String expandedSystemId;
+<i>2733</i>&nbsp;        public String notation;
+<i>2734</i>&nbsp;        public Augmentations augmentations;
+<i>2735</i>&nbsp;
+<i>2736</i>&nbsp;        // equals() returns true if two UnparsedEntities have the same name.
+<i>2737</i>&nbsp;        // Useful for searching Vectors for entities with the same name
+<i>2738</i>&nbsp;        @Override
+<i>2739</i>&nbsp;        public boolean equals(Object obj) {
+<b class="nc"><i>2740</i>&nbsp;            return obj == this || obj instanceof UnparsedEntity</b>
+<b class="nc"><i>2741</i>&nbsp;                    &amp;&amp; Objects.equals(name, ((UnparsedEntity)obj).name);</b>
+<i>2742</i>&nbsp;        }
+<i>2743</i>&nbsp;
+<i>2744</i>&nbsp;        @Override
+<i>2745</i>&nbsp;        public int hashCode() {
+<b class="nc"><i>2746</i>&nbsp;            return Objects.hashCode(name);</b>
+<i>2747</i>&nbsp;        }
+<i>2748</i>&nbsp;
+<i>2749</i>&nbsp;        // from 4.5.1:
+<i>2750</i>&nbsp;        // Unparsed entity items with the same [name], [system identifier],
+<i>2751</i>&nbsp;        // [public identifier], [declaration base URI], [notation name], and
+<i>2752</i>&nbsp;        // [notation] are considered to be duplicate. An application may also
+<i>2753</i>&nbsp;        // be able to detect that unparsed entities are duplicate through other
+<i>2754</i>&nbsp;        // means. For instance, the URI resulting from combining the system
+<i>2755</i>&nbsp;        // identifier and the declaration base URI is the same.
+<i>2756</i>&nbsp;        public boolean isDuplicate(Object obj) {
+<b class="nc"><i>2757</i>&nbsp;            if (obj != null &amp;&amp; obj instanceof UnparsedEntity) {</b>
+<b class="nc"><i>2758</i>&nbsp;                UnparsedEntity other = (UnparsedEntity)obj;</b>
+<b class="nc"><i>2759</i>&nbsp;                return Objects.equals(name, other.name)</b>
+<b class="nc"><i>2760</i>&nbsp;                &amp;&amp; Objects.equals(publicId, other.publicId)</b>
+<b class="nc"><i>2761</i>&nbsp;                &amp;&amp; Objects.equals(expandedSystemId, other.expandedSystemId)</b>
+<b class="nc"><i>2762</i>&nbsp;                &amp;&amp; Objects.equals(notation, other.notation);</b>
+<i>2763</i>&nbsp;            }
+<b class="nc"><i>2764</i>&nbsp;            return false;</b>
+<i>2765</i>&nbsp;        }
+<i>2766</i>&nbsp;    }
+<i>2767</i>&nbsp;
+<i>2768</i>&nbsp;    // The following methods are used for XML Base processing
+<i>2769</i>&nbsp;
+<i>2770</i>&nbsp;    /**
+<i>2771</i>&nbsp;     * Saves the current base URI to the top of the stack.
+<i>2772</i>&nbsp;     */
+<i>2773</i>&nbsp;    protected void saveBaseURI() {
+<b class="nc"><i>2774</i>&nbsp;        fBaseURIScope.push(fDepth);</b>
+<b class="nc"><i>2775</i>&nbsp;        fBaseURI.push(fCurrentBaseURI.getBaseSystemId());</b>
+<b class="nc"><i>2776</i>&nbsp;        fLiteralSystemID.push(fCurrentBaseURI.getLiteralSystemId());</b>
+<b class="nc"><i>2777</i>&nbsp;        fExpandedSystemID.push(fCurrentBaseURI.getExpandedSystemId());</b>
+<i>2778</i>&nbsp;    }
+<i>2779</i>&nbsp;
+<i>2780</i>&nbsp;    /**
+<i>2781</i>&nbsp;     * Discards the URIs at the top of the stack, and restores the ones beneath it.
+<i>2782</i>&nbsp;     */
+<i>2783</i>&nbsp;    protected void restoreBaseURI() {
+<b class="nc"><i>2784</i>&nbsp;        fBaseURI.pop();</b>
+<b class="nc"><i>2785</i>&nbsp;        fLiteralSystemID.pop();</b>
+<b class="nc"><i>2786</i>&nbsp;        fExpandedSystemID.pop();</b>
+<b class="nc"><i>2787</i>&nbsp;        fBaseURIScope.pop();</b>
+<b class="nc"><i>2788</i>&nbsp;        fCurrentBaseURI.setBaseSystemId((String)fBaseURI.peek());</b>
+<b class="nc"><i>2789</i>&nbsp;        fCurrentBaseURI.setLiteralSystemId((String)fLiteralSystemID.peek());</b>
+<b class="nc"><i>2790</i>&nbsp;        fCurrentBaseURI.setExpandedSystemId((String)fExpandedSystemID.peek());</b>
+<i>2791</i>&nbsp;    }
+<i>2792</i>&nbsp;
+<i>2793</i>&nbsp;    // The following methods are used for language processing
+<i>2794</i>&nbsp;
+<i>2795</i>&nbsp;    /**
+<i>2796</i>&nbsp;     * Saves the given language on the top of the stack.
+<i>2797</i>&nbsp;     *
+<i>2798</i>&nbsp;     * @param lanaguage the language to push onto the stack.
+<i>2799</i>&nbsp;     */
+<i>2800</i>&nbsp;    protected void saveLanguage(String language) {
+<b class="nc"><i>2801</i>&nbsp;        fLanguageScope.push(fDepth);</b>
+<b class="nc"><i>2802</i>&nbsp;        fLanguageStack.push(language);</b>
+<i>2803</i>&nbsp;    }
+<i>2804</i>&nbsp;
+<i>2805</i>&nbsp;    /**
+<i>2806</i>&nbsp;     * Discards the language at the top of the stack, and returns the one beneath it.
+<i>2807</i>&nbsp;     */
+<i>2808</i>&nbsp;    public String restoreLanguage() {
+<b class="nc"><i>2809</i>&nbsp;        fLanguageStack.pop();</b>
+<b class="nc"><i>2810</i>&nbsp;        fLanguageScope.pop();</b>
+<b class="nc"><i>2811</i>&nbsp;        return (String) fLanguageStack.peek();</b>
+<i>2812</i>&nbsp;    }
+<i>2813</i>&nbsp;
+<i>2814</i>&nbsp;    /**
+<i>2815</i>&nbsp;     * Gets the base URI that was in use at that depth
+<i>2816</i>&nbsp;     * @param depth
+<i>2817</i>&nbsp;     * @return the base URI
+<i>2818</i>&nbsp;     */
+<i>2819</i>&nbsp;    public String getBaseURI(int depth) {
+<b class="nc"><i>2820</i>&nbsp;        int scope = scopeOfBaseURI(depth);</b>
+<b class="nc"><i>2821</i>&nbsp;        return (String)fExpandedSystemID.elementAt(scope);</b>
+<i>2822</i>&nbsp;    }
+<i>2823</i>&nbsp;
+<i>2824</i>&nbsp;    /**
+<i>2825</i>&nbsp;     * Gets the language that was in use at that depth.
+<i>2826</i>&nbsp;     * @param depth
+<i>2827</i>&nbsp;     * @return the language
+<i>2828</i>&nbsp;     */
+<i>2829</i>&nbsp;    public String getLanguage(int depth) {
+<b class="nc"><i>2830</i>&nbsp;        int scope = scopeOfLanguage(depth);</b>
+<b class="nc"><i>2831</i>&nbsp;        return (String)fLanguageStack.elementAt(scope);</b>
+<i>2832</i>&nbsp;    }
+<i>2833</i>&nbsp;
+<i>2834</i>&nbsp;    /**
+<i>2835</i>&nbsp;     * Returns a relative URI, which when resolved against the base URI at the
+<i>2836</i>&nbsp;     * specified depth, will create the current base URI.
+<i>2837</i>&nbsp;     * This is accomplished by merged the literal system IDs.
+<i>2838</i>&nbsp;     * @param depth the depth at which to start creating the relative URI
+<i>2839</i>&nbsp;     * @return a relative URI to convert the base URI at the given depth to the current
+<i>2840</i>&nbsp;     *         base URI
+<i>2841</i>&nbsp;     */
+<i>2842</i>&nbsp;    public String getRelativeURI(int depth) throws MalformedURIException {
+<i>2843</i>&nbsp;        // The literal system id at the location given by &quot;start&quot; is *in focus* at
+<i>2844</i>&nbsp;        // the given depth. So we need to adjust it to the next scope, so that we
+<i>2845</i>&nbsp;        // only process out of focus literal system ids
+<b class="nc"><i>2846</i>&nbsp;        int start = scopeOfBaseURI(depth) + 1;</b>
+<b class="nc"><i>2847</i>&nbsp;        if (start == fBaseURIScope.size()) {</b>
+<i>2848</i>&nbsp;            // If that is the last system id, then we don&#39;t need a relative URI
+<b class="nc"><i>2849</i>&nbsp;            return &quot;&quot;;</b>
+<i>2850</i>&nbsp;        }
+<b class="nc"><i>2851</i>&nbsp;        URI uri = new URI(&quot;file&quot;, (String)fLiteralSystemID.elementAt(start));</b>
+<b class="nc"><i>2852</i>&nbsp;        for (int i = start + 1; i &lt; fBaseURIScope.size(); i++) {</b>
+<b class="nc"><i>2853</i>&nbsp;            uri = new URI(uri, (String)fLiteralSystemID.elementAt(i));</b>
+<i>2854</i>&nbsp;        }
+<b class="nc"><i>2855</i>&nbsp;        return uri.getPath();</b>
+<i>2856</i>&nbsp;    }
+<i>2857</i>&nbsp;
+<i>2858</i>&nbsp;    // We need to find two consecutive elements in the scope stack,
+<i>2859</i>&nbsp;    // such that the first is lower than &#39;depth&#39; (or equal), and the
+<i>2860</i>&nbsp;    // second is higher.
+<i>2861</i>&nbsp;    private int scopeOfBaseURI(int depth) {
+<b class="nc"><i>2862</i>&nbsp;        for (int i = fBaseURIScope.size() - 1; i &gt;= 0; i--) {</b>
+<b class="nc"><i>2863</i>&nbsp;            if (fBaseURIScope.elementAt(i) &lt;= depth)</b>
+<b class="nc"><i>2864</i>&nbsp;                return i;</b>
+<i>2865</i>&nbsp;        }
+<i>2866</i>&nbsp;        // we should never get here, because 0 was put on the stack in startDocument()
+<b class="nc"><i>2867</i>&nbsp;        return -1;</b>
+<i>2868</i>&nbsp;    }
+<i>2869</i>&nbsp;
+<i>2870</i>&nbsp;    private int scopeOfLanguage(int depth) {
+<b class="nc"><i>2871</i>&nbsp;        for (int i = fLanguageScope.size() - 1; i &gt;= 0; i--) {</b>
+<b class="nc"><i>2872</i>&nbsp;            if (fLanguageScope.elementAt(i) &lt;= depth)</b>
+<b class="nc"><i>2873</i>&nbsp;                return i;</b>
+<i>2874</i>&nbsp;        }
+<i>2875</i>&nbsp;        // we should never get here, because 0 was put on the stack in startDocument()
+<b class="nc"><i>2876</i>&nbsp;        return -1;</b>
+<i>2877</i>&nbsp;    }
+<i>2878</i>&nbsp;
+<i>2879</i>&nbsp;    /**
+<i>2880</i>&nbsp;     * Search for a xml:base attribute, and if one is found, put the new base URI into
+<i>2881</i>&nbsp;     * effect.
+<i>2882</i>&nbsp;     */
+<i>2883</i>&nbsp;    protected void processXMLBaseAttributes(XMLAttributes attributes) {
+<b class="nc"><i>2884</i>&nbsp;        String baseURIValue =</b>
+<b class="nc"><i>2885</i>&nbsp;            attributes.getValue(NamespaceContext.XML_URI, &quot;base&quot;);</b>
+<b class="nc"><i>2886</i>&nbsp;        if (baseURIValue != null) {</b>
+<i>2887</i>&nbsp;            try {
+<b class="nc"><i>2888</i>&nbsp;                String expandedValue =</b>
+<b class="nc"><i>2889</i>&nbsp;                    XMLEntityManager.expandSystemId(</b>
+<i>2890</i>&nbsp;                        baseURIValue,
+<b class="nc"><i>2891</i>&nbsp;                        fCurrentBaseURI.getExpandedSystemId(),</b>
+<i>2892</i>&nbsp;                        false);
+<b class="nc"><i>2893</i>&nbsp;                fCurrentBaseURI.setLiteralSystemId(baseURIValue);</b>
+<b class="nc"><i>2894</i>&nbsp;                fCurrentBaseURI.setBaseSystemId(</b>
+<b class="nc"><i>2895</i>&nbsp;                    fCurrentBaseURI.getExpandedSystemId());</b>
+<b class="nc"><i>2896</i>&nbsp;                fCurrentBaseURI.setExpandedSystemId(expandedValue);</b>
+<i>2897</i>&nbsp;
+<i>2898</i>&nbsp;                // push the new values on the stack
+<b class="nc"><i>2899</i>&nbsp;                saveBaseURI();</b>
+<i>2900</i>&nbsp;            }
+<b class="nc"><i>2901</i>&nbsp;            catch (MalformedURIException e) {</b>
+<i>2902</i>&nbsp;                // REVISIT: throw error here
+<b class="nc"><i>2903</i>&nbsp;            }</b>
+<i>2904</i>&nbsp;        }
+<i>2905</i>&nbsp;    }
+<i>2906</i>&nbsp;
+<i>2907</i>&nbsp;    /**
+<i>2908</i>&nbsp;     * Search for a xml:lang attribute, and if one is found, put the new
+<i>2909</i>&nbsp;     * [language] into effect.
+<i>2910</i>&nbsp;     */
+<i>2911</i>&nbsp;    protected void processXMLLangAttributes(XMLAttributes attributes) {
+<b class="nc"><i>2912</i>&nbsp;        String language = attributes.getValue(NamespaceContext.XML_URI, &quot;lang&quot;);</b>
+<b class="nc"><i>2913</i>&nbsp;        if (language != null) {</b>
+<b class="nc"><i>2914</i>&nbsp;            fCurrentLanguage = language;</b>
+<b class="nc"><i>2915</i>&nbsp;            saveLanguage(fCurrentLanguage);</b>
+<i>2916</i>&nbsp;        }
+<i>2917</i>&nbsp;    }
+<i>2918</i>&nbsp;
+<i>2919</i>&nbsp;    /**
+<i>2920</i>&nbsp;     * Returns &lt;code&gt;true&lt;/code&gt; if the given string
+<i>2921</i>&nbsp;     * would be valid in an HTTP header.
+<i>2922</i>&nbsp;     *
+<i>2923</i>&nbsp;     * @param value string to check
+<i>2924</i>&nbsp;     * @return &lt;code&gt;true&lt;/code&gt; if the given string
+<i>2925</i>&nbsp;     * would be valid in an HTTP header
+<i>2926</i>&nbsp;     */
+<i>2927</i>&nbsp;    private boolean isValidInHTTPHeader (String value) {
+<i>2928</i>&nbsp;        char ch;
+<b class="nc"><i>2929</i>&nbsp;        for (int i = value.length() - 1; i &gt;= 0; --i) {</b>
+<b class="nc"><i>2930</i>&nbsp;            ch = value.charAt(i);</b>
+<b class="nc"><i>2931</i>&nbsp;            if (ch &lt; 0x20 || ch &gt; 0x7E) {</b>
+<b class="nc"><i>2932</i>&nbsp;                return false;</b>
+<i>2933</i>&nbsp;            }
+<i>2934</i>&nbsp;        }
+<b class="nc"><i>2935</i>&nbsp;        return true;</b>
+<i>2936</i>&nbsp;    }
+<i>2937</i>&nbsp;
+<i>2938</i>&nbsp;    /**
+<i>2939</i>&nbsp;     * Returns a new &lt;code&gt;XMLInputSource&lt;/code&gt; from the given parameters.
+<i>2940</i>&nbsp;     */
+<i>2941</i>&nbsp;    private XMLInputSource createInputSource(String publicId,
+<i>2942</i>&nbsp;            String systemId, String baseSystemId,
+<i>2943</i>&nbsp;            String accept, String acceptLanguage) {
+<i>2944</i>&nbsp;
+<b class="nc"><i>2945</i>&nbsp;        HTTPInputSource httpSource = new HTTPInputSource(publicId, systemId, baseSystemId);</b>
+<b class="nc"><i>2946</i>&nbsp;        if (accept != null &amp;&amp; accept.length() &gt; 0) {</b>
+<b class="nc"><i>2947</i>&nbsp;            httpSource.setHTTPRequestProperty(XIncludeHandler.HTTP_ACCEPT, accept);</b>
+<i>2948</i>&nbsp;        }
+<b class="nc"><i>2949</i>&nbsp;        if (acceptLanguage != null &amp;&amp; acceptLanguage.length() &gt; 0) {</b>
+<b class="nc"><i>2950</i>&nbsp;            httpSource.setHTTPRequestProperty(XIncludeHandler.HTTP_ACCEPT_LANGUAGE, acceptLanguage);</b>
+<i>2951</i>&nbsp;        }
+<b class="nc"><i>2952</i>&nbsp;        return httpSource;</b>
+<i>2953</i>&nbsp;    }
+<i>2954</i>&nbsp;
+<i>2955</i>&nbsp;    // which ASCII characters need to be escaped
+<b class="nc"><i>2956</i>&nbsp;    private static final boolean gNeedEscaping[] = new boolean[128];</b>
+<i>2957</i>&nbsp;    // the first hex character if a character needs to be escaped
+<b class="nc"><i>2958</i>&nbsp;    private static final char gAfterEscaping1[] = new char[128];</b>
+<i>2959</i>&nbsp;    // the second hex character if a character needs to be escaped
+<b class="nc"><i>2960</i>&nbsp;    private static final char gAfterEscaping2[] = new char[128];</b>
+<b class="nc"><i>2961</i>&nbsp;    private static final char[] gHexChs = {&#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;6&#39;, &#39;7&#39;,</b>
+<i>2962</i>&nbsp;                                     &#39;8&#39;, &#39;9&#39;, &#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;, &#39;E&#39;, &#39;F&#39;};
+<i>2963</i>&nbsp;    // initialize the above 3 arrays
+<i>2964</i>&nbsp;    static {
+<b class="nc"><i>2965</i>&nbsp;        char[] escChs = {&#39; &#39;, &#39;&lt;&#39;, &#39;&gt;&#39;, &#39;&quot;&#39;, &#39;{&#39;, &#39;}&#39;, &#39;|&#39;, &#39;\\&#39;, &#39;^&#39;, &#39;`&#39;};</b>
+<b class="nc"><i>2966</i>&nbsp;        int len = escChs.length;</b>
+<i>2967</i>&nbsp;        char ch;
+<b class="nc"><i>2968</i>&nbsp;        for (int i = 0; i &lt; len; i++) {</b>
+<b class="nc"><i>2969</i>&nbsp;            ch = escChs[i];</b>
+<b class="nc"><i>2970</i>&nbsp;            gNeedEscaping[ch] = true;</b>
+<b class="nc"><i>2971</i>&nbsp;            gAfterEscaping1[ch] = gHexChs[ch &gt;&gt; 4];</b>
+<b class="nc"><i>2972</i>&nbsp;            gAfterEscaping2[ch] = gHexChs[ch &amp; 0xf];</b>
+<i>2973</i>&nbsp;        }
+<i>2974</i>&nbsp;    }
+<i>2975</i>&nbsp;
+<i>2976</i>&nbsp;    //
+<i>2977</i>&nbsp;    // Escape an href value according to (4.1.1):
+<i>2978</i>&nbsp;    //
+<i>2979</i>&nbsp;    // To convert the value of the href attribute to an IRI reference, the following characters must be escaped:
+<i>2980</i>&nbsp;    // space #x20
+<i>2981</i>&nbsp;    // the delimiters &lt; #x3C, &gt; #x3E and &quot; #x22
+<i>2982</i>&nbsp;    // the unwise characters { #x7B, } #x7D, | #x7C, \ #x5C, ^ #x5E and ` #x60
+<i>2983</i>&nbsp;    //
+<i>2984</i>&nbsp;    // To convert an IRI reference to a URI reference, the following characters must also be escaped:
+<i>2985</i>&nbsp;    // the Unicode plane 0 characters #xA0 - #xD7FF, #xF900-#xFDCF, #xFDF0-#xFFEF
+<i>2986</i>&nbsp;    // the Unicode plane 1-14 characters #x10000-#x1FFFD ... #xE0000-#xEFFFD
+<i>2987</i>&nbsp;    //
+<i>2988</i>&nbsp;    private String escapeHref(String href) {
+<b class="nc"><i>2989</i>&nbsp;        int len = href.length();</b>
+<i>2990</i>&nbsp;        int ch;
+<b class="nc"><i>2991</i>&nbsp;        final StringBuilder buffer = new StringBuilder(len*3);</b>
+<i>2992</i>&nbsp;
+<i>2993</i>&nbsp;        // for each character in the href
+<b class="nc"><i>2994</i>&nbsp;        int i = 0;</b>
+<b class="nc"><i>2995</i>&nbsp;        for (; i &lt; len; i++) {</b>
+<b class="nc"><i>2996</i>&nbsp;            ch = href.charAt(i);</b>
+<i>2997</i>&nbsp;            // if it&#39;s not an ASCII character (excluding 0x7F), break here, and use UTF-8 encoding
+<b class="nc"><i>2998</i>&nbsp;            if (ch &gt; 0x7E) {</b>
+<b class="nc"><i>2999</i>&nbsp;                break;</b>
+<i>3000</i>&nbsp;            }
+<i>3001</i>&nbsp;            // abort: href does not allow this character
+<b class="nc"><i>3002</i>&nbsp;            if (ch &lt; 0x20) {</b>
+<b class="nc"><i>3003</i>&nbsp;                return href;</b>
+<i>3004</i>&nbsp;            }
+<b class="nc"><i>3005</i>&nbsp;            if (gNeedEscaping[ch]) {</b>
+<b class="nc"><i>3006</i>&nbsp;                buffer.append(&#39;%&#39;);</b>
+<b class="nc"><i>3007</i>&nbsp;                buffer.append(gAfterEscaping1[ch]);</b>
+<b class="nc"><i>3008</i>&nbsp;                buffer.append(gAfterEscaping2[ch]);</b>
+<i>3009</i>&nbsp;            }
+<i>3010</i>&nbsp;            else {
+<b class="nc"><i>3011</i>&nbsp;                buffer.append((char)ch);</b>
+<i>3012</i>&nbsp;            }
+<i>3013</i>&nbsp;        }
+<i>3014</i>&nbsp;
+<i>3015</i>&nbsp;        // we saw some non-ascii character
+<b class="nc"><i>3016</i>&nbsp;        if (i &lt; len) {</b>
+<i>3017</i>&nbsp;            // check if remainder of href contains any illegal characters before proceeding
+<b class="nc"><i>3018</i>&nbsp;            for (int j = i; j &lt; len; ++j) {</b>
+<b class="nc"><i>3019</i>&nbsp;                ch = href.charAt(j);</b>
+<b class="nc"><i>3020</i>&nbsp;                if ((ch &gt;= 0x20 &amp;&amp; ch &lt;= 0x7E) ||</b>
+<i>3021</i>&nbsp;                    (ch &gt;= 0xA0 &amp;&amp; ch &lt;= 0xD7FF) ||
+<i>3022</i>&nbsp;                    (ch &gt;= 0xF900 &amp;&amp; ch &lt;= 0xFDCF) ||
+<i>3023</i>&nbsp;                    (ch &gt;= 0xFDF0 &amp;&amp; ch &lt;= 0xFFEF)) {
+<b class="nc"><i>3024</i>&nbsp;                    continue;</b>
+<i>3025</i>&nbsp;                }
+<b class="nc"><i>3026</i>&nbsp;                if (XMLChar.isHighSurrogate(ch) &amp;&amp; ++j &lt; len) {</b>
+<b class="nc"><i>3027</i>&nbsp;                    int ch2 = href.charAt(j);</b>
+<b class="nc"><i>3028</i>&nbsp;                    if (XMLChar.isLowSurrogate(ch2)) {</b>
+<b class="nc"><i>3029</i>&nbsp;                        ch2 = XMLChar.supplemental((char)ch, (char)ch2);</b>
+<b class="nc"><i>3030</i>&nbsp;                        if (ch2 &lt; 0xF0000 &amp;&amp; (ch2 &amp; 0xFFFF) &lt;= 0xFFFD) {</b>
+<b class="nc"><i>3031</i>&nbsp;                            continue;</b>
+<i>3032</i>&nbsp;                        }
+<i>3033</i>&nbsp;                    }
+<i>3034</i>&nbsp;                }
+<i>3035</i>&nbsp;                // abort: href does not allow this character
+<b class="nc"><i>3036</i>&nbsp;                return href;</b>
+<i>3037</i>&nbsp;            }
+<i>3038</i>&nbsp;
+<i>3039</i>&nbsp;            // get UTF-8 bytes for the remaining sub-string
+<b class="nc"><i>3040</i>&nbsp;            byte[] bytes = null;</b>
+<i>3041</i>&nbsp;            byte b;
+<i>3042</i>&nbsp;            try {
+<b class="nc"><i>3043</i>&nbsp;                bytes = href.substring(i).getBytes(&quot;UTF-8&quot;);</b>
+<b class="nc"><i>3044</i>&nbsp;            } catch (java.io.UnsupportedEncodingException e) {</b>
+<i>3045</i>&nbsp;                // should never happen
+<b class="nc"><i>3046</i>&nbsp;                return href;</b>
+<b class="nc"><i>3047</i>&nbsp;            }</b>
+<b class="nc"><i>3048</i>&nbsp;            len = bytes.length;</b>
+<i>3049</i>&nbsp;
+<i>3050</i>&nbsp;            // for each byte
+<b class="nc"><i>3051</i>&nbsp;            for (i = 0; i &lt; len; i++) {</b>
+<b class="nc"><i>3052</i>&nbsp;                b = bytes[i];</b>
+<i>3053</i>&nbsp;                // for non-ascii character: make it positive, then escape
+<b class="nc"><i>3054</i>&nbsp;                if (b &lt; 0) {</b>
+<b class="nc"><i>3055</i>&nbsp;                    ch = b + 256;</b>
+<b class="nc"><i>3056</i>&nbsp;                    buffer.append(&#39;%&#39;);</b>
+<b class="nc"><i>3057</i>&nbsp;                    buffer.append(gHexChs[ch &gt;&gt; 4]);</b>
+<b class="nc"><i>3058</i>&nbsp;                    buffer.append(gHexChs[ch &amp; 0xf]);</b>
+<i>3059</i>&nbsp;                }
+<b class="nc"><i>3060</i>&nbsp;                else if (gNeedEscaping[b]) {</b>
+<b class="nc"><i>3061</i>&nbsp;                    buffer.append(&#39;%&#39;);</b>
+<b class="nc"><i>3062</i>&nbsp;                    buffer.append(gAfterEscaping1[b]);</b>
+<b class="nc"><i>3063</i>&nbsp;                    buffer.append(gAfterEscaping2[b]);</b>
+<i>3064</i>&nbsp;                }
+<i>3065</i>&nbsp;                else {
+<b class="nc"><i>3066</i>&nbsp;                    buffer.append((char)b);</b>
+<i>3067</i>&nbsp;                }
+<i>3068</i>&nbsp;            }
+<i>3069</i>&nbsp;        }
+<i>3070</i>&nbsp;
+<i>3071</i>&nbsp;        // If escaping happened, create a new string;
+<i>3072</i>&nbsp;        // otherwise, return the orginal one.
+<b class="nc"><i>3073</i>&nbsp;        if (buffer.length() != len) {</b>
+<b class="nc"><i>3074</i>&nbsp;            return buffer.toString();</b>
+<i>3075</i>&nbsp;        }
+<i>3076</i>&nbsp;        else {
+<b class="nc"><i>3077</i>&nbsp;            return href;</b>
+<i>3078</i>&nbsp;        }
+<i>3079</i>&nbsp;    }
+<i>3080</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

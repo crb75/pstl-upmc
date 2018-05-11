@@ -1,0 +1,440 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BufferManagerReadStream</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.encoding</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BufferManagerReadStream (com.sun.corba.se.impl.encoding)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BufferManagerReadStream</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 142)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2009, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;package com.sun.corba.se.impl.encoding;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import java.nio.ByteBuffer;
+<i>28</i>&nbsp;import com.sun.corba.se.pept.transport.ByteBufferPool;
+<i>29</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains;
+<i>30</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>31</i>&nbsp;import com.sun.corba.se.impl.logging.ORBUtilSystemException;
+<i>32</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBUtility;
+<i>33</i>&nbsp;import com.sun.corba.se.impl.protocol.RequestCanceledException;
+<i>34</i>&nbsp;import com.sun.corba.se.impl.protocol.giopmsgheaders.FragmentMessage;
+<i>35</i>&nbsp;import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
+<i>36</i>&nbsp;import java.util.*;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;public class BufferManagerReadStream
+<i>39</i>&nbsp;    implements BufferManagerRead, MarkAndResetHandler
+<i>40</i>&nbsp;{
+<b class="nc"><i>41</i>&nbsp;    private boolean receivedCancel = false;</b>
+<b class="nc"><i>42</i>&nbsp;    private int cancelReqId = 0;</b>
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    // We should convert endOfStream to a final static dummy end node
+<b class="nc"><i>45</i>&nbsp;    private boolean endOfStream = true;</b>
+<b class="nc"><i>46</i>&nbsp;    private BufferQueue fragmentQueue = new BufferQueue();</b>
+<b class="nc"><i>47</i>&nbsp;    private long FRAGMENT_TIMEOUT = 60000;</b>
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    // REVISIT - This should go in BufferManagerRead. But, since
+<i>50</i>&nbsp;    //           BufferManagerRead is an interface. BufferManagerRead
+<i>51</i>&nbsp;    //           might ought to be an abstract class instead of an
+<i>52</i>&nbsp;    //           interface.
+<i>53</i>&nbsp;    private ORB orb ;
+<i>54</i>&nbsp;    private ORBUtilSystemException wrapper ;
+<b class="nc"><i>55</i>&nbsp;    private boolean debug = false;</b>
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    BufferManagerReadStream( ORB orb )
+<b class="nc"><i>58</i>&nbsp;    {</b>
+<b class="nc"><i>59</i>&nbsp;        this.orb = orb ;</b>
+<b class="nc"><i>60</i>&nbsp;        this.wrapper = ORBUtilSystemException.get( orb,</b>
+<i>61</i>&nbsp;            CORBALogDomains.RPC_ENCODING ) ;
+<b class="nc"><i>62</i>&nbsp;        debug = orb.transportDebugFlag;</b>
+<i>63</i>&nbsp;    }
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    public void cancelProcessing(int requestId) {
+<b class="nc"><i>66</i>&nbsp;        synchronized(fragmentQueue) {</b>
+<b class="nc"><i>67</i>&nbsp;            receivedCancel = true;</b>
+<b class="nc"><i>68</i>&nbsp;            cancelReqId = requestId;</b>
+<b class="nc"><i>69</i>&nbsp;            fragmentQueue.notify();</b>
+<b class="nc"><i>70</i>&nbsp;        }</b>
+<i>71</i>&nbsp;    }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    public void processFragment(ByteBuffer byteBuffer, FragmentMessage msg)
+<i>74</i>&nbsp;    {
+<b class="nc"><i>75</i>&nbsp;        ByteBufferWithInfo bbwi =</b>
+<b class="nc"><i>76</i>&nbsp;            new ByteBufferWithInfo(orb, byteBuffer, msg.getHeaderLength());</b>
+<i>77</i>&nbsp;
+<b class="nc"><i>78</i>&nbsp;        synchronized (fragmentQueue) {</b>
+<b class="nc"><i>79</i>&nbsp;            if (debug)</b>
+<i>80</i>&nbsp;            {
+<i>81</i>&nbsp;                // print address of ByteBuffer being queued
+<b class="nc"><i>82</i>&nbsp;                int bbAddress = System.identityHashCode(byteBuffer);</b>
+<b class="nc"><i>83</i>&nbsp;                StringBuffer sb = new StringBuffer(80);</b>
+<b class="nc"><i>84</i>&nbsp;                sb.append(&quot;processFragment() - queueing ByteBuffer id (&quot;);</b>
+<b class="nc"><i>85</i>&nbsp;                sb.append(bbAddress).append(&quot;) to fragment queue.&quot;);</b>
+<b class="nc"><i>86</i>&nbsp;                String strMsg = sb.toString();</b>
+<b class="nc"><i>87</i>&nbsp;                dprint(strMsg);</b>
+<i>88</i>&nbsp;            }
+<b class="nc"><i>89</i>&nbsp;            fragmentQueue.enqueue(bbwi);</b>
+<b class="nc"><i>90</i>&nbsp;            endOfStream = !msg.moreFragmentsToFollow();</b>
+<b class="nc"><i>91</i>&nbsp;            fragmentQueue.notify();</b>
+<b class="nc"><i>92</i>&nbsp;        }</b>
+<i>93</i>&nbsp;    }
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    public ByteBufferWithInfo underflow (ByteBufferWithInfo bbwi)
+<i>96</i>&nbsp;    {
+<i>97</i>&nbsp;
+<b class="nc"><i>98</i>&nbsp;      ByteBufferWithInfo result = null;</b>
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;      try {
+<i>101</i>&nbsp;          //System.out.println(&quot;ENTER underflow&quot;);
+<i>102</i>&nbsp;
+<b class="nc"><i>103</i>&nbsp;        synchronized (fragmentQueue) {</b>
+<i>104</i>&nbsp;
+<b class="nc"><i>105</i>&nbsp;            if (receivedCancel) {</b>
+<b class="nc"><i>106</i>&nbsp;                throw new RequestCanceledException(cancelReqId);</b>
+<i>107</i>&nbsp;            }
+<i>108</i>&nbsp;
+<b class="nc"><i>109</i>&nbsp;            while (fragmentQueue.size() == 0) {</b>
+<i>110</i>&nbsp;
+<b class="nc"><i>111</i>&nbsp;                if (endOfStream) {</b>
+<b class="nc"><i>112</i>&nbsp;                    throw wrapper.endOfStream() ;</b>
+<i>113</i>&nbsp;                }
+<i>114</i>&nbsp;
+<b class="nc"><i>115</i>&nbsp;                boolean interrupted = false;</b>
+<i>116</i>&nbsp;                try {
+<b class="nc"><i>117</i>&nbsp;                    fragmentQueue.wait(FRAGMENT_TIMEOUT);</b>
+<b class="nc"><i>118</i>&nbsp;                } catch (InterruptedException e) {</b>
+<b class="nc"><i>119</i>&nbsp;                    interrupted = true;</b>
+<b class="nc"><i>120</i>&nbsp;                }</b>
+<i>121</i>&nbsp;
+<b class="nc"><i>122</i>&nbsp;                if (!interrupted &amp;&amp; fragmentQueue.size() == 0) {</b>
+<b class="nc"><i>123</i>&nbsp;                    throw wrapper.bufferReadManagerTimeout();</b>
+<i>124</i>&nbsp;                }
+<i>125</i>&nbsp;
+<b class="nc"><i>126</i>&nbsp;                if (receivedCancel) {</b>
+<b class="nc"><i>127</i>&nbsp;                    throw new RequestCanceledException(cancelReqId);</b>
+<i>128</i>&nbsp;                }
+<b class="nc"><i>129</i>&nbsp;            }</b>
+<i>130</i>&nbsp;
+<b class="nc"><i>131</i>&nbsp;            result = fragmentQueue.dequeue();</b>
+<b class="nc"><i>132</i>&nbsp;            result.fragmented = true;</b>
+<i>133</i>&nbsp;
+<b class="nc"><i>134</i>&nbsp;            if (debug)</b>
+<i>135</i>&nbsp;            {
+<i>136</i>&nbsp;                // print address of ByteBuffer being dequeued
+<b class="nc"><i>137</i>&nbsp;                int bbAddr = System.identityHashCode(result.byteBuffer);</b>
+<b class="nc"><i>138</i>&nbsp;                StringBuffer sb1 = new StringBuffer(80);</b>
+<b class="nc"><i>139</i>&nbsp;                sb1.append(&quot;underflow() - dequeued ByteBuffer id (&quot;);</b>
+<b class="nc"><i>140</i>&nbsp;                sb1.append(bbAddr).append(&quot;) from fragment queue.&quot;);</b>
+<b class="nc"><i>141</i>&nbsp;                String msg1 = sb1.toString();</b>
+<b class="nc"><i>142</i>&nbsp;                dprint(msg1);</b>
+<i>143</i>&nbsp;            }
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;            // VERY IMPORTANT
+<i>146</i>&nbsp;            // Release bbwi.byteBuffer to the ByteBufferPool only if
+<i>147</i>&nbsp;            // this BufferManagerStream is not marked for potential restore.
+<b class="nc"><i>148</i>&nbsp;            if (markEngaged == false &amp;&amp; bbwi != null &amp;&amp; bbwi.byteBuffer != null)</b>
+<i>149</i>&nbsp;            {
+<b class="nc"><i>150</i>&nbsp;                ByteBufferPool byteBufferPool = getByteBufferPool();</b>
+<i>151</i>&nbsp;
+<b class="nc"><i>152</i>&nbsp;                if (debug)</b>
+<i>153</i>&nbsp;                {
+<i>154</i>&nbsp;                    // print address of ByteBuffer being released
+<b class="nc"><i>155</i>&nbsp;                    int bbAddress = System.identityHashCode(bbwi.byteBuffer);</b>
+<b class="nc"><i>156</i>&nbsp;                    StringBuffer sb = new StringBuffer(80);</b>
+<b class="nc"><i>157</i>&nbsp;                    sb.append(&quot;underflow() - releasing ByteBuffer id (&quot;);</b>
+<b class="nc"><i>158</i>&nbsp;                    sb.append(bbAddress).append(&quot;) to ByteBufferPool.&quot;);</b>
+<b class="nc"><i>159</i>&nbsp;                    String msg = sb.toString();</b>
+<b class="nc"><i>160</i>&nbsp;                    dprint(msg);</b>
+<i>161</i>&nbsp;                }
+<i>162</i>&nbsp;
+<b class="nc"><i>163</i>&nbsp;                byteBufferPool.releaseByteBuffer(bbwi.byteBuffer);</b>
+<b class="nc"><i>164</i>&nbsp;                bbwi.byteBuffer = null;</b>
+<b class="nc"><i>165</i>&nbsp;                bbwi = null;</b>
+<i>166</i>&nbsp;            }
+<b class="nc"><i>167</i>&nbsp;        }</b>
+<b class="nc"><i>168</i>&nbsp;        return result;</b>
+<i>169</i>&nbsp;      } finally {
+<i>170</i>&nbsp;          //System.out.println(&quot;EXIT underflow&quot;);
+<i>171</i>&nbsp;      }
+<i>172</i>&nbsp;    }
+<i>173</i>&nbsp;
+<i>174</i>&nbsp;    public void init(Message msg) {
+<b class="nc"><i>175</i>&nbsp;        if (msg != null)</b>
+<b class="nc"><i>176</i>&nbsp;            endOfStream = !msg.moreFragmentsToFollow();</b>
+<i>177</i>&nbsp;    }
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;    // Release any queued ByteBufferWithInfo&#39;s byteBuffers to the
+<i>180</i>&nbsp;    // ByteBufferPoool
+<i>181</i>&nbsp;    public void close(ByteBufferWithInfo bbwi)
+<i>182</i>&nbsp;    {
+<b class="nc"><i>183</i>&nbsp;        int inputBbAddress = 0;</b>
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;        // release ByteBuffers on fragmentQueue
+<b class="nc"><i>186</i>&nbsp;        if (fragmentQueue != null)</b>
+<i>187</i>&nbsp;        {
+<b class="nc"><i>188</i>&nbsp;            synchronized (fragmentQueue)</b>
+<i>189</i>&nbsp;            {
+<i>190</i>&nbsp;                // IMPORTANT: The fragment queue may have one ByteBuffer
+<i>191</i>&nbsp;                //            on it that&#39;s also on the CDRInputStream if
+<i>192</i>&nbsp;                //            this method is called when the stream is &#39;marked&#39;.
+<i>193</i>&nbsp;                //            Thus, we&#39;ll compare the ByteBuffer passed
+<i>194</i>&nbsp;                //            in (from a CDRInputStream) with all ByteBuffers
+<i>195</i>&nbsp;                //            on the stack. If one is found to equal, it will
+<i>196</i>&nbsp;                //            not be released to the ByteBufferPool.
+<b class="nc"><i>197</i>&nbsp;                if (bbwi != null)</b>
+<i>198</i>&nbsp;                {
+<b class="nc"><i>199</i>&nbsp;                    inputBbAddress = System.identityHashCode(bbwi.byteBuffer);</b>
+<i>200</i>&nbsp;                }
+<i>201</i>&nbsp;
+<b class="nc"><i>202</i>&nbsp;                ByteBufferWithInfo abbwi = null;</b>
+<b class="nc"><i>203</i>&nbsp;                ByteBufferPool byteBufferPool = getByteBufferPool();</b>
+<b class="nc"><i>204</i>&nbsp;                while (fragmentQueue.size() != 0)</b>
+<i>205</i>&nbsp;                {
+<b class="nc"><i>206</i>&nbsp;                    abbwi = fragmentQueue.dequeue();</b>
+<b class="nc"><i>207</i>&nbsp;                    if (abbwi != null &amp;&amp; abbwi.byteBuffer != null)</b>
+<i>208</i>&nbsp;                    {
+<b class="nc"><i>209</i>&nbsp;                        int bbAddress = System.identityHashCode(abbwi.byteBuffer);</b>
+<b class="nc"><i>210</i>&nbsp;                        if (inputBbAddress != bbAddress)</b>
+<i>211</i>&nbsp;                        {
+<b class="nc"><i>212</i>&nbsp;                            if (debug)</b>
+<i>213</i>&nbsp;                            {
+<i>214</i>&nbsp;                                 // print address of ByteBuffer released
+<b class="nc"><i>215</i>&nbsp;                                 StringBuffer sb = new StringBuffer(80);</b>
+<b class="nc"><i>216</i>&nbsp;                                 sb.append(&quot;close() - fragmentQueue is &quot;)</b>
+<b class="nc"><i>217</i>&nbsp;                                   .append(&quot;releasing ByteBuffer id (&quot;)</b>
+<b class="nc"><i>218</i>&nbsp;                                   .append(bbAddress).append(&quot;) to &quot;)</b>
+<b class="nc"><i>219</i>&nbsp;                                   .append(&quot;ByteBufferPool.&quot;);</b>
+<b class="nc"><i>220</i>&nbsp;                                 String msg = sb.toString();</b>
+<b class="nc"><i>221</i>&nbsp;                                 dprint(msg);</b>
+<i>222</i>&nbsp;                            }
+<i>223</i>&nbsp;                        }
+<b class="nc"><i>224</i>&nbsp;                        byteBufferPool.releaseByteBuffer(abbwi.byteBuffer);</b>
+<b class="nc"><i>225</i>&nbsp;                    }</b>
+<i>226</i>&nbsp;                }
+<b class="nc"><i>227</i>&nbsp;            }</b>
+<b class="nc"><i>228</i>&nbsp;            fragmentQueue = null;</b>
+<i>229</i>&nbsp;        }
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;        // release ByteBuffers on fragmentStack
+<b class="nc"><i>232</i>&nbsp;        if (fragmentStack != null &amp;&amp; fragmentStack.size() != 0)</b>
+<i>233</i>&nbsp;        {
+<i>234</i>&nbsp;            // IMPORTANT: The fragment stack may have one ByteBuffer
+<i>235</i>&nbsp;            //            on it that&#39;s also on the CDRInputStream if
+<i>236</i>&nbsp;            //            this method is called when the stream is &#39;marked&#39;.
+<i>237</i>&nbsp;            //            Thus, we&#39;ll compare the ByteBuffer passed
+<i>238</i>&nbsp;            //            in (from a CDRInputStream) with all ByteBuffers
+<i>239</i>&nbsp;            //            on the stack. If one is found to equal, it will
+<i>240</i>&nbsp;            //            not be released to the ByteBufferPool.
+<b class="nc"><i>241</i>&nbsp;            if (bbwi != null)</b>
+<i>242</i>&nbsp;            {
+<b class="nc"><i>243</i>&nbsp;                inputBbAddress = System.identityHashCode(bbwi.byteBuffer);</b>
+<i>244</i>&nbsp;            }
+<i>245</i>&nbsp;
+<b class="nc"><i>246</i>&nbsp;            ByteBufferWithInfo abbwi = null;</b>
+<b class="nc"><i>247</i>&nbsp;            ByteBufferPool byteBufferPool = getByteBufferPool();</b>
+<b class="nc"><i>248</i>&nbsp;            ListIterator itr = fragmentStack.listIterator();</b>
+<b class="nc"><i>249</i>&nbsp;            while (itr.hasNext())</b>
+<i>250</i>&nbsp;            {
+<b class="nc"><i>251</i>&nbsp;                abbwi = (ByteBufferWithInfo)itr.next();</b>
+<i>252</i>&nbsp;
+<b class="nc"><i>253</i>&nbsp;                if (abbwi != null &amp;&amp; abbwi.byteBuffer != null)</b>
+<i>254</i>&nbsp;                {
+<b class="nc"><i>255</i>&nbsp;                   int bbAddress = System.identityHashCode(abbwi.byteBuffer);</b>
+<b class="nc"><i>256</i>&nbsp;                   if (inputBbAddress != bbAddress)</b>
+<i>257</i>&nbsp;                   {
+<b class="nc"><i>258</i>&nbsp;                       if (debug)</b>
+<i>259</i>&nbsp;                       {
+<i>260</i>&nbsp;                            // print address of ByteBuffer being released
+<b class="nc"><i>261</i>&nbsp;                            StringBuffer sb = new StringBuffer(80);</b>
+<b class="nc"><i>262</i>&nbsp;                            sb.append(&quot;close() - fragmentStack - releasing &quot;)</b>
+<b class="nc"><i>263</i>&nbsp;                              .append(&quot;ByteBuffer id (&quot; + bbAddress + &quot;) to &quot;)</b>
+<b class="nc"><i>264</i>&nbsp;                              .append(&quot;ByteBufferPool.&quot;);</b>
+<b class="nc"><i>265</i>&nbsp;                            String msg = sb.toString();</b>
+<b class="nc"><i>266</i>&nbsp;                            dprint(msg);</b>
+<i>267</i>&nbsp;                       }
+<b class="nc"><i>268</i>&nbsp;                       byteBufferPool.releaseByteBuffer(abbwi.byteBuffer);</b>
+<i>269</i>&nbsp;                   }
+<b class="nc"><i>270</i>&nbsp;                }</b>
+<i>271</i>&nbsp;            }
+<b class="nc"><i>272</i>&nbsp;            fragmentStack = null;</b>
+<i>273</i>&nbsp;        }
+<i>274</i>&nbsp;
+<i>275</i>&nbsp;    }
+<i>276</i>&nbsp;
+<i>277</i>&nbsp;    protected ByteBufferPool getByteBufferPool()
+<i>278</i>&nbsp;    {
+<b class="nc"><i>279</i>&nbsp;        return orb.getByteBufferPool();</b>
+<i>280</i>&nbsp;    }
+<i>281</i>&nbsp;
+<i>282</i>&nbsp;    private void dprint(String msg)
+<i>283</i>&nbsp;    {
+<b class="nc"><i>284</i>&nbsp;        ORBUtility.dprint(&quot;BufferManagerReadStream&quot;, msg);</b>
+<i>285</i>&nbsp;    }
+<i>286</i>&nbsp;
+<i>287</i>&nbsp;    // Mark and reset handler ----------------------------------------
+<i>288</i>&nbsp;
+<b class="nc"><i>289</i>&nbsp;    private boolean markEngaged = false;</b>
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;    // List of fragment ByteBufferWithInfos received since
+<i>292</i>&nbsp;    // the mark was engaged.
+<b class="nc"><i>293</i>&nbsp;    private LinkedList fragmentStack = null;</b>
+<b class="nc"><i>294</i>&nbsp;    private RestorableInputStream inputStream = null;</b>
+<i>295</i>&nbsp;
+<i>296</i>&nbsp;    // Original state of the stream
+<b class="nc"><i>297</i>&nbsp;    private Object streamMemento = null;</b>
+<i>298</i>&nbsp;
+<i>299</i>&nbsp;    public void mark(RestorableInputStream inputStream)
+<i>300</i>&nbsp;    {
+<b class="nc"><i>301</i>&nbsp;        this.inputStream = inputStream;</b>
+<b class="nc"><i>302</i>&nbsp;        markEngaged = true;</b>
+<i>303</i>&nbsp;
+<i>304</i>&nbsp;        // Get the magic Object that the stream will use to
+<i>305</i>&nbsp;        // reconstruct it&#39;s state when reset is called
+<b class="nc"><i>306</i>&nbsp;        streamMemento = inputStream.createStreamMemento();</b>
+<i>307</i>&nbsp;
+<b class="nc"><i>308</i>&nbsp;        if (fragmentStack != null) {</b>
+<b class="nc"><i>309</i>&nbsp;            fragmentStack.clear();</b>
+<i>310</i>&nbsp;        }
+<i>311</i>&nbsp;    }
+<i>312</i>&nbsp;
+<i>313</i>&nbsp;    // Collects fragments received since the mark was engaged.
+<i>314</i>&nbsp;    public void fragmentationOccured(ByteBufferWithInfo newFragment)
+<i>315</i>&nbsp;    {
+<b class="nc"><i>316</i>&nbsp;        if (!markEngaged)</b>
+<i>317</i>&nbsp;            return;
+<i>318</i>&nbsp;
+<b class="nc"><i>319</i>&nbsp;        if (fragmentStack == null)</b>
+<b class="nc"><i>320</i>&nbsp;            fragmentStack = new LinkedList();</b>
+<i>321</i>&nbsp;
+<b class="nc"><i>322</i>&nbsp;        fragmentStack.addFirst(new ByteBufferWithInfo(newFragment));</b>
+<i>323</i>&nbsp;    }
+<i>324</i>&nbsp;
+<i>325</i>&nbsp;    public void reset()
+<i>326</i>&nbsp;    {
+<b class="nc"><i>327</i>&nbsp;        if (!markEngaged) {</b>
+<i>328</i>&nbsp;            // REVISIT - call to reset without call to mark
+<i>329</i>&nbsp;            return;
+<i>330</i>&nbsp;        }
+<i>331</i>&nbsp;
+<b class="nc"><i>332</i>&nbsp;        markEngaged = false;</b>
+<i>333</i>&nbsp;
+<i>334</i>&nbsp;        // If we actually did peek across fragments, we need
+<i>335</i>&nbsp;        // to push those fragments onto the front of the
+<i>336</i>&nbsp;        // buffer queue.
+<b class="nc"><i>337</i>&nbsp;        if (fragmentStack != null &amp;&amp; fragmentStack.size() != 0) {</b>
+<b class="nc"><i>338</i>&nbsp;            ListIterator iter = fragmentStack.listIterator();</b>
+<i>339</i>&nbsp;
+<b class="nc"><i>340</i>&nbsp;            synchronized(fragmentQueue) {</b>
+<b class="nc"><i>341</i>&nbsp;                while (iter.hasNext()) {</b>
+<b class="nc"><i>342</i>&nbsp;                    fragmentQueue.push((ByteBufferWithInfo)iter.next());</b>
+<i>343</i>&nbsp;                }
+<b class="nc"><i>344</i>&nbsp;            }</b>
+<i>345</i>&nbsp;
+<b class="nc"><i>346</i>&nbsp;            fragmentStack.clear();</b>
+<i>347</i>&nbsp;        }
+<i>348</i>&nbsp;
+<i>349</i>&nbsp;        // Give the stream the magic Object to restore
+<i>350</i>&nbsp;        // it&#39;s state.
+<b class="nc"><i>351</i>&nbsp;        inputStream.restoreInternalState(streamMemento);</b>
+<i>352</i>&nbsp;    }
+<i>353</i>&nbsp;
+<i>354</i>&nbsp;    public MarkAndResetHandler getMarkAndResetHandler() {
+<b class="nc"><i>355</i>&nbsp;        return this;</b>
+<i>356</i>&nbsp;    }
+<i>357</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

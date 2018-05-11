@@ -1,0 +1,251 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XMLX509Certificate</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.security.keys.content.x509</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XMLX509Certificate (com.sun.org.apache.xml.internal.security.keys.content.x509)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XMLX509Certificate</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 39)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one
+<i>7</i>&nbsp; * or more contributor license agreements. See the NOTICE file
+<i>8</i>&nbsp; * distributed with this work for additional information
+<i>9</i>&nbsp; * regarding copyright ownership. The ASF licenses this file
+<i>10</i>&nbsp; * to you under the Apache License, Version 2.0 (the
+<i>11</i>&nbsp; * &quot;License&quot;); you may not use this file except in compliance
+<i>12</i>&nbsp; * with the License. You may obtain a copy of the License at
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * http://www.apache.org/licenses/LICENSE-2.0
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; * Unless required by applicable law or agreed to in writing,
+<i>17</i>&nbsp; * software distributed under the License is distributed on an
+<i>18</i>&nbsp; * &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+<i>19</i>&nbsp; * KIND, either express or implied. See the License for the
+<i>20</i>&nbsp; * specific language governing permissions and limitations
+<i>21</i>&nbsp; * under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.security.keys.content.x509;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.io.ByteArrayInputStream;
+<i>26</i>&nbsp;import java.security.PublicKey;
+<i>27</i>&nbsp;import java.security.cert.CertificateException;
+<i>28</i>&nbsp;import java.security.cert.CertificateFactory;
+<i>29</i>&nbsp;import java.security.cert.X509Certificate;
+<i>30</i>&nbsp;import java.util.Arrays;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import com.sun.org.apache.xml.internal.security.exceptions.XMLSecurityException;
+<i>33</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.Constants;
+<i>34</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.SignatureElementProxy;
+<i>35</i>&nbsp;import org.w3c.dom.Document;
+<i>36</i>&nbsp;import org.w3c.dom.Element;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;public class XMLX509Certificate extends SignatureElementProxy implements XMLX509DataContent {
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;    /** Field JCA_CERT_ID */
+<i>41</i>&nbsp;    public static final String JCA_CERT_ID = &quot;X.509&quot;;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    /**
+<i>44</i>&nbsp;     * Constructor X509Certificate
+<i>45</i>&nbsp;     *
+<i>46</i>&nbsp;     * @param element
+<i>47</i>&nbsp;     * @param BaseURI
+<i>48</i>&nbsp;     * @throws XMLSecurityException
+<i>49</i>&nbsp;     */
+<i>50</i>&nbsp;    public XMLX509Certificate(Element element, String BaseURI) throws XMLSecurityException {
+<b class="nc"><i>51</i>&nbsp;        super(element, BaseURI);</b>
+<i>52</i>&nbsp;    }
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /**
+<i>55</i>&nbsp;     * Constructor X509Certificate
+<i>56</i>&nbsp;     *
+<i>57</i>&nbsp;     * @param doc
+<i>58</i>&nbsp;     * @param certificateBytes
+<i>59</i>&nbsp;     */
+<i>60</i>&nbsp;    public XMLX509Certificate(Document doc, byte[] certificateBytes) {
+<b class="nc"><i>61</i>&nbsp;        super(doc);</b>
+<i>62</i>&nbsp;
+<b class="nc"><i>63</i>&nbsp;        this.addBase64Text(certificateBytes);</b>
+<i>64</i>&nbsp;    }
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    /**
+<i>67</i>&nbsp;     * Constructor XMLX509Certificate
+<i>68</i>&nbsp;     *
+<i>69</i>&nbsp;     * @param doc
+<i>70</i>&nbsp;     * @param x509certificate
+<i>71</i>&nbsp;     * @throws XMLSecurityException
+<i>72</i>&nbsp;     */
+<i>73</i>&nbsp;    public XMLX509Certificate(Document doc, X509Certificate x509certificate)
+<i>74</i>&nbsp;        throws XMLSecurityException {
+<b class="nc"><i>75</i>&nbsp;        super(doc);</b>
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;        try {
+<b class="nc"><i>78</i>&nbsp;            this.addBase64Text(x509certificate.getEncoded());</b>
+<b class="nc"><i>79</i>&nbsp;        } catch (java.security.cert.CertificateEncodingException ex) {</b>
+<b class="nc"><i>80</i>&nbsp;            throw new XMLSecurityException(&quot;empty&quot;, ex);</b>
+<b class="nc"><i>81</i>&nbsp;        }</b>
+<i>82</i>&nbsp;    }
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    /**
+<i>85</i>&nbsp;     * Method getCertificateBytes
+<i>86</i>&nbsp;     *
+<i>87</i>&nbsp;     * @return the certificate bytes
+<i>88</i>&nbsp;     * @throws XMLSecurityException
+<i>89</i>&nbsp;     */
+<i>90</i>&nbsp;    public byte[] getCertificateBytes() throws XMLSecurityException {
+<b class="nc"><i>91</i>&nbsp;        return this.getBytesFromTextChild();</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    /**
+<i>95</i>&nbsp;     * Method getX509Certificate
+<i>96</i>&nbsp;     *
+<i>97</i>&nbsp;     * @return the x509 certificate
+<i>98</i>&nbsp;     * @throws XMLSecurityException
+<i>99</i>&nbsp;     */
+<i>100</i>&nbsp;    public X509Certificate getX509Certificate() throws XMLSecurityException {
+<i>101</i>&nbsp;        try {
+<b class="nc"><i>102</i>&nbsp;            byte certbytes[] = this.getCertificateBytes();</b>
+<b class="nc"><i>103</i>&nbsp;            CertificateFactory certFact =</b>
+<b class="nc"><i>104</i>&nbsp;                CertificateFactory.getInstance(XMLX509Certificate.JCA_CERT_ID);</b>
+<b class="nc"><i>105</i>&nbsp;            X509Certificate cert =</b>
+<b class="nc"><i>106</i>&nbsp;                (X509Certificate) certFact.generateCertificate(</b>
+<i>107</i>&nbsp;                    new ByteArrayInputStream(certbytes)
+<i>108</i>&nbsp;                );
+<i>109</i>&nbsp;
+<b class="nc"><i>110</i>&nbsp;            if (cert != null) {</b>
+<b class="nc"><i>111</i>&nbsp;                return cert;</b>
+<i>112</i>&nbsp;            }
+<i>113</i>&nbsp;
+<b class="nc"><i>114</i>&nbsp;            return null;</b>
+<b class="nc"><i>115</i>&nbsp;        } catch (CertificateException ex) {</b>
+<b class="nc"><i>116</i>&nbsp;            throw new XMLSecurityException(&quot;empty&quot;, ex);</b>
+<i>117</i>&nbsp;        }
+<i>118</i>&nbsp;    }
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    /**
+<i>121</i>&nbsp;     * Method getPublicKey
+<i>122</i>&nbsp;     *
+<i>123</i>&nbsp;     * @return the publickey
+<i>124</i>&nbsp;     * @throws XMLSecurityException
+<i>125</i>&nbsp;     */
+<i>126</i>&nbsp;    public PublicKey getPublicKey() throws XMLSecurityException {
+<b class="nc"><i>127</i>&nbsp;        X509Certificate cert = this.getX509Certificate();</b>
+<i>128</i>&nbsp;
+<b class="nc"><i>129</i>&nbsp;        if (cert != null) {</b>
+<b class="nc"><i>130</i>&nbsp;            return cert.getPublicKey();</b>
+<i>131</i>&nbsp;        }
+<i>132</i>&nbsp;
+<b class="nc"><i>133</i>&nbsp;        return null;</b>
+<i>134</i>&nbsp;    }
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;    /** @inheritDoc */
+<i>137</i>&nbsp;    public boolean equals(Object obj) {
+<b class="nc"><i>138</i>&nbsp;        if (!(obj instanceof XMLX509Certificate)) {</b>
+<b class="nc"><i>139</i>&nbsp;            return false;</b>
+<i>140</i>&nbsp;        }
+<b class="nc"><i>141</i>&nbsp;        XMLX509Certificate other = (XMLX509Certificate) obj;</b>
+<i>142</i>&nbsp;        try {
+<b class="nc"><i>143</i>&nbsp;            return Arrays.equals(other.getCertificateBytes(), this.getCertificateBytes());</b>
+<b class="nc"><i>144</i>&nbsp;        } catch (XMLSecurityException ex) {</b>
+<b class="nc"><i>145</i>&nbsp;            return false;</b>
+<i>146</i>&nbsp;        }
+<i>147</i>&nbsp;    }
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    public int hashCode() {
+<b class="nc"><i>150</i>&nbsp;        int result = 17;</b>
+<i>151</i>&nbsp;        try {
+<b class="nc"><i>152</i>&nbsp;            byte[] bytes = getCertificateBytes();</b>
+<b class="nc"><i>153</i>&nbsp;            for (int i = 0; i &lt; bytes.length; i++) {</b>
+<b class="nc"><i>154</i>&nbsp;                result = 31 * result + bytes[i];</b>
+<i>155</i>&nbsp;            }
+<b class="nc"><i>156</i>&nbsp;        } catch (XMLSecurityException e) {</b>
+<b class="nc"><i>157</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>158</i>&nbsp;                log.log(java.util.logging.Level.FINE, e.getMessage(), e);</b>
+<i>159</i>&nbsp;            }
+<b class="nc"><i>160</i>&nbsp;        }</b>
+<b class="nc"><i>161</i>&nbsp;        return result;</b>
+<i>162</i>&nbsp;    }
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;    /** @inheritDoc */
+<i>165</i>&nbsp;    public String getBaseLocalName() {
+<b class="nc"><i>166</i>&nbsp;        return Constants._TAG_X509CERTIFICATE;</b>
+<i>167</i>&nbsp;    }
+<i>168</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

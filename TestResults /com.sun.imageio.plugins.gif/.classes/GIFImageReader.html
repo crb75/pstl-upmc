@@ -1,0 +1,1166 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: GIFImageReader</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.imageio.plugins.gif</a> ]
+</div>
+
+<h1>Coverage Summary for Class: GIFImageReader (com.sun.imageio.plugins.gif)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GIFImageReader</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 522)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.imageio.plugins.gif;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.awt.Point;
+<i>29</i>&nbsp;import java.awt.Rectangle;
+<i>30</i>&nbsp;import java.awt.image.BufferedImage;
+<i>31</i>&nbsp;import java.awt.image.DataBuffer;
+<i>32</i>&nbsp;import java.awt.image.WritableRaster;
+<i>33</i>&nbsp;import java.io.EOFException;
+<i>34</i>&nbsp;import java.io.IOException;
+<i>35</i>&nbsp;import java.nio.ByteOrder;
+<i>36</i>&nbsp;import java.util.ArrayList;
+<i>37</i>&nbsp;import java.util.Iterator;
+<i>38</i>&nbsp;import java.util.List;
+<i>39</i>&nbsp;import javax.imageio.IIOException;
+<i>40</i>&nbsp;import javax.imageio.ImageReader;
+<i>41</i>&nbsp;import javax.imageio.ImageReadParam;
+<i>42</i>&nbsp;import javax.imageio.ImageTypeSpecifier;
+<i>43</i>&nbsp;import javax.imageio.metadata.IIOMetadata;
+<i>44</i>&nbsp;import javax.imageio.spi.ImageReaderSpi;
+<i>45</i>&nbsp;import javax.imageio.stream.ImageInputStream;
+<i>46</i>&nbsp;import com.sun.imageio.plugins.common.ReaderUtil;
+<i>47</i>&nbsp;import java.awt.image.ColorModel;
+<i>48</i>&nbsp;import java.awt.image.IndexColorModel;
+<i>49</i>&nbsp;import java.awt.image.MultiPixelPackedSampleModel;
+<i>50</i>&nbsp;import java.awt.image.PixelInterleavedSampleModel;
+<i>51</i>&nbsp;import java.awt.image.SampleModel;
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;public class GIFImageReader extends ImageReader {
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    // The current ImageInputStream source.
+<b class="nc"><i>56</i>&nbsp;    ImageInputStream stream = null;</b>
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    // Per-stream settings
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    // True if the file header including stream metadata has been read.
+<b class="nc"><i>61</i>&nbsp;    boolean gotHeader = false;</b>
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    // Global metadata, read once per input setting.
+<b class="nc"><i>64</i>&nbsp;    GIFStreamMetadata streamMetadata = null;</b>
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    // The current image index
+<b class="nc"><i>67</i>&nbsp;    int currIndex = -1;</b>
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    // Metadata for image at &#39;currIndex&#39;, or null.
+<b class="nc"><i>70</i>&nbsp;    GIFImageMetadata imageMetadata = null;</b>
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;    // A List of Longs indicating the stream positions of the
+<i>73</i>&nbsp;    // start of the metadata for each image.  Entries are added
+<i>74</i>&nbsp;    // as needed.
+<b class="nc"><i>75</i>&nbsp;    List imageStartPosition = new ArrayList();</b>
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    // Length of metadata for image at &#39;currIndex&#39;, valid only if
+<i>78</i>&nbsp;    // imageMetadata != null.
+<i>79</i>&nbsp;    int imageMetadataLength;
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    // The number of images in the stream, if known, otherwise -1.
+<b class="nc"><i>82</i>&nbsp;    int numImages = -1;</b>
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    // Variables used by the LZW decoding process
+<b class="nc"><i>85</i>&nbsp;    byte[] block = new byte[255];</b>
+<b class="nc"><i>86</i>&nbsp;    int blockLength = 0;</b>
+<b class="nc"><i>87</i>&nbsp;    int bitPos = 0;</b>
+<b class="nc"><i>88</i>&nbsp;    int nextByte = 0;</b>
+<i>89</i>&nbsp;    int initCodeSize;
+<i>90</i>&nbsp;    int clearCode;
+<i>91</i>&nbsp;    int eofCode;
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    // 32-bit lookahead buffer
+<b class="nc"><i>94</i>&nbsp;    int next32Bits = 0;</b>
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    // Try if the end of the data blocks has been found,
+<i>97</i>&nbsp;    // and we are simply draining the 32-bit buffer
+<b class="nc"><i>98</i>&nbsp;    boolean lastBlockFound = false;</b>
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;    // The image to be written.
+<b class="nc"><i>101</i>&nbsp;    BufferedImage theImage = null;</b>
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    // The image&#39;s tile.
+<b class="nc"><i>104</i>&nbsp;    WritableRaster theTile = null;</b>
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;    // The image dimensions (from the stream).
+<b class="nc"><i>107</i>&nbsp;    int width = -1, height = -1;</b>
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    // The pixel currently being decoded (in the stream&#39;s coordinates).
+<b class="nc"><i>110</i>&nbsp;    int streamX = -1, streamY = -1;</b>
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;    // The number of rows decoded
+<b class="nc"><i>113</i>&nbsp;    int rowsDone = 0;</b>
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;    // The current interlace pass, starting with 0.
+<b class="nc"><i>116</i>&nbsp;    int interlacePass = 0;</b>
+<i>117</i>&nbsp;
+<b class="nc"><i>118</i>&nbsp;    private byte[] fallbackColorTable = null;</b>
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    // End per-stream settings
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;    // Constants used to control interlacing.
+<b class="nc"><i>123</i>&nbsp;    static final int[] interlaceIncrement = { 8, 8, 4, 2, -1 };</b>
+<b class="nc"><i>124</i>&nbsp;    static final int[] interlaceOffset = { 0, 4, 2, 1, -1 };</b>
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;    public GIFImageReader(ImageReaderSpi originatingProvider) {
+<b class="nc"><i>127</i>&nbsp;        super(originatingProvider);</b>
+<i>128</i>&nbsp;    }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    // Take input from an ImageInputStream
+<i>131</i>&nbsp;    public void setInput(Object input,
+<i>132</i>&nbsp;                         boolean seekForwardOnly,
+<i>133</i>&nbsp;                         boolean ignoreMetadata) {
+<b class="nc"><i>134</i>&nbsp;        super.setInput(input, seekForwardOnly, ignoreMetadata);</b>
+<b class="nc"><i>135</i>&nbsp;        if (input != null) {</b>
+<b class="nc"><i>136</i>&nbsp;            if (!(input instanceof ImageInputStream)) {</b>
+<b class="nc"><i>137</i>&nbsp;                throw new IllegalArgumentException</b>
+<i>138</i>&nbsp;                    (&quot;input not an ImageInputStream!&quot;);
+<i>139</i>&nbsp;            }
+<b class="nc"><i>140</i>&nbsp;            this.stream = (ImageInputStream)input;</b>
+<i>141</i>&nbsp;        } else {
+<b class="nc"><i>142</i>&nbsp;            this.stream = null;</b>
+<i>143</i>&nbsp;        }
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;        // Clear all values based on the previous stream contents
+<b class="nc"><i>146</i>&nbsp;        resetStreamSettings();</b>
+<i>147</i>&nbsp;    }
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    public int getNumImages(boolean allowSearch) throws IIOException {
+<b class="nc"><i>150</i>&nbsp;        if (stream == null) {</b>
+<b class="nc"><i>151</i>&nbsp;            throw new IllegalStateException(&quot;Input not set!&quot;);</b>
+<i>152</i>&nbsp;        }
+<b class="nc"><i>153</i>&nbsp;        if (seekForwardOnly &amp;&amp; allowSearch) {</b>
+<b class="nc"><i>154</i>&nbsp;            throw new IllegalStateException</b>
+<i>155</i>&nbsp;                (&quot;seekForwardOnly and allowSearch can&#39;t both be true!&quot;);
+<i>156</i>&nbsp;        }
+<i>157</i>&nbsp;
+<b class="nc"><i>158</i>&nbsp;        if (numImages &gt; 0) {</b>
+<b class="nc"><i>159</i>&nbsp;            return numImages;</b>
+<i>160</i>&nbsp;        }
+<b class="nc"><i>161</i>&nbsp;        if (allowSearch) {</b>
+<b class="nc"><i>162</i>&nbsp;            this.numImages = locateImage(Integer.MAX_VALUE) + 1;</b>
+<i>163</i>&nbsp;        }
+<b class="nc"><i>164</i>&nbsp;        return numImages;</b>
+<i>165</i>&nbsp;    }
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;    // Throw an IndexOutOfBoundsException if index &lt; minIndex,
+<i>168</i>&nbsp;    // and bump minIndex if required.
+<i>169</i>&nbsp;    private void checkIndex(int imageIndex) {
+<b class="nc"><i>170</i>&nbsp;        if (imageIndex &lt; minIndex) {</b>
+<b class="nc"><i>171</i>&nbsp;            throw new IndexOutOfBoundsException(&quot;imageIndex &lt; minIndex!&quot;);</b>
+<i>172</i>&nbsp;        }
+<b class="nc"><i>173</i>&nbsp;        if (seekForwardOnly) {</b>
+<b class="nc"><i>174</i>&nbsp;            minIndex = imageIndex;</b>
+<i>175</i>&nbsp;        }
+<i>176</i>&nbsp;    }
+<i>177</i>&nbsp;
+<i>178</i>&nbsp;    public int getWidth(int imageIndex) throws IIOException {
+<b class="nc"><i>179</i>&nbsp;        checkIndex(imageIndex);</b>
+<i>180</i>&nbsp;
+<b class="nc"><i>181</i>&nbsp;        int index = locateImage(imageIndex);</b>
+<b class="nc"><i>182</i>&nbsp;        if (index != imageIndex) {</b>
+<b class="nc"><i>183</i>&nbsp;            throw new IndexOutOfBoundsException();</b>
+<i>184</i>&nbsp;        }
+<b class="nc"><i>185</i>&nbsp;        readMetadata();</b>
+<b class="nc"><i>186</i>&nbsp;        return imageMetadata.imageWidth;</b>
+<i>187</i>&nbsp;    }
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;    public int getHeight(int imageIndex) throws IIOException {
+<b class="nc"><i>190</i>&nbsp;        checkIndex(imageIndex);</b>
+<i>191</i>&nbsp;
+<b class="nc"><i>192</i>&nbsp;        int index = locateImage(imageIndex);</b>
+<b class="nc"><i>193</i>&nbsp;        if (index != imageIndex) {</b>
+<b class="nc"><i>194</i>&nbsp;            throw new IndexOutOfBoundsException();</b>
+<i>195</i>&nbsp;        }
+<b class="nc"><i>196</i>&nbsp;        readMetadata();</b>
+<b class="nc"><i>197</i>&nbsp;        return imageMetadata.imageHeight;</b>
+<i>198</i>&nbsp;    }
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;    // We don&#39;t check all parameters as ImageTypeSpecifier.createIndexed do
+<i>201</i>&nbsp;    // since this method is private and we pass consistent data here
+<i>202</i>&nbsp;    private ImageTypeSpecifier createIndexed(byte[] r, byte[] g, byte[] b,
+<i>203</i>&nbsp;                                             int bits) {
+<i>204</i>&nbsp;        ColorModel colorModel;
+<b class="nc"><i>205</i>&nbsp;        if (imageMetadata.transparentColorFlag) {</b>
+<i>206</i>&nbsp;            // Some files erroneously have a transparent color index
+<i>207</i>&nbsp;            // of 255 even though there are fewer than 256 colors.
+<b class="nc"><i>208</i>&nbsp;            int idx = Math.min(imageMetadata.transparentColorIndex,</b>
+<i>209</i>&nbsp;                    r.length - 1);
+<b class="nc"><i>210</i>&nbsp;            colorModel = new IndexColorModel(bits, r.length, r, g, b, idx);</b>
+<b class="nc"><i>211</i>&nbsp;        } else {</b>
+<b class="nc"><i>212</i>&nbsp;            colorModel = new IndexColorModel(bits, r.length, r, g, b);</b>
+<i>213</i>&nbsp;        }
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;        SampleModel sampleModel;
+<b class="nc"><i>216</i>&nbsp;        if (bits == 8) {</b>
+<b class="nc"><i>217</i>&nbsp;            int[] bandOffsets = {0};</b>
+<b class="nc"><i>218</i>&nbsp;            sampleModel =</b>
+<i>219</i>&nbsp;                    new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE,
+<i>220</i>&nbsp;                    1, 1, 1, 1,
+<i>221</i>&nbsp;                    bandOffsets);
+<b class="nc"><i>222</i>&nbsp;        } else {</b>
+<b class="nc"><i>223</i>&nbsp;            sampleModel =</b>
+<i>224</i>&nbsp;                    new MultiPixelPackedSampleModel(DataBuffer.TYPE_BYTE,
+<i>225</i>&nbsp;                    1, 1, bits);
+<i>226</i>&nbsp;        }
+<b class="nc"><i>227</i>&nbsp;        return new ImageTypeSpecifier(colorModel, sampleModel);</b>
+<i>228</i>&nbsp;    }
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;    public Iterator getImageTypes(int imageIndex) throws IIOException {
+<b class="nc"><i>231</i>&nbsp;        checkIndex(imageIndex);</b>
+<i>232</i>&nbsp;
+<b class="nc"><i>233</i>&nbsp;        int index = locateImage(imageIndex);</b>
+<b class="nc"><i>234</i>&nbsp;        if (index != imageIndex) {</b>
+<b class="nc"><i>235</i>&nbsp;            throw new IndexOutOfBoundsException();</b>
+<i>236</i>&nbsp;        }
+<b class="nc"><i>237</i>&nbsp;        readMetadata();</b>
+<i>238</i>&nbsp;
+<b class="nc"><i>239</i>&nbsp;        List l = new ArrayList(1);</b>
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;        byte[] colorTable;
+<b class="nc"><i>242</i>&nbsp;        if (imageMetadata.localColorTable != null) {</b>
+<b class="nc"><i>243</i>&nbsp;            colorTable = imageMetadata.localColorTable;</b>
+<b class="nc"><i>244</i>&nbsp;            fallbackColorTable = imageMetadata.localColorTable;</b>
+<i>245</i>&nbsp;        } else {
+<b class="nc"><i>246</i>&nbsp;            colorTable = streamMetadata.globalColorTable;</b>
+<i>247</i>&nbsp;        }
+<i>248</i>&nbsp;
+<b class="nc"><i>249</i>&nbsp;        if (colorTable == null) {</b>
+<b class="nc"><i>250</i>&nbsp;            if (fallbackColorTable == null) {</b>
+<b class="nc"><i>251</i>&nbsp;                this.processWarningOccurred(&quot;Use default color table.&quot;);</b>
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;                // no color table, the spec allows to use any palette.
+<b class="nc"><i>254</i>&nbsp;                fallbackColorTable = getDefaultPalette();</b>
+<i>255</i>&nbsp;            }
+<i>256</i>&nbsp;
+<b class="nc"><i>257</i>&nbsp;            colorTable = fallbackColorTable;</b>
+<i>258</i>&nbsp;        }
+<i>259</i>&nbsp;
+<i>260</i>&nbsp;        // Normalize color table length to 2^1, 2^2, 2^4, or 2^8
+<b class="nc"><i>261</i>&nbsp;        int length = colorTable.length/3;</b>
+<i>262</i>&nbsp;        int bits;
+<b class="nc"><i>263</i>&nbsp;        if (length == 2) {</b>
+<b class="nc"><i>264</i>&nbsp;            bits = 1;</b>
+<b class="nc"><i>265</i>&nbsp;        } else if (length == 4) {</b>
+<b class="nc"><i>266</i>&nbsp;            bits = 2;</b>
+<b class="nc"><i>267</i>&nbsp;        } else if (length == 8 || length == 16) {</b>
+<i>268</i>&nbsp;            // Bump from 3 to 4 bits
+<b class="nc"><i>269</i>&nbsp;            bits = 4;</b>
+<i>270</i>&nbsp;        } else {
+<i>271</i>&nbsp;            // Bump to 8 bits
+<b class="nc"><i>272</i>&nbsp;            bits = 8;</b>
+<i>273</i>&nbsp;        }
+<b class="nc"><i>274</i>&nbsp;        int lutLength = 1 &lt;&lt; bits;</b>
+<b class="nc"><i>275</i>&nbsp;        byte[] r = new byte[lutLength];</b>
+<b class="nc"><i>276</i>&nbsp;        byte[] g = new byte[lutLength];</b>
+<b class="nc"><i>277</i>&nbsp;        byte[] b = new byte[lutLength];</b>
+<i>278</i>&nbsp;
+<i>279</i>&nbsp;        // Entries from length + 1 to lutLength - 1 will be 0
+<b class="nc"><i>280</i>&nbsp;        int rgbIndex = 0;</b>
+<b class="nc"><i>281</i>&nbsp;        for (int i = 0; i &lt; length; i++) {</b>
+<b class="nc"><i>282</i>&nbsp;            r[i] = colorTable[rgbIndex++];</b>
+<b class="nc"><i>283</i>&nbsp;            g[i] = colorTable[rgbIndex++];</b>
+<b class="nc"><i>284</i>&nbsp;            b[i] = colorTable[rgbIndex++];</b>
+<i>285</i>&nbsp;        }
+<i>286</i>&nbsp;
+<b class="nc"><i>287</i>&nbsp;        l.add(createIndexed(r, g, b, bits));</b>
+<b class="nc"><i>288</i>&nbsp;        return l.iterator();</b>
+<i>289</i>&nbsp;    }
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;    public ImageReadParam getDefaultReadParam() {
+<b class="nc"><i>292</i>&nbsp;        return new ImageReadParam();</b>
+<i>293</i>&nbsp;    }
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;    public IIOMetadata getStreamMetadata() throws IIOException {
+<b class="nc"><i>296</i>&nbsp;        readHeader();</b>
+<b class="nc"><i>297</i>&nbsp;        return streamMetadata;</b>
+<i>298</i>&nbsp;    }
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;    public IIOMetadata getImageMetadata(int imageIndex) throws IIOException {
+<b class="nc"><i>301</i>&nbsp;        checkIndex(imageIndex);</b>
+<i>302</i>&nbsp;
+<b class="nc"><i>303</i>&nbsp;        int index = locateImage(imageIndex);</b>
+<b class="nc"><i>304</i>&nbsp;        if (index != imageIndex) {</b>
+<b class="nc"><i>305</i>&nbsp;            throw new IndexOutOfBoundsException(&quot;Bad image index!&quot;);</b>
+<i>306</i>&nbsp;        }
+<b class="nc"><i>307</i>&nbsp;        readMetadata();</b>
+<b class="nc"><i>308</i>&nbsp;        return imageMetadata;</b>
+<i>309</i>&nbsp;    }
+<i>310</i>&nbsp;
+<i>311</i>&nbsp;    // BEGIN LZW STUFF
+<i>312</i>&nbsp;
+<i>313</i>&nbsp;    private void initNext32Bits() {
+<b class="nc"><i>314</i>&nbsp;        next32Bits = block[0] &amp; 0xff;</b>
+<b class="nc"><i>315</i>&nbsp;        next32Bits |= (block[1] &amp; 0xff) &lt;&lt; 8;</b>
+<b class="nc"><i>316</i>&nbsp;        next32Bits |= (block[2] &amp; 0xff) &lt;&lt; 16;</b>
+<b class="nc"><i>317</i>&nbsp;        next32Bits |= block[3] &lt;&lt; 24;</b>
+<b class="nc"><i>318</i>&nbsp;        nextByte = 4;</b>
+<i>319</i>&nbsp;    }
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;    // Load a block (1-255 bytes) at a time, and maintain
+<i>322</i>&nbsp;    // a 32-bit lookahead buffer that is filled from the left
+<i>323</i>&nbsp;    // and extracted from the right.
+<i>324</i>&nbsp;    //
+<i>325</i>&nbsp;    // When the last block is found, we continue to
+<i>326</i>&nbsp;    //
+<i>327</i>&nbsp;    private int getCode(int codeSize, int codeMask) throws IOException {
+<b class="nc"><i>328</i>&nbsp;        if (bitPos + codeSize &gt; 32) {</b>
+<b class="nc"><i>329</i>&nbsp;            return eofCode; // No more data available</b>
+<i>330</i>&nbsp;        }
+<i>331</i>&nbsp;
+<b class="nc"><i>332</i>&nbsp;        int code = (next32Bits &gt;&gt; bitPos) &amp; codeMask;</b>
+<b class="nc"><i>333</i>&nbsp;        bitPos += codeSize;</b>
+<i>334</i>&nbsp;
+<i>335</i>&nbsp;        // Shift in a byte of new data at a time
+<b class="nc"><i>336</i>&nbsp;        while (bitPos &gt;= 8 &amp;&amp; !lastBlockFound) {</b>
+<b class="nc"><i>337</i>&nbsp;            next32Bits &gt;&gt;&gt;= 8;</b>
+<b class="nc"><i>338</i>&nbsp;            bitPos -= 8;</b>
+<i>339</i>&nbsp;
+<i>340</i>&nbsp;            // Check if current block is out of bytes
+<b class="nc"><i>341</i>&nbsp;            if (nextByte &gt;= blockLength) {</b>
+<i>342</i>&nbsp;                // Get next block size
+<b class="nc"><i>343</i>&nbsp;                blockLength = stream.readUnsignedByte();</b>
+<b class="nc"><i>344</i>&nbsp;                if (blockLength == 0) {</b>
+<b class="nc"><i>345</i>&nbsp;                    lastBlockFound = true;</b>
+<b class="nc"><i>346</i>&nbsp;                    return code;</b>
+<i>347</i>&nbsp;                } else {
+<b class="nc"><i>348</i>&nbsp;                    int left = blockLength;</b>
+<b class="nc"><i>349</i>&nbsp;                    int off = 0;</b>
+<b class="nc"><i>350</i>&nbsp;                    while (left &gt; 0) {</b>
+<b class="nc"><i>351</i>&nbsp;                        int nbytes = stream.read(block, off, left);</b>
+<b class="nc"><i>352</i>&nbsp;                        off += nbytes;</b>
+<b class="nc"><i>353</i>&nbsp;                        left -= nbytes;</b>
+<b class="nc"><i>354</i>&nbsp;                    }</b>
+<b class="nc"><i>355</i>&nbsp;                    nextByte = 0;</b>
+<i>356</i>&nbsp;                }
+<i>357</i>&nbsp;            }
+<i>358</i>&nbsp;
+<b class="nc"><i>359</i>&nbsp;            next32Bits |= block[nextByte++] &lt;&lt; 24;</b>
+<i>360</i>&nbsp;        }
+<i>361</i>&nbsp;
+<b class="nc"><i>362</i>&nbsp;        return code;</b>
+<i>363</i>&nbsp;    }
+<i>364</i>&nbsp;
+<i>365</i>&nbsp;    public void initializeStringTable(int[] prefix,
+<i>366</i>&nbsp;                                      byte[] suffix,
+<i>367</i>&nbsp;                                      byte[] initial,
+<i>368</i>&nbsp;                                      int[] length) {
+<b class="nc"><i>369</i>&nbsp;        int numEntries = 1 &lt;&lt; initCodeSize;</b>
+<b class="nc"><i>370</i>&nbsp;        for (int i = 0; i &lt; numEntries; i++) {</b>
+<b class="nc"><i>371</i>&nbsp;            prefix[i] = -1;</b>
+<b class="nc"><i>372</i>&nbsp;            suffix[i] = (byte)i;</b>
+<b class="nc"><i>373</i>&nbsp;            initial[i] = (byte)i;</b>
+<b class="nc"><i>374</i>&nbsp;            length[i] = 1;</b>
+<i>375</i>&nbsp;        }
+<i>376</i>&nbsp;
+<i>377</i>&nbsp;        // Fill in the entire table for robustness against
+<i>378</i>&nbsp;        // out-of-sequence codes.
+<b class="nc"><i>379</i>&nbsp;        for (int i = numEntries; i &lt; 4096; i++) {</b>
+<b class="nc"><i>380</i>&nbsp;            prefix[i] = -1;</b>
+<b class="nc"><i>381</i>&nbsp;            length[i] = 1;</b>
+<i>382</i>&nbsp;        }
+<i>383</i>&nbsp;
+<i>384</i>&nbsp;        // tableIndex = numEntries + 2;
+<i>385</i>&nbsp;        // codeSize = initCodeSize + 1;
+<i>386</i>&nbsp;        // codeMask = (1 &lt;&lt; codeSize) - 1;
+<i>387</i>&nbsp;    }
+<i>388</i>&nbsp;
+<i>389</i>&nbsp;    Rectangle sourceRegion;
+<i>390</i>&nbsp;    int sourceXSubsampling;
+<i>391</i>&nbsp;    int sourceYSubsampling;
+<i>392</i>&nbsp;    int sourceMinProgressivePass;
+<i>393</i>&nbsp;    int sourceMaxProgressivePass;
+<i>394</i>&nbsp;
+<i>395</i>&nbsp;    Point destinationOffset;
+<i>396</i>&nbsp;    Rectangle destinationRegion;
+<i>397</i>&nbsp;
+<i>398</i>&nbsp;    // Used only if IIOReadUpdateListeners are present
+<i>399</i>&nbsp;    int updateMinY;
+<i>400</i>&nbsp;    int updateYStep;
+<i>401</i>&nbsp;
+<b class="nc"><i>402</i>&nbsp;    boolean decodeThisRow = true;</b>
+<b class="nc"><i>403</i>&nbsp;    int destY = 0;</b>
+<i>404</i>&nbsp;
+<i>405</i>&nbsp;    byte[] rowBuf;
+<i>406</i>&nbsp;
+<i>407</i>&nbsp;    private void outputRow() {
+<i>408</i>&nbsp;        // Clip against ImageReadParam
+<b class="nc"><i>409</i>&nbsp;        int width = Math.min(sourceRegion.width,</b>
+<i>410</i>&nbsp;                             destinationRegion.width*sourceXSubsampling);
+<b class="nc"><i>411</i>&nbsp;        int destX = destinationRegion.x;</b>
+<i>412</i>&nbsp;
+<b class="nc"><i>413</i>&nbsp;        if (sourceXSubsampling == 1) {</b>
+<b class="nc"><i>414</i>&nbsp;            theTile.setDataElements(destX, destY, width, 1, rowBuf);</b>
+<i>415</i>&nbsp;        } else {
+<b class="nc"><i>416</i>&nbsp;            for (int x = 0; x &lt; width; x += sourceXSubsampling, destX++) {</b>
+<b class="nc"><i>417</i>&nbsp;                theTile.setSample(destX, destY, 0, rowBuf[x] &amp; 0xff);</b>
+<i>418</i>&nbsp;            }
+<i>419</i>&nbsp;        }
+<i>420</i>&nbsp;
+<i>421</i>&nbsp;        // Update IIOReadUpdateListeners, if any
+<b class="nc"><i>422</i>&nbsp;        if (updateListeners != null) {</b>
+<b class="nc"><i>423</i>&nbsp;            int[] bands = { 0 };</b>
+<i>424</i>&nbsp;            // updateYStep will have been initialized if
+<i>425</i>&nbsp;            // updateListeners is non-null
+<b class="nc"><i>426</i>&nbsp;            processImageUpdate(theImage,</b>
+<i>427</i>&nbsp;                               destX, destY,
+<i>428</i>&nbsp;                               width, 1, 1, updateYStep,
+<i>429</i>&nbsp;                               bands);
+<i>430</i>&nbsp;        }
+<i>431</i>&nbsp;    }
+<i>432</i>&nbsp;
+<i>433</i>&nbsp;    private void computeDecodeThisRow() {
+<b class="nc"><i>434</i>&nbsp;        this.decodeThisRow =</b>
+<i>435</i>&nbsp;            (destY &lt; destinationRegion.y + destinationRegion.height) &amp;&amp;
+<i>436</i>&nbsp;            (streamY &gt;= sourceRegion.y) &amp;&amp;
+<i>437</i>&nbsp;            (streamY &lt; sourceRegion.y + sourceRegion.height) &amp;&amp;
+<i>438</i>&nbsp;            (((streamY - sourceRegion.y) % sourceYSubsampling) == 0);
+<i>439</i>&nbsp;    }
+<i>440</i>&nbsp;
+<i>441</i>&nbsp;    private void outputPixels(byte[] string, int len) {
+<b class="nc"><i>442</i>&nbsp;        if (interlacePass &lt; sourceMinProgressivePass ||</b>
+<i>443</i>&nbsp;            interlacePass &gt; sourceMaxProgressivePass) {
+<i>444</i>&nbsp;            return;
+<i>445</i>&nbsp;        }
+<i>446</i>&nbsp;
+<b class="nc"><i>447</i>&nbsp;        for (int i = 0; i &lt; len; i++) {</b>
+<b class="nc"><i>448</i>&nbsp;            if (streamX &gt;= sourceRegion.x) {</b>
+<b class="nc"><i>449</i>&nbsp;                rowBuf[streamX - sourceRegion.x] = string[i];</b>
+<i>450</i>&nbsp;            }
+<i>451</i>&nbsp;
+<i>452</i>&nbsp;            // Process end-of-row
+<b class="nc"><i>453</i>&nbsp;            ++streamX;</b>
+<b class="nc"><i>454</i>&nbsp;            if (streamX == width) {</b>
+<i>455</i>&nbsp;                // Update IIOReadProgressListeners
+<b class="nc"><i>456</i>&nbsp;                ++rowsDone;</b>
+<b class="nc"><i>457</i>&nbsp;                processImageProgress(100.0F*rowsDone/height);</b>
+<i>458</i>&nbsp;
+<b class="nc"><i>459</i>&nbsp;                if (decodeThisRow) {</b>
+<b class="nc"><i>460</i>&nbsp;                    outputRow();</b>
+<i>461</i>&nbsp;                }
+<i>462</i>&nbsp;
+<b class="nc"><i>463</i>&nbsp;                streamX = 0;</b>
+<b class="nc"><i>464</i>&nbsp;                if (imageMetadata.interlaceFlag) {</b>
+<b class="nc"><i>465</i>&nbsp;                    streamY += interlaceIncrement[interlacePass];</b>
+<b class="nc"><i>466</i>&nbsp;                    if (streamY &gt;= height) {</b>
+<i>467</i>&nbsp;                        // Inform IIOReadUpdateListeners of end of pass
+<b class="nc"><i>468</i>&nbsp;                        if (updateListeners != null) {</b>
+<b class="nc"><i>469</i>&nbsp;                            processPassComplete(theImage);</b>
+<i>470</i>&nbsp;                        }
+<i>471</i>&nbsp;
+<b class="nc"><i>472</i>&nbsp;                        ++interlacePass;</b>
+<b class="nc"><i>473</i>&nbsp;                        if (interlacePass &gt; sourceMaxProgressivePass) {</b>
+<i>474</i>&nbsp;                            return;
+<i>475</i>&nbsp;                        }
+<b class="nc"><i>476</i>&nbsp;                        streamY = interlaceOffset[interlacePass];</b>
+<b class="nc"><i>477</i>&nbsp;                        startPass(interlacePass);</b>
+<i>478</i>&nbsp;                    }
+<i>479</i>&nbsp;                } else {
+<b class="nc"><i>480</i>&nbsp;                    ++streamY;</b>
+<i>481</i>&nbsp;                }
+<i>482</i>&nbsp;
+<i>483</i>&nbsp;                // Determine whether pixels from this row will
+<i>484</i>&nbsp;                // be written to the destination
+<b class="nc"><i>485</i>&nbsp;                this.destY = destinationRegion.y +</b>
+<i>486</i>&nbsp;                    (streamY - sourceRegion.y)/sourceYSubsampling;
+<b class="nc"><i>487</i>&nbsp;                computeDecodeThisRow();</b>
+<i>488</i>&nbsp;            }
+<i>489</i>&nbsp;        }
+<i>490</i>&nbsp;    }
+<i>491</i>&nbsp;
+<i>492</i>&nbsp;    // END LZW STUFF
+<i>493</i>&nbsp;
+<i>494</i>&nbsp;    private void readHeader() throws IIOException {
+<b class="nc"><i>495</i>&nbsp;        if (gotHeader) {</b>
+<i>496</i>&nbsp;            return;
+<i>497</i>&nbsp;        }
+<b class="nc"><i>498</i>&nbsp;        if (stream == null) {</b>
+<b class="nc"><i>499</i>&nbsp;            throw new IllegalStateException(&quot;Input not set!&quot;);</b>
+<i>500</i>&nbsp;        }
+<i>501</i>&nbsp;
+<i>502</i>&nbsp;        // Create an object to store the stream metadata
+<b class="nc"><i>503</i>&nbsp;        this.streamMetadata = new GIFStreamMetadata();</b>
+<i>504</i>&nbsp;
+<i>505</i>&nbsp;        try {
+<b class="nc"><i>506</i>&nbsp;            stream.setByteOrder(ByteOrder.LITTLE_ENDIAN);</b>
+<i>507</i>&nbsp;
+<b class="nc"><i>508</i>&nbsp;            byte[] signature = new byte[6];</b>
+<b class="nc"><i>509</i>&nbsp;            stream.readFully(signature);</b>
+<i>510</i>&nbsp;
+<b class="nc"><i>511</i>&nbsp;            StringBuffer version = new StringBuffer(3);</b>
+<b class="nc"><i>512</i>&nbsp;            version.append((char)signature[3]);</b>
+<b class="nc"><i>513</i>&nbsp;            version.append((char)signature[4]);</b>
+<b class="nc"><i>514</i>&nbsp;            version.append((char)signature[5]);</b>
+<b class="nc"><i>515</i>&nbsp;            streamMetadata.version = version.toString();</b>
+<i>516</i>&nbsp;
+<b class="nc"><i>517</i>&nbsp;            streamMetadata.logicalScreenWidth = stream.readUnsignedShort();</b>
+<b class="nc"><i>518</i>&nbsp;            streamMetadata.logicalScreenHeight = stream.readUnsignedShort();</b>
+<i>519</i>&nbsp;
+<b class="nc"><i>520</i>&nbsp;            int packedFields = stream.readUnsignedByte();</b>
+<b class="nc"><i>521</i>&nbsp;            boolean globalColorTableFlag = (packedFields &amp; 0x80) != 0;</b>
+<b class="nc"><i>522</i>&nbsp;            streamMetadata.colorResolution = ((packedFields &gt;&gt; 4) &amp; 0x7) + 1;</b>
+<b class="nc"><i>523</i>&nbsp;            streamMetadata.sortFlag = (packedFields &amp; 0x8) != 0;</b>
+<b class="nc"><i>524</i>&nbsp;            int numGCTEntries = 1 &lt;&lt; ((packedFields &amp; 0x7) + 1);</b>
+<i>525</i>&nbsp;
+<b class="nc"><i>526</i>&nbsp;            streamMetadata.backgroundColorIndex = stream.readUnsignedByte();</b>
+<b class="nc"><i>527</i>&nbsp;            streamMetadata.pixelAspectRatio = stream.readUnsignedByte();</b>
+<i>528</i>&nbsp;
+<b class="nc"><i>529</i>&nbsp;            if (globalColorTableFlag) {</b>
+<b class="nc"><i>530</i>&nbsp;                streamMetadata.globalColorTable = new byte[3*numGCTEntries];</b>
+<b class="nc"><i>531</i>&nbsp;                stream.readFully(streamMetadata.globalColorTable);</b>
+<i>532</i>&nbsp;            } else {
+<b class="nc"><i>533</i>&nbsp;                streamMetadata.globalColorTable = null;</b>
+<i>534</i>&nbsp;            }
+<i>535</i>&nbsp;
+<i>536</i>&nbsp;            // Found position of metadata for image 0
+<b class="nc"><i>537</i>&nbsp;            imageStartPosition.add(Long.valueOf(stream.getStreamPosition()));</b>
+<b class="nc"><i>538</i>&nbsp;        } catch (IOException e) {</b>
+<b class="nc"><i>539</i>&nbsp;            throw new IIOException(&quot;I/O error reading header!&quot;, e);</b>
+<b class="nc"><i>540</i>&nbsp;        }</b>
+<i>541</i>&nbsp;
+<b class="nc"><i>542</i>&nbsp;        gotHeader = true;</b>
+<i>543</i>&nbsp;    }
+<i>544</i>&nbsp;
+<i>545</i>&nbsp;    private boolean skipImage() throws IIOException {
+<i>546</i>&nbsp;        // Stream must be at the beginning of an image descriptor
+<i>547</i>&nbsp;        // upon exit
+<i>548</i>&nbsp;
+<i>549</i>&nbsp;        try {
+<i>550</i>&nbsp;            while (true) {
+<b class="nc"><i>551</i>&nbsp;                int blockType = stream.readUnsignedByte();</b>
+<i>552</i>&nbsp;
+<b class="nc"><i>553</i>&nbsp;                if (blockType == 0x2c) {</b>
+<b class="nc"><i>554</i>&nbsp;                    stream.skipBytes(8);</b>
+<i>555</i>&nbsp;
+<b class="nc"><i>556</i>&nbsp;                    int packedFields = stream.readUnsignedByte();</b>
+<b class="nc"><i>557</i>&nbsp;                    if ((packedFields &amp; 0x80) != 0) {</b>
+<i>558</i>&nbsp;                        // Skip color table if any
+<b class="nc"><i>559</i>&nbsp;                        int bits = (packedFields &amp; 0x7) + 1;</b>
+<b class="nc"><i>560</i>&nbsp;                        stream.skipBytes(3*(1 &lt;&lt; bits));</b>
+<i>561</i>&nbsp;                    }
+<i>562</i>&nbsp;
+<b class="nc"><i>563</i>&nbsp;                    stream.skipBytes(1);</b>
+<i>564</i>&nbsp;
+<b class="nc"><i>565</i>&nbsp;                    int length = 0;</b>
+<i>566</i>&nbsp;                    do {
+<b class="nc"><i>567</i>&nbsp;                        length = stream.readUnsignedByte();</b>
+<b class="nc"><i>568</i>&nbsp;                        stream.skipBytes(length);</b>
+<b class="nc"><i>569</i>&nbsp;                    } while (length &gt; 0);</b>
+<i>570</i>&nbsp;
+<b class="nc"><i>571</i>&nbsp;                    return true;</b>
+<b class="nc"><i>572</i>&nbsp;                } else if (blockType == 0x3b) {</b>
+<b class="nc"><i>573</i>&nbsp;                    return false;</b>
+<b class="nc"><i>574</i>&nbsp;                } else if (blockType == 0x21) {</b>
+<b class="nc"><i>575</i>&nbsp;                    int label = stream.readUnsignedByte();</b>
+<i>576</i>&nbsp;
+<b class="nc"><i>577</i>&nbsp;                    int length = 0;</b>
+<i>578</i>&nbsp;                    do {
+<b class="nc"><i>579</i>&nbsp;                        length = stream.readUnsignedByte();</b>
+<b class="nc"><i>580</i>&nbsp;                        stream.skipBytes(length);</b>
+<b class="nc"><i>581</i>&nbsp;                    } while (length &gt; 0);</b>
+<b class="nc"><i>582</i>&nbsp;                } else if (blockType == 0x0) {</b>
+<i>583</i>&nbsp;                    // EOF
+<b class="nc"><i>584</i>&nbsp;                    return false;</b>
+<i>585</i>&nbsp;                } else {
+<b class="nc"><i>586</i>&nbsp;                    int length = 0;</b>
+<i>587</i>&nbsp;                    do {
+<b class="nc"><i>588</i>&nbsp;                        length = stream.readUnsignedByte();</b>
+<b class="nc"><i>589</i>&nbsp;                        stream.skipBytes(length);</b>
+<b class="nc"><i>590</i>&nbsp;                    } while (length &gt; 0);</b>
+<i>591</i>&nbsp;                }
+<b class="nc"><i>592</i>&nbsp;            }</b>
+<b class="nc"><i>593</i>&nbsp;        } catch (EOFException e) {</b>
+<b class="nc"><i>594</i>&nbsp;            return false;</b>
+<b class="nc"><i>595</i>&nbsp;        } catch (IOException e) {</b>
+<b class="nc"><i>596</i>&nbsp;            throw new IIOException(&quot;I/O error locating image!&quot;, e);</b>
+<i>597</i>&nbsp;        }
+<i>598</i>&nbsp;    }
+<i>599</i>&nbsp;
+<i>600</i>&nbsp;    private int locateImage(int imageIndex) throws IIOException {
+<b class="nc"><i>601</i>&nbsp;        readHeader();</b>
+<i>602</i>&nbsp;
+<i>603</i>&nbsp;        try {
+<i>604</i>&nbsp;            // Find closest known index
+<b class="nc"><i>605</i>&nbsp;            int index = Math.min(imageIndex, imageStartPosition.size() - 1);</b>
+<i>606</i>&nbsp;
+<i>607</i>&nbsp;            // Seek to that position
+<b class="nc"><i>608</i>&nbsp;            Long l = (Long)imageStartPosition.get(index);</b>
+<b class="nc"><i>609</i>&nbsp;            stream.seek(l.longValue());</b>
+<i>610</i>&nbsp;
+<i>611</i>&nbsp;            // Skip images until at desired index or last image found
+<b class="nc"><i>612</i>&nbsp;            while (index &lt; imageIndex) {</b>
+<b class="nc"><i>613</i>&nbsp;                if (!skipImage()) {</b>
+<b class="nc"><i>614</i>&nbsp;                    --index;</b>
+<b class="nc"><i>615</i>&nbsp;                    return index;</b>
+<i>616</i>&nbsp;                }
+<i>617</i>&nbsp;
+<b class="nc"><i>618</i>&nbsp;                Long l1 = new Long(stream.getStreamPosition());</b>
+<b class="nc"><i>619</i>&nbsp;                imageStartPosition.add(l1);</b>
+<b class="nc"><i>620</i>&nbsp;                ++index;</b>
+<b class="nc"><i>621</i>&nbsp;            }</b>
+<b class="nc"><i>622</i>&nbsp;        } catch (IOException e) {</b>
+<b class="nc"><i>623</i>&nbsp;            throw new IIOException(&quot;Couldn&#39;t seek!&quot;, e);</b>
+<b class="nc"><i>624</i>&nbsp;        }</b>
+<i>625</i>&nbsp;
+<b class="nc"><i>626</i>&nbsp;        if (currIndex != imageIndex) {</b>
+<b class="nc"><i>627</i>&nbsp;            imageMetadata = null;</b>
+<i>628</i>&nbsp;        }
+<b class="nc"><i>629</i>&nbsp;        currIndex = imageIndex;</b>
+<b class="nc"><i>630</i>&nbsp;        return imageIndex;</b>
+<i>631</i>&nbsp;    }
+<i>632</i>&nbsp;
+<i>633</i>&nbsp;    // Read blocks of 1-255 bytes, stop at a 0-length block
+<i>634</i>&nbsp;    private byte[] concatenateBlocks() throws IOException {
+<b class="nc"><i>635</i>&nbsp;        byte[] data = new byte[0];</b>
+<i>636</i>&nbsp;        while (true) {
+<b class="nc"><i>637</i>&nbsp;            int length = stream.readUnsignedByte();</b>
+<b class="nc"><i>638</i>&nbsp;            if (length == 0) {</b>
+<b class="nc"><i>639</i>&nbsp;                break;</b>
+<i>640</i>&nbsp;            }
+<b class="nc"><i>641</i>&nbsp;            byte[] newData = new byte[data.length + length];</b>
+<b class="nc"><i>642</i>&nbsp;            System.arraycopy(data, 0, newData, 0, data.length);</b>
+<b class="nc"><i>643</i>&nbsp;            stream.readFully(newData, data.length, length);</b>
+<b class="nc"><i>644</i>&nbsp;            data = newData;</b>
+<b class="nc"><i>645</i>&nbsp;        }</b>
+<i>646</i>&nbsp;
+<b class="nc"><i>647</i>&nbsp;        return data;</b>
+<i>648</i>&nbsp;    }
+<i>649</i>&nbsp;
+<i>650</i>&nbsp;    // Stream must be positioned at start of metadata for &#39;currIndex&#39;
+<i>651</i>&nbsp;    private void readMetadata() throws IIOException {
+<b class="nc"><i>652</i>&nbsp;        if (stream == null) {</b>
+<b class="nc"><i>653</i>&nbsp;            throw new IllegalStateException(&quot;Input not set!&quot;);</b>
+<i>654</i>&nbsp;        }
+<i>655</i>&nbsp;
+<i>656</i>&nbsp;        try {
+<i>657</i>&nbsp;            // Create an object to store the image metadata
+<b class="nc"><i>658</i>&nbsp;            this.imageMetadata = new GIFImageMetadata();</b>
+<i>659</i>&nbsp;
+<b class="nc"><i>660</i>&nbsp;            long startPosition = stream.getStreamPosition();</b>
+<i>661</i>&nbsp;            while (true) {
+<b class="nc"><i>662</i>&nbsp;                int blockType = stream.readUnsignedByte();</b>
+<b class="nc"><i>663</i>&nbsp;                if (blockType == 0x2c) { // Image Descriptor</b>
+<b class="nc"><i>664</i>&nbsp;                    imageMetadata.imageLeftPosition =</b>
+<b class="nc"><i>665</i>&nbsp;                        stream.readUnsignedShort();</b>
+<b class="nc"><i>666</i>&nbsp;                    imageMetadata.imageTopPosition =</b>
+<b class="nc"><i>667</i>&nbsp;                        stream.readUnsignedShort();</b>
+<b class="nc"><i>668</i>&nbsp;                    imageMetadata.imageWidth = stream.readUnsignedShort();</b>
+<b class="nc"><i>669</i>&nbsp;                    imageMetadata.imageHeight = stream.readUnsignedShort();</b>
+<i>670</i>&nbsp;
+<b class="nc"><i>671</i>&nbsp;                    int idPackedFields = stream.readUnsignedByte();</b>
+<b class="nc"><i>672</i>&nbsp;                    boolean localColorTableFlag =</b>
+<i>673</i>&nbsp;                        (idPackedFields &amp; 0x80) != 0;
+<b class="nc"><i>674</i>&nbsp;                    imageMetadata.interlaceFlag = (idPackedFields &amp; 0x40) != 0;</b>
+<b class="nc"><i>675</i>&nbsp;                    imageMetadata.sortFlag = (idPackedFields &amp; 0x20) != 0;</b>
+<b class="nc"><i>676</i>&nbsp;                    int numLCTEntries = 1 &lt;&lt; ((idPackedFields &amp; 0x7) + 1);</b>
+<i>677</i>&nbsp;
+<b class="nc"><i>678</i>&nbsp;                    if (localColorTableFlag) {</b>
+<i>679</i>&nbsp;                        // Read color table if any
+<b class="nc"><i>680</i>&nbsp;                        imageMetadata.localColorTable =</b>
+<i>681</i>&nbsp;                            new byte[3*numLCTEntries];
+<b class="nc"><i>682</i>&nbsp;                        stream.readFully(imageMetadata.localColorTable);</b>
+<i>683</i>&nbsp;                    } else {
+<b class="nc"><i>684</i>&nbsp;                        imageMetadata.localColorTable = null;</b>
+<i>685</i>&nbsp;                    }
+<i>686</i>&nbsp;
+<i>687</i>&nbsp;                    // Record length of this metadata block
+<b class="nc"><i>688</i>&nbsp;                    this.imageMetadataLength =</b>
+<b class="nc"><i>689</i>&nbsp;                        (int)(stream.getStreamPosition() - startPosition);</b>
+<i>690</i>&nbsp;
+<i>691</i>&nbsp;                    // Now positioned at start of LZW-compressed pixels
+<i>692</i>&nbsp;                    return;
+<b class="nc"><i>693</i>&nbsp;                } else if (blockType == 0x21) { // Extension block</b>
+<b class="nc"><i>694</i>&nbsp;                    int label = stream.readUnsignedByte();</b>
+<i>695</i>&nbsp;
+<b class="nc"><i>696</i>&nbsp;                    if (label == 0xf9) { // Graphics Control Extension</b>
+<b class="nc"><i>697</i>&nbsp;                        int gceLength = stream.readUnsignedByte(); // 4</b>
+<b class="nc"><i>698</i>&nbsp;                        int gcePackedFields = stream.readUnsignedByte();</b>
+<b class="nc"><i>699</i>&nbsp;                        imageMetadata.disposalMethod =</b>
+<i>700</i>&nbsp;                            (gcePackedFields &gt;&gt; 2) &amp; 0x3;
+<b class="nc"><i>701</i>&nbsp;                        imageMetadata.userInputFlag =</b>
+<i>702</i>&nbsp;                            (gcePackedFields &amp; 0x2) != 0;
+<b class="nc"><i>703</i>&nbsp;                        imageMetadata.transparentColorFlag =</b>
+<i>704</i>&nbsp;                            (gcePackedFields &amp; 0x1) != 0;
+<i>705</i>&nbsp;
+<b class="nc"><i>706</i>&nbsp;                        imageMetadata.delayTime = stream.readUnsignedShort();</b>
+<b class="nc"><i>707</i>&nbsp;                        imageMetadata.transparentColorIndex</b>
+<b class="nc"><i>708</i>&nbsp;                            = stream.readUnsignedByte();</b>
+<i>709</i>&nbsp;
+<b class="nc"><i>710</i>&nbsp;                        int terminator = stream.readUnsignedByte();</b>
+<b class="nc"><i>711</i>&nbsp;                    } else if (label == 0x1) { // Plain text extension</b>
+<b class="nc"><i>712</i>&nbsp;                        int length = stream.readUnsignedByte();</b>
+<b class="nc"><i>713</i>&nbsp;                        imageMetadata.hasPlainTextExtension = true;</b>
+<b class="nc"><i>714</i>&nbsp;                        imageMetadata.textGridLeft =</b>
+<b class="nc"><i>715</i>&nbsp;                            stream.readUnsignedShort();</b>
+<b class="nc"><i>716</i>&nbsp;                        imageMetadata.textGridTop =</b>
+<b class="nc"><i>717</i>&nbsp;                            stream.readUnsignedShort();</b>
+<b class="nc"><i>718</i>&nbsp;                        imageMetadata.textGridWidth =</b>
+<b class="nc"><i>719</i>&nbsp;                            stream.readUnsignedShort();</b>
+<b class="nc"><i>720</i>&nbsp;                        imageMetadata.textGridHeight =</b>
+<b class="nc"><i>721</i>&nbsp;                            stream.readUnsignedShort();</b>
+<b class="nc"><i>722</i>&nbsp;                        imageMetadata.characterCellWidth =</b>
+<b class="nc"><i>723</i>&nbsp;                            stream.readUnsignedByte();</b>
+<b class="nc"><i>724</i>&nbsp;                        imageMetadata.characterCellHeight =</b>
+<b class="nc"><i>725</i>&nbsp;                            stream.readUnsignedByte();</b>
+<b class="nc"><i>726</i>&nbsp;                        imageMetadata.textForegroundColor =</b>
+<b class="nc"><i>727</i>&nbsp;                            stream.readUnsignedByte();</b>
+<b class="nc"><i>728</i>&nbsp;                        imageMetadata.textBackgroundColor =</b>
+<b class="nc"><i>729</i>&nbsp;                            stream.readUnsignedByte();</b>
+<b class="nc"><i>730</i>&nbsp;                        imageMetadata.text = concatenateBlocks();</b>
+<b class="nc"><i>731</i>&nbsp;                    } else if (label == 0xfe) { // Comment extension</b>
+<b class="nc"><i>732</i>&nbsp;                        byte[] comment = concatenateBlocks();</b>
+<b class="nc"><i>733</i>&nbsp;                        if (imageMetadata.comments == null) {</b>
+<b class="nc"><i>734</i>&nbsp;                            imageMetadata.comments = new ArrayList();</b>
+<i>735</i>&nbsp;                        }
+<b class="nc"><i>736</i>&nbsp;                        imageMetadata.comments.add(comment);</b>
+<b class="nc"><i>737</i>&nbsp;                    } else if (label == 0xff) { // Application extension</b>
+<b class="nc"><i>738</i>&nbsp;                        int blockSize = stream.readUnsignedByte();</b>
+<b class="nc"><i>739</i>&nbsp;                        byte[] applicationID = new byte[8];</b>
+<b class="nc"><i>740</i>&nbsp;                        byte[] authCode = new byte[3];</b>
+<i>741</i>&nbsp;
+<i>742</i>&nbsp;                        // read available data
+<b class="nc"><i>743</i>&nbsp;                        byte[] blockData = new byte[blockSize];</b>
+<b class="nc"><i>744</i>&nbsp;                        stream.readFully(blockData);</b>
+<i>745</i>&nbsp;
+<b class="nc"><i>746</i>&nbsp;                        int offset = copyData(blockData, 0, applicationID);</b>
+<b class="nc"><i>747</i>&nbsp;                        offset = copyData(blockData, offset, authCode);</b>
+<i>748</i>&nbsp;
+<b class="nc"><i>749</i>&nbsp;                        byte[] applicationData = concatenateBlocks();</b>
+<i>750</i>&nbsp;
+<b class="nc"><i>751</i>&nbsp;                        if (offset &lt; blockSize) {</b>
+<b class="nc"><i>752</i>&nbsp;                            int len = blockSize - offset;</b>
+<b class="nc"><i>753</i>&nbsp;                            byte[] data =</b>
+<i>754</i>&nbsp;                                new byte[len + applicationData.length];
+<i>755</i>&nbsp;
+<b class="nc"><i>756</i>&nbsp;                            System.arraycopy(blockData, offset, data, 0, len);</b>
+<b class="nc"><i>757</i>&nbsp;                            System.arraycopy(applicationData, 0, data, len,</b>
+<i>758</i>&nbsp;                                             applicationData.length);
+<i>759</i>&nbsp;
+<b class="nc"><i>760</i>&nbsp;                            applicationData = data;</b>
+<i>761</i>&nbsp;                        }
+<i>762</i>&nbsp;
+<i>763</i>&nbsp;                        // Init lists if necessary
+<b class="nc"><i>764</i>&nbsp;                        if (imageMetadata.applicationIDs == null) {</b>
+<b class="nc"><i>765</i>&nbsp;                            imageMetadata.applicationIDs = new ArrayList();</b>
+<b class="nc"><i>766</i>&nbsp;                            imageMetadata.authenticationCodes =</b>
+<i>767</i>&nbsp;                                new ArrayList();
+<b class="nc"><i>768</i>&nbsp;                            imageMetadata.applicationData = new ArrayList();</b>
+<i>769</i>&nbsp;                        }
+<b class="nc"><i>770</i>&nbsp;                        imageMetadata.applicationIDs.add(applicationID);</b>
+<b class="nc"><i>771</i>&nbsp;                        imageMetadata.authenticationCodes.add(authCode);</b>
+<b class="nc"><i>772</i>&nbsp;                        imageMetadata.applicationData.add(applicationData);</b>
+<b class="nc"><i>773</i>&nbsp;                    } else {</b>
+<i>774</i>&nbsp;                        // Skip over unknown extension blocks
+<b class="nc"><i>775</i>&nbsp;                        int length = 0;</b>
+<i>776</i>&nbsp;                        do {
+<b class="nc"><i>777</i>&nbsp;                            length = stream.readUnsignedByte();</b>
+<b class="nc"><i>778</i>&nbsp;                            stream.skipBytes(length);</b>
+<b class="nc"><i>779</i>&nbsp;                        } while (length &gt; 0);</b>
+<i>780</i>&nbsp;                    }
+<b class="nc"><i>781</i>&nbsp;                } else if (blockType == 0x3b) { // Trailer</b>
+<b class="nc"><i>782</i>&nbsp;                    throw new IndexOutOfBoundsException</b>
+<i>783</i>&nbsp;                        (&quot;Attempt to read past end of image sequence!&quot;);
+<i>784</i>&nbsp;                } else {
+<b class="nc"><i>785</i>&nbsp;                    throw new IIOException(&quot;Unexpected block type &quot; +</b>
+<i>786</i>&nbsp;                                           blockType + &quot;!&quot;);
+<i>787</i>&nbsp;                }
+<b class="nc"><i>788</i>&nbsp;            }</b>
+<b class="nc"><i>789</i>&nbsp;        } catch (IIOException iioe) {</b>
+<b class="nc"><i>790</i>&nbsp;            throw iioe;</b>
+<b class="nc"><i>791</i>&nbsp;        } catch (IOException ioe) {</b>
+<b class="nc"><i>792</i>&nbsp;            throw new IIOException(&quot;I/O error reading image metadata!&quot;, ioe);</b>
+<i>793</i>&nbsp;        }
+<i>794</i>&nbsp;    }
+<i>795</i>&nbsp;
+<i>796</i>&nbsp;    private int copyData(byte[] src, int offset, byte[] dst) {
+<b class="nc"><i>797</i>&nbsp;        int len = dst.length;</b>
+<b class="nc"><i>798</i>&nbsp;        int rest = src.length - offset;</b>
+<b class="nc"><i>799</i>&nbsp;        if (len &gt; rest) {</b>
+<b class="nc"><i>800</i>&nbsp;            len = rest;</b>
+<i>801</i>&nbsp;        }
+<b class="nc"><i>802</i>&nbsp;        System.arraycopy(src, offset, dst, 0, len);</b>
+<b class="nc"><i>803</i>&nbsp;        return offset + len;</b>
+<i>804</i>&nbsp;    }
+<i>805</i>&nbsp;
+<i>806</i>&nbsp;    private void startPass(int pass) {
+<b class="nc"><i>807</i>&nbsp;        if (updateListeners == null || !imageMetadata.interlaceFlag) {</b>
+<i>808</i>&nbsp;            return;
+<i>809</i>&nbsp;        }
+<i>810</i>&nbsp;
+<b class="nc"><i>811</i>&nbsp;        int y = interlaceOffset[interlacePass];</b>
+<b class="nc"><i>812</i>&nbsp;        int yStep = interlaceIncrement[interlacePass];</b>
+<i>813</i>&nbsp;
+<b class="nc"><i>814</i>&nbsp;        int[] vals = ReaderUtil.</b>
+<b class="nc"><i>815</i>&nbsp;            computeUpdatedPixels(sourceRegion,</b>
+<i>816</i>&nbsp;                                 destinationOffset,
+<i>817</i>&nbsp;                                 destinationRegion.x,
+<i>818</i>&nbsp;                                 destinationRegion.y,
+<i>819</i>&nbsp;                                 destinationRegion.x +
+<i>820</i>&nbsp;                                 destinationRegion.width - 1,
+<i>821</i>&nbsp;                                 destinationRegion.y +
+<i>822</i>&nbsp;                                 destinationRegion.height - 1,
+<i>823</i>&nbsp;                                 sourceXSubsampling,
+<i>824</i>&nbsp;                                 sourceYSubsampling,
+<i>825</i>&nbsp;                                 0,
+<i>826</i>&nbsp;                                 y,
+<i>827</i>&nbsp;                                 destinationRegion.width,
+<i>828</i>&nbsp;                                 (destinationRegion.height + yStep - 1)/yStep,
+<i>829</i>&nbsp;                                 1,
+<i>830</i>&nbsp;                                 yStep);
+<i>831</i>&nbsp;
+<i>832</i>&nbsp;        // Initialized updateMinY and updateYStep
+<b class="nc"><i>833</i>&nbsp;        this.updateMinY = vals[1];</b>
+<b class="nc"><i>834</i>&nbsp;        this.updateYStep = vals[5];</b>
+<i>835</i>&nbsp;
+<i>836</i>&nbsp;        // Inform IIOReadUpdateListeners of new pass
+<b class="nc"><i>837</i>&nbsp;        int[] bands = { 0 };</b>
+<i>838</i>&nbsp;
+<b class="nc"><i>839</i>&nbsp;        processPassStarted(theImage,</b>
+<i>840</i>&nbsp;                           interlacePass,
+<i>841</i>&nbsp;                           sourceMinProgressivePass,
+<i>842</i>&nbsp;                           sourceMaxProgressivePass,
+<i>843</i>&nbsp;                           0,
+<i>844</i>&nbsp;                           updateMinY,
+<i>845</i>&nbsp;                           1,
+<i>846</i>&nbsp;                           updateYStep,
+<i>847</i>&nbsp;                           bands);
+<i>848</i>&nbsp;    }
+<i>849</i>&nbsp;
+<i>850</i>&nbsp;    public BufferedImage read(int imageIndex, ImageReadParam param)
+<i>851</i>&nbsp;        throws IIOException {
+<b class="nc"><i>852</i>&nbsp;        if (stream == null) {</b>
+<b class="nc"><i>853</i>&nbsp;            throw new IllegalStateException(&quot;Input not set!&quot;);</b>
+<i>854</i>&nbsp;        }
+<b class="nc"><i>855</i>&nbsp;        checkIndex(imageIndex);</b>
+<i>856</i>&nbsp;
+<b class="nc"><i>857</i>&nbsp;        int index = locateImage(imageIndex);</b>
+<b class="nc"><i>858</i>&nbsp;        if (index != imageIndex) {</b>
+<b class="nc"><i>859</i>&nbsp;            throw new IndexOutOfBoundsException(&quot;imageIndex out of bounds!&quot;);</b>
+<i>860</i>&nbsp;        }
+<i>861</i>&nbsp;
+<b class="nc"><i>862</i>&nbsp;        clearAbortRequest();</b>
+<b class="nc"><i>863</i>&nbsp;        readMetadata();</b>
+<i>864</i>&nbsp;
+<i>865</i>&nbsp;        // A null ImageReadParam means we use the default
+<b class="nc"><i>866</i>&nbsp;        if (param == null) {</b>
+<b class="nc"><i>867</i>&nbsp;            param = getDefaultReadParam();</b>
+<i>868</i>&nbsp;        }
+<i>869</i>&nbsp;
+<i>870</i>&nbsp;        // Initialize the destination image
+<b class="nc"><i>871</i>&nbsp;        Iterator imageTypes = getImageTypes(imageIndex);</b>
+<b class="nc"><i>872</i>&nbsp;        this.theImage = getDestination(param,</b>
+<i>873</i>&nbsp;                                       imageTypes,
+<i>874</i>&nbsp;                                       imageMetadata.imageWidth,
+<i>875</i>&nbsp;                                       imageMetadata.imageHeight);
+<b class="nc"><i>876</i>&nbsp;        this.theTile = theImage.getWritableTile(0, 0);</b>
+<b class="nc"><i>877</i>&nbsp;        this.width = imageMetadata.imageWidth;</b>
+<b class="nc"><i>878</i>&nbsp;        this.height = imageMetadata.imageHeight;</b>
+<b class="nc"><i>879</i>&nbsp;        this.streamX = 0;</b>
+<b class="nc"><i>880</i>&nbsp;        this.streamY = 0;</b>
+<b class="nc"><i>881</i>&nbsp;        this.rowsDone = 0;</b>
+<b class="nc"><i>882</i>&nbsp;        this.interlacePass = 0;</b>
+<i>883</i>&nbsp;
+<i>884</i>&nbsp;        // Get source region, taking subsampling offsets into account,
+<i>885</i>&nbsp;        // and clipping against the true source bounds
+<i>886</i>&nbsp;
+<b class="nc"><i>887</i>&nbsp;        this.sourceRegion = new Rectangle(0, 0, 0, 0);</b>
+<b class="nc"><i>888</i>&nbsp;        this.destinationRegion = new Rectangle(0, 0, 0, 0);</b>
+<b class="nc"><i>889</i>&nbsp;        computeRegions(param, width, height, theImage,</b>
+<i>890</i>&nbsp;                       sourceRegion, destinationRegion);
+<b class="nc"><i>891</i>&nbsp;        this.destinationOffset = new Point(destinationRegion.x,</b>
+<i>892</i>&nbsp;                                           destinationRegion.y);
+<i>893</i>&nbsp;
+<b class="nc"><i>894</i>&nbsp;        this.sourceXSubsampling = param.getSourceXSubsampling();</b>
+<b class="nc"><i>895</i>&nbsp;        this.sourceYSubsampling = param.getSourceYSubsampling();</b>
+<b class="nc"><i>896</i>&nbsp;        this.sourceMinProgressivePass =</b>
+<b class="nc"><i>897</i>&nbsp;            Math.max(param.getSourceMinProgressivePass(), 0);</b>
+<b class="nc"><i>898</i>&nbsp;        this.sourceMaxProgressivePass =</b>
+<b class="nc"><i>899</i>&nbsp;            Math.min(param.getSourceMaxProgressivePass(), 3);</b>
+<i>900</i>&nbsp;
+<b class="nc"><i>901</i>&nbsp;        this.destY = destinationRegion.y +</b>
+<i>902</i>&nbsp;            (streamY - sourceRegion.y)/sourceYSubsampling;
+<b class="nc"><i>903</i>&nbsp;        computeDecodeThisRow();</b>
+<i>904</i>&nbsp;
+<i>905</i>&nbsp;        // Inform IIOReadProgressListeners of start of image
+<b class="nc"><i>906</i>&nbsp;        processImageStarted(imageIndex);</b>
+<b class="nc"><i>907</i>&nbsp;        startPass(0);</b>
+<i>908</i>&nbsp;
+<b class="nc"><i>909</i>&nbsp;        this.rowBuf = new byte[width];</b>
+<i>910</i>&nbsp;
+<i>911</i>&nbsp;        try {
+<i>912</i>&nbsp;            // Read and decode the image data, fill in theImage
+<b class="nc"><i>913</i>&nbsp;            this.initCodeSize = stream.readUnsignedByte();</b>
+<i>914</i>&nbsp;
+<i>915</i>&nbsp;            // Read first data block
+<b class="nc"><i>916</i>&nbsp;            this.blockLength = stream.readUnsignedByte();</b>
+<b class="nc"><i>917</i>&nbsp;            int left = blockLength;</b>
+<b class="nc"><i>918</i>&nbsp;            int off = 0;</b>
+<b class="nc"><i>919</i>&nbsp;            while (left &gt; 0) {</b>
+<b class="nc"><i>920</i>&nbsp;                int nbytes = stream.read(block, off, left);</b>
+<b class="nc"><i>921</i>&nbsp;                left -= nbytes;</b>
+<b class="nc"><i>922</i>&nbsp;                off += nbytes;</b>
+<b class="nc"><i>923</i>&nbsp;            }</b>
+<i>924</i>&nbsp;
+<b class="nc"><i>925</i>&nbsp;            this.bitPos = 0;</b>
+<b class="nc"><i>926</i>&nbsp;            this.nextByte = 0;</b>
+<b class="nc"><i>927</i>&nbsp;            this.lastBlockFound = false;</b>
+<b class="nc"><i>928</i>&nbsp;            this.interlacePass = 0;</b>
+<i>929</i>&nbsp;
+<i>930</i>&nbsp;            // Init 32-bit buffer
+<b class="nc"><i>931</i>&nbsp;            initNext32Bits();</b>
+<i>932</i>&nbsp;
+<b class="nc"><i>933</i>&nbsp;            this.clearCode = 1 &lt;&lt; initCodeSize;</b>
+<b class="nc"><i>934</i>&nbsp;            this.eofCode = clearCode + 1;</b>
+<i>935</i>&nbsp;
+<b class="nc"><i>936</i>&nbsp;            int code, oldCode = 0;</b>
+<i>937</i>&nbsp;
+<b class="nc"><i>938</i>&nbsp;            int[] prefix = new int[4096];</b>
+<b class="nc"><i>939</i>&nbsp;            byte[] suffix = new byte[4096];</b>
+<b class="nc"><i>940</i>&nbsp;            byte[] initial = new byte[4096];</b>
+<b class="nc"><i>941</i>&nbsp;            int[] length = new int[4096];</b>
+<b class="nc"><i>942</i>&nbsp;            byte[] string = new byte[4096];</b>
+<i>943</i>&nbsp;
+<b class="nc"><i>944</i>&nbsp;            initializeStringTable(prefix, suffix, initial, length);</b>
+<b class="nc"><i>945</i>&nbsp;            int tableIndex = (1 &lt;&lt; initCodeSize) + 2;</b>
+<b class="nc"><i>946</i>&nbsp;            int codeSize = initCodeSize + 1;</b>
+<b class="nc"><i>947</i>&nbsp;            int codeMask = (1 &lt;&lt; codeSize) - 1;</b>
+<i>948</i>&nbsp;
+<b class="nc"><i>949</i>&nbsp;            while (!abortRequested()) {</b>
+<b class="nc"><i>950</i>&nbsp;                code = getCode(codeSize, codeMask);</b>
+<i>951</i>&nbsp;
+<b class="nc"><i>952</i>&nbsp;                if (code == clearCode) {</b>
+<b class="nc"><i>953</i>&nbsp;                    initializeStringTable(prefix, suffix, initial, length);</b>
+<b class="nc"><i>954</i>&nbsp;                    tableIndex = (1 &lt;&lt; initCodeSize) + 2;</b>
+<b class="nc"><i>955</i>&nbsp;                    codeSize = initCodeSize + 1;</b>
+<b class="nc"><i>956</i>&nbsp;                    codeMask = (1 &lt;&lt; codeSize) - 1;</b>
+<i>957</i>&nbsp;
+<b class="nc"><i>958</i>&nbsp;                    code = getCode(codeSize, codeMask);</b>
+<b class="nc"><i>959</i>&nbsp;                    if (code == eofCode) {</b>
+<i>960</i>&nbsp;                        // Inform IIOReadProgressListeners of end of image
+<b class="nc"><i>961</i>&nbsp;                        processImageComplete();</b>
+<b class="nc"><i>962</i>&nbsp;                        return theImage;</b>
+<i>963</i>&nbsp;                    }
+<b class="nc"><i>964</i>&nbsp;                } else if (code == eofCode) {</b>
+<i>965</i>&nbsp;                    // Inform IIOReadProgressListeners of end of image
+<b class="nc"><i>966</i>&nbsp;                    processImageComplete();</b>
+<b class="nc"><i>967</i>&nbsp;                    return theImage;</b>
+<i>968</i>&nbsp;                } else {
+<i>969</i>&nbsp;                    int newSuffixIndex;
+<b class="nc"><i>970</i>&nbsp;                    if (code &lt; tableIndex) {</b>
+<b class="nc"><i>971</i>&nbsp;                        newSuffixIndex = code;</b>
+<i>972</i>&nbsp;                    } else { // code == tableIndex
+<b class="nc"><i>973</i>&nbsp;                        newSuffixIndex = oldCode;</b>
+<b class="nc"><i>974</i>&nbsp;                        if (code != tableIndex) {</b>
+<i>975</i>&nbsp;                            // warning - code out of sequence
+<i>976</i>&nbsp;                            // possibly data corruption
+<b class="nc"><i>977</i>&nbsp;                            processWarningOccurred(&quot;Out-of-sequence code!&quot;);</b>
+<i>978</i>&nbsp;                        }
+<i>979</i>&nbsp;                    }
+<i>980</i>&nbsp;
+<b class="nc"><i>981</i>&nbsp;                    int ti = tableIndex;</b>
+<b class="nc"><i>982</i>&nbsp;                    int oc = oldCode;</b>
+<i>983</i>&nbsp;
+<b class="nc"><i>984</i>&nbsp;                    prefix[ti] = oc;</b>
+<b class="nc"><i>985</i>&nbsp;                    suffix[ti] = initial[newSuffixIndex];</b>
+<b class="nc"><i>986</i>&nbsp;                    initial[ti] = initial[oc];</b>
+<b class="nc"><i>987</i>&nbsp;                    length[ti] = length[oc] + 1;</b>
+<i>988</i>&nbsp;
+<b class="nc"><i>989</i>&nbsp;                    ++tableIndex;</b>
+<b class="nc"><i>990</i>&nbsp;                    if ((tableIndex == (1 &lt;&lt; codeSize)) &amp;&amp;</b>
+<i>991</i>&nbsp;                        (tableIndex &lt; 4096)) {
+<b class="nc"><i>992</i>&nbsp;                        ++codeSize;</b>
+<b class="nc"><i>993</i>&nbsp;                        codeMask = (1 &lt;&lt; codeSize) - 1;</b>
+<i>994</i>&nbsp;                    }
+<i>995</i>&nbsp;                }
+<i>996</i>&nbsp;
+<i>997</i>&nbsp;                // Reverse code
+<b class="nc"><i>998</i>&nbsp;                int c = code;</b>
+<b class="nc"><i>999</i>&nbsp;                int len = length[c];</b>
+<b class="nc"><i>1000</i>&nbsp;                for (int i = len - 1; i &gt;= 0; i--) {</b>
+<b class="nc"><i>1001</i>&nbsp;                    string[i] = suffix[c];</b>
+<b class="nc"><i>1002</i>&nbsp;                    c = prefix[c];</b>
+<i>1003</i>&nbsp;                }
+<i>1004</i>&nbsp;
+<b class="nc"><i>1005</i>&nbsp;                outputPixels(string, len);</b>
+<b class="nc"><i>1006</i>&nbsp;                oldCode = code;</b>
+<b class="nc"><i>1007</i>&nbsp;            }</b>
+<i>1008</i>&nbsp;
+<b class="nc"><i>1009</i>&nbsp;            processReadAborted();</b>
+<b class="nc"><i>1010</i>&nbsp;            return theImage;</b>
+<b class="nc"><i>1011</i>&nbsp;        } catch (IOException e) {</b>
+<b class="nc"><i>1012</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>1013</i>&nbsp;            throw new IIOException(&quot;I/O error reading image!&quot;, e);</b>
+<i>1014</i>&nbsp;        }
+<i>1015</i>&nbsp;    }
+<i>1016</i>&nbsp;
+<i>1017</i>&nbsp;    /**
+<i>1018</i>&nbsp;     * Remove all settings including global settings such as
+<i>1019</i>&nbsp;     * &lt;code&gt;Locale&lt;/code&gt;s and listeners, as well as stream settings.
+<i>1020</i>&nbsp;     */
+<i>1021</i>&nbsp;    public void reset() {
+<b class="nc"><i>1022</i>&nbsp;        super.reset();</b>
+<b class="nc"><i>1023</i>&nbsp;        resetStreamSettings();</b>
+<i>1024</i>&nbsp;    }
+<i>1025</i>&nbsp;
+<i>1026</i>&nbsp;    /**
+<i>1027</i>&nbsp;     * Remove local settings based on parsing of a stream.
+<i>1028</i>&nbsp;     */
+<i>1029</i>&nbsp;    private void resetStreamSettings() {
+<b class="nc"><i>1030</i>&nbsp;        gotHeader = false;</b>
+<b class="nc"><i>1031</i>&nbsp;        streamMetadata = null;</b>
+<b class="nc"><i>1032</i>&nbsp;        currIndex = -1;</b>
+<b class="nc"><i>1033</i>&nbsp;        imageMetadata = null;</b>
+<b class="nc"><i>1034</i>&nbsp;        imageStartPosition = new ArrayList();</b>
+<b class="nc"><i>1035</i>&nbsp;        numImages = -1;</b>
+<i>1036</i>&nbsp;
+<i>1037</i>&nbsp;        // No need to reinitialize &#39;block&#39;
+<b class="nc"><i>1038</i>&nbsp;        blockLength = 0;</b>
+<b class="nc"><i>1039</i>&nbsp;        bitPos = 0;</b>
+<b class="nc"><i>1040</i>&nbsp;        nextByte = 0;</b>
+<i>1041</i>&nbsp;
+<b class="nc"><i>1042</i>&nbsp;        next32Bits = 0;</b>
+<b class="nc"><i>1043</i>&nbsp;        lastBlockFound = false;</b>
+<i>1044</i>&nbsp;
+<b class="nc"><i>1045</i>&nbsp;        theImage = null;</b>
+<b class="nc"><i>1046</i>&nbsp;        theTile = null;</b>
+<b class="nc"><i>1047</i>&nbsp;        width = -1;</b>
+<b class="nc"><i>1048</i>&nbsp;        height = -1;</b>
+<b class="nc"><i>1049</i>&nbsp;        streamX = -1;</b>
+<b class="nc"><i>1050</i>&nbsp;        streamY = -1;</b>
+<b class="nc"><i>1051</i>&nbsp;        rowsDone = 0;</b>
+<b class="nc"><i>1052</i>&nbsp;        interlacePass = 0;</b>
+<i>1053</i>&nbsp;
+<b class="nc"><i>1054</i>&nbsp;        fallbackColorTable = null;</b>
+<i>1055</i>&nbsp;    }
+<i>1056</i>&nbsp;
+<b class="nc"><i>1057</i>&nbsp;    private static byte[] defaultPalette = null;</b>
+<i>1058</i>&nbsp;
+<i>1059</i>&nbsp;    private static synchronized byte[] getDefaultPalette() {
+<b class="nc"><i>1060</i>&nbsp;        if (defaultPalette == null) {</b>
+<b class="nc"><i>1061</i>&nbsp;            BufferedImage img = new BufferedImage(1, 1,</b>
+<i>1062</i>&nbsp;                    BufferedImage.TYPE_BYTE_INDEXED);
+<b class="nc"><i>1063</i>&nbsp;            IndexColorModel icm = (IndexColorModel) img.getColorModel();</b>
+<i>1064</i>&nbsp;
+<b class="nc"><i>1065</i>&nbsp;            final int size = icm.getMapSize();</b>
+<b class="nc"><i>1066</i>&nbsp;            byte[] r = new byte[size];</b>
+<b class="nc"><i>1067</i>&nbsp;            byte[] g = new byte[size];</b>
+<b class="nc"><i>1068</i>&nbsp;            byte[] b = new byte[size];</b>
+<b class="nc"><i>1069</i>&nbsp;            icm.getReds(r);</b>
+<b class="nc"><i>1070</i>&nbsp;            icm.getGreens(g);</b>
+<b class="nc"><i>1071</i>&nbsp;            icm.getBlues(b);</b>
+<i>1072</i>&nbsp;
+<b class="nc"><i>1073</i>&nbsp;            defaultPalette = new byte[size * 3];</b>
+<i>1074</i>&nbsp;
+<b class="nc"><i>1075</i>&nbsp;            for (int i = 0; i &lt; size; i++) {</b>
+<b class="nc"><i>1076</i>&nbsp;                defaultPalette[3 * i + 0] = r[i];</b>
+<b class="nc"><i>1077</i>&nbsp;                defaultPalette[3 * i + 1] = g[i];</b>
+<b class="nc"><i>1078</i>&nbsp;                defaultPalette[3 * i + 2] = b[i];</b>
+<i>1079</i>&nbsp;            }
+<i>1080</i>&nbsp;        }
+<b class="nc"><i>1081</i>&nbsp;        return defaultPalette;</b>
+<i>1082</i>&nbsp;    }
+<i>1083</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

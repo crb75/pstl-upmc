@@ -1,0 +1,189 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BMPImageWriterSpi</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.imageio.plugins.bmp</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BMPImageWriterSpi (com.sun.imageio.plugins.bmp)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BMPImageWriterSpi</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 22)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2003, 2010, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.imageio.plugins.bmp;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.awt.image.DataBuffer;
+<i>29</i>&nbsp;import java.awt.image.SampleModel;
+<i>30</i>&nbsp;import java.awt.image.SinglePixelPackedSampleModel;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import javax.imageio.spi.ImageWriterSpi;
+<i>33</i>&nbsp;import javax.imageio.spi.ServiceRegistry;
+<i>34</i>&nbsp;import javax.imageio.spi.IIORegistry;
+<i>35</i>&nbsp;import javax.imageio.stream.ImageOutputStream;
+<i>36</i>&nbsp;import javax.imageio.ImageWriter;
+<i>37</i>&nbsp;import javax.imageio.ImageTypeSpecifier;
+<i>38</i>&nbsp;import javax.imageio.IIOException;
+<i>39</i>&nbsp;import java.util.Locale;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import javax.imageio.plugins.bmp.BMPImageWriteParam;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;public class BMPImageWriterSpi extends ImageWriterSpi {
+<b class="nc"><i>44</i>&nbsp;    private static String [] readerSpiNames =</b>
+<i>45</i>&nbsp;        {&quot;com.sun.imageio.plugins.bmp.BMPImageReaderSpi&quot;};
+<b class="nc"><i>46</i>&nbsp;    private static String[] formatNames = {&quot;bmp&quot;, &quot;BMP&quot;};</b>
+<b class="nc"><i>47</i>&nbsp;    private static String[] entensions = {&quot;bmp&quot;};</b>
+<b class="nc"><i>48</i>&nbsp;    private static String[] mimeType = {&quot;image/bmp&quot;};</b>
+<i>49</i>&nbsp;
+<b class="nc"><i>50</i>&nbsp;    private boolean registered = false;</b>
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    public BMPImageWriterSpi() {
+<b class="nc"><i>53</i>&nbsp;        super(&quot;Oracle Corporation&quot;,</b>
+<i>54</i>&nbsp;              &quot;1.0&quot;,
+<i>55</i>&nbsp;              formatNames,
+<i>56</i>&nbsp;              entensions,
+<i>57</i>&nbsp;              mimeType,
+<i>58</i>&nbsp;              &quot;com.sun.imageio.plugins.bmp.BMPImageWriter&quot;,
+<i>59</i>&nbsp;              new Class[] { ImageOutputStream.class },
+<i>60</i>&nbsp;              readerSpiNames,
+<i>61</i>&nbsp;              false,
+<i>62</i>&nbsp;              null, null, null, null,
+<i>63</i>&nbsp;              true,
+<i>64</i>&nbsp;              BMPMetadata.nativeMetadataFormatName,
+<i>65</i>&nbsp;              &quot;com.sun.imageio.plugins.bmp.BMPMetadataFormat&quot;,
+<i>66</i>&nbsp;              null, null);
+<i>67</i>&nbsp;    }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    public String getDescription(Locale locale) {
+<b class="nc"><i>70</i>&nbsp;        return &quot;Standard BMP Image Writer&quot;;</b>
+<i>71</i>&nbsp;    }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    public void onRegistration(ServiceRegistry registry,
+<i>74</i>&nbsp;                               Class&lt;?&gt; category) {
+<b class="nc"><i>75</i>&nbsp;        if (registered) {</b>
+<i>76</i>&nbsp;            return;
+<i>77</i>&nbsp;        }
+<i>78</i>&nbsp;
+<b class="nc"><i>79</i>&nbsp;        registered = true;</b>
+<i>80</i>&nbsp;    }
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    public boolean canEncodeImage(ImageTypeSpecifier type) {
+<b class="nc"><i>83</i>&nbsp;        int dataType= type.getSampleModel().getDataType();</b>
+<b class="nc"><i>84</i>&nbsp;        if (dataType &lt; DataBuffer.TYPE_BYTE || dataType &gt; DataBuffer.TYPE_INT)</b>
+<b class="nc"><i>85</i>&nbsp;            return false;</b>
+<i>86</i>&nbsp;
+<b class="nc"><i>87</i>&nbsp;        SampleModel sm = type.getSampleModel();</b>
+<b class="nc"><i>88</i>&nbsp;        int numBands = sm.getNumBands();</b>
+<b class="nc"><i>89</i>&nbsp;        if (!(numBands == 1 || numBands == 3))</b>
+<b class="nc"><i>90</i>&nbsp;            return false;</b>
+<i>91</i>&nbsp;
+<b class="nc"><i>92</i>&nbsp;        if (numBands == 1 &amp;&amp; dataType != DataBuffer.TYPE_BYTE)</b>
+<b class="nc"><i>93</i>&nbsp;            return false;</b>
+<i>94</i>&nbsp;
+<b class="nc"><i>95</i>&nbsp;        if (dataType &gt; DataBuffer.TYPE_BYTE &amp;&amp;</b>
+<i>96</i>&nbsp;              !(sm instanceof SinglePixelPackedSampleModel))
+<b class="nc"><i>97</i>&nbsp;            return false;</b>
+<i>98</i>&nbsp;
+<b class="nc"><i>99</i>&nbsp;        return true;</b>
+<i>100</i>&nbsp;    }
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;    public ImageWriter createWriterInstance(Object extension)
+<i>103</i>&nbsp;        throws IIOException {
+<b class="nc"><i>104</i>&nbsp;        return new BMPImageWriter(this);</b>
+<i>105</i>&nbsp;    }
+<i>106</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

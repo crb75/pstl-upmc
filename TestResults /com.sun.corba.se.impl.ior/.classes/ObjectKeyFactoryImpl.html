@@ -1,0 +1,368 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ObjectKeyFactoryImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.ior</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ObjectKeyFactoryImpl (com.sun.corba.se.impl.ior)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ObjectKeyFactoryImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 31)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ObjectKeyFactoryImpl$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ObjectKeyFactoryImpl$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 53)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.ior;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.io.IOException ;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import org.omg.CORBA.MARSHAL ;
+<i>31</i>&nbsp;import org.omg.CORBA.OctetSeqHolder ;
+<i>32</i>&nbsp;import org.omg.CORBA_2_3.portable.InputStream ;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectId ;
+<i>35</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectKey ;
+<i>36</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectKeyFactory ;
+<i>37</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectKeyTemplate ;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;import com.sun.corba.se.spi.orb.ORB ;
+<i>40</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains ;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBConstants ;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import com.sun.corba.se.impl.ior.JIDLObjectKeyTemplate ;
+<i>45</i>&nbsp;import com.sun.corba.se.impl.ior.POAObjectKeyTemplate ;
+<i>46</i>&nbsp;import com.sun.corba.se.impl.ior.WireObjectKeyTemplate ;
+<i>47</i>&nbsp;import com.sun.corba.se.impl.ior.ObjectIdImpl ;
+<i>48</i>&nbsp;import com.sun.corba.se.impl.ior.ObjectKeyImpl ;
+<i>49</i>&nbsp;import com.sun.corba.se.impl.logging.IORSystemException ;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;import com.sun.corba.se.impl.encoding.EncapsInputStream ;
+<i>52</i>&nbsp;import sun.corba.EncapsInputStreamFactory;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;/** Based on the magic and scid, return the appropriate
+<i>56</i>&nbsp;* ObjectKeyTemplate.  Expects to be called with a valid
+<i>57</i>&nbsp;* magic.  If scid is not valid, null should be returned.
+<i>58</i>&nbsp;*/
+<i>59</i>&nbsp;interface Handler {
+<i>60</i>&nbsp;    ObjectKeyTemplate handle( int magic, int scid,
+<i>61</i>&nbsp;        InputStream is, OctetSeqHolder osh ) ;
+<i>62</i>&nbsp;}
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;/** Singleton used to manufacture ObjectKey and ObjectKeyTemplate
+<i>65</i>&nbsp; * instances.
+<i>66</i>&nbsp; * @author Ken Cavanaugh
+<i>67</i>&nbsp; */
+<b class="nc"><i>68</i>&nbsp;public class ObjectKeyFactoryImpl implements ObjectKeyFactory</b>
+<i>69</i>&nbsp;{
+<i>70</i>&nbsp;    public static final int MAGIC_BASE                  = 0xAFABCAFE ;
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;    // Magic used in our object keys for JDK 1.2, 1.3, RMI-IIOP OP,
+<i>73</i>&nbsp;    // J2EE 1.0-1.2.1.
+<i>74</i>&nbsp;    public static final int JAVAMAGIC_OLD               = MAGIC_BASE ;
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;    // Magic used only in JDK 1.3.1.  No format changes in object keys.
+<i>77</i>&nbsp;    public static final int JAVAMAGIC_NEW               = MAGIC_BASE + 1 ;
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    // New magic used in our object keys for JDK 1.4, J2EE 1.3 and later.
+<i>80</i>&nbsp;    // Format changes: all object keys have version string; POA key format
+<i>81</i>&nbsp;    // is changed.
+<i>82</i>&nbsp;    public static final int JAVAMAGIC_NEWER             = MAGIC_BASE + 2 ;
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    public static final int MAX_MAGIC                   = JAVAMAGIC_NEWER ;
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    // Beginning in JDK 1.3.1_01, we introduced changes which required
+<i>87</i>&nbsp;    // the ability to distinguish between JDK 1.3.1 FCS and the patch
+<i>88</i>&nbsp;    // versions.  See OldJIDLObjectKeyTemplate.
+<i>89</i>&nbsp;    public static final byte JDK1_3_1_01_PATCH_LEVEL = 1;
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    private final ORB orb ;
+<i>92</i>&nbsp;    private IORSystemException wrapper ;
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    public ObjectKeyFactoryImpl( ORB orb )
+<b class="nc"><i>95</i>&nbsp;    {</b>
+<b class="nc"><i>96</i>&nbsp;        this.orb = orb ;</b>
+<b class="nc"><i>97</i>&nbsp;        wrapper = IORSystemException.get( orb,</b>
+<i>98</i>&nbsp;            CORBALogDomains.OA_IOR ) ;
+<i>99</i>&nbsp;    }
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;    // XXX The handlers still need to be made pluggable.
+<i>102</i>&nbsp;    //
+<i>103</i>&nbsp;    // I think this can be done as follows:
+<i>104</i>&nbsp;    // 1. Move the Handler interface into the SPI as ObjectKeyHandler.
+<i>105</i>&nbsp;    // 2. Add two methods to ObjectAdapterFactory:
+<i>106</i>&nbsp;    //      ObjectKeyHandler getHandlerForObjectKey( ) ;
+<i>107</i>&nbsp;    //      ObjectKeyHandler getHandlerForObjectKeyTemplate( ) ;
+<i>108</i>&nbsp;    // 3. Move the implementation of the fullKey handler and the
+<i>109</i>&nbsp;    //    oktempOnly handler into TOAFactory and POAFactory.
+<i>110</i>&nbsp;    // 4. Move the ObjectKey impl classes into the impl/oa packages.
+<i>111</i>&nbsp;    // 5. Create an internal interface
+<i>112</i>&nbsp;    //      interface HandlerFinder {
+<i>113</i>&nbsp;    //          ObjectKeyHandler get( int scid ) ;
+<i>114</i>&nbsp;    //      }
+<i>115</i>&nbsp;    //    and modify create(InputStream,Handler,OctetSeqHolder)
+<i>116</i>&nbsp;    //    to take a HandlerFinder instead of a Handler.
+<i>117</i>&nbsp;    // 6. Modify create( byte[] ) and createTemplate( InputStream )
+<i>118</i>&nbsp;    //    to create an instance of HandlerFinder: something like:
+<i>119</i>&nbsp;    //      new HandlerFinder() {
+<i>120</i>&nbsp;    //          ObjectKeyHandler get( int scid )
+<i>121</i>&nbsp;    //          {
+<i>122</i>&nbsp;    //              return orb.getRequestDispatcherRegistry().
+<i>123</i>&nbsp;    //                  getObjectAdapterFactory( scid ).getHandlerForObjectKey() ;
+<i>124</i>&nbsp;    //          }
+<i>125</i>&nbsp;    //      and similarly for getHandlerForObjectKeyTemplate.
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;    /** This handler reads the full object key, both the oktemp
+<i>128</i>&nbsp;    * and the ID.
+<i>129</i>&nbsp;    */
+<b class="nc"><i>130</i>&nbsp;    private Handler fullKey = new Handler() {</b>
+<i>131</i>&nbsp;        public ObjectKeyTemplate handle( int magic, int scid,
+<i>132</i>&nbsp;            InputStream is, OctetSeqHolder osh ) {
+<b class="nc"><i>133</i>&nbsp;                ObjectKeyTemplate oktemp = null ;</b>
+<i>134</i>&nbsp;
+<b class="nc"><i>135</i>&nbsp;                if ((scid &gt;= ORBConstants.FIRST_POA_SCID) &amp;&amp;</b>
+<i>136</i>&nbsp;                    (scid &lt;= ORBConstants.MAX_POA_SCID)) {
+<b class="nc"><i>137</i>&nbsp;                    if (magic &gt;= JAVAMAGIC_NEWER)</b>
+<b class="nc"><i>138</i>&nbsp;                        oktemp = new POAObjectKeyTemplate( orb, magic, scid, is, osh ) ;</b>
+<i>139</i>&nbsp;                    else
+<b class="nc"><i>140</i>&nbsp;                        oktemp = new OldPOAObjectKeyTemplate( orb, magic, scid, is, osh ) ;</b>
+<b class="nc"><i>141</i>&nbsp;                } else if ((scid &gt;= 0) &amp;&amp; (scid &lt; ORBConstants.FIRST_POA_SCID)) {</b>
+<b class="nc"><i>142</i>&nbsp;                    if (magic &gt;= JAVAMAGIC_NEWER)</b>
+<b class="nc"><i>143</i>&nbsp;                        oktemp = new JIDLObjectKeyTemplate( orb, magic, scid, is, osh ) ;</b>
+<i>144</i>&nbsp;                    else
+<b class="nc"><i>145</i>&nbsp;                        oktemp = new OldJIDLObjectKeyTemplate( orb, magic, scid, is, osh );</b>
+<i>146</i>&nbsp;                }
+<i>147</i>&nbsp;
+<b class="nc"><i>148</i>&nbsp;                return oktemp ;</b>
+<i>149</i>&nbsp;            }
+<i>150</i>&nbsp;        } ;
+<i>151</i>&nbsp;
+<i>152</i>&nbsp;    /** This handler reads only the oktemp.
+<i>153</i>&nbsp;    */
+<b class="nc"><i>154</i>&nbsp;    private Handler oktempOnly = new Handler() {</b>
+<i>155</i>&nbsp;        public ObjectKeyTemplate handle( int magic, int scid,
+<i>156</i>&nbsp;            InputStream is, OctetSeqHolder osh ) {
+<b class="nc"><i>157</i>&nbsp;                ObjectKeyTemplate oktemp = null ;</b>
+<i>158</i>&nbsp;
+<b class="nc"><i>159</i>&nbsp;                if ((scid &gt;= ORBConstants.FIRST_POA_SCID) &amp;&amp;</b>
+<i>160</i>&nbsp;                    (scid &lt;= ORBConstants.MAX_POA_SCID)) {
+<b class="nc"><i>161</i>&nbsp;                    if (magic &gt;= JAVAMAGIC_NEWER)</b>
+<b class="nc"><i>162</i>&nbsp;                        oktemp = new POAObjectKeyTemplate( orb, magic, scid, is ) ;</b>
+<i>163</i>&nbsp;                    else
+<b class="nc"><i>164</i>&nbsp;                        oktemp = new OldPOAObjectKeyTemplate( orb, magic, scid, is ) ;</b>
+<b class="nc"><i>165</i>&nbsp;                } else if ((scid &gt;= 0) &amp;&amp; (scid &lt; ORBConstants.FIRST_POA_SCID)) {</b>
+<b class="nc"><i>166</i>&nbsp;                    if (magic &gt;= JAVAMAGIC_NEWER)</b>
+<b class="nc"><i>167</i>&nbsp;                        oktemp = new JIDLObjectKeyTemplate( orb, magic, scid, is ) ;</b>
+<i>168</i>&nbsp;                    else
+<b class="nc"><i>169</i>&nbsp;                        oktemp = new OldJIDLObjectKeyTemplate( orb, magic, scid, is ) ;</b>
+<i>170</i>&nbsp;                }
+<i>171</i>&nbsp;
+<b class="nc"><i>172</i>&nbsp;                return oktemp ;</b>
+<i>173</i>&nbsp;            }
+<i>174</i>&nbsp;        } ;
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    /** Returns true iff magic is in the range of valid magic numbers
+<i>177</i>&nbsp;    * for our ORB.
+<i>178</i>&nbsp;    */
+<i>179</i>&nbsp;    private boolean validMagic( int magic )
+<i>180</i>&nbsp;    {
+<b class="nc"><i>181</i>&nbsp;        return (magic &gt;= MAGIC_BASE) &amp;&amp; (magic &lt;= MAX_MAGIC) ;</b>
+<i>182</i>&nbsp;    }
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;    /** Creates an ObjectKeyTemplate from the InputStream.  Most of the
+<i>185</i>&nbsp;    * decoding is done inside the handler.
+<i>186</i>&nbsp;    */
+<i>187</i>&nbsp;    private ObjectKeyTemplate create( InputStream is, Handler handler,
+<i>188</i>&nbsp;        OctetSeqHolder osh )
+<i>189</i>&nbsp;    {
+<b class="nc"><i>190</i>&nbsp;        ObjectKeyTemplate oktemp = null ;</b>
+<i>191</i>&nbsp;
+<i>192</i>&nbsp;        try {
+<b class="nc"><i>193</i>&nbsp;            is.mark(0) ;</b>
+<b class="nc"><i>194</i>&nbsp;            int magic = is.read_long() ;</b>
+<i>195</i>&nbsp;
+<b class="nc"><i>196</i>&nbsp;            if (validMagic( magic )) {</b>
+<b class="nc"><i>197</i>&nbsp;                int scid = is.read_long() ;</b>
+<b class="nc"><i>198</i>&nbsp;                oktemp = handler.handle( magic, scid, is, osh ) ;</b>
+<i>199</i>&nbsp;            }
+<b class="nc"><i>200</i>&nbsp;        } catch (MARSHAL mexc) {</b>
+<i>201</i>&nbsp;            // XXX log this error
+<i>202</i>&nbsp;            // ignore this: error handled below because oktemp == null
+<b class="nc"><i>203</i>&nbsp;        }</b>
+<i>204</i>&nbsp;
+<b class="nc"><i>205</i>&nbsp;        if (oktemp == null)</b>
+<i>206</i>&nbsp;            // If we did not successfully construct a oktemp, reset the
+<i>207</i>&nbsp;            // stream so that WireObjectKeyTemplate can correctly construct the
+<i>208</i>&nbsp;            // object key.
+<i>209</i>&nbsp;            try {
+<b class="nc"><i>210</i>&nbsp;                is.reset() ;</b>
+<b class="nc"><i>211</i>&nbsp;            } catch (IOException exc) {</b>
+<i>212</i>&nbsp;                // XXX log this error
+<i>213</i>&nbsp;                // ignore this
+<b class="nc"><i>214</i>&nbsp;            }</b>
+<i>215</i>&nbsp;
+<b class="nc"><i>216</i>&nbsp;        return oktemp ;</b>
+<i>217</i>&nbsp;    }
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;    public ObjectKey create( byte[] key )
+<i>220</i>&nbsp;    {
+<b class="nc"><i>221</i>&nbsp;        OctetSeqHolder osh = new OctetSeqHolder() ;</b>
+<b class="nc"><i>222</i>&nbsp;        EncapsInputStream is = EncapsInputStreamFactory.newEncapsInputStream( orb, key, key.length );</b>
+<i>223</i>&nbsp;
+<b class="nc"><i>224</i>&nbsp;        ObjectKeyTemplate oktemp = create( is, fullKey, osh ) ;</b>
+<b class="nc"><i>225</i>&nbsp;        if (oktemp == null)</b>
+<b class="nc"><i>226</i>&nbsp;            oktemp = new WireObjectKeyTemplate( is, osh ) ;</b>
+<i>227</i>&nbsp;
+<b class="nc"><i>228</i>&nbsp;        ObjectId oid = new ObjectIdImpl( osh.value ) ;</b>
+<b class="nc"><i>229</i>&nbsp;        return new ObjectKeyImpl( oktemp, oid ) ;</b>
+<i>230</i>&nbsp;    }
+<i>231</i>&nbsp;
+<i>232</i>&nbsp;    public ObjectKeyTemplate createTemplate( InputStream is )
+<i>233</i>&nbsp;    {
+<b class="nc"><i>234</i>&nbsp;        ObjectKeyTemplate oktemp = create( is, oktempOnly, null ) ;</b>
+<b class="nc"><i>235</i>&nbsp;        if (oktemp == null)</b>
+<b class="nc"><i>236</i>&nbsp;            oktemp = new WireObjectKeyTemplate( orb ) ;</b>
+<i>237</i>&nbsp;
+<b class="nc"><i>238</i>&nbsp;        return oktemp ;</b>
+<i>239</i>&nbsp;    }
+<i>240</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

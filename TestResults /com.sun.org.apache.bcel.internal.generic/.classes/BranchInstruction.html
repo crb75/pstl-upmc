@@ -1,0 +1,352 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BranchInstruction</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.bcel.internal.generic</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BranchInstruction (com.sun.org.apache.bcel.internal.generic)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BranchInstruction</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 49)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;package com.sun.org.apache.bcel.internal.generic;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;/* ====================================================================
+<i>8</i>&nbsp; * The Apache Software License, Version 1.1
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; * Copyright (c) 2001 The Apache Software Foundation.  All rights
+<i>11</i>&nbsp; * reserved.
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; * Redistribution and use in source and binary forms, with or without
+<i>14</i>&nbsp; * modification, are permitted provided that the following conditions
+<i>15</i>&nbsp; * are met:
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; * 1. Redistributions of source code must retain the above copyright
+<i>18</i>&nbsp; *    notice, this list of conditions and the following disclaimer.
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; * 2. Redistributions in binary form must reproduce the above copyright
+<i>21</i>&nbsp; *    notice, this list of conditions and the following disclaimer in
+<i>22</i>&nbsp; *    the documentation and/or other materials provided with the
+<i>23</i>&nbsp; *    distribution.
+<i>24</i>&nbsp; *
+<i>25</i>&nbsp; * 3. The end-user documentation included with the redistribution,
+<i>26</i>&nbsp; *    if any, must include the following acknowledgment:
+<i>27</i>&nbsp; *       &quot;This product includes software developed by the
+<i>28</i>&nbsp; *        Apache Software Foundation (http://www.apache.org/).&quot;
+<i>29</i>&nbsp; *    Alternately, this acknowledgment may appear in the software itself,
+<i>30</i>&nbsp; *    if and wherever such third-party acknowledgments normally appear.
+<i>31</i>&nbsp; *
+<i>32</i>&nbsp; * 4. The names &quot;Apache&quot; and &quot;Apache Software Foundation&quot; and
+<i>33</i>&nbsp; *    &quot;Apache BCEL&quot; must not be used to endorse or promote products
+<i>34</i>&nbsp; *    derived from this software without prior written permission. For
+<i>35</i>&nbsp; *    written permission, please contact apache@apache.org.
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; * 5. Products derived from this software may not be called &quot;Apache&quot;,
+<i>38</i>&nbsp; *    &quot;Apache BCEL&quot;, nor may &quot;Apache&quot; appear in their name, without
+<i>39</i>&nbsp; *    prior written permission of the Apache Software Foundation.
+<i>40</i>&nbsp; *
+<i>41</i>&nbsp; * THIS SOFTWARE IS PROVIDED ``AS IS&#39;&#39; AND ANY EXPRESSED OR IMPLIED
+<i>42</i>&nbsp; * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+<i>43</i>&nbsp; * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+<i>44</i>&nbsp; * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+<i>45</i>&nbsp; * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+<i>46</i>&nbsp; * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+<i>47</i>&nbsp; * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+<i>48</i>&nbsp; * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+<i>49</i>&nbsp; * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+<i>50</i>&nbsp; * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+<i>51</i>&nbsp; * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+<i>52</i>&nbsp; * SUCH DAMAGE.
+<i>53</i>&nbsp; * ====================================================================
+<i>54</i>&nbsp; *
+<i>55</i>&nbsp; * This software consists of voluntary contributions made by many
+<i>56</i>&nbsp; * individuals on behalf of the Apache Software Foundation.  For more
+<i>57</i>&nbsp; * information on the Apache Software Foundation, please see
+<i>58</i>&nbsp; * &lt;http://www.apache.org/&gt;.
+<i>59</i>&nbsp; */
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;import java.io.*;
+<i>62</i>&nbsp;import com.sun.org.apache.bcel.internal.util.ByteSequence;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;/**
+<i>65</i>&nbsp; * Abstract super class for branching instructions like GOTO, IFEQ, etc..
+<i>66</i>&nbsp; * Branch instructions may have a variable length, namely GOTO, JSR,
+<i>67</i>&nbsp; * LOOKUPSWITCH and TABLESWITCH.
+<i>68</i>&nbsp; *
+<i>69</i>&nbsp; * @see InstructionList
+<i>70</i>&nbsp; * @author  &lt;A HREF=&quot;mailto:markus.dahm@berlin.de&quot;&gt;M. Dahm&lt;/A&gt;
+<i>71</i>&nbsp; */
+<i>72</i>&nbsp;public abstract class BranchInstruction extends Instruction implements InstructionTargeter {
+<i>73</i>&nbsp;  protected int               index;    // Branch target relative to this instruction
+<i>74</i>&nbsp;  protected InstructionHandle target;   // Target object in instruction list
+<i>75</i>&nbsp;  protected int               position; // Byte code offset
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;  /**
+<i>78</i>&nbsp;   * Empty constructor needed for the Class.newInstance() statement in
+<i>79</i>&nbsp;   * Instruction.readInstruction(). Not to be used otherwise.
+<i>80</i>&nbsp;   */
+<b class="nc"><i>81</i>&nbsp;  BranchInstruction() {}</b>
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;  /** Common super constructor
+<i>84</i>&nbsp;   * @param opcodee Instruction opcode
+<i>85</i>&nbsp;   * @param target instruction to branch to
+<i>86</i>&nbsp;   */
+<i>87</i>&nbsp;  protected BranchInstruction(short opcode, InstructionHandle target) {
+<b class="nc"><i>88</i>&nbsp;    super(opcode, (short)3);</b>
+<b class="nc"><i>89</i>&nbsp;    setTarget(target);</b>
+<i>90</i>&nbsp;  }
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;  /**
+<i>93</i>&nbsp;   * Dump instruction as byte code to stream out.
+<i>94</i>&nbsp;   * @param out Output stream
+<i>95</i>&nbsp;   */
+<i>96</i>&nbsp;  @Override
+<i>97</i>&nbsp;  public void dump(DataOutputStream out) throws IOException {
+<b class="nc"><i>98</i>&nbsp;    out.writeByte(opcode);</b>
+<i>99</i>&nbsp;
+<b class="nc"><i>100</i>&nbsp;    index = getTargetOffset();</b>
+<i>101</i>&nbsp;
+<b class="nc"><i>102</i>&nbsp;    if(Math.abs(index) &gt;= 32767) // too large for short</b>
+<b class="nc"><i>103</i>&nbsp;      throw new ClassGenException(&quot;Branch target offset too large for short&quot;);</b>
+<i>104</i>&nbsp;
+<b class="nc"><i>105</i>&nbsp;    out.writeShort(index); // May be negative, i.e., point backwards</b>
+<i>106</i>&nbsp;  }
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;  /**
+<i>109</i>&nbsp;   * @param target branch target
+<i>110</i>&nbsp;   * @return the offset to  `target&#39; relative to this instruction
+<i>111</i>&nbsp;   */
+<i>112</i>&nbsp;  protected int getTargetOffset(InstructionHandle target) {
+<b class="nc"><i>113</i>&nbsp;    if(target == null)</b>
+<b class="nc"><i>114</i>&nbsp;      throw new ClassGenException(&quot;Target of &quot; + super.toString(true) +</b>
+<i>115</i>&nbsp;                                  &quot; is invalid null handle&quot;);
+<i>116</i>&nbsp;
+<b class="nc"><i>117</i>&nbsp;    int t = target.getPosition();</b>
+<i>118</i>&nbsp;
+<b class="nc"><i>119</i>&nbsp;    if(t &lt; 0)</b>
+<b class="nc"><i>120</i>&nbsp;      throw new ClassGenException(&quot;Invalid branch target position offset for &quot; +</b>
+<b class="nc"><i>121</i>&nbsp;                                  super.toString(true) + &quot;:&quot; + t + &quot;:&quot; + target);</b>
+<i>122</i>&nbsp;
+<b class="nc"><i>123</i>&nbsp;    return t - position;</b>
+<i>124</i>&nbsp;  }
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;  /**
+<i>127</i>&nbsp;   * @return the offset to this instruction&#39;s target
+<i>128</i>&nbsp;   */
+<b class="nc"><i>129</i>&nbsp;  protected int getTargetOffset() { return getTargetOffset(target); }</b>
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;  /**
+<i>132</i>&nbsp;   * Called by InstructionList.setPositions when setting the position for every
+<i>133</i>&nbsp;   * instruction. In the presence of variable length instructions `setPositions&#39;
+<i>134</i>&nbsp;   * performs multiple passes over the instruction list to calculate the
+<i>135</i>&nbsp;   * correct (byte) positions and offsets by calling this function.
+<i>136</i>&nbsp;   *
+<i>137</i>&nbsp;   * @param offset additional offset caused by preceding (variable length) instructions
+<i>138</i>&nbsp;   * @param max_offset the maximum offset that may be caused by these instructions
+<i>139</i>&nbsp;   * @return additional offset caused by possible change of this instruction&#39;s length
+<i>140</i>&nbsp;   */
+<i>141</i>&nbsp;  protected int updatePosition(int offset, int max_offset) {
+<b class="nc"><i>142</i>&nbsp;    position += offset;</b>
+<b class="nc"><i>143</i>&nbsp;    return 0;</b>
+<i>144</i>&nbsp;  }
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;  /**
+<i>147</i>&nbsp;   * Long output format:
+<i>148</i>&nbsp;   *
+<i>149</i>&nbsp;   * &amp;lt;position in byte code&amp;gt;
+<i>150</i>&nbsp;   * &amp;lt;name of opcode&amp;gt; &quot;[&quot;&amp;lt;opcode number&amp;gt;&quot;]&quot;
+<i>151</i>&nbsp;   * &quot;(&quot;&amp;lt;length of instruction&amp;gt;&quot;)&quot;
+<i>152</i>&nbsp;   * &quot;&amp;lt;&quot;&amp;lt;target instruction&amp;gt;&quot;&amp;gt;&quot; &quot;@&quot;&amp;lt;branch target offset&amp;gt;
+<i>153</i>&nbsp;   *
+<i>154</i>&nbsp;   * @param verbose long/short format switch
+<i>155</i>&nbsp;   * @return mnemonic for instruction
+<i>156</i>&nbsp;   */
+<i>157</i>&nbsp;  @Override
+<i>158</i>&nbsp;  public String toString(boolean verbose) {
+<b class="nc"><i>159</i>&nbsp;    String s = super.toString(verbose);</b>
+<b class="nc"><i>160</i>&nbsp;    String t = &quot;null&quot;;</b>
+<i>161</i>&nbsp;
+<b class="nc"><i>162</i>&nbsp;    if(verbose) {</b>
+<b class="nc"><i>163</i>&nbsp;      if(target != null) {</b>
+<b class="nc"><i>164</i>&nbsp;        if(target.getInstruction() == this)</b>
+<b class="nc"><i>165</i>&nbsp;          t = &quot;&lt;points to itself&gt;&quot;;</b>
+<b class="nc"><i>166</i>&nbsp;        else if(target.getInstruction() == null)</b>
+<b class="nc"><i>167</i>&nbsp;          t = &quot;&lt;null instruction!!!?&gt;&quot;;</b>
+<i>168</i>&nbsp;        else
+<b class="nc"><i>169</i>&nbsp;          t = target.getInstruction().toString(false); // Avoid circles</b>
+<i>170</i>&nbsp;      }
+<i>171</i>&nbsp;    } else {
+<b class="nc"><i>172</i>&nbsp;      if(target != null) {</b>
+<b class="nc"><i>173</i>&nbsp;        index = getTargetOffset();</b>
+<b class="nc"><i>174</i>&nbsp;        t = &quot;&quot; + (index + position);</b>
+<i>175</i>&nbsp;      }
+<i>176</i>&nbsp;    }
+<i>177</i>&nbsp;
+<b class="nc"><i>178</i>&nbsp;    return s + &quot; -&gt; &quot; + t;</b>
+<i>179</i>&nbsp;  }
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;  /**
+<i>182</i>&nbsp;   * Read needed data (e.g. index) from file. Conversion to a InstructionHandle
+<i>183</i>&nbsp;   * is done in InstructionList(byte[]).
+<i>184</i>&nbsp;   *
+<i>185</i>&nbsp;   * @param bytes input stream
+<i>186</i>&nbsp;   * @param wide wide prefix?
+<i>187</i>&nbsp;   * @see InstructionList
+<i>188</i>&nbsp;   */
+<i>189</i>&nbsp;  @Override
+<i>190</i>&nbsp;  protected void initFromFile(ByteSequence bytes, boolean wide) throws IOException
+<i>191</i>&nbsp;  {
+<b class="nc"><i>192</i>&nbsp;    length = 3;</b>
+<b class="nc"><i>193</i>&nbsp;    index  = bytes.readShort();</b>
+<i>194</i>&nbsp;  }
+<i>195</i>&nbsp;
+<i>196</i>&nbsp;  /**
+<i>197</i>&nbsp;   * @return target offset in byte code
+<i>198</i>&nbsp;   */
+<b class="nc"><i>199</i>&nbsp;  public final int getIndex() { return index; }</b>
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;  /**
+<i>202</i>&nbsp;   * @return target of branch instruction
+<i>203</i>&nbsp;   */
+<b class="nc"><i>204</i>&nbsp;  public InstructionHandle getTarget() { return target; }</b>
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;  /**
+<i>207</i>&nbsp;   * Set branch target
+<i>208</i>&nbsp;   * @param target branch target
+<i>209</i>&nbsp;   */
+<i>210</i>&nbsp;  public final void setTarget(InstructionHandle target) {
+<b class="nc"><i>211</i>&nbsp;    notifyTargetChanging(this.target, this);</b>
+<b class="nc"><i>212</i>&nbsp;    this.target = target;</b>
+<b class="nc"><i>213</i>&nbsp;    notifyTargetChanged(this.target, this);</b>
+<i>214</i>&nbsp;  }
+<i>215</i>&nbsp;
+<i>216</i>&nbsp;  /**
+<i>217</i>&nbsp;   * Used by BranchInstruction, LocalVariableGen, CodeExceptionGen.
+<i>218</i>&nbsp;   * Must be called before the target is actually changed in the
+<i>219</i>&nbsp;   * InstructionTargeter.
+<i>220</i>&nbsp;   */
+<i>221</i>&nbsp;  static void notifyTargetChanging(InstructionHandle old_ih,
+<i>222</i>&nbsp;                                 InstructionTargeter t) {
+<b class="nc"><i>223</i>&nbsp;    if(old_ih != null) {</b>
+<b class="nc"><i>224</i>&nbsp;      old_ih.removeTargeter(t);</b>
+<i>225</i>&nbsp;    }
+<i>226</i>&nbsp;  }
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;  /**
+<i>229</i>&nbsp;   * Used by BranchInstruction, LocalVariableGen, CodeExceptionGen.
+<i>230</i>&nbsp;   * Must be called after the target is actually changed in the
+<i>231</i>&nbsp;   * InstructionTargeter.
+<i>232</i>&nbsp;   */
+<i>233</i>&nbsp;  static void notifyTargetChanged(InstructionHandle new_ih,
+<i>234</i>&nbsp;                                 InstructionTargeter t) {
+<b class="nc"><i>235</i>&nbsp;    if(new_ih != null) {</b>
+<b class="nc"><i>236</i>&nbsp;      new_ih.addTargeter(t);</b>
+<i>237</i>&nbsp;    }
+<i>238</i>&nbsp;  }
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;  /**
+<i>241</i>&nbsp;   * @param old_ih old target
+<i>242</i>&nbsp;   * @param new_ih new target
+<i>243</i>&nbsp;   */
+<i>244</i>&nbsp;  @Override
+<i>245</i>&nbsp;  public void updateTarget(InstructionHandle old_ih, InstructionHandle new_ih) {
+<b class="nc"><i>246</i>&nbsp;    if(target == old_ih)</b>
+<b class="nc"><i>247</i>&nbsp;      setTarget(new_ih);</b>
+<i>248</i>&nbsp;    else
+<b class="nc"><i>249</i>&nbsp;      throw new ClassGenException(&quot;Not targeting &quot; + old_ih + &quot;, but &quot; + target);</b>
+<i>250</i>&nbsp;  }
+<i>251</i>&nbsp;
+<i>252</i>&nbsp;  /**
+<i>253</i>&nbsp;   * @return true, if ih is target of this instruction
+<i>254</i>&nbsp;   */
+<i>255</i>&nbsp;  @Override
+<i>256</i>&nbsp;  public boolean containsTarget(InstructionHandle ih) {
+<b class="nc"><i>257</i>&nbsp;    return (target == ih);</b>
+<i>258</i>&nbsp;  }
+<i>259</i>&nbsp;
+<i>260</i>&nbsp;  /**
+<i>261</i>&nbsp;   * Inform target that it&#39;s not targeted anymore.
+<i>262</i>&nbsp;   */
+<i>263</i>&nbsp;  @Override
+<i>264</i>&nbsp;  void dispose() {
+<b class="nc"><i>265</i>&nbsp;    setTarget(null);</b>
+<b class="nc"><i>266</i>&nbsp;    index=-1;</b>
+<b class="nc"><i>267</i>&nbsp;    position=-1;</b>
+<i>268</i>&nbsp;  }
+<i>269</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

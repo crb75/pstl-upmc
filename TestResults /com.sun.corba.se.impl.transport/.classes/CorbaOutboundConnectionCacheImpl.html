@@ -1,0 +1,357 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CorbaOutboundConnectionCacheImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.transport</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CorbaOutboundConnectionCacheImpl (com.sun.corba.se.impl.transport)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CorbaOutboundConnectionCacheImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 53)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CorbaOutboundConnectionCacheImpl$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CorbaOutboundConnectionCacheImpl$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CorbaOutboundConnectionCacheImpl$3</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 59)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2003, 2004, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.transport;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.util.Collection;
+<i>29</i>&nbsp;import java.util.Hashtable;
+<i>30</i>&nbsp;import java.util.Iterator;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import com.sun.corba.se.pept.broker.Broker;
+<i>33</i>&nbsp;import com.sun.corba.se.pept.transport.ContactInfo;
+<i>34</i>&nbsp;import com.sun.corba.se.pept.transport.Connection;
+<i>35</i>&nbsp;import com.sun.corba.se.pept.transport.OutboundConnectionCache;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import com.sun.corba.se.spi.monitoring.LongMonitoredAttributeBase;
+<i>38</i>&nbsp;import com.sun.corba.se.spi.monitoring.MonitoringConstants;
+<i>39</i>&nbsp;import com.sun.corba.se.spi.monitoring.MonitoringFactories;
+<i>40</i>&nbsp;import com.sun.corba.se.spi.monitoring.MonitoredObject;
+<i>41</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>42</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaConnectionCache;
+<i>43</i>&nbsp;import com.sun.corba.se.spi.transport.CorbaContactInfo;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBUtility;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;/**
+<i>48</i>&nbsp; * @author Harold Carr
+<i>49</i>&nbsp; */
+<i>50</i>&nbsp;public class CorbaOutboundConnectionCacheImpl
+<i>51</i>&nbsp;    extends
+<i>52</i>&nbsp;        CorbaConnectionCacheBase
+<i>53</i>&nbsp;    implements
+<i>54</i>&nbsp;        OutboundConnectionCache
+<i>55</i>&nbsp;{
+<i>56</i>&nbsp;    protected Hashtable connectionCache;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    public CorbaOutboundConnectionCacheImpl(ORB orb, ContactInfo contactInfo)
+<i>59</i>&nbsp;    {
+<b class="nc"><i>60</i>&nbsp;        super(orb, contactInfo.getConnectionCacheType(),</b>
+<b class="nc"><i>61</i>&nbsp;              ((CorbaContactInfo)contactInfo).getMonitoringName());</b>
+<b class="nc"><i>62</i>&nbsp;        this.connectionCache = new Hashtable();</b>
+<i>63</i>&nbsp;    }
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    ////////////////////////////////////////////////////
+<i>66</i>&nbsp;    //
+<i>67</i>&nbsp;    // pept.transport.OutboundConnectionCache
+<i>68</i>&nbsp;    //
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    public Connection get(ContactInfo contactInfo)
+<i>71</i>&nbsp;    {
+<b class="nc"><i>72</i>&nbsp;        if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>73</i>&nbsp;            dprint(&quot;.get: &quot; + contactInfo + &quot; &quot; + contactInfo.hashCode());</b>
+<i>74</i>&nbsp;        }
+<b class="nc"><i>75</i>&nbsp;        synchronized (backingStore()) {</b>
+<b class="nc"><i>76</i>&nbsp;            dprintStatistics();</b>
+<b class="nc"><i>77</i>&nbsp;            return (Connection) connectionCache.get(contactInfo);</b>
+<b class="nc"><i>78</i>&nbsp;        }</b>
+<i>79</i>&nbsp;    }
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    public void put(ContactInfo contactInfo, Connection connection)
+<i>82</i>&nbsp;    {
+<b class="nc"><i>83</i>&nbsp;        if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>84</i>&nbsp;            dprint(&quot;.put: &quot; + contactInfo + &quot; &quot; + contactInfo.hashCode() + &quot; &quot;</b>
+<i>85</i>&nbsp;                   + connection);
+<i>86</i>&nbsp;        }
+<b class="nc"><i>87</i>&nbsp;        synchronized (backingStore()) {</b>
+<b class="nc"><i>88</i>&nbsp;            connectionCache.put(contactInfo, connection);</b>
+<b class="nc"><i>89</i>&nbsp;            connection.setConnectionCache(this);</b>
+<b class="nc"><i>90</i>&nbsp;            dprintStatistics();</b>
+<b class="nc"><i>91</i>&nbsp;        }</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    public void remove(ContactInfo contactInfo)
+<i>95</i>&nbsp;    {
+<b class="nc"><i>96</i>&nbsp;        if (orb.transportDebugFlag) {</b>
+<b class="nc"><i>97</i>&nbsp;            dprint(&quot;.remove: &quot; + contactInfo + &quot; &quot; + contactInfo.hashCode());</b>
+<i>98</i>&nbsp;        }
+<b class="nc"><i>99</i>&nbsp;        synchronized (backingStore()) {</b>
+<b class="nc"><i>100</i>&nbsp;            if (contactInfo != null) {</b>
+<b class="nc"><i>101</i>&nbsp;                connectionCache.remove(contactInfo);</b>
+<i>102</i>&nbsp;            }
+<b class="nc"><i>103</i>&nbsp;            dprintStatistics();</b>
+<b class="nc"><i>104</i>&nbsp;        }</b>
+<i>105</i>&nbsp;    }
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    ////////////////////////////////////////////////////
+<i>108</i>&nbsp;    //
+<i>109</i>&nbsp;    // Implementation
+<i>110</i>&nbsp;    //
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;    public Collection values()
+<i>113</i>&nbsp;    {
+<b class="nc"><i>114</i>&nbsp;        return connectionCache.values();</b>
+<i>115</i>&nbsp;    }
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    protected Object backingStore()
+<i>118</i>&nbsp;    {
+<b class="nc"><i>119</i>&nbsp;        return connectionCache;</b>
+<i>120</i>&nbsp;    }
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;    protected void registerWithMonitoring()
+<i>123</i>&nbsp;    {
+<i>124</i>&nbsp;        // ORB
+<b class="nc"><i>125</i>&nbsp;        MonitoredObject orbMO =</b>
+<b class="nc"><i>126</i>&nbsp;            orb.getMonitoringManager().getRootMonitoredObject();</b>
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;        // CONNECTION
+<b class="nc"><i>129</i>&nbsp;        MonitoredObject connectionMO =</b>
+<b class="nc"><i>130</i>&nbsp;            orbMO.getChild(MonitoringConstants.CONNECTION_MONITORING_ROOT);</b>
+<b class="nc"><i>131</i>&nbsp;        if (connectionMO == null) {</b>
+<i>132</i>&nbsp;            connectionMO =
+<b class="nc"><i>133</i>&nbsp;                MonitoringFactories.getMonitoredObjectFactory()</b>
+<b class="nc"><i>134</i>&nbsp;                    .createMonitoredObject(</b>
+<i>135</i>&nbsp;                        MonitoringConstants.CONNECTION_MONITORING_ROOT,
+<i>136</i>&nbsp;                        MonitoringConstants.CONNECTION_MONITORING_ROOT_DESCRIPTION);
+<b class="nc"><i>137</i>&nbsp;            orbMO.addChild(connectionMO);</b>
+<i>138</i>&nbsp;        }
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;        // OUTBOUND CONNECTION
+<b class="nc"><i>141</i>&nbsp;        MonitoredObject outboundConnectionMO =</b>
+<b class="nc"><i>142</i>&nbsp;            connectionMO.getChild(</b>
+<i>143</i>&nbsp;                MonitoringConstants.OUTBOUND_CONNECTION_MONITORING_ROOT);
+<b class="nc"><i>144</i>&nbsp;        if (outboundConnectionMO == null) {</b>
+<i>145</i>&nbsp;            outboundConnectionMO =
+<b class="nc"><i>146</i>&nbsp;                MonitoringFactories.getMonitoredObjectFactory()</b>
+<b class="nc"><i>147</i>&nbsp;                    .createMonitoredObject(</b>
+<i>148</i>&nbsp;                        MonitoringConstants.OUTBOUND_CONNECTION_MONITORING_ROOT,
+<i>149</i>&nbsp;                        MonitoringConstants.OUTBOUND_CONNECTION_MONITORING_ROOT_DESCRIPTION);
+<b class="nc"><i>150</i>&nbsp;            connectionMO.addChild(outboundConnectionMO);</b>
+<i>151</i>&nbsp;        }
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;        // NODE FOR THIS CACHE
+<b class="nc"><i>154</i>&nbsp;        MonitoredObject thisMO =</b>
+<b class="nc"><i>155</i>&nbsp;            outboundConnectionMO.getChild(getMonitoringName());</b>
+<b class="nc"><i>156</i>&nbsp;        if (thisMO == null) {</b>
+<i>157</i>&nbsp;            thisMO =
+<b class="nc"><i>158</i>&nbsp;                MonitoringFactories.getMonitoredObjectFactory()</b>
+<b class="nc"><i>159</i>&nbsp;                    .createMonitoredObject(</b>
+<b class="nc"><i>160</i>&nbsp;                        getMonitoringName(),</b>
+<i>161</i>&nbsp;                        MonitoringConstants.CONNECTION_MONITORING_DESCRIPTION);
+<b class="nc"><i>162</i>&nbsp;            outboundConnectionMO.addChild(thisMO);</b>
+<i>163</i>&nbsp;        }
+<i>164</i>&nbsp;
+<i>165</i>&nbsp;        LongMonitoredAttributeBase attribute;
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;        // ATTRIBUTE
+<b class="nc"><i>168</i>&nbsp;        attribute = new</b>
+<i>169</i>&nbsp;            LongMonitoredAttributeBase(
+<i>170</i>&nbsp;                MonitoringConstants.CONNECTION_TOTAL_NUMBER_OF_CONNECTIONS,
+<i>171</i>&nbsp;                MonitoringConstants.CONNECTION_TOTAL_NUMBER_OF_CONNECTIONS_DESCRIPTION)
+<b class="nc"><i>172</i>&nbsp;            {</b>
+<i>173</i>&nbsp;                public Object getValue() {
+<b class="nc"><i>174</i>&nbsp;                    return new Long(CorbaOutboundConnectionCacheImpl.this.numberOfConnections());</b>
+<i>175</i>&nbsp;                }
+<i>176</i>&nbsp;            };
+<b class="nc"><i>177</i>&nbsp;        thisMO.addAttribute(attribute);</b>
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;        // ATTRIBUTE
+<b class="nc"><i>180</i>&nbsp;        attribute = new</b>
+<i>181</i>&nbsp;            LongMonitoredAttributeBase(
+<i>182</i>&nbsp;                MonitoringConstants.CONNECTION_NUMBER_OF_IDLE_CONNECTIONS,
+<i>183</i>&nbsp;                MonitoringConstants.CONNECTION_NUMBER_OF_IDLE_CONNECTIONS_DESCRIPTION)
+<b class="nc"><i>184</i>&nbsp;            {</b>
+<i>185</i>&nbsp;                public Object getValue() {
+<b class="nc"><i>186</i>&nbsp;                    return new Long(CorbaOutboundConnectionCacheImpl.this.numberOfIdleConnections());</b>
+<i>187</i>&nbsp;                }
+<i>188</i>&nbsp;            };
+<b class="nc"><i>189</i>&nbsp;        thisMO.addAttribute(attribute);</b>
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;        // ATTRIBUTE
+<b class="nc"><i>192</i>&nbsp;        attribute = new</b>
+<i>193</i>&nbsp;            LongMonitoredAttributeBase(
+<i>194</i>&nbsp;                MonitoringConstants.CONNECTION_NUMBER_OF_BUSY_CONNECTIONS,
+<i>195</i>&nbsp;                MonitoringConstants.CONNECTION_NUMBER_OF_BUSY_CONNECTIONS_DESCRIPTION)
+<b class="nc"><i>196</i>&nbsp;            {</b>
+<i>197</i>&nbsp;                public Object getValue() {
+<b class="nc"><i>198</i>&nbsp;                    return new Long(CorbaOutboundConnectionCacheImpl.this.numberOfBusyConnections());</b>
+<i>199</i>&nbsp;                }
+<i>200</i>&nbsp;            };
+<b class="nc"><i>201</i>&nbsp;        thisMO.addAttribute(attribute);</b>
+<i>202</i>&nbsp;    }
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;    protected void dprint(String msg)
+<i>205</i>&nbsp;    {
+<b class="nc"><i>206</i>&nbsp;        ORBUtility.dprint(&quot;CorbaOutboundConnectionCacheImpl&quot;, msg);</b>
+<i>207</i>&nbsp;    }
+<i>208</i>&nbsp;}
+<i>209</i>&nbsp;
+<i>210</i>&nbsp;// End of file.
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

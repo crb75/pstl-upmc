@@ -1,0 +1,246 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: POALocalCRDImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.protocol</a> ]
+</div>
+
+<h1>Coverage Summary for Class: POALocalCRDImpl (com.sun.corba.se.impl.protocol)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">POALocalCRDImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 42)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2002, 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.protocol;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import org.omg.CORBA.SystemException;
+<i>29</i>&nbsp;import org.omg.CORBA.OBJ_ADAPTER ;
+<i>30</i>&nbsp;import org.omg.CORBA.UNKNOWN ;
+<i>31</i>&nbsp;import org.omg.CORBA.CompletionStatus ;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import org.omg.CORBA.portable.ServantObject;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import com.sun.corba.se.pept.protocol.ClientRequestDispatcher;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import com.sun.corba.se.spi.protocol.LocalClientRequestDispatcher;
+<i>38</i>&nbsp;import com.sun.corba.se.spi.protocol.LocalClientRequestDispatcherFactory;
+<i>39</i>&nbsp;import com.sun.corba.se.spi.protocol.ForwardException ;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import com.sun.corba.se.spi.oa.ObjectAdapter;
+<i>42</i>&nbsp;import com.sun.corba.se.spi.oa.OAInvocationInfo ;
+<i>43</i>&nbsp;import com.sun.corba.se.spi.oa.OADestroyed;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;import com.sun.corba.se.spi.ior.IOR ;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains ;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;import com.sun.corba.se.impl.logging.POASystemException ;
+<i>52</i>&nbsp;import com.sun.corba.se.impl.logging.ORBUtilSystemException ;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;public class POALocalCRDImpl extends LocalClientRequestDispatcherBase
+<i>55</i>&nbsp;{
+<i>56</i>&nbsp;    private ORBUtilSystemException wrapper ;
+<i>57</i>&nbsp;    private POASystemException poaWrapper ;
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    public POALocalCRDImpl( ORB orb, int scid, IOR ior)
+<i>60</i>&nbsp;    {
+<b class="nc"><i>61</i>&nbsp;        super( (com.sun.corba.se.spi.orb.ORB)orb, scid, ior );</b>
+<b class="nc"><i>62</i>&nbsp;        wrapper = ORBUtilSystemException.get( orb,</b>
+<i>63</i>&nbsp;            CORBALogDomains.RPC_PROTOCOL ) ;
+<b class="nc"><i>64</i>&nbsp;        poaWrapper = POASystemException.get( orb,</b>
+<i>65</i>&nbsp;            CORBALogDomains.RPC_PROTOCOL ) ;
+<i>66</i>&nbsp;    }
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    private OAInvocationInfo servantEnter( ObjectAdapter oa ) throws OADestroyed
+<i>69</i>&nbsp;    {
+<b class="nc"><i>70</i>&nbsp;        oa.enter() ;</b>
+<i>71</i>&nbsp;
+<b class="nc"><i>72</i>&nbsp;        OAInvocationInfo info = oa.makeInvocationInfo( objectId ) ;</b>
+<b class="nc"><i>73</i>&nbsp;        orb.pushInvocationInfo( info ) ;</b>
+<i>74</i>&nbsp;
+<b class="nc"><i>75</i>&nbsp;        return info ;</b>
+<i>76</i>&nbsp;    }
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    private void servantExit( ObjectAdapter oa )
+<i>79</i>&nbsp;    {
+<i>80</i>&nbsp;        try {
+<b class="nc"><i>81</i>&nbsp;            oa.returnServant();</b>
+<i>82</i>&nbsp;        } finally {
+<b class="nc"><i>83</i>&nbsp;            oa.exit() ;</b>
+<b class="nc"><i>84</i>&nbsp;            orb.popInvocationInfo() ;</b>
+<b class="nc"><i>85</i>&nbsp;        }</b>
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    // Look up the servant for this request and return it in a
+<i>89</i>&nbsp;    // ServantObject.  Note that servant_postinvoke is always called
+<i>90</i>&nbsp;    // by the stub UNLESS this method returns null.  However, in all
+<i>91</i>&nbsp;    // cases we must be sure that ObjectAdapter.getServant and
+<i>92</i>&nbsp;    // ObjectAdapter.returnServant calls are paired, as required for
+<i>93</i>&nbsp;    // Portable Interceptors and Servant Locators in the POA.
+<i>94</i>&nbsp;    // Thus, this method must call returnServant if it returns null.
+<i>95</i>&nbsp;    public ServantObject servant_preinvoke(org.omg.CORBA.Object self,
+<i>96</i>&nbsp;                                           String operation,
+<i>97</i>&nbsp;                                           Class expectedType)
+<i>98</i>&nbsp;    {
+<b class="nc"><i>99</i>&nbsp;        ObjectAdapter oa = oaf.find( oaid ) ;</b>
+<b class="nc"><i>100</i>&nbsp;        OAInvocationInfo info = null ;</b>
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;        try {
+<b class="nc"><i>103</i>&nbsp;            info = servantEnter( oa ) ;</b>
+<b class="nc"><i>104</i>&nbsp;            info.setOperation( operation ) ;</b>
+<b class="nc"><i>105</i>&nbsp;        } catch ( OADestroyed ex ) {</b>
+<i>106</i>&nbsp;            // Destroyed POAs can be recreated by normal adapter activation.
+<i>107</i>&nbsp;            // So just reinvoke this method.
+<b class="nc"><i>108</i>&nbsp;            return servant_preinvoke(self, operation, expectedType);</b>
+<b class="nc"><i>109</i>&nbsp;        }</b>
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;        try {
+<i>112</i>&nbsp;            try {
+<b class="nc"><i>113</i>&nbsp;                oa.getInvocationServant( info );</b>
+<b class="nc"><i>114</i>&nbsp;                if (!checkForCompatibleServant( info, expectedType ))</b>
+<b class="nc"><i>115</i>&nbsp;                    return null ;</b>
+<b class="nc"><i>116</i>&nbsp;            } catch (Throwable thr) {</b>
+<i>117</i>&nbsp;                // Cleanup after this call, then throw to allow
+<i>118</i>&nbsp;                // outer try to handle the exception appropriately.
+<b class="nc"><i>119</i>&nbsp;                servantExit( oa ) ;</b>
+<b class="nc"><i>120</i>&nbsp;                throw thr ;</b>
+<b class="nc"><i>121</i>&nbsp;            }</b>
+<b class="nc"><i>122</i>&nbsp;        } catch ( ForwardException ex ) {</b>
+<i>123</i>&nbsp;            /* REVISIT
+<i>124</i>&nbsp;            ClientRequestDispatcher csub = (ClientRequestDispatcher)
+<i>125</i>&nbsp;                StubAdapter.getDelegate( ex.forward_reference ) ;
+<i>126</i>&nbsp;            IOR ior = csub.getIOR() ;
+<i>127</i>&nbsp;            setLocatedIOR( ior ) ;
+<i>128</i>&nbsp;            */
+<b class="nc"><i>129</i>&nbsp;            RuntimeException runexc = new RuntimeException(&quot;deal with this.&quot;);</b>
+<b class="nc"><i>130</i>&nbsp;            runexc.initCause( ex ) ;</b>
+<b class="nc"><i>131</i>&nbsp;            throw runexc ;</b>
+<b class="nc"><i>132</i>&nbsp;        } catch ( ThreadDeath ex ) {</b>
+<i>133</i>&nbsp;            // ThreadDeath on the server side should not cause a client
+<i>134</i>&nbsp;            // side thread death in the local case.  We want to preserve
+<i>135</i>&nbsp;            // this behavior for location transparency, so that a ThreadDeath
+<i>136</i>&nbsp;            // has the same affect in either the local or remote case.
+<i>137</i>&nbsp;            // The non-colocated case is handled in iiop.ORB.process, which
+<i>138</i>&nbsp;            // throws the same exception.
+<b class="nc"><i>139</i>&nbsp;            throw wrapper.runtimeexception( ex ) ;</b>
+<b class="nc"><i>140</i>&nbsp;        } catch ( Throwable t ) {</b>
+<b class="nc"><i>141</i>&nbsp;            if (t instanceof SystemException)</b>
+<b class="nc"><i>142</i>&nbsp;                throw (SystemException)t ;</b>
+<i>143</i>&nbsp;
+<b class="nc"><i>144</i>&nbsp;            throw poaWrapper.localServantLookup( t ) ;</b>
+<b class="nc"><i>145</i>&nbsp;        }</b>
+<i>146</i>&nbsp;
+<b class="nc"><i>147</i>&nbsp;        if (!checkForCompatibleServant( info, expectedType )) {</b>
+<b class="nc"><i>148</i>&nbsp;            servantExit( oa ) ;</b>
+<b class="nc"><i>149</i>&nbsp;            return null ;</b>
+<i>150</i>&nbsp;        }
+<i>151</i>&nbsp;
+<b class="nc"><i>152</i>&nbsp;        return info;</b>
+<i>153</i>&nbsp;    }
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;    public void servant_postinvoke(org.omg.CORBA.Object self,
+<i>156</i>&nbsp;                                   ServantObject servantobj)
+<i>157</i>&nbsp;    {
+<b class="nc"><i>158</i>&nbsp;        ObjectAdapter oa = orb.peekInvocationInfo().oa() ;</b>
+<b class="nc"><i>159</i>&nbsp;        servantExit( oa ) ;</b>
+<i>160</i>&nbsp;    }
+<i>161</i>&nbsp;}
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;// End of file.
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

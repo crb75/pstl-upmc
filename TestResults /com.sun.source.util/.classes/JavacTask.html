@@ -1,0 +1,236 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: JavacTask</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.source.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: JavacTask (com.sun.source.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JavacTask</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.source.util;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.io.IOException;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import javax.annotation.processing.ProcessingEnvironment;
+<i>31</i>&nbsp;import javax.lang.model.element.Element;
+<i>32</i>&nbsp;import javax.lang.model.type.TypeMirror;
+<i>33</i>&nbsp;import javax.lang.model.util.Elements;
+<i>34</i>&nbsp;import javax.lang.model.util.Types;
+<i>35</i>&nbsp;import javax.tools.JavaCompiler.CompilationTask;
+<i>36</i>&nbsp;import javax.tools.JavaFileObject;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import com.sun.source.tree.CompilationUnitTree;
+<i>39</i>&nbsp;import com.sun.source.tree.Tree;
+<i>40</i>&nbsp;import com.sun.tools.javac.api.BasicJavacTask;
+<i>41</i>&nbsp;import com.sun.tools.javac.processing.JavacProcessingEnvironment;
+<i>42</i>&nbsp;import com.sun.tools.javac.util.Context;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;/**
+<i>45</i>&nbsp; * Provides access to functionality specific to the JDK Java Compiler, javac.
+<i>46</i>&nbsp; *
+<i>47</i>&nbsp; * @author Peter von der Ah&amp;eacute;
+<i>48</i>&nbsp; * @author Jonathan Gibbons
+<i>49</i>&nbsp; * @since 1.6
+<i>50</i>&nbsp; */
+<i>51</i>&nbsp;@jdk.Exported
+<b class="nc"><i>52</i>&nbsp;public abstract class JavacTask implements CompilationTask {</b>
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /**
+<i>55</i>&nbsp;     * Get the {@code JavacTask} for a {@code ProcessingEnvironment}.
+<i>56</i>&nbsp;     * If the compiler is being invoked using a
+<i>57</i>&nbsp;     * {@link javax.tools.JavaCompiler.CompilationTask CompilationTask},
+<i>58</i>&nbsp;     * then that task will be returned.
+<i>59</i>&nbsp;     * @param processingEnvironment the processing environment
+<i>60</i>&nbsp;     * @return the {@code JavacTask} for a {@code ProcessingEnvironment}
+<i>61</i>&nbsp;     * @since 1.8
+<i>62</i>&nbsp;     */
+<i>63</i>&nbsp;    public static JavacTask instance(ProcessingEnvironment processingEnvironment) {
+<b class="nc"><i>64</i>&nbsp;        if (!processingEnvironment.getClass().getName().equals(</b>
+<i>65</i>&nbsp;                &quot;com.sun.tools.javac.processing.JavacProcessingEnvironment&quot;))
+<b class="nc"><i>66</i>&nbsp;            throw new IllegalArgumentException();</b>
+<b class="nc"><i>67</i>&nbsp;        Context c = ((JavacProcessingEnvironment) processingEnvironment).getContext();</b>
+<b class="nc"><i>68</i>&nbsp;        JavacTask t = c.get(JavacTask.class);</b>
+<b class="nc"><i>69</i>&nbsp;        return (t != null) ? t : new BasicJavacTask(c, true);</b>
+<i>70</i>&nbsp;    }
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;    /**
+<i>73</i>&nbsp;     * Parse the specified files returning a list of abstract syntax trees.
+<i>74</i>&nbsp;     *
+<i>75</i>&nbsp;     * @return a list of abstract syntax trees
+<i>76</i>&nbsp;     * @throws IOException if an unhandled I/O error occurred in the compiler.
+<i>77</i>&nbsp;     * @throws IllegalStateException if the operation cannot be performed at this time.
+<i>78</i>&nbsp;     */
+<i>79</i>&nbsp;    public abstract Iterable&lt;? extends CompilationUnitTree&gt; parse()
+<i>80</i>&nbsp;        throws IOException;
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    /**
+<i>83</i>&nbsp;     * Complete all analysis.
+<i>84</i>&nbsp;     *
+<i>85</i>&nbsp;     * @return a list of elements that were analyzed
+<i>86</i>&nbsp;     * @throws IOException if an unhandled I/O error occurred in the compiler.
+<i>87</i>&nbsp;     * @throws IllegalStateException if the operation cannot be performed at this time.
+<i>88</i>&nbsp;     */
+<i>89</i>&nbsp;    public abstract Iterable&lt;? extends Element&gt; analyze() throws IOException;
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    /**
+<i>92</i>&nbsp;     * Generate code.
+<i>93</i>&nbsp;     *
+<i>94</i>&nbsp;     * @return a list of files that were generated
+<i>95</i>&nbsp;     * @throws IOException if an unhandled I/O error occurred in the compiler.
+<i>96</i>&nbsp;     * @throws IllegalStateException if the operation cannot be performed at this time.
+<i>97</i>&nbsp;     */
+<i>98</i>&nbsp;    public abstract Iterable&lt;? extends JavaFileObject&gt; generate() throws IOException;
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;    /**
+<i>101</i>&nbsp;     * The specified listener will receive notification of events
+<i>102</i>&nbsp;     * describing the progress of this compilation task.
+<i>103</i>&nbsp;     *
+<i>104</i>&nbsp;     * If another listener is receiving notifications as a result of a prior
+<i>105</i>&nbsp;     * call of this method, then that listener will no longer receive notifications.
+<i>106</i>&nbsp;     *
+<i>107</i>&nbsp;     * Informally, this method is equivalent to calling {@code removeTaskListener} for
+<i>108</i>&nbsp;     * any listener that has been previously set, followed by {@code addTaskListener}
+<i>109</i>&nbsp;     * for the new listener.
+<i>110</i>&nbsp;     *
+<i>111</i>&nbsp;     * @throws IllegalStateException if the specified listener has already been added.
+<i>112</i>&nbsp;     */
+<i>113</i>&nbsp;    public abstract void setTaskListener(TaskListener taskListener);
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;    /**
+<i>116</i>&nbsp;     * The specified listener will receive notification of events
+<i>117</i>&nbsp;     * describing the progress of this compilation task.
+<i>118</i>&nbsp;     *
+<i>119</i>&nbsp;     * This method may be called at any time before or during the compilation.
+<i>120</i>&nbsp;     *
+<i>121</i>&nbsp;     * @throws IllegalStateException if the specified listener has already been added.
+<i>122</i>&nbsp;     * @since 1.8
+<i>123</i>&nbsp;     */
+<i>124</i>&nbsp;    public abstract void addTaskListener(TaskListener taskListener);
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;    /**
+<i>127</i>&nbsp;     * The specified listener will no longer receive notification of events
+<i>128</i>&nbsp;     * describing the progress of this compilation task.
+<i>129</i>&nbsp;     *
+<i>130</i>&nbsp;     * This method may be called at any time before or during the compilation.
+<i>131</i>&nbsp;     *
+<i>132</i>&nbsp;     * @since 1.8
+<i>133</i>&nbsp;     */
+<i>134</i>&nbsp;    public abstract void removeTaskListener(TaskListener taskListener);
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;    /**
+<i>137</i>&nbsp;     * Get a type mirror of the tree node determined by the specified path.
+<i>138</i>&nbsp;     * This method has been superceded by methods on
+<i>139</i>&nbsp;     * {@link com.sun.source.util.Trees Trees}.
+<i>140</i>&nbsp;     * @see com.sun.source.util.Trees#getTypeMirror
+<i>141</i>&nbsp;     */
+<i>142</i>&nbsp;    public abstract TypeMirror getTypeMirror(Iterable&lt;? extends Tree&gt; path);
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;    /**
+<i>145</i>&nbsp;     * Get a utility object for dealing with program elements.
+<i>146</i>&nbsp;     */
+<i>147</i>&nbsp;    public abstract Elements getElements();
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    /**
+<i>150</i>&nbsp;     * Get a utility object for dealing with type mirrors.
+<i>151</i>&nbsp;     */
+<i>152</i>&nbsp;    public abstract Types getTypes();
+<i>153</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

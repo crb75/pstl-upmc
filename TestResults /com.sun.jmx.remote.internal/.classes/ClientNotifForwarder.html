@@ -1,0 +1,1087 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ClientNotifForwarder</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.jmx.remote.internal</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ClientNotifForwarder (com.sun.jmx.remote.internal)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ClientNotifForwarder</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 155)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ClientNotifForwarder$LinearExecutor</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ClientNotifForwarder$LinearExecutor$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ClientNotifForwarder$NotifFetcher</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 147)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ClientNotifForwarder$NotifFetcher$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 30)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 329)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2002, 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;package com.sun.jmx.remote.internal;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.io.NotSerializableException;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import java.util.ArrayList;
+<i>31</i>&nbsp;import java.util.HashMap;
+<i>32</i>&nbsp;import java.util.List;
+<i>33</i>&nbsp;import java.util.Map;
+<i>34</i>&nbsp;import java.util.concurrent.Executor;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import java.security.AccessControlContext;
+<i>37</i>&nbsp;import java.security.AccessController;
+<i>38</i>&nbsp;import java.security.PrivilegedAction;
+<i>39</i>&nbsp;import javax.security.auth.Subject;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import javax.management.Notification;
+<i>42</i>&nbsp;import javax.management.NotificationListener;
+<i>43</i>&nbsp;import javax.management.NotificationFilter;
+<i>44</i>&nbsp;import javax.management.ObjectName;
+<i>45</i>&nbsp;import javax.management.MBeanServerNotification;
+<i>46</i>&nbsp;import javax.management.InstanceNotFoundException;
+<i>47</i>&nbsp;import javax.management.ListenerNotFoundException;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;import javax.management.remote.NotificationResult;
+<i>50</i>&nbsp;import javax.management.remote.TargetedNotification;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;import com.sun.jmx.remote.util.ClassLogger;
+<i>53</i>&nbsp;import com.sun.jmx.remote.util.EnvHelp;
+<i>54</i>&nbsp;import java.rmi.UnmarshalException;
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;
+<b class="nc"><i>57</i>&nbsp;public abstract class ClientNotifForwarder {</b>
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    private final AccessControlContext acc;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    public ClientNotifForwarder(Map env) {
+<b class="nc"><i>62</i>&nbsp;        this(null, env);</b>
+<i>63</i>&nbsp;    }
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    private static int threadId;
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    /* An Executor that allows at most one executing and one pending
+<i>68</i>&nbsp;       Runnable.  It uses at most one thread -- as soon as there is
+<i>69</i>&nbsp;       no pending Runnable the thread can exit.  Another thread is
+<i>70</i>&nbsp;       created as soon as there is a new pending Runnable.  This
+<i>71</i>&nbsp;       Executor is adapted for use in a situation where each Runnable
+<i>72</i>&nbsp;       usually schedules up another Runnable.  On return from the
+<i>73</i>&nbsp;       first one, the second one is immediately executed.  So this
+<i>74</i>&nbsp;       just becomes a complicated way to write a while loop, but with
+<i>75</i>&nbsp;       the advantage that you can replace it with another Executor,
+<i>76</i>&nbsp;       for instance one that you are using to execute a bunch of other
+<i>77</i>&nbsp;       unrelated work.
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;       You might expect that a java.util.concurrent.ThreadPoolExecutor
+<i>80</i>&nbsp;       with corePoolSize=0 and maximumPoolSize=1 would have the same
+<i>81</i>&nbsp;       behavior, but it does not.  A ThreadPoolExecutor only creates
+<i>82</i>&nbsp;       a new thread when a new task is submitted and the number of
+<i>83</i>&nbsp;       existing threads is &lt; corePoolSize.  This can never happen when
+<i>84</i>&nbsp;       corePoolSize=0, so new threads are never created.  Surprising,
+<i>85</i>&nbsp;       but there you are.
+<i>86</i>&nbsp;    */
+<b class="nc"><i>87</i>&nbsp;    private static class LinearExecutor implements Executor {</b>
+<i>88</i>&nbsp;        public synchronized void execute(Runnable command) {
+<b class="nc"><i>89</i>&nbsp;            if (this.command != null)</b>
+<b class="nc"><i>90</i>&nbsp;                throw new IllegalArgumentException(&quot;More than one command&quot;);</b>
+<b class="nc"><i>91</i>&nbsp;            this.command = command;</b>
+<b class="nc"><i>92</i>&nbsp;            if (thread == null) {</b>
+<b class="nc"><i>93</i>&nbsp;                thread = new Thread() {</b>
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;                    @Override
+<i>96</i>&nbsp;                    public void run() {
+<i>97</i>&nbsp;                        while (true) {
+<i>98</i>&nbsp;                            Runnable r;
+<b class="nc"><i>99</i>&nbsp;                            synchronized (LinearExecutor.this) {</b>
+<b class="nc"><i>100</i>&nbsp;                                if (LinearExecutor.this.command == null) {</b>
+<b class="nc"><i>101</i>&nbsp;                                    thread = null;</b>
+<b class="nc"><i>102</i>&nbsp;                                    return;</b>
+<i>103</i>&nbsp;                                } else {
+<b class="nc"><i>104</i>&nbsp;                                    r = LinearExecutor.this.command;</b>
+<b class="nc"><i>105</i>&nbsp;                                    LinearExecutor.this.command = null;</b>
+<i>106</i>&nbsp;                                }
+<b class="nc"><i>107</i>&nbsp;                            }</b>
+<b class="nc"><i>108</i>&nbsp;                            r.run();</b>
+<b class="nc"><i>109</i>&nbsp;                        }</b>
+<i>110</i>&nbsp;                    }
+<i>111</i>&nbsp;                };
+<b class="nc"><i>112</i>&nbsp;                thread.setDaemon(true);</b>
+<b class="nc"><i>113</i>&nbsp;                thread.setName(&quot;ClientNotifForwarder-&quot; + ++threadId);</b>
+<b class="nc"><i>114</i>&nbsp;                thread.start();</b>
+<i>115</i>&nbsp;            }
+<i>116</i>&nbsp;        }
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;        private Runnable command;
+<i>119</i>&nbsp;        private Thread thread;
+<i>120</i>&nbsp;    }
+<i>121</i>&nbsp;
+<b class="nc"><i>122</i>&nbsp;    public ClientNotifForwarder(ClassLoader defaultClassLoader, Map&lt;String, ?&gt; env) {</b>
+<b class="nc"><i>123</i>&nbsp;        maxNotifications = EnvHelp.getMaxFetchNotifNumber(env);</b>
+<b class="nc"><i>124</i>&nbsp;        timeout = EnvHelp.getFetchTimeout(env);</b>
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;        /* You can supply an Executor in which the remote call to
+<i>127</i>&nbsp;           fetchNotifications will be made.  The Executor&#39;s execute
+<i>128</i>&nbsp;           method reschedules another task, so you must not use
+<i>129</i>&nbsp;           an Executor that executes tasks in the caller&#39;s thread.  */
+<b class="nc"><i>130</i>&nbsp;        Executor ex = (Executor)</b>
+<b class="nc"><i>131</i>&nbsp;            env.get(&quot;jmx.remote.x.fetch.notifications.executor&quot;);</b>
+<b class="nc"><i>132</i>&nbsp;        if (ex == null)</b>
+<b class="nc"><i>133</i>&nbsp;            ex = new LinearExecutor();</b>
+<b class="nc"><i>134</i>&nbsp;        else if (logger.traceOn())</b>
+<b class="nc"><i>135</i>&nbsp;            logger.trace(&quot;ClientNotifForwarder&quot;, &quot;executor is &quot; + ex);</b>
+<i>136</i>&nbsp;
+<b class="nc"><i>137</i>&nbsp;        this.defaultClassLoader = defaultClassLoader;</b>
+<b class="nc"><i>138</i>&nbsp;        this.executor = ex;</b>
+<b class="nc"><i>139</i>&nbsp;        this.acc = AccessController.getContext();</b>
+<i>140</i>&nbsp;    }
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;    /**
+<i>143</i>&nbsp;     * Called to to fetch notifications from a server.
+<i>144</i>&nbsp;     */
+<i>145</i>&nbsp;    abstract protected NotificationResult fetchNotifs(long clientSequenceNumber,
+<i>146</i>&nbsp;                                                      int maxNotifications,
+<i>147</i>&nbsp;                                                      long timeout)
+<i>148</i>&nbsp;            throws IOException, ClassNotFoundException;
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;    abstract protected Integer addListenerForMBeanRemovedNotif()
+<i>151</i>&nbsp;        throws IOException, InstanceNotFoundException;
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;    abstract protected void removeListenerForMBeanRemovedNotif(Integer id)
+<i>154</i>&nbsp;        throws IOException, InstanceNotFoundException,
+<i>155</i>&nbsp;               ListenerNotFoundException;
+<i>156</i>&nbsp;
+<i>157</i>&nbsp;    /**
+<i>158</i>&nbsp;     * Used to send out a notification about lost notifs
+<i>159</i>&nbsp;     */
+<i>160</i>&nbsp;    abstract protected void lostNotifs(String message, long number);
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;    public synchronized void addNotificationListener(Integer listenerID,
+<i>164</i>&nbsp;                                        ObjectName name,
+<i>165</i>&nbsp;                                        NotificationListener listener,
+<i>166</i>&nbsp;                                        NotificationFilter filter,
+<i>167</i>&nbsp;                                        Object handback,
+<i>168</i>&nbsp;                                        Subject delegationSubject)
+<i>169</i>&nbsp;            throws IOException, InstanceNotFoundException {
+<i>170</i>&nbsp;
+<b class="nc"><i>171</i>&nbsp;        if (logger.traceOn()) {</b>
+<b class="nc"><i>172</i>&nbsp;            logger.trace(&quot;addNotificationListener&quot;,</b>
+<i>173</i>&nbsp;                         &quot;Add the listener &quot;+listener+&quot; at &quot;+name);
+<i>174</i>&nbsp;        }
+<i>175</i>&nbsp;
+<b class="nc"><i>176</i>&nbsp;        infoList.put(listenerID,</b>
+<i>177</i>&nbsp;                     new ClientListenerInfo(listenerID,
+<i>178</i>&nbsp;                                            name,
+<i>179</i>&nbsp;                                            listener,
+<i>180</i>&nbsp;                                            filter,
+<i>181</i>&nbsp;                                            handback,
+<i>182</i>&nbsp;                                            delegationSubject));
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;
+<b class="nc"><i>185</i>&nbsp;        init(false);</b>
+<i>186</i>&nbsp;    }
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;    public synchronized Integer[]
+<i>189</i>&nbsp;        removeNotificationListener(ObjectName name,
+<i>190</i>&nbsp;                                   NotificationListener listener)
+<i>191</i>&nbsp;        throws ListenerNotFoundException, IOException {
+<i>192</i>&nbsp;
+<b class="nc"><i>193</i>&nbsp;        beforeRemove();</b>
+<i>194</i>&nbsp;
+<b class="nc"><i>195</i>&nbsp;        if (logger.traceOn()) {</b>
+<b class="nc"><i>196</i>&nbsp;            logger.trace(&quot;removeNotificationListener&quot;,</b>
+<i>197</i>&nbsp;                         &quot;Remove the listener &quot;+listener+&quot; from &quot;+name);
+<i>198</i>&nbsp;        }
+<i>199</i>&nbsp;
+<b class="nc"><i>200</i>&nbsp;        List&lt;Integer&gt; ids = new ArrayList&lt;Integer&gt;();</b>
+<b class="nc"><i>201</i>&nbsp;        List&lt;ClientListenerInfo&gt; values =</b>
+<b class="nc"><i>202</i>&nbsp;                new ArrayList&lt;ClientListenerInfo&gt;(infoList.values());</b>
+<b class="nc"><i>203</i>&nbsp;        for (int i=values.size()-1; i&gt;=0; i--) {</b>
+<b class="nc"><i>204</i>&nbsp;            ClientListenerInfo li = values.get(i);</b>
+<i>205</i>&nbsp;
+<b class="nc"><i>206</i>&nbsp;            if (li.sameAs(name, listener)) {</b>
+<b class="nc"><i>207</i>&nbsp;                ids.add(li.getListenerID());</b>
+<i>208</i>&nbsp;
+<b class="nc"><i>209</i>&nbsp;                infoList.remove(li.getListenerID());</b>
+<i>210</i>&nbsp;            }
+<i>211</i>&nbsp;        }
+<i>212</i>&nbsp;
+<b class="nc"><i>213</i>&nbsp;        if (ids.isEmpty())</b>
+<b class="nc"><i>214</i>&nbsp;            throw new ListenerNotFoundException(&quot;Listener not found&quot;);</b>
+<i>215</i>&nbsp;
+<b class="nc"><i>216</i>&nbsp;        return ids.toArray(new Integer[0]);</b>
+<i>217</i>&nbsp;    }
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;    public synchronized Integer
+<i>220</i>&nbsp;        removeNotificationListener(ObjectName name,
+<i>221</i>&nbsp;                                   NotificationListener listener,
+<i>222</i>&nbsp;                                   NotificationFilter filter,
+<i>223</i>&nbsp;                                   Object handback)
+<i>224</i>&nbsp;            throws ListenerNotFoundException, IOException {
+<i>225</i>&nbsp;
+<b class="nc"><i>226</i>&nbsp;        if (logger.traceOn()) {</b>
+<b class="nc"><i>227</i>&nbsp;            logger.trace(&quot;removeNotificationListener&quot;,</b>
+<i>228</i>&nbsp;                         &quot;Remove the listener &quot;+listener+&quot; from &quot;+name);
+<i>229</i>&nbsp;        }
+<i>230</i>&nbsp;
+<b class="nc"><i>231</i>&nbsp;        beforeRemove();</b>
+<i>232</i>&nbsp;
+<b class="nc"><i>233</i>&nbsp;        Integer id = null;</b>
+<i>234</i>&nbsp;
+<b class="nc"><i>235</i>&nbsp;        List&lt;ClientListenerInfo&gt; values =</b>
+<b class="nc"><i>236</i>&nbsp;                new ArrayList&lt;ClientListenerInfo&gt;(infoList.values());</b>
+<b class="nc"><i>237</i>&nbsp;        for (int i=values.size()-1; i&gt;=0; i--) {</b>
+<b class="nc"><i>238</i>&nbsp;            ClientListenerInfo li = values.get(i);</b>
+<b class="nc"><i>239</i>&nbsp;            if (li.sameAs(name, listener, filter, handback)) {</b>
+<b class="nc"><i>240</i>&nbsp;                id=li.getListenerID();</b>
+<i>241</i>&nbsp;
+<b class="nc"><i>242</i>&nbsp;                infoList.remove(id);</b>
+<i>243</i>&nbsp;
+<b class="nc"><i>244</i>&nbsp;                break;</b>
+<i>245</i>&nbsp;            }
+<i>246</i>&nbsp;        }
+<i>247</i>&nbsp;
+<b class="nc"><i>248</i>&nbsp;        if (id == null)</b>
+<b class="nc"><i>249</i>&nbsp;            throw new ListenerNotFoundException(&quot;Listener not found&quot;);</b>
+<i>250</i>&nbsp;
+<b class="nc"><i>251</i>&nbsp;        return id;</b>
+<i>252</i>&nbsp;    }
+<i>253</i>&nbsp;
+<i>254</i>&nbsp;    public synchronized Integer[] removeNotificationListener(ObjectName name) {
+<b class="nc"><i>255</i>&nbsp;        if (logger.traceOn()) {</b>
+<b class="nc"><i>256</i>&nbsp;            logger.trace(&quot;removeNotificationListener&quot;,</b>
+<i>257</i>&nbsp;                         &quot;Remove all listeners registered at &quot;+name);
+<i>258</i>&nbsp;        }
+<i>259</i>&nbsp;
+<b class="nc"><i>260</i>&nbsp;        List&lt;Integer&gt; ids = new ArrayList&lt;Integer&gt;();</b>
+<i>261</i>&nbsp;
+<b class="nc"><i>262</i>&nbsp;        List&lt;ClientListenerInfo&gt; values =</b>
+<b class="nc"><i>263</i>&nbsp;                new ArrayList&lt;ClientListenerInfo&gt;(infoList.values());</b>
+<b class="nc"><i>264</i>&nbsp;        for (int i=values.size()-1; i&gt;=0; i--) {</b>
+<b class="nc"><i>265</i>&nbsp;            ClientListenerInfo li = values.get(i);</b>
+<b class="nc"><i>266</i>&nbsp;            if (li.sameAs(name)) {</b>
+<b class="nc"><i>267</i>&nbsp;                ids.add(li.getListenerID());</b>
+<i>268</i>&nbsp;
+<b class="nc"><i>269</i>&nbsp;                infoList.remove(li.getListenerID());</b>
+<i>270</i>&nbsp;            }
+<i>271</i>&nbsp;        }
+<i>272</i>&nbsp;
+<b class="nc"><i>273</i>&nbsp;        return ids.toArray(new Integer[0]);</b>
+<i>274</i>&nbsp;    }
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;    /*
+<i>277</i>&nbsp;     * Called when a connector is doing reconnection. Like &lt;code&gt;postReconnection&lt;/code&gt;,
+<i>278</i>&nbsp;     * this method is intended to be called only by a client connector:
+<i>279</i>&nbsp;     * &lt;code&gt;RMIConnector&lt;/code&gt; and &lt;code&gt;ClientIntermediary&lt;/code&gt;.
+<i>280</i>&nbsp;     * Call this method will set the flag beingReconnection to &lt;code&gt;true&lt;/code&gt;,
+<i>281</i>&nbsp;     * and the thread used to fetch notifis will be stopped, a new thread can be
+<i>282</i>&nbsp;     * created only after the method &lt;code&gt;postReconnection&lt;/code&gt; is called.
+<i>283</i>&nbsp;     *
+<i>284</i>&nbsp;     * It is caller&#39;s responsiblity to not re-call this method before calling
+<i>285</i>&nbsp;     * &lt;code&gt;postReconnection&lt;/code&gt;.
+<i>286</i>&nbsp;     */
+<i>287</i>&nbsp;    public synchronized ClientListenerInfo[] preReconnection() throws IOException {
+<b class="nc"><i>288</i>&nbsp;        if (state == TERMINATED || beingReconnected) { // should never</b>
+<b class="nc"><i>289</i>&nbsp;            throw new IOException(&quot;Illegal state.&quot;);</b>
+<i>290</i>&nbsp;        }
+<i>291</i>&nbsp;
+<b class="nc"><i>292</i>&nbsp;        final ClientListenerInfo[] tmp =</b>
+<b class="nc"><i>293</i>&nbsp;            infoList.values().toArray(new ClientListenerInfo[0]);</b>
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;
+<b class="nc"><i>296</i>&nbsp;        beingReconnected = true;</b>
+<i>297</i>&nbsp;
+<b class="nc"><i>298</i>&nbsp;        infoList.clear();</b>
+<i>299</i>&nbsp;
+<b class="nc"><i>300</i>&nbsp;        return tmp;</b>
+<i>301</i>&nbsp;    }
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;    /**
+<i>304</i>&nbsp;     * Called after reconnection is finished.
+<i>305</i>&nbsp;     * This method is intended to be called only by a client connector:
+<i>306</i>&nbsp;     * &lt;code&gt;RMIConnector&lt;/code&gt; and &lt;code&gt;ClientIntermediary&lt;/code&gt;.
+<i>307</i>&nbsp;     */
+<i>308</i>&nbsp;    public synchronized void postReconnection(ClientListenerInfo[] listenerInfos)
+<i>309</i>&nbsp;        throws IOException {
+<i>310</i>&nbsp;
+<b class="nc"><i>311</i>&nbsp;        if (state == TERMINATED) {</b>
+<i>312</i>&nbsp;            return;
+<i>313</i>&nbsp;        }
+<i>314</i>&nbsp;
+<b class="nc"><i>315</i>&nbsp;        while (state == STOPPING) {</b>
+<i>316</i>&nbsp;            try {
+<b class="nc"><i>317</i>&nbsp;                wait();</b>
+<b class="nc"><i>318</i>&nbsp;            } catch (InterruptedException ire) {</b>
+<b class="nc"><i>319</i>&nbsp;                IOException ioe = new IOException(ire.toString());</b>
+<b class="nc"><i>320</i>&nbsp;                EnvHelp.initCause(ioe, ire);</b>
+<b class="nc"><i>321</i>&nbsp;                throw ioe;</b>
+<b class="nc"><i>322</i>&nbsp;            }</b>
+<i>323</i>&nbsp;        }
+<i>324</i>&nbsp;
+<b class="nc"><i>325</i>&nbsp;        final boolean trace = logger.traceOn();</b>
+<b class="nc"><i>326</i>&nbsp;        final int len   = listenerInfos.length;</b>
+<i>327</i>&nbsp;
+<b class="nc"><i>328</i>&nbsp;        for (int i=0; i&lt;len; i++) {</b>
+<b class="nc"><i>329</i>&nbsp;            if (trace) {</b>
+<b class="nc"><i>330</i>&nbsp;                logger.trace(&quot;addNotificationListeners&quot;,</b>
+<i>331</i>&nbsp;                             &quot;Add a listener at &quot;+
+<b class="nc"><i>332</i>&nbsp;                             listenerInfos[i].getListenerID());</b>
+<i>333</i>&nbsp;            }
+<i>334</i>&nbsp;
+<b class="nc"><i>335</i>&nbsp;            infoList.put(listenerInfos[i].getListenerID(), listenerInfos[i]);</b>
+<i>336</i>&nbsp;        }
+<i>337</i>&nbsp;
+<b class="nc"><i>338</i>&nbsp;        beingReconnected = false;</b>
+<b class="nc"><i>339</i>&nbsp;        notifyAll();</b>
+<i>340</i>&nbsp;
+<b class="nc"><i>341</i>&nbsp;        if (currentFetchThread == Thread.currentThread() ||</b>
+<i>342</i>&nbsp;              state == STARTING || state == STARTED) { // doing or waiting reconnection
+<i>343</i>&nbsp;              // only update mbeanRemovedNotifID
+<i>344</i>&nbsp;            try {
+<b class="nc"><i>345</i>&nbsp;                mbeanRemovedNotifID = addListenerForMBeanRemovedNotif();</b>
+<b class="nc"><i>346</i>&nbsp;            } catch (Exception e) {</b>
+<i>347</i>&nbsp;                final String msg =
+<i>348</i>&nbsp;                    &quot;Failed to register a listener to the mbean &quot; +
+<i>349</i>&nbsp;                    &quot;server: the client will not do clean when an MBean &quot; +
+<i>350</i>&nbsp;                    &quot;is unregistered&quot;;
+<b class="nc"><i>351</i>&nbsp;                if (logger.traceOn()) {</b>
+<b class="nc"><i>352</i>&nbsp;                    logger.trace(&quot;init&quot;, msg, e);</b>
+<i>353</i>&nbsp;                }
+<b class="nc"><i>354</i>&nbsp;            }</b>
+<i>355</i>&nbsp;        } else {
+<b class="nc"><i>356</i>&nbsp;              while (state == STOPPING) {</b>
+<i>357</i>&nbsp;                  try {
+<b class="nc"><i>358</i>&nbsp;                      wait();</b>
+<b class="nc"><i>359</i>&nbsp;                  } catch (InterruptedException ire) {</b>
+<b class="nc"><i>360</i>&nbsp;                      IOException ioe = new IOException(ire.toString());</b>
+<b class="nc"><i>361</i>&nbsp;                      EnvHelp.initCause(ioe, ire);</b>
+<b class="nc"><i>362</i>&nbsp;                      throw ioe;</b>
+<b class="nc"><i>363</i>&nbsp;                  }</b>
+<i>364</i>&nbsp;              }
+<i>365</i>&nbsp;
+<b class="nc"><i>366</i>&nbsp;              if (listenerInfos.length &gt; 0) { // old listeners are re-added</b>
+<b class="nc"><i>367</i>&nbsp;                  init(true); // not update clientSequenceNumber</b>
+<b class="nc"><i>368</i>&nbsp;              } else if (infoList.size() &gt; 0) { // only new listeners added during reconnection</b>
+<b class="nc"><i>369</i>&nbsp;                  init(false); // need update clientSequenceNumber</b>
+<i>370</i>&nbsp;              }
+<i>371</i>&nbsp;          }
+<i>372</i>&nbsp;    }
+<i>373</i>&nbsp;
+<i>374</i>&nbsp;    public synchronized void terminate() {
+<b class="nc"><i>375</i>&nbsp;        if (state == TERMINATED) {</b>
+<i>376</i>&nbsp;            return;
+<i>377</i>&nbsp;        }
+<i>378</i>&nbsp;
+<b class="nc"><i>379</i>&nbsp;        if (logger.traceOn()) {</b>
+<b class="nc"><i>380</i>&nbsp;            logger.trace(&quot;terminate&quot;, &quot;Terminating...&quot;);</b>
+<i>381</i>&nbsp;        }
+<i>382</i>&nbsp;
+<b class="nc"><i>383</i>&nbsp;        if (state == STARTED) {</b>
+<b class="nc"><i>384</i>&nbsp;           infoList.clear();</b>
+<i>385</i>&nbsp;        }
+<i>386</i>&nbsp;
+<b class="nc"><i>387</i>&nbsp;        setState(TERMINATED);</b>
+<i>388</i>&nbsp;    }
+<i>389</i>&nbsp;
+<i>390</i>&nbsp;
+<i>391</i>&nbsp;    // -------------------------------------------------
+<i>392</i>&nbsp;    // private classes
+<i>393</i>&nbsp;    // -------------------------------------------------
+<i>394</i>&nbsp;    //
+<i>395</i>&nbsp;
+<b class="nc"><i>396</i>&nbsp;    private class NotifFetcher implements Runnable {</b>
+<i>397</i>&nbsp;
+<b class="nc"><i>398</i>&nbsp;        private volatile boolean alreadyLogged = false;</b>
+<i>399</i>&nbsp;
+<i>400</i>&nbsp;        private void logOnce(String msg, SecurityException x) {
+<b class="nc"><i>401</i>&nbsp;            if (alreadyLogged) return;</b>
+<i>402</i>&nbsp;            // Log only once.
+<b class="nc"><i>403</i>&nbsp;            logger.config(&quot;setContextClassLoader&quot;,msg);</b>
+<b class="nc"><i>404</i>&nbsp;            if (x != null) logger.fine(&quot;setContextClassLoader&quot;, x);</b>
+<b class="nc"><i>405</i>&nbsp;            alreadyLogged = true;</b>
+<i>406</i>&nbsp;        }
+<i>407</i>&nbsp;
+<i>408</i>&nbsp;        // Set new context class loader, returns previous one.
+<i>409</i>&nbsp;        private final ClassLoader setContextClassLoader(final ClassLoader loader) {
+<b class="nc"><i>410</i>&nbsp;            final AccessControlContext ctxt = ClientNotifForwarder.this.acc;</b>
+<i>411</i>&nbsp;            // if ctxt is null, log a config message and throw a
+<i>412</i>&nbsp;            // SecurityException.
+<b class="nc"><i>413</i>&nbsp;            if (ctxt == null) {</b>
+<b class="nc"><i>414</i>&nbsp;                logOnce(&quot;AccessControlContext must not be null.&quot;,null);</b>
+<b class="nc"><i>415</i>&nbsp;                throw new SecurityException(&quot;AccessControlContext must not be null&quot;);</b>
+<i>416</i>&nbsp;            }
+<b class="nc"><i>417</i>&nbsp;            return AccessController.doPrivileged(</b>
+<b class="nc"><i>418</i>&nbsp;                new PrivilegedAction&lt;ClassLoader&gt;() {</b>
+<i>419</i>&nbsp;                    public ClassLoader run() {
+<i>420</i>&nbsp;                        try {
+<i>421</i>&nbsp;                            // get context class loader - may throw
+<i>422</i>&nbsp;                            // SecurityException - though unlikely.
+<i>423</i>&nbsp;                            final ClassLoader previous =
+<b class="nc"><i>424</i>&nbsp;                                Thread.currentThread().getContextClassLoader();</b>
+<i>425</i>&nbsp;
+<i>426</i>&nbsp;                            // if nothing needs to be done, break here...
+<b class="nc"><i>427</i>&nbsp;                            if (loader == previous) return previous;</b>
+<i>428</i>&nbsp;
+<i>429</i>&nbsp;                            // reset context class loader - may throw
+<i>430</i>&nbsp;                            // SecurityException
+<b class="nc"><i>431</i>&nbsp;                            Thread.currentThread().setContextClassLoader(loader);</b>
+<b class="nc"><i>432</i>&nbsp;                            return previous;</b>
+<b class="nc"><i>433</i>&nbsp;                        } catch (SecurityException x) {</b>
+<b class="nc"><i>434</i>&nbsp;                            logOnce(&quot;Permission to set ContextClassLoader missing. &quot; +</b>
+<i>435</i>&nbsp;                                    &quot;Notifications will not be dispatched. &quot; +
+<i>436</i>&nbsp;                                    &quot;Please check your Java policy configuration: &quot; +
+<i>437</i>&nbsp;                                    x, x);
+<b class="nc"><i>438</i>&nbsp;                            throw x;</b>
+<i>439</i>&nbsp;                        }
+<i>440</i>&nbsp;                    }
+<i>441</i>&nbsp;                }, ctxt);
+<i>442</i>&nbsp;        }
+<i>443</i>&nbsp;
+<i>444</i>&nbsp;        public void run() {
+<i>445</i>&nbsp;            final ClassLoader previous;
+<b class="nc"><i>446</i>&nbsp;            if (defaultClassLoader != null) {</b>
+<b class="nc"><i>447</i>&nbsp;                previous = setContextClassLoader(defaultClassLoader);</b>
+<i>448</i>&nbsp;            } else {
+<b class="nc"><i>449</i>&nbsp;                previous = null;</b>
+<i>450</i>&nbsp;            }
+<i>451</i>&nbsp;            try {
+<b class="nc"><i>452</i>&nbsp;                doRun();</b>
+<i>453</i>&nbsp;            } finally {
+<b class="nc"><i>454</i>&nbsp;                if (defaultClassLoader != null) {</b>
+<b class="nc"><i>455</i>&nbsp;                    setContextClassLoader(previous);</b>
+<i>456</i>&nbsp;                }
+<i>457</i>&nbsp;            }
+<i>458</i>&nbsp;        }
+<i>459</i>&nbsp;
+<i>460</i>&nbsp;        private void doRun() {
+<b class="nc"><i>461</i>&nbsp;            synchronized (ClientNotifForwarder.this) {</b>
+<b class="nc"><i>462</i>&nbsp;                currentFetchThread = Thread.currentThread();</b>
+<i>463</i>&nbsp;
+<b class="nc"><i>464</i>&nbsp;                if (state == STARTING) {</b>
+<b class="nc"><i>465</i>&nbsp;                    setState(STARTED);</b>
+<i>466</i>&nbsp;                }
+<b class="nc"><i>467</i>&nbsp;            }</b>
+<i>468</i>&nbsp;
+<i>469</i>&nbsp;
+<b class="nc"><i>470</i>&nbsp;            NotificationResult nr = null;</b>
+<b class="nc"><i>471</i>&nbsp;            if (!shouldStop() &amp;&amp; (nr = fetchNotifs()) != null) {</b>
+<i>472</i>&nbsp;                // nr == null means got exception
+<i>473</i>&nbsp;
+<b class="nc"><i>474</i>&nbsp;                final TargetedNotification[] notifs =</b>
+<b class="nc"><i>475</i>&nbsp;                    nr.getTargetedNotifications();</b>
+<b class="nc"><i>476</i>&nbsp;                final int len = notifs.length;</b>
+<i>477</i>&nbsp;                final Map&lt;Integer, ClientListenerInfo&gt; listeners;
+<i>478</i>&nbsp;                final Integer myListenerID;
+<i>479</i>&nbsp;
+<b class="nc"><i>480</i>&nbsp;                long missed = 0;</b>
+<i>481</i>&nbsp;
+<b class="nc"><i>482</i>&nbsp;                synchronized(ClientNotifForwarder.this) {</b>
+<i>483</i>&nbsp;                    // check sequence number.
+<i>484</i>&nbsp;                    //
+<b class="nc"><i>485</i>&nbsp;                    if (clientSequenceNumber &gt;= 0) {</b>
+<b class="nc"><i>486</i>&nbsp;                        missed = nr.getEarliestSequenceNumber() -</b>
+<b class="nc"><i>487</i>&nbsp;                            clientSequenceNumber;</b>
+<i>488</i>&nbsp;                    }
+<i>489</i>&nbsp;
+<b class="nc"><i>490</i>&nbsp;                    clientSequenceNumber = nr.getNextSequenceNumber();</b>
+<i>491</i>&nbsp;
+<b class="nc"><i>492</i>&nbsp;                    listeners = new HashMap&lt;Integer, ClientListenerInfo&gt;();</b>
+<i>493</i>&nbsp;
+<b class="nc"><i>494</i>&nbsp;                    for (int i = 0 ; i &lt; len ; i++) {</b>
+<b class="nc"><i>495</i>&nbsp;                        final TargetedNotification tn = notifs[i];</b>
+<b class="nc"><i>496</i>&nbsp;                        final Integer listenerID = tn.getListenerID();</b>
+<i>497</i>&nbsp;
+<i>498</i>&nbsp;                        // check if an mbean unregistration notif
+<b class="nc"><i>499</i>&nbsp;                        if (!listenerID.equals(mbeanRemovedNotifID)) {</b>
+<b class="nc"><i>500</i>&nbsp;                            final ClientListenerInfo li = infoList.get(listenerID);</b>
+<b class="nc"><i>501</i>&nbsp;                            if (li != null) {</b>
+<b class="nc"><i>502</i>&nbsp;                                listeners.put(listenerID, li);</b>
+<i>503</i>&nbsp;                            }
+<i>504</i>&nbsp;                            continue;
+<i>505</i>&nbsp;                        }
+<b class="nc"><i>506</i>&nbsp;                        final Notification notif = tn.getNotification();</b>
+<i>507</i>&nbsp;                        final String unreg =
+<i>508</i>&nbsp;                            MBeanServerNotification.UNREGISTRATION_NOTIFICATION;
+<b class="nc"><i>509</i>&nbsp;                        if (notif instanceof MBeanServerNotification &amp;&amp;</b>
+<b class="nc"><i>510</i>&nbsp;                            notif.getType().equals(unreg)) {</b>
+<i>511</i>&nbsp;
+<b class="nc"><i>512</i>&nbsp;                            MBeanServerNotification mbsn =</b>
+<i>513</i>&nbsp;                                (MBeanServerNotification) notif;
+<b class="nc"><i>514</i>&nbsp;                            ObjectName name = mbsn.getMBeanName();</b>
+<i>515</i>&nbsp;
+<b class="nc"><i>516</i>&nbsp;                            removeNotificationListener(name);</b>
+<i>517</i>&nbsp;                        }
+<i>518</i>&nbsp;                    }
+<b class="nc"><i>519</i>&nbsp;                    myListenerID = mbeanRemovedNotifID;</b>
+<b class="nc"><i>520</i>&nbsp;                }</b>
+<i>521</i>&nbsp;
+<b class="nc"><i>522</i>&nbsp;                if (missed &gt; 0) {</b>
+<b class="nc"><i>523</i>&nbsp;                    final String msg =</b>
+<i>524</i>&nbsp;                        &quot;May have lost up to &quot; + missed +
+<i>525</i>&nbsp;                        &quot; notification&quot; + (missed == 1 ? &quot;&quot; : &quot;s&quot;);
+<b class="nc"><i>526</i>&nbsp;                    lostNotifs(msg, missed);</b>
+<b class="nc"><i>527</i>&nbsp;                    logger.trace(&quot;NotifFetcher.run&quot;, msg);</b>
+<i>528</i>&nbsp;                }
+<i>529</i>&nbsp;
+<i>530</i>&nbsp;                // forward
+<b class="nc"><i>531</i>&nbsp;                for (int i = 0 ; i &lt; len ; i++) {</b>
+<b class="nc"><i>532</i>&nbsp;                    final TargetedNotification tn = notifs[i];</b>
+<b class="nc"><i>533</i>&nbsp;                    dispatchNotification(tn,myListenerID,listeners);</b>
+<i>534</i>&nbsp;                }
+<i>535</i>&nbsp;            }
+<i>536</i>&nbsp;
+<b class="nc"><i>537</i>&nbsp;            synchronized (ClientNotifForwarder.this) {</b>
+<b class="nc"><i>538</i>&nbsp;                currentFetchThread = null;</b>
+<b class="nc"><i>539</i>&nbsp;            }</b>
+<i>540</i>&nbsp;
+<b class="nc"><i>541</i>&nbsp;            if (nr == null) {</b>
+<b class="nc"><i>542</i>&nbsp;                if (logger.traceOn()) {</b>
+<b class="nc"><i>543</i>&nbsp;                    logger.trace(&quot;NotifFetcher-run&quot;,</b>
+<i>544</i>&nbsp;                            &quot;Recieved null object as notifs, stops fetching because the &quot;
+<i>545</i>&nbsp;                                    + &quot;notification server is terminated.&quot;);
+<i>546</i>&nbsp;                }
+<i>547</i>&nbsp;            }
+<b class="nc"><i>548</i>&nbsp;            if (nr == null || shouldStop()) {</b>
+<i>549</i>&nbsp;                // tell that the thread is REALLY stopped
+<b class="nc"><i>550</i>&nbsp;                setState(STOPPED);</b>
+<i>551</i>&nbsp;
+<i>552</i>&nbsp;                try {
+<b class="nc"><i>553</i>&nbsp;                      removeListenerForMBeanRemovedNotif(mbeanRemovedNotifID);</b>
+<b class="nc"><i>554</i>&nbsp;                } catch (Exception e) {</b>
+<b class="nc"><i>555</i>&nbsp;                    if (logger.traceOn()) {</b>
+<b class="nc"><i>556</i>&nbsp;                        logger.trace(&quot;NotifFetcher-run&quot;,</b>
+<i>557</i>&nbsp;                                &quot;removeListenerForMBeanRemovedNotif&quot;, e);
+<i>558</i>&nbsp;                    }
+<b class="nc"><i>559</i>&nbsp;                }</b>
+<i>560</i>&nbsp;            } else {
+<b class="nc"><i>561</i>&nbsp;                executor.execute(this);</b>
+<i>562</i>&nbsp;            }
+<i>563</i>&nbsp;        }
+<i>564</i>&nbsp;
+<i>565</i>&nbsp;        void dispatchNotification(TargetedNotification tn,
+<i>566</i>&nbsp;                                  Integer myListenerID,
+<i>567</i>&nbsp;                                  Map&lt;Integer, ClientListenerInfo&gt; listeners) {
+<b class="nc"><i>568</i>&nbsp;            final Notification notif = tn.getNotification();</b>
+<b class="nc"><i>569</i>&nbsp;            final Integer listenerID = tn.getListenerID();</b>
+<i>570</i>&nbsp;
+<b class="nc"><i>571</i>&nbsp;            if (listenerID.equals(myListenerID)) return;</b>
+<b class="nc"><i>572</i>&nbsp;            final ClientListenerInfo li = listeners.get(listenerID);</b>
+<i>573</i>&nbsp;
+<b class="nc"><i>574</i>&nbsp;            if (li == null) {</b>
+<b class="nc"><i>575</i>&nbsp;                logger.trace(&quot;NotifFetcher.dispatch&quot;,</b>
+<i>576</i>&nbsp;                             &quot;Listener ID not in map&quot;);
+<i>577</i>&nbsp;                return;
+<i>578</i>&nbsp;            }
+<i>579</i>&nbsp;
+<b class="nc"><i>580</i>&nbsp;            NotificationListener l = li.getListener();</b>
+<b class="nc"><i>581</i>&nbsp;            Object h = li.getHandback();</b>
+<i>582</i>&nbsp;            try {
+<b class="nc"><i>583</i>&nbsp;                l.handleNotification(notif, h);</b>
+<b class="nc"><i>584</i>&nbsp;            } catch (RuntimeException e) {</b>
+<i>585</i>&nbsp;                final String msg =
+<i>586</i>&nbsp;                    &quot;Failed to forward a notification &quot; +
+<i>587</i>&nbsp;                    &quot;to a listener&quot;;
+<b class="nc"><i>588</i>&nbsp;                logger.trace(&quot;NotifFetcher-run&quot;, msg, e);</b>
+<b class="nc"><i>589</i>&nbsp;            }</b>
+<i>590</i>&nbsp;
+<i>591</i>&nbsp;        }
+<i>592</i>&nbsp;
+<i>593</i>&nbsp;        private NotificationResult fetchNotifs() {
+<i>594</i>&nbsp;            try {
+<b class="nc"><i>595</i>&nbsp;                NotificationResult nr = ClientNotifForwarder.this.</b>
+<b class="nc"><i>596</i>&nbsp;                    fetchNotifs(clientSequenceNumber,maxNotifications,</b>
+<b class="nc"><i>597</i>&nbsp;                                timeout);</b>
+<i>598</i>&nbsp;
+<b class="nc"><i>599</i>&nbsp;                if (logger.traceOn()) {</b>
+<b class="nc"><i>600</i>&nbsp;                    logger.trace(&quot;NotifFetcher-run&quot;,</b>
+<i>601</i>&nbsp;                                 &quot;Got notifications from the server: &quot;+nr);
+<i>602</i>&nbsp;                }
+<i>603</i>&nbsp;
+<b class="nc"><i>604</i>&nbsp;                return nr;</b>
+<b class="nc"><i>605</i>&nbsp;            } catch (ClassNotFoundException | NotSerializableException | UnmarshalException e) {</b>
+<b class="nc"><i>606</i>&nbsp;                logger.trace(&quot;NotifFetcher.fetchNotifs&quot;, e);</b>
+<b class="nc"><i>607</i>&nbsp;                return fetchOneNotif();</b>
+<b class="nc"><i>608</i>&nbsp;            } catch (IOException ioe) {</b>
+<b class="nc"><i>609</i>&nbsp;                if (!shouldStop()) {</b>
+<b class="nc"><i>610</i>&nbsp;                    logger.error(&quot;NotifFetcher-run&quot;,</b>
+<i>611</i>&nbsp;                                 &quot;Failed to fetch notification, &quot; +
+<i>612</i>&nbsp;                                 &quot;stopping thread. Error is: &quot; + ioe, ioe);
+<b class="nc"><i>613</i>&nbsp;                    logger.debug(&quot;NotifFetcher-run&quot;,ioe);</b>
+<i>614</i>&nbsp;                }
+<i>615</i>&nbsp;
+<i>616</i>&nbsp;                // no more fetching
+<b class="nc"><i>617</i>&nbsp;                return null;</b>
+<i>618</i>&nbsp;            }
+<i>619</i>&nbsp;        }
+<i>620</i>&nbsp;
+<i>621</i>&nbsp;        /* Fetch one notification when we suspect that it might be a
+<i>622</i>&nbsp;           notification that we can&#39;t deserialize (because of a
+<i>623</i>&nbsp;           missing class).  First we ask for 0 notifications with 0
+<i>624</i>&nbsp;           timeout.  This allows us to skip sequence numbers for
+<i>625</i>&nbsp;           notifications that don&#39;t match our filters.  Then we ask
+<i>626</i>&nbsp;           for one notification.  If that produces a
+<i>627</i>&nbsp;           ClassNotFoundException, NotSerializableException or
+<i>628</i>&nbsp;           UnmarshalException, we increase our sequence number and ask again.
+<i>629</i>&nbsp;           Eventually we will either get a successful notification, or a
+<i>630</i>&nbsp;           return with 0 notifications.  In either case we can return a
+<i>631</i>&nbsp;           NotificationResult.  This algorithm works (albeit less
+<i>632</i>&nbsp;           well) even if the server implementation doesn&#39;t optimize a
+<i>633</i>&nbsp;           request for 0 notifications to skip sequence numbers for
+<i>634</i>&nbsp;           notifications that don&#39;t match our filters.
+<i>635</i>&nbsp;
+<i>636</i>&nbsp;           If we had at least one
+<i>637</i>&nbsp;           ClassNotFoundException/NotSerializableException/UnmarshalException,
+<i>638</i>&nbsp;           then we must emit a JMXConnectionNotification.LOST_NOTIFS.
+<i>639</i>&nbsp;        */
+<i>640</i>&nbsp;        private NotificationResult fetchOneNotif() {
+<b class="nc"><i>641</i>&nbsp;            ClientNotifForwarder cnf = ClientNotifForwarder.this;</b>
+<i>642</i>&nbsp;
+<b class="nc"><i>643</i>&nbsp;            long startSequenceNumber = clientSequenceNumber;</b>
+<i>644</i>&nbsp;
+<b class="nc"><i>645</i>&nbsp;            int notFoundCount = 0;</b>
+<i>646</i>&nbsp;
+<b class="nc"><i>647</i>&nbsp;            NotificationResult result = null;</b>
+<b class="nc"><i>648</i>&nbsp;            long firstEarliest = -1;</b>
+<i>649</i>&nbsp;
+<b class="nc"><i>650</i>&nbsp;            while (result == null &amp;&amp; !shouldStop()) {</b>
+<i>651</i>&nbsp;                NotificationResult nr;
+<i>652</i>&nbsp;
+<i>653</i>&nbsp;                try {
+<i>654</i>&nbsp;                    // 0 notifs to update startSequenceNumber
+<b class="nc"><i>655</i>&nbsp;                    nr = cnf.fetchNotifs(startSequenceNumber, 0, 0L);</b>
+<b class="nc"><i>656</i>&nbsp;                } catch (ClassNotFoundException e) {</b>
+<b class="nc"><i>657</i>&nbsp;                    logger.warning(&quot;NotifFetcher.fetchOneNotif&quot;,</b>
+<i>658</i>&nbsp;                                   &quot;Impossible exception: &quot; + e);
+<b class="nc"><i>659</i>&nbsp;                    logger.debug(&quot;NotifFetcher.fetchOneNotif&quot;,e);</b>
+<b class="nc"><i>660</i>&nbsp;                    return null;</b>
+<b class="nc"><i>661</i>&nbsp;                } catch (IOException e) {</b>
+<b class="nc"><i>662</i>&nbsp;                    if (!shouldStop())</b>
+<b class="nc"><i>663</i>&nbsp;                        logger.trace(&quot;NotifFetcher.fetchOneNotif&quot;, e);</b>
+<b class="nc"><i>664</i>&nbsp;                    return null;</b>
+<b class="nc"><i>665</i>&nbsp;                }</b>
+<i>666</i>&nbsp;
+<b class="nc"><i>667</i>&nbsp;                if (shouldStop() || nr == null)</b>
+<b class="nc"><i>668</i>&nbsp;                    return null;</b>
+<i>669</i>&nbsp;
+<b class="nc"><i>670</i>&nbsp;                startSequenceNumber = nr.getNextSequenceNumber();</b>
+<b class="nc"><i>671</i>&nbsp;                if (firstEarliest &lt; 0)</b>
+<b class="nc"><i>672</i>&nbsp;                    firstEarliest = nr.getEarliestSequenceNumber();</b>
+<i>673</i>&nbsp;
+<i>674</i>&nbsp;                try {
+<i>675</i>&nbsp;                    // 1 notif to skip possible missing class
+<b class="nc"><i>676</i>&nbsp;                    result = cnf.fetchNotifs(startSequenceNumber, 1, 0L);</b>
+<b class="nc"><i>677</i>&nbsp;                } catch (ClassNotFoundException | NotSerializableException | UnmarshalException e) {</b>
+<b class="nc"><i>678</i>&nbsp;                    logger.warning(&quot;NotifFetcher.fetchOneNotif&quot;,</b>
+<b class="nc"><i>679</i>&nbsp;                                   &quot;Failed to deserialize a notification: &quot;+e.toString());</b>
+<b class="nc"><i>680</i>&nbsp;                    if (logger.traceOn()) {</b>
+<b class="nc"><i>681</i>&nbsp;                        logger.trace(&quot;NotifFetcher.fetchOneNotif&quot;,</b>
+<i>682</i>&nbsp;                                     &quot;Failed to deserialize a notification.&quot;, e);
+<i>683</i>&nbsp;                    }
+<i>684</i>&nbsp;
+<b class="nc"><i>685</i>&nbsp;                    notFoundCount++;</b>
+<b class="nc"><i>686</i>&nbsp;                    startSequenceNumber++;</b>
+<b class="nc"><i>687</i>&nbsp;                } catch (Exception e) {</b>
+<b class="nc"><i>688</i>&nbsp;                    if (!shouldStop())</b>
+<b class="nc"><i>689</i>&nbsp;                        logger.trace(&quot;NotifFetcher.fetchOneNotif&quot;, e);</b>
+<b class="nc"><i>690</i>&nbsp;                    return null;</b>
+<b class="nc"><i>691</i>&nbsp;                }</b>
+<b class="nc"><i>692</i>&nbsp;            }</b>
+<i>693</i>&nbsp;
+<b class="nc"><i>694</i>&nbsp;            if (notFoundCount &gt; 0) {</b>
+<b class="nc"><i>695</i>&nbsp;                final String msg =</b>
+<i>696</i>&nbsp;                    &quot;Dropped &quot; + notFoundCount + &quot; notification&quot; +
+<i>697</i>&nbsp;                    (notFoundCount == 1 ? &quot;&quot; : &quot;s&quot;) +
+<i>698</i>&nbsp;                    &quot; because classes were missing locally or incompatible&quot;;
+<b class="nc"><i>699</i>&nbsp;                lostNotifs(msg, notFoundCount);</b>
+<i>700</i>&nbsp;                // Even if result.getEarliestSequenceNumber() is now greater than
+<i>701</i>&nbsp;                // it was initially, meaning some notifs have been dropped
+<i>702</i>&nbsp;                // from the buffer, we don&#39;t want the caller to see that
+<i>703</i>&nbsp;                // because it is then likely to renotify about the lost notifs.
+<i>704</i>&nbsp;                // So we put back the first value of earliestSequenceNumber
+<i>705</i>&nbsp;                // that we saw.
+<b class="nc"><i>706</i>&nbsp;                if (result != null) {</b>
+<b class="nc"><i>707</i>&nbsp;                    result = new NotificationResult(</b>
+<b class="nc"><i>708</i>&nbsp;                            firstEarliest, result.getNextSequenceNumber(),</b>
+<b class="nc"><i>709</i>&nbsp;                            result.getTargetedNotifications());</b>
+<i>710</i>&nbsp;                }
+<i>711</i>&nbsp;            }
+<i>712</i>&nbsp;
+<b class="nc"><i>713</i>&nbsp;            return result;</b>
+<i>714</i>&nbsp;        }
+<i>715</i>&nbsp;
+<i>716</i>&nbsp;        private boolean shouldStop() {
+<b class="nc"><i>717</i>&nbsp;            synchronized (ClientNotifForwarder.this) {</b>
+<b class="nc"><i>718</i>&nbsp;                if (state != STARTED) {</b>
+<b class="nc"><i>719</i>&nbsp;                    return true;</b>
+<b class="nc"><i>720</i>&nbsp;                } else if (infoList.size() == 0) {</b>
+<i>721</i>&nbsp;                    // no more listener, stop fetching
+<b class="nc"><i>722</i>&nbsp;                    setState(STOPPING);</b>
+<i>723</i>&nbsp;
+<b class="nc"><i>724</i>&nbsp;                    return true;</b>
+<i>725</i>&nbsp;                }
+<i>726</i>&nbsp;
+<b class="nc"><i>727</i>&nbsp;                return false;</b>
+<b class="nc"><i>728</i>&nbsp;            }</b>
+<i>729</i>&nbsp;        }
+<i>730</i>&nbsp;    }
+<i>731</i>&nbsp;
+<i>732</i>&nbsp;
+<i>733</i>&nbsp;// -------------------------------------------------
+<i>734</i>&nbsp;// private methods
+<i>735</i>&nbsp;// -------------------------------------------------
+<i>736</i>&nbsp;    private synchronized void setState(int newState) {
+<b class="nc"><i>737</i>&nbsp;        if (state == TERMINATED) {</b>
+<i>738</i>&nbsp;            return;
+<i>739</i>&nbsp;        }
+<i>740</i>&nbsp;
+<b class="nc"><i>741</i>&nbsp;        state = newState;</b>
+<b class="nc"><i>742</i>&nbsp;        this.notifyAll();</b>
+<i>743</i>&nbsp;    }
+<i>744</i>&nbsp;
+<i>745</i>&nbsp;    /*
+<i>746</i>&nbsp;     * Called to decide whether need to start a thread for fetching notifs.
+<i>747</i>&nbsp;     * &lt;P&gt;The parameter reconnected will decide whether to initilize the clientSequenceNumber,
+<i>748</i>&nbsp;     * initilaizing the clientSequenceNumber means to ignore all notifications arrived before.
+<i>749</i>&nbsp;     * If it is reconnected, we will not initialize in order to get all notifications arrived
+<i>750</i>&nbsp;     * during the reconnection. It may cause the newly registered listeners to receive some
+<i>751</i>&nbsp;     * notifications arrived before its registray.
+<i>752</i>&nbsp;     */
+<i>753</i>&nbsp;    private synchronized void init(boolean reconnected) throws IOException {
+<b class="nc"><i>754</i>&nbsp;        switch (state) {</b>
+<i>755</i>&nbsp;        case STARTED:
+<i>756</i>&nbsp;            return;
+<i>757</i>&nbsp;        case STARTING:
+<i>758</i>&nbsp;            return;
+<i>759</i>&nbsp;        case TERMINATED:
+<b class="nc"><i>760</i>&nbsp;            throw new IOException(&quot;The ClientNotifForwarder has been terminated.&quot;);</b>
+<i>761</i>&nbsp;        case STOPPING:
+<b class="nc"><i>762</i>&nbsp;            if (beingReconnected == true) {</b>
+<i>763</i>&nbsp;                // wait for another thread to do, which is doing reconnection
+<i>764</i>&nbsp;                return;
+<i>765</i>&nbsp;            }
+<i>766</i>&nbsp;
+<b class="nc"><i>767</i>&nbsp;            while (state == STOPPING) { // make sure only one fetching thread.</b>
+<i>768</i>&nbsp;                try {
+<b class="nc"><i>769</i>&nbsp;                    wait();</b>
+<b class="nc"><i>770</i>&nbsp;                } catch (InterruptedException ire) {</b>
+<b class="nc"><i>771</i>&nbsp;                    IOException ioe = new IOException(ire.toString());</b>
+<b class="nc"><i>772</i>&nbsp;                    EnvHelp.initCause(ioe, ire);</b>
+<i>773</i>&nbsp;
+<b class="nc"><i>774</i>&nbsp;                    throw ioe;</b>
+<b class="nc"><i>775</i>&nbsp;                }</b>
+<i>776</i>&nbsp;            }
+<i>777</i>&nbsp;
+<i>778</i>&nbsp;            // re-call this method to check the state again,
+<i>779</i>&nbsp;            // the state can be other value like TERMINATED.
+<b class="nc"><i>780</i>&nbsp;            init(reconnected);</b>
+<i>781</i>&nbsp;
+<i>782</i>&nbsp;            return;
+<i>783</i>&nbsp;        case STOPPED:
+<b class="nc"><i>784</i>&nbsp;            if (beingReconnected == true) {</b>
+<i>785</i>&nbsp;                // wait for another thread to do, which is doing reconnection
+<i>786</i>&nbsp;                return;
+<i>787</i>&nbsp;            }
+<i>788</i>&nbsp;
+<b class="nc"><i>789</i>&nbsp;            if (logger.traceOn()) {</b>
+<b class="nc"><i>790</i>&nbsp;                logger.trace(&quot;init&quot;, &quot;Initializing...&quot;);</b>
+<i>791</i>&nbsp;            }
+<i>792</i>&nbsp;
+<i>793</i>&nbsp;            // init the clientSequenceNumber if not reconnected.
+<b class="nc"><i>794</i>&nbsp;            if (!reconnected) {</b>
+<i>795</i>&nbsp;                try {
+<b class="nc"><i>796</i>&nbsp;                    NotificationResult nr = fetchNotifs(-1, 0, 0);</b>
+<i>797</i>&nbsp;
+<b class="nc"><i>798</i>&nbsp;                    if (state != STOPPED) { // JDK-8038940</b>
+<i>799</i>&nbsp;                                            // reconnection must happen during
+<i>800</i>&nbsp;                                            // fetchNotifs(-1, 0, 0), and a new
+<i>801</i>&nbsp;                                            // thread takes over the fetching job
+<i>802</i>&nbsp;                        return;
+<i>803</i>&nbsp;                    }
+<i>804</i>&nbsp;
+<b class="nc"><i>805</i>&nbsp;                    clientSequenceNumber = nr.getNextSequenceNumber();</b>
+<b class="nc"><i>806</i>&nbsp;                } catch (ClassNotFoundException e) {</b>
+<i>807</i>&nbsp;                    // can&#39;t happen
+<b class="nc"><i>808</i>&nbsp;                    logger.warning(&quot;init&quot;, &quot;Impossible exception: &quot;+ e);</b>
+<b class="nc"><i>809</i>&nbsp;                    logger.debug(&quot;init&quot;,e);</b>
+<b class="nc"><i>810</i>&nbsp;                }</b>
+<i>811</i>&nbsp;            }
+<i>812</i>&nbsp;
+<i>813</i>&nbsp;            // for cleaning
+<i>814</i>&nbsp;            try {
+<b class="nc"><i>815</i>&nbsp;                mbeanRemovedNotifID = addListenerForMBeanRemovedNotif();</b>
+<b class="nc"><i>816</i>&nbsp;            } catch (Exception e) {</b>
+<i>817</i>&nbsp;                final String msg =
+<i>818</i>&nbsp;                    &quot;Failed to register a listener to the mbean &quot; +
+<i>819</i>&nbsp;                    &quot;server: the client will not do clean when an MBean &quot; +
+<i>820</i>&nbsp;                    &quot;is unregistered&quot;;
+<b class="nc"><i>821</i>&nbsp;                if (logger.traceOn()) {</b>
+<b class="nc"><i>822</i>&nbsp;                    logger.trace(&quot;init&quot;, msg, e);</b>
+<i>823</i>&nbsp;                }
+<b class="nc"><i>824</i>&nbsp;            }</b>
+<i>825</i>&nbsp;
+<b class="nc"><i>826</i>&nbsp;            setState(STARTING);</b>
+<i>827</i>&nbsp;
+<i>828</i>&nbsp;            // start fetching
+<b class="nc"><i>829</i>&nbsp;            executor.execute(new NotifFetcher());</b>
+<i>830</i>&nbsp;
+<i>831</i>&nbsp;            return;
+<i>832</i>&nbsp;        default:
+<i>833</i>&nbsp;            // should not
+<b class="nc"><i>834</i>&nbsp;            throw new IOException(&quot;Unknown state.&quot;);</b>
+<i>835</i>&nbsp;        }
+<i>836</i>&nbsp;    }
+<i>837</i>&nbsp;
+<i>838</i>&nbsp;    /**
+<i>839</i>&nbsp;     * Import: should not remove a listener during reconnection, the reconnection
+<i>840</i>&nbsp;     * needs to change the listener list and that will possibly make removal fail.
+<i>841</i>&nbsp;     */
+<i>842</i>&nbsp;    private synchronized void beforeRemove() throws IOException {
+<b class="nc"><i>843</i>&nbsp;        while (beingReconnected) {</b>
+<b class="nc"><i>844</i>&nbsp;            if (state == TERMINATED) {</b>
+<b class="nc"><i>845</i>&nbsp;                throw new IOException(&quot;Terminated.&quot;);</b>
+<i>846</i>&nbsp;            }
+<i>847</i>&nbsp;
+<i>848</i>&nbsp;            try {
+<b class="nc"><i>849</i>&nbsp;                wait();</b>
+<b class="nc"><i>850</i>&nbsp;            } catch (InterruptedException ire) {</b>
+<b class="nc"><i>851</i>&nbsp;                IOException ioe = new IOException(ire.toString());</b>
+<b class="nc"><i>852</i>&nbsp;                EnvHelp.initCause(ioe, ire);</b>
+<i>853</i>&nbsp;
+<b class="nc"><i>854</i>&nbsp;                throw ioe;</b>
+<b class="nc"><i>855</i>&nbsp;            }</b>
+<i>856</i>&nbsp;        }
+<i>857</i>&nbsp;
+<b class="nc"><i>858</i>&nbsp;        if (state == TERMINATED) {</b>
+<b class="nc"><i>859</i>&nbsp;            throw new IOException(&quot;Terminated.&quot;);</b>
+<i>860</i>&nbsp;        }
+<i>861</i>&nbsp;    }
+<i>862</i>&nbsp;
+<i>863</i>&nbsp;// -------------------------------------------------
+<i>864</i>&nbsp;// private variables
+<i>865</i>&nbsp;// -------------------------------------------------
+<i>866</i>&nbsp;
+<i>867</i>&nbsp;    private final ClassLoader defaultClassLoader;
+<i>868</i>&nbsp;    private final Executor executor;
+<i>869</i>&nbsp;
+<b class="nc"><i>870</i>&nbsp;    private final Map&lt;Integer, ClientListenerInfo&gt; infoList =</b>
+<i>871</i>&nbsp;            new HashMap&lt;Integer, ClientListenerInfo&gt;();
+<i>872</i>&nbsp;
+<i>873</i>&nbsp;    // notif stuff
+<b class="nc"><i>874</i>&nbsp;    private long clientSequenceNumber = -1;</b>
+<i>875</i>&nbsp;    private final int maxNotifications;
+<i>876</i>&nbsp;    private final long timeout;
+<b class="nc"><i>877</i>&nbsp;    private Integer mbeanRemovedNotifID = null;</b>
+<i>878</i>&nbsp;    private Thread currentFetchThread;
+<i>879</i>&nbsp;
+<i>880</i>&nbsp;    // state
+<i>881</i>&nbsp;    /**
+<i>882</i>&nbsp;     * This state means that a thread is being created for fetching and forwarding notifications.
+<i>883</i>&nbsp;     */
+<i>884</i>&nbsp;    private static final int STARTING = 0;
+<i>885</i>&nbsp;
+<i>886</i>&nbsp;    /**
+<i>887</i>&nbsp;     * This state tells that a thread has been started for fetching and forwarding notifications.
+<i>888</i>&nbsp;     */
+<i>889</i>&nbsp;    private static final int STARTED = 1;
+<i>890</i>&nbsp;
+<i>891</i>&nbsp;    /**
+<i>892</i>&nbsp;     * This state means that the fetching thread is informed to stop.
+<i>893</i>&nbsp;     */
+<i>894</i>&nbsp;    private static final int STOPPING = 2;
+<i>895</i>&nbsp;
+<i>896</i>&nbsp;    /**
+<i>897</i>&nbsp;     * This state means that the fetching thread is already stopped.
+<i>898</i>&nbsp;     */
+<i>899</i>&nbsp;    private static final int STOPPED = 3;
+<i>900</i>&nbsp;
+<i>901</i>&nbsp;    /**
+<i>902</i>&nbsp;     * This state means that this object is terminated and no more thread will be created
+<i>903</i>&nbsp;     * for fetching notifications.
+<i>904</i>&nbsp;     */
+<i>905</i>&nbsp;    private static final int TERMINATED = 4;
+<i>906</i>&nbsp;
+<b class="nc"><i>907</i>&nbsp;    private int state = STOPPED;</b>
+<i>908</i>&nbsp;
+<i>909</i>&nbsp;    /**
+<i>910</i>&nbsp;     * This variable is used to tell whether a connector (RMIConnector or ClientIntermediary)
+<i>911</i>&nbsp;     * is doing reconnection.
+<i>912</i>&nbsp;     * This variable will be set to true by the method &lt;code&gt;preReconnection&lt;/code&gt;, and set
+<i>913</i>&nbsp;     * to false by &lt;code&gt;postReconnection&lt;/code&gt;.
+<i>914</i>&nbsp;     * When beingReconnected == true, no thread will be created for fetching notifications.
+<i>915</i>&nbsp;     */
+<b class="nc"><i>916</i>&nbsp;    private boolean beingReconnected = false;</b>
+<i>917</i>&nbsp;
+<b class="nc"><i>918</i>&nbsp;    private static final ClassLogger logger =</b>
+<i>919</i>&nbsp;        new ClassLogger(&quot;javax.management.remote.misc&quot;,
+<i>920</i>&nbsp;                        &quot;ClientNotifForwarder&quot;);
+<i>921</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

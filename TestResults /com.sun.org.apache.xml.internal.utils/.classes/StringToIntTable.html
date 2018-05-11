@@ -1,0 +1,281 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: StringToIntTable</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.utils</a> ]
+</div>
+
+<h1>Coverage Summary for Class: StringToIntTable (com.sun.org.apache.xml.internal.utils)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StringToIntTable</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 41)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: StringToIntTable.java,v 1.2.4.1 2005/09/15 08:15:55 suresh_emailid Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.utils;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;/**
+<i>26</i>&nbsp; * A very simple lookup table that stores a list of strings, the even
+<i>27</i>&nbsp; * number strings being keys, and the odd number strings being values.
+<i>28</i>&nbsp; * @xsl.usage internal
+<i>29</i>&nbsp; */
+<i>30</i>&nbsp;public class StringToIntTable
+<i>31</i>&nbsp;{
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;  public static final int INVALID_KEY = -10000;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;  /** Block size to allocate          */
+<i>36</i>&nbsp;  private int m_blocksize;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;  /** Array of strings this table points to. Associated with ints
+<i>39</i>&nbsp;   * in m_values         */
+<i>40</i>&nbsp;  private String m_map[];
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;  /** Array of ints this table points. Associated with strings from
+<i>43</i>&nbsp;   * m_map.         */
+<i>44</i>&nbsp;  private int m_values[];
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;  /** Number of ints in the table          */
+<b class="nc"><i>47</i>&nbsp;  private int m_firstFree = 0;</b>
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;  /** Size of this table         */
+<i>50</i>&nbsp;  private int m_mapSize;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;  /**
+<i>53</i>&nbsp;   * Default constructor.  Note that the default
+<i>54</i>&nbsp;   * block size is very small, for small lists.
+<i>55</i>&nbsp;   */
+<i>56</i>&nbsp;  public StringToIntTable()
+<b class="nc"><i>57</i>&nbsp;  {</b>
+<i>58</i>&nbsp;
+<b class="nc"><i>59</i>&nbsp;    m_blocksize = 8;</b>
+<b class="nc"><i>60</i>&nbsp;    m_mapSize = m_blocksize;</b>
+<b class="nc"><i>61</i>&nbsp;    m_map = new String[m_blocksize];</b>
+<b class="nc"><i>62</i>&nbsp;    m_values = new int[m_blocksize];</b>
+<i>63</i>&nbsp;  }
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;  /**
+<i>66</i>&nbsp;   * Construct a StringToIntTable, using the given block size.
+<i>67</i>&nbsp;   *
+<i>68</i>&nbsp;   * @param blocksize Size of block to allocate
+<i>69</i>&nbsp;   */
+<i>70</i>&nbsp;  public StringToIntTable(int blocksize)
+<b class="nc"><i>71</i>&nbsp;  {</b>
+<i>72</i>&nbsp;
+<b class="nc"><i>73</i>&nbsp;    m_blocksize = blocksize;</b>
+<b class="nc"><i>74</i>&nbsp;    m_mapSize = blocksize;</b>
+<b class="nc"><i>75</i>&nbsp;    m_map = new String[blocksize];</b>
+<b class="nc"><i>76</i>&nbsp;    m_values = new int[m_blocksize];</b>
+<i>77</i>&nbsp;  }
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;  /**
+<i>80</i>&nbsp;   * Get the length of the list.
+<i>81</i>&nbsp;   *
+<i>82</i>&nbsp;   * @return the length of the list
+<i>83</i>&nbsp;   */
+<i>84</i>&nbsp;  public final int getLength()
+<i>85</i>&nbsp;  {
+<b class="nc"><i>86</i>&nbsp;    return m_firstFree;</b>
+<i>87</i>&nbsp;  }
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;  /**
+<i>90</i>&nbsp;   * Append a string onto the vector.
+<i>91</i>&nbsp;   *
+<i>92</i>&nbsp;   * @param key String to append
+<i>93</i>&nbsp;   * @param value The int value of the string
+<i>94</i>&nbsp;   */
+<i>95</i>&nbsp;  public final void put(String key, int value)
+<i>96</i>&nbsp;  {
+<i>97</i>&nbsp;
+<b class="nc"><i>98</i>&nbsp;    if ((m_firstFree + 1) &gt;= m_mapSize)</b>
+<i>99</i>&nbsp;    {
+<b class="nc"><i>100</i>&nbsp;      m_mapSize += m_blocksize;</b>
+<i>101</i>&nbsp;
+<b class="nc"><i>102</i>&nbsp;      String newMap[] = new String[m_mapSize];</b>
+<i>103</i>&nbsp;
+<b class="nc"><i>104</i>&nbsp;      System.arraycopy(m_map, 0, newMap, 0, m_firstFree + 1);</b>
+<i>105</i>&nbsp;
+<b class="nc"><i>106</i>&nbsp;      m_map = newMap;</b>
+<i>107</i>&nbsp;
+<b class="nc"><i>108</i>&nbsp;      int newValues[] = new int[m_mapSize];</b>
+<i>109</i>&nbsp;
+<b class="nc"><i>110</i>&nbsp;      System.arraycopy(m_values, 0, newValues, 0, m_firstFree + 1);</b>
+<i>111</i>&nbsp;
+<b class="nc"><i>112</i>&nbsp;      m_values = newValues;</b>
+<i>113</i>&nbsp;    }
+<i>114</i>&nbsp;
+<b class="nc"><i>115</i>&nbsp;    m_map[m_firstFree] = key;</b>
+<b class="nc"><i>116</i>&nbsp;    m_values[m_firstFree] = value;</b>
+<i>117</i>&nbsp;
+<b class="nc"><i>118</i>&nbsp;    m_firstFree++;</b>
+<i>119</i>&nbsp;  }
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;  /**
+<i>122</i>&nbsp;   * Tell if the table contains the given string.
+<i>123</i>&nbsp;   *
+<i>124</i>&nbsp;   * @param key String to look for
+<i>125</i>&nbsp;   *
+<i>126</i>&nbsp;   * @return The String&#39;s int value
+<i>127</i>&nbsp;   *
+<i>128</i>&nbsp;   */
+<i>129</i>&nbsp;  public final int get(String key)
+<i>130</i>&nbsp;  {
+<i>131</i>&nbsp;
+<b class="nc"><i>132</i>&nbsp;    for (int i = 0; i &lt; m_firstFree; i++)</b>
+<i>133</i>&nbsp;    {
+<b class="nc"><i>134</i>&nbsp;      if (m_map[i].equals(key))</b>
+<b class="nc"><i>135</i>&nbsp;        return m_values[i];</b>
+<i>136</i>&nbsp;    }
+<i>137</i>&nbsp;
+<b class="nc"><i>138</i>&nbsp;        return INVALID_KEY;</b>
+<i>139</i>&nbsp;  }
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;  /**
+<i>142</i>&nbsp;   * Tell if the table contains the given string. Ignore case.
+<i>143</i>&nbsp;   *
+<i>144</i>&nbsp;   * @param key String to look for
+<i>145</i>&nbsp;   *
+<i>146</i>&nbsp;   * @return The string&#39;s int value
+<i>147</i>&nbsp;   */
+<i>148</i>&nbsp;  public final int getIgnoreCase(String key)
+<i>149</i>&nbsp;  {
+<i>150</i>&nbsp;
+<b class="nc"><i>151</i>&nbsp;    if (null == key)</b>
+<b class="nc"><i>152</i>&nbsp;        return INVALID_KEY;</b>
+<i>153</i>&nbsp;
+<b class="nc"><i>154</i>&nbsp;    for (int i = 0; i &lt; m_firstFree; i++)</b>
+<i>155</i>&nbsp;    {
+<b class="nc"><i>156</i>&nbsp;      if (m_map[i].equalsIgnoreCase(key))</b>
+<b class="nc"><i>157</i>&nbsp;        return m_values[i];</b>
+<i>158</i>&nbsp;    }
+<i>159</i>&nbsp;
+<b class="nc"><i>160</i>&nbsp;    return INVALID_KEY;</b>
+<i>161</i>&nbsp;  }
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;  /**
+<i>164</i>&nbsp;   * Tell if the table contains the given string.
+<i>165</i>&nbsp;   *
+<i>166</i>&nbsp;   * @param key String to look for
+<i>167</i>&nbsp;   *
+<i>168</i>&nbsp;   * @return True if the string is in the table
+<i>169</i>&nbsp;   */
+<i>170</i>&nbsp;  public final boolean contains(String key)
+<i>171</i>&nbsp;  {
+<i>172</i>&nbsp;
+<b class="nc"><i>173</i>&nbsp;    for (int i = 0; i &lt; m_firstFree; i++)</b>
+<i>174</i>&nbsp;    {
+<b class="nc"><i>175</i>&nbsp;      if (m_map[i].equals(key))</b>
+<b class="nc"><i>176</i>&nbsp;        return true;</b>
+<i>177</i>&nbsp;    }
+<i>178</i>&nbsp;
+<b class="nc"><i>179</i>&nbsp;    return false;</b>
+<i>180</i>&nbsp;  }
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;  /**
+<i>183</i>&nbsp;   * Return array of keys in the table.
+<i>184</i>&nbsp;   *
+<i>185</i>&nbsp;   * @return Array of strings
+<i>186</i>&nbsp;   */
+<i>187</i>&nbsp;  public final String[] keys()
+<i>188</i>&nbsp;  {
+<b class="nc"><i>189</i>&nbsp;    String [] keysArr = new String[m_firstFree];</b>
+<i>190</i>&nbsp;
+<b class="nc"><i>191</i>&nbsp;    for (int i = 0; i &lt; m_firstFree; i++)</b>
+<i>192</i>&nbsp;    {
+<b class="nc"><i>193</i>&nbsp;      keysArr[i] = m_map[i];</b>
+<i>194</i>&nbsp;    }
+<i>195</i>&nbsp;
+<b class="nc"><i>196</i>&nbsp;    return keysArr;</b>
+<i>197</i>&nbsp;  }
+<i>198</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

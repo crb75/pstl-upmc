@@ -1,0 +1,239 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XRTreeFragSelectWrapper</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xpath.internal.objects</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XRTreeFragSelectWrapper (com.sun.org.apache.xpath.internal.objects)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XRTreeFragSelectWrapper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: XRTreeFragSelectWrapper.java,v 1.2.4.1 2005/09/15 02:02:35 jeffsuttor Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xpath.internal.objects;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xalan.internal.res.XSLMessages;
+<i>26</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTMIterator;
+<i>27</i>&nbsp;import com.sun.org.apache.xml.internal.utils.XMLString;
+<i>28</i>&nbsp;import com.sun.org.apache.xpath.internal.Expression;
+<i>29</i>&nbsp;import com.sun.org.apache.xpath.internal.XPathContext;
+<i>30</i>&nbsp;import com.sun.org.apache.xpath.internal.res.XPATHErrorResources;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;/**
+<i>33</i>&nbsp; * This class makes an select statement act like an result tree fragment.
+<i>34</i>&nbsp; */
+<i>35</i>&nbsp;public class XRTreeFragSelectWrapper extends XRTreeFrag implements Cloneable
+<i>36</i>&nbsp;{
+<i>37</i>&nbsp;    static final long serialVersionUID = -6526177905590461251L;
+<i>38</i>&nbsp;  public XRTreeFragSelectWrapper(Expression expr)
+<i>39</i>&nbsp;  {
+<b class="nc"><i>40</i>&nbsp;    super(expr);</b>
+<i>41</i>&nbsp;  }
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;  /**
+<i>44</i>&nbsp;   * This function is used to fixup variables from QNames to stack frame
+<i>45</i>&nbsp;   * indexes at stylesheet build time.
+<i>46</i>&nbsp;   * @param vars List of QNames that correspond to variables.  This list
+<i>47</i>&nbsp;   * should be searched backwards for the first qualified name that
+<i>48</i>&nbsp;   * corresponds to the variable reference qname.  The position of the
+<i>49</i>&nbsp;   * QName in the vector from the start of the vector will be its position
+<i>50</i>&nbsp;   * in the stack frame (but variables above the globalsTop value will need
+<i>51</i>&nbsp;   * to be offset to the current stack frame).
+<i>52</i>&nbsp;   */
+<i>53</i>&nbsp;  public void fixupVariables(java.util.Vector vars, int globalsSize)
+<i>54</i>&nbsp;  {
+<b class="nc"><i>55</i>&nbsp;    ((Expression)m_obj).fixupVariables(vars, globalsSize);</b>
+<i>56</i>&nbsp;  }
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;  /**
+<i>59</i>&nbsp;   * For support of literal objects in xpaths.
+<i>60</i>&nbsp;   *
+<i>61</i>&nbsp;   * @param xctxt The XPath execution context.
+<i>62</i>&nbsp;   *
+<i>63</i>&nbsp;   * @return the result of executing the select expression
+<i>64</i>&nbsp;   *
+<i>65</i>&nbsp;   * @throws javax.xml.transform.TransformerException
+<i>66</i>&nbsp;   */
+<i>67</i>&nbsp;  public XObject execute(XPathContext xctxt)
+<i>68</i>&nbsp;          throws javax.xml.transform.TransformerException
+<i>69</i>&nbsp;  {
+<i>70</i>&nbsp;         XObject m_selected;
+<b class="nc"><i>71</i>&nbsp;     m_selected = ((Expression)m_obj).execute(xctxt);</b>
+<b class="nc"><i>72</i>&nbsp;     m_selected.allowDetachToRelease(m_allowRelease);</b>
+<b class="nc"><i>73</i>&nbsp;     if (m_selected.getType() == CLASS_STRING)</b>
+<b class="nc"><i>74</i>&nbsp;       return m_selected;</b>
+<i>75</i>&nbsp;     else
+<b class="nc"><i>76</i>&nbsp;       return new XString(m_selected.str());</b>
+<i>77</i>&nbsp;  }
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;  /**
+<i>80</i>&nbsp;   * Detaches the &lt;code&gt;DTMIterator&lt;/code&gt; from the set which it iterated
+<i>81</i>&nbsp;   * over, releasing any computational resources and placing the iterator
+<i>82</i>&nbsp;   * in the INVALID state. After &lt;code&gt;detach&lt;/code&gt; has been invoked,
+<i>83</i>&nbsp;   * calls to &lt;code&gt;nextNode&lt;/code&gt; or &lt;code&gt;previousNode&lt;/code&gt; will
+<i>84</i>&nbsp;   * raise a runtime exception.
+<i>85</i>&nbsp;   *
+<i>86</i>&nbsp;   * In general, detach should only be called once on the object.
+<i>87</i>&nbsp;   */
+<i>88</i>&nbsp;  public void detach()
+<i>89</i>&nbsp;  {
+<b class="nc"><i>90</i>&nbsp;        throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_DETACH_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER, null)); //&quot;detach() not supported by XRTreeFragSelectWrapper!&quot;);</b>
+<i>91</i>&nbsp;  }
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;  /**
+<i>94</i>&nbsp;   * Cast result object to a number.
+<i>95</i>&nbsp;   *
+<i>96</i>&nbsp;   * @return The result tree fragment as a number or NaN
+<i>97</i>&nbsp;   */
+<i>98</i>&nbsp;  public double num()
+<i>99</i>&nbsp;    throws javax.xml.transform.TransformerException
+<i>100</i>&nbsp;  {
+<i>101</i>&nbsp;
+<b class="nc"><i>102</i>&nbsp;        throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NUM_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER, null)); //&quot;num() not supported by XRTreeFragSelectWrapper!&quot;);</b>
+<i>103</i>&nbsp;  }
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;  /**
+<i>107</i>&nbsp;   * Cast result object to an XMLString.
+<i>108</i>&nbsp;   *
+<i>109</i>&nbsp;   * @return The document fragment node data or the empty string.
+<i>110</i>&nbsp;   */
+<i>111</i>&nbsp;  public XMLString xstr()
+<i>112</i>&nbsp;  {
+<b class="nc"><i>113</i>&nbsp;        throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_XSTR_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER, null)); //&quot;xstr() not supported by XRTreeFragSelectWrapper!&quot;);</b>
+<i>114</i>&nbsp;  }
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;  /**
+<i>117</i>&nbsp;   * Cast result object to a string.
+<i>118</i>&nbsp;   *
+<i>119</i>&nbsp;   * @return The document fragment node data or the empty string.
+<i>120</i>&nbsp;   */
+<i>121</i>&nbsp;  public String str()
+<i>122</i>&nbsp;  {
+<b class="nc"><i>123</i>&nbsp;        throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_STR_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER, null)); //&quot;str() not supported by XRTreeFragSelectWrapper!&quot;);</b>
+<i>124</i>&nbsp;  }
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;  /**
+<i>127</i>&nbsp;   * Tell what kind of class this is.
+<i>128</i>&nbsp;   *
+<i>129</i>&nbsp;   * @return the string type
+<i>130</i>&nbsp;   */
+<i>131</i>&nbsp;  public int getType()
+<i>132</i>&nbsp;  {
+<b class="nc"><i>133</i>&nbsp;    return CLASS_STRING;</b>
+<i>134</i>&nbsp;  }
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;  /**
+<i>137</i>&nbsp;   * Cast result object to a result tree fragment.
+<i>138</i>&nbsp;   *
+<i>139</i>&nbsp;   * @return The document fragment this wraps
+<i>140</i>&nbsp;   */
+<i>141</i>&nbsp;  public int rtf()
+<i>142</i>&nbsp;  {
+<b class="nc"><i>143</i>&nbsp;    throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_RTF_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER, null)); //&quot;rtf() not supported by XRTreeFragSelectWrapper!&quot;);</b>
+<i>144</i>&nbsp;  }
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;  /**
+<i>147</i>&nbsp;   * Cast result object to a DTMIterator.
+<i>148</i>&nbsp;   *
+<i>149</i>&nbsp;   * @return The document fragment as a DTMIterator
+<i>150</i>&nbsp;   */
+<i>151</i>&nbsp;  public DTMIterator asNodeIterator()
+<i>152</i>&nbsp;  {
+<b class="nc"><i>153</i>&nbsp;    throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_RTF_NOT_SUPPORTED_XRTREEFRAGSELECTWRAPPER, null)); //&quot;asNodeIterator() not supported by XRTreeFragSelectWrapper!&quot;);</b>
+<i>154</i>&nbsp;  }
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:55</div>
+</div>
+</body>
+</html>

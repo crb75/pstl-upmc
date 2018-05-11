@@ -1,0 +1,234 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SubjectDelegator</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.jmx.remote.security</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SubjectDelegator (com.sun.jmx.remote.security)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SubjectDelegator</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 29)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SubjectDelegator$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 34)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2003, 2014, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.jmx.remote.security;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.security.AccessController;
+<i>29</i>&nbsp;import java.security.AccessControlContext;
+<i>30</i>&nbsp;import java.security.Permission;
+<i>31</i>&nbsp;import java.security.Principal;
+<i>32</i>&nbsp;import java.security.PrivilegedAction;
+<i>33</i>&nbsp;import javax.security.auth.Subject;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import javax.management.remote.SubjectDelegationPermission;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import java.util.*;
+<i>38</i>&nbsp;
+<b class="nc"><i>39</i>&nbsp;public class SubjectDelegator {</b>
+<i>40</i>&nbsp;    /* Return the AccessControlContext appropriate to execute an
+<i>41</i>&nbsp;       operation on behalf of the delegatedSubject.  If the
+<i>42</i>&nbsp;       authenticatedAccessControlContext does not have permission to
+<i>43</i>&nbsp;       delegate to that subject, throw SecurityException.  */
+<i>44</i>&nbsp;    public AccessControlContext
+<i>45</i>&nbsp;        delegatedContext(AccessControlContext authenticatedACC,
+<i>46</i>&nbsp;                         Subject delegatedSubject,
+<i>47</i>&nbsp;                         boolean removeCallerContext)
+<i>48</i>&nbsp;            throws SecurityException {
+<i>49</i>&nbsp;
+<b class="nc"><i>50</i>&nbsp;        if (System.getSecurityManager() != null &amp;&amp; authenticatedACC == null) {</b>
+<b class="nc"><i>51</i>&nbsp;            throw new SecurityException(&quot;Illegal AccessControlContext: null&quot;);</b>
+<i>52</i>&nbsp;        }
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;        // Check if the subject delegation permission allows the
+<i>55</i>&nbsp;        // authenticated subject to assume the identity of each
+<i>56</i>&nbsp;        // principal in the delegated subject
+<i>57</i>&nbsp;        //
+<b class="nc"><i>58</i>&nbsp;        Collection&lt;Principal&gt; ps = getSubjectPrincipals(delegatedSubject);</b>
+<b class="nc"><i>59</i>&nbsp;        final Collection&lt;Permission&gt; permissions = new ArrayList&lt;&gt;(ps.size());</b>
+<b class="nc"><i>60</i>&nbsp;        for(Principal p : ps) {</b>
+<b class="nc"><i>61</i>&nbsp;            final String pname = p.getClass().getName() + &quot;.&quot; + p.getName();</b>
+<b class="nc"><i>62</i>&nbsp;            permissions.add(new SubjectDelegationPermission(pname));</b>
+<b class="nc"><i>63</i>&nbsp;        }</b>
+<b class="nc"><i>64</i>&nbsp;        PrivilegedAction&lt;Void&gt; action =</b>
+<b class="nc"><i>65</i>&nbsp;            new PrivilegedAction&lt;Void&gt;() {</b>
+<i>66</i>&nbsp;                public Void run() {
+<b class="nc"><i>67</i>&nbsp;                    for (Permission sdp : permissions) {</b>
+<b class="nc"><i>68</i>&nbsp;                        AccessController.checkPermission(sdp);</b>
+<b class="nc"><i>69</i>&nbsp;                    }</b>
+<b class="nc"><i>70</i>&nbsp;                    return null;</b>
+<i>71</i>&nbsp;                }
+<i>72</i>&nbsp;            };
+<b class="nc"><i>73</i>&nbsp;        AccessController.doPrivileged(action, authenticatedACC);</b>
+<i>74</i>&nbsp;
+<b class="nc"><i>75</i>&nbsp;        return getDelegatedAcc(delegatedSubject, removeCallerContext);</b>
+<i>76</i>&nbsp;    }
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    private AccessControlContext getDelegatedAcc(Subject delegatedSubject, boolean removeCallerContext) {
+<b class="nc"><i>79</i>&nbsp;        if (removeCallerContext) {</b>
+<b class="nc"><i>80</i>&nbsp;            return JMXSubjectDomainCombiner.getDomainCombinerContext(delegatedSubject);</b>
+<i>81</i>&nbsp;        } else {
+<b class="nc"><i>82</i>&nbsp;            return JMXSubjectDomainCombiner.getContext(delegatedSubject);</b>
+<i>83</i>&nbsp;        }
+<i>84</i>&nbsp;    }
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    /**
+<i>87</i>&nbsp;     * Check if the connector server creator can assume the identity of each
+<i>88</i>&nbsp;     * principal in the authenticated subject, i.e. check if the connector
+<i>89</i>&nbsp;     * server creator codebase contains a subject delegation permission for
+<i>90</i>&nbsp;     * each principal present in the authenticated subject.
+<i>91</i>&nbsp;     *
+<i>92</i>&nbsp;     * @return {@code true} if the connector server creator can delegate to all
+<i>93</i>&nbsp;     * the authenticated principals in the subject. Otherwise, {@code false}.
+<i>94</i>&nbsp;     */
+<i>95</i>&nbsp;    public static synchronized boolean
+<i>96</i>&nbsp;        checkRemoveCallerContext(Subject subject) {
+<i>97</i>&nbsp;        try {
+<b class="nc"><i>98</i>&nbsp;            for (Principal p : getSubjectPrincipals(subject)) {</b>
+<b class="nc"><i>99</i>&nbsp;                final String pname =</b>
+<b class="nc"><i>100</i>&nbsp;                    p.getClass().getName() + &quot;.&quot; + p.getName();</b>
+<b class="nc"><i>101</i>&nbsp;                final Permission sdp =</b>
+<i>102</i>&nbsp;                    new SubjectDelegationPermission(pname);
+<b class="nc"><i>103</i>&nbsp;                AccessController.checkPermission(sdp);</b>
+<b class="nc"><i>104</i>&nbsp;            }</b>
+<b class="nc"><i>105</i>&nbsp;        } catch (SecurityException e) {</b>
+<b class="nc"><i>106</i>&nbsp;            return false;</b>
+<b class="nc"><i>107</i>&nbsp;        }</b>
+<b class="nc"><i>108</i>&nbsp;        return true;</b>
+<i>109</i>&nbsp;    }
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;    /**
+<i>112</i>&nbsp;     * Retrieves the {@linkplain Subject} principals
+<i>113</i>&nbsp;     * @param subject The subject
+<i>114</i>&nbsp;     * @return If the {@code Subject} is immutable it will return the principals directly.
+<i>115</i>&nbsp;     *         If the {@code Subject} is mutable it will create an unmodifiable copy.
+<i>116</i>&nbsp;     */
+<i>117</i>&nbsp;    private static Collection&lt;Principal&gt; getSubjectPrincipals(Subject subject) {
+<b class="nc"><i>118</i>&nbsp;        if (subject.isReadOnly()) {</b>
+<b class="nc"><i>119</i>&nbsp;            return subject.getPrincipals();</b>
+<i>120</i>&nbsp;        }
+<i>121</i>&nbsp;
+<b class="nc"><i>122</i>&nbsp;        List&lt;Principal&gt; principals = Arrays.asList(subject.getPrincipals().toArray(new Principal[0]));</b>
+<b class="nc"><i>123</i>&nbsp;        return Collections.unmodifiableList(principals);</b>
+<i>124</i>&nbsp;    }
+<i>125</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

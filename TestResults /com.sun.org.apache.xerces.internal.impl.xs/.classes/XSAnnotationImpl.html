@@ -1,0 +1,270 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XSAnnotationImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.xs</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XSAnnotationImpl (com.sun.org.apache.xerces.internal.impl.xs)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XSAnnotationImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 45)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.xs;
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;import java.io.IOException;
+<i>23</i>&nbsp;import java.io.StringReader;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xerces.internal.dom.CoreDocumentImpl;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.parsers.DOMParser;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.parsers.SAXParser;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSAnnotation;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSConstants;
+<i>30</i>&nbsp;import com.sun.org.apache.xerces.internal.xs.XSNamespaceItem;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import org.w3c.dom.Document;
+<i>33</i>&nbsp;import org.w3c.dom.Element;
+<i>34</i>&nbsp;import org.w3c.dom.Node;
+<i>35</i>&nbsp;import org.xml.sax.ContentHandler;
+<i>36</i>&nbsp;import org.xml.sax.InputSource;
+<i>37</i>&nbsp;import org.xml.sax.SAXException;
+<i>38</i>&nbsp;/**
+<i>39</i>&nbsp; * This is an implementation of the XSAnnotation schema component.
+<i>40</i>&nbsp; *
+<i>41</i>&nbsp; * @xerces.internal
+<i>42</i>&nbsp; */
+<i>43</i>&nbsp;public class XSAnnotationImpl implements XSAnnotation {
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    // Data
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    // the content of the annotation node, including all children, along
+<i>48</i>&nbsp;    // with any non-schema attributes from its parent
+<b class="nc"><i>49</i>&nbsp;    private String fData = null;</b>
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    // the grammar which owns this annotation; we get parsers
+<i>52</i>&nbsp;    // from here when we need them
+<b class="nc"><i>53</i>&nbsp;    private SchemaGrammar fGrammar = null;</b>
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    // constructors
+<b class="nc"><i>56</i>&nbsp;    public XSAnnotationImpl(String contents, SchemaGrammar grammar) {</b>
+<b class="nc"><i>57</i>&nbsp;        fData = contents;</b>
+<b class="nc"><i>58</i>&nbsp;        fGrammar = grammar;</b>
+<i>59</i>&nbsp;    }
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    /**
+<i>62</i>&nbsp;     *  Write contents of the annotation to the specified DOM object. If the
+<i>63</i>&nbsp;     * specified &lt;code&gt;target&lt;/code&gt; object is a DOM in-scope namespace
+<i>64</i>&nbsp;     * declarations for &lt;code&gt;annotation&lt;/code&gt; element are added as
+<i>65</i>&nbsp;     * attributes nodes of the serialized &lt;code&gt;annotation&lt;/code&gt;, otherwise
+<i>66</i>&nbsp;     * the corresponding events for all in-scope namespace declaration are
+<i>67</i>&nbsp;     * sent via specified document handler.
+<i>68</i>&nbsp;     * @param target  A target pointer to the annotation target object, i.e.
+<i>69</i>&nbsp;     *   &lt;code&gt;org.w3c.dom.Document&lt;/code&gt;,
+<i>70</i>&nbsp;     *   &lt;code&gt;org.xml.sax.ContentHandler&lt;/code&gt;.
+<i>71</i>&nbsp;     * @param targetType  A target type.
+<i>72</i>&nbsp;     * @return If the &lt;code&gt;target&lt;/code&gt; is recognized type and supported by
+<i>73</i>&nbsp;     *   this implementation return true, otherwise return false.
+<i>74</i>&nbsp;     */
+<i>75</i>&nbsp;    public boolean writeAnnotation(Object target,
+<i>76</i>&nbsp;                                   short targetType) {
+<b class="nc"><i>77</i>&nbsp;        if(targetType == XSAnnotation.W3C_DOM_ELEMENT || targetType == XSAnnotation.W3C_DOM_DOCUMENT) {</b>
+<b class="nc"><i>78</i>&nbsp;            writeToDOM((Node)target, targetType);</b>
+<b class="nc"><i>79</i>&nbsp;            return true;</b>
+<b class="nc"><i>80</i>&nbsp;        } else if (targetType == SAX_CONTENTHANDLER) {</b>
+<b class="nc"><i>81</i>&nbsp;            writeToSAX((ContentHandler)target);</b>
+<b class="nc"><i>82</i>&nbsp;            return true;</b>
+<i>83</i>&nbsp;        }
+<b class="nc"><i>84</i>&nbsp;        return false;</b>
+<i>85</i>&nbsp;    }
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    /**
+<i>88</i>&nbsp;     * A text representation of annotation.
+<i>89</i>&nbsp;     */
+<i>90</i>&nbsp;    public String getAnnotationString() {
+<b class="nc"><i>91</i>&nbsp;        return fData;</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    // XSObject methods
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    /**
+<i>97</i>&nbsp;     *  The &lt;code&gt;type&lt;/code&gt; of this object, i.e.
+<i>98</i>&nbsp;     * &lt;code&gt;ELEMENT_DECLARATION&lt;/code&gt;.
+<i>99</i>&nbsp;     */
+<i>100</i>&nbsp;    public short getType() {
+<b class="nc"><i>101</i>&nbsp;        return XSConstants.ANNOTATION;</b>
+<i>102</i>&nbsp;    }
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    /**
+<i>105</i>&nbsp;     * The name of type &lt;code&gt;NCName&lt;/code&gt; of this declaration as defined in
+<i>106</i>&nbsp;     * XML Namespaces.
+<i>107</i>&nbsp;     */
+<i>108</i>&nbsp;    public String getName() {
+<b class="nc"><i>109</i>&nbsp;        return null;</b>
+<i>110</i>&nbsp;    }
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;    /**
+<i>113</i>&nbsp;     *  The [target namespace] of this object, or &lt;code&gt;null&lt;/code&gt; if it is
+<i>114</i>&nbsp;     * unspecified.
+<i>115</i>&nbsp;     */
+<i>116</i>&nbsp;    public String getNamespace() {
+<b class="nc"><i>117</i>&nbsp;        return null;</b>
+<i>118</i>&nbsp;    }
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    /**
+<i>121</i>&nbsp;     * A namespace schema information item corresponding to the target
+<i>122</i>&nbsp;     * namespace of the component, if it&#39;s globally declared; or null
+<i>123</i>&nbsp;     * otherwise.
+<i>124</i>&nbsp;     */
+<i>125</i>&nbsp;    public XSNamespaceItem getNamespaceItem() {
+<b class="nc"><i>126</i>&nbsp;        return null;</b>
+<i>127</i>&nbsp;    }
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;    // private methods
+<i>130</i>&nbsp;    private synchronized void writeToSAX(ContentHandler handler) {
+<i>131</i>&nbsp;        // nothing must go wrong with this parse...
+<b class="nc"><i>132</i>&nbsp;        SAXParser parser = fGrammar.getSAXParser();</b>
+<b class="nc"><i>133</i>&nbsp;        StringReader aReader = new StringReader(fData);</b>
+<b class="nc"><i>134</i>&nbsp;        InputSource aSource = new InputSource(aReader);</b>
+<b class="nc"><i>135</i>&nbsp;        parser.setContentHandler(handler);</b>
+<i>136</i>&nbsp;        try {
+<b class="nc"><i>137</i>&nbsp;            parser.parse(aSource);</b>
+<i>138</i>&nbsp;        }
+<b class="nc"><i>139</i>&nbsp;        catch (SAXException e) {</b>
+<i>140</i>&nbsp;            // this should never happen!
+<i>141</i>&nbsp;            // REVISIT:  what to do with this?; should really not
+<i>142</i>&nbsp;            // eat it...
+<i>143</i>&nbsp;        }
+<b class="nc"><i>144</i>&nbsp;        catch (IOException i) {</b>
+<i>145</i>&nbsp;            // ditto with above
+<b class="nc"><i>146</i>&nbsp;        }</b>
+<i>147</i>&nbsp;        // Release the reference to the user&#39;s ContentHandler.
+<b class="nc"><i>148</i>&nbsp;        parser.setContentHandler(null);</b>
+<i>149</i>&nbsp;    }
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;    // this creates the new Annotation element as the first child
+<i>152</i>&nbsp;    // of the Node
+<i>153</i>&nbsp;    private synchronized void writeToDOM(Node target, short type) {
+<b class="nc"><i>154</i>&nbsp;        Document futureOwner = (type == XSAnnotation.W3C_DOM_ELEMENT) ?</b>
+<b class="nc"><i>155</i>&nbsp;                target.getOwnerDocument() : (Document)target;</b>
+<b class="nc"><i>156</i>&nbsp;        DOMParser parser = fGrammar.getDOMParser();</b>
+<b class="nc"><i>157</i>&nbsp;        StringReader aReader = new StringReader(fData);</b>
+<b class="nc"><i>158</i>&nbsp;        InputSource aSource = new InputSource(aReader);</b>
+<i>159</i>&nbsp;        try {
+<b class="nc"><i>160</i>&nbsp;            parser.parse(aSource);</b>
+<i>161</i>&nbsp;        }
+<b class="nc"><i>162</i>&nbsp;        catch (SAXException e) {</b>
+<i>163</i>&nbsp;            // this should never happen!
+<i>164</i>&nbsp;            // REVISIT:  what to do with this?; should really not
+<i>165</i>&nbsp;            // eat it...
+<i>166</i>&nbsp;        }
+<b class="nc"><i>167</i>&nbsp;        catch (IOException i) {</b>
+<i>168</i>&nbsp;            // ditto with above
+<b class="nc"><i>169</i>&nbsp;        }</b>
+<b class="nc"><i>170</i>&nbsp;        Document aDocument = parser.getDocument();</b>
+<b class="nc"><i>171</i>&nbsp;        parser.dropDocumentReferences();</b>
+<b class="nc"><i>172</i>&nbsp;        Element annotation = aDocument.getDocumentElement();</b>
+<b class="nc"><i>173</i>&nbsp;        Node newElem = null;</b>
+<b class="nc"><i>174</i>&nbsp;        if (futureOwner instanceof CoreDocumentImpl) {</b>
+<b class="nc"><i>175</i>&nbsp;            newElem = futureOwner.adoptNode(annotation);</b>
+<i>176</i>&nbsp;            // adoptNode will return null when the DOM implementations are not compatible.
+<b class="nc"><i>177</i>&nbsp;            if (newElem == null) {</b>
+<b class="nc"><i>178</i>&nbsp;                newElem = futureOwner.importNode(annotation, true);</b>
+<i>179</i>&nbsp;            }
+<i>180</i>&nbsp;        }
+<i>181</i>&nbsp;        else {
+<b class="nc"><i>182</i>&nbsp;            newElem = futureOwner.importNode(annotation, true);</b>
+<i>183</i>&nbsp;        }
+<b class="nc"><i>184</i>&nbsp;        target.insertBefore(newElem, target.getFirstChild());</b>
+<i>185</i>&nbsp;    }
+<i>186</i>&nbsp;
+<i>187</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:55</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,335 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: XSDocumentInfo</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.xs.traversers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: XSDocumentInfo (com.sun.org.apache.xerces.internal.impl.xs.traversers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">XSDocumentInfo</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 73)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.xs.traversers;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import java.util.Stack;
+<i>24</i>&nbsp;import java.util.Vector;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.validation.ValidationState;
+<i>27</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.SchemaNamespaceSupport;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.SchemaSymbols;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaException;
+<i>30</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.xs.util.XInt;
+<i>31</i>&nbsp;import com.sun.org.apache.xerces.internal.util.SymbolTable;
+<i>32</i>&nbsp;import org.w3c.dom.Element;
+<i>33</i>&nbsp;import org.w3c.dom.Node;
+<i>34</i>&nbsp;import org.w3c.dom.Attr;
+<i>35</i>&nbsp;import org.w3c.dom.NamedNodeMap;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;/**
+<i>38</i>&nbsp; * Objects of this class hold all information pecular to a
+<i>39</i>&nbsp; * particular XML Schema document.  This is needed because
+<i>40</i>&nbsp; * namespace bindings and other settings on the &lt;schema/&gt; element
+<i>41</i>&nbsp; * affect the contents of that schema document alone.
+<i>42</i>&nbsp; *
+<i>43</i>&nbsp; * @xerces.internal
+<i>44</i>&nbsp; *
+<i>45</i>&nbsp; * @author Neil Graham, IBM
+<i>46</i>&nbsp; * @version $Id: XSDocumentInfo.java,v 1.5 2007/10/15 22:27:48 spericas Exp $
+<i>47</i>&nbsp; */
+<i>48</i>&nbsp;class XSDocumentInfo {
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    // Data
+<i>51</i>&nbsp;    protected SchemaNamespaceSupport fNamespaceSupport;
+<i>52</i>&nbsp;    protected SchemaNamespaceSupport fNamespaceSupportRoot;
+<b class="nc"><i>53</i>&nbsp;    protected Stack SchemaNamespaceSupportStack = new Stack();</b>
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    // schema&#39;s attributeFormDefault
+<i>56</i>&nbsp;    protected boolean fAreLocalAttributesQualified;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    // elementFormDefault
+<i>59</i>&nbsp;    protected boolean fAreLocalElementsQualified;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    // [block | final]Default
+<i>62</i>&nbsp;    protected short fBlockDefault;
+<i>63</i>&nbsp;    protected short fFinalDefault;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    // targetNamespace
+<i>66</i>&nbsp;    String fTargetNamespace;
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    // represents whether this is a chameleon schema (i.e., whether its TNS is natural or comes from without)
+<i>69</i>&nbsp;    protected boolean fIsChameleonSchema;
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    // the root of the schema Document tree itself
+<i>72</i>&nbsp;    protected Element fSchemaElement;
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    // all namespaces that this document can refer to
+<b class="nc"><i>75</i>&nbsp;    Vector fImportedNS = new Vector();</b>
+<i>76</i>&nbsp;
+<b class="nc"><i>77</i>&nbsp;    protected ValidationState fValidationContext = new ValidationState();</b>
+<i>78</i>&nbsp;
+<b class="nc"><i>79</i>&nbsp;    SymbolTable fSymbolTable = null;</b>
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    // attribute checker to which we&#39;ll return the attributes
+<i>82</i>&nbsp;    // once we&#39;ve been told that we&#39;re done with them
+<i>83</i>&nbsp;    protected XSAttributeChecker fAttrChecker;
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    // array of objects on the schema&#39;s root element.  This is null
+<i>86</i>&nbsp;    // once returnSchemaAttrs has been called.
+<i>87</i>&nbsp;    protected Object [] fSchemaAttrs;
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    // list of annotations contained in the schema document. This is null
+<i>90</i>&nbsp;    // once removeAnnotations has been called.
+<b class="nc"><i>91</i>&nbsp;    protected XSAnnotationInfo fAnnotations = null;</b>
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    // note that the caller must ensure to call returnSchemaAttrs()
+<i>94</i>&nbsp;    // to avoid memory leaks!
+<i>95</i>&nbsp;    XSDocumentInfo (Element schemaRoot, XSAttributeChecker attrChecker, SymbolTable symbolTable)
+<b class="nc"><i>96</i>&nbsp;                    throws XMLSchemaException {</b>
+<b class="nc"><i>97</i>&nbsp;        fSchemaElement = schemaRoot;</b>
+<b class="nc"><i>98</i>&nbsp;        initNamespaceSupport(schemaRoot);</b>
+<b class="nc"><i>99</i>&nbsp;        fIsChameleonSchema = false;</b>
+<i>100</i>&nbsp;
+<b class="nc"><i>101</i>&nbsp;        fSymbolTable = symbolTable;</b>
+<b class="nc"><i>102</i>&nbsp;        fAttrChecker = attrChecker;</b>
+<i>103</i>&nbsp;
+<b class="nc"><i>104</i>&nbsp;        if (schemaRoot != null) {</b>
+<b class="nc"><i>105</i>&nbsp;            Element root = schemaRoot;</b>
+<b class="nc"><i>106</i>&nbsp;            fSchemaAttrs = attrChecker.checkAttributes(root, true, this);</b>
+<i>107</i>&nbsp;            // schemaAttrs == null means it&#39;s not an &lt;xsd:schema&gt; element
+<i>108</i>&nbsp;            // throw an exception, but we don&#39;t know the document systemId,
+<i>109</i>&nbsp;            // so we leave that to the caller.
+<b class="nc"><i>110</i>&nbsp;            if (fSchemaAttrs == null) {</b>
+<b class="nc"><i>111</i>&nbsp;                throw new XMLSchemaException(null, null);</b>
+<i>112</i>&nbsp;            }
+<b class="nc"><i>113</i>&nbsp;            fAreLocalAttributesQualified =</b>
+<b class="nc"><i>114</i>&nbsp;                ((XInt)fSchemaAttrs[XSAttributeChecker.ATTIDX_AFORMDEFAULT]).intValue() == SchemaSymbols.FORM_QUALIFIED;</b>
+<b class="nc"><i>115</i>&nbsp;            fAreLocalElementsQualified =</b>
+<b class="nc"><i>116</i>&nbsp;                ((XInt)fSchemaAttrs[XSAttributeChecker.ATTIDX_EFORMDEFAULT]).intValue() == SchemaSymbols.FORM_QUALIFIED;</b>
+<b class="nc"><i>117</i>&nbsp;            fBlockDefault =</b>
+<b class="nc"><i>118</i>&nbsp;                ((XInt)fSchemaAttrs[XSAttributeChecker.ATTIDX_BLOCKDEFAULT]).shortValue();</b>
+<b class="nc"><i>119</i>&nbsp;            fFinalDefault =</b>
+<b class="nc"><i>120</i>&nbsp;                ((XInt)fSchemaAttrs[XSAttributeChecker.ATTIDX_FINALDEFAULT]).shortValue();</b>
+<b class="nc"><i>121</i>&nbsp;            fTargetNamespace =</b>
+<i>122</i>&nbsp;                (String)fSchemaAttrs[XSAttributeChecker.ATTIDX_TARGETNAMESPACE];
+<b class="nc"><i>123</i>&nbsp;            if (fTargetNamespace != null)</b>
+<b class="nc"><i>124</i>&nbsp;                fTargetNamespace = symbolTable.addSymbol(fTargetNamespace);</b>
+<i>125</i>&nbsp;
+<b class="nc"><i>126</i>&nbsp;            fNamespaceSupportRoot = new SchemaNamespaceSupport(fNamespaceSupport);</b>
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;            //set namespace support
+<b class="nc"><i>129</i>&nbsp;            fValidationContext.setNamespaceSupport(fNamespaceSupport);</b>
+<b class="nc"><i>130</i>&nbsp;            fValidationContext.setSymbolTable(symbolTable);</b>
+<i>131</i>&nbsp;            // pass null as the schema document, so that the namespace
+<i>132</i>&nbsp;            // context is not popped.
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;            // don&#39;t return the attribute array yet!
+<i>135</i>&nbsp;            //attrChecker.returnAttrArray(schemaAttrs, null);
+<i>136</i>&nbsp;        }
+<i>137</i>&nbsp;    }
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;    /**
+<i>140</i>&nbsp;     * Initialize namespace support by collecting all of the namespace
+<i>141</i>&nbsp;     * declarations in the root&#39;s ancestors. This is necessary to
+<i>142</i>&nbsp;     * support schemas fragments, i.e. schemas embedded in other
+<i>143</i>&nbsp;     * documents. See,
+<i>144</i>&nbsp;     *
+<i>145</i>&nbsp;     * https://jaxp.dev.java.net/issues/show_bug.cgi?id=43
+<i>146</i>&nbsp;     *
+<i>147</i>&nbsp;     * Requires the DOM to be created with namespace support enabled.
+<i>148</i>&nbsp;     */
+<i>149</i>&nbsp;    private void initNamespaceSupport(Element schemaRoot) {
+<b class="nc"><i>150</i>&nbsp;        fNamespaceSupport = new SchemaNamespaceSupport();</b>
+<b class="nc"><i>151</i>&nbsp;        fNamespaceSupport.reset();</b>
+<i>152</i>&nbsp;
+<b class="nc"><i>153</i>&nbsp;        Node parent = schemaRoot.getParentNode();</b>
+<b class="nc"><i>154</i>&nbsp;        while (parent != null &amp;&amp; parent.getNodeType() == Node.ELEMENT_NODE</b>
+<b class="nc"><i>155</i>&nbsp;                &amp;&amp; !parent.getNodeName().equals(&quot;DOCUMENT_NODE&quot;))</b>
+<i>156</i>&nbsp;        {
+<b class="nc"><i>157</i>&nbsp;            Element eparent = (Element) parent;</b>
+<b class="nc"><i>158</i>&nbsp;            NamedNodeMap map = eparent.getAttributes();</b>
+<b class="nc"><i>159</i>&nbsp;            int length = (map != null) ? map.getLength() : 0;</b>
+<b class="nc"><i>160</i>&nbsp;            for (int i = 0; i &lt; length; i++) {</b>
+<b class="nc"><i>161</i>&nbsp;                Attr attr = (Attr) map.item(i);</b>
+<b class="nc"><i>162</i>&nbsp;                String uri = attr.getNamespaceURI();</b>
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;                // Check if attribute is an ns decl -- requires ns support
+<b class="nc"><i>165</i>&nbsp;                if (uri != null &amp;&amp; uri.equals(&quot;http://www.w3.org/2000/xmlns/&quot;)) {</b>
+<b class="nc"><i>166</i>&nbsp;                    String prefix = attr.getLocalName().intern();</b>
+<b class="nc"><i>167</i>&nbsp;                    if (prefix == &quot;xmlns&quot;) prefix = &quot;&quot;;</b>
+<i>168</i>&nbsp;                    // Declare prefix if not set -- moving upwards
+<b class="nc"><i>169</i>&nbsp;                    if (fNamespaceSupport.getURI(prefix) == null) {</b>
+<b class="nc"><i>170</i>&nbsp;                        fNamespaceSupport.declarePrefix(prefix,</b>
+<b class="nc"><i>171</i>&nbsp;                                attr.getValue().intern());</b>
+<i>172</i>&nbsp;                    }
+<i>173</i>&nbsp;                }
+<i>174</i>&nbsp;            }
+<b class="nc"><i>175</i>&nbsp;            parent = parent.getParentNode();</b>
+<b class="nc"><i>176</i>&nbsp;        }</b>
+<i>177</i>&nbsp;    }
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;    // backup the current ns support, and use the one passed-in.
+<i>180</i>&nbsp;    // if no ns support is passed-in, use the one for &lt;schema&gt; element
+<i>181</i>&nbsp;    void backupNSSupport(SchemaNamespaceSupport nsSupport) {
+<b class="nc"><i>182</i>&nbsp;        SchemaNamespaceSupportStack.push(fNamespaceSupport);</b>
+<b class="nc"><i>183</i>&nbsp;        if (nsSupport == null)</b>
+<b class="nc"><i>184</i>&nbsp;            nsSupport = fNamespaceSupportRoot;</b>
+<b class="nc"><i>185</i>&nbsp;        fNamespaceSupport = new SchemaNamespaceSupport(nsSupport);</b>
+<i>186</i>&nbsp;
+<b class="nc"><i>187</i>&nbsp;        fValidationContext.setNamespaceSupport(fNamespaceSupport);</b>
+<i>188</i>&nbsp;    }
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;    void restoreNSSupport() {
+<b class="nc"><i>191</i>&nbsp;        fNamespaceSupport = (SchemaNamespaceSupport)SchemaNamespaceSupportStack.pop();</b>
+<b class="nc"><i>192</i>&nbsp;        fValidationContext.setNamespaceSupport(fNamespaceSupport);</b>
+<i>193</i>&nbsp;    }
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;    // some Object methods
+<i>196</i>&nbsp;    public String toString() {
+<b class="nc"><i>197</i>&nbsp;        return fTargetNamespace == null?&quot;no targetNamspace&quot;:&quot;targetNamespace is &quot; + fTargetNamespace;</b>
+<i>198</i>&nbsp;    }
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;    public void addAllowedNS(String namespace) {
+<b class="nc"><i>201</i>&nbsp;        fImportedNS.addElement(namespace == null ? &quot;&quot; : namespace);</b>
+<i>202</i>&nbsp;    }
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;    public boolean isAllowedNS(String namespace) {
+<b class="nc"><i>205</i>&nbsp;        return fImportedNS.contains(namespace == null ? &quot;&quot; : namespace);</b>
+<i>206</i>&nbsp;    }
+<i>207</i>&nbsp;
+<i>208</i>&nbsp;    // store whether we have reported an error about that this document
+<i>209</i>&nbsp;    // can&#39;t access components from the given namespace
+<b class="nc"><i>210</i>&nbsp;    private Vector fReportedTNS = null;</b>
+<i>211</i>&nbsp;    // check whether we need to report an error against the given uri.
+<i>212</i>&nbsp;    // if we have reported an error, then we don&#39;t need to report again;
+<i>213</i>&nbsp;    // otherwise we reported the error, and remember this fact.
+<i>214</i>&nbsp;    final boolean needReportTNSError(String uri) {
+<b class="nc"><i>215</i>&nbsp;        if (fReportedTNS == null)</b>
+<b class="nc"><i>216</i>&nbsp;            fReportedTNS = new Vector();</b>
+<b class="nc"><i>217</i>&nbsp;        else if (fReportedTNS.contains(uri))</b>
+<b class="nc"><i>218</i>&nbsp;            return false;</b>
+<b class="nc"><i>219</i>&nbsp;        fReportedTNS.addElement(uri);</b>
+<b class="nc"><i>220</i>&nbsp;        return true;</b>
+<i>221</i>&nbsp;    }
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;    // return the attributes on the schema element itself:
+<i>224</i>&nbsp;    Object [] getSchemaAttrs () {
+<b class="nc"><i>225</i>&nbsp;        return fSchemaAttrs;</b>
+<i>226</i>&nbsp;    }
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;    // deallocate the storage set aside for the schema element&#39;s
+<i>229</i>&nbsp;    // attributes
+<i>230</i>&nbsp;    void returnSchemaAttrs () {
+<b class="nc"><i>231</i>&nbsp;        fAttrChecker.returnAttrArray (fSchemaAttrs, null);</b>
+<b class="nc"><i>232</i>&nbsp;        fSchemaAttrs = null;</b>
+<i>233</i>&nbsp;    }
+<i>234</i>&nbsp;
+<i>235</i>&nbsp;    // adds an annotation to the list of annotations
+<i>236</i>&nbsp;    void addAnnotation(XSAnnotationInfo info) {
+<b class="nc"><i>237</i>&nbsp;        info.next = fAnnotations;</b>
+<b class="nc"><i>238</i>&nbsp;        fAnnotations = info;</b>
+<i>239</i>&nbsp;    }
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;    // returns the list of annotations conatined in the
+<i>242</i>&nbsp;    // schema document or null if the document contained no annotations.
+<i>243</i>&nbsp;    XSAnnotationInfo getAnnotations() {
+<b class="nc"><i>244</i>&nbsp;        return fAnnotations;</b>
+<i>245</i>&nbsp;    }
+<i>246</i>&nbsp;
+<i>247</i>&nbsp;    // removes reference to annotation list
+<i>248</i>&nbsp;    void removeAnnotations() {
+<b class="nc"><i>249</i>&nbsp;        fAnnotations = null;</b>
+<i>250</i>&nbsp;    }
+<i>251</i>&nbsp;
+<i>252</i>&nbsp;} // XSDocumentInfo
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

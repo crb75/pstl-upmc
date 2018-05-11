@@ -1,0 +1,293 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DynFixedImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.dynamicany</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DynFixedImpl (com.sun.corba.se.impl.dynamicany)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DynFixedImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 72)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.dynamicany;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import org.omg.CORBA.TypeCode;
+<i>29</i>&nbsp;import org.omg.CORBA.Any;
+<i>30</i>&nbsp;import org.omg.CORBA.NO_IMPLEMENT;
+<i>31</i>&nbsp;import org.omg.DynamicAny.*;
+<i>32</i>&nbsp;import org.omg.DynamicAny.DynAnyPackage.*;
+<i>33</i>&nbsp;import java.math.BigDecimal;
+<i>34</i>&nbsp;import java.math.BigInteger;
+<i>35</i>&nbsp;import org.omg.CORBA.TypeCodePackage.BadKind;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import com.sun.corba.se.spi.orb.ORB ;
+<i>38</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains ;
+<i>39</i>&nbsp;import com.sun.corba.se.impl.logging.ORBUtilSystemException ;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;public class DynFixedImpl extends DynAnyBasicImpl implements DynFixed
+<i>42</i>&nbsp;{
+<i>43</i>&nbsp;    //
+<i>44</i>&nbsp;    // Constructors
+<i>45</i>&nbsp;    //
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    private DynFixedImpl() {
+<b class="nc"><i>48</i>&nbsp;        this(null, (Any)null, false);</b>
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    protected DynFixedImpl(ORB orb, Any any, boolean copyValue) {
+<b class="nc"><i>52</i>&nbsp;        super(orb, any, copyValue);</b>
+<i>53</i>&nbsp;    }
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    // Sets the current position to -1 and the value to zero.
+<i>56</i>&nbsp;    protected DynFixedImpl(ORB orb, TypeCode typeCode) {
+<b class="nc"><i>57</i>&nbsp;        super(orb, typeCode);</b>
+<b class="nc"><i>58</i>&nbsp;        index = NO_INDEX;</b>
+<i>59</i>&nbsp;    }
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    //
+<i>62</i>&nbsp;    // DynAny interface methods
+<i>63</i>&nbsp;    //
+<i>64</i>&nbsp;/*
+<i>65</i>&nbsp;    public int component_count() {
+<i>66</i>&nbsp;        return 0;
+<i>67</i>&nbsp;    }
+<i>68</i>&nbsp;*/
+<i>69</i>&nbsp;    //
+<i>70</i>&nbsp;    // DynFixed interface methods
+<i>71</i>&nbsp;    //
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    public String get_value () {
+<b class="nc"><i>74</i>&nbsp;        if (status == STATUS_DESTROYED) {</b>
+<b class="nc"><i>75</i>&nbsp;            throw wrapper.dynAnyDestroyed() ;</b>
+<i>76</i>&nbsp;        }
+<b class="nc"><i>77</i>&nbsp;        return any.extract_fixed().toString();</b>
+<i>78</i>&nbsp;    }
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    // Initializes the value of the DynFixed.
+<i>81</i>&nbsp;    // The val string must contain a fixed string constant in the same format
+<i>82</i>&nbsp;    // as used for IDL fixed-point literals.
+<i>83</i>&nbsp;    //
+<i>84</i>&nbsp;    // It may consist of an integer part, an optional decimal point,
+<i>85</i>&nbsp;    // a fraction part and an optional letter d or D.
+<i>86</i>&nbsp;    // The integer and fraction parts both must be sequences of decimal (base 10) digits.
+<i>87</i>&nbsp;    // Either the integer part or the fraction part, but not both, may be missing.
+<i>88</i>&nbsp;    //
+<i>89</i>&nbsp;    // If val contains a value whose scale exceeds that of the DynFixed or is not initialized,
+<i>90</i>&nbsp;    // the operation raises InvalidValue.
+<i>91</i>&nbsp;    // The return value is true if val can be represented as the DynFixed without loss of precision.
+<i>92</i>&nbsp;    // If val has more fractional digits than can be represented in the DynFixed,
+<i>93</i>&nbsp;    // fractional digits are truncated and the return value is false.
+<i>94</i>&nbsp;    // If val does not contain a valid fixed-point literal or contains extraneous characters
+<i>95</i>&nbsp;    // other than leading or trailing white space, the operation raises TypeMismatch.
+<i>96</i>&nbsp;    //
+<i>97</i>&nbsp;    public boolean set_value (String val)
+<i>98</i>&nbsp;        throws org.omg.DynamicAny.DynAnyPackage.TypeMismatch,
+<i>99</i>&nbsp;               org.omg.DynamicAny.DynAnyPackage.InvalidValue
+<i>100</i>&nbsp;    {
+<b class="nc"><i>101</i>&nbsp;        if (status == STATUS_DESTROYED) {</b>
+<b class="nc"><i>102</i>&nbsp;            throw wrapper.dynAnyDestroyed() ;</b>
+<i>103</i>&nbsp;        }
+<b class="nc"><i>104</i>&nbsp;        int digits = 0;</b>
+<b class="nc"><i>105</i>&nbsp;        int scale = 0;</b>
+<b class="nc"><i>106</i>&nbsp;        boolean preservedPrecision = true;</b>
+<i>107</i>&nbsp;        try {
+<b class="nc"><i>108</i>&nbsp;            digits = any.type().fixed_digits();</b>
+<b class="nc"><i>109</i>&nbsp;            scale = any.type().fixed_scale();</b>
+<b class="nc"><i>110</i>&nbsp;        } catch (BadKind ex) { // impossible</b>
+<b class="nc"><i>111</i>&nbsp;        }</b>
+<i>112</i>&nbsp;        // First get rid of leading or trailing whitespace which is allowed
+<b class="nc"><i>113</i>&nbsp;        String string = val.trim();</b>
+<b class="nc"><i>114</i>&nbsp;        if (string.length() == 0)</b>
+<b class="nc"><i>115</i>&nbsp;            throw new TypeMismatch();</b>
+<i>116</i>&nbsp;        // Now scan for the sign
+<b class="nc"><i>117</i>&nbsp;        String sign = &quot;&quot;;</b>
+<b class="nc"><i>118</i>&nbsp;        if (string.charAt(0) == &#39;-&#39;) {</b>
+<b class="nc"><i>119</i>&nbsp;            sign = &quot;-&quot;;</b>
+<b class="nc"><i>120</i>&nbsp;            string = string.substring(1);</b>
+<b class="nc"><i>121</i>&nbsp;        } else if (string.charAt(0) == &#39;+&#39;) {</b>
+<b class="nc"><i>122</i>&nbsp;            sign = &quot;+&quot;;</b>
+<b class="nc"><i>123</i>&nbsp;            string = string.substring(1);</b>
+<i>124</i>&nbsp;        }
+<i>125</i>&nbsp;        // Now get rid of the letter d or D.
+<b class="nc"><i>126</i>&nbsp;        int dIndex = string.indexOf(&#39;d&#39;);</b>
+<b class="nc"><i>127</i>&nbsp;        if (dIndex == -1) {</b>
+<b class="nc"><i>128</i>&nbsp;            dIndex = string.indexOf(&#39;D&#39;);</b>
+<i>129</i>&nbsp;        }
+<b class="nc"><i>130</i>&nbsp;        if (dIndex != -1) {</b>
+<b class="nc"><i>131</i>&nbsp;            string = string.substring(0, dIndex);</b>
+<i>132</i>&nbsp;        }
+<i>133</i>&nbsp;        // Just to be sure
+<b class="nc"><i>134</i>&nbsp;        if (string.length() == 0)</b>
+<b class="nc"><i>135</i>&nbsp;            throw new TypeMismatch();</b>
+<i>136</i>&nbsp;        // Now look for the dot to determine the integer part
+<i>137</i>&nbsp;        String integerPart;
+<i>138</i>&nbsp;        String fractionPart;
+<i>139</i>&nbsp;        int currentScale;
+<i>140</i>&nbsp;        int currentDigits;
+<b class="nc"><i>141</i>&nbsp;        int dotIndex = string.indexOf(&#39;.&#39;);</b>
+<b class="nc"><i>142</i>&nbsp;        if (dotIndex == -1) {</b>
+<b class="nc"><i>143</i>&nbsp;            integerPart = string;</b>
+<b class="nc"><i>144</i>&nbsp;            fractionPart = null;</b>
+<b class="nc"><i>145</i>&nbsp;            currentScale = 0;</b>
+<b class="nc"><i>146</i>&nbsp;            currentDigits = integerPart.length();</b>
+<b class="nc"><i>147</i>&nbsp;        } else if (dotIndex == 0 ) {</b>
+<b class="nc"><i>148</i>&nbsp;            integerPart = null;</b>
+<b class="nc"><i>149</i>&nbsp;            fractionPart = string;</b>
+<b class="nc"><i>150</i>&nbsp;            currentScale = fractionPart.length();</b>
+<b class="nc"><i>151</i>&nbsp;            currentDigits = currentScale;</b>
+<i>152</i>&nbsp;        } else {
+<b class="nc"><i>153</i>&nbsp;            integerPart = string.substring(0, dotIndex);</b>
+<b class="nc"><i>154</i>&nbsp;            fractionPart = string.substring(dotIndex + 1);</b>
+<b class="nc"><i>155</i>&nbsp;            currentScale = fractionPart.length();</b>
+<b class="nc"><i>156</i>&nbsp;            currentDigits = integerPart.length() + currentScale;</b>
+<i>157</i>&nbsp;        }
+<i>158</i>&nbsp;        // Let&#39;s see if we have to drop some precision
+<b class="nc"><i>159</i>&nbsp;        if (currentDigits &gt; digits) {</b>
+<b class="nc"><i>160</i>&nbsp;            preservedPrecision = false;</b>
+<i>161</i>&nbsp;            // truncate the fraction part
+<b class="nc"><i>162</i>&nbsp;            if (integerPart.length() &lt; digits) {</b>
+<b class="nc"><i>163</i>&nbsp;                fractionPart = fractionPart.substring(0, digits - integerPart.length());</b>
+<b class="nc"><i>164</i>&nbsp;            } else if (integerPart.length() == digits) {</b>
+<i>165</i>&nbsp;                // currentScale &gt; 0
+<i>166</i>&nbsp;                // drop the fraction completely
+<b class="nc"><i>167</i>&nbsp;                fractionPart = null;</b>
+<i>168</i>&nbsp;            } else {
+<i>169</i>&nbsp;                // integerPart.length() &gt; digits
+<i>170</i>&nbsp;                // unable to truncate fraction part
+<b class="nc"><i>171</i>&nbsp;                throw new InvalidValue();</b>
+<i>172</i>&nbsp;            }
+<i>173</i>&nbsp;        }
+<i>174</i>&nbsp;        // If val contains a value whose scale exceeds that of the DynFixed or is not initialized,
+<i>175</i>&nbsp;        // the operation raises InvalidValue.
+<i>176</i>&nbsp;        // Reinterpreted to mean raise InvalidValue only if the integer part exceeds precision,
+<i>177</i>&nbsp;        // which is handled above (integerPart.length() &gt; digits)
+<i>178</i>&nbsp;/*
+<i>179</i>&nbsp;        if (currentScale &gt; scale) {
+<i>180</i>&nbsp;            throw new InvalidValue(&quot;Scale exceeds &quot; + scale);
+<i>181</i>&nbsp;        }
+<i>182</i>&nbsp;*/
+<i>183</i>&nbsp;        // Now check whether both parts are valid numbers
+<i>184</i>&nbsp;        BigDecimal result;
+<i>185</i>&nbsp;        try {
+<b class="nc"><i>186</i>&nbsp;            new BigInteger(integerPart);</b>
+<b class="nc"><i>187</i>&nbsp;            if (fractionPart == null) {</b>
+<b class="nc"><i>188</i>&nbsp;                result = new BigDecimal(sign + integerPart);</b>
+<i>189</i>&nbsp;            } else {
+<b class="nc"><i>190</i>&nbsp;                new BigInteger(fractionPart);</b>
+<b class="nc"><i>191</i>&nbsp;                result = new BigDecimal(sign + integerPart + &quot;.&quot; + fractionPart);</b>
+<i>192</i>&nbsp;            }
+<b class="nc"><i>193</i>&nbsp;        } catch (NumberFormatException nfe) {</b>
+<b class="nc"><i>194</i>&nbsp;            throw new TypeMismatch();</b>
+<b class="nc"><i>195</i>&nbsp;        }</b>
+<b class="nc"><i>196</i>&nbsp;        any.insert_fixed(result, any.type());</b>
+<b class="nc"><i>197</i>&nbsp;        return preservedPrecision;</b>
+<i>198</i>&nbsp;    }
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;    public String toString() {
+<b class="nc"><i>201</i>&nbsp;        int digits = 0;</b>
+<b class="nc"><i>202</i>&nbsp;        int scale = 0;</b>
+<i>203</i>&nbsp;        try {
+<b class="nc"><i>204</i>&nbsp;            digits = any.type().fixed_digits();</b>
+<b class="nc"><i>205</i>&nbsp;            scale = any.type().fixed_scale();</b>
+<b class="nc"><i>206</i>&nbsp;        } catch (BadKind ex) { // impossible</b>
+<b class="nc"><i>207</i>&nbsp;        }</b>
+<b class="nc"><i>208</i>&nbsp;        return &quot;DynFixed with value=&quot; + this.get_value() + &quot;, digits=&quot; + digits + &quot;, scale=&quot; + scale;</b>
+<i>209</i>&nbsp;    }
+<i>210</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

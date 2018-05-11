@@ -1,0 +1,459 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Code</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.bcel.internal.classfile</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Code (com.sun.org.apache.bcel.internal.classfile)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Code</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 84)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;package com.sun.org.apache.bcel.internal.classfile;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;/* ====================================================================
+<i>8</i>&nbsp; * The Apache Software License, Version 1.1
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; * Copyright (c) 2001 The Apache Software Foundation.  All rights
+<i>11</i>&nbsp; * reserved.
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; * Redistribution and use in source and binary forms, with or without
+<i>14</i>&nbsp; * modification, are permitted provided that the following conditions
+<i>15</i>&nbsp; * are met:
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; * 1. Redistributions of source code must retain the above copyright
+<i>18</i>&nbsp; *    notice, this list of conditions and the following disclaimer.
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; * 2. Redistributions in binary form must reproduce the above copyright
+<i>21</i>&nbsp; *    notice, this list of conditions and the following disclaimer in
+<i>22</i>&nbsp; *    the documentation and/or other materials provided with the
+<i>23</i>&nbsp; *    distribution.
+<i>24</i>&nbsp; *
+<i>25</i>&nbsp; * 3. The end-user documentation included with the redistribution,
+<i>26</i>&nbsp; *    if any, must include the following acknowledgment:
+<i>27</i>&nbsp; *       &quot;This product includes software developed by the
+<i>28</i>&nbsp; *        Apache Software Foundation (http://www.apache.org/).&quot;
+<i>29</i>&nbsp; *    Alternately, this acknowledgment may appear in the software itself,
+<i>30</i>&nbsp; *    if and wherever such third-party acknowledgments normally appear.
+<i>31</i>&nbsp; *
+<i>32</i>&nbsp; * 4. The names &quot;Apache&quot; and &quot;Apache Software Foundation&quot; and
+<i>33</i>&nbsp; *    &quot;Apache BCEL&quot; must not be used to endorse or promote products
+<i>34</i>&nbsp; *    derived from this software without prior written permission. For
+<i>35</i>&nbsp; *    written permission, please contact apache@apache.org.
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; * 5. Products derived from this software may not be called &quot;Apache&quot;,
+<i>38</i>&nbsp; *    &quot;Apache BCEL&quot;, nor may &quot;Apache&quot; appear in their name, without
+<i>39</i>&nbsp; *    prior written permission of the Apache Software Foundation.
+<i>40</i>&nbsp; *
+<i>41</i>&nbsp; * THIS SOFTWARE IS PROVIDED ``AS IS&#39;&#39; AND ANY EXPRESSED OR IMPLIED
+<i>42</i>&nbsp; * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+<i>43</i>&nbsp; * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+<i>44</i>&nbsp; * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+<i>45</i>&nbsp; * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+<i>46</i>&nbsp; * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+<i>47</i>&nbsp; * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+<i>48</i>&nbsp; * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+<i>49</i>&nbsp; * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+<i>50</i>&nbsp; * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+<i>51</i>&nbsp; * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+<i>52</i>&nbsp; * SUCH DAMAGE.
+<i>53</i>&nbsp; * ====================================================================
+<i>54</i>&nbsp; *
+<i>55</i>&nbsp; * This software consists of voluntary contributions made by many
+<i>56</i>&nbsp; * individuals on behalf of the Apache Software Foundation.  For more
+<i>57</i>&nbsp; * information on the Apache Software Foundation, please see
+<i>58</i>&nbsp; * &lt;http://www.apache.org/&gt;.
+<i>59</i>&nbsp; */
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;import  com.sun.org.apache.bcel.internal.Constants;
+<i>62</i>&nbsp;import  java.io.*;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;/**
+<i>65</i>&nbsp; * This class represents a chunk of Java byte code contained in a
+<i>66</i>&nbsp; * method. It is instantiated by the
+<i>67</i>&nbsp; * &lt;em&gt;Attribute.readAttribute()&lt;/em&gt; method. A &lt;em&gt;Code&lt;/em&gt;
+<i>68</i>&nbsp; * attribute contains informations about operand stack, local
+<i>69</i>&nbsp; * variables, byte code and the exceptions handled within this
+<i>70</i>&nbsp; * method.
+<i>71</i>&nbsp; *
+<i>72</i>&nbsp; * This attribute has attributes itself, namely &lt;em&gt;LineNumberTable&lt;/em&gt; which
+<i>73</i>&nbsp; * is used for debugging purposes and &lt;em&gt;LocalVariableTable&lt;/em&gt; which
+<i>74</i>&nbsp; * contains information about the local variables.
+<i>75</i>&nbsp; *
+<i>76</i>&nbsp; * @author  &lt;A HREF=&quot;mailto:markus.dahm@berlin.de&quot;&gt;M. Dahm&lt;/A&gt;
+<i>77</i>&nbsp; * @see     Attribute
+<i>78</i>&nbsp; * @see     CodeException
+<i>79</i>&nbsp; * @see     LineNumberTable
+<i>80</i>&nbsp; * @see LocalVariableTable
+<i>81</i>&nbsp; */
+<i>82</i>&nbsp;public final class Code extends Attribute {
+<i>83</i>&nbsp;  private int             max_stack;   // Maximum size of stack used by this method
+<i>84</i>&nbsp;  private int             max_locals;  // Number of local variables
+<i>85</i>&nbsp;  private int             code_length; // Length of code in bytes
+<i>86</i>&nbsp;  private byte[]          code;        // Actual byte code
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;  private int             exception_table_length;
+<i>89</i>&nbsp;  private CodeException[] exception_table;  // Table of handled exceptions
+<i>90</i>&nbsp;  private int             attributes_count; // Attributes of code: LineNumber
+<i>91</i>&nbsp;  private Attribute[]     attributes;       // or LocalVariable
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;  /**
+<i>94</i>&nbsp;   * Initialize from another object. Note that both objects use the same
+<i>95</i>&nbsp;   * references (shallow copy). Use copy() for a physical copy.
+<i>96</i>&nbsp;   */
+<i>97</i>&nbsp;  public Code(Code c) {
+<b class="nc"><i>98</i>&nbsp;    this(c.getNameIndex(), c.getLength(), c.getMaxStack(), c.getMaxLocals(),</b>
+<b class="nc"><i>99</i>&nbsp;         c.getCode(), c.getExceptionTable(), c.getAttributes(),</b>
+<b class="nc"><i>100</i>&nbsp;         c.getConstantPool());</b>
+<i>101</i>&nbsp;  }
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;  /**
+<i>104</i>&nbsp;   * @param name_index Index pointing to the name &lt;em&gt;Code&lt;/em&gt;
+<i>105</i>&nbsp;   * @param length Content length in bytes
+<i>106</i>&nbsp;   * @param file Input stream
+<i>107</i>&nbsp;   * @param constant_pool Array of constants
+<i>108</i>&nbsp;   */
+<i>109</i>&nbsp;  Code(int name_index, int length, DataInputStream file,
+<i>110</i>&nbsp;       ConstantPool constant_pool) throws IOException
+<i>111</i>&nbsp;  {
+<i>112</i>&nbsp;    // Initialize with some default values which will be overwritten later
+<b class="nc"><i>113</i>&nbsp;    this(name_index, length,</b>
+<b class="nc"><i>114</i>&nbsp;         file.readUnsignedShort(), file.readUnsignedShort(),</b>
+<i>115</i>&nbsp;         (byte[])null, (CodeException[])null, (Attribute[])null,
+<i>116</i>&nbsp;         constant_pool);
+<i>117</i>&nbsp;
+<b class="nc"><i>118</i>&nbsp;    code_length = file.readInt();</b>
+<b class="nc"><i>119</i>&nbsp;    code = new byte[code_length]; // Read byte code</b>
+<b class="nc"><i>120</i>&nbsp;    file.readFully(code);</b>
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;    /* Read exception table that contains all regions where an exception
+<i>123</i>&nbsp;     * handler is active, i.e., a try { ... } catch() block.
+<i>124</i>&nbsp;     */
+<b class="nc"><i>125</i>&nbsp;    exception_table_length = file.readUnsignedShort();</b>
+<b class="nc"><i>126</i>&nbsp;    exception_table        = new CodeException[exception_table_length];</b>
+<i>127</i>&nbsp;
+<b class="nc"><i>128</i>&nbsp;    for(int i=0; i &lt; exception_table_length; i++)</b>
+<b class="nc"><i>129</i>&nbsp;      exception_table[i] = new CodeException(file);</b>
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;    /* Read all attributes, currently `LineNumberTable&#39; and
+<i>132</i>&nbsp;     * `LocalVariableTable&#39;
+<i>133</i>&nbsp;     */
+<b class="nc"><i>134</i>&nbsp;    attributes_count = file.readUnsignedShort();</b>
+<b class="nc"><i>135</i>&nbsp;    attributes = new Attribute[attributes_count];</b>
+<b class="nc"><i>136</i>&nbsp;    for(int i=0; i &lt; attributes_count; i++)</b>
+<b class="nc"><i>137</i>&nbsp;      attributes[i] = Attribute.readAttribute(file, constant_pool);</b>
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;    /* Adjust length, because of setAttributes in this(), s.b.  length
+<i>140</i>&nbsp;     * is incorrect, because it didn&#39;t take the internal attributes
+<i>141</i>&nbsp;     * into account yet! Very subtle bug, fixed in 3.1.1.
+<i>142</i>&nbsp;     */
+<b class="nc"><i>143</i>&nbsp;    this.length = length;</b>
+<i>144</i>&nbsp;  }
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;  /**
+<i>147</i>&nbsp;   * @param name_index Index pointing to the name &lt;em&gt;Code&lt;/em&gt;
+<i>148</i>&nbsp;   * @param length Content length in bytes
+<i>149</i>&nbsp;   * @param max_stack Maximum size of stack
+<i>150</i>&nbsp;   * @param max_locals Number of local variables
+<i>151</i>&nbsp;   * @param code Actual byte code
+<i>152</i>&nbsp;   * @param exception_table Table of handled exceptions
+<i>153</i>&nbsp;   * @param attributes Attributes of code: LineNumber or LocalVariable
+<i>154</i>&nbsp;   * @param constant_pool Array of constants
+<i>155</i>&nbsp;   */
+<i>156</i>&nbsp;  public Code(int name_index, int length,
+<i>157</i>&nbsp;              int max_stack,  int max_locals,
+<i>158</i>&nbsp;              byte[]          code,
+<i>159</i>&nbsp;              CodeException[] exception_table,
+<i>160</i>&nbsp;              Attribute[]     attributes,
+<i>161</i>&nbsp;              ConstantPool    constant_pool)
+<i>162</i>&nbsp;  {
+<b class="nc"><i>163</i>&nbsp;    super(Constants.ATTR_CODE, name_index, length, constant_pool);</b>
+<i>164</i>&nbsp;
+<b class="nc"><i>165</i>&nbsp;    this.max_stack         = max_stack;</b>
+<b class="nc"><i>166</i>&nbsp;    this.max_locals        = max_locals;</b>
+<i>167</i>&nbsp;
+<b class="nc"><i>168</i>&nbsp;    setCode(code);</b>
+<b class="nc"><i>169</i>&nbsp;    setExceptionTable(exception_table);</b>
+<b class="nc"><i>170</i>&nbsp;    setAttributes(attributes); // Overwrites length!</b>
+<i>171</i>&nbsp;  }
+<i>172</i>&nbsp;
+<i>173</i>&nbsp;  /**
+<i>174</i>&nbsp;   * Called by objects that are traversing the nodes of the tree implicitely
+<i>175</i>&nbsp;   * defined by the contents of a Java class. I.e., the hierarchy of methods,
+<i>176</i>&nbsp;   * fields, attributes, etc. spawns a tree of objects.
+<i>177</i>&nbsp;   *
+<i>178</i>&nbsp;   * @param v Visitor object
+<i>179</i>&nbsp;   */
+<i>180</i>&nbsp;  public void accept(Visitor v) {
+<b class="nc"><i>181</i>&nbsp;    v.visitCode(this);</b>
+<i>182</i>&nbsp;  }
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;  /**
+<i>185</i>&nbsp;   * Dump code attribute to file stream in binary format.
+<i>186</i>&nbsp;   *
+<i>187</i>&nbsp;   * @param file Output file stream
+<i>188</i>&nbsp;   * @throws IOException
+<i>189</i>&nbsp;   */
+<i>190</i>&nbsp;  public final void dump(DataOutputStream file) throws IOException
+<i>191</i>&nbsp;  {
+<b class="nc"><i>192</i>&nbsp;    super.dump(file);</b>
+<i>193</i>&nbsp;
+<b class="nc"><i>194</i>&nbsp;    file.writeShort(max_stack);</b>
+<b class="nc"><i>195</i>&nbsp;    file.writeShort(max_locals);</b>
+<b class="nc"><i>196</i>&nbsp;    file.writeInt(code_length);</b>
+<b class="nc"><i>197</i>&nbsp;    file.write(code, 0, code_length);</b>
+<i>198</i>&nbsp;
+<b class="nc"><i>199</i>&nbsp;    file.writeShort(exception_table_length);</b>
+<b class="nc"><i>200</i>&nbsp;    for(int i=0; i &lt; exception_table_length; i++)</b>
+<b class="nc"><i>201</i>&nbsp;      exception_table[i].dump(file);</b>
+<i>202</i>&nbsp;
+<b class="nc"><i>203</i>&nbsp;    file.writeShort(attributes_count);</b>
+<b class="nc"><i>204</i>&nbsp;    for(int i=0; i &lt; attributes_count; i++)</b>
+<b class="nc"><i>205</i>&nbsp;      attributes[i].dump(file);</b>
+<i>206</i>&nbsp;  }
+<i>207</i>&nbsp;
+<i>208</i>&nbsp;  /**
+<i>209</i>&nbsp;   * @return Collection of code attributes.
+<i>210</i>&nbsp;   * @see Attribute
+<i>211</i>&nbsp;   */
+<b class="nc"><i>212</i>&nbsp;  public final Attribute[] getAttributes()         { return attributes; }</b>
+<i>213</i>&nbsp;
+<i>214</i>&nbsp;  /**
+<i>215</i>&nbsp;   * @return LineNumberTable of Code, if it has one
+<i>216</i>&nbsp;   */
+<i>217</i>&nbsp;  public LineNumberTable getLineNumberTable() {
+<b class="nc"><i>218</i>&nbsp;    for(int i=0; i &lt; attributes_count; i++)</b>
+<b class="nc"><i>219</i>&nbsp;      if(attributes[i] instanceof LineNumberTable)</b>
+<b class="nc"><i>220</i>&nbsp;        return (LineNumberTable)attributes[i];</b>
+<i>221</i>&nbsp;
+<b class="nc"><i>222</i>&nbsp;    return null;</b>
+<i>223</i>&nbsp;  }
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;  /**
+<i>226</i>&nbsp;   * @return LocalVariableTable of Code, if it has one
+<i>227</i>&nbsp;   */
+<i>228</i>&nbsp;  public LocalVariableTable getLocalVariableTable() {
+<b class="nc"><i>229</i>&nbsp;    for(int i=0; i &lt; attributes_count; i++)</b>
+<b class="nc"><i>230</i>&nbsp;      if(attributes[i] instanceof LocalVariableTable)</b>
+<b class="nc"><i>231</i>&nbsp;        return (LocalVariableTable)attributes[i];</b>
+<i>232</i>&nbsp;
+<b class="nc"><i>233</i>&nbsp;    return null;</b>
+<i>234</i>&nbsp;  }
+<i>235</i>&nbsp;
+<i>236</i>&nbsp;  /**
+<i>237</i>&nbsp;   * @return Actual byte code of the method.
+<i>238</i>&nbsp;   */
+<b class="nc"><i>239</i>&nbsp;  public final byte[] getCode()      { return code; }</b>
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;  /**
+<i>242</i>&nbsp;   * @return Table of handled exceptions.
+<i>243</i>&nbsp;   * @see CodeException
+<i>244</i>&nbsp;   */
+<b class="nc"><i>245</i>&nbsp;  public final CodeException[] getExceptionTable() { return exception_table; }</b>
+<i>246</i>&nbsp;
+<i>247</i>&nbsp;  /**
+<i>248</i>&nbsp;   * @return Number of local variables.
+<i>249</i>&nbsp;   */
+<b class="nc"><i>250</i>&nbsp;  public final int  getMaxLocals() { return max_locals; }</b>
+<i>251</i>&nbsp;
+<i>252</i>&nbsp;  /**
+<i>253</i>&nbsp;   * @return Maximum size of stack used by this method.
+<i>254</i>&nbsp;   */
+<i>255</i>&nbsp;
+<b class="nc"><i>256</i>&nbsp;  public final int  getMaxStack()  { return max_stack; }</b>
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;  /**
+<i>259</i>&nbsp;   * @return the internal length of this code attribute (minus the first 6 bytes)
+<i>260</i>&nbsp;   * and excluding all its attributes
+<i>261</i>&nbsp;   */
+<i>262</i>&nbsp;  private final int getInternalLength() {
+<b class="nc"><i>263</i>&nbsp;    return 2 /*max_stack*/ + 2 /*max_locals*/ + 4 /*code length*/</b>
+<i>264</i>&nbsp;      + code_length /*byte-code*/
+<i>265</i>&nbsp;      + 2 /*exception-table length*/
+<i>266</i>&nbsp;      + 8 * exception_table_length /* exception table */
+<i>267</i>&nbsp;      + 2 /* attributes count */;
+<i>268</i>&nbsp;  }
+<i>269</i>&nbsp;
+<i>270</i>&nbsp;  /**
+<i>271</i>&nbsp;   * @return the full size of this code attribute, minus its first 6 bytes,
+<i>272</i>&nbsp;   * including the size of all its contained attributes
+<i>273</i>&nbsp;   */
+<i>274</i>&nbsp;  private final int calculateLength() {
+<b class="nc"><i>275</i>&nbsp;    int len = 0;</b>
+<i>276</i>&nbsp;
+<b class="nc"><i>277</i>&nbsp;    for(int i=0; i &lt; attributes_count; i++)</b>
+<b class="nc"><i>278</i>&nbsp;      len += attributes[i].length + 6 /*attribute header size*/;</b>
+<i>279</i>&nbsp;
+<b class="nc"><i>280</i>&nbsp;    return len + getInternalLength();</b>
+<i>281</i>&nbsp;  }
+<i>282</i>&nbsp;
+<i>283</i>&nbsp;  /**
+<i>284</i>&nbsp;   * @param attributes.
+<i>285</i>&nbsp;   */
+<i>286</i>&nbsp;  public final void setAttributes(Attribute[] attributes) {
+<b class="nc"><i>287</i>&nbsp;    this.attributes  = attributes;</b>
+<b class="nc"><i>288</i>&nbsp;    attributes_count = (attributes == null)? 0 : attributes.length;</b>
+<b class="nc"><i>289</i>&nbsp;    length = calculateLength(); // Adjust length</b>
+<i>290</i>&nbsp;  }
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;  /**
+<i>293</i>&nbsp;   * @param code byte code
+<i>294</i>&nbsp;   */
+<i>295</i>&nbsp;  public final void setCode(byte[] code) {
+<b class="nc"><i>296</i>&nbsp;    this.code   = code;</b>
+<b class="nc"><i>297</i>&nbsp;    code_length = (code == null)? 0 : code.length;</b>
+<i>298</i>&nbsp;  }
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;  /**
+<i>301</i>&nbsp;   * @param exception_table exception table
+<i>302</i>&nbsp;   */
+<i>303</i>&nbsp;  public final void setExceptionTable(CodeException[] exception_table) {
+<b class="nc"><i>304</i>&nbsp;    this.exception_table   = exception_table;</b>
+<b class="nc"><i>305</i>&nbsp;    exception_table_length = (exception_table == null)? 0 :</b>
+<i>306</i>&nbsp;      exception_table.length;
+<i>307</i>&nbsp;  }
+<i>308</i>&nbsp;
+<i>309</i>&nbsp;  /**
+<i>310</i>&nbsp;   * @param max_locals maximum number of local variables
+<i>311</i>&nbsp;   */
+<i>312</i>&nbsp;  public final void setMaxLocals(int max_locals) {
+<b class="nc"><i>313</i>&nbsp;    this.max_locals = max_locals;</b>
+<i>314</i>&nbsp;  }
+<i>315</i>&nbsp;
+<i>316</i>&nbsp;  /**
+<i>317</i>&nbsp;   * @param max_stack maximum stack size
+<i>318</i>&nbsp;   */
+<i>319</i>&nbsp;  public final void setMaxStack(int max_stack) {
+<b class="nc"><i>320</i>&nbsp;    this.max_stack = max_stack;</b>
+<i>321</i>&nbsp;  }
+<i>322</i>&nbsp;
+<i>323</i>&nbsp;  /**
+<i>324</i>&nbsp;   * @return String representation of code chunk.
+<i>325</i>&nbsp;   */
+<i>326</i>&nbsp;  public final String toString(boolean verbose) {
+<i>327</i>&nbsp;    StringBuffer buf;
+<i>328</i>&nbsp;
+<b class="nc"><i>329</i>&nbsp;    buf = new StringBuffer(&quot;Code(max_stack = &quot; + max_stack +</b>
+<i>330</i>&nbsp;                           &quot;, max_locals = &quot; + max_locals +
+<i>331</i>&nbsp;                           &quot;, code_length = &quot; + code_length + &quot;)\n&quot; +
+<b class="nc"><i>332</i>&nbsp;                           Utility.codeToString(code, constant_pool, 0, -1, verbose));</b>
+<i>333</i>&nbsp;
+<b class="nc"><i>334</i>&nbsp;    if(exception_table_length &gt; 0) {</b>
+<b class="nc"><i>335</i>&nbsp;      buf.append(&quot;\nException handler(s) = \n&quot; + &quot;From\tTo\tHandler\tType\n&quot;);</b>
+<i>336</i>&nbsp;
+<b class="nc"><i>337</i>&nbsp;      for(int i=0; i &lt; exception_table_length; i++)</b>
+<b class="nc"><i>338</i>&nbsp;        buf.append(exception_table[i].toString(constant_pool, verbose) + &quot;\n&quot;);</b>
+<i>339</i>&nbsp;    }
+<i>340</i>&nbsp;
+<b class="nc"><i>341</i>&nbsp;    if(attributes_count &gt; 0) {</b>
+<b class="nc"><i>342</i>&nbsp;      buf.append(&quot;\nAttribute(s) = \n&quot;);</b>
+<i>343</i>&nbsp;
+<b class="nc"><i>344</i>&nbsp;      for(int i=0; i &lt; attributes_count; i++)</b>
+<b class="nc"><i>345</i>&nbsp;        buf.append(attributes[i].toString() + &quot;\n&quot;);</b>
+<i>346</i>&nbsp;    }
+<i>347</i>&nbsp;
+<b class="nc"><i>348</i>&nbsp;    return buf.toString();</b>
+<i>349</i>&nbsp;  }
+<i>350</i>&nbsp;
+<i>351</i>&nbsp;  /**
+<i>352</i>&nbsp;   * @return String representation of code chunk.
+<i>353</i>&nbsp;   */
+<i>354</i>&nbsp;  public final String toString() {
+<b class="nc"><i>355</i>&nbsp;    return toString(true);</b>
+<i>356</i>&nbsp;  }
+<i>357</i>&nbsp;
+<i>358</i>&nbsp;  /**
+<i>359</i>&nbsp;   * @return deep copy of this attribute
+<i>360</i>&nbsp;   */
+<i>361</i>&nbsp;  public Attribute copy(ConstantPool constant_pool) {
+<b class="nc"><i>362</i>&nbsp;    Code c = (Code)clone();</b>
+<b class="nc"><i>363</i>&nbsp;    c.code          = (byte[])code.clone();</b>
+<b class="nc"><i>364</i>&nbsp;    c.constant_pool = constant_pool;</b>
+<i>365</i>&nbsp;
+<b class="nc"><i>366</i>&nbsp;    c.exception_table = new CodeException[exception_table_length];</b>
+<b class="nc"><i>367</i>&nbsp;    for(int i=0; i &lt; exception_table_length; i++)</b>
+<b class="nc"><i>368</i>&nbsp;      c.exception_table[i] = exception_table[i].copy();</b>
+<i>369</i>&nbsp;
+<b class="nc"><i>370</i>&nbsp;    c.attributes = new Attribute[attributes_count];</b>
+<b class="nc"><i>371</i>&nbsp;    for(int i=0; i &lt; attributes_count; i++)</b>
+<b class="nc"><i>372</i>&nbsp;      c.attributes[i] = attributes[i].copy(constant_pool);</b>
+<i>373</i>&nbsp;
+<b class="nc"><i>374</i>&nbsp;    return c;</b>
+<i>375</i>&nbsp;  }
+<i>376</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

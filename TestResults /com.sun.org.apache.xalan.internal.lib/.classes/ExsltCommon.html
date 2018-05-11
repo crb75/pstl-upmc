@@ -1,0 +1,191 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ExsltCommon</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.lib</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ExsltCommon (com.sun.org.apache.xalan.internal.lib)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ExsltCommon</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: ExsltCommon.java,v 1.2.4.1 2005/09/15 02:45:24 jeffsuttor Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xalan.internal.lib;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xalan.internal.extensions.ExpressionContext;
+<i>26</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTMIterator;
+<i>27</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.ref.DTMNodeIterator;
+<i>28</i>&nbsp;import com.sun.org.apache.xpath.internal.NodeSet;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;/**
+<i>31</i>&nbsp; * This class contains EXSLT common extension functions.
+<i>32</i>&nbsp; * It is accessed by specifying a namespace URI as follows:
+<i>33</i>&nbsp; * &lt;pre&gt;
+<i>34</i>&nbsp; *    xmlns:exslt=&quot;http://exslt.org/common&quot;
+<i>35</i>&nbsp; * &lt;/pre&gt;
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; * The documentation for each function has been copied from the relevant
+<i>38</i>&nbsp; * EXSLT Implementer page.
+<i>39</i>&nbsp; *
+<i>40</i>&nbsp; * @see &lt;a href=&quot;http://www.exslt.org/&quot;&gt;EXSLT&lt;/a&gt;
+<i>41</i>&nbsp; * @xsl.usage general
+<i>42</i>&nbsp; */
+<b class="nc"><i>43</i>&nbsp;public class ExsltCommon</b>
+<i>44</i>&nbsp;{
+<i>45</i>&nbsp;  /**
+<i>46</i>&nbsp;   * The exsl:object-type function returns a string giving the type of the object passed
+<i>47</i>&nbsp;   * as the argument. The possible object types are: &#39;string&#39;, &#39;number&#39;, &#39;boolean&#39;,
+<i>48</i>&nbsp;   * &#39;node-set&#39;, &#39;RTF&#39;, or &#39;external&#39;.
+<i>49</i>&nbsp;   *
+<i>50</i>&nbsp;   * Most XSLT object types can be coerced to each other without error. However, there are
+<i>51</i>&nbsp;   * certain coercions that raise errors, most importantly treating anything other than a
+<i>52</i>&nbsp;   * node set as a node set. Authors of utilities such as named templates or user-defined
+<i>53</i>&nbsp;   * extension functions may wish to give some flexibility in the parameter and argument values
+<i>54</i>&nbsp;   * that are accepted by the utility; the exsl:object-type function enables them to do so.
+<i>55</i>&nbsp;   *
+<i>56</i>&nbsp;   * The Xalan extensions MethodResolver converts &#39;object-type&#39; to &#39;objectType&#39;.
+<i>57</i>&nbsp;   *
+<i>58</i>&nbsp;   * @param obj The object to be typed.
+<i>59</i>&nbsp;   * @return objectType &#39;string&#39;, &#39;number&#39;, &#39;boolean&#39;, &#39;node-set&#39;, &#39;RTF&#39;, or &#39;external&#39;.
+<i>60</i>&nbsp;   *
+<i>61</i>&nbsp;   * @see &lt;a href=&quot;http://www.exslt.org/&quot;&gt;EXSLT&lt;/a&gt;
+<i>62</i>&nbsp;   */
+<i>63</i>&nbsp;  public static String objectType (Object obj)
+<i>64</i>&nbsp;  {
+<b class="nc"><i>65</i>&nbsp;    if (obj instanceof String)</b>
+<b class="nc"><i>66</i>&nbsp;      return &quot;string&quot;;</b>
+<b class="nc"><i>67</i>&nbsp;    else if (obj instanceof Boolean)</b>
+<b class="nc"><i>68</i>&nbsp;      return &quot;boolean&quot;;</b>
+<b class="nc"><i>69</i>&nbsp;    else if (obj instanceof Number)</b>
+<b class="nc"><i>70</i>&nbsp;      return &quot;number&quot;;</b>
+<b class="nc"><i>71</i>&nbsp;    else if (obj instanceof DTMNodeIterator)</b>
+<i>72</i>&nbsp;    {
+<b class="nc"><i>73</i>&nbsp;      DTMIterator dtmI = ((DTMNodeIterator)obj).getDTMIterator();</b>
+<b class="nc"><i>74</i>&nbsp;      if (dtmI instanceof com.sun.org.apache.xpath.internal.axes.RTFIterator)</b>
+<b class="nc"><i>75</i>&nbsp;        return &quot;RTF&quot;;</b>
+<i>76</i>&nbsp;      else
+<b class="nc"><i>77</i>&nbsp;        return &quot;node-set&quot;;</b>
+<i>78</i>&nbsp;    }
+<i>79</i>&nbsp;    else
+<b class="nc"><i>80</i>&nbsp;      return &quot;unknown&quot;;</b>
+<i>81</i>&nbsp;  }
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;  /**
+<i>84</i>&nbsp;   * The exsl:node-set function converts a result tree fragment (which is what you get
+<i>85</i>&nbsp;   * when you use the content of xsl:variable rather than its select attribute to give
+<i>86</i>&nbsp;   * a variable value) into a node set. This enables you to process the XML that you create
+<i>87</i>&nbsp;   * within a variable, and therefore do multi-step processing.
+<i>88</i>&nbsp;   *
+<i>89</i>&nbsp;   * You can also use this function to turn a string into a text node, which is helpful
+<i>90</i>&nbsp;   * if you want to pass a string to a function that only accepts a node set.
+<i>91</i>&nbsp;   *
+<i>92</i>&nbsp;   * The Xalan extensions MethodResolver converts &#39;node-set&#39; to &#39;nodeSet&#39;.
+<i>93</i>&nbsp;   *
+<i>94</i>&nbsp;   * @param myProcessor is passed in by the Xalan extension processor
+<i>95</i>&nbsp;   * @param rtf The result tree fragment to be converted to a node-set.
+<i>96</i>&nbsp;   *
+<i>97</i>&nbsp;   * @return node-set with the contents of the result tree fragment.
+<i>98</i>&nbsp;   *
+<i>99</i>&nbsp;   * Note: Already implemented in the xalan namespace as nodeset.
+<i>100</i>&nbsp;   *
+<i>101</i>&nbsp;   * @see &lt;a href=&quot;http://www.exslt.org/&quot;&gt;EXSLT&lt;/a&gt;
+<i>102</i>&nbsp;   */
+<i>103</i>&nbsp;  public static NodeSet nodeSet(ExpressionContext myProcessor, Object rtf)
+<i>104</i>&nbsp;  {
+<b class="nc"><i>105</i>&nbsp;    return Extensions.nodeset(myProcessor, rtf);</b>
+<i>106</i>&nbsp;  }
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

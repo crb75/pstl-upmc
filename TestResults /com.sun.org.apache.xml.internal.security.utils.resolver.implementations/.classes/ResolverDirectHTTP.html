@@ -1,0 +1,356 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ResolverDirectHTTP</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.security.utils.resolver.implementations</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ResolverDirectHTTP (com.sun.org.apache.xml.internal.security.utils.resolver.implementations)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ResolverDirectHTTP</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 91)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one
+<i>7</i>&nbsp; * or more contributor license agreements. See the NOTICE file
+<i>8</i>&nbsp; * distributed with this work for additional information
+<i>9</i>&nbsp; * regarding copyright ownership. The ASF licenses this file
+<i>10</i>&nbsp; * to you under the Apache License, Version 2.0 (the
+<i>11</i>&nbsp; * &quot;License&quot;); you may not use this file except in compliance
+<i>12</i>&nbsp; * with the License. You may obtain a copy of the License at
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * http://www.apache.org/licenses/LICENSE-2.0
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; * Unless required by applicable law or agreed to in writing,
+<i>17</i>&nbsp; * software distributed under the License is distributed on an
+<i>18</i>&nbsp; * &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+<i>19</i>&nbsp; * KIND, either express or implied. See the License for the
+<i>20</i>&nbsp; * specific language governing permissions and limitations
+<i>21</i>&nbsp; * under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.security.utils.resolver.implementations;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.io.ByteArrayOutputStream;
+<i>26</i>&nbsp;import java.io.IOException;
+<i>27</i>&nbsp;import java.io.InputStream;
+<i>28</i>&nbsp;import java.net.InetSocketAddress;
+<i>29</i>&nbsp;import java.net.MalformedURLException;
+<i>30</i>&nbsp;import java.net.Proxy;
+<i>31</i>&nbsp;import java.net.URISyntaxException;
+<i>32</i>&nbsp;import java.net.URI;
+<i>33</i>&nbsp;import java.net.URL;
+<i>34</i>&nbsp;import java.net.URLConnection;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import com.sun.org.apache.xml.internal.security.signature.XMLSignatureInput;
+<i>37</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.Base64;
+<i>38</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.resolver.ResourceResolverContext;
+<i>39</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.resolver.ResourceResolverException;
+<i>40</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.resolver.ResourceResolverSpi;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;/**
+<i>43</i>&nbsp; * A simple ResourceResolver for HTTP requests. This class handles only &#39;pure&#39;
+<i>44</i>&nbsp; * HTTP URIs which means without a fragment. The Fragment handling is done by the
+<i>45</i>&nbsp; * {@link ResolverFragment} class.
+<i>46</i>&nbsp; * &lt;BR&gt;
+<i>47</i>&nbsp; * If the user has a corporate HTTP proxy which is to be used, the usage can be
+<i>48</i>&nbsp; * switched on by setting properties for the resolver:
+<i>49</i>&nbsp; * &lt;PRE&gt;
+<i>50</i>&nbsp; * resourceResolver.setProperty(&quot;http.proxy.host&quot;, &quot;proxy.company.com&quot;);
+<i>51</i>&nbsp; * resourceResolver.setProperty(&quot;http.proxy.port&quot;, &quot;8080&quot;);
+<i>52</i>&nbsp; *
+<i>53</i>&nbsp; * // if we need a password for the proxy
+<i>54</i>&nbsp; * resourceResolver.setProperty(&quot;http.proxy.username&quot;, &quot;proxyuser3&quot;);
+<i>55</i>&nbsp; * resourceResolver.setProperty(&quot;http.proxy.password&quot;, &quot;secretca&quot;);
+<i>56</i>&nbsp; * &lt;/PRE&gt;
+<i>57</i>&nbsp; *
+<i>58</i>&nbsp; * @see &lt;A HREF=&quot;http://www.javaworld.com/javaworld/javatips/jw-javatip42_p.html&quot;&gt;Java Tip 42: Write Java apps that work with proxy-based firewalls&lt;/A&gt;
+<i>59</i>&nbsp; * @see &lt;A HREF=&quot;https://docs.oracle.com/javase/1.4.2/docs/guide/net/properties.html&quot;&gt;SUN J2SE docs for network properties&lt;/A&gt;
+<i>60</i>&nbsp; * @see &lt;A HREF=&quot;http://metalab.unc.edu/javafaq/javafaq.html#proxy&quot;&gt;The JAVA FAQ Question 9.5: How do I make Java work with a proxy server?&lt;/A&gt;
+<i>61</i>&nbsp; */
+<b class="nc"><i>62</i>&nbsp;public class ResolverDirectHTTP extends ResourceResolverSpi {</b>
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    /** {@link org.apache.commons.logging} logging facility */
+<b class="nc"><i>65</i>&nbsp;    private static java.util.logging.Logger log =</b>
+<b class="nc"><i>66</i>&nbsp;        java.util.logging.Logger.getLogger(ResolverDirectHTTP.class.getName());</b>
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    /** Field properties[] */
+<b class="nc"><i>69</i>&nbsp;    private static final String properties[] = {</b>
+<i>70</i>&nbsp;                                                 &quot;http.proxy.host&quot;, &quot;http.proxy.port&quot;,
+<i>71</i>&nbsp;                                                 &quot;http.proxy.username&quot;, &quot;http.proxy.password&quot;,
+<i>72</i>&nbsp;                                                 &quot;http.basic.username&quot;, &quot;http.basic.password&quot;
+<i>73</i>&nbsp;                                               };
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    /** Field HttpProxyHost */
+<i>76</i>&nbsp;    private static final int HttpProxyHost = 0;
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    /** Field HttpProxyPort */
+<i>79</i>&nbsp;    private static final int HttpProxyPort = 1;
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    /** Field HttpProxyUser */
+<i>82</i>&nbsp;    private static final int HttpProxyUser = 2;
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    /** Field HttpProxyPass */
+<i>85</i>&nbsp;    private static final int HttpProxyPass = 3;
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    /** Field HttpProxyUser */
+<i>88</i>&nbsp;    private static final int HttpBasicUser = 4;
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    /** Field HttpProxyPass */
+<i>91</i>&nbsp;    private static final int HttpBasicPass = 5;
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    @Override
+<i>94</i>&nbsp;    public boolean engineIsThreadSafe() {
+<b class="nc"><i>95</i>&nbsp;        return true;</b>
+<i>96</i>&nbsp;    }
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;    /**
+<i>99</i>&nbsp;     * Method resolve
+<i>100</i>&nbsp;     *
+<i>101</i>&nbsp;     * @param uri
+<i>102</i>&nbsp;     * @param baseURI
+<i>103</i>&nbsp;     *
+<i>104</i>&nbsp;     * @throws ResourceResolverException
+<i>105</i>&nbsp;     * @return
+<i>106</i>&nbsp;     * $todo$ calculate the correct URI from the attribute and the baseURI
+<i>107</i>&nbsp;     */
+<i>108</i>&nbsp;    @Override
+<i>109</i>&nbsp;    public XMLSignatureInput engineResolveURI(ResourceResolverContext context)
+<i>110</i>&nbsp;        throws ResourceResolverException {
+<i>111</i>&nbsp;        try {
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;            // calculate new URI
+<b class="nc"><i>114</i>&nbsp;            URI uriNew = getNewURI(context.uriToResolve, context.baseUri);</b>
+<b class="nc"><i>115</i>&nbsp;            URL url = uriNew.toURL();</b>
+<i>116</i>&nbsp;            URLConnection urlConnection;
+<b class="nc"><i>117</i>&nbsp;            urlConnection = openConnection(url);</b>
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;            // check if Basic authentication is required
+<b class="nc"><i>120</i>&nbsp;            String auth = urlConnection.getHeaderField(&quot;WWW-Authenticate&quot;);</b>
+<i>121</i>&nbsp;
+<b class="nc"><i>122</i>&nbsp;            if (auth != null &amp;&amp; auth.startsWith(&quot;Basic&quot;)) {</b>
+<i>123</i>&nbsp;                // do http basic authentication
+<b class="nc"><i>124</i>&nbsp;                String user =</b>
+<b class="nc"><i>125</i>&nbsp;                    engineGetProperty(ResolverDirectHTTP.properties[ResolverDirectHTTP.HttpBasicUser]);</b>
+<b class="nc"><i>126</i>&nbsp;                String pass =</b>
+<b class="nc"><i>127</i>&nbsp;                    engineGetProperty(ResolverDirectHTTP.properties[ResolverDirectHTTP.HttpBasicPass]);</b>
+<i>128</i>&nbsp;
+<b class="nc"><i>129</i>&nbsp;                if ((user != null) &amp;&amp; (pass != null)) {</b>
+<b class="nc"><i>130</i>&nbsp;                    urlConnection = openConnection(url);</b>
+<i>131</i>&nbsp;
+<b class="nc"><i>132</i>&nbsp;                    String password = user + &quot;:&quot; + pass;</b>
+<b class="nc"><i>133</i>&nbsp;                    String encodedPassword = Base64.encode(password.getBytes(&quot;ISO-8859-1&quot;));</b>
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;                    // set authentication property in the http header
+<b class="nc"><i>136</i>&nbsp;                    urlConnection.setRequestProperty(&quot;Authorization&quot;,</b>
+<i>137</i>&nbsp;                                                     &quot;Basic &quot; + encodedPassword);
+<i>138</i>&nbsp;                }
+<i>139</i>&nbsp;            }
+<i>140</i>&nbsp;
+<b class="nc"><i>141</i>&nbsp;            String mimeType = urlConnection.getHeaderField(&quot;Content-Type&quot;);</b>
+<b class="nc"><i>142</i>&nbsp;            InputStream inputStream = urlConnection.getInputStream();</b>
+<b class="nc"><i>143</i>&nbsp;            ByteArrayOutputStream baos = new ByteArrayOutputStream();</b>
+<b class="nc"><i>144</i>&nbsp;            byte buf[] = new byte[4096];</b>
+<b class="nc"><i>145</i>&nbsp;            int read = 0;</b>
+<b class="nc"><i>146</i>&nbsp;            int summarized = 0;</b>
+<i>147</i>&nbsp;
+<b class="nc"><i>148</i>&nbsp;            while ((read = inputStream.read(buf)) &gt;= 0) {</b>
+<b class="nc"><i>149</i>&nbsp;                baos.write(buf, 0, read);</b>
+<b class="nc"><i>150</i>&nbsp;                summarized += read;</b>
+<i>151</i>&nbsp;            }
+<i>152</i>&nbsp;
+<b class="nc"><i>153</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>154</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;Fetched &quot; + summarized + &quot; bytes from URI &quot; + uriNew.toString());</b>
+<i>155</i>&nbsp;            }
+<i>156</i>&nbsp;
+<b class="nc"><i>157</i>&nbsp;            XMLSignatureInput result = new XMLSignatureInput(baos.toByteArray());</b>
+<i>158</i>&nbsp;
+<b class="nc"><i>159</i>&nbsp;            result.setSourceURI(uriNew.toString());</b>
+<b class="nc"><i>160</i>&nbsp;            result.setMIMEType(mimeType);</b>
+<i>161</i>&nbsp;
+<b class="nc"><i>162</i>&nbsp;            return result;</b>
+<b class="nc"><i>163</i>&nbsp;        } catch (URISyntaxException ex) {</b>
+<b class="nc"><i>164</i>&nbsp;            throw new ResourceResolverException(&quot;generic.EmptyMessage&quot;, ex, context.attr, context.baseUri);</b>
+<b class="nc"><i>165</i>&nbsp;        } catch (MalformedURLException ex) {</b>
+<b class="nc"><i>166</i>&nbsp;            throw new ResourceResolverException(&quot;generic.EmptyMessage&quot;, ex, context.attr, context.baseUri);</b>
+<b class="nc"><i>167</i>&nbsp;        } catch (IOException ex) {</b>
+<b class="nc"><i>168</i>&nbsp;            throw new ResourceResolverException(&quot;generic.EmptyMessage&quot;, ex, context.attr, context.baseUri);</b>
+<b class="nc"><i>169</i>&nbsp;        } catch (IllegalArgumentException e) {</b>
+<b class="nc"><i>170</i>&nbsp;            throw new ResourceResolverException(&quot;generic.EmptyMessage&quot;, e, context.attr, context.baseUri);</b>
+<i>171</i>&nbsp;        }
+<i>172</i>&nbsp;    }
+<i>173</i>&nbsp;
+<i>174</i>&nbsp;    private URLConnection openConnection(URL url) throws IOException {
+<i>175</i>&nbsp;
+<b class="nc"><i>176</i>&nbsp;        String proxyHostProp =</b>
+<b class="nc"><i>177</i>&nbsp;                engineGetProperty(ResolverDirectHTTP.properties[ResolverDirectHTTP.HttpProxyHost]);</b>
+<b class="nc"><i>178</i>&nbsp;        String proxyPortProp =</b>
+<b class="nc"><i>179</i>&nbsp;                engineGetProperty(ResolverDirectHTTP.properties[ResolverDirectHTTP.HttpProxyPort]);</b>
+<b class="nc"><i>180</i>&nbsp;        String proxyUser =</b>
+<b class="nc"><i>181</i>&nbsp;                engineGetProperty(ResolverDirectHTTP.properties[ResolverDirectHTTP.HttpProxyUser]);</b>
+<b class="nc"><i>182</i>&nbsp;        String proxyPass =</b>
+<b class="nc"><i>183</i>&nbsp;                engineGetProperty(ResolverDirectHTTP.properties[ResolverDirectHTTP.HttpProxyPass]);</b>
+<i>184</i>&nbsp;
+<b class="nc"><i>185</i>&nbsp;        Proxy proxy = null;</b>
+<b class="nc"><i>186</i>&nbsp;        if ((proxyHostProp != null) &amp;&amp; (proxyPortProp != null)) {</b>
+<b class="nc"><i>187</i>&nbsp;            int port = Integer.parseInt(proxyPortProp);</b>
+<b class="nc"><i>188</i>&nbsp;            proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHostProp, port));</b>
+<i>189</i>&nbsp;        }
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;        URLConnection urlConnection;
+<b class="nc"><i>192</i>&nbsp;        if (proxy != null) {</b>
+<b class="nc"><i>193</i>&nbsp;            urlConnection = url.openConnection(proxy);</b>
+<i>194</i>&nbsp;
+<b class="nc"><i>195</i>&nbsp;            if ((proxyUser != null) &amp;&amp; (proxyPass != null)) {</b>
+<b class="nc"><i>196</i>&nbsp;                String password = proxyUser + &quot;:&quot; + proxyPass;</b>
+<b class="nc"><i>197</i>&nbsp;                String authString = &quot;Basic &quot; + Base64.encode(password.getBytes(&quot;ISO-8859-1&quot;));</b>
+<i>198</i>&nbsp;
+<b class="nc"><i>199</i>&nbsp;                urlConnection.setRequestProperty(&quot;Proxy-Authorization&quot;, authString);</b>
+<b class="nc"><i>200</i>&nbsp;            }</b>
+<i>201</i>&nbsp;        } else {
+<b class="nc"><i>202</i>&nbsp;            urlConnection = url.openConnection();</b>
+<i>203</i>&nbsp;        }
+<i>204</i>&nbsp;
+<b class="nc"><i>205</i>&nbsp;        return urlConnection;</b>
+<i>206</i>&nbsp;    }
+<i>207</i>&nbsp;
+<i>208</i>&nbsp;    /**
+<i>209</i>&nbsp;     * We resolve http URIs &lt;I&gt;without&lt;/I&gt; fragment...
+<i>210</i>&nbsp;     *
+<i>211</i>&nbsp;     * @param uri
+<i>212</i>&nbsp;     * @param baseURI
+<i>213</i>&nbsp;     * @return true if can be resolved
+<i>214</i>&nbsp;     */
+<i>215</i>&nbsp;    public boolean engineCanResolveURI(ResourceResolverContext context) {
+<b class="nc"><i>216</i>&nbsp;        if (context.uriToResolve == null) {</b>
+<b class="nc"><i>217</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>218</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;quick fail, uri == null&quot;);</b>
+<i>219</i>&nbsp;            }
+<b class="nc"><i>220</i>&nbsp;            return false;</b>
+<i>221</i>&nbsp;        }
+<i>222</i>&nbsp;
+<b class="nc"><i>223</i>&nbsp;        if (context.uriToResolve.equals(&quot;&quot;) || (context.uriToResolve.charAt(0)==&#39;#&#39;)) {</b>
+<b class="nc"><i>224</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>225</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;quick fail for empty URIs and local ones&quot;);</b>
+<i>226</i>&nbsp;            }
+<b class="nc"><i>227</i>&nbsp;            return false;</b>
+<i>228</i>&nbsp;        }
+<i>229</i>&nbsp;
+<b class="nc"><i>230</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>231</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;I was asked whether I can resolve &quot; + context.uriToResolve);</b>
+<i>232</i>&nbsp;        }
+<i>233</i>&nbsp;
+<b class="nc"><i>234</i>&nbsp;        if (context.uriToResolve.startsWith(&quot;http:&quot;) ||</b>
+<b class="nc"><i>235</i>&nbsp;            (context.baseUri != null &amp;&amp; context.baseUri.startsWith(&quot;http:&quot;) )) {</b>
+<b class="nc"><i>236</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>237</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;I state that I can resolve &quot; + context.uriToResolve);</b>
+<i>238</i>&nbsp;            }
+<b class="nc"><i>239</i>&nbsp;            return true;</b>
+<i>240</i>&nbsp;        }
+<i>241</i>&nbsp;
+<b class="nc"><i>242</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>243</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;I state that I can&#39;t resolve &quot; + context.uriToResolve);</b>
+<i>244</i>&nbsp;        }
+<i>245</i>&nbsp;
+<b class="nc"><i>246</i>&nbsp;        return false;</b>
+<i>247</i>&nbsp;    }
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;    /**
+<i>250</i>&nbsp;     * @inheritDoc
+<i>251</i>&nbsp;     */
+<i>252</i>&nbsp;    public String[] engineGetPropertyKeys() {
+<b class="nc"><i>253</i>&nbsp;        return ResolverDirectHTTP.properties.clone();</b>
+<i>254</i>&nbsp;    }
+<i>255</i>&nbsp;
+<i>256</i>&nbsp;    private static URI getNewURI(String uri, String baseURI) throws URISyntaxException {
+<b class="nc"><i>257</i>&nbsp;        URI newUri = null;</b>
+<b class="nc"><i>258</i>&nbsp;        if (baseURI == null || &quot;&quot;.equals(baseURI)) {</b>
+<b class="nc"><i>259</i>&nbsp;            newUri = new URI(uri);</b>
+<i>260</i>&nbsp;        } else {
+<b class="nc"><i>261</i>&nbsp;            newUri = new URI(baseURI).resolve(uri);</b>
+<i>262</i>&nbsp;        }
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;        // if the URI contains a fragment, ignore it
+<b class="nc"><i>265</i>&nbsp;        if (newUri.getFragment() != null) {</b>
+<b class="nc"><i>266</i>&nbsp;            URI uriNewNoFrag =</b>
+<b class="nc"><i>267</i>&nbsp;                new URI(newUri.getScheme(), newUri.getSchemeSpecificPart(), null);</b>
+<b class="nc"><i>268</i>&nbsp;            return uriNewNoFrag;</b>
+<i>269</i>&nbsp;        }
+<b class="nc"><i>270</i>&nbsp;        return newUri;</b>
+<i>271</i>&nbsp;    }
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

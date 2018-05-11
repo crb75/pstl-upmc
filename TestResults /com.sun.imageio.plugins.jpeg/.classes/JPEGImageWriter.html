@@ -1,0 +1,2105 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: JPEGImageWriter</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.imageio.plugins.jpeg</a> ]
+</div>
+
+<h1>Coverage Summary for Class: JPEGImageWriter (com.sun.imageio.plugins.jpeg)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JPEGImageWriter</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 50)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 832)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">JPEGImageWriter$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">JPEGImageWriter$CallBackLock</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">JPEGImageWriter$CallBackLock$State</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">JPEGImageWriter$JPEGWriterDisposerRecord</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 60)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 850)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2015, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.imageio.plugins.jpeg;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import javax.imageio.IIOException;
+<i>29</i>&nbsp;import javax.imageio.ImageWriter;
+<i>30</i>&nbsp;import javax.imageio.ImageWriteParam;
+<i>31</i>&nbsp;import javax.imageio.IIOImage;
+<i>32</i>&nbsp;import javax.imageio.ImageTypeSpecifier;
+<i>33</i>&nbsp;import javax.imageio.metadata.IIOMetadata;
+<i>34</i>&nbsp;import javax.imageio.metadata.IIOMetadataFormatImpl;
+<i>35</i>&nbsp;import javax.imageio.metadata.IIOInvalidTreeException;
+<i>36</i>&nbsp;import javax.imageio.spi.ImageWriterSpi;
+<i>37</i>&nbsp;import javax.imageio.stream.ImageOutputStream;
+<i>38</i>&nbsp;import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+<i>39</i>&nbsp;import javax.imageio.plugins.jpeg.JPEGQTable;
+<i>40</i>&nbsp;import javax.imageio.plugins.jpeg.JPEGHuffmanTable;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import org.w3c.dom.Node;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import java.awt.image.Raster;
+<i>45</i>&nbsp;import java.awt.image.WritableRaster;
+<i>46</i>&nbsp;import java.awt.image.DataBufferByte;
+<i>47</i>&nbsp;import java.awt.image.ColorModel;
+<i>48</i>&nbsp;import java.awt.image.IndexColorModel;
+<i>49</i>&nbsp;import java.awt.image.ColorConvertOp;
+<i>50</i>&nbsp;import java.awt.image.RenderedImage;
+<i>51</i>&nbsp;import java.awt.image.BufferedImage;
+<i>52</i>&nbsp;import java.awt.color.ColorSpace;
+<i>53</i>&nbsp;import java.awt.color.ICC_ColorSpace;
+<i>54</i>&nbsp;import java.awt.color.ICC_Profile;
+<i>55</i>&nbsp;import java.awt.Dimension;
+<i>56</i>&nbsp;import java.awt.Rectangle;
+<i>57</i>&nbsp;import java.awt.Transparency;
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;import java.io.IOException;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;import java.util.List;
+<i>62</i>&nbsp;import java.util.ArrayList;
+<i>63</i>&nbsp;import java.util.Iterator;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;import sun.java2d.Disposer;
+<i>66</i>&nbsp;import sun.java2d.DisposerRecord;
+<i>67</i>&nbsp;
+<b class="nc"><i>68</i>&nbsp;public class JPEGImageWriter extends ImageWriter {</b>
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    ///////// Private variables
+<i>71</i>&nbsp;
+<b class="nc"><i>72</i>&nbsp;    private boolean debug = false;</b>
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    /**
+<i>75</i>&nbsp;     * The following variable contains a pointer to the IJG library
+<i>76</i>&nbsp;     * structure for this reader.  It is assigned in the constructor
+<i>77</i>&nbsp;     * and then is passed in to every native call.  It is set to 0
+<i>78</i>&nbsp;     * by dispose to avoid disposing twice.
+<i>79</i>&nbsp;     */
+<b class="nc"><i>80</i>&nbsp;    private long structPointer = 0;</b>
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    /** The output stream we write to */
+<b class="nc"><i>84</i>&nbsp;    private ImageOutputStream ios = null;</b>
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    /** The Raster we will write from */
+<b class="nc"><i>87</i>&nbsp;    private Raster srcRas = null;</b>
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    /** An intermediate Raster holding compressor-friendly data */
+<b class="nc"><i>90</i>&nbsp;    private WritableRaster raster = null;</b>
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;    /**
+<i>93</i>&nbsp;     * Set to true if we are writing an image with an
+<i>94</i>&nbsp;     * indexed ColorModel
+<i>95</i>&nbsp;     */
+<b class="nc"><i>96</i>&nbsp;    private boolean indexed = false;</b>
+<b class="nc"><i>97</i>&nbsp;    private IndexColorModel indexCM = null;</b>
+<i>98</i>&nbsp;
+<b class="nc"><i>99</i>&nbsp;    private boolean convertTosRGB = false;  // Used by PhotoYCC only</b>
+<b class="nc"><i>100</i>&nbsp;    private WritableRaster converted = null;</b>
+<i>101</i>&nbsp;
+<b class="nc"><i>102</i>&nbsp;    private boolean isAlphaPremultiplied = false;</b>
+<b class="nc"><i>103</i>&nbsp;    private ColorModel srcCM = null;</b>
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;    /**
+<i>106</i>&nbsp;     * If there are thumbnails to be written, this is the list.
+<i>107</i>&nbsp;     */
+<b class="nc"><i>108</i>&nbsp;    private List thumbnails = null;</b>
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;    /**
+<i>111</i>&nbsp;     * If metadata should include an icc profile, store it here.
+<i>112</i>&nbsp;     */
+<b class="nc"><i>113</i>&nbsp;    private ICC_Profile iccProfile = null;</b>
+<i>114</i>&nbsp;
+<b class="nc"><i>115</i>&nbsp;    private int sourceXOffset = 0;</b>
+<b class="nc"><i>116</i>&nbsp;    private int sourceYOffset = 0;</b>
+<b class="nc"><i>117</i>&nbsp;    private int sourceWidth = 0;</b>
+<b class="nc"><i>118</i>&nbsp;    private int [] srcBands = null;</b>
+<b class="nc"><i>119</i>&nbsp;    private int sourceHeight = 0;</b>
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;    /** Used when calling listeners */
+<b class="nc"><i>122</i>&nbsp;    private int currentImage = 0;</b>
+<i>123</i>&nbsp;
+<b class="nc"><i>124</i>&nbsp;    private ColorConvertOp convertOp = null;</b>
+<i>125</i>&nbsp;
+<b class="nc"><i>126</i>&nbsp;    private JPEGQTable [] streamQTables = null;</b>
+<b class="nc"><i>127</i>&nbsp;    private JPEGHuffmanTable[] streamDCHuffmanTables = null;</b>
+<b class="nc"><i>128</i>&nbsp;    private JPEGHuffmanTable[] streamACHuffmanTables = null;</b>
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    // Parameters for writing metadata
+<b class="nc"><i>131</i>&nbsp;    private boolean ignoreJFIF = false;  // If it&#39;s there, use it</b>
+<b class="nc"><i>132</i>&nbsp;    private boolean forceJFIF = false;  // Add one for the thumbnails</b>
+<b class="nc"><i>133</i>&nbsp;    private boolean ignoreAdobe = false;  // If it&#39;s there, use it</b>
+<b class="nc"><i>134</i>&nbsp;    private int newAdobeTransform = JPEG.ADOBE_IMPOSSIBLE;  // Change if needed</b>
+<b class="nc"><i>135</i>&nbsp;    private boolean writeDefaultJFIF = false;</b>
+<b class="nc"><i>136</i>&nbsp;    private boolean writeAdobe = false;</b>
+<b class="nc"><i>137</i>&nbsp;    private JPEGMetadata metadata = null;</b>
+<i>138</i>&nbsp;
+<b class="nc"><i>139</i>&nbsp;    private boolean sequencePrepared = false;</b>
+<i>140</i>&nbsp;
+<b class="nc"><i>141</i>&nbsp;    private int numScans = 0;</b>
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;    /** The referent to be registered with the Disposer. */
+<b class="nc"><i>144</i>&nbsp;    private Object disposerReferent = new Object();</b>
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;    /** The DisposerRecord that handles the actual disposal of this writer. */
+<i>147</i>&nbsp;    private DisposerRecord disposerRecord;
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    ///////// End of Private variables
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;    ///////// Protected variables
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;    protected static final int WARNING_DEST_IGNORED = 0;
+<i>154</i>&nbsp;    protected static final int WARNING_STREAM_METADATA_IGNORED = 1;
+<i>155</i>&nbsp;    protected static final int WARNING_DEST_METADATA_COMP_MISMATCH = 2;
+<i>156</i>&nbsp;    protected static final int WARNING_DEST_METADATA_JFIF_MISMATCH = 3;
+<i>157</i>&nbsp;    protected static final int WARNING_DEST_METADATA_ADOBE_MISMATCH = 4;
+<i>158</i>&nbsp;    protected static final int WARNING_IMAGE_METADATA_JFIF_MISMATCH = 5;
+<i>159</i>&nbsp;    protected static final int WARNING_IMAGE_METADATA_ADOBE_MISMATCH = 6;
+<i>160</i>&nbsp;    protected static final int WARNING_METADATA_NOT_JPEG_FOR_RASTER = 7;
+<i>161</i>&nbsp;    protected static final int WARNING_NO_BANDS_ON_INDEXED = 8;
+<i>162</i>&nbsp;    protected static final int WARNING_ILLEGAL_THUMBNAIL = 9;
+<i>163</i>&nbsp;    protected static final int WARNING_IGNORING_THUMBS = 10;
+<i>164</i>&nbsp;    protected static final int WARNING_FORCING_JFIF = 11;
+<i>165</i>&nbsp;    protected static final int WARNING_THUMB_CLIPPED = 12;
+<i>166</i>&nbsp;    protected static final int WARNING_METADATA_ADJUSTED_FOR_THUMB = 13;
+<i>167</i>&nbsp;    protected static final int WARNING_NO_RGB_THUMB_AS_INDEXED = 14;
+<i>168</i>&nbsp;    protected static final int WARNING_NO_GRAY_THUMB_AS_INDEXED = 15;
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;    private static final int MAX_WARNING = WARNING_NO_GRAY_THUMB_AS_INDEXED;
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;    ///////// End of Protected variables
+<i>173</i>&nbsp;
+<i>174</i>&nbsp;    ///////// static initializer
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    static {
+<b class="nc"><i>177</i>&nbsp;        java.security.AccessController.doPrivileged(</b>
+<b class="nc"><i>178</i>&nbsp;            new java.security.PrivilegedAction&lt;Void&gt;() {</b>
+<i>179</i>&nbsp;                public Void run() {
+<b class="nc"><i>180</i>&nbsp;                    System.loadLibrary(&quot;jpeg&quot;);</b>
+<b class="nc"><i>181</i>&nbsp;                    return null;</b>
+<i>182</i>&nbsp;                }
+<i>183</i>&nbsp;            });
+<b class="nc"><i>184</i>&nbsp;        initWriterIDs(JPEGQTable.class,</b>
+<i>185</i>&nbsp;                      JPEGHuffmanTable.class);
+<i>186</i>&nbsp;    }
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;    //////// Public API
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;    public JPEGImageWriter(ImageWriterSpi originator) {
+<b class="nc"><i>191</i>&nbsp;        super(originator);</b>
+<b class="nc"><i>192</i>&nbsp;        structPointer = initJPEGImageWriter();</b>
+<b class="nc"><i>193</i>&nbsp;        disposerRecord = new JPEGWriterDisposerRecord(structPointer);</b>
+<b class="nc"><i>194</i>&nbsp;        Disposer.addRecord(disposerReferent, disposerRecord);</b>
+<i>195</i>&nbsp;    }
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;    public void setOutput(Object output) {
+<b class="nc"><i>198</i>&nbsp;        setThreadLock();</b>
+<i>199</i>&nbsp;        try {
+<b class="nc"><i>200</i>&nbsp;            cbLock.check();</b>
+<i>201</i>&nbsp;
+<b class="nc"><i>202</i>&nbsp;            super.setOutput(output); // validates output</b>
+<b class="nc"><i>203</i>&nbsp;            resetInternalState();</b>
+<b class="nc"><i>204</i>&nbsp;            ios = (ImageOutputStream) output; // so this will always work</b>
+<i>205</i>&nbsp;            // Set the native destination
+<b class="nc"><i>206</i>&nbsp;            setDest(structPointer);</b>
+<i>207</i>&nbsp;        } finally {
+<b class="nc"><i>208</i>&nbsp;            clearThreadLock();</b>
+<b class="nc"><i>209</i>&nbsp;        }</b>
+<i>210</i>&nbsp;    }
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;    public ImageWriteParam getDefaultWriteParam() {
+<b class="nc"><i>213</i>&nbsp;        return new JPEGImageWriteParam(null);</b>
+<i>214</i>&nbsp;    }
+<i>215</i>&nbsp;
+<i>216</i>&nbsp;    public IIOMetadata getDefaultStreamMetadata(ImageWriteParam param) {
+<b class="nc"><i>217</i>&nbsp;        setThreadLock();</b>
+<i>218</i>&nbsp;        try {
+<b class="nc"><i>219</i>&nbsp;            return new JPEGMetadata(param, this);</b>
+<i>220</i>&nbsp;        } finally {
+<b class="nc"><i>221</i>&nbsp;            clearThreadLock();</b>
+<i>222</i>&nbsp;        }
+<i>223</i>&nbsp;    }
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;    public IIOMetadata
+<i>226</i>&nbsp;        getDefaultImageMetadata(ImageTypeSpecifier imageType,
+<i>227</i>&nbsp;                                ImageWriteParam param) {
+<b class="nc"><i>228</i>&nbsp;        setThreadLock();</b>
+<i>229</i>&nbsp;        try {
+<b class="nc"><i>230</i>&nbsp;            return new JPEGMetadata(imageType, param, this);</b>
+<i>231</i>&nbsp;        } finally {
+<b class="nc"><i>232</i>&nbsp;            clearThreadLock();</b>
+<i>233</i>&nbsp;        }
+<i>234</i>&nbsp;    }
+<i>235</i>&nbsp;
+<i>236</i>&nbsp;    public IIOMetadata convertStreamMetadata(IIOMetadata inData,
+<i>237</i>&nbsp;                                             ImageWriteParam param) {
+<i>238</i>&nbsp;        // There isn&#39;t much we can do.  If it&#39;s one of ours, then
+<i>239</i>&nbsp;        // return it.  Otherwise just return null.  We use it only
+<i>240</i>&nbsp;        // for tables, so we can&#39;t get a default and modify it,
+<i>241</i>&nbsp;        // as this will usually not be what is intended.
+<b class="nc"><i>242</i>&nbsp;        if (inData instanceof JPEGMetadata) {</b>
+<b class="nc"><i>243</i>&nbsp;            JPEGMetadata jpegData = (JPEGMetadata) inData;</b>
+<b class="nc"><i>244</i>&nbsp;            if (jpegData.isStream) {</b>
+<b class="nc"><i>245</i>&nbsp;                return inData;</b>
+<i>246</i>&nbsp;            }
+<i>247</i>&nbsp;        }
+<b class="nc"><i>248</i>&nbsp;        return null;</b>
+<i>249</i>&nbsp;    }
+<i>250</i>&nbsp;
+<i>251</i>&nbsp;    public IIOMetadata
+<i>252</i>&nbsp;        convertImageMetadata(IIOMetadata inData,
+<i>253</i>&nbsp;                             ImageTypeSpecifier imageType,
+<i>254</i>&nbsp;                             ImageWriteParam param) {
+<b class="nc"><i>255</i>&nbsp;        setThreadLock();</b>
+<i>256</i>&nbsp;        try {
+<b class="nc"><i>257</i>&nbsp;            return convertImageMetadataOnThread(inData, imageType, param);</b>
+<i>258</i>&nbsp;        } finally {
+<b class="nc"><i>259</i>&nbsp;            clearThreadLock();</b>
+<i>260</i>&nbsp;        }
+<i>261</i>&nbsp;    }
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;    private IIOMetadata
+<i>264</i>&nbsp;        convertImageMetadataOnThread(IIOMetadata inData,
+<i>265</i>&nbsp;                                     ImageTypeSpecifier imageType,
+<i>266</i>&nbsp;                                     ImageWriteParam param) {
+<i>267</i>&nbsp;        // If it&#39;s one of ours, just return it
+<b class="nc"><i>268</i>&nbsp;        if (inData instanceof JPEGMetadata) {</b>
+<b class="nc"><i>269</i>&nbsp;            JPEGMetadata jpegData = (JPEGMetadata) inData;</b>
+<b class="nc"><i>270</i>&nbsp;            if (!jpegData.isStream) {</b>
+<b class="nc"><i>271</i>&nbsp;                return inData;</b>
+<i>272</i>&nbsp;            } else {
+<i>273</i>&nbsp;                // Can&#39;t convert stream metadata to image metadata
+<i>274</i>&nbsp;                // XXX Maybe this should put out a warning?
+<b class="nc"><i>275</i>&nbsp;                return null;</b>
+<i>276</i>&nbsp;            }
+<i>277</i>&nbsp;        }
+<i>278</i>&nbsp;        // If it&#39;s not one of ours, create a default and set it from
+<i>279</i>&nbsp;        // the standard tree from the input, if it exists.
+<b class="nc"><i>280</i>&nbsp;        if (inData.isStandardMetadataFormatSupported()) {</b>
+<b class="nc"><i>281</i>&nbsp;            String formatName =</b>
+<i>282</i>&nbsp;                IIOMetadataFormatImpl.standardMetadataFormatName;
+<b class="nc"><i>283</i>&nbsp;            Node tree = inData.getAsTree(formatName);</b>
+<b class="nc"><i>284</i>&nbsp;            if (tree != null) {</b>
+<b class="nc"><i>285</i>&nbsp;                JPEGMetadata jpegData = new JPEGMetadata(imageType,</b>
+<i>286</i>&nbsp;                                                         param,
+<i>287</i>&nbsp;                                                         this);
+<i>288</i>&nbsp;                try {
+<b class="nc"><i>289</i>&nbsp;                    jpegData.setFromTree(formatName, tree);</b>
+<b class="nc"><i>290</i>&nbsp;                } catch (IIOInvalidTreeException e) {</b>
+<i>291</i>&nbsp;                    // Other plug-in generates bogus standard tree
+<i>292</i>&nbsp;                    // XXX Maybe this should put out a warning?
+<b class="nc"><i>293</i>&nbsp;                    return null;</b>
+<b class="nc"><i>294</i>&nbsp;                }</b>
+<i>295</i>&nbsp;
+<b class="nc"><i>296</i>&nbsp;                return jpegData;</b>
+<i>297</i>&nbsp;            }
+<i>298</i>&nbsp;        }
+<b class="nc"><i>299</i>&nbsp;        return null;</b>
+<i>300</i>&nbsp;    }
+<i>301</i>&nbsp;
+<i>302</i>&nbsp;    public int getNumThumbnailsSupported(ImageTypeSpecifier imageType,
+<i>303</i>&nbsp;                                         ImageWriteParam param,
+<i>304</i>&nbsp;                                         IIOMetadata streamMetadata,
+<i>305</i>&nbsp;                                         IIOMetadata imageMetadata) {
+<b class="nc"><i>306</i>&nbsp;        if (jfifOK(imageType, param, streamMetadata, imageMetadata)) {</b>
+<b class="nc"><i>307</i>&nbsp;            return Integer.MAX_VALUE;</b>
+<i>308</i>&nbsp;        }
+<b class="nc"><i>309</i>&nbsp;        return 0;</b>
+<i>310</i>&nbsp;    }
+<i>311</i>&nbsp;
+<b class="nc"><i>312</i>&nbsp;    static final Dimension [] preferredThumbSizes = {new Dimension(1, 1),</b>
+<i>313</i>&nbsp;                                                     new Dimension(255, 255)};
+<i>314</i>&nbsp;
+<i>315</i>&nbsp;    public Dimension[] getPreferredThumbnailSizes(ImageTypeSpecifier imageType,
+<i>316</i>&nbsp;                                                  ImageWriteParam param,
+<i>317</i>&nbsp;                                                  IIOMetadata streamMetadata,
+<i>318</i>&nbsp;                                                  IIOMetadata imageMetadata) {
+<b class="nc"><i>319</i>&nbsp;        if (jfifOK(imageType, param, streamMetadata, imageMetadata)) {</b>
+<b class="nc"><i>320</i>&nbsp;            return (Dimension [])preferredThumbSizes.clone();</b>
+<i>321</i>&nbsp;        }
+<b class="nc"><i>322</i>&nbsp;        return null;</b>
+<i>323</i>&nbsp;    }
+<i>324</i>&nbsp;
+<i>325</i>&nbsp;    private boolean jfifOK(ImageTypeSpecifier imageType,
+<i>326</i>&nbsp;                           ImageWriteParam param,
+<i>327</i>&nbsp;                           IIOMetadata streamMetadata,
+<i>328</i>&nbsp;                           IIOMetadata imageMetadata) {
+<i>329</i>&nbsp;        // If the image type and metadata are JFIF compatible, return true
+<b class="nc"><i>330</i>&nbsp;        if ((imageType != null) &amp;&amp;</b>
+<b class="nc"><i>331</i>&nbsp;            (!JPEG.isJFIFcompliant(imageType, true))) {</b>
+<b class="nc"><i>332</i>&nbsp;            return false;</b>
+<i>333</i>&nbsp;        }
+<b class="nc"><i>334</i>&nbsp;        if (imageMetadata != null) {</b>
+<b class="nc"><i>335</i>&nbsp;            JPEGMetadata metadata = null;</b>
+<b class="nc"><i>336</i>&nbsp;            if (imageMetadata instanceof JPEGMetadata) {</b>
+<b class="nc"><i>337</i>&nbsp;                metadata = (JPEGMetadata) imageMetadata;</b>
+<i>338</i>&nbsp;            } else {
+<b class="nc"><i>339</i>&nbsp;                metadata = (JPEGMetadata)convertImageMetadata(imageMetadata,</b>
+<i>340</i>&nbsp;                                                              imageType,
+<i>341</i>&nbsp;                                                              param);
+<i>342</i>&nbsp;            }
+<i>343</i>&nbsp;            // metadata must have a jfif node
+<b class="nc"><i>344</i>&nbsp;            if (metadata.findMarkerSegment</b>
+<b class="nc"><i>345</i>&nbsp;                (JFIFMarkerSegment.class, true) == null){</b>
+<b class="nc"><i>346</i>&nbsp;                return false;</b>
+<i>347</i>&nbsp;            }
+<i>348</i>&nbsp;        }
+<b class="nc"><i>349</i>&nbsp;        return true;</b>
+<i>350</i>&nbsp;    }
+<i>351</i>&nbsp;
+<i>352</i>&nbsp;    public boolean canWriteRasters() {
+<b class="nc"><i>353</i>&nbsp;        return true;</b>
+<i>354</i>&nbsp;    }
+<i>355</i>&nbsp;
+<i>356</i>&nbsp;    public void write(IIOMetadata streamMetadata,
+<i>357</i>&nbsp;                      IIOImage image,
+<i>358</i>&nbsp;                      ImageWriteParam param) throws IOException {
+<b class="nc"><i>359</i>&nbsp;        setThreadLock();</b>
+<i>360</i>&nbsp;        try {
+<b class="nc"><i>361</i>&nbsp;            cbLock.check();</b>
+<i>362</i>&nbsp;
+<b class="nc"><i>363</i>&nbsp;            writeOnThread(streamMetadata, image, param);</b>
+<i>364</i>&nbsp;        } finally {
+<b class="nc"><i>365</i>&nbsp;            clearThreadLock();</b>
+<b class="nc"><i>366</i>&nbsp;        }</b>
+<i>367</i>&nbsp;    }
+<i>368</i>&nbsp;
+<i>369</i>&nbsp;    private void writeOnThread(IIOMetadata streamMetadata,
+<i>370</i>&nbsp;                      IIOImage image,
+<i>371</i>&nbsp;                      ImageWriteParam param) throws IOException {
+<i>372</i>&nbsp;
+<b class="nc"><i>373</i>&nbsp;        if (ios == null) {</b>
+<b class="nc"><i>374</i>&nbsp;            throw new IllegalStateException(&quot;Output has not been set!&quot;);</b>
+<i>375</i>&nbsp;        }
+<i>376</i>&nbsp;
+<b class="nc"><i>377</i>&nbsp;        if (image == null) {</b>
+<b class="nc"><i>378</i>&nbsp;            throw new IllegalArgumentException(&quot;image is null!&quot;);</b>
+<i>379</i>&nbsp;        }
+<i>380</i>&nbsp;
+<i>381</i>&nbsp;        // if streamMetadata is not null, issue a warning
+<b class="nc"><i>382</i>&nbsp;        if (streamMetadata != null) {</b>
+<b class="nc"><i>383</i>&nbsp;            warningOccurred(WARNING_STREAM_METADATA_IGNORED);</b>
+<i>384</i>&nbsp;        }
+<i>385</i>&nbsp;
+<i>386</i>&nbsp;        // Obtain the raster and image, if there is one
+<b class="nc"><i>387</i>&nbsp;        boolean rasterOnly = image.hasRaster();</b>
+<i>388</i>&nbsp;
+<b class="nc"><i>389</i>&nbsp;        RenderedImage rimage = null;</b>
+<b class="nc"><i>390</i>&nbsp;        if (rasterOnly) {</b>
+<b class="nc"><i>391</i>&nbsp;            srcRas = image.getRaster();</b>
+<i>392</i>&nbsp;        } else {
+<b class="nc"><i>393</i>&nbsp;            rimage = image.getRenderedImage();</b>
+<b class="nc"><i>394</i>&nbsp;            if (rimage instanceof BufferedImage) {</b>
+<i>395</i>&nbsp;                // Use the Raster directly.
+<b class="nc"><i>396</i>&nbsp;                srcRas = ((BufferedImage)rimage).getRaster();</b>
+<b class="nc"><i>397</i>&nbsp;            } else if (rimage.getNumXTiles() == 1 &amp;&amp;</b>
+<b class="nc"><i>398</i>&nbsp;                       rimage.getNumYTiles() == 1)</b>
+<i>399</i>&nbsp;            {
+<i>400</i>&nbsp;                // Get the unique tile.
+<b class="nc"><i>401</i>&nbsp;                srcRas = rimage.getTile(rimage.getMinTileX(),</b>
+<b class="nc"><i>402</i>&nbsp;                                        rimage.getMinTileY());</b>
+<i>403</i>&nbsp;
+<i>404</i>&nbsp;                // Ensure the Raster has dimensions of the image,
+<i>405</i>&nbsp;                // as the tile dimensions might differ.
+<b class="nc"><i>406</i>&nbsp;                if (srcRas.getWidth() != rimage.getWidth() ||</b>
+<b class="nc"><i>407</i>&nbsp;                    srcRas.getHeight() != rimage.getHeight())</b>
+<i>408</i>&nbsp;                {
+<b class="nc"><i>409</i>&nbsp;                    srcRas = srcRas.createChild(srcRas.getMinX(),</b>
+<b class="nc"><i>410</i>&nbsp;                                                srcRas.getMinY(),</b>
+<b class="nc"><i>411</i>&nbsp;                                                rimage.getWidth(),</b>
+<b class="nc"><i>412</i>&nbsp;                                                rimage.getHeight(),</b>
+<b class="nc"><i>413</i>&nbsp;                                                srcRas.getMinX(),</b>
+<b class="nc"><i>414</i>&nbsp;                                                srcRas.getMinY(),</b>
+<i>415</i>&nbsp;                                                null);
+<i>416</i>&nbsp;                }
+<i>417</i>&nbsp;            } else {
+<i>418</i>&nbsp;                // Image is tiled so get a contiguous raster by copying.
+<b class="nc"><i>419</i>&nbsp;                srcRas = rimage.getData();</b>
+<i>420</i>&nbsp;            }
+<i>421</i>&nbsp;        }
+<i>422</i>&nbsp;
+<i>423</i>&nbsp;        // Now determine if we are using a band subset
+<i>424</i>&nbsp;
+<i>425</i>&nbsp;        // By default, we are using all source bands
+<b class="nc"><i>426</i>&nbsp;        int numSrcBands = srcRas.getNumBands();</b>
+<b class="nc"><i>427</i>&nbsp;        indexed = false;</b>
+<b class="nc"><i>428</i>&nbsp;        indexCM = null;</b>
+<b class="nc"><i>429</i>&nbsp;        ColorModel cm = null;</b>
+<b class="nc"><i>430</i>&nbsp;        ColorSpace cs = null;</b>
+<b class="nc"><i>431</i>&nbsp;        isAlphaPremultiplied = false;</b>
+<b class="nc"><i>432</i>&nbsp;        srcCM = null;</b>
+<b class="nc"><i>433</i>&nbsp;        if (!rasterOnly) {</b>
+<b class="nc"><i>434</i>&nbsp;            cm = rimage.getColorModel();</b>
+<b class="nc"><i>435</i>&nbsp;            if (cm != null) {</b>
+<b class="nc"><i>436</i>&nbsp;                cs = cm.getColorSpace();</b>
+<b class="nc"><i>437</i>&nbsp;                if (cm instanceof IndexColorModel) {</b>
+<b class="nc"><i>438</i>&nbsp;                    indexed = true;</b>
+<b class="nc"><i>439</i>&nbsp;                    indexCM = (IndexColorModel) cm;</b>
+<b class="nc"><i>440</i>&nbsp;                    numSrcBands = cm.getNumComponents();</b>
+<i>441</i>&nbsp;                }
+<b class="nc"><i>442</i>&nbsp;                if (cm.isAlphaPremultiplied()) {</b>
+<b class="nc"><i>443</i>&nbsp;                    isAlphaPremultiplied = true;</b>
+<b class="nc"><i>444</i>&nbsp;                    srcCM = cm;</b>
+<i>445</i>&nbsp;                }
+<i>446</i>&nbsp;            }
+<i>447</i>&nbsp;        }
+<i>448</i>&nbsp;
+<b class="nc"><i>449</i>&nbsp;        srcBands = JPEG.bandOffsets[numSrcBands-1];</b>
+<b class="nc"><i>450</i>&nbsp;        int numBandsUsed = numSrcBands;</b>
+<i>451</i>&nbsp;        // Consult the param to determine if we&#39;re writing a subset
+<i>452</i>&nbsp;
+<b class="nc"><i>453</i>&nbsp;        if (param != null) {</b>
+<b class="nc"><i>454</i>&nbsp;            int[] sBands = param.getSourceBands();</b>
+<b class="nc"><i>455</i>&nbsp;            if (sBands != null) {</b>
+<b class="nc"><i>456</i>&nbsp;                if (indexed) {</b>
+<b class="nc"><i>457</i>&nbsp;                    warningOccurred(WARNING_NO_BANDS_ON_INDEXED);</b>
+<i>458</i>&nbsp;                } else {
+<b class="nc"><i>459</i>&nbsp;                    srcBands = sBands;</b>
+<b class="nc"><i>460</i>&nbsp;                    numBandsUsed = srcBands.length;</b>
+<b class="nc"><i>461</i>&nbsp;                    if (numBandsUsed &gt; numSrcBands) {</b>
+<b class="nc"><i>462</i>&nbsp;                        throw new IIOException</b>
+<i>463</i>&nbsp;                        (&quot;ImageWriteParam specifies too many source bands&quot;);
+<i>464</i>&nbsp;                    }
+<i>465</i>&nbsp;                }
+<i>466</i>&nbsp;            }
+<i>467</i>&nbsp;        }
+<i>468</i>&nbsp;
+<b class="nc"><i>469</i>&nbsp;        boolean usingBandSubset = (numBandsUsed != numSrcBands);</b>
+<b class="nc"><i>470</i>&nbsp;        boolean fullImage = ((!rasterOnly) &amp;&amp; (!usingBandSubset));</b>
+<i>471</i>&nbsp;
+<b class="nc"><i>472</i>&nbsp;        int [] bandSizes = null;</b>
+<b class="nc"><i>473</i>&nbsp;        if (!indexed) {</b>
+<b class="nc"><i>474</i>&nbsp;            bandSizes = srcRas.getSampleModel().getSampleSize();</b>
+<i>475</i>&nbsp;            // If this is a subset, we must adjust bandSizes
+<b class="nc"><i>476</i>&nbsp;            if (usingBandSubset) {</b>
+<b class="nc"><i>477</i>&nbsp;                int [] temp = new int [numBandsUsed];</b>
+<b class="nc"><i>478</i>&nbsp;                for (int i = 0; i &lt; numBandsUsed; i++) {</b>
+<b class="nc"><i>479</i>&nbsp;                    temp[i] = bandSizes[srcBands[i]];</b>
+<i>480</i>&nbsp;                }
+<b class="nc"><i>481</i>&nbsp;                bandSizes = temp;</b>
+<b class="nc"><i>482</i>&nbsp;            }</b>
+<i>483</i>&nbsp;        } else {
+<b class="nc"><i>484</i>&nbsp;            int [] tempSize = srcRas.getSampleModel().getSampleSize();</b>
+<b class="nc"><i>485</i>&nbsp;            bandSizes = new int [numSrcBands];</b>
+<b class="nc"><i>486</i>&nbsp;            for (int i = 0; i &lt; numSrcBands; i++) {</b>
+<b class="nc"><i>487</i>&nbsp;                bandSizes[i] = tempSize[0];  // All the same</b>
+<i>488</i>&nbsp;            }
+<i>489</i>&nbsp;        }
+<i>490</i>&nbsp;
+<b class="nc"><i>491</i>&nbsp;        for (int i = 0; i &lt; bandSizes.length; i++) {</b>
+<i>492</i>&nbsp;            // 4450894 part 1: The IJG libraries are compiled so they only
+<i>493</i>&nbsp;            // handle &lt;= 8-bit samples.  We now check the band sizes and throw
+<i>494</i>&nbsp;            // an exception for images, such as USHORT_GRAY, with &gt; 8 bits
+<i>495</i>&nbsp;            // per sample.
+<b class="nc"><i>496</i>&nbsp;            if (bandSizes[i] &lt;= 0 || bandSizes[i] &gt; 8) {</b>
+<b class="nc"><i>497</i>&nbsp;                throw new IIOException(&quot;Illegal band size: should be 0 &lt; size &lt;= 8&quot;);</b>
+<i>498</i>&nbsp;            }
+<i>499</i>&nbsp;            // 4450894 part 2: We expand IndexColorModel images to full 24-
+<i>500</i>&nbsp;            // or 32-bit in grabPixels() for each scanline.  For indexed
+<i>501</i>&nbsp;            // images such as BYTE_BINARY, we need to ensure that we update
+<i>502</i>&nbsp;            // bandSizes to account for the scaling from 1-bit band sizes
+<i>503</i>&nbsp;            // to 8-bit.
+<b class="nc"><i>504</i>&nbsp;            if (indexed) {</b>
+<b class="nc"><i>505</i>&nbsp;                bandSizes[i] = 8;</b>
+<i>506</i>&nbsp;            }
+<i>507</i>&nbsp;        }
+<i>508</i>&nbsp;
+<b class="nc"><i>509</i>&nbsp;        if (debug) {</b>
+<b class="nc"><i>510</i>&nbsp;            System.out.println(&quot;numSrcBands is &quot; + numSrcBands);</b>
+<b class="nc"><i>511</i>&nbsp;            System.out.println(&quot;numBandsUsed is &quot; + numBandsUsed);</b>
+<b class="nc"><i>512</i>&nbsp;            System.out.println(&quot;usingBandSubset is &quot; + usingBandSubset);</b>
+<b class="nc"><i>513</i>&nbsp;            System.out.println(&quot;fullImage is &quot; + fullImage);</b>
+<b class="nc"><i>514</i>&nbsp;            System.out.print(&quot;Band sizes:&quot;);</b>
+<b class="nc"><i>515</i>&nbsp;            for (int i = 0; i&lt; bandSizes.length; i++) {</b>
+<b class="nc"><i>516</i>&nbsp;                System.out.print(&quot; &quot; + bandSizes[i]);</b>
+<i>517</i>&nbsp;            }
+<b class="nc"><i>518</i>&nbsp;            System.out.println();</b>
+<i>519</i>&nbsp;        }
+<i>520</i>&nbsp;
+<i>521</i>&nbsp;        // Destination type, if there is one
+<b class="nc"><i>522</i>&nbsp;        ImageTypeSpecifier destType = null;</b>
+<b class="nc"><i>523</i>&nbsp;        if (param != null) {</b>
+<b class="nc"><i>524</i>&nbsp;            destType = param.getDestinationType();</b>
+<i>525</i>&nbsp;            // Ignore dest type if we are writing a complete image
+<b class="nc"><i>526</i>&nbsp;            if ((fullImage) &amp;&amp; (destType != null)) {</b>
+<b class="nc"><i>527</i>&nbsp;                warningOccurred(WARNING_DEST_IGNORED);</b>
+<b class="nc"><i>528</i>&nbsp;                destType = null;</b>
+<i>529</i>&nbsp;            }
+<i>530</i>&nbsp;        }
+<i>531</i>&nbsp;
+<i>532</i>&nbsp;        // Examine the param
+<i>533</i>&nbsp;
+<b class="nc"><i>534</i>&nbsp;        sourceXOffset = srcRas.getMinX();</b>
+<b class="nc"><i>535</i>&nbsp;        sourceYOffset = srcRas.getMinY();</b>
+<b class="nc"><i>536</i>&nbsp;        int imageWidth = srcRas.getWidth();</b>
+<b class="nc"><i>537</i>&nbsp;        int imageHeight = srcRas.getHeight();</b>
+<b class="nc"><i>538</i>&nbsp;        sourceWidth = imageWidth;</b>
+<b class="nc"><i>539</i>&nbsp;        sourceHeight = imageHeight;</b>
+<b class="nc"><i>540</i>&nbsp;        int periodX = 1;</b>
+<b class="nc"><i>541</i>&nbsp;        int periodY = 1;</b>
+<b class="nc"><i>542</i>&nbsp;        int gridX = 0;</b>
+<b class="nc"><i>543</i>&nbsp;        int gridY = 0;</b>
+<b class="nc"><i>544</i>&nbsp;        JPEGQTable [] qTables = null;</b>
+<b class="nc"><i>545</i>&nbsp;        JPEGHuffmanTable[] DCHuffmanTables = null;</b>
+<b class="nc"><i>546</i>&nbsp;        JPEGHuffmanTable[] ACHuffmanTables = null;</b>
+<b class="nc"><i>547</i>&nbsp;        boolean optimizeHuffman = false;</b>
+<b class="nc"><i>548</i>&nbsp;        JPEGImageWriteParam jparam = null;</b>
+<b class="nc"><i>549</i>&nbsp;        int progressiveMode = ImageWriteParam.MODE_DISABLED;</b>
+<i>550</i>&nbsp;
+<b class="nc"><i>551</i>&nbsp;        if (param != null) {</b>
+<i>552</i>&nbsp;
+<b class="nc"><i>553</i>&nbsp;            Rectangle sourceRegion = param.getSourceRegion();</b>
+<b class="nc"><i>554</i>&nbsp;            if (sourceRegion != null) {</b>
+<b class="nc"><i>555</i>&nbsp;                Rectangle imageBounds = new Rectangle(sourceXOffset,</b>
+<i>556</i>&nbsp;                                                      sourceYOffset,
+<i>557</i>&nbsp;                                                      sourceWidth,
+<i>558</i>&nbsp;                                                      sourceHeight);
+<b class="nc"><i>559</i>&nbsp;                sourceRegion = sourceRegion.intersection(imageBounds);</b>
+<b class="nc"><i>560</i>&nbsp;                sourceXOffset = sourceRegion.x;</b>
+<b class="nc"><i>561</i>&nbsp;                sourceYOffset = sourceRegion.y;</b>
+<b class="nc"><i>562</i>&nbsp;                sourceWidth = sourceRegion.width;</b>
+<b class="nc"><i>563</i>&nbsp;                sourceHeight = sourceRegion.height;</b>
+<i>564</i>&nbsp;            }
+<i>565</i>&nbsp;
+<b class="nc"><i>566</i>&nbsp;            if (sourceWidth + sourceXOffset &gt; imageWidth) {</b>
+<b class="nc"><i>567</i>&nbsp;                sourceWidth = imageWidth - sourceXOffset;</b>
+<i>568</i>&nbsp;            }
+<b class="nc"><i>569</i>&nbsp;            if (sourceHeight + sourceYOffset &gt; imageHeight) {</b>
+<b class="nc"><i>570</i>&nbsp;                sourceHeight = imageHeight - sourceYOffset;</b>
+<i>571</i>&nbsp;            }
+<i>572</i>&nbsp;
+<b class="nc"><i>573</i>&nbsp;            periodX = param.getSourceXSubsampling();</b>
+<b class="nc"><i>574</i>&nbsp;            periodY = param.getSourceYSubsampling();</b>
+<b class="nc"><i>575</i>&nbsp;            gridX = param.getSubsamplingXOffset();</b>
+<b class="nc"><i>576</i>&nbsp;            gridY = param.getSubsamplingYOffset();</b>
+<i>577</i>&nbsp;
+<b class="nc"><i>578</i>&nbsp;            switch(param.getCompressionMode()) {</b>
+<i>579</i>&nbsp;            case ImageWriteParam.MODE_DISABLED:
+<b class="nc"><i>580</i>&nbsp;                throw new IIOException(&quot;JPEG compression cannot be disabled&quot;);</b>
+<i>581</i>&nbsp;            case ImageWriteParam.MODE_EXPLICIT:
+<b class="nc"><i>582</i>&nbsp;                float quality = param.getCompressionQuality();</b>
+<b class="nc"><i>583</i>&nbsp;                quality = JPEG.convertToLinearQuality(quality);</b>
+<b class="nc"><i>584</i>&nbsp;                qTables = new JPEGQTable[2];</b>
+<b class="nc"><i>585</i>&nbsp;                qTables[0] = JPEGQTable.K1Luminance.getScaledInstance</b>
+<b class="nc"><i>586</i>&nbsp;                    (quality, true);</b>
+<b class="nc"><i>587</i>&nbsp;                qTables[1] = JPEGQTable.K2Chrominance.getScaledInstance</b>
+<b class="nc"><i>588</i>&nbsp;                    (quality, true);</b>
+<b class="nc"><i>589</i>&nbsp;                break;</b>
+<i>590</i>&nbsp;            case ImageWriteParam.MODE_DEFAULT:
+<b class="nc"><i>591</i>&nbsp;                qTables = new JPEGQTable[2];</b>
+<b class="nc"><i>592</i>&nbsp;                qTables[0] = JPEGQTable.K1Div2Luminance;</b>
+<b class="nc"><i>593</i>&nbsp;                qTables[1] = JPEGQTable.K2Div2Chrominance;</b>
+<i>594</i>&nbsp;                break;
+<i>595</i>&nbsp;            // We&#39;ll handle the metadata case later
+<i>596</i>&nbsp;            }
+<i>597</i>&nbsp;
+<b class="nc"><i>598</i>&nbsp;            progressiveMode = param.getProgressiveMode();</b>
+<i>599</i>&nbsp;
+<b class="nc"><i>600</i>&nbsp;            if (param instanceof JPEGImageWriteParam) {</b>
+<b class="nc"><i>601</i>&nbsp;                jparam = (JPEGImageWriteParam)param;</b>
+<b class="nc"><i>602</i>&nbsp;                optimizeHuffman = jparam.getOptimizeHuffmanTables();</b>
+<i>603</i>&nbsp;            }
+<i>604</i>&nbsp;        }
+<i>605</i>&nbsp;
+<i>606</i>&nbsp;        // Now examine the metadata
+<b class="nc"><i>607</i>&nbsp;        IIOMetadata mdata = image.getMetadata();</b>
+<b class="nc"><i>608</i>&nbsp;        if (mdata != null) {</b>
+<b class="nc"><i>609</i>&nbsp;            if (mdata instanceof JPEGMetadata) {</b>
+<b class="nc"><i>610</i>&nbsp;                metadata = (JPEGMetadata) mdata;</b>
+<b class="nc"><i>611</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>612</i>&nbsp;                    System.out.println</b>
+<b class="nc"><i>613</i>&nbsp;                        (&quot;We have metadata, and it&#39;s JPEG metadata&quot;);</b>
+<i>614</i>&nbsp;                }
+<i>615</i>&nbsp;            } else {
+<b class="nc"><i>616</i>&nbsp;                if (!rasterOnly) {</b>
+<b class="nc"><i>617</i>&nbsp;                    ImageTypeSpecifier type = destType;</b>
+<b class="nc"><i>618</i>&nbsp;                    if (type == null) {</b>
+<b class="nc"><i>619</i>&nbsp;                        type = new ImageTypeSpecifier(rimage);</b>
+<i>620</i>&nbsp;                    }
+<b class="nc"><i>621</i>&nbsp;                    metadata = (JPEGMetadata) convertImageMetadata(mdata,</b>
+<i>622</i>&nbsp;                                                                   type,
+<i>623</i>&nbsp;                                                                   param);
+<b class="nc"><i>624</i>&nbsp;                } else {</b>
+<b class="nc"><i>625</i>&nbsp;                    warningOccurred(WARNING_METADATA_NOT_JPEG_FOR_RASTER);</b>
+<i>626</i>&nbsp;                }
+<i>627</i>&nbsp;            }
+<i>628</i>&nbsp;        }
+<i>629</i>&nbsp;
+<i>630</i>&nbsp;        // First set a default state
+<i>631</i>&nbsp;
+<b class="nc"><i>632</i>&nbsp;        ignoreJFIF = false;  // If it&#39;s there, use it</b>
+<b class="nc"><i>633</i>&nbsp;        ignoreAdobe = false;  // If it&#39;s there, use it</b>
+<b class="nc"><i>634</i>&nbsp;        newAdobeTransform = JPEG.ADOBE_IMPOSSIBLE;  // Change if needed</b>
+<b class="nc"><i>635</i>&nbsp;        writeDefaultJFIF = false;</b>
+<b class="nc"><i>636</i>&nbsp;        writeAdobe = false;</b>
+<i>637</i>&nbsp;
+<i>638</i>&nbsp;        // By default we&#39;ll do no conversion:
+<b class="nc"><i>639</i>&nbsp;        int inCsType = JPEG.JCS_UNKNOWN;</b>
+<b class="nc"><i>640</i>&nbsp;        int outCsType = JPEG.JCS_UNKNOWN;</b>
+<i>641</i>&nbsp;
+<b class="nc"><i>642</i>&nbsp;        JFIFMarkerSegment jfif = null;</b>
+<b class="nc"><i>643</i>&nbsp;        AdobeMarkerSegment adobe = null;</b>
+<b class="nc"><i>644</i>&nbsp;        SOFMarkerSegment sof = null;</b>
+<i>645</i>&nbsp;
+<b class="nc"><i>646</i>&nbsp;        if (metadata != null) {</b>
+<b class="nc"><i>647</i>&nbsp;            jfif = (JFIFMarkerSegment) metadata.findMarkerSegment</b>
+<b class="nc"><i>648</i>&nbsp;                (JFIFMarkerSegment.class, true);</b>
+<b class="nc"><i>649</i>&nbsp;            adobe = (AdobeMarkerSegment) metadata.findMarkerSegment</b>
+<b class="nc"><i>650</i>&nbsp;                (AdobeMarkerSegment.class, true);</b>
+<b class="nc"><i>651</i>&nbsp;            sof = (SOFMarkerSegment) metadata.findMarkerSegment</b>
+<b class="nc"><i>652</i>&nbsp;                (SOFMarkerSegment.class, true);</b>
+<i>653</i>&nbsp;        }
+<i>654</i>&nbsp;
+<b class="nc"><i>655</i>&nbsp;        iccProfile = null;  // By default don&#39;t write one</b>
+<b class="nc"><i>656</i>&nbsp;        convertTosRGB = false;  // PhotoYCC does this</b>
+<b class="nc"><i>657</i>&nbsp;        converted = null;</b>
+<i>658</i>&nbsp;
+<b class="nc"><i>659</i>&nbsp;        if (destType != null) {</b>
+<b class="nc"><i>660</i>&nbsp;            if (numBandsUsed != destType.getNumBands()) {</b>
+<b class="nc"><i>661</i>&nbsp;                throw new IIOException</b>
+<i>662</i>&nbsp;                    (&quot;Number of source bands != number of destination bands&quot;);
+<i>663</i>&nbsp;            }
+<b class="nc"><i>664</i>&nbsp;            cs = destType.getColorModel().getColorSpace();</b>
+<i>665</i>&nbsp;            // Check the metadata against the destination type
+<b class="nc"><i>666</i>&nbsp;            if (metadata != null) {</b>
+<b class="nc"><i>667</i>&nbsp;                checkSOFBands(sof, numBandsUsed);</b>
+<i>668</i>&nbsp;
+<b class="nc"><i>669</i>&nbsp;                checkJFIF(jfif, destType, false);</b>
+<i>670</i>&nbsp;                // Do we want to write an ICC profile?
+<b class="nc"><i>671</i>&nbsp;                if ((jfif != null) &amp;&amp; (ignoreJFIF == false)) {</b>
+<b class="nc"><i>672</i>&nbsp;                    if (JPEG.isNonStandardICC(cs)) {</b>
+<b class="nc"><i>673</i>&nbsp;                        iccProfile = ((ICC_ColorSpace) cs).getProfile();</b>
+<i>674</i>&nbsp;                    }
+<i>675</i>&nbsp;                }
+<b class="nc"><i>676</i>&nbsp;                checkAdobe(adobe, destType, false);</b>
+<i>677</i>&nbsp;
+<i>678</i>&nbsp;            } else { // no metadata, but there is a dest type
+<i>679</i>&nbsp;                // If we can add a JFIF or an Adobe marker segment, do so
+<b class="nc"><i>680</i>&nbsp;                if (JPEG.isJFIFcompliant(destType, false)) {</b>
+<b class="nc"><i>681</i>&nbsp;                    writeDefaultJFIF = true;</b>
+<i>682</i>&nbsp;                    // Do we want to write an ICC profile?
+<b class="nc"><i>683</i>&nbsp;                    if (JPEG.isNonStandardICC(cs)) {</b>
+<b class="nc"><i>684</i>&nbsp;                        iccProfile = ((ICC_ColorSpace) cs).getProfile();</b>
+<i>685</i>&nbsp;                    }
+<i>686</i>&nbsp;                } else {
+<b class="nc"><i>687</i>&nbsp;                    int transform = JPEG.transformForType(destType, false);</b>
+<b class="nc"><i>688</i>&nbsp;                    if (transform != JPEG.ADOBE_IMPOSSIBLE) {</b>
+<b class="nc"><i>689</i>&nbsp;                        writeAdobe = true;</b>
+<b class="nc"><i>690</i>&nbsp;                        newAdobeTransform = transform;</b>
+<i>691</i>&nbsp;                    }
+<i>692</i>&nbsp;                }
+<i>693</i>&nbsp;                // re-create the metadata
+<b class="nc"><i>694</i>&nbsp;                metadata = new JPEGMetadata(destType, null, this);</b>
+<i>695</i>&nbsp;            }
+<b class="nc"><i>696</i>&nbsp;            inCsType = getSrcCSType(destType);</b>
+<b class="nc"><i>697</i>&nbsp;            outCsType = getDefaultDestCSType(destType);</b>
+<i>698</i>&nbsp;        } else { // no destination type
+<b class="nc"><i>699</i>&nbsp;            if (metadata == null) {</b>
+<b class="nc"><i>700</i>&nbsp;                if (fullImage) {  // no dest, no metadata, full image</b>
+<i>701</i>&nbsp;                    // Use default metadata matching the image and param
+<b class="nc"><i>702</i>&nbsp;                    metadata = new JPEGMetadata(new ImageTypeSpecifier(rimage),</b>
+<i>703</i>&nbsp;                                                param, this);
+<b class="nc"><i>704</i>&nbsp;                    if (metadata.findMarkerSegment</b>
+<b class="nc"><i>705</i>&nbsp;                        (JFIFMarkerSegment.class, true) != null) {</b>
+<b class="nc"><i>706</i>&nbsp;                        cs = rimage.getColorModel().getColorSpace();</b>
+<b class="nc"><i>707</i>&nbsp;                        if (JPEG.isNonStandardICC(cs)) {</b>
+<b class="nc"><i>708</i>&nbsp;                            iccProfile = ((ICC_ColorSpace) cs).getProfile();</b>
+<i>709</i>&nbsp;                        }
+<i>710</i>&nbsp;                    }
+<i>711</i>&nbsp;
+<b class="nc"><i>712</i>&nbsp;                    inCsType = getSrcCSType(rimage);</b>
+<b class="nc"><i>713</i>&nbsp;                    outCsType = getDefaultDestCSType(rimage);</b>
+<i>714</i>&nbsp;                }
+<i>715</i>&nbsp;                // else no dest, no metadata, not an image,
+<i>716</i>&nbsp;                // so no special headers, no color conversion
+<i>717</i>&nbsp;            } else { // no dest type, but there is metadata
+<b class="nc"><i>718</i>&nbsp;                checkSOFBands(sof, numBandsUsed);</b>
+<b class="nc"><i>719</i>&nbsp;                if (fullImage) {  // no dest, metadata, image</b>
+<i>720</i>&nbsp;                    // Check that the metadata and the image match
+<i>721</i>&nbsp;
+<b class="nc"><i>722</i>&nbsp;                    ImageTypeSpecifier inputType =</b>
+<i>723</i>&nbsp;                        new ImageTypeSpecifier(rimage);
+<i>724</i>&nbsp;
+<b class="nc"><i>725</i>&nbsp;                    inCsType = getSrcCSType(rimage);</b>
+<i>726</i>&nbsp;
+<b class="nc"><i>727</i>&nbsp;                    if (cm != null) {</b>
+<b class="nc"><i>728</i>&nbsp;                        boolean alpha = cm.hasAlpha();</b>
+<b class="nc"><i>729</i>&nbsp;                        switch (cs.getType()) {</b>
+<i>730</i>&nbsp;                        case ColorSpace.TYPE_GRAY:
+<b class="nc"><i>731</i>&nbsp;                            if (!alpha) {</b>
+<b class="nc"><i>732</i>&nbsp;                                outCsType = JPEG.JCS_GRAYSCALE;</b>
+<i>733</i>&nbsp;                            } else {
+<b class="nc"><i>734</i>&nbsp;                                if (jfif != null) {</b>
+<b class="nc"><i>735</i>&nbsp;                                    ignoreJFIF = true;</b>
+<b class="nc"><i>736</i>&nbsp;                                    warningOccurred</b>
+<b class="nc"><i>737</i>&nbsp;                                    (WARNING_IMAGE_METADATA_JFIF_MISMATCH);</b>
+<i>738</i>&nbsp;                                }
+<i>739</i>&nbsp;                                // out colorspace remains unknown
+<i>740</i>&nbsp;                            }
+<b class="nc"><i>741</i>&nbsp;                            if ((adobe != null)</b>
+<i>742</i>&nbsp;                                &amp;&amp; (adobe.transform != JPEG.ADOBE_UNKNOWN)) {
+<b class="nc"><i>743</i>&nbsp;                                newAdobeTransform = JPEG.ADOBE_UNKNOWN;</b>
+<b class="nc"><i>744</i>&nbsp;                                warningOccurred</b>
+<b class="nc"><i>745</i>&nbsp;                                (WARNING_IMAGE_METADATA_ADOBE_MISMATCH);</b>
+<i>746</i>&nbsp;                            }
+<i>747</i>&nbsp;                            break;
+<i>748</i>&nbsp;                        case ColorSpace.TYPE_RGB:
+<b class="nc"><i>749</i>&nbsp;                            if (!alpha) {</b>
+<b class="nc"><i>750</i>&nbsp;                                if (jfif != null) {</b>
+<b class="nc"><i>751</i>&nbsp;                                    outCsType = JPEG.JCS_YCbCr;</b>
+<b class="nc"><i>752</i>&nbsp;                                    if (JPEG.isNonStandardICC(cs)</b>
+<i>753</i>&nbsp;                                        || ((cs instanceof ICC_ColorSpace)
+<i>754</i>&nbsp;                                            &amp;&amp; (jfif.iccSegment != null))) {
+<b class="nc"><i>755</i>&nbsp;                                        iccProfile =</b>
+<b class="nc"><i>756</i>&nbsp;                                            ((ICC_ColorSpace) cs).getProfile();</b>
+<i>757</i>&nbsp;                                    }
+<b class="nc"><i>758</i>&nbsp;                                } else if (adobe != null) {</b>
+<b class="nc"><i>759</i>&nbsp;                                    switch (adobe.transform) {</b>
+<i>760</i>&nbsp;                                    case JPEG.ADOBE_UNKNOWN:
+<b class="nc"><i>761</i>&nbsp;                                        outCsType = JPEG.JCS_RGB;</b>
+<b class="nc"><i>762</i>&nbsp;                                        break;</b>
+<i>763</i>&nbsp;                                    case JPEG.ADOBE_YCC:
+<b class="nc"><i>764</i>&nbsp;                                        outCsType = JPEG.JCS_YCbCr;</b>
+<b class="nc"><i>765</i>&nbsp;                                        break;</b>
+<i>766</i>&nbsp;                                    default:
+<b class="nc"><i>767</i>&nbsp;                                        warningOccurred</b>
+<b class="nc"><i>768</i>&nbsp;                                        (WARNING_IMAGE_METADATA_ADOBE_MISMATCH);</b>
+<b class="nc"><i>769</i>&nbsp;                                        newAdobeTransform = JPEG.ADOBE_UNKNOWN;</b>
+<b class="nc"><i>770</i>&nbsp;                                        outCsType = JPEG.JCS_RGB;</b>
+<b class="nc"><i>771</i>&nbsp;                                        break;</b>
+<i>772</i>&nbsp;                                    }
+<i>773</i>&nbsp;                                } else {
+<i>774</i>&nbsp;                                    // consult the ids
+<b class="nc"><i>775</i>&nbsp;                                    int outCS = sof.getIDencodedCSType();</b>
+<i>776</i>&nbsp;                                    // if they don&#39;t resolve it,
+<i>777</i>&nbsp;                                    // consult the sampling factors
+<b class="nc"><i>778</i>&nbsp;                                    if (outCS != JPEG.JCS_UNKNOWN) {</b>
+<b class="nc"><i>779</i>&nbsp;                                        outCsType = outCS;</b>
+<i>780</i>&nbsp;                                    } else {
+<b class="nc"><i>781</i>&nbsp;                                        boolean subsampled =</b>
+<b class="nc"><i>782</i>&nbsp;                                        isSubsampled(sof.componentSpecs);</b>
+<b class="nc"><i>783</i>&nbsp;                                        if (subsampled) {</b>
+<b class="nc"><i>784</i>&nbsp;                                            outCsType = JPEG.JCS_YCbCr;</b>
+<i>785</i>&nbsp;                                        } else {
+<b class="nc"><i>786</i>&nbsp;                                            outCsType = JPEG.JCS_RGB;</b>
+<i>787</i>&nbsp;                                        }
+<i>788</i>&nbsp;                                    }
+<b class="nc"><i>789</i>&nbsp;                                }</b>
+<i>790</i>&nbsp;                            } else { // RGBA
+<b class="nc"><i>791</i>&nbsp;                                if (jfif != null) {</b>
+<b class="nc"><i>792</i>&nbsp;                                    ignoreJFIF = true;</b>
+<b class="nc"><i>793</i>&nbsp;                                    warningOccurred</b>
+<b class="nc"><i>794</i>&nbsp;                                    (WARNING_IMAGE_METADATA_JFIF_MISMATCH);</b>
+<i>795</i>&nbsp;                                }
+<b class="nc"><i>796</i>&nbsp;                                if (adobe != null) {</b>
+<b class="nc"><i>797</i>&nbsp;                                    if (adobe.transform</b>
+<i>798</i>&nbsp;                                        != JPEG.ADOBE_UNKNOWN) {
+<b class="nc"><i>799</i>&nbsp;                                        newAdobeTransform = JPEG.ADOBE_UNKNOWN;</b>
+<b class="nc"><i>800</i>&nbsp;                                        warningOccurred</b>
+<b class="nc"><i>801</i>&nbsp;                                        (WARNING_IMAGE_METADATA_ADOBE_MISMATCH);</b>
+<i>802</i>&nbsp;                                    }
+<b class="nc"><i>803</i>&nbsp;                                    outCsType = JPEG.JCS_RGBA;</b>
+<i>804</i>&nbsp;                                } else {
+<i>805</i>&nbsp;                                    // consult the ids
+<b class="nc"><i>806</i>&nbsp;                                    int outCS = sof.getIDencodedCSType();</b>
+<i>807</i>&nbsp;                                    // if they don&#39;t resolve it,
+<i>808</i>&nbsp;                                    // consult the sampling factors
+<b class="nc"><i>809</i>&nbsp;                                    if (outCS != JPEG.JCS_UNKNOWN) {</b>
+<b class="nc"><i>810</i>&nbsp;                                        outCsType = outCS;</b>
+<i>811</i>&nbsp;                                    } else {
+<b class="nc"><i>812</i>&nbsp;                                        boolean subsampled =</b>
+<b class="nc"><i>813</i>&nbsp;                                        isSubsampled(sof.componentSpecs);</b>
+<b class="nc"><i>814</i>&nbsp;                                        outCsType = subsampled ?</b>
+<i>815</i>&nbsp;                                            JPEG.JCS_YCbCrA : JPEG.JCS_RGBA;
+<i>816</i>&nbsp;                                    }
+<i>817</i>&nbsp;                                }
+<i>818</i>&nbsp;                            }
+<b class="nc"><i>819</i>&nbsp;                            break;</b>
+<i>820</i>&nbsp;                        case ColorSpace.TYPE_3CLR:
+<b class="nc"><i>821</i>&nbsp;                            if (cs == JPEG.JCS.getYCC()) {</b>
+<b class="nc"><i>822</i>&nbsp;                                if (!alpha) {</b>
+<b class="nc"><i>823</i>&nbsp;                                    if (jfif != null) {</b>
+<b class="nc"><i>824</i>&nbsp;                                        convertTosRGB = true;</b>
+<b class="nc"><i>825</i>&nbsp;                                        convertOp =</b>
+<i>826</i>&nbsp;                                        new ColorConvertOp(cs,
+<i>827</i>&nbsp;                                                           JPEG.JCS.sRGB,
+<i>828</i>&nbsp;                                                           null);
+<b class="nc"><i>829</i>&nbsp;                                        outCsType = JPEG.JCS_YCbCr;</b>
+<b class="nc"><i>830</i>&nbsp;                                    } else if (adobe != null) {</b>
+<b class="nc"><i>831</i>&nbsp;                                        if (adobe.transform</b>
+<i>832</i>&nbsp;                                            != JPEG.ADOBE_YCC) {
+<b class="nc"><i>833</i>&nbsp;                                            newAdobeTransform = JPEG.ADOBE_YCC;</b>
+<b class="nc"><i>834</i>&nbsp;                                            warningOccurred</b>
+<b class="nc"><i>835</i>&nbsp;                                            (WARNING_IMAGE_METADATA_ADOBE_MISMATCH);</b>
+<i>836</i>&nbsp;                                        }
+<b class="nc"><i>837</i>&nbsp;                                        outCsType = JPEG.JCS_YCC;</b>
+<i>838</i>&nbsp;                                    } else {
+<b class="nc"><i>839</i>&nbsp;                                        outCsType = JPEG.JCS_YCC;</b>
+<i>840</i>&nbsp;                                    }
+<i>841</i>&nbsp;                                } else { // PhotoYCCA
+<b class="nc"><i>842</i>&nbsp;                                    if (jfif != null) {</b>
+<b class="nc"><i>843</i>&nbsp;                                        ignoreJFIF = true;</b>
+<b class="nc"><i>844</i>&nbsp;                                        warningOccurred</b>
+<b class="nc"><i>845</i>&nbsp;                                        (WARNING_IMAGE_METADATA_JFIF_MISMATCH);</b>
+<b class="nc"><i>846</i>&nbsp;                                    } else if (adobe != null) {</b>
+<b class="nc"><i>847</i>&nbsp;                                        if (adobe.transform</b>
+<i>848</i>&nbsp;                                            != JPEG.ADOBE_UNKNOWN) {
+<b class="nc"><i>849</i>&nbsp;                                            newAdobeTransform</b>
+<i>850</i>&nbsp;                                            = JPEG.ADOBE_UNKNOWN;
+<b class="nc"><i>851</i>&nbsp;                                            warningOccurred</b>
+<b class="nc"><i>852</i>&nbsp;                                            (WARNING_IMAGE_METADATA_ADOBE_MISMATCH);</b>
+<i>853</i>&nbsp;                                        }
+<i>854</i>&nbsp;                                    }
+<b class="nc"><i>855</i>&nbsp;                                    outCsType = JPEG.JCS_YCCA;</b>
+<i>856</i>&nbsp;                                }
+<i>857</i>&nbsp;                            }
+<i>858</i>&nbsp;                        }
+<i>859</i>&nbsp;                    }
+<i>860</i>&nbsp;                } // else no dest, metadata, not an image.  Defaults ok
+<i>861</i>&nbsp;            }
+<i>862</i>&nbsp;        }
+<i>863</i>&nbsp;
+<b class="nc"><i>864</i>&nbsp;        boolean metadataProgressive = false;</b>
+<b class="nc"><i>865</i>&nbsp;        int [] scans = null;</b>
+<i>866</i>&nbsp;
+<b class="nc"><i>867</i>&nbsp;        if (metadata != null) {</b>
+<b class="nc"><i>868</i>&nbsp;            if (sof == null) {</b>
+<b class="nc"><i>869</i>&nbsp;                sof = (SOFMarkerSegment) metadata.findMarkerSegment</b>
+<b class="nc"><i>870</i>&nbsp;                    (SOFMarkerSegment.class, true);</b>
+<i>871</i>&nbsp;            }
+<b class="nc"><i>872</i>&nbsp;            if ((sof != null) &amp;&amp; (sof.tag == JPEG.SOF2)) {</b>
+<b class="nc"><i>873</i>&nbsp;                metadataProgressive = true;</b>
+<b class="nc"><i>874</i>&nbsp;                if (progressiveMode == ImageWriteParam.MODE_COPY_FROM_METADATA) {</b>
+<b class="nc"><i>875</i>&nbsp;                    scans = collectScans(metadata, sof);  // Might still be null</b>
+<i>876</i>&nbsp;                } else {
+<b class="nc"><i>877</i>&nbsp;                    numScans = 0;</b>
+<i>878</i>&nbsp;                }
+<i>879</i>&nbsp;            }
+<b class="nc"><i>880</i>&nbsp;            if (jfif == null) {</b>
+<b class="nc"><i>881</i>&nbsp;                jfif = (JFIFMarkerSegment) metadata.findMarkerSegment</b>
+<b class="nc"><i>882</i>&nbsp;                    (JFIFMarkerSegment.class, true);</b>
+<i>883</i>&nbsp;            }
+<i>884</i>&nbsp;        }
+<i>885</i>&nbsp;
+<b class="nc"><i>886</i>&nbsp;        thumbnails = image.getThumbnails();</b>
+<b class="nc"><i>887</i>&nbsp;        int numThumbs = image.getNumThumbnails();</b>
+<b class="nc"><i>888</i>&nbsp;        forceJFIF = false;</b>
+<i>889</i>&nbsp;        // determine if thumbnails can be written
+<i>890</i>&nbsp;        // If we are going to add a default JFIF marker segment,
+<i>891</i>&nbsp;        // then thumbnails can be written
+<b class="nc"><i>892</i>&nbsp;        if (!writeDefaultJFIF) {</b>
+<i>893</i>&nbsp;            // If there is no metadata, then we can&#39;t write thumbnails
+<b class="nc"><i>894</i>&nbsp;            if (metadata == null) {</b>
+<b class="nc"><i>895</i>&nbsp;                thumbnails = null;</b>
+<b class="nc"><i>896</i>&nbsp;                if (numThumbs != 0) {</b>
+<b class="nc"><i>897</i>&nbsp;                    warningOccurred(WARNING_IGNORING_THUMBS);</b>
+<i>898</i>&nbsp;                }
+<i>899</i>&nbsp;            } else {
+<i>900</i>&nbsp;                // There is metadata
+<i>901</i>&nbsp;                // If we are writing a raster or subbands,
+<i>902</i>&nbsp;                // then the user must specify JFIF on the metadata
+<b class="nc"><i>903</i>&nbsp;                if (fullImage == false) {</b>
+<b class="nc"><i>904</i>&nbsp;                    if (jfif == null) {</b>
+<b class="nc"><i>905</i>&nbsp;                        thumbnails = null;  // Or we can&#39;t include thumbnails</b>
+<b class="nc"><i>906</i>&nbsp;                        if (numThumbs != 0) {</b>
+<b class="nc"><i>907</i>&nbsp;                            warningOccurred(WARNING_IGNORING_THUMBS);</b>
+<i>908</i>&nbsp;                        }
+<i>909</i>&nbsp;                    }
+<i>910</i>&nbsp;                } else {  // It is a full image, and there is metadata
+<b class="nc"><i>911</i>&nbsp;                    if (jfif == null) {  // Not JFIF</b>
+<i>912</i>&nbsp;                        // Can it have JFIF?
+<b class="nc"><i>913</i>&nbsp;                        if ((outCsType == JPEG.JCS_GRAYSCALE)</b>
+<i>914</i>&nbsp;                            || (outCsType == JPEG.JCS_YCbCr)) {
+<b class="nc"><i>915</i>&nbsp;                            if (numThumbs != 0) {</b>
+<b class="nc"><i>916</i>&nbsp;                                forceJFIF = true;</b>
+<b class="nc"><i>917</i>&nbsp;                                warningOccurred(WARNING_FORCING_JFIF);</b>
+<i>918</i>&nbsp;                            }
+<i>919</i>&nbsp;                        } else {  // Nope, not JFIF-compatible
+<b class="nc"><i>920</i>&nbsp;                            thumbnails = null;</b>
+<b class="nc"><i>921</i>&nbsp;                            if (numThumbs != 0) {</b>
+<b class="nc"><i>922</i>&nbsp;                                warningOccurred(WARNING_IGNORING_THUMBS);</b>
+<i>923</i>&nbsp;                            }
+<i>924</i>&nbsp;                        }
+<i>925</i>&nbsp;                    }
+<i>926</i>&nbsp;                }
+<i>927</i>&nbsp;            }
+<i>928</i>&nbsp;        }
+<i>929</i>&nbsp;
+<i>930</i>&nbsp;        // Set up a boolean to indicate whether we need to call back to
+<i>931</i>&nbsp;        // write metadata
+<b class="nc"><i>932</i>&nbsp;        boolean haveMetadata =</b>
+<i>933</i>&nbsp;            ((metadata != null) || writeDefaultJFIF || writeAdobe);
+<i>934</i>&nbsp;
+<i>935</i>&nbsp;        // Now that we have dealt with metadata, finalize our tables set up
+<i>936</i>&nbsp;
+<i>937</i>&nbsp;        // Are we going to write tables?  By default, yes.
+<b class="nc"><i>938</i>&nbsp;        boolean writeDQT = true;</b>
+<b class="nc"><i>939</i>&nbsp;        boolean writeDHT = true;</b>
+<i>940</i>&nbsp;
+<i>941</i>&nbsp;        // But if the metadata has no tables, no.
+<b class="nc"><i>942</i>&nbsp;        DQTMarkerSegment dqt = null;</b>
+<b class="nc"><i>943</i>&nbsp;        DHTMarkerSegment dht = null;</b>
+<i>944</i>&nbsp;
+<b class="nc"><i>945</i>&nbsp;        int restartInterval = 0;</b>
+<i>946</i>&nbsp;
+<b class="nc"><i>947</i>&nbsp;        if (metadata != null) {</b>
+<b class="nc"><i>948</i>&nbsp;            dqt = (DQTMarkerSegment) metadata.findMarkerSegment</b>
+<b class="nc"><i>949</i>&nbsp;                (DQTMarkerSegment.class, true);</b>
+<b class="nc"><i>950</i>&nbsp;            dht = (DHTMarkerSegment) metadata.findMarkerSegment</b>
+<b class="nc"><i>951</i>&nbsp;                (DHTMarkerSegment.class, true);</b>
+<b class="nc"><i>952</i>&nbsp;            DRIMarkerSegment dri =</b>
+<i>953</i>&nbsp;                (DRIMarkerSegment) metadata.findMarkerSegment
+<b class="nc"><i>954</i>&nbsp;                (DRIMarkerSegment.class, true);</b>
+<b class="nc"><i>955</i>&nbsp;            if (dri != null) {</b>
+<b class="nc"><i>956</i>&nbsp;                restartInterval = dri.restartInterval;</b>
+<i>957</i>&nbsp;            }
+<i>958</i>&nbsp;
+<b class="nc"><i>959</i>&nbsp;            if (dqt == null) {</b>
+<b class="nc"><i>960</i>&nbsp;                writeDQT = false;</b>
+<i>961</i>&nbsp;            }
+<b class="nc"><i>962</i>&nbsp;            if (dht == null) {</b>
+<b class="nc"><i>963</i>&nbsp;                writeDHT = false;  // Ignored if optimizeHuffman is true</b>
+<i>964</i>&nbsp;            }
+<i>965</i>&nbsp;        }
+<i>966</i>&nbsp;
+<i>967</i>&nbsp;        // Whether we write tables or not, we need to figure out which ones
+<i>968</i>&nbsp;        // to use
+<b class="nc"><i>969</i>&nbsp;        if (qTables == null) { // Get them from metadata, or use defaults</b>
+<b class="nc"><i>970</i>&nbsp;            if (dqt != null) {</b>
+<b class="nc"><i>971</i>&nbsp;                qTables = collectQTablesFromMetadata(metadata);</b>
+<b class="nc"><i>972</i>&nbsp;            } else if (streamQTables != null) {</b>
+<b class="nc"><i>973</i>&nbsp;                qTables = streamQTables;</b>
+<b class="nc"><i>974</i>&nbsp;            } else if ((jparam != null) &amp;&amp; (jparam.areTablesSet())) {</b>
+<b class="nc"><i>975</i>&nbsp;                qTables = jparam.getQTables();</b>
+<i>976</i>&nbsp;            } else {
+<b class="nc"><i>977</i>&nbsp;                qTables = JPEG.getDefaultQTables();</b>
+<i>978</i>&nbsp;            }
+<i>979</i>&nbsp;
+<i>980</i>&nbsp;        }
+<i>981</i>&nbsp;
+<i>982</i>&nbsp;        // If we are optimizing, we don&#39;t want any tables.
+<b class="nc"><i>983</i>&nbsp;        if (optimizeHuffman == false) {</b>
+<i>984</i>&nbsp;            // If they were for progressive scans, we can&#39;t use them.
+<b class="nc"><i>985</i>&nbsp;            if ((dht != null) &amp;&amp; (metadataProgressive == false)) {</b>
+<b class="nc"><i>986</i>&nbsp;                DCHuffmanTables = collectHTablesFromMetadata(metadata, true);</b>
+<b class="nc"><i>987</i>&nbsp;                ACHuffmanTables = collectHTablesFromMetadata(metadata, false);</b>
+<b class="nc"><i>988</i>&nbsp;            } else if (streamDCHuffmanTables != null) {</b>
+<b class="nc"><i>989</i>&nbsp;                DCHuffmanTables = streamDCHuffmanTables;</b>
+<b class="nc"><i>990</i>&nbsp;                ACHuffmanTables = streamACHuffmanTables;</b>
+<b class="nc"><i>991</i>&nbsp;            } else if ((jparam != null) &amp;&amp; (jparam.areTablesSet())) {</b>
+<b class="nc"><i>992</i>&nbsp;                DCHuffmanTables = jparam.getDCHuffmanTables();</b>
+<b class="nc"><i>993</i>&nbsp;                ACHuffmanTables = jparam.getACHuffmanTables();</b>
+<i>994</i>&nbsp;            } else {
+<b class="nc"><i>995</i>&nbsp;                DCHuffmanTables = JPEG.getDefaultHuffmanTables(true);</b>
+<b class="nc"><i>996</i>&nbsp;                ACHuffmanTables = JPEG.getDefaultHuffmanTables(false);</b>
+<i>997</i>&nbsp;            }
+<i>998</i>&nbsp;        }
+<i>999</i>&nbsp;
+<i>1000</i>&nbsp;        // By default, ids are 1 - N, no subsampling
+<b class="nc"><i>1001</i>&nbsp;        int [] componentIds = new int[numBandsUsed];</b>
+<b class="nc"><i>1002</i>&nbsp;        int [] HsamplingFactors = new int[numBandsUsed];</b>
+<b class="nc"><i>1003</i>&nbsp;        int [] VsamplingFactors = new int[numBandsUsed];</b>
+<b class="nc"><i>1004</i>&nbsp;        int [] QtableSelectors = new int[numBandsUsed];</b>
+<b class="nc"><i>1005</i>&nbsp;        for (int i = 0; i &lt; numBandsUsed; i++) {</b>
+<b class="nc"><i>1006</i>&nbsp;            componentIds[i] = i+1; // JFIF compatible</b>
+<b class="nc"><i>1007</i>&nbsp;            HsamplingFactors[i] = 1;</b>
+<b class="nc"><i>1008</i>&nbsp;            VsamplingFactors[i] = 1;</b>
+<b class="nc"><i>1009</i>&nbsp;            QtableSelectors[i] = 0;</b>
+<i>1010</i>&nbsp;        }
+<i>1011</i>&nbsp;
+<i>1012</i>&nbsp;        // Now override them with the contents of sof, if there is one,
+<b class="nc"><i>1013</i>&nbsp;        if (sof != null) {</b>
+<b class="nc"><i>1014</i>&nbsp;            for (int i = 0; i &lt; numBandsUsed; i++) {</b>
+<b class="nc"><i>1015</i>&nbsp;                if (forceJFIF == false) {  // else use JFIF-compatible default</b>
+<b class="nc"><i>1016</i>&nbsp;                    componentIds[i] = sof.componentSpecs[i].componentId;</b>
+<i>1017</i>&nbsp;                }
+<b class="nc"><i>1018</i>&nbsp;                HsamplingFactors[i] = sof.componentSpecs[i].HsamplingFactor;</b>
+<b class="nc"><i>1019</i>&nbsp;                VsamplingFactors[i] = sof.componentSpecs[i].VsamplingFactor;</b>
+<b class="nc"><i>1020</i>&nbsp;                QtableSelectors[i] = sof.componentSpecs[i].QtableSelector;</b>
+<i>1021</i>&nbsp;            }
+<i>1022</i>&nbsp;        }
+<i>1023</i>&nbsp;
+<b class="nc"><i>1024</i>&nbsp;        sourceXOffset += gridX;</b>
+<b class="nc"><i>1025</i>&nbsp;        sourceWidth -= gridX;</b>
+<b class="nc"><i>1026</i>&nbsp;        sourceYOffset += gridY;</b>
+<b class="nc"><i>1027</i>&nbsp;        sourceHeight -= gridY;</b>
+<i>1028</i>&nbsp;
+<b class="nc"><i>1029</i>&nbsp;        int destWidth = (sourceWidth + periodX - 1)/periodX;</b>
+<b class="nc"><i>1030</i>&nbsp;        int destHeight = (sourceHeight + periodY - 1)/periodY;</b>
+<i>1031</i>&nbsp;
+<i>1032</i>&nbsp;        // Create an appropriate 1-line databuffer for writing
+<b class="nc"><i>1033</i>&nbsp;        int lineSize = sourceWidth*numBandsUsed;</b>
+<i>1034</i>&nbsp;
+<b class="nc"><i>1035</i>&nbsp;        DataBufferByte buffer = new DataBufferByte(lineSize);</b>
+<i>1036</i>&nbsp;
+<i>1037</i>&nbsp;        // Create a raster from that
+<b class="nc"><i>1038</i>&nbsp;        int [] bandOffs = JPEG.bandOffsets[numBandsUsed-1];</b>
+<i>1039</i>&nbsp;
+<b class="nc"><i>1040</i>&nbsp;        raster = Raster.createInterleavedRaster(buffer,</b>
+<i>1041</i>&nbsp;                                                sourceWidth, 1,
+<i>1042</i>&nbsp;                                                lineSize,
+<i>1043</i>&nbsp;                                                numBandsUsed,
+<i>1044</i>&nbsp;                                                bandOffs,
+<i>1045</i>&nbsp;                                                null);
+<i>1046</i>&nbsp;
+<i>1047</i>&nbsp;        // Call the writer, who will call back for every scanline
+<i>1048</i>&nbsp;
+<b class="nc"><i>1049</i>&nbsp;        clearAbortRequest();</b>
+<b class="nc"><i>1050</i>&nbsp;        cbLock.lock();</b>
+<i>1051</i>&nbsp;        try {
+<b class="nc"><i>1052</i>&nbsp;            processImageStarted(currentImage);</b>
+<i>1053</i>&nbsp;        } finally {
+<b class="nc"><i>1054</i>&nbsp;            cbLock.unlock();</b>
+<b class="nc"><i>1055</i>&nbsp;        }</b>
+<i>1056</i>&nbsp;
+<b class="nc"><i>1057</i>&nbsp;        boolean aborted = false;</b>
+<i>1058</i>&nbsp;
+<b class="nc"><i>1059</i>&nbsp;        if (debug) {</b>
+<b class="nc"><i>1060</i>&nbsp;            System.out.println(&quot;inCsType: &quot; + inCsType);</b>
+<b class="nc"><i>1061</i>&nbsp;            System.out.println(&quot;outCsType: &quot; + outCsType);</b>
+<i>1062</i>&nbsp;        }
+<i>1063</i>&nbsp;
+<i>1064</i>&nbsp;        // Note that getData disables acceleration on buffer, but it is
+<i>1065</i>&nbsp;        // just a 1-line intermediate data transfer buffer that does not
+<i>1066</i>&nbsp;        // affect the acceleration of the source image.
+<b class="nc"><i>1067</i>&nbsp;        aborted = writeImage(structPointer,</b>
+<b class="nc"><i>1068</i>&nbsp;                             buffer.getData(),</b>
+<i>1069</i>&nbsp;                             inCsType, outCsType,
+<i>1070</i>&nbsp;                             numBandsUsed,
+<i>1071</i>&nbsp;                             bandSizes,
+<i>1072</i>&nbsp;                             sourceWidth,
+<i>1073</i>&nbsp;                             destWidth, destHeight,
+<i>1074</i>&nbsp;                             periodX, periodY,
+<i>1075</i>&nbsp;                             qTables,
+<i>1076</i>&nbsp;                             writeDQT,
+<i>1077</i>&nbsp;                             DCHuffmanTables,
+<i>1078</i>&nbsp;                             ACHuffmanTables,
+<i>1079</i>&nbsp;                             writeDHT,
+<i>1080</i>&nbsp;                             optimizeHuffman,
+<i>1081</i>&nbsp;                             (progressiveMode
+<i>1082</i>&nbsp;                              != ImageWriteParam.MODE_DISABLED),
+<i>1083</i>&nbsp;                             numScans,
+<i>1084</i>&nbsp;                             scans,
+<i>1085</i>&nbsp;                             componentIds,
+<i>1086</i>&nbsp;                             HsamplingFactors,
+<i>1087</i>&nbsp;                             VsamplingFactors,
+<i>1088</i>&nbsp;                             QtableSelectors,
+<i>1089</i>&nbsp;                             haveMetadata,
+<i>1090</i>&nbsp;                             restartInterval);
+<i>1091</i>&nbsp;
+<b class="nc"><i>1092</i>&nbsp;        cbLock.lock();</b>
+<i>1093</i>&nbsp;        try {
+<b class="nc"><i>1094</i>&nbsp;            if (aborted) {</b>
+<b class="nc"><i>1095</i>&nbsp;                processWriteAborted();</b>
+<i>1096</i>&nbsp;            } else {
+<b class="nc"><i>1097</i>&nbsp;                processImageComplete();</b>
+<i>1098</i>&nbsp;            }
+<i>1099</i>&nbsp;
+<b class="nc"><i>1100</i>&nbsp;            ios.flush();</b>
+<i>1101</i>&nbsp;        } finally {
+<b class="nc"><i>1102</i>&nbsp;            cbLock.unlock();</b>
+<b class="nc"><i>1103</i>&nbsp;        }</b>
+<b class="nc"><i>1104</i>&nbsp;        currentImage++;  // After a successful write</b>
+<i>1105</i>&nbsp;    }
+<i>1106</i>&nbsp;
+<i>1107</i>&nbsp;    @Override
+<i>1108</i>&nbsp;    public boolean canWriteSequence() {
+<b class="nc"><i>1109</i>&nbsp;        return true;</b>
+<i>1110</i>&nbsp;    }
+<i>1111</i>&nbsp;
+<i>1112</i>&nbsp;    public void prepareWriteSequence(IIOMetadata streamMetadata)
+<i>1113</i>&nbsp;        throws IOException {
+<b class="nc"><i>1114</i>&nbsp;        setThreadLock();</b>
+<i>1115</i>&nbsp;        try {
+<b class="nc"><i>1116</i>&nbsp;            cbLock.check();</b>
+<i>1117</i>&nbsp;
+<b class="nc"><i>1118</i>&nbsp;            prepareWriteSequenceOnThread(streamMetadata);</b>
+<i>1119</i>&nbsp;        } finally {
+<b class="nc"><i>1120</i>&nbsp;            clearThreadLock();</b>
+<b class="nc"><i>1121</i>&nbsp;        }</b>
+<i>1122</i>&nbsp;    }
+<i>1123</i>&nbsp;
+<i>1124</i>&nbsp;    private void prepareWriteSequenceOnThread(IIOMetadata streamMetadata)
+<i>1125</i>&nbsp;        throws IOException {
+<b class="nc"><i>1126</i>&nbsp;        if (ios == null) {</b>
+<b class="nc"><i>1127</i>&nbsp;            throw new IllegalStateException(&quot;Output has not been set!&quot;);</b>
+<i>1128</i>&nbsp;        }
+<i>1129</i>&nbsp;
+<i>1130</i>&nbsp;        /*
+<i>1131</i>&nbsp;         * from jpeg_metadata.html:
+<i>1132</i>&nbsp;         * If no stream metadata is supplied to
+<i>1133</i>&nbsp;         * &lt;code&gt;ImageWriter.prepareWriteSequence&lt;/code&gt;, then no
+<i>1134</i>&nbsp;         * tables-only image is written.  If stream metadata containing
+<i>1135</i>&nbsp;         * no tables is supplied to
+<i>1136</i>&nbsp;         * &lt;code&gt;ImageWriter.prepareWriteSequence&lt;/code&gt;, then a tables-only
+<i>1137</i>&nbsp;         * image containing default visually lossless tables is written.
+<i>1138</i>&nbsp;         */
+<b class="nc"><i>1139</i>&nbsp;        if (streamMetadata != null) {</b>
+<b class="nc"><i>1140</i>&nbsp;            if (streamMetadata instanceof JPEGMetadata) {</b>
+<i>1141</i>&nbsp;                // write a complete tables-only image at the beginning of
+<i>1142</i>&nbsp;                // the stream.
+<b class="nc"><i>1143</i>&nbsp;                JPEGMetadata jmeta = (JPEGMetadata) streamMetadata;</b>
+<b class="nc"><i>1144</i>&nbsp;                if (jmeta.isStream == false) {</b>
+<b class="nc"><i>1145</i>&nbsp;                    throw new IllegalArgumentException</b>
+<i>1146</i>&nbsp;                        (&quot;Invalid stream metadata object.&quot;);
+<i>1147</i>&nbsp;                }
+<i>1148</i>&nbsp;                // Check that we are
+<i>1149</i>&nbsp;                // at the beginning of the stream, or can go there, and haven&#39;t
+<i>1150</i>&nbsp;                // written out the metadata already.
+<b class="nc"><i>1151</i>&nbsp;                if (currentImage != 0) {</b>
+<b class="nc"><i>1152</i>&nbsp;                    throw new IIOException</b>
+<i>1153</i>&nbsp;                        (&quot;JPEG Stream metadata must precede all images&quot;);
+<i>1154</i>&nbsp;                }
+<b class="nc"><i>1155</i>&nbsp;                if (sequencePrepared == true) {</b>
+<b class="nc"><i>1156</i>&nbsp;                    throw new IIOException(&quot;Stream metadata already written!&quot;);</b>
+<i>1157</i>&nbsp;                }
+<i>1158</i>&nbsp;
+<i>1159</i>&nbsp;                // Set the tables
+<i>1160</i>&nbsp;                // If the metadata has no tables, use default tables.
+<b class="nc"><i>1161</i>&nbsp;                streamQTables = collectQTablesFromMetadata(jmeta);</b>
+<b class="nc"><i>1162</i>&nbsp;                if (debug) {</b>
+<b class="nc"><i>1163</i>&nbsp;                    System.out.println(&quot;after collecting from stream metadata, &quot;</b>
+<i>1164</i>&nbsp;                                       + &quot;streamQTables.length is &quot;
+<i>1165</i>&nbsp;                                       + streamQTables.length);
+<i>1166</i>&nbsp;                }
+<b class="nc"><i>1167</i>&nbsp;                if (streamQTables == null) {</b>
+<b class="nc"><i>1168</i>&nbsp;                    streamQTables = JPEG.getDefaultQTables();</b>
+<i>1169</i>&nbsp;                }
+<b class="nc"><i>1170</i>&nbsp;                streamDCHuffmanTables =</b>
+<b class="nc"><i>1171</i>&nbsp;                    collectHTablesFromMetadata(jmeta, true);</b>
+<b class="nc"><i>1172</i>&nbsp;                if (streamDCHuffmanTables == null) {</b>
+<b class="nc"><i>1173</i>&nbsp;                    streamDCHuffmanTables = JPEG.getDefaultHuffmanTables(true);</b>
+<i>1174</i>&nbsp;                }
+<b class="nc"><i>1175</i>&nbsp;                streamACHuffmanTables =</b>
+<b class="nc"><i>1176</i>&nbsp;                    collectHTablesFromMetadata(jmeta, false);</b>
+<b class="nc"><i>1177</i>&nbsp;                if (streamACHuffmanTables == null) {</b>
+<b class="nc"><i>1178</i>&nbsp;                    streamACHuffmanTables = JPEG.getDefaultHuffmanTables(false);</b>
+<i>1179</i>&nbsp;                }
+<i>1180</i>&nbsp;
+<i>1181</i>&nbsp;                // Now write them out
+<b class="nc"><i>1182</i>&nbsp;                writeTables(structPointer,</b>
+<i>1183</i>&nbsp;                            streamQTables,
+<i>1184</i>&nbsp;                            streamDCHuffmanTables,
+<i>1185</i>&nbsp;                            streamACHuffmanTables);
+<b class="nc"><i>1186</i>&nbsp;            } else {</b>
+<b class="nc"><i>1187</i>&nbsp;                throw new IIOException(&quot;Stream metadata must be JPEG metadata&quot;);</b>
+<i>1188</i>&nbsp;            }
+<i>1189</i>&nbsp;        }
+<b class="nc"><i>1190</i>&nbsp;        sequencePrepared = true;</b>
+<i>1191</i>&nbsp;    }
+<i>1192</i>&nbsp;
+<i>1193</i>&nbsp;    public void writeToSequence(IIOImage image, ImageWriteParam param)
+<i>1194</i>&nbsp;        throws IOException {
+<b class="nc"><i>1195</i>&nbsp;        setThreadLock();</b>
+<i>1196</i>&nbsp;        try {
+<b class="nc"><i>1197</i>&nbsp;            cbLock.check();</b>
+<i>1198</i>&nbsp;
+<b class="nc"><i>1199</i>&nbsp;            if (sequencePrepared == false) {</b>
+<b class="nc"><i>1200</i>&nbsp;                throw new IllegalStateException(&quot;sequencePrepared not called!&quot;);</b>
+<i>1201</i>&nbsp;            }
+<i>1202</i>&nbsp;            // In the case of JPEG this does nothing different from write
+<b class="nc"><i>1203</i>&nbsp;            write(null, image, param);</b>
+<i>1204</i>&nbsp;        } finally {
+<b class="nc"><i>1205</i>&nbsp;            clearThreadLock();</b>
+<b class="nc"><i>1206</i>&nbsp;        }</b>
+<i>1207</i>&nbsp;    }
+<i>1208</i>&nbsp;
+<i>1209</i>&nbsp;    public void endWriteSequence() throws IOException {
+<b class="nc"><i>1210</i>&nbsp;        setThreadLock();</b>
+<i>1211</i>&nbsp;        try {
+<b class="nc"><i>1212</i>&nbsp;            cbLock.check();</b>
+<i>1213</i>&nbsp;
+<b class="nc"><i>1214</i>&nbsp;            if (sequencePrepared == false) {</b>
+<b class="nc"><i>1215</i>&nbsp;                throw new IllegalStateException(&quot;sequencePrepared not called!&quot;);</b>
+<i>1216</i>&nbsp;            }
+<b class="nc"><i>1217</i>&nbsp;            sequencePrepared = false;</b>
+<i>1218</i>&nbsp;        } finally {
+<b class="nc"><i>1219</i>&nbsp;            clearThreadLock();</b>
+<b class="nc"><i>1220</i>&nbsp;        }</b>
+<i>1221</i>&nbsp;    }
+<i>1222</i>&nbsp;
+<i>1223</i>&nbsp;    public synchronized void abort() {
+<b class="nc"><i>1224</i>&nbsp;        setThreadLock();</b>
+<i>1225</i>&nbsp;        try {
+<i>1226</i>&nbsp;            /**
+<i>1227</i>&nbsp;             * NB: we do not check the call back lock here, we allow to abort
+<i>1228</i>&nbsp;             * the reader any time.
+<i>1229</i>&nbsp;             */
+<b class="nc"><i>1230</i>&nbsp;            super.abort();</b>
+<b class="nc"><i>1231</i>&nbsp;            abortWrite(structPointer);</b>
+<i>1232</i>&nbsp;        } finally {
+<b class="nc"><i>1233</i>&nbsp;            clearThreadLock();</b>
+<b class="nc"><i>1234</i>&nbsp;        }</b>
+<i>1235</i>&nbsp;    }
+<i>1236</i>&nbsp;
+<i>1237</i>&nbsp;    @Override
+<i>1238</i>&nbsp;    protected synchronized void clearAbortRequest() {
+<b class="nc"><i>1239</i>&nbsp;        setThreadLock();</b>
+<i>1240</i>&nbsp;        try {
+<b class="nc"><i>1241</i>&nbsp;            cbLock.check();</b>
+<b class="nc"><i>1242</i>&nbsp;            if (abortRequested()) {</b>
+<b class="nc"><i>1243</i>&nbsp;                super.clearAbortRequest();</b>
+<i>1244</i>&nbsp;                // reset C structures
+<b class="nc"><i>1245</i>&nbsp;                resetWriter(structPointer);</b>
+<i>1246</i>&nbsp;                // reset the native destination
+<b class="nc"><i>1247</i>&nbsp;                setDest(structPointer);</b>
+<i>1248</i>&nbsp;            }
+<i>1249</i>&nbsp;        } finally {
+<b class="nc"><i>1250</i>&nbsp;            clearThreadLock();</b>
+<b class="nc"><i>1251</i>&nbsp;        }</b>
+<i>1252</i>&nbsp;    }
+<i>1253</i>&nbsp;
+<i>1254</i>&nbsp;    private void resetInternalState() {
+<i>1255</i>&nbsp;        // reset C structures
+<b class="nc"><i>1256</i>&nbsp;        resetWriter(structPointer);</b>
+<i>1257</i>&nbsp;
+<i>1258</i>&nbsp;        // reset local Java structures
+<b class="nc"><i>1259</i>&nbsp;        srcRas = null;</b>
+<b class="nc"><i>1260</i>&nbsp;        raster = null;</b>
+<b class="nc"><i>1261</i>&nbsp;        convertTosRGB = false;</b>
+<b class="nc"><i>1262</i>&nbsp;        currentImage = 0;</b>
+<b class="nc"><i>1263</i>&nbsp;        numScans = 0;</b>
+<b class="nc"><i>1264</i>&nbsp;        metadata = null;</b>
+<i>1265</i>&nbsp;    }
+<i>1266</i>&nbsp;
+<i>1267</i>&nbsp;    public void reset() {
+<b class="nc"><i>1268</i>&nbsp;        setThreadLock();</b>
+<i>1269</i>&nbsp;        try {
+<b class="nc"><i>1270</i>&nbsp;            cbLock.check();</b>
+<i>1271</i>&nbsp;
+<b class="nc"><i>1272</i>&nbsp;            super.reset();</b>
+<i>1273</i>&nbsp;        } finally {
+<b class="nc"><i>1274</i>&nbsp;            clearThreadLock();</b>
+<b class="nc"><i>1275</i>&nbsp;        }</b>
+<i>1276</i>&nbsp;    }
+<i>1277</i>&nbsp;
+<i>1278</i>&nbsp;    public void dispose() {
+<b class="nc"><i>1279</i>&nbsp;        setThreadLock();</b>
+<i>1280</i>&nbsp;        try {
+<b class="nc"><i>1281</i>&nbsp;            cbLock.check();</b>
+<i>1282</i>&nbsp;
+<b class="nc"><i>1283</i>&nbsp;            if (structPointer != 0) {</b>
+<b class="nc"><i>1284</i>&nbsp;                disposerRecord.dispose();</b>
+<b class="nc"><i>1285</i>&nbsp;                structPointer = 0;</b>
+<i>1286</i>&nbsp;            }
+<i>1287</i>&nbsp;        } finally {
+<b class="nc"><i>1288</i>&nbsp;            clearThreadLock();</b>
+<b class="nc"><i>1289</i>&nbsp;        }</b>
+<i>1290</i>&nbsp;    }
+<i>1291</i>&nbsp;
+<i>1292</i>&nbsp;    ////////// End of public API
+<i>1293</i>&nbsp;
+<i>1294</i>&nbsp;    ///////// Package-access API
+<i>1295</i>&nbsp;
+<i>1296</i>&nbsp;    /**
+<i>1297</i>&nbsp;     * Called by the native code or other classes to signal a warning.
+<i>1298</i>&nbsp;     * The code is used to lookup a localized message to be used when
+<i>1299</i>&nbsp;     * sending warnings to listeners.
+<i>1300</i>&nbsp;     */
+<i>1301</i>&nbsp;    void warningOccurred(int code) {
+<b class="nc"><i>1302</i>&nbsp;        cbLock.lock();</b>
+<i>1303</i>&nbsp;        try {
+<b class="nc"><i>1304</i>&nbsp;            if ((code &lt; 0) || (code &gt; MAX_WARNING)){</b>
+<b class="nc"><i>1305</i>&nbsp;                throw new InternalError(&quot;Invalid warning index&quot;);</b>
+<i>1306</i>&nbsp;            }
+<b class="nc"><i>1307</i>&nbsp;            processWarningOccurred</b>
+<b class="nc"><i>1308</i>&nbsp;                (currentImage,</b>
+<i>1309</i>&nbsp;                 &quot;com.sun.imageio.plugins.jpeg.JPEGImageWriterResources&quot;,
+<b class="nc"><i>1310</i>&nbsp;                Integer.toString(code));</b>
+<i>1311</i>&nbsp;        } finally {
+<b class="nc"><i>1312</i>&nbsp;            cbLock.unlock();</b>
+<b class="nc"><i>1313</i>&nbsp;        }</b>
+<i>1314</i>&nbsp;    }
+<i>1315</i>&nbsp;
+<i>1316</i>&nbsp;    /**
+<i>1317</i>&nbsp;     * The library has it&#39;s own error facility that emits warning messages.
+<i>1318</i>&nbsp;     * This routine is called by the native code when it has already
+<i>1319</i>&nbsp;     * formatted a string for output.
+<i>1320</i>&nbsp;     * XXX  For truly complete localization of all warning messages,
+<i>1321</i>&nbsp;     * the sun_jpeg_output_message routine in the native code should
+<i>1322</i>&nbsp;     * send only the codes and parameters to a method here in Java,
+<i>1323</i>&nbsp;     * which will then format and send the warnings, using localized
+<i>1324</i>&nbsp;     * strings.  This method will have to deal with all the parameters
+<i>1325</i>&nbsp;     * and formats (%u with possibly large numbers, %02d, %02x, etc.)
+<i>1326</i>&nbsp;     * that actually occur in the JPEG library.  For now, this prevents
+<i>1327</i>&nbsp;     * library warnings from being printed to stderr.
+<i>1328</i>&nbsp;     */
+<i>1329</i>&nbsp;    void warningWithMessage(String msg) {
+<b class="nc"><i>1330</i>&nbsp;        cbLock.lock();</b>
+<i>1331</i>&nbsp;        try {
+<b class="nc"><i>1332</i>&nbsp;            processWarningOccurred(currentImage, msg);</b>
+<i>1333</i>&nbsp;        } finally {
+<b class="nc"><i>1334</i>&nbsp;            cbLock.unlock();</b>
+<b class="nc"><i>1335</i>&nbsp;        }</b>
+<i>1336</i>&nbsp;    }
+<i>1337</i>&nbsp;
+<i>1338</i>&nbsp;    void thumbnailStarted(int thumbnailIndex) {
+<b class="nc"><i>1339</i>&nbsp;        cbLock.lock();</b>
+<i>1340</i>&nbsp;        try {
+<b class="nc"><i>1341</i>&nbsp;            processThumbnailStarted(currentImage, thumbnailIndex);</b>
+<i>1342</i>&nbsp;        } finally {
+<b class="nc"><i>1343</i>&nbsp;            cbLock.unlock();</b>
+<b class="nc"><i>1344</i>&nbsp;        }</b>
+<i>1345</i>&nbsp;    }
+<i>1346</i>&nbsp;
+<i>1347</i>&nbsp;    // Provide access to protected superclass method
+<i>1348</i>&nbsp;    void thumbnailProgress(float percentageDone) {
+<b class="nc"><i>1349</i>&nbsp;        cbLock.lock();</b>
+<i>1350</i>&nbsp;        try {
+<b class="nc"><i>1351</i>&nbsp;            processThumbnailProgress(percentageDone);</b>
+<i>1352</i>&nbsp;        } finally {
+<b class="nc"><i>1353</i>&nbsp;            cbLock.unlock();</b>
+<b class="nc"><i>1354</i>&nbsp;        }</b>
+<i>1355</i>&nbsp;    }
+<i>1356</i>&nbsp;
+<i>1357</i>&nbsp;    // Provide access to protected superclass method
+<i>1358</i>&nbsp;    void thumbnailComplete() {
+<b class="nc"><i>1359</i>&nbsp;        cbLock.lock();</b>
+<i>1360</i>&nbsp;        try {
+<b class="nc"><i>1361</i>&nbsp;            processThumbnailComplete();</b>
+<i>1362</i>&nbsp;        } finally {
+<b class="nc"><i>1363</i>&nbsp;            cbLock.unlock();</b>
+<b class="nc"><i>1364</i>&nbsp;        }</b>
+<i>1365</i>&nbsp;    }
+<i>1366</i>&nbsp;
+<i>1367</i>&nbsp;    ///////// End of Package-access API
+<i>1368</i>&nbsp;
+<i>1369</i>&nbsp;    ///////// Private methods
+<i>1370</i>&nbsp;
+<i>1371</i>&nbsp;    ///////// Metadata handling
+<i>1372</i>&nbsp;
+<i>1373</i>&nbsp;    private void checkSOFBands(SOFMarkerSegment sof, int numBandsUsed)
+<i>1374</i>&nbsp;        throws IIOException {
+<i>1375</i>&nbsp;        // Does the metadata frame header, if any, match numBandsUsed?
+<b class="nc"><i>1376</i>&nbsp;        if (sof != null) {</b>
+<b class="nc"><i>1377</i>&nbsp;            if (sof.componentSpecs.length != numBandsUsed) {</b>
+<b class="nc"><i>1378</i>&nbsp;                throw new IIOException</b>
+<i>1379</i>&nbsp;                    (&quot;Metadata components != number of destination bands&quot;);
+<i>1380</i>&nbsp;            }
+<i>1381</i>&nbsp;        }
+<i>1382</i>&nbsp;    }
+<i>1383</i>&nbsp;
+<i>1384</i>&nbsp;    private void checkJFIF(JFIFMarkerSegment jfif,
+<i>1385</i>&nbsp;                           ImageTypeSpecifier type,
+<i>1386</i>&nbsp;                           boolean input) {
+<b class="nc"><i>1387</i>&nbsp;        if (jfif != null) {</b>
+<b class="nc"><i>1388</i>&nbsp;            if (!JPEG.isJFIFcompliant(type, input)) {</b>
+<b class="nc"><i>1389</i>&nbsp;                ignoreJFIF = true;  // type overrides metadata</b>
+<b class="nc"><i>1390</i>&nbsp;                warningOccurred(input</b>
+<i>1391</i>&nbsp;                                ? WARNING_IMAGE_METADATA_JFIF_MISMATCH
+<i>1392</i>&nbsp;                                : WARNING_DEST_METADATA_JFIF_MISMATCH);
+<i>1393</i>&nbsp;            }
+<i>1394</i>&nbsp;        }
+<i>1395</i>&nbsp;    }
+<i>1396</i>&nbsp;
+<i>1397</i>&nbsp;    private void checkAdobe(AdobeMarkerSegment adobe,
+<i>1398</i>&nbsp;                           ImageTypeSpecifier type,
+<i>1399</i>&nbsp;                           boolean input) {
+<b class="nc"><i>1400</i>&nbsp;        if (adobe != null) {</b>
+<b class="nc"><i>1401</i>&nbsp;            int rightTransform = JPEG.transformForType(type, input);</b>
+<b class="nc"><i>1402</i>&nbsp;            if (adobe.transform != rightTransform) {</b>
+<b class="nc"><i>1403</i>&nbsp;                warningOccurred(input</b>
+<i>1404</i>&nbsp;                                ? WARNING_IMAGE_METADATA_ADOBE_MISMATCH
+<i>1405</i>&nbsp;                                : WARNING_DEST_METADATA_ADOBE_MISMATCH);
+<b class="nc"><i>1406</i>&nbsp;                if (rightTransform == JPEG.ADOBE_IMPOSSIBLE) {</b>
+<b class="nc"><i>1407</i>&nbsp;                    ignoreAdobe = true;</b>
+<i>1408</i>&nbsp;                } else {
+<b class="nc"><i>1409</i>&nbsp;                    newAdobeTransform = rightTransform;</b>
+<i>1410</i>&nbsp;                }
+<i>1411</i>&nbsp;            }
+<i>1412</i>&nbsp;        }
+<i>1413</i>&nbsp;    }
+<i>1414</i>&nbsp;
+<i>1415</i>&nbsp;    /**
+<i>1416</i>&nbsp;     * Collect all the scan info from the given metadata, and
+<i>1417</i>&nbsp;     * organize it into the scan info array required by the
+<i>1418</i>&nbsp;     * IJG libray.  It is much simpler to parse out this
+<i>1419</i>&nbsp;     * data in Java and then just copy the data in C.
+<i>1420</i>&nbsp;     */
+<i>1421</i>&nbsp;    private int [] collectScans(JPEGMetadata metadata,
+<i>1422</i>&nbsp;                                SOFMarkerSegment sof) {
+<b class="nc"><i>1423</i>&nbsp;        List segments = new ArrayList();</b>
+<b class="nc"><i>1424</i>&nbsp;        int SCAN_SIZE = 9;</b>
+<b class="nc"><i>1425</i>&nbsp;        int MAX_COMPS_PER_SCAN = 4;</b>
+<b class="nc"><i>1426</i>&nbsp;        for (Iterator iter = metadata.markerSequence.iterator();</b>
+<b class="nc"><i>1427</i>&nbsp;             iter.hasNext();) {</b>
+<b class="nc"><i>1428</i>&nbsp;            MarkerSegment seg = (MarkerSegment) iter.next();</b>
+<b class="nc"><i>1429</i>&nbsp;            if (seg instanceof SOSMarkerSegment) {</b>
+<b class="nc"><i>1430</i>&nbsp;                segments.add(seg);</b>
+<i>1431</i>&nbsp;            }
+<b class="nc"><i>1432</i>&nbsp;        }</b>
+<b class="nc"><i>1433</i>&nbsp;        int [] retval = null;</b>
+<b class="nc"><i>1434</i>&nbsp;        numScans = 0;</b>
+<b class="nc"><i>1435</i>&nbsp;        if (!segments.isEmpty()) {</b>
+<b class="nc"><i>1436</i>&nbsp;            numScans = segments.size();</b>
+<b class="nc"><i>1437</i>&nbsp;            retval = new int [numScans*SCAN_SIZE];</b>
+<b class="nc"><i>1438</i>&nbsp;            int index = 0;</b>
+<b class="nc"><i>1439</i>&nbsp;            for (int i = 0; i &lt; numScans; i++) {</b>
+<b class="nc"><i>1440</i>&nbsp;                SOSMarkerSegment sos = (SOSMarkerSegment) segments.get(i);</b>
+<b class="nc"><i>1441</i>&nbsp;                retval[index++] = sos.componentSpecs.length; // num comps</b>
+<b class="nc"><i>1442</i>&nbsp;                for (int j = 0; j &lt; MAX_COMPS_PER_SCAN; j++) {</b>
+<b class="nc"><i>1443</i>&nbsp;                    if (j &lt; sos.componentSpecs.length) {</b>
+<b class="nc"><i>1444</i>&nbsp;                        int compSel = sos.componentSpecs[j].componentSelector;</b>
+<b class="nc"><i>1445</i>&nbsp;                        for (int k = 0; k &lt; sof.componentSpecs.length; k++) {</b>
+<b class="nc"><i>1446</i>&nbsp;                            if (compSel == sof.componentSpecs[k].componentId) {</b>
+<b class="nc"><i>1447</i>&nbsp;                                retval[index++] = k;</b>
+<b class="nc"><i>1448</i>&nbsp;                                break; // out of for over sof comps</b>
+<i>1449</i>&nbsp;                            }
+<i>1450</i>&nbsp;                        }
+<b class="nc"><i>1451</i>&nbsp;                    } else {</b>
+<b class="nc"><i>1452</i>&nbsp;                        retval[index++] = 0;</b>
+<i>1453</i>&nbsp;                    }
+<i>1454</i>&nbsp;                }
+<b class="nc"><i>1455</i>&nbsp;                retval[index++] = sos.startSpectralSelection;</b>
+<b class="nc"><i>1456</i>&nbsp;                retval[index++] = sos.endSpectralSelection;</b>
+<b class="nc"><i>1457</i>&nbsp;                retval[index++] = sos.approxHigh;</b>
+<b class="nc"><i>1458</i>&nbsp;                retval[index++] = sos.approxLow;</b>
+<i>1459</i>&nbsp;            }
+<i>1460</i>&nbsp;        }
+<b class="nc"><i>1461</i>&nbsp;        return retval;</b>
+<i>1462</i>&nbsp;    }
+<i>1463</i>&nbsp;
+<i>1464</i>&nbsp;    /**
+<i>1465</i>&nbsp;     * Finds all DQT marker segments and returns all the q
+<i>1466</i>&nbsp;     * tables as a single array of JPEGQTables.
+<i>1467</i>&nbsp;     */
+<i>1468</i>&nbsp;    private JPEGQTable [] collectQTablesFromMetadata
+<i>1469</i>&nbsp;        (JPEGMetadata metadata) {
+<b class="nc"><i>1470</i>&nbsp;        ArrayList tables = new ArrayList();</b>
+<b class="nc"><i>1471</i>&nbsp;        Iterator iter = metadata.markerSequence.iterator();</b>
+<b class="nc"><i>1472</i>&nbsp;        while (iter.hasNext()) {</b>
+<b class="nc"><i>1473</i>&nbsp;            MarkerSegment seg = (MarkerSegment) iter.next();</b>
+<b class="nc"><i>1474</i>&nbsp;            if (seg instanceof DQTMarkerSegment) {</b>
+<b class="nc"><i>1475</i>&nbsp;                DQTMarkerSegment dqt =</b>
+<i>1476</i>&nbsp;                    (DQTMarkerSegment) seg;
+<b class="nc"><i>1477</i>&nbsp;                tables.addAll(dqt.tables);</b>
+<i>1478</i>&nbsp;            }
+<b class="nc"><i>1479</i>&nbsp;        }</b>
+<b class="nc"><i>1480</i>&nbsp;        JPEGQTable [] retval = null;</b>
+<b class="nc"><i>1481</i>&nbsp;        if (tables.size() != 0) {</b>
+<b class="nc"><i>1482</i>&nbsp;            retval = new JPEGQTable[tables.size()];</b>
+<b class="nc"><i>1483</i>&nbsp;            for (int i = 0; i &lt; retval.length; i++) {</b>
+<b class="nc"><i>1484</i>&nbsp;                retval[i] =</b>
+<b class="nc"><i>1485</i>&nbsp;                    new JPEGQTable(((DQTMarkerSegment.Qtable)tables.get(i)).data);</b>
+<i>1486</i>&nbsp;            }
+<i>1487</i>&nbsp;        }
+<b class="nc"><i>1488</i>&nbsp;        return retval;</b>
+<i>1489</i>&nbsp;    }
+<i>1490</i>&nbsp;
+<i>1491</i>&nbsp;    /**
+<i>1492</i>&nbsp;     * Finds all DHT marker segments and returns all the q
+<i>1493</i>&nbsp;     * tables as a single array of JPEGQTables.  The metadata
+<i>1494</i>&nbsp;     * must not be for a progressive image, or an exception
+<i>1495</i>&nbsp;     * will be thrown when two Huffman tables with the same
+<i>1496</i>&nbsp;     * table id are encountered.
+<i>1497</i>&nbsp;     */
+<i>1498</i>&nbsp;    private JPEGHuffmanTable[] collectHTablesFromMetadata
+<i>1499</i>&nbsp;        (JPEGMetadata metadata, boolean wantDC) throws IIOException {
+<b class="nc"><i>1500</i>&nbsp;        ArrayList tables = new ArrayList();</b>
+<b class="nc"><i>1501</i>&nbsp;        Iterator iter = metadata.markerSequence.iterator();</b>
+<b class="nc"><i>1502</i>&nbsp;        while (iter.hasNext()) {</b>
+<b class="nc"><i>1503</i>&nbsp;            MarkerSegment seg = (MarkerSegment) iter.next();</b>
+<b class="nc"><i>1504</i>&nbsp;            if (seg instanceof DHTMarkerSegment) {</b>
+<b class="nc"><i>1505</i>&nbsp;                DHTMarkerSegment dht =</b>
+<i>1506</i>&nbsp;                    (DHTMarkerSegment) seg;
+<b class="nc"><i>1507</i>&nbsp;                for (int i = 0; i &lt; dht.tables.size(); i++) {</b>
+<b class="nc"><i>1508</i>&nbsp;                    DHTMarkerSegment.Htable htable =</b>
+<b class="nc"><i>1509</i>&nbsp;                        (DHTMarkerSegment.Htable) dht.tables.get(i);</b>
+<b class="nc"><i>1510</i>&nbsp;                    if (htable.tableClass == (wantDC ? 0 : 1)) {</b>
+<b class="nc"><i>1511</i>&nbsp;                        tables.add(htable);</b>
+<i>1512</i>&nbsp;                    }
+<i>1513</i>&nbsp;                }
+<i>1514</i>&nbsp;            }
+<b class="nc"><i>1515</i>&nbsp;        }</b>
+<b class="nc"><i>1516</i>&nbsp;        JPEGHuffmanTable [] retval = null;</b>
+<b class="nc"><i>1517</i>&nbsp;        if (tables.size() != 0) {</b>
+<b class="nc"><i>1518</i>&nbsp;            DHTMarkerSegment.Htable [] htables =</b>
+<b class="nc"><i>1519</i>&nbsp;                new DHTMarkerSegment.Htable[tables.size()];</b>
+<b class="nc"><i>1520</i>&nbsp;            tables.toArray(htables);</b>
+<b class="nc"><i>1521</i>&nbsp;            retval = new JPEGHuffmanTable[tables.size()];</b>
+<b class="nc"><i>1522</i>&nbsp;            for (int i = 0; i &lt; retval.length; i++) {</b>
+<b class="nc"><i>1523</i>&nbsp;                retval[i] = null;</b>
+<b class="nc"><i>1524</i>&nbsp;                for (int j = 0; j &lt; tables.size(); j++) {</b>
+<b class="nc"><i>1525</i>&nbsp;                    if (htables[j].tableID == i) {</b>
+<b class="nc"><i>1526</i>&nbsp;                        if (retval[i] != null) {</b>
+<b class="nc"><i>1527</i>&nbsp;                            throw new IIOException(&quot;Metadata has duplicate Htables!&quot;);</b>
+<i>1528</i>&nbsp;                        }
+<b class="nc"><i>1529</i>&nbsp;                        retval[i] = new JPEGHuffmanTable(htables[j].numCodes,</b>
+<i>1530</i>&nbsp;                                                         htables[j].values);
+<i>1531</i>&nbsp;                    }
+<i>1532</i>&nbsp;                }
+<i>1533</i>&nbsp;            }
+<i>1534</i>&nbsp;        }
+<i>1535</i>&nbsp;
+<b class="nc"><i>1536</i>&nbsp;        return retval;</b>
+<i>1537</i>&nbsp;    }
+<i>1538</i>&nbsp;
+<i>1539</i>&nbsp;    /////////// End of metadata handling
+<i>1540</i>&nbsp;
+<i>1541</i>&nbsp;    ////////////// ColorSpace conversion
+<i>1542</i>&nbsp;
+<i>1543</i>&nbsp;    private int getSrcCSType(ImageTypeSpecifier type) {
+<b class="nc"><i>1544</i>&nbsp;         return getSrcCSType(type.getColorModel());</b>
+<i>1545</i>&nbsp;    }
+<i>1546</i>&nbsp;
+<i>1547</i>&nbsp;    private int getSrcCSType(RenderedImage rimage) {
+<b class="nc"><i>1548</i>&nbsp;        return getSrcCSType(rimage.getColorModel());</b>
+<i>1549</i>&nbsp;    }
+<i>1550</i>&nbsp;
+<i>1551</i>&nbsp;    private int getSrcCSType(ColorModel cm) {
+<b class="nc"><i>1552</i>&nbsp;        int retval = JPEG.JCS_UNKNOWN;</b>
+<b class="nc"><i>1553</i>&nbsp;        if (cm != null) {</b>
+<b class="nc"><i>1554</i>&nbsp;            boolean alpha = cm.hasAlpha();</b>
+<b class="nc"><i>1555</i>&nbsp;            ColorSpace cs = cm.getColorSpace();</b>
+<b class="nc"><i>1556</i>&nbsp;            switch (cs.getType()) {</b>
+<i>1557</i>&nbsp;            case ColorSpace.TYPE_GRAY:
+<b class="nc"><i>1558</i>&nbsp;                retval = JPEG.JCS_GRAYSCALE;</b>
+<b class="nc"><i>1559</i>&nbsp;                break;</b>
+<i>1560</i>&nbsp;            case ColorSpace.TYPE_RGB:
+<b class="nc"><i>1561</i>&nbsp;                if (alpha) {</b>
+<b class="nc"><i>1562</i>&nbsp;                    retval = JPEG.JCS_RGBA;</b>
+<i>1563</i>&nbsp;                } else {
+<b class="nc"><i>1564</i>&nbsp;                    retval = JPEG.JCS_RGB;</b>
+<i>1565</i>&nbsp;                }
+<b class="nc"><i>1566</i>&nbsp;                break;</b>
+<i>1567</i>&nbsp;            case ColorSpace.TYPE_YCbCr:
+<b class="nc"><i>1568</i>&nbsp;                if (alpha) {</b>
+<b class="nc"><i>1569</i>&nbsp;                    retval = JPEG.JCS_YCbCrA;</b>
+<i>1570</i>&nbsp;                } else {
+<b class="nc"><i>1571</i>&nbsp;                    retval = JPEG.JCS_YCbCr;</b>
+<i>1572</i>&nbsp;                }
+<b class="nc"><i>1573</i>&nbsp;                break;</b>
+<i>1574</i>&nbsp;            case ColorSpace.TYPE_3CLR:
+<b class="nc"><i>1575</i>&nbsp;                if (cs == JPEG.JCS.getYCC()) {</b>
+<b class="nc"><i>1576</i>&nbsp;                    if (alpha) {</b>
+<b class="nc"><i>1577</i>&nbsp;                        retval = JPEG.JCS_YCCA;</b>
+<i>1578</i>&nbsp;                    } else {
+<b class="nc"><i>1579</i>&nbsp;                        retval = JPEG.JCS_YCC;</b>
+<i>1580</i>&nbsp;                    }
+<i>1581</i>&nbsp;                }
+<i>1582</i>&nbsp;            case ColorSpace.TYPE_CMYK:
+<b class="nc"><i>1583</i>&nbsp;                retval = JPEG.JCS_CMYK;</b>
+<i>1584</i>&nbsp;                break;
+<i>1585</i>&nbsp;            }
+<i>1586</i>&nbsp;        }
+<b class="nc"><i>1587</i>&nbsp;        return retval;</b>
+<i>1588</i>&nbsp;    }
+<i>1589</i>&nbsp;
+<i>1590</i>&nbsp;    private int getDestCSType(ImageTypeSpecifier destType) {
+<b class="nc"><i>1591</i>&nbsp;        ColorModel cm = destType.getColorModel();</b>
+<b class="nc"><i>1592</i>&nbsp;        boolean alpha = cm.hasAlpha();</b>
+<b class="nc"><i>1593</i>&nbsp;        ColorSpace cs = cm.getColorSpace();</b>
+<b class="nc"><i>1594</i>&nbsp;        int retval = JPEG.JCS_UNKNOWN;</b>
+<b class="nc"><i>1595</i>&nbsp;        switch (cs.getType()) {</b>
+<i>1596</i>&nbsp;        case ColorSpace.TYPE_GRAY:
+<b class="nc"><i>1597</i>&nbsp;                retval = JPEG.JCS_GRAYSCALE;</b>
+<b class="nc"><i>1598</i>&nbsp;                break;</b>
+<i>1599</i>&nbsp;            case ColorSpace.TYPE_RGB:
+<b class="nc"><i>1600</i>&nbsp;                if (alpha) {</b>
+<b class="nc"><i>1601</i>&nbsp;                    retval = JPEG.JCS_RGBA;</b>
+<i>1602</i>&nbsp;                } else {
+<b class="nc"><i>1603</i>&nbsp;                    retval = JPEG.JCS_RGB;</b>
+<i>1604</i>&nbsp;                }
+<b class="nc"><i>1605</i>&nbsp;                break;</b>
+<i>1606</i>&nbsp;            case ColorSpace.TYPE_YCbCr:
+<b class="nc"><i>1607</i>&nbsp;                if (alpha) {</b>
+<b class="nc"><i>1608</i>&nbsp;                    retval = JPEG.JCS_YCbCrA;</b>
+<i>1609</i>&nbsp;                } else {
+<b class="nc"><i>1610</i>&nbsp;                    retval = JPEG.JCS_YCbCr;</b>
+<i>1611</i>&nbsp;                }
+<b class="nc"><i>1612</i>&nbsp;                break;</b>
+<i>1613</i>&nbsp;            case ColorSpace.TYPE_3CLR:
+<b class="nc"><i>1614</i>&nbsp;                if (cs == JPEG.JCS.getYCC()) {</b>
+<b class="nc"><i>1615</i>&nbsp;                    if (alpha) {</b>
+<b class="nc"><i>1616</i>&nbsp;                        retval = JPEG.JCS_YCCA;</b>
+<i>1617</i>&nbsp;                    } else {
+<b class="nc"><i>1618</i>&nbsp;                        retval = JPEG.JCS_YCC;</b>
+<i>1619</i>&nbsp;                    }
+<i>1620</i>&nbsp;                }
+<i>1621</i>&nbsp;            case ColorSpace.TYPE_CMYK:
+<b class="nc"><i>1622</i>&nbsp;                retval = JPEG.JCS_CMYK;</b>
+<i>1623</i>&nbsp;                break;
+<i>1624</i>&nbsp;            }
+<b class="nc"><i>1625</i>&nbsp;        return retval;</b>
+<i>1626</i>&nbsp;        }
+<i>1627</i>&nbsp;
+<i>1628</i>&nbsp;    private int getDefaultDestCSType(ImageTypeSpecifier type) {
+<b class="nc"><i>1629</i>&nbsp;        return getDefaultDestCSType(type.getColorModel());</b>
+<i>1630</i>&nbsp;    }
+<i>1631</i>&nbsp;
+<i>1632</i>&nbsp;    private int getDefaultDestCSType(RenderedImage rimage) {
+<b class="nc"><i>1633</i>&nbsp;        return getDefaultDestCSType(rimage.getColorModel());</b>
+<i>1634</i>&nbsp;    }
+<i>1635</i>&nbsp;
+<i>1636</i>&nbsp;    private int getDefaultDestCSType(ColorModel cm) {
+<b class="nc"><i>1637</i>&nbsp;        int retval = JPEG.JCS_UNKNOWN;</b>
+<b class="nc"><i>1638</i>&nbsp;        if (cm != null) {</b>
+<b class="nc"><i>1639</i>&nbsp;            boolean alpha = cm.hasAlpha();</b>
+<b class="nc"><i>1640</i>&nbsp;            ColorSpace cs = cm.getColorSpace();</b>
+<b class="nc"><i>1641</i>&nbsp;            switch (cs.getType()) {</b>
+<i>1642</i>&nbsp;            case ColorSpace.TYPE_GRAY:
+<b class="nc"><i>1643</i>&nbsp;                retval = JPEG.JCS_GRAYSCALE;</b>
+<b class="nc"><i>1644</i>&nbsp;                break;</b>
+<i>1645</i>&nbsp;            case ColorSpace.TYPE_RGB:
+<b class="nc"><i>1646</i>&nbsp;                if (alpha) {</b>
+<b class="nc"><i>1647</i>&nbsp;                    retval = JPEG.JCS_YCbCrA;</b>
+<i>1648</i>&nbsp;                } else {
+<b class="nc"><i>1649</i>&nbsp;                    retval = JPEG.JCS_YCbCr;</b>
+<i>1650</i>&nbsp;                }
+<b class="nc"><i>1651</i>&nbsp;                break;</b>
+<i>1652</i>&nbsp;            case ColorSpace.TYPE_YCbCr:
+<b class="nc"><i>1653</i>&nbsp;                if (alpha) {</b>
+<b class="nc"><i>1654</i>&nbsp;                    retval = JPEG.JCS_YCbCrA;</b>
+<i>1655</i>&nbsp;                } else {
+<b class="nc"><i>1656</i>&nbsp;                    retval = JPEG.JCS_YCbCr;</b>
+<i>1657</i>&nbsp;                }
+<b class="nc"><i>1658</i>&nbsp;                break;</b>
+<i>1659</i>&nbsp;            case ColorSpace.TYPE_3CLR:
+<b class="nc"><i>1660</i>&nbsp;                if (cs == JPEG.JCS.getYCC()) {</b>
+<b class="nc"><i>1661</i>&nbsp;                    if (alpha) {</b>
+<b class="nc"><i>1662</i>&nbsp;                        retval = JPEG.JCS_YCCA;</b>
+<i>1663</i>&nbsp;                    } else {
+<b class="nc"><i>1664</i>&nbsp;                        retval = JPEG.JCS_YCC;</b>
+<i>1665</i>&nbsp;                    }
+<i>1666</i>&nbsp;                }
+<i>1667</i>&nbsp;            case ColorSpace.TYPE_CMYK:
+<b class="nc"><i>1668</i>&nbsp;                retval = JPEG.JCS_YCCK;</b>
+<i>1669</i>&nbsp;                break;
+<i>1670</i>&nbsp;            }
+<i>1671</i>&nbsp;        }
+<b class="nc"><i>1672</i>&nbsp;        return retval;</b>
+<i>1673</i>&nbsp;    }
+<i>1674</i>&nbsp;
+<i>1675</i>&nbsp;    private boolean isSubsampled(SOFMarkerSegment.ComponentSpec [] specs) {
+<b class="nc"><i>1676</i>&nbsp;        int hsamp0 = specs[0].HsamplingFactor;</b>
+<b class="nc"><i>1677</i>&nbsp;        int vsamp0 = specs[0].VsamplingFactor;</b>
+<b class="nc"><i>1678</i>&nbsp;        for (int i = 1; i &lt; specs.length; i++) {</b>
+<b class="nc"><i>1679</i>&nbsp;            if ((specs[i].HsamplingFactor != hsamp0) ||</b>
+<i>1680</i>&nbsp;                (specs[i].HsamplingFactor != hsamp0))
+<b class="nc"><i>1681</i>&nbsp;                return true;</b>
+<i>1682</i>&nbsp;        }
+<b class="nc"><i>1683</i>&nbsp;        return false;</b>
+<i>1684</i>&nbsp;    }
+<i>1685</i>&nbsp;
+<i>1686</i>&nbsp;    ////////////// End of ColorSpace conversion
+<i>1687</i>&nbsp;
+<i>1688</i>&nbsp;    ////////////// Native methods and callbacks
+<i>1689</i>&nbsp;
+<i>1690</i>&nbsp;    /** Sets up static native structures. */
+<i>1691</i>&nbsp;    private static native void initWriterIDs(Class qTableClass,
+<i>1692</i>&nbsp;                                             Class huffClass);
+<i>1693</i>&nbsp;
+<i>1694</i>&nbsp;    /** Sets up per-writer native structure and returns a pointer to it. */
+<i>1695</i>&nbsp;    private native long initJPEGImageWriter();
+<i>1696</i>&nbsp;
+<i>1697</i>&nbsp;    /** Sets up native structures for output stream */
+<i>1698</i>&nbsp;    private native void setDest(long structPointer);
+<i>1699</i>&nbsp;
+<i>1700</i>&nbsp;    /**
+<i>1701</i>&nbsp;     * Returns &lt;code&gt;true&lt;/code&gt; if the write was aborted.
+<i>1702</i>&nbsp;     */
+<i>1703</i>&nbsp;    private native boolean writeImage(long structPointer,
+<i>1704</i>&nbsp;                                      byte [] data,
+<i>1705</i>&nbsp;                                      int inCsType, int outCsType,
+<i>1706</i>&nbsp;                                      int numBands,
+<i>1707</i>&nbsp;                                      int [] bandSizes,
+<i>1708</i>&nbsp;                                      int srcWidth,
+<i>1709</i>&nbsp;                                      int destWidth, int destHeight,
+<i>1710</i>&nbsp;                                      int stepX, int stepY,
+<i>1711</i>&nbsp;                                      JPEGQTable [] qtables,
+<i>1712</i>&nbsp;                                      boolean writeDQT,
+<i>1713</i>&nbsp;                                      JPEGHuffmanTable[] DCHuffmanTables,
+<i>1714</i>&nbsp;                                      JPEGHuffmanTable[] ACHuffmanTables,
+<i>1715</i>&nbsp;                                      boolean writeDHT,
+<i>1716</i>&nbsp;                                      boolean optimizeHuffman,
+<i>1717</i>&nbsp;                                      boolean progressive,
+<i>1718</i>&nbsp;                                      int numScans,
+<i>1719</i>&nbsp;                                      int [] scans,
+<i>1720</i>&nbsp;                                      int [] componentIds,
+<i>1721</i>&nbsp;                                      int [] HsamplingFactors,
+<i>1722</i>&nbsp;                                      int [] VsamplingFactors,
+<i>1723</i>&nbsp;                                      int [] QtableSelectors,
+<i>1724</i>&nbsp;                                      boolean haveMetadata,
+<i>1725</i>&nbsp;                                      int restartInterval);
+<i>1726</i>&nbsp;
+<i>1727</i>&nbsp;
+<i>1728</i>&nbsp;    /**
+<i>1729</i>&nbsp;     * Writes the metadata out when called by the native code,
+<i>1730</i>&nbsp;     * which will have already written the header to the stream
+<i>1731</i>&nbsp;     * and established the library state.  This is simpler than
+<i>1732</i>&nbsp;     * breaking the write call in two.
+<i>1733</i>&nbsp;     */
+<i>1734</i>&nbsp;    private void writeMetadata() throws IOException {
+<b class="nc"><i>1735</i>&nbsp;        if (metadata == null) {</b>
+<b class="nc"><i>1736</i>&nbsp;            if (writeDefaultJFIF) {</b>
+<b class="nc"><i>1737</i>&nbsp;                JFIFMarkerSegment.writeDefaultJFIF(ios,</b>
+<i>1738</i>&nbsp;                                                   thumbnails,
+<i>1739</i>&nbsp;                                                   iccProfile,
+<i>1740</i>&nbsp;                                                   this);
+<i>1741</i>&nbsp;            }
+<b class="nc"><i>1742</i>&nbsp;            if (writeAdobe) {</b>
+<b class="nc"><i>1743</i>&nbsp;                AdobeMarkerSegment.writeAdobeSegment(ios, newAdobeTransform);</b>
+<i>1744</i>&nbsp;            }
+<i>1745</i>&nbsp;        } else {
+<b class="nc"><i>1746</i>&nbsp;            metadata.writeToStream(ios,</b>
+<i>1747</i>&nbsp;                                   ignoreJFIF,
+<i>1748</i>&nbsp;                                   forceJFIF,
+<i>1749</i>&nbsp;                                   thumbnails,
+<i>1750</i>&nbsp;                                   iccProfile,
+<i>1751</i>&nbsp;                                   ignoreAdobe,
+<i>1752</i>&nbsp;                                   newAdobeTransform,
+<i>1753</i>&nbsp;                                   this);
+<i>1754</i>&nbsp;        }
+<i>1755</i>&nbsp;    }
+<i>1756</i>&nbsp;
+<i>1757</i>&nbsp;    /**
+<i>1758</i>&nbsp;     * Write out a tables-only image to the stream.
+<i>1759</i>&nbsp;     */
+<i>1760</i>&nbsp;    private native void writeTables(long structPointer,
+<i>1761</i>&nbsp;                                    JPEGQTable [] qtables,
+<i>1762</i>&nbsp;                                    JPEGHuffmanTable[] DCHuffmanTables,
+<i>1763</i>&nbsp;                                    JPEGHuffmanTable[] ACHuffmanTables);
+<i>1764</i>&nbsp;
+<i>1765</i>&nbsp;    /**
+<i>1766</i>&nbsp;     * Put the scanline y of the source ROI view Raster into the
+<i>1767</i>&nbsp;     * 1-line Raster for writing.  This handles ROI and band
+<i>1768</i>&nbsp;     * rearrangements, and expands indexed images.  Subsampling is
+<i>1769</i>&nbsp;     * done in the native code.
+<i>1770</i>&nbsp;     * This is called by the native code.
+<i>1771</i>&nbsp;     */
+<i>1772</i>&nbsp;    private void grabPixels(int y) {
+<i>1773</i>&nbsp;
+<b class="nc"><i>1774</i>&nbsp;        Raster sourceLine = null;</b>
+<b class="nc"><i>1775</i>&nbsp;        if (indexed) {</b>
+<b class="nc"><i>1776</i>&nbsp;            sourceLine = srcRas.createChild(sourceXOffset,</b>
+<i>1777</i>&nbsp;                                            sourceYOffset+y,
+<i>1778</i>&nbsp;                                            sourceWidth, 1,
+<i>1779</i>&nbsp;                                            0, 0,
+<i>1780</i>&nbsp;                                            new int [] {0});
+<i>1781</i>&nbsp;            // If the image has BITMASK transparency, we need to make sure
+<i>1782</i>&nbsp;            // it gets converted to 32-bit ARGB, because the JPEG encoder
+<i>1783</i>&nbsp;            // relies upon the full 8-bit alpha channel.
+<b class="nc"><i>1784</i>&nbsp;            boolean forceARGB =</b>
+<b class="nc"><i>1785</i>&nbsp;                (indexCM.getTransparency() != Transparency.OPAQUE);</b>
+<b class="nc"><i>1786</i>&nbsp;            BufferedImage temp = indexCM.convertToIntDiscrete(sourceLine,</b>
+<i>1787</i>&nbsp;                                                              forceARGB);
+<b class="nc"><i>1788</i>&nbsp;            sourceLine = temp.getRaster();</b>
+<b class="nc"><i>1789</i>&nbsp;        } else {</b>
+<b class="nc"><i>1790</i>&nbsp;            sourceLine = srcRas.createChild(sourceXOffset,</b>
+<i>1791</i>&nbsp;                                            sourceYOffset+y,
+<i>1792</i>&nbsp;                                            sourceWidth, 1,
+<i>1793</i>&nbsp;                                            0, 0,
+<i>1794</i>&nbsp;                                            srcBands);
+<i>1795</i>&nbsp;        }
+<b class="nc"><i>1796</i>&nbsp;        if (convertTosRGB) {</b>
+<b class="nc"><i>1797</i>&nbsp;            if (debug) {</b>
+<b class="nc"><i>1798</i>&nbsp;                System.out.println(&quot;Converting to sRGB&quot;);</b>
+<i>1799</i>&nbsp;            }
+<i>1800</i>&nbsp;            // The first time through, converted is null, so
+<i>1801</i>&nbsp;            // a new raster is allocated.  It is then reused
+<i>1802</i>&nbsp;            // on subsequent lines.
+<b class="nc"><i>1803</i>&nbsp;            converted = convertOp.filter(sourceLine, converted);</b>
+<b class="nc"><i>1804</i>&nbsp;            sourceLine = converted;</b>
+<i>1805</i>&nbsp;        }
+<b class="nc"><i>1806</i>&nbsp;        if (isAlphaPremultiplied) {</b>
+<b class="nc"><i>1807</i>&nbsp;            WritableRaster wr = sourceLine.createCompatibleWritableRaster();</b>
+<b class="nc"><i>1808</i>&nbsp;            int[] data = null;</b>
+<b class="nc"><i>1809</i>&nbsp;            data = sourceLine.getPixels(sourceLine.getMinX(), sourceLine.getMinY(),</b>
+<b class="nc"><i>1810</i>&nbsp;                                        sourceLine.getWidth(), sourceLine.getHeight(),</b>
+<i>1811</i>&nbsp;                                        data);
+<b class="nc"><i>1812</i>&nbsp;            wr.setPixels(sourceLine.getMinX(), sourceLine.getMinY(),</b>
+<b class="nc"><i>1813</i>&nbsp;                         sourceLine.getWidth(), sourceLine.getHeight(),</b>
+<i>1814</i>&nbsp;                         data);
+<b class="nc"><i>1815</i>&nbsp;            srcCM.coerceData(wr, false);</b>
+<b class="nc"><i>1816</i>&nbsp;            sourceLine = wr.createChild(wr.getMinX(), wr.getMinY(),</b>
+<b class="nc"><i>1817</i>&nbsp;                                        wr.getWidth(), wr.getHeight(),</b>
+<i>1818</i>&nbsp;                                        0, 0,
+<i>1819</i>&nbsp;                                        srcBands);
+<i>1820</i>&nbsp;        }
+<b class="nc"><i>1821</i>&nbsp;        raster.setRect(sourceLine);</b>
+<b class="nc"><i>1822</i>&nbsp;        if ((y &gt; 7) &amp;&amp; (y%8 == 0)) {  // Every 8 scanlines</b>
+<b class="nc"><i>1823</i>&nbsp;            cbLock.lock();</b>
+<i>1824</i>&nbsp;            try {
+<b class="nc"><i>1825</i>&nbsp;                processImageProgress((float) y / (float) sourceHeight * 100.0F);</b>
+<i>1826</i>&nbsp;            } finally {
+<b class="nc"><i>1827</i>&nbsp;                cbLock.unlock();</b>
+<b class="nc"><i>1828</i>&nbsp;            }</b>
+<i>1829</i>&nbsp;        }
+<i>1830</i>&nbsp;    }
+<i>1831</i>&nbsp;
+<i>1832</i>&nbsp;    /** Aborts the current write in the native code */
+<i>1833</i>&nbsp;    private native void abortWrite(long structPointer);
+<i>1834</i>&nbsp;
+<i>1835</i>&nbsp;    /** Resets native structures */
+<i>1836</i>&nbsp;    private native void resetWriter(long structPointer);
+<i>1837</i>&nbsp;
+<i>1838</i>&nbsp;    /** Releases native structures */
+<i>1839</i>&nbsp;    private static native void disposeWriter(long structPointer);
+<i>1840</i>&nbsp;
+<i>1841</i>&nbsp;    private static class JPEGWriterDisposerRecord implements DisposerRecord {
+<i>1842</i>&nbsp;        private long pData;
+<i>1843</i>&nbsp;
+<b class="nc"><i>1844</i>&nbsp;        public JPEGWriterDisposerRecord(long pData) {</b>
+<b class="nc"><i>1845</i>&nbsp;            this.pData = pData;</b>
+<i>1846</i>&nbsp;        }
+<i>1847</i>&nbsp;
+<i>1848</i>&nbsp;        public synchronized void dispose() {
+<b class="nc"><i>1849</i>&nbsp;            if (pData != 0) {</b>
+<b class="nc"><i>1850</i>&nbsp;                disposeWriter(pData);</b>
+<b class="nc"><i>1851</i>&nbsp;                pData = 0;</b>
+<i>1852</i>&nbsp;            }
+<i>1853</i>&nbsp;        }
+<i>1854</i>&nbsp;    }
+<i>1855</i>&nbsp;
+<i>1856</i>&nbsp;    /**
+<i>1857</i>&nbsp;     * This method is called from native code in order to write encoder
+<i>1858</i>&nbsp;     * output to the destination.
+<i>1859</i>&nbsp;     *
+<i>1860</i>&nbsp;     * We block any attempt to change the writer state during this
+<i>1861</i>&nbsp;     * method, in order to prevent a corruption of the native encoder
+<i>1862</i>&nbsp;     * state.
+<i>1863</i>&nbsp;     */
+<i>1864</i>&nbsp;    private void writeOutputData(byte[] data, int offset, int len)
+<i>1865</i>&nbsp;            throws IOException
+<i>1866</i>&nbsp;    {
+<b class="nc"><i>1867</i>&nbsp;        cbLock.lock();</b>
+<i>1868</i>&nbsp;        try {
+<b class="nc"><i>1869</i>&nbsp;            ios.write(data, offset, len);</b>
+<i>1870</i>&nbsp;        } finally {
+<b class="nc"><i>1871</i>&nbsp;            cbLock.unlock();</b>
+<b class="nc"><i>1872</i>&nbsp;        }</b>
+<i>1873</i>&nbsp;    }
+<i>1874</i>&nbsp;
+<b class="nc"><i>1875</i>&nbsp;    private Thread theThread = null;</b>
+<b class="nc"><i>1876</i>&nbsp;    private int theLockCount = 0;</b>
+<i>1877</i>&nbsp;
+<i>1878</i>&nbsp;    private synchronized void setThreadLock() {
+<b class="nc"><i>1879</i>&nbsp;        Thread currThread = Thread.currentThread();</b>
+<b class="nc"><i>1880</i>&nbsp;        if (theThread != null) {</b>
+<b class="nc"><i>1881</i>&nbsp;            if (theThread != currThread) {</b>
+<i>1882</i>&nbsp;                // it looks like that this reader instance is used
+<i>1883</i>&nbsp;                // by multiple threads.
+<b class="nc"><i>1884</i>&nbsp;                throw new IllegalStateException(&quot;Attempt to use instance of &quot; +</b>
+<i>1885</i>&nbsp;                                                this + &quot; locked on thread &quot; +
+<i>1886</i>&nbsp;                                                theThread + &quot; from thread &quot; +
+<i>1887</i>&nbsp;                                                currThread);
+<i>1888</i>&nbsp;            } else {
+<b class="nc"><i>1889</i>&nbsp;                theLockCount ++;</b>
+<i>1890</i>&nbsp;            }
+<i>1891</i>&nbsp;        } else {
+<b class="nc"><i>1892</i>&nbsp;            theThread = currThread;</b>
+<b class="nc"><i>1893</i>&nbsp;            theLockCount = 1;</b>
+<i>1894</i>&nbsp;        }
+<i>1895</i>&nbsp;    }
+<i>1896</i>&nbsp;
+<i>1897</i>&nbsp;    private synchronized void clearThreadLock() {
+<b class="nc"><i>1898</i>&nbsp;        Thread currThread = Thread.currentThread();</b>
+<b class="nc"><i>1899</i>&nbsp;        if (theThread == null || theThread != currThread) {</b>
+<b class="nc"><i>1900</i>&nbsp;            throw new IllegalStateException(&quot;Attempt to clear thread lock form wrong thread. &quot; +</b>
+<i>1901</i>&nbsp;                                            &quot;Locked thread: &quot; + theThread +
+<i>1902</i>&nbsp;                                            &quot;; current thread: &quot; + currThread);
+<i>1903</i>&nbsp;        }
+<b class="nc"><i>1904</i>&nbsp;        theLockCount --;</b>
+<b class="nc"><i>1905</i>&nbsp;        if (theLockCount == 0) {</b>
+<b class="nc"><i>1906</i>&nbsp;            theThread = null;</b>
+<i>1907</i>&nbsp;        }
+<i>1908</i>&nbsp;    }
+<i>1909</i>&nbsp;
+<b class="nc"><i>1910</i>&nbsp;    private CallBackLock cbLock = new CallBackLock();</b>
+<i>1911</i>&nbsp;
+<b class="nc"><i>1912</i>&nbsp;    private static class CallBackLock {</b>
+<i>1913</i>&nbsp;
+<i>1914</i>&nbsp;        private State lockState;
+<i>1915</i>&nbsp;
+<b class="nc"><i>1916</i>&nbsp;        CallBackLock() {</b>
+<b class="nc"><i>1917</i>&nbsp;            lockState = State.Unlocked;</b>
+<i>1918</i>&nbsp;        }
+<i>1919</i>&nbsp;
+<i>1920</i>&nbsp;        void check() {
+<b class="nc"><i>1921</i>&nbsp;            if (lockState != State.Unlocked) {</b>
+<b class="nc"><i>1922</i>&nbsp;                throw new IllegalStateException(&quot;Access to the writer is not allowed&quot;);</b>
+<i>1923</i>&nbsp;            }
+<i>1924</i>&nbsp;        }
+<i>1925</i>&nbsp;
+<i>1926</i>&nbsp;        private void lock() {
+<b class="nc"><i>1927</i>&nbsp;            lockState = State.Locked;</b>
+<i>1928</i>&nbsp;        }
+<i>1929</i>&nbsp;
+<i>1930</i>&nbsp;        private void unlock() {
+<b class="nc"><i>1931</i>&nbsp;            lockState = State.Unlocked;</b>
+<i>1932</i>&nbsp;        }
+<i>1933</i>&nbsp;
+<b class="nc"><i>1934</i>&nbsp;        private static enum State {</b>
+<b class="nc"><i>1935</i>&nbsp;            Unlocked,</b>
+<b class="nc"><i>1936</i>&nbsp;            Locked</b>
+<i>1937</i>&nbsp;        }
+<i>1938</i>&nbsp;    }
+<i>1939</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,340 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ByteBufferWithInfo</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.encoding</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ByteBufferWithInfo (com.sun.corba.se.impl.encoding)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ByteBufferWithInfo</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 84)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.encoding;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.nio.ByteBuffer;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import com.sun.corba.se.impl.encoding.BufferManagerWrite;
+<i>32</i>&nbsp;import com.sun.corba.se.impl.orbutil.ORBUtility;
+<i>33</i>&nbsp;import com.sun.corba.se.pept.transport.ByteBufferPool;
+<i>34</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;// Notes about the class.
+<i>38</i>&nbsp;// Assumptions, the ByteBuffer&#39;s position is set by the constructor&#39;s
+<i>39</i>&nbsp;// index variable and the ByteBuffer&#39;s limit points to the end of the
+<i>40</i>&nbsp;// data. Also, since the index variable tracks the current empty
+<i>41</i>&nbsp;// position in the buffer, the ByteBuffer&#39;s position is updated
+<i>42</i>&nbsp;// any time there&#39;s a call to this class&#39;s position().
+<i>43</i>&nbsp;// Although, a ByteBuffer&#39;s length is it&#39;s capacity(), the context in
+<i>44</i>&nbsp;// which length is used in this object, this.buflen is actually the
+<i>45</i>&nbsp;// ByteBuffer limit().
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;public class ByteBufferWithInfo
+<i>48</i>&nbsp;{
+<i>49</i>&nbsp;    private ORB orb;
+<i>50</i>&nbsp;    private boolean debug;
+<i>51</i>&nbsp;    // REVISIT - index should eventually be replaced with byteBuffer.position()
+<i>52</i>&nbsp;    private int     index;     // Current empty position in buffer.
+<i>53</i>&nbsp;    // REVISIT - CHANGE THESE TO PRIVATE
+<i>54</i>&nbsp;    public ByteBuffer byteBuffer;// Marshal buffer.
+<i>55</i>&nbsp;    public int     buflen;     // Total length of buffer. // Unnecessary...
+<i>56</i>&nbsp;    public int     needed;     // How many more bytes are needed on overflow.
+<i>57</i>&nbsp;    public boolean fragmented; // Did the overflow operation fragment?
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    public ByteBufferWithInfo(org.omg.CORBA.ORB orb,
+<i>60</i>&nbsp;                              ByteBuffer byteBuffer,
+<i>61</i>&nbsp;                              int index)
+<b class="nc"><i>62</i>&nbsp;    {</b>
+<b class="nc"><i>63</i>&nbsp;        this.orb = (com.sun.corba.se.spi.orb.ORB)orb;</b>
+<b class="nc"><i>64</i>&nbsp;        debug = this.orb.transportDebugFlag;</b>
+<b class="nc"><i>65</i>&nbsp;        this.byteBuffer = byteBuffer;</b>
+<b class="nc"><i>66</i>&nbsp;        if (byteBuffer != null)</b>
+<i>67</i>&nbsp;        {
+<b class="nc"><i>68</i>&nbsp;            this.buflen = byteBuffer.limit();</b>
+<i>69</i>&nbsp;        }
+<b class="nc"><i>70</i>&nbsp;        position(index);</b>
+<b class="nc"><i>71</i>&nbsp;        this.needed = 0;</b>
+<b class="nc"><i>72</i>&nbsp;        this.fragmented = false;</b>
+<i>73</i>&nbsp;    }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    public ByteBufferWithInfo(org.omg.CORBA.ORB orb, ByteBuffer byteBuffer)
+<i>76</i>&nbsp;    {
+<b class="nc"><i>77</i>&nbsp;        this(orb, byteBuffer, 0);</b>
+<i>78</i>&nbsp;    }
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    public ByteBufferWithInfo(org.omg.CORBA.ORB orb,
+<i>81</i>&nbsp;                              BufferManagerWrite bufferManager)
+<i>82</i>&nbsp;    {
+<b class="nc"><i>83</i>&nbsp;        this(orb, bufferManager, true);</b>
+<i>84</i>&nbsp;    }
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    // Right now, EncapsOutputStream&#39;s do not use pooled byte buffers.
+<i>87</i>&nbsp;    // EncapsOutputStream&#39;s is the only one that does not use pooled
+<i>88</i>&nbsp;    // byte buffers. Hence, the reason for the boolean &#39;usePooledByteBuffers&#39;.
+<i>89</i>&nbsp;    // See EncapsOutputStream for additional information.
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    public ByteBufferWithInfo(org.omg.CORBA.ORB orb,
+<i>92</i>&nbsp;                              BufferManagerWrite bufferManager,
+<i>93</i>&nbsp;                              boolean usePooledByteBuffers)
+<b class="nc"><i>94</i>&nbsp;    {</b>
+<b class="nc"><i>95</i>&nbsp;        this.orb = (com.sun.corba.se.spi.orb.ORB)orb;</b>
+<b class="nc"><i>96</i>&nbsp;        debug = this.orb.transportDebugFlag;</b>
+<i>97</i>&nbsp;
+<b class="nc"><i>98</i>&nbsp;        int bufferSize = bufferManager.getBufferSize();</b>
+<i>99</i>&nbsp;
+<b class="nc"><i>100</i>&nbsp;        if (usePooledByteBuffers)</b>
+<i>101</i>&nbsp;        {
+<b class="nc"><i>102</i>&nbsp;            ByteBufferPool byteBufferPool = this.orb.getByteBufferPool();</b>
+<b class="nc"><i>103</i>&nbsp;            this.byteBuffer = byteBufferPool.getByteBuffer(bufferSize);</b>
+<i>104</i>&nbsp;
+<b class="nc"><i>105</i>&nbsp;            if (debug)</b>
+<i>106</i>&nbsp;            {
+<i>107</i>&nbsp;                // print address of ByteBuffer gotten from pool
+<b class="nc"><i>108</i>&nbsp;                int bbAddress = System.identityHashCode(byteBuffer);</b>
+<b class="nc"><i>109</i>&nbsp;                StringBuffer sb = new StringBuffer(80);</b>
+<b class="nc"><i>110</i>&nbsp;                sb.append(&quot;constructor (ORB, BufferManagerWrite) - got &quot;)</b>
+<b class="nc"><i>111</i>&nbsp;                  .append(&quot;ByteBuffer id (&quot;).append(bbAddress)</b>
+<b class="nc"><i>112</i>&nbsp;                  .append(&quot;) from ByteBufferPool.&quot;);</b>
+<b class="nc"><i>113</i>&nbsp;                String msgStr = sb.toString();</b>
+<b class="nc"><i>114</i>&nbsp;                dprint(msgStr);</b>
+<i>115</i>&nbsp;            }
+<b class="nc"><i>116</i>&nbsp;        }</b>
+<i>117</i>&nbsp;        else
+<i>118</i>&nbsp;        {
+<i>119</i>&nbsp;             // don&#39;t allocate from pool, allocate non-direct ByteBuffer
+<b class="nc"><i>120</i>&nbsp;             this.byteBuffer = ByteBuffer.allocate(bufferSize);</b>
+<i>121</i>&nbsp;        }
+<i>122</i>&nbsp;
+<b class="nc"><i>123</i>&nbsp;        position(0);</b>
+<b class="nc"><i>124</i>&nbsp;        this.buflen = bufferSize;</b>
+<b class="nc"><i>125</i>&nbsp;        this.byteBuffer.limit(this.buflen);</b>
+<b class="nc"><i>126</i>&nbsp;        this.needed = 0;</b>
+<b class="nc"><i>127</i>&nbsp;        this.fragmented = false;</b>
+<i>128</i>&nbsp;    }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    // Shallow copy constructor
+<i>131</i>&nbsp;    public ByteBufferWithInfo (ByteBufferWithInfo bbwi)
+<b class="nc"><i>132</i>&nbsp;    {</b>
+<b class="nc"><i>133</i>&nbsp;        this.orb = bbwi.orb;</b>
+<b class="nc"><i>134</i>&nbsp;        this.debug = bbwi.debug;</b>
+<b class="nc"><i>135</i>&nbsp;        this.byteBuffer = bbwi.byteBuffer;</b>
+<b class="nc"><i>136</i>&nbsp;        this.buflen = bbwi.buflen;</b>
+<b class="nc"><i>137</i>&nbsp;        this.byteBuffer.limit(this.buflen);</b>
+<b class="nc"><i>138</i>&nbsp;        position(bbwi.position());</b>
+<b class="nc"><i>139</i>&nbsp;        this.needed = bbwi.needed;</b>
+<b class="nc"><i>140</i>&nbsp;        this.fragmented = bbwi.fragmented;</b>
+<i>141</i>&nbsp;    }
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;    // So IIOPOutputStream seems more intuitive
+<i>144</i>&nbsp;    public int getSize()
+<i>145</i>&nbsp;    {
+<b class="nc"><i>146</i>&nbsp;        return position();</b>
+<i>147</i>&nbsp;    }
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    // accessor to buflen
+<i>150</i>&nbsp;    public int getLength()
+<i>151</i>&nbsp;    {
+<b class="nc"><i>152</i>&nbsp;         return buflen;</b>
+<i>153</i>&nbsp;    }
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;    // get position in this buffer
+<i>156</i>&nbsp;    public int position()
+<i>157</i>&nbsp;    {
+<i>158</i>&nbsp;        // REVISIT - This should be changed to return the
+<i>159</i>&nbsp;        //           value of byteBuffer.position() rather
+<i>160</i>&nbsp;        //           than this.index. But, byteBuffer.position
+<i>161</i>&nbsp;        //           is manipulated via ByteBuffer writes, reads,
+<i>162</i>&nbsp;        //           gets and puts. These locations need to be
+<i>163</i>&nbsp;        //           investigated and updated before
+<i>164</i>&nbsp;        //           byteBuffer.position() can be returned here.
+<i>165</i>&nbsp;        // return byteBuffer.position();
+<b class="nc"><i>166</i>&nbsp;        return index;</b>
+<i>167</i>&nbsp;    }
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;    // set position in this buffer
+<i>170</i>&nbsp;    public void position(int newPosition)
+<i>171</i>&nbsp;    {
+<i>172</i>&nbsp;        // REVISIT - This should be changed to set only the
+<i>173</i>&nbsp;        //           value of byteBuffer.position rather
+<i>174</i>&nbsp;        //           than this.index. This change should be made
+<i>175</i>&nbsp;        //           in conjunction with the change to this.position().
+<b class="nc"><i>176</i>&nbsp;        byteBuffer.position(newPosition);</b>
+<b class="nc"><i>177</i>&nbsp;        index = newPosition;</b>
+<i>178</i>&nbsp;    }
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;    // mutator to buflen
+<i>181</i>&nbsp;    public void setLength(int theLength)
+<i>182</i>&nbsp;    {
+<b class="nc"><i>183</i>&nbsp;        buflen = theLength;</b>
+<b class="nc"><i>184</i>&nbsp;        byteBuffer.limit(buflen);</b>
+<i>185</i>&nbsp;    }
+<i>186</i>&nbsp;
+<i>187</i>&nbsp;    // Grow byteBuffer to a size larger than position() + needed
+<i>188</i>&nbsp;    public void growBuffer(com.sun.corba.se.spi.orb.ORB orb)
+<i>189</i>&nbsp;    {
+<i>190</i>&nbsp;        // This code used to live directly in CDROutputStream.grow.
+<i>191</i>&nbsp;
+<i>192</i>&nbsp;        // Recall that the byteBuffer size is &#39;really&#39; the limit or
+<i>193</i>&nbsp;        // buflen.
+<i>194</i>&nbsp;
+<b class="nc"><i>195</i>&nbsp;        int newLength = byteBuffer.limit() * 2;</b>
+<i>196</i>&nbsp;
+<b class="nc"><i>197</i>&nbsp;        while (position() + needed &gt;= newLength)</b>
+<b class="nc"><i>198</i>&nbsp;            newLength = newLength * 2;</b>
+<i>199</i>&nbsp;
+<b class="nc"><i>200</i>&nbsp;        ByteBufferPool byteBufferPool = orb.getByteBufferPool();</b>
+<b class="nc"><i>201</i>&nbsp;        ByteBuffer newBB = byteBufferPool.getByteBuffer(newLength);</b>
+<i>202</i>&nbsp;
+<b class="nc"><i>203</i>&nbsp;        if (debug)</b>
+<i>204</i>&nbsp;        {
+<i>205</i>&nbsp;            // print address of ByteBuffer just gotten
+<b class="nc"><i>206</i>&nbsp;            int newbbAddress = System.identityHashCode(newBB);</b>
+<b class="nc"><i>207</i>&nbsp;            StringBuffer sb = new StringBuffer(80);</b>
+<b class="nc"><i>208</i>&nbsp;            sb.append(&quot;growBuffer() - got ByteBuffer id (&quot;);</b>
+<b class="nc"><i>209</i>&nbsp;            sb.append(newbbAddress).append(&quot;) from ByteBufferPool.&quot;);</b>
+<b class="nc"><i>210</i>&nbsp;            String msgStr = sb.toString();</b>
+<b class="nc"><i>211</i>&nbsp;            dprint(msgStr);</b>
+<i>212</i>&nbsp;        }
+<i>213</i>&nbsp;
+<b class="nc"><i>214</i>&nbsp;        byteBuffer.position(0);</b>
+<b class="nc"><i>215</i>&nbsp;        newBB.put(byteBuffer);</b>
+<i>216</i>&nbsp;
+<i>217</i>&nbsp;        // return &#39;old&#39; byteBuffer reference to the ByteBuffer pool
+<b class="nc"><i>218</i>&nbsp;        if (debug)</b>
+<i>219</i>&nbsp;        {
+<i>220</i>&nbsp;            // print address of ByteBuffer being released
+<b class="nc"><i>221</i>&nbsp;            int bbAddress = System.identityHashCode(byteBuffer);</b>
+<b class="nc"><i>222</i>&nbsp;            StringBuffer sb = new StringBuffer(80);</b>
+<b class="nc"><i>223</i>&nbsp;            sb.append(&quot;growBuffer() - releasing ByteBuffer id (&quot;);</b>
+<b class="nc"><i>224</i>&nbsp;            sb.append(bbAddress).append(&quot;) to ByteBufferPool.&quot;);</b>
+<b class="nc"><i>225</i>&nbsp;            String msgStr2 = sb.toString();</b>
+<b class="nc"><i>226</i>&nbsp;            dprint(msgStr2);</b>
+<i>227</i>&nbsp;        }
+<b class="nc"><i>228</i>&nbsp;        byteBufferPool.releaseByteBuffer(byteBuffer);</b>
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;        // update the byteBuffer with a larger ByteBuffer
+<b class="nc"><i>231</i>&nbsp;        byteBuffer = newBB;</b>
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;        // limit and buflen must be set to newLength.
+<b class="nc"><i>234</i>&nbsp;        buflen = newLength;</b>
+<b class="nc"><i>235</i>&nbsp;        byteBuffer.limit(buflen);</b>
+<i>236</i>&nbsp;    }
+<i>237</i>&nbsp;
+<i>238</i>&nbsp;    public String toString()
+<i>239</i>&nbsp;    {
+<b class="nc"><i>240</i>&nbsp;        StringBuffer str = new StringBuffer(&quot;ByteBufferWithInfo:&quot;);</b>
+<i>241</i>&nbsp;
+<b class="nc"><i>242</i>&nbsp;        str.append(&quot; buflen = &quot; + buflen);</b>
+<b class="nc"><i>243</i>&nbsp;        str.append(&quot; byteBuffer.limit = &quot; + byteBuffer.limit());</b>
+<b class="nc"><i>244</i>&nbsp;        str.append(&quot; index = &quot; + index);</b>
+<b class="nc"><i>245</i>&nbsp;        str.append(&quot; position = &quot; + position());</b>
+<b class="nc"><i>246</i>&nbsp;        str.append(&quot; needed = &quot; + needed);</b>
+<b class="nc"><i>247</i>&nbsp;        str.append(&quot; byteBuffer = &quot; + (byteBuffer == null ? &quot;null&quot; : &quot;not null&quot;));</b>
+<b class="nc"><i>248</i>&nbsp;        str.append(&quot; fragmented = &quot; + fragmented);</b>
+<i>249</i>&nbsp;
+<b class="nc"><i>250</i>&nbsp;        return str.toString();</b>
+<i>251</i>&nbsp;    }
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;    protected void dprint(String msg)
+<i>254</i>&nbsp;    {
+<b class="nc"><i>255</i>&nbsp;        ORBUtility.dprint(&quot;ByteBufferWithInfo&quot;, msg);</b>
+<i>256</i>&nbsp;    }
+<i>257</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

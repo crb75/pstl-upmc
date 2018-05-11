@@ -1,0 +1,477 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: JPEG</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.imageio.plugins.jpeg</a> ]
+</div>
+
+<h1>Coverage Summary for Class: JPEG (com.sun.imageio.plugins.jpeg)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JPEG</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 59)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">JPEG$JCS</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 70)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.imageio.plugins.jpeg;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import javax.imageio.ImageTypeSpecifier;
+<i>29</i>&nbsp;import javax.imageio.plugins.jpeg.JPEGQTable;
+<i>30</i>&nbsp;import javax.imageio.plugins.jpeg.JPEGHuffmanTable;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import java.awt.image.ColorModel;
+<i>33</i>&nbsp;import java.awt.color.ColorSpace;
+<i>34</i>&nbsp;import java.awt.color.ICC_ColorSpace;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; * A class containing JPEG-related constants, definitions, and
+<i>38</i>&nbsp; * static methods.  This class and its constants must be public so that
+<i>39</i>&nbsp; * &lt;code&gt;JPEGImageWriteParam&lt;/code&gt; can see it.
+<i>40</i>&nbsp; */
+<b class="nc"><i>41</i>&nbsp;public class JPEG {</b>
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    // List of all the JPEG markers (pre-JPEG2000)
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    /** For temporary use in arithmetic coding */
+<i>46</i>&nbsp;    public static final int TEM = 0x01;
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    // Codes 0x02 - 0xBF are reserved
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    // SOF markers for Nondifferential Huffman coding
+<i>51</i>&nbsp;    /** Baseline DCT */
+<i>52</i>&nbsp;    public static final int SOF0 = 0xC0;
+<i>53</i>&nbsp;    /** Extended Sequential DCT */
+<i>54</i>&nbsp;    public static final int SOF1 = 0xC1;
+<i>55</i>&nbsp;    /** Progressive DCT */
+<i>56</i>&nbsp;    public static final int SOF2 = 0xC2;
+<i>57</i>&nbsp;    /** Lossless Sequential */
+<i>58</i>&nbsp;    public static final int SOF3 = 0xC3;
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    /** Define Huffman Tables */
+<i>61</i>&nbsp;    public static final int DHT = 0xC4;
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    // SOF markers for Differential Huffman coding
+<i>64</i>&nbsp;    /** Differential Sequential DCT */
+<i>65</i>&nbsp;    public static final int SOF5 = 0xC5;
+<i>66</i>&nbsp;    /** Differential Progressive DCT */
+<i>67</i>&nbsp;    public static final int SOF6 = 0xC6;
+<i>68</i>&nbsp;    /** Differential Lossless */
+<i>69</i>&nbsp;    public static final int SOF7 = 0xC7;
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    /** Reserved for JPEG extensions */
+<i>72</i>&nbsp;    public static final int JPG = 0xC8;
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    // SOF markers for Nondifferential arithmetic coding
+<i>75</i>&nbsp;    /** Extended Sequential DCT, Arithmetic coding */
+<i>76</i>&nbsp;    public static final int SOF9 = 0xC9;
+<i>77</i>&nbsp;    /** Progressive DCT, Arithmetic coding */
+<i>78</i>&nbsp;    public static final int SOF10 = 0xCA;
+<i>79</i>&nbsp;    /** Lossless Sequential, Arithmetic coding */
+<i>80</i>&nbsp;    public static final int SOF11 = 0xCB;
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    /** Define Arithmetic conditioning tables */
+<i>83</i>&nbsp;    public static final int DAC = 0xCC;
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    // SOF markers for Differential arithmetic coding
+<i>86</i>&nbsp;    /** Differential Sequential DCT, Arithmetic coding */
+<i>87</i>&nbsp;    public static final int SOF13 = 0xCD;
+<i>88</i>&nbsp;    /** Differential Progressive DCT, Arithmetic coding */
+<i>89</i>&nbsp;    public static final int SOF14 = 0xCE;
+<i>90</i>&nbsp;    /** Differential Lossless, Arithmetic coding */
+<i>91</i>&nbsp;    public static final int SOF15 = 0xCF;
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    // Restart Markers
+<i>94</i>&nbsp;    public static final int RST0 = 0xD0;
+<i>95</i>&nbsp;    public static final int RST1 = 0xD1;
+<i>96</i>&nbsp;    public static final int RST2 = 0xD2;
+<i>97</i>&nbsp;    public static final int RST3 = 0xD3;
+<i>98</i>&nbsp;    public static final int RST4 = 0xD4;
+<i>99</i>&nbsp;    public static final int RST5 = 0xD5;
+<i>100</i>&nbsp;    public static final int RST6 = 0xD6;
+<i>101</i>&nbsp;    public static final int RST7 = 0xD7;
+<i>102</i>&nbsp;    /** Number of restart markers */
+<i>103</i>&nbsp;    public static final int RESTART_RANGE = 8;
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;    /** Start of Image */
+<i>106</i>&nbsp;    public static final int SOI = 0xD8;
+<i>107</i>&nbsp;    /** End of Image */
+<i>108</i>&nbsp;    public static final int EOI = 0xD9;
+<i>109</i>&nbsp;    /** Start of Scan */
+<i>110</i>&nbsp;    public static final int SOS = 0xDA;
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;    /** Define Quantisation Tables */
+<i>113</i>&nbsp;    public static final int DQT = 0xDB;
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;    /** Define Number of lines */
+<i>116</i>&nbsp;    public static final int DNL = 0xDC;
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;    /** Define Restart Interval */
+<i>119</i>&nbsp;    public static final int DRI = 0xDD;
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;    /** Define Heirarchical progression */
+<i>122</i>&nbsp;    public static final int DHP = 0xDE;
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;    /** Expand reference image(s) */
+<i>125</i>&nbsp;    public static final int EXP = 0xDF;
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;    // Application markers
+<i>128</i>&nbsp;    /** APP0 used by JFIF */
+<i>129</i>&nbsp;    public static final int APP0 = 0xE0;
+<i>130</i>&nbsp;    public static final int APP1 = 0xE1;
+<i>131</i>&nbsp;    public static final int APP2 = 0xE2;
+<i>132</i>&nbsp;    public static final int APP3 = 0xE3;
+<i>133</i>&nbsp;    public static final int APP4 = 0xE4;
+<i>134</i>&nbsp;    public static final int APP5 = 0xE5;
+<i>135</i>&nbsp;    public static final int APP6 = 0xE6;
+<i>136</i>&nbsp;    public static final int APP7 = 0xE7;
+<i>137</i>&nbsp;    public static final int APP8 = 0xE8;
+<i>138</i>&nbsp;    public static final int APP9 = 0xE9;
+<i>139</i>&nbsp;    public static final int APP10 = 0xEA;
+<i>140</i>&nbsp;    public static final int APP11 = 0xEB;
+<i>141</i>&nbsp;    public static final int APP12 = 0xEC;
+<i>142</i>&nbsp;    public static final int APP13 = 0xED;
+<i>143</i>&nbsp;    /** APP14 used by Adobe */
+<i>144</i>&nbsp;    public static final int APP14 = 0xEE;
+<i>145</i>&nbsp;    public static final int APP15 = 0xEF;
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;    // codes 0xF0 to 0xFD are reserved
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;    /** Comment marker */
+<i>150</i>&nbsp;    public static final int COM = 0xFE;
+<i>151</i>&nbsp;
+<i>152</i>&nbsp;    // JFIF Resolution units
+<i>153</i>&nbsp;    /** The X and Y units simply indicate the aspect ratio of the pixels. */
+<i>154</i>&nbsp;    public static final int DENSITY_UNIT_ASPECT_RATIO = 0;
+<i>155</i>&nbsp;    /** Pixel density is in pixels per inch. */
+<i>156</i>&nbsp;    public static final int DENSITY_UNIT_DOTS_INCH    = 1;
+<i>157</i>&nbsp;    /** Pixel density is in pixels per centemeter. */
+<i>158</i>&nbsp;    public static final int DENSITY_UNIT_DOTS_CM      = 2;
+<i>159</i>&nbsp;    /** The max known value for DENSITY_UNIT */
+<i>160</i>&nbsp;    public static final int NUM_DENSITY_UNIT = 3;
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;    // Adobe transform values
+<i>163</i>&nbsp;    public static final int ADOBE_IMPOSSIBLE = -1;
+<i>164</i>&nbsp;    public static final int ADOBE_UNKNOWN = 0;
+<i>165</i>&nbsp;    public static final int ADOBE_YCC = 1;
+<i>166</i>&nbsp;    public static final int ADOBE_YCCK = 2;
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;    // Spi initialization stuff
+<i>169</i>&nbsp;    public static final String vendor = &quot;Oracle Corporation&quot;;
+<i>170</i>&nbsp;    public static final String version = &quot;0.5&quot;;
+<i>171</i>&nbsp;    // Names of the formats we can read or write
+<b class="nc"><i>172</i>&nbsp;    static final String [] names = {&quot;JPEG&quot;, &quot;jpeg&quot;, &quot;JPG&quot;, &quot;jpg&quot;};</b>
+<b class="nc"><i>173</i>&nbsp;    static final String [] suffixes = {&quot;jpg&quot;, &quot;jpeg&quot;};</b>
+<b class="nc"><i>174</i>&nbsp;    static final String [] MIMETypes = {&quot;image/jpeg&quot;};</b>
+<i>175</i>&nbsp;    public static final String nativeImageMetadataFormatName =
+<i>176</i>&nbsp;        &quot;javax_imageio_jpeg_image_1.0&quot;;
+<i>177</i>&nbsp;    public static final String nativeImageMetadataFormatClassName =
+<i>178</i>&nbsp;        &quot;com.sun.imageio.plugins.jpeg.JPEGImageMetadataFormat&quot;;
+<i>179</i>&nbsp;    public static final String nativeStreamMetadataFormatName =
+<i>180</i>&nbsp;        &quot;javax_imageio_jpeg_stream_1.0&quot;;
+<i>181</i>&nbsp;    public static final String nativeStreamMetadataFormatClassName =
+<i>182</i>&nbsp;        &quot;com.sun.imageio.plugins.jpeg.JPEGStreamMetadataFormat&quot;;
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;    // IJG Color codes.
+<i>185</i>&nbsp;    public static final int JCS_UNKNOWN = 0;       // error/unspecified
+<i>186</i>&nbsp;    public static final int JCS_GRAYSCALE = 1;     // monochrome
+<i>187</i>&nbsp;    public static final int JCS_RGB = 2;           // red/green/blue
+<i>188</i>&nbsp;    public static final int JCS_YCbCr = 3;         // Y/Cb/Cr (also known as YUV)
+<i>189</i>&nbsp;    public static final int JCS_CMYK = 4;          // C/M/Y/K
+<i>190</i>&nbsp;    public static final int JCS_YCC = 5;           // PhotoYCC
+<i>191</i>&nbsp;    public static final int JCS_RGBA = 6;          // RGB-Alpha
+<i>192</i>&nbsp;    public static final int JCS_YCbCrA = 7;        // Y/Cb/Cr/Alpha
+<i>193</i>&nbsp;    // 8 and 9 were old &quot;Legacy&quot; codes which the old code never identified
+<i>194</i>&nbsp;    // on reading anyway.  Support for writing them is being dropped, too.
+<i>195</i>&nbsp;    public static final int JCS_YCCA = 10;         // PhotoYCC-Alpha
+<i>196</i>&nbsp;    public static final int JCS_YCCK = 11;         // Y/Cb/Cr/K
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;    public static final int NUM_JCS_CODES = JCS_YCCK+1;
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;    /** IJG can handle up to 4-channel JPEGs */
+<b class="nc"><i>201</i>&nbsp;    static final int [] [] bandOffsets = {{0},</b>
+<i>202</i>&nbsp;                                          {0, 1},
+<i>203</i>&nbsp;                                          {0, 1, 2},
+<i>204</i>&nbsp;                                          {0, 1, 2, 3}};
+<i>205</i>&nbsp;
+<b class="nc"><i>206</i>&nbsp;    static final int [] bOffsRGB = { 2, 1, 0 };</b>
+<i>207</i>&nbsp;
+<i>208</i>&nbsp;    /* These are kept in the inner class to avoid static initialization
+<i>209</i>&nbsp;     * of the CMM class until someone actually needs it.
+<i>210</i>&nbsp;     * (e.g. do not init CMM on the request for jpeg mime types)
+<i>211</i>&nbsp;     */
+<b class="nc"><i>212</i>&nbsp;    public static class JCS {</b>
+<b class="nc"><i>213</i>&nbsp;        public static final ColorSpace sRGB =</b>
+<b class="nc"><i>214</i>&nbsp;            ColorSpace.getInstance(ColorSpace.CS_sRGB);</b>
+<i>215</i>&nbsp;
+<b class="nc"><i>216</i>&nbsp;        private static ColorSpace YCC = null;</b>
+<b class="nc"><i>217</i>&nbsp;        private static boolean yccInited = false;</b>
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;        public static ColorSpace getYCC() {
+<b class="nc"><i>220</i>&nbsp;            if (!yccInited) {</b>
+<i>221</i>&nbsp;                try {
+<b class="nc"><i>222</i>&nbsp;                    YCC = ColorSpace.getInstance(ColorSpace.CS_PYCC);</b>
+<b class="nc"><i>223</i>&nbsp;                } catch (IllegalArgumentException e) {</b>
+<i>224</i>&nbsp;                    // PYCC.pf may not always be installed
+<i>225</i>&nbsp;                } finally {
+<b class="nc"><i>226</i>&nbsp;                    yccInited = true;</b>
+<b class="nc"><i>227</i>&nbsp;                }</b>
+<i>228</i>&nbsp;            }
+<b class="nc"><i>229</i>&nbsp;            return YCC;</b>
+<i>230</i>&nbsp;        }
+<i>231</i>&nbsp;    }
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;    // Default value for ImageWriteParam
+<i>234</i>&nbsp;    public static final float DEFAULT_QUALITY = 0.75F;
+<i>235</i>&nbsp;
+<i>236</i>&nbsp;    /**
+<i>237</i>&nbsp;     * Returns &lt;code&gt;true&lt;/code&gt; if the given &lt;code&gt;ColorSpace&lt;/code&gt;
+<i>238</i>&nbsp;     * object is an instance of ICC_ColorSpace but is not one of the
+<i>239</i>&nbsp;     * standard &lt;code&gt;ColorSpaces&lt;/code&gt; returned by
+<i>240</i>&nbsp;     * &lt;code&gt;ColorSpace.getInstance()&lt;/code&gt;.
+<i>241</i>&nbsp;     */
+<i>242</i>&nbsp;    static boolean isNonStandardICC(ColorSpace cs) {
+<b class="nc"><i>243</i>&nbsp;        boolean retval = false;</b>
+<b class="nc"><i>244</i>&nbsp;        if ((cs instanceof ICC_ColorSpace)</b>
+<b class="nc"><i>245</i>&nbsp;            &amp;&amp; (!cs.isCS_sRGB())</b>
+<b class="nc"><i>246</i>&nbsp;            &amp;&amp; (!cs.equals(ColorSpace.getInstance(ColorSpace.CS_CIEXYZ)))</b>
+<b class="nc"><i>247</i>&nbsp;            &amp;&amp; (!cs.equals(ColorSpace.getInstance(ColorSpace.CS_GRAY)))</b>
+<b class="nc"><i>248</i>&nbsp;            &amp;&amp; (!cs.equals(ColorSpace.getInstance(ColorSpace.CS_LINEAR_RGB)))</b>
+<b class="nc"><i>249</i>&nbsp;            &amp;&amp; (!cs.equals(ColorSpace.getInstance(ColorSpace.CS_PYCC)))</b>
+<i>250</i>&nbsp;            ) {
+<b class="nc"><i>251</i>&nbsp;            retval = true;</b>
+<i>252</i>&nbsp;        }
+<b class="nc"><i>253</i>&nbsp;        return retval;</b>
+<i>254</i>&nbsp;    }
+<i>255</i>&nbsp;
+<i>256</i>&nbsp;
+<i>257</i>&nbsp;    /**
+<i>258</i>&nbsp;     * Returns &lt;code&gt;true&lt;/code&gt; if the given imageType can be used
+<i>259</i>&nbsp;     * in a JFIF file.  If &lt;code&gt;input&lt;/code&gt; is true, then the
+<i>260</i>&nbsp;     * image type is considered before colorspace conversion.
+<i>261</i>&nbsp;     */
+<i>262</i>&nbsp;    static boolean isJFIFcompliant(ImageTypeSpecifier imageType,
+<i>263</i>&nbsp;                                   boolean input) {
+<b class="nc"><i>264</i>&nbsp;        ColorModel cm = imageType.getColorModel();</b>
+<i>265</i>&nbsp;        // Can&#39;t have alpha
+<b class="nc"><i>266</i>&nbsp;        if (cm.hasAlpha()) {</b>
+<b class="nc"><i>267</i>&nbsp;            return false;</b>
+<i>268</i>&nbsp;        }
+<i>269</i>&nbsp;        // Gray is OK, always
+<b class="nc"><i>270</i>&nbsp;        int numComponents = imageType.getNumComponents();</b>
+<b class="nc"><i>271</i>&nbsp;        if (numComponents == 1) {</b>
+<b class="nc"><i>272</i>&nbsp;            return true;</b>
+<i>273</i>&nbsp;        }
+<i>274</i>&nbsp;
+<i>275</i>&nbsp;        // If it isn&#39;t gray, it must have 3 channels
+<b class="nc"><i>276</i>&nbsp;        if (numComponents != 3) {</b>
+<b class="nc"><i>277</i>&nbsp;            return false;</b>
+<i>278</i>&nbsp;        }
+<i>279</i>&nbsp;
+<b class="nc"><i>280</i>&nbsp;        if (input) {</b>
+<i>281</i>&nbsp;            // Must be RGB
+<b class="nc"><i>282</i>&nbsp;            if (cm.getColorSpace().getType() == ColorSpace.TYPE_RGB) {</b>
+<b class="nc"><i>283</i>&nbsp;                return true;</b>
+<i>284</i>&nbsp;            }
+<i>285</i>&nbsp;        } else {
+<i>286</i>&nbsp;            // Must be YCbCr
+<b class="nc"><i>287</i>&nbsp;            if (cm.getColorSpace().getType() == ColorSpace.TYPE_YCbCr) {</b>
+<b class="nc"><i>288</i>&nbsp;                return true;</b>
+<i>289</i>&nbsp;            }
+<i>290</i>&nbsp;        }
+<i>291</i>&nbsp;
+<b class="nc"><i>292</i>&nbsp;        return false;</b>
+<i>293</i>&nbsp;    }
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;    /**
+<i>296</i>&nbsp;     * Given an image type, return the Adobe transform corresponding to
+<i>297</i>&nbsp;     * that type, or ADOBE_IMPOSSIBLE if the image type is incompatible
+<i>298</i>&nbsp;     * with an Adobe marker segment.  If &lt;code&gt;input&lt;/code&gt; is true, then
+<i>299</i>&nbsp;     * the image type is considered before colorspace conversion.
+<i>300</i>&nbsp;     */
+<i>301</i>&nbsp;    static int transformForType(ImageTypeSpecifier imageType, boolean input) {
+<b class="nc"><i>302</i>&nbsp;        int retval = ADOBE_IMPOSSIBLE;</b>
+<b class="nc"><i>303</i>&nbsp;        ColorModel cm = imageType.getColorModel();</b>
+<b class="nc"><i>304</i>&nbsp;        switch (cm.getColorSpace().getType()) {</b>
+<i>305</i>&nbsp;        case ColorSpace.TYPE_GRAY:
+<b class="nc"><i>306</i>&nbsp;            retval = ADOBE_UNKNOWN;</b>
+<b class="nc"><i>307</i>&nbsp;            break;</b>
+<i>308</i>&nbsp;        case ColorSpace.TYPE_RGB:
+<b class="nc"><i>309</i>&nbsp;            retval = input ? ADOBE_YCC : ADOBE_UNKNOWN;</b>
+<b class="nc"><i>310</i>&nbsp;            break;</b>
+<i>311</i>&nbsp;        case ColorSpace.TYPE_YCbCr:
+<b class="nc"><i>312</i>&nbsp;            retval = ADOBE_YCC;</b>
+<b class="nc"><i>313</i>&nbsp;            break;</b>
+<i>314</i>&nbsp;        case ColorSpace.TYPE_CMYK:
+<b class="nc"><i>315</i>&nbsp;            retval = input ? ADOBE_YCCK : ADOBE_IMPOSSIBLE;</b>
+<i>316</i>&nbsp;        }
+<b class="nc"><i>317</i>&nbsp;        return retval;</b>
+<i>318</i>&nbsp;    }
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;    /**
+<i>321</i>&nbsp;     * Converts an ImageWriteParam (i.e. IJG) non-linear quality value
+<i>322</i>&nbsp;     * to a float suitable for passing to JPEGQTable.getScaledInstance().
+<i>323</i>&nbsp;     */
+<i>324</i>&nbsp;    static float convertToLinearQuality(float quality) {
+<i>325</i>&nbsp;        // The following is converted from the IJG code.
+<b class="nc"><i>326</i>&nbsp;        if (quality &lt;= 0.0F) {</b>
+<b class="nc"><i>327</i>&nbsp;            quality = 0.01F;</b>
+<i>328</i>&nbsp;        }
+<i>329</i>&nbsp;
+<b class="nc"><i>330</i>&nbsp;        if (quality &gt; 1.00F) {</b>
+<b class="nc"><i>331</i>&nbsp;            quality = 1.00F;</b>
+<i>332</i>&nbsp;        }
+<i>333</i>&nbsp;
+<b class="nc"><i>334</i>&nbsp;        if (quality &lt; 0.5F) {</b>
+<b class="nc"><i>335</i>&nbsp;            quality = 0.5F / quality;</b>
+<i>336</i>&nbsp;        } else {
+<b class="nc"><i>337</i>&nbsp;            quality = 2.0F - (quality * 2.0F);</b>
+<i>338</i>&nbsp;        }
+<i>339</i>&nbsp;
+<b class="nc"><i>340</i>&nbsp;        return quality;</b>
+<i>341</i>&nbsp;    }
+<i>342</i>&nbsp;
+<i>343</i>&nbsp;    /**
+<i>344</i>&nbsp;     * Return an array of default, visually lossless quantization tables.
+<i>345</i>&nbsp;     */
+<i>346</i>&nbsp;    static JPEGQTable [] getDefaultQTables() {
+<b class="nc"><i>347</i>&nbsp;        JPEGQTable [] qTables = new JPEGQTable[2];</b>
+<b class="nc"><i>348</i>&nbsp;        qTables[0] = JPEGQTable.K1Div2Luminance;</b>
+<b class="nc"><i>349</i>&nbsp;        qTables[1] = JPEGQTable.K2Div2Chrominance;</b>
+<b class="nc"><i>350</i>&nbsp;        return qTables;</b>
+<i>351</i>&nbsp;    }
+<i>352</i>&nbsp;
+<i>353</i>&nbsp;    /**
+<i>354</i>&nbsp;     * Return an array of default Huffman tables.
+<i>355</i>&nbsp;     */
+<i>356</i>&nbsp;    static JPEGHuffmanTable [] getDefaultHuffmanTables(boolean wantDC) {
+<b class="nc"><i>357</i>&nbsp;        JPEGHuffmanTable [] tables = new JPEGHuffmanTable[2];</b>
+<b class="nc"><i>358</i>&nbsp;        if (wantDC) {</b>
+<b class="nc"><i>359</i>&nbsp;            tables[0] = JPEGHuffmanTable.StdDCLuminance;</b>
+<b class="nc"><i>360</i>&nbsp;            tables[1] = JPEGHuffmanTable.StdDCChrominance;</b>
+<i>361</i>&nbsp;        } else {
+<b class="nc"><i>362</i>&nbsp;            tables[0] = JPEGHuffmanTable.StdACLuminance;</b>
+<b class="nc"><i>363</i>&nbsp;            tables[1] = JPEGHuffmanTable.StdACChrominance;</b>
+<i>364</i>&nbsp;        }
+<b class="nc"><i>365</i>&nbsp;        return tables;</b>
+<i>366</i>&nbsp;    }
+<i>367</i>&nbsp;
+<i>368</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

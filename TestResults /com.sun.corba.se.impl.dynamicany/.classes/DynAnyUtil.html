@@ -1,0 +1,421 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DynAnyUtil</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.dynamicany</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DynAnyUtil (com.sun.corba.se.impl.dynamicany)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DynAnyUtil</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 97)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.dynamicany;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import org.omg.CORBA.Any;
+<i>29</i>&nbsp;import org.omg.CORBA.TypeCode;
+<i>30</i>&nbsp;import org.omg.CORBA.TCKind;
+<i>31</i>&nbsp;import org.omg.CORBA.portable.OutputStream;
+<i>32</i>&nbsp;//import org.omg.CORBA.ORBPackage.*;
+<i>33</i>&nbsp;import org.omg.CORBA.TypeCodePackage.BadKind;
+<i>34</i>&nbsp;import org.omg.CORBA.TypeCodePackage.Bounds;
+<i>35</i>&nbsp;import org.omg.CORBA.portable.InputStream;
+<i>36</i>&nbsp;import org.omg.DynamicAny.*;
+<i>37</i>&nbsp;import org.omg.DynamicAny.DynAnyPackage.TypeMismatch;
+<i>38</i>&nbsp;import org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode;
+<i>39</i>&nbsp;import java.math.BigDecimal;
+<i>40</i>&nbsp;import com.sun.corba.se.impl.corba.AnyImpl;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import com.sun.corba.se.spi.orb.ORB ;
+<i>43</i>&nbsp;import com.sun.corba.se.spi.logging.CORBALogDomains ;
+<i>44</i>&nbsp;import com.sun.corba.se.impl.logging.ORBUtilSystemException ;
+<i>45</i>&nbsp;
+<b class="nc"><i>46</i>&nbsp;public class DynAnyUtil</b>
+<i>47</i>&nbsp;{
+<i>48</i>&nbsp;    static boolean isConsistentType(TypeCode typeCode) {
+<b class="nc"><i>49</i>&nbsp;        int kind = typeCode.kind().value();</b>
+<b class="nc"><i>50</i>&nbsp;        return (kind != TCKind._tk_Principal &amp;&amp;</b>
+<i>51</i>&nbsp;                kind != TCKind._tk_native &amp;&amp;
+<i>52</i>&nbsp;                kind != TCKind._tk_abstract_interface);
+<i>53</i>&nbsp;    }
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    static boolean isConstructedDynAny(DynAny dynAny) {
+<i>56</i>&nbsp;        // DynFixed is constructed but not a subclass of DynAnyConstructedImpl
+<i>57</i>&nbsp;        //return (dynAny instanceof DynAnyConstructedImpl);
+<b class="nc"><i>58</i>&nbsp;        int kind = dynAny.type().kind().value();</b>
+<b class="nc"><i>59</i>&nbsp;        return (kind == TCKind._tk_sequence ||</b>
+<i>60</i>&nbsp;                kind == TCKind._tk_struct ||
+<i>61</i>&nbsp;                kind == TCKind._tk_array ||
+<i>62</i>&nbsp;                kind == TCKind._tk_union ||
+<i>63</i>&nbsp;                kind == TCKind._tk_enum ||
+<i>64</i>&nbsp;                kind == TCKind._tk_fixed ||
+<i>65</i>&nbsp;                kind == TCKind._tk_value ||
+<i>66</i>&nbsp;                kind == TCKind._tk_value_box);
+<i>67</i>&nbsp;    }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    static DynAny createMostDerivedDynAny(Any any, ORB orb, boolean copyValue)
+<i>70</i>&nbsp;        throws org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode
+<i>71</i>&nbsp;    {
+<b class="nc"><i>72</i>&nbsp;        if (any == null || ! DynAnyUtil.isConsistentType(any.type()))</b>
+<b class="nc"><i>73</i>&nbsp;            throw new org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode();</b>
+<i>74</i>&nbsp;
+<b class="nc"><i>75</i>&nbsp;        switch (any.type().kind().value()) {</b>
+<i>76</i>&nbsp;            case TCKind._tk_sequence:
+<b class="nc"><i>77</i>&nbsp;                return new DynSequenceImpl(orb, any, copyValue);</b>
+<i>78</i>&nbsp;            case TCKind._tk_struct:
+<b class="nc"><i>79</i>&nbsp;                return new DynStructImpl(orb, any, copyValue);</b>
+<i>80</i>&nbsp;            case TCKind._tk_array:
+<b class="nc"><i>81</i>&nbsp;                return new DynArrayImpl(orb, any, copyValue);</b>
+<i>82</i>&nbsp;            case TCKind._tk_union:
+<b class="nc"><i>83</i>&nbsp;                return new DynUnionImpl(orb, any, copyValue);</b>
+<i>84</i>&nbsp;            case TCKind._tk_enum:
+<b class="nc"><i>85</i>&nbsp;                return new DynEnumImpl(orb, any, copyValue);</b>
+<i>86</i>&nbsp;            case TCKind._tk_fixed:
+<b class="nc"><i>87</i>&nbsp;                return new DynFixedImpl(orb, any, copyValue);</b>
+<i>88</i>&nbsp;            case TCKind._tk_value:
+<b class="nc"><i>89</i>&nbsp;                return new DynValueImpl(orb, any, copyValue);</b>
+<i>90</i>&nbsp;            case TCKind._tk_value_box:
+<b class="nc"><i>91</i>&nbsp;                return new DynValueBoxImpl(orb, any, copyValue);</b>
+<i>92</i>&nbsp;            default:
+<b class="nc"><i>93</i>&nbsp;                return new DynAnyBasicImpl(orb, any, copyValue);</b>
+<i>94</i>&nbsp;        }
+<i>95</i>&nbsp;    }
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    static DynAny createMostDerivedDynAny(TypeCode typeCode, ORB orb)
+<i>98</i>&nbsp;        throws org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode
+<i>99</i>&nbsp;    {
+<b class="nc"><i>100</i>&nbsp;        if (typeCode == null || ! DynAnyUtil.isConsistentType(typeCode))</b>
+<b class="nc"><i>101</i>&nbsp;            throw new org.omg.DynamicAny.DynAnyFactoryPackage.InconsistentTypeCode();</b>
+<i>102</i>&nbsp;
+<b class="nc"><i>103</i>&nbsp;        switch (typeCode.kind().value()) {</b>
+<i>104</i>&nbsp;            case TCKind._tk_sequence:
+<b class="nc"><i>105</i>&nbsp;                return new DynSequenceImpl(orb, typeCode);</b>
+<i>106</i>&nbsp;            case TCKind._tk_struct:
+<b class="nc"><i>107</i>&nbsp;                return new DynStructImpl(orb, typeCode);</b>
+<i>108</i>&nbsp;            case TCKind._tk_array:
+<b class="nc"><i>109</i>&nbsp;                return new DynArrayImpl(orb, typeCode);</b>
+<i>110</i>&nbsp;            case TCKind._tk_union:
+<b class="nc"><i>111</i>&nbsp;                return new DynUnionImpl(orb, typeCode);</b>
+<i>112</i>&nbsp;            case TCKind._tk_enum:
+<b class="nc"><i>113</i>&nbsp;                return new DynEnumImpl(orb, typeCode);</b>
+<i>114</i>&nbsp;            case TCKind._tk_fixed:
+<b class="nc"><i>115</i>&nbsp;                return new DynFixedImpl(orb, typeCode);</b>
+<i>116</i>&nbsp;            case TCKind._tk_value:
+<b class="nc"><i>117</i>&nbsp;                return new DynValueImpl(orb, typeCode);</b>
+<i>118</i>&nbsp;            case TCKind._tk_value_box:
+<b class="nc"><i>119</i>&nbsp;                return new DynValueBoxImpl(orb, typeCode);</b>
+<i>120</i>&nbsp;            default:
+<b class="nc"><i>121</i>&nbsp;                return new DynAnyBasicImpl(orb, typeCode);</b>
+<i>122</i>&nbsp;        }
+<i>123</i>&nbsp;    }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    // Extracts a member value according to the given TypeCode from the given complex Any
+<i>126</i>&nbsp;    // (at the Anys current internal stream position, consuming the anys stream on the way)
+<i>127</i>&nbsp;    // and returns it wrapped into a new Any
+<i>128</i>&nbsp;/*
+<i>129</i>&nbsp;    static Any extractAnyFromAny(TypeCode memberType, Any any, ORB orb) {
+<i>130</i>&nbsp;        // Moved this functionality into AnyImpl because it is needed for Any.equal()
+<i>131</i>&nbsp;        return ((AnyImpl)any).extractAny(memberType, orb);
+<i>132</i>&nbsp;    }
+<i>133</i>&nbsp;*/
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;    // Extracts a member value according to the given TypeCode from the given complex Any
+<i>136</i>&nbsp;    // (at the Anys current internal stream position, consuming the anys stream on the way)
+<i>137</i>&nbsp;    // and returns it wrapped into a new Any
+<i>138</i>&nbsp;    static Any extractAnyFromStream(TypeCode memberType, InputStream input, ORB orb) {
+<b class="nc"><i>139</i>&nbsp;        return AnyImpl.extractAnyFromStream(memberType, input, orb);</b>
+<i>140</i>&nbsp;    }
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;    // Creates a default Any of the given type.
+<i>143</i>&nbsp;    static Any createDefaultAnyOfType(TypeCode typeCode, ORB orb) {
+<b class="nc"><i>144</i>&nbsp;        ORBUtilSystemException wrapper = ORBUtilSystemException.get( orb,</b>
+<i>145</i>&nbsp;            CORBALogDomains.RPC_PRESENTATION ) ;
+<i>146</i>&nbsp;
+<b class="nc"><i>147</i>&nbsp;        Any returnValue = orb.create_any();</b>
+<i>148</i>&nbsp;        // The spec for DynAny differs from Any on initialization via type code:
+<i>149</i>&nbsp;        // - false for boolean
+<i>150</i>&nbsp;        // - zero for numeric types
+<i>151</i>&nbsp;        // - zero for types octet, char, and wchar
+<i>152</i>&nbsp;        // - the empty string for string and wstring
+<i>153</i>&nbsp;        // - nil for object references
+<i>154</i>&nbsp;        // - a type code with a TCKind value of tk_null for type codes
+<i>155</i>&nbsp;        // - for Any values, an Any containing a type code with a TCKind value of tk_null
+<i>156</i>&nbsp;        //   type and no value
+<b class="nc"><i>157</i>&nbsp;        switch (typeCode.kind().value()) {</b>
+<i>158</i>&nbsp;            case TCKind._tk_boolean:
+<i>159</i>&nbsp;                // false for boolean
+<b class="nc"><i>160</i>&nbsp;                returnValue.insert_boolean(false);</b>
+<b class="nc"><i>161</i>&nbsp;                break;</b>
+<i>162</i>&nbsp;            case TCKind._tk_short:
+<i>163</i>&nbsp;                // zero for numeric types
+<b class="nc"><i>164</i>&nbsp;                returnValue.insert_short((short)0);</b>
+<b class="nc"><i>165</i>&nbsp;                break;</b>
+<i>166</i>&nbsp;            case TCKind._tk_ushort:
+<i>167</i>&nbsp;                // zero for numeric types
+<b class="nc"><i>168</i>&nbsp;                returnValue.insert_ushort((short)0);</b>
+<b class="nc"><i>169</i>&nbsp;                break;</b>
+<i>170</i>&nbsp;            case TCKind._tk_long:
+<i>171</i>&nbsp;                // zero for numeric types
+<b class="nc"><i>172</i>&nbsp;                returnValue.insert_long(0);</b>
+<b class="nc"><i>173</i>&nbsp;                break;</b>
+<i>174</i>&nbsp;            case TCKind._tk_ulong:
+<i>175</i>&nbsp;                // zero for numeric types
+<b class="nc"><i>176</i>&nbsp;                returnValue.insert_ulong(0);</b>
+<b class="nc"><i>177</i>&nbsp;                break;</b>
+<i>178</i>&nbsp;            case TCKind._tk_longlong:
+<i>179</i>&nbsp;                // zero for numeric types
+<b class="nc"><i>180</i>&nbsp;                returnValue.insert_longlong((long)0);</b>
+<b class="nc"><i>181</i>&nbsp;                break;</b>
+<i>182</i>&nbsp;            case TCKind._tk_ulonglong:
+<i>183</i>&nbsp;                // zero for numeric types
+<b class="nc"><i>184</i>&nbsp;                returnValue.insert_ulonglong((long)0);</b>
+<b class="nc"><i>185</i>&nbsp;                break;</b>
+<i>186</i>&nbsp;            case TCKind._tk_float:
+<i>187</i>&nbsp;                // zero for numeric types
+<b class="nc"><i>188</i>&nbsp;                returnValue.insert_float((float)0.0);</b>
+<b class="nc"><i>189</i>&nbsp;                break;</b>
+<i>190</i>&nbsp;            case TCKind._tk_double:
+<i>191</i>&nbsp;                // zero for numeric types
+<b class="nc"><i>192</i>&nbsp;                returnValue.insert_double((double)0.0);</b>
+<b class="nc"><i>193</i>&nbsp;                break;</b>
+<i>194</i>&nbsp;            case TCKind._tk_octet:
+<i>195</i>&nbsp;                // zero for types octet, char, and wchar
+<b class="nc"><i>196</i>&nbsp;                returnValue.insert_octet((byte)0);</b>
+<b class="nc"><i>197</i>&nbsp;                break;</b>
+<i>198</i>&nbsp;            case TCKind._tk_char:
+<i>199</i>&nbsp;                // zero for types octet, char, and wchar
+<b class="nc"><i>200</i>&nbsp;                returnValue.insert_char((char)0);</b>
+<b class="nc"><i>201</i>&nbsp;                break;</b>
+<i>202</i>&nbsp;            case TCKind._tk_wchar:
+<i>203</i>&nbsp;                // zero for types octet, char, and wchar
+<b class="nc"><i>204</i>&nbsp;                returnValue.insert_wchar((char)0);</b>
+<b class="nc"><i>205</i>&nbsp;                break;</b>
+<i>206</i>&nbsp;            case TCKind._tk_string:
+<i>207</i>&nbsp;                // the empty string for string and wstring
+<i>208</i>&nbsp;                // Make sure that type code for bounded strings gets respected
+<b class="nc"><i>209</i>&nbsp;                returnValue.type(typeCode);</b>
+<i>210</i>&nbsp;                // Doesn&#39;t erase the type of bounded string
+<b class="nc"><i>211</i>&nbsp;                returnValue.insert_string(&quot;&quot;);</b>
+<b class="nc"><i>212</i>&nbsp;                break;</b>
+<i>213</i>&nbsp;            case TCKind._tk_wstring:
+<i>214</i>&nbsp;                // the empty string for string and wstring
+<i>215</i>&nbsp;                // Make sure that type code for bounded strings gets respected
+<b class="nc"><i>216</i>&nbsp;                returnValue.type(typeCode);</b>
+<i>217</i>&nbsp;                // Doesn&#39;t erase the type of bounded string
+<b class="nc"><i>218</i>&nbsp;                returnValue.insert_wstring(&quot;&quot;);</b>
+<b class="nc"><i>219</i>&nbsp;                break;</b>
+<i>220</i>&nbsp;            case TCKind._tk_objref:
+<i>221</i>&nbsp;                // nil for object references
+<b class="nc"><i>222</i>&nbsp;                returnValue.insert_Object(null);</b>
+<b class="nc"><i>223</i>&nbsp;                break;</b>
+<i>224</i>&nbsp;            case TCKind._tk_TypeCode:
+<i>225</i>&nbsp;                // a type code with a TCKind value of tk_null for type codes
+<i>226</i>&nbsp;                // We can reuse the type code that&#39;s already in the any.
+<b class="nc"><i>227</i>&nbsp;                returnValue.insert_TypeCode(returnValue.type());</b>
+<b class="nc"><i>228</i>&nbsp;                break;</b>
+<i>229</i>&nbsp;            case TCKind._tk_any:
+<i>230</i>&nbsp;                // for Any values, an Any containing a type code with a TCKind value
+<i>231</i>&nbsp;                // of tk_null type and no value.
+<i>232</i>&nbsp;                // This is exactly what the default AnyImpl constructor provides.
+<i>233</i>&nbsp;                // _REVISIT_ Note that this inner Any is considered uninitialized.
+<b class="nc"><i>234</i>&nbsp;                returnValue.insert_any(orb.create_any());</b>
+<b class="nc"><i>235</i>&nbsp;                break;</b>
+<i>236</i>&nbsp;            case TCKind._tk_struct:
+<i>237</i>&nbsp;            case TCKind._tk_union:
+<i>238</i>&nbsp;            case TCKind._tk_enum:
+<i>239</i>&nbsp;            case TCKind._tk_sequence:
+<i>240</i>&nbsp;            case TCKind._tk_array:
+<i>241</i>&nbsp;            case TCKind._tk_except:
+<i>242</i>&nbsp;            case TCKind._tk_value:
+<i>243</i>&nbsp;            case TCKind._tk_value_box:
+<i>244</i>&nbsp;                // There are no default value for complex types since there is no
+<i>245</i>&nbsp;                // concept of a hierarchy of Anys. Only DynAnys can be arrange in
+<i>246</i>&nbsp;                // a hierarchy to mirror the TypeCode hierarchy.
+<i>247</i>&nbsp;                // See DynAnyConstructedImpl.initializeComponentsFromTypeCode()
+<i>248</i>&nbsp;                // on how this DynAny hierarchy is created from TypeCodes.
+<b class="nc"><i>249</i>&nbsp;                returnValue.type(typeCode);</b>
+<b class="nc"><i>250</i>&nbsp;                break;</b>
+<i>251</i>&nbsp;            case TCKind._tk_fixed:
+<b class="nc"><i>252</i>&nbsp;                returnValue.insert_fixed(new BigDecimal(&quot;0.0&quot;), typeCode);</b>
+<b class="nc"><i>253</i>&nbsp;                break;</b>
+<i>254</i>&nbsp;            case TCKind._tk_native:
+<i>255</i>&nbsp;            case TCKind._tk_alias:
+<i>256</i>&nbsp;            case TCKind._tk_void:
+<i>257</i>&nbsp;            case TCKind._tk_Principal:
+<i>258</i>&nbsp;            case TCKind._tk_abstract_interface:
+<b class="nc"><i>259</i>&nbsp;                returnValue.type(typeCode);</b>
+<b class="nc"><i>260</i>&nbsp;                break;</b>
+<i>261</i>&nbsp;            case TCKind._tk_null:
+<i>262</i>&nbsp;                // Any is already initialized to null
+<b class="nc"><i>263</i>&nbsp;                break;</b>
+<i>264</i>&nbsp;            case TCKind._tk_longdouble:
+<i>265</i>&nbsp;                // Unspecified for Java
+<b class="nc"><i>266</i>&nbsp;                throw wrapper.tkLongDoubleNotSupported() ;</b>
+<i>267</i>&nbsp;            default:
+<b class="nc"><i>268</i>&nbsp;                throw wrapper.typecodeNotSupported() ;</b>
+<i>269</i>&nbsp;        }
+<b class="nc"><i>270</i>&nbsp;        return returnValue;</b>
+<i>271</i>&nbsp;    }
+<i>272</i>&nbsp;/*
+<i>273</i>&nbsp;    static Any setTypeOfAny(TypeCode typeCode, Any value) {
+<i>274</i>&nbsp;        if (value != null) {
+<i>275</i>&nbsp;            value.read_value(value.create_input_stream(), typeCode);
+<i>276</i>&nbsp;        }
+<i>277</i>&nbsp;        return value;
+<i>278</i>&nbsp;    }
+<i>279</i>&nbsp;*/
+<i>280</i>&nbsp;    static Any copy(Any inAny, ORB orb) {
+<b class="nc"><i>281</i>&nbsp;        return new AnyImpl(orb, inAny);</b>
+<i>282</i>&nbsp;    }
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;/*
+<i>285</i>&nbsp;    static Any copy(Any inAny, ORB orb) {
+<i>286</i>&nbsp;        Any outAny = null;
+<i>287</i>&nbsp;        if (inAny != null &amp;&amp; orb != null) {
+<i>288</i>&nbsp;            outAny = orb.create_any();
+<i>289</i>&nbsp;            outAny.read_value(inAny.create_input_stream(), inAny.type());
+<i>290</i>&nbsp;            // isInitialized is set to true
+<i>291</i>&nbsp;        }
+<i>292</i>&nbsp;        return outAny;
+<i>293</i>&nbsp;    }
+<i>294</i>&nbsp;*/
+<i>295</i>&nbsp;
+<i>296</i>&nbsp;    static DynAny convertToNative(DynAny dynAny, ORB orb) {
+<b class="nc"><i>297</i>&nbsp;        if (dynAny instanceof DynAnyImpl) {</b>
+<b class="nc"><i>298</i>&nbsp;            return dynAny;</b>
+<i>299</i>&nbsp;        } else {
+<i>300</i>&nbsp;            // if copy flag wasn&#39;t true we would be using our DynAny with
+<i>301</i>&nbsp;            // a foreign Any in it.
+<i>302</i>&nbsp;            try {
+<b class="nc"><i>303</i>&nbsp;                return createMostDerivedDynAny(dynAny.to_any(), orb, true);</b>
+<b class="nc"><i>304</i>&nbsp;            } catch (InconsistentTypeCode ictc) {</b>
+<b class="nc"><i>305</i>&nbsp;                return null;</b>
+<i>306</i>&nbsp;            }
+<i>307</i>&nbsp;        }
+<i>308</i>&nbsp;    }
+<i>309</i>&nbsp;
+<i>310</i>&nbsp;    static boolean isInitialized(Any any) {
+<i>311</i>&nbsp;        // Returning simply the value of Any.isInitialized() is not enough.
+<i>312</i>&nbsp;        // The DynAny spec says that Anys containing null strings do not contain
+<i>313</i>&nbsp;        // a &quot;legal value&quot; (see ptc 99-10-07, 9.2.3.3)
+<b class="nc"><i>314</i>&nbsp;        boolean isInitialized = ((AnyImpl)any).isInitialized();</b>
+<b class="nc"><i>315</i>&nbsp;        switch (any.type().kind().value()) {</b>
+<i>316</i>&nbsp;            case TCKind._tk_string:
+<b class="nc"><i>317</i>&nbsp;                return (isInitialized &amp;&amp; (any.extract_string() != null));</b>
+<i>318</i>&nbsp;            case TCKind._tk_wstring:
+<b class="nc"><i>319</i>&nbsp;                return (isInitialized &amp;&amp; (any.extract_wstring() != null));</b>
+<i>320</i>&nbsp;        }
+<b class="nc"><i>321</i>&nbsp;        return isInitialized;</b>
+<i>322</i>&nbsp;    }
+<i>323</i>&nbsp;
+<i>324</i>&nbsp;    // This is a convenient method to reset the current component to where it was
+<i>325</i>&nbsp;    // before we changed it. See DynAnyConstructedImpl.equal for use.
+<i>326</i>&nbsp;    static boolean set_current_component(DynAny dynAny, DynAny currentComponent) {
+<b class="nc"><i>327</i>&nbsp;        if (currentComponent != null) {</b>
+<i>328</i>&nbsp;            try {
+<b class="nc"><i>329</i>&nbsp;                dynAny.rewind();</b>
+<i>330</i>&nbsp;                do {
+<b class="nc"><i>331</i>&nbsp;                    if (dynAny.current_component() == currentComponent)</b>
+<b class="nc"><i>332</i>&nbsp;                        return true;</b>
+<b class="nc"><i>333</i>&nbsp;                } while (dynAny.next());</b>
+<b class="nc"><i>334</i>&nbsp;            } catch (TypeMismatch tm) { /* impossible */ }</b>
+<i>335</i>&nbsp;        }
+<b class="nc"><i>336</i>&nbsp;        return false;</b>
+<i>337</i>&nbsp;    }
+<i>338</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,799 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: UTF8Reader</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.io</a> ]
+</div>
+
+<h1>Coverage Summary for Class: UTF8Reader (com.sun.org.apache.xerces.internal.impl.io)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UTF8Reader</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 283)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2000-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.io;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import java.io.InputStream;
+<i>24</i>&nbsp;import java.io.IOException;
+<i>25</i>&nbsp;import java.io.Reader;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import java.util.Locale;
+<i>28</i>&nbsp;import com.sun.org.apache.xerces.internal.util.MessageFormatter;
+<i>29</i>&nbsp;import com.sun.org.apache.xerces.internal.impl.msg.XMLMessageFormatter;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import com.sun.xml.internal.stream.util.BufferAllocator;
+<i>32</i>&nbsp;import com.sun.xml.internal.stream.util.ThreadLocalBufferAllocator;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;/**
+<i>35</i>&nbsp; * &lt;p&gt;A UTF-8 reader.&lt;/p&gt;
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; * @xerces.internal
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; * @author Andy Clark, IBM
+<i>40</i>&nbsp; *
+<i>41</i>&nbsp; */
+<i>42</i>&nbsp;public class UTF8Reader
+<i>43</i>&nbsp;    extends Reader {
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    //
+<i>46</i>&nbsp;    // Constants
+<i>47</i>&nbsp;    //
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    /** Default byte buffer size (2048). */
+<i>50</i>&nbsp;    public static final int DEFAULT_BUFFER_SIZE = 2048;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    // debugging
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /** Debug read. */
+<i>55</i>&nbsp;    private static final boolean DEBUG_READ = false;
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    //
+<i>58</i>&nbsp;    // Data
+<i>59</i>&nbsp;    //
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    /** Input stream. */
+<i>62</i>&nbsp;    protected InputStream fInputStream;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    /** Byte buffer. */
+<i>65</i>&nbsp;    protected byte[] fBuffer;
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    /** Offset into buffer. */
+<i>68</i>&nbsp;    protected int fOffset;
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    /** Surrogate character. */
+<b class="nc"><i>71</i>&nbsp;    private int fSurrogate = -1;</b>
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    // message formatter; used to produce localized
+<i>74</i>&nbsp;    // exception messages
+<b class="nc"><i>75</i>&nbsp;    private MessageFormatter fFormatter = null;</b>
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    //Locale to use for messages
+<b class="nc"><i>78</i>&nbsp;    private Locale fLocale = null;</b>
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    //
+<i>81</i>&nbsp;    // Constructors
+<i>82</i>&nbsp;    //
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    /**
+<i>85</i>&nbsp;     * Constructs a UTF-8 reader from the specified input stream
+<i>86</i>&nbsp;     * using the default buffer size.  Primarily for testing.
+<i>87</i>&nbsp;     *
+<i>88</i>&nbsp;     * @param inputStream The input stream.
+<i>89</i>&nbsp;     */
+<i>90</i>&nbsp;    public UTF8Reader(InputStream inputStream) {
+<b class="nc"><i>91</i>&nbsp;        this(inputStream, DEFAULT_BUFFER_SIZE, new XMLMessageFormatter(), Locale.getDefault());</b>
+<i>92</i>&nbsp;    } // &lt;init&gt;(InputStream, MessageFormatter)
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    /**
+<i>95</i>&nbsp;     * Constructs a UTF-8 reader from the specified input stream
+<i>96</i>&nbsp;     * using the default buffer size and the given MessageFormatter.
+<i>97</i>&nbsp;     *
+<i>98</i>&nbsp;     * @param inputStream The input stream.
+<i>99</i>&nbsp;     * @param messageFormatter  given MessageFormatter
+<i>100</i>&nbsp;     * @param locale    Locale to use for messages
+<i>101</i>&nbsp;     */
+<i>102</i>&nbsp;    public UTF8Reader(InputStream inputStream, MessageFormatter messageFormatter,
+<i>103</i>&nbsp;            Locale locale) {
+<b class="nc"><i>104</i>&nbsp;        this(inputStream, DEFAULT_BUFFER_SIZE, messageFormatter, locale);</b>
+<i>105</i>&nbsp;    } // &lt;init&gt;(InputStream, MessageFormatter, Locale)
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    /**
+<i>108</i>&nbsp;     * Constructs a UTF-8 reader from the specified input stream,
+<i>109</i>&nbsp;     * buffer size and MessageFormatter.
+<i>110</i>&nbsp;     *
+<i>111</i>&nbsp;     * @param inputStream The input stream.
+<i>112</i>&nbsp;     * @param size        The initial buffer size.
+<i>113</i>&nbsp;     * @param messageFormatter  the formatter for localizing/formatting errors.
+<i>114</i>&nbsp;     * @param locale    the Locale to use for messages
+<i>115</i>&nbsp;     */
+<i>116</i>&nbsp;    public UTF8Reader(InputStream inputStream, int size,
+<b class="nc"><i>117</i>&nbsp;            MessageFormatter messageFormatter, Locale locale) {</b>
+<b class="nc"><i>118</i>&nbsp;        fInputStream = inputStream;</b>
+<b class="nc"><i>119</i>&nbsp;        BufferAllocator ba = ThreadLocalBufferAllocator.getBufferAllocator();</b>
+<b class="nc"><i>120</i>&nbsp;        fBuffer = ba.getByteBuffer(size);</b>
+<b class="nc"><i>121</i>&nbsp;        if (fBuffer == null) {</b>
+<b class="nc"><i>122</i>&nbsp;            fBuffer = new byte[size];</b>
+<i>123</i>&nbsp;        }
+<b class="nc"><i>124</i>&nbsp;        fFormatter = messageFormatter;</b>
+<b class="nc"><i>125</i>&nbsp;        fLocale = locale;</b>
+<i>126</i>&nbsp;    } // &lt;init&gt;(InputStream, int, MessageFormatter, Locale)
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;    //
+<i>129</i>&nbsp;    // Reader methods
+<i>130</i>&nbsp;    //
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;    /**
+<i>133</i>&nbsp;     * Read a single character.  This method will block until a character is
+<i>134</i>&nbsp;     * available, an I/O error occurs, or the end of the stream is reached.
+<i>135</i>&nbsp;     *
+<i>136</i>&nbsp;     * &lt;p&gt; Subclasses that intend to support efficient single-character input
+<i>137</i>&nbsp;     * should override this method.
+<i>138</i>&nbsp;     *
+<i>139</i>&nbsp;     * @return     The character read, as an integer in the range 0 to 16383
+<i>140</i>&nbsp;     *             (&lt;tt&gt;0x00-0xffff&lt;/tt&gt;), or -1 if the end of the stream has
+<i>141</i>&nbsp;     *             been reached
+<i>142</i>&nbsp;     *
+<i>143</i>&nbsp;     * @exception  IOException  If an I/O error occurs
+<i>144</i>&nbsp;     */
+<i>145</i>&nbsp;    public int read() throws IOException {
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;        // decode character
+<b class="nc"><i>148</i>&nbsp;        int c = fSurrogate;</b>
+<b class="nc"><i>149</i>&nbsp;        if (fSurrogate == -1) {</b>
+<i>150</i>&nbsp;            // NOTE: We use the index into the buffer if there are remaining
+<i>151</i>&nbsp;            //       bytes from the last block read. -Ac
+<b class="nc"><i>152</i>&nbsp;            int index = 0;</b>
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;            // get first byte
+<b class="nc"><i>155</i>&nbsp;            int b0 = index == fOffset</b>
+<b class="nc"><i>156</i>&nbsp;                   ? fInputStream.read() : fBuffer[index++] &amp; 0x00FF;</b>
+<b class="nc"><i>157</i>&nbsp;            if (b0 == -1) {</b>
+<b class="nc"><i>158</i>&nbsp;                return -1;</b>
+<i>159</i>&nbsp;            }
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;            // UTF-8:   [0xxx xxxx]
+<i>162</i>&nbsp;            // Unicode: [0000 0000] [0xxx xxxx]
+<b class="nc"><i>163</i>&nbsp;            if (b0 &lt; 0x80) {</b>
+<b class="nc"><i>164</i>&nbsp;                c = (char)b0;</b>
+<i>165</i>&nbsp;            }
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;            // UTF-8:   [110y yyyy] [10xx xxxx]
+<i>168</i>&nbsp;            // Unicode: [0000 0yyy] [yyxx xxxx]
+<b class="nc"><i>169</i>&nbsp;            else if ((b0 &amp; 0xE0) == 0xC0 &amp;&amp; (b0 &amp; 0x1E) != 0) {</b>
+<b class="nc"><i>170</i>&nbsp;                int b1 = index == fOffset</b>
+<b class="nc"><i>171</i>&nbsp;                       ? fInputStream.read() : fBuffer[index++] &amp; 0x00FF;</b>
+<b class="nc"><i>172</i>&nbsp;                if (b1 == -1) {</b>
+<b class="nc"><i>173</i>&nbsp;                    expectedByte(2, 2);</b>
+<i>174</i>&nbsp;                }
+<b class="nc"><i>175</i>&nbsp;                if ((b1 &amp; 0xC0) != 0x80) {</b>
+<b class="nc"><i>176</i>&nbsp;                    invalidByte(2, 2, b1);</b>
+<i>177</i>&nbsp;                }
+<b class="nc"><i>178</i>&nbsp;                c = ((b0 &lt;&lt; 6) &amp; 0x07C0) | (b1 &amp; 0x003F);</b>
+<b class="nc"><i>179</i>&nbsp;            }</b>
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;            // UTF-8:   [1110 zzzz] [10yy yyyy] [10xx xxxx]
+<i>182</i>&nbsp;            // Unicode: [zzzz yyyy] [yyxx xxxx]
+<b class="nc"><i>183</i>&nbsp;            else if ((b0 &amp; 0xF0) == 0xE0) {</b>
+<b class="nc"><i>184</i>&nbsp;                int b1 = index == fOffset</b>
+<b class="nc"><i>185</i>&nbsp;                       ? fInputStream.read() : fBuffer[index++] &amp; 0x00FF;</b>
+<b class="nc"><i>186</i>&nbsp;                if (b1 == -1) {</b>
+<b class="nc"><i>187</i>&nbsp;                    expectedByte(2, 3);</b>
+<i>188</i>&nbsp;                }
+<b class="nc"><i>189</i>&nbsp;                if ((b1 &amp; 0xC0) != 0x80</b>
+<i>190</i>&nbsp;                    || (b0 == 0xED &amp;&amp; b1 &gt;= 0xA0)
+<i>191</i>&nbsp;                    || ((b0 &amp; 0x0F) == 0 &amp;&amp; (b1 &amp; 0x20) == 0)) {
+<b class="nc"><i>192</i>&nbsp;                    invalidByte(2, 3, b1);</b>
+<i>193</i>&nbsp;                }
+<b class="nc"><i>194</i>&nbsp;                int b2 = index == fOffset</b>
+<b class="nc"><i>195</i>&nbsp;                       ? fInputStream.read() : fBuffer[index++] &amp; 0x00FF;</b>
+<b class="nc"><i>196</i>&nbsp;                if (b2 == -1) {</b>
+<b class="nc"><i>197</i>&nbsp;                    expectedByte(3, 3);</b>
+<i>198</i>&nbsp;                }
+<b class="nc"><i>199</i>&nbsp;                if ((b2 &amp; 0xC0) != 0x80) {</b>
+<b class="nc"><i>200</i>&nbsp;                    invalidByte(3, 3, b2);</b>
+<i>201</i>&nbsp;                }
+<b class="nc"><i>202</i>&nbsp;                c = ((b0 &lt;&lt; 12) &amp; 0xF000) | ((b1 &lt;&lt; 6) &amp; 0x0FC0) |</b>
+<i>203</i>&nbsp;                    (b2 &amp; 0x003F);
+<b class="nc"><i>204</i>&nbsp;            }</b>
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;            // UTF-8:   [1111 0uuu] [10uu zzzz] [10yy yyyy] [10xx xxxx]*
+<i>207</i>&nbsp;            // Unicode: [1101 10ww] [wwzz zzyy] (high surrogate)
+<i>208</i>&nbsp;            //          [1101 11yy] [yyxx xxxx] (low surrogate)
+<i>209</i>&nbsp;            //          * uuuuu = wwww + 1
+<b class="nc"><i>210</i>&nbsp;            else if ((b0 &amp; 0xF8) == 0xF0) {</b>
+<b class="nc"><i>211</i>&nbsp;                int b1 = index == fOffset</b>
+<b class="nc"><i>212</i>&nbsp;                       ? fInputStream.read() : fBuffer[index++] &amp; 0x00FF;</b>
+<b class="nc"><i>213</i>&nbsp;                if (b1 == -1) {</b>
+<b class="nc"><i>214</i>&nbsp;                    expectedByte(2, 4);</b>
+<i>215</i>&nbsp;                }
+<b class="nc"><i>216</i>&nbsp;                if ((b1 &amp; 0xC0) != 0x80</b>
+<i>217</i>&nbsp;                    || ((b1 &amp; 0x30) == 0 &amp;&amp; (b0 &amp; 0x07) == 0)) {
+<b class="nc"><i>218</i>&nbsp;                    invalidByte(2, 3, b1);</b>
+<i>219</i>&nbsp;                }
+<b class="nc"><i>220</i>&nbsp;                int b2 = index == fOffset</b>
+<b class="nc"><i>221</i>&nbsp;                       ? fInputStream.read() : fBuffer[index++] &amp; 0x00FF;</b>
+<b class="nc"><i>222</i>&nbsp;                if (b2 == -1) {</b>
+<b class="nc"><i>223</i>&nbsp;                    expectedByte(3, 4);</b>
+<i>224</i>&nbsp;                }
+<b class="nc"><i>225</i>&nbsp;                if ((b2 &amp; 0xC0) != 0x80) {</b>
+<b class="nc"><i>226</i>&nbsp;                    invalidByte(3, 3, b2);</b>
+<i>227</i>&nbsp;                }
+<b class="nc"><i>228</i>&nbsp;                int b3 = index == fOffset</b>
+<b class="nc"><i>229</i>&nbsp;                       ? fInputStream.read() : fBuffer[index++] &amp; 0x00FF;</b>
+<b class="nc"><i>230</i>&nbsp;                if (b3 == -1) {</b>
+<b class="nc"><i>231</i>&nbsp;                    expectedByte(4, 4);</b>
+<i>232</i>&nbsp;                }
+<b class="nc"><i>233</i>&nbsp;                if ((b3 &amp; 0xC0) != 0x80) {</b>
+<b class="nc"><i>234</i>&nbsp;                    invalidByte(4, 4, b3);</b>
+<i>235</i>&nbsp;                }
+<b class="nc"><i>236</i>&nbsp;                int uuuuu = ((b0 &lt;&lt; 2) &amp; 0x001C) | ((b1 &gt;&gt; 4) &amp; 0x0003);</b>
+<b class="nc"><i>237</i>&nbsp;                if (uuuuu &gt; 0x10) {</b>
+<b class="nc"><i>238</i>&nbsp;                    invalidSurrogate(uuuuu);</b>
+<i>239</i>&nbsp;                }
+<b class="nc"><i>240</i>&nbsp;                int wwww = uuuuu - 1;</b>
+<b class="nc"><i>241</i>&nbsp;                int hs = 0xD800 |</b>
+<i>242</i>&nbsp;                         ((wwww &lt;&lt; 6) &amp; 0x03C0) | ((b1 &lt;&lt; 2) &amp; 0x003C) |
+<i>243</i>&nbsp;                         ((b2 &gt;&gt; 4) &amp; 0x0003);
+<b class="nc"><i>244</i>&nbsp;                int ls = 0xDC00 | ((b2 &lt;&lt; 6) &amp; 0x03C0) | (b3 &amp; 0x003F);</b>
+<b class="nc"><i>245</i>&nbsp;                c = hs;</b>
+<b class="nc"><i>246</i>&nbsp;                fSurrogate = ls;</b>
+<b class="nc"><i>247</i>&nbsp;            }</b>
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;            // error
+<i>250</i>&nbsp;            else {
+<b class="nc"><i>251</i>&nbsp;                invalidByte(1, 1, b0);</b>
+<i>252</i>&nbsp;            }
+<b class="nc"><i>253</i>&nbsp;        }</b>
+<i>254</i>&nbsp;
+<i>255</i>&nbsp;        // use surrogate
+<i>256</i>&nbsp;        else {
+<b class="nc"><i>257</i>&nbsp;            fSurrogate = -1;</b>
+<i>258</i>&nbsp;        }
+<i>259</i>&nbsp;
+<i>260</i>&nbsp;        // return character
+<i>261</i>&nbsp;        if (DEBUG_READ) {
+<i>262</i>&nbsp;            System.out.println(&quot;read(): 0x&quot;+Integer.toHexString(c));
+<i>263</i>&nbsp;        }
+<b class="nc"><i>264</i>&nbsp;        return c;</b>
+<i>265</i>&nbsp;
+<i>266</i>&nbsp;    } // read():int
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;    /**
+<i>269</i>&nbsp;     * Read characters into a portion of an array.  This method will block
+<i>270</i>&nbsp;     * until some input is available, an I/O error occurs, or the end of the
+<i>271</i>&nbsp;     * stream is reached.
+<i>272</i>&nbsp;     *
+<i>273</i>&nbsp;     * @param      ch     Destination buffer
+<i>274</i>&nbsp;     * @param      offset Offset at which to start storing characters
+<i>275</i>&nbsp;     * @param      length Maximum number of characters to read
+<i>276</i>&nbsp;     *
+<i>277</i>&nbsp;     * @return     The number of characters read, or -1 if the end of the
+<i>278</i>&nbsp;     *             stream has been reached
+<i>279</i>&nbsp;     *
+<i>280</i>&nbsp;     * @exception  IOException  If an I/O error occurs
+<i>281</i>&nbsp;     */
+<i>282</i>&nbsp;    public int read(char ch[], int offset, int length) throws IOException {
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;        // handle surrogate
+<b class="nc"><i>285</i>&nbsp;        int out = offset;</b>
+<b class="nc"><i>286</i>&nbsp;        if (fSurrogate != -1) {</b>
+<b class="nc"><i>287</i>&nbsp;            ch[offset + 1] = (char)fSurrogate;</b>
+<b class="nc"><i>288</i>&nbsp;            fSurrogate = -1;</b>
+<b class="nc"><i>289</i>&nbsp;            length--;</b>
+<b class="nc"><i>290</i>&nbsp;            out++;</b>
+<i>291</i>&nbsp;        }
+<i>292</i>&nbsp;
+<i>293</i>&nbsp;        // read bytes
+<b class="nc"><i>294</i>&nbsp;        int count = 0;</b>
+<b class="nc"><i>295</i>&nbsp;        if (fOffset == 0) {</b>
+<i>296</i>&nbsp;            // adjust length to read
+<b class="nc"><i>297</i>&nbsp;            if (length &gt; fBuffer.length) {</b>
+<b class="nc"><i>298</i>&nbsp;                length = fBuffer.length;</b>
+<i>299</i>&nbsp;            }
+<i>300</i>&nbsp;
+<i>301</i>&nbsp;            // perform read operation
+<b class="nc"><i>302</i>&nbsp;            count = fInputStream.read(fBuffer, 0, length);</b>
+<b class="nc"><i>303</i>&nbsp;            if (count == -1) {</b>
+<b class="nc"><i>304</i>&nbsp;                return -1;</b>
+<i>305</i>&nbsp;            }
+<b class="nc"><i>306</i>&nbsp;            count += out - offset;</b>
+<i>307</i>&nbsp;        }
+<i>308</i>&nbsp;
+<i>309</i>&nbsp;        // skip read; last character was in error
+<i>310</i>&nbsp;        // NOTE: Having an offset value other than zero means that there was
+<i>311</i>&nbsp;        //       an error in the last character read. In this case, we have
+<i>312</i>&nbsp;        //       skipped the read so we don&#39;t consume any bytes past the
+<i>313</i>&nbsp;        //       error. By signalling the error on the next block read we
+<i>314</i>&nbsp;        //       allow the method to return the most valid characters that
+<i>315</i>&nbsp;        //       it can on the previous block read. -Ac
+<i>316</i>&nbsp;        else {
+<b class="nc"><i>317</i>&nbsp;            count = fOffset;</b>
+<b class="nc"><i>318</i>&nbsp;            fOffset = 0;</b>
+<i>319</i>&nbsp;        }
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;        // convert bytes to characters
+<b class="nc"><i>322</i>&nbsp;        final int total = count;</b>
+<i>323</i>&nbsp;        int in;
+<i>324</i>&nbsp;        byte byte1;
+<b class="nc"><i>325</i>&nbsp;        final byte byte0 = 0;</b>
+<b class="nc"><i>326</i>&nbsp;        for (in = 0; in &lt; total; in++) {</b>
+<b class="nc"><i>327</i>&nbsp;            byte1 = fBuffer[in];</b>
+<b class="nc"><i>328</i>&nbsp;            if (byte1 &gt;= byte0) {</b>
+<b class="nc"><i>329</i>&nbsp;                ch[out++] = (char)byte1;</b>
+<i>330</i>&nbsp;            }
+<i>331</i>&nbsp;            else   {
+<i>332</i>&nbsp;                break;
+<i>333</i>&nbsp;            }
+<i>334</i>&nbsp;        }
+<b class="nc"><i>335</i>&nbsp;        for ( ; in &lt; total; in++) {</b>
+<b class="nc"><i>336</i>&nbsp;            byte1 = fBuffer[in];</b>
+<i>337</i>&nbsp;
+<i>338</i>&nbsp;            // UTF-8:   [0xxx xxxx]
+<i>339</i>&nbsp;            // Unicode: [0000 0000] [0xxx xxxx]
+<b class="nc"><i>340</i>&nbsp;            if (byte1 &gt;= byte0) {</b>
+<b class="nc"><i>341</i>&nbsp;                ch[out++] = (char)byte1;</b>
+<b class="nc"><i>342</i>&nbsp;                continue;</b>
+<i>343</i>&nbsp;            }
+<i>344</i>&nbsp;
+<i>345</i>&nbsp;            // UTF-8:   [110y yyyy] [10xx xxxx]
+<i>346</i>&nbsp;            // Unicode: [0000 0yyy] [yyxx xxxx]
+<b class="nc"><i>347</i>&nbsp;            int b0 = byte1 &amp; 0x0FF;</b>
+<b class="nc"><i>348</i>&nbsp;            if ((b0 &amp; 0xE0) == 0xC0 &amp;&amp; (b0 &amp; 0x1E) != 0) {</b>
+<b class="nc"><i>349</i>&nbsp;                int b1 = -1;</b>
+<b class="nc"><i>350</i>&nbsp;                if (++in &lt; total) {</b>
+<b class="nc"><i>351</i>&nbsp;                    b1 = fBuffer[in] &amp; 0x00FF;</b>
+<i>352</i>&nbsp;                }
+<i>353</i>&nbsp;                else {
+<b class="nc"><i>354</i>&nbsp;                    b1 = fInputStream.read();</b>
+<b class="nc"><i>355</i>&nbsp;                    if (b1 == -1) {</b>
+<b class="nc"><i>356</i>&nbsp;                        if (out &gt; offset) {</b>
+<b class="nc"><i>357</i>&nbsp;                            fBuffer[0] = (byte)b0;</b>
+<b class="nc"><i>358</i>&nbsp;                            fOffset = 1;</b>
+<b class="nc"><i>359</i>&nbsp;                            return out - offset;</b>
+<i>360</i>&nbsp;                        }
+<b class="nc"><i>361</i>&nbsp;                        expectedByte(2, 2);</b>
+<i>362</i>&nbsp;                    }
+<b class="nc"><i>363</i>&nbsp;                    count++;</b>
+<i>364</i>&nbsp;                }
+<b class="nc"><i>365</i>&nbsp;                if ((b1 &amp; 0xC0) != 0x80) {</b>
+<b class="nc"><i>366</i>&nbsp;                    if (out &gt; offset) {</b>
+<b class="nc"><i>367</i>&nbsp;                        fBuffer[0] = (byte)b0;</b>
+<b class="nc"><i>368</i>&nbsp;                        fBuffer[1] = (byte)b1;</b>
+<b class="nc"><i>369</i>&nbsp;                        fOffset = 2;</b>
+<b class="nc"><i>370</i>&nbsp;                        return out - offset;</b>
+<i>371</i>&nbsp;                    }
+<b class="nc"><i>372</i>&nbsp;                    invalidByte(2, 2, b1);</b>
+<i>373</i>&nbsp;                }
+<b class="nc"><i>374</i>&nbsp;                int c = ((b0 &lt;&lt; 6) &amp; 0x07C0) | (b1 &amp; 0x003F);</b>
+<b class="nc"><i>375</i>&nbsp;                ch[out++] = (char)c;</b>
+<b class="nc"><i>376</i>&nbsp;                count -= 1;</b>
+<b class="nc"><i>377</i>&nbsp;                continue;</b>
+<i>378</i>&nbsp;            }
+<i>379</i>&nbsp;
+<i>380</i>&nbsp;            // UTF-8:   [1110 zzzz] [10yy yyyy] [10xx xxxx]
+<i>381</i>&nbsp;            // Unicode: [zzzz yyyy] [yyxx xxxx]
+<b class="nc"><i>382</i>&nbsp;            if ((b0 &amp; 0xF0) == 0xE0) {</b>
+<b class="nc"><i>383</i>&nbsp;                int b1 = -1;</b>
+<b class="nc"><i>384</i>&nbsp;                if (++in &lt; total) {</b>
+<b class="nc"><i>385</i>&nbsp;                    b1 = fBuffer[in] &amp; 0x00FF;</b>
+<i>386</i>&nbsp;                }
+<i>387</i>&nbsp;                else {
+<b class="nc"><i>388</i>&nbsp;                    b1 = fInputStream.read();</b>
+<b class="nc"><i>389</i>&nbsp;                    if (b1 == -1) {</b>
+<b class="nc"><i>390</i>&nbsp;                        if (out &gt; offset) {</b>
+<b class="nc"><i>391</i>&nbsp;                            fBuffer[0] = (byte)b0;</b>
+<b class="nc"><i>392</i>&nbsp;                            fOffset = 1;</b>
+<b class="nc"><i>393</i>&nbsp;                            return out - offset;</b>
+<i>394</i>&nbsp;                        }
+<b class="nc"><i>395</i>&nbsp;                        expectedByte(2, 3);</b>
+<i>396</i>&nbsp;                    }
+<b class="nc"><i>397</i>&nbsp;                    count++;</b>
+<i>398</i>&nbsp;                }
+<b class="nc"><i>399</i>&nbsp;                if ((b1 &amp; 0xC0) != 0x80</b>
+<i>400</i>&nbsp;                    || (b0 == 0xED &amp;&amp; b1 &gt;= 0xA0)
+<i>401</i>&nbsp;                    || ((b0 &amp; 0x0F) == 0 &amp;&amp; (b1 &amp; 0x20) == 0)) {
+<b class="nc"><i>402</i>&nbsp;                    if (out &gt; offset) {</b>
+<b class="nc"><i>403</i>&nbsp;                        fBuffer[0] = (byte)b0;</b>
+<b class="nc"><i>404</i>&nbsp;                        fBuffer[1] = (byte)b1;</b>
+<b class="nc"><i>405</i>&nbsp;                        fOffset = 2;</b>
+<b class="nc"><i>406</i>&nbsp;                        return out - offset;</b>
+<i>407</i>&nbsp;                    }
+<b class="nc"><i>408</i>&nbsp;                    invalidByte(2, 3, b1);</b>
+<i>409</i>&nbsp;                }
+<b class="nc"><i>410</i>&nbsp;                int b2 = -1;</b>
+<b class="nc"><i>411</i>&nbsp;                if (++in &lt; total) {</b>
+<b class="nc"><i>412</i>&nbsp;                    b2 = fBuffer[in] &amp; 0x00FF;</b>
+<i>413</i>&nbsp;                }
+<i>414</i>&nbsp;                else {
+<b class="nc"><i>415</i>&nbsp;                    b2 = fInputStream.read();</b>
+<b class="nc"><i>416</i>&nbsp;                    if (b2 == -1) {</b>
+<b class="nc"><i>417</i>&nbsp;                        if (out &gt; offset) {</b>
+<b class="nc"><i>418</i>&nbsp;                            fBuffer[0] = (byte)b0;</b>
+<b class="nc"><i>419</i>&nbsp;                            fBuffer[1] = (byte)b1;</b>
+<b class="nc"><i>420</i>&nbsp;                            fOffset = 2;</b>
+<b class="nc"><i>421</i>&nbsp;                            return out - offset;</b>
+<i>422</i>&nbsp;                        }
+<b class="nc"><i>423</i>&nbsp;                        expectedByte(3, 3);</b>
+<i>424</i>&nbsp;                    }
+<b class="nc"><i>425</i>&nbsp;                    count++;</b>
+<i>426</i>&nbsp;                }
+<b class="nc"><i>427</i>&nbsp;                if ((b2 &amp; 0xC0) != 0x80) {</b>
+<b class="nc"><i>428</i>&nbsp;                    if (out &gt; offset) {</b>
+<b class="nc"><i>429</i>&nbsp;                        fBuffer[0] = (byte)b0;</b>
+<b class="nc"><i>430</i>&nbsp;                        fBuffer[1] = (byte)b1;</b>
+<b class="nc"><i>431</i>&nbsp;                        fBuffer[2] = (byte)b2;</b>
+<b class="nc"><i>432</i>&nbsp;                        fOffset = 3;</b>
+<b class="nc"><i>433</i>&nbsp;                        return out - offset;</b>
+<i>434</i>&nbsp;                    }
+<b class="nc"><i>435</i>&nbsp;                    invalidByte(3, 3, b2);</b>
+<i>436</i>&nbsp;                }
+<b class="nc"><i>437</i>&nbsp;                int c = ((b0 &lt;&lt; 12) &amp; 0xF000) | ((b1 &lt;&lt; 6) &amp; 0x0FC0) |</b>
+<i>438</i>&nbsp;                        (b2 &amp; 0x003F);
+<b class="nc"><i>439</i>&nbsp;                ch[out++] = (char)c;</b>
+<b class="nc"><i>440</i>&nbsp;                count -= 2;</b>
+<b class="nc"><i>441</i>&nbsp;                continue;</b>
+<i>442</i>&nbsp;            }
+<i>443</i>&nbsp;
+<i>444</i>&nbsp;            // UTF-8:   [1111 0uuu] [10uu zzzz] [10yy yyyy] [10xx xxxx]*
+<i>445</i>&nbsp;            // Unicode: [1101 10ww] [wwzz zzyy] (high surrogate)
+<i>446</i>&nbsp;            //          [1101 11yy] [yyxx xxxx] (low surrogate)
+<i>447</i>&nbsp;            //          * uuuuu = wwww + 1
+<b class="nc"><i>448</i>&nbsp;            if ((b0 &amp; 0xF8) == 0xF0) {</b>
+<b class="nc"><i>449</i>&nbsp;                int b1 = -1;</b>
+<b class="nc"><i>450</i>&nbsp;                if (++in &lt; total) {</b>
+<b class="nc"><i>451</i>&nbsp;                    b1 = fBuffer[in] &amp; 0x00FF;</b>
+<i>452</i>&nbsp;                }
+<i>453</i>&nbsp;                else {
+<b class="nc"><i>454</i>&nbsp;                    b1 = fInputStream.read();</b>
+<b class="nc"><i>455</i>&nbsp;                    if (b1 == -1) {</b>
+<b class="nc"><i>456</i>&nbsp;                        if (out &gt; offset) {</b>
+<b class="nc"><i>457</i>&nbsp;                            fBuffer[0] = (byte)b0;</b>
+<b class="nc"><i>458</i>&nbsp;                            fOffset = 1;</b>
+<b class="nc"><i>459</i>&nbsp;                            return out - offset;</b>
+<i>460</i>&nbsp;                        }
+<b class="nc"><i>461</i>&nbsp;                        expectedByte(2, 4);</b>
+<i>462</i>&nbsp;                    }
+<b class="nc"><i>463</i>&nbsp;                    count++;</b>
+<i>464</i>&nbsp;                }
+<b class="nc"><i>465</i>&nbsp;                if ((b1 &amp; 0xC0) != 0x80</b>
+<i>466</i>&nbsp;                    || ((b1 &amp; 0x30) == 0 &amp;&amp; (b0 &amp; 0x07) == 0)) {
+<b class="nc"><i>467</i>&nbsp;                    if (out &gt; offset) {</b>
+<b class="nc"><i>468</i>&nbsp;                        fBuffer[0] = (byte)b0;</b>
+<b class="nc"><i>469</i>&nbsp;                        fBuffer[1] = (byte)b1;</b>
+<b class="nc"><i>470</i>&nbsp;                        fOffset = 2;</b>
+<b class="nc"><i>471</i>&nbsp;                        return out - offset;</b>
+<i>472</i>&nbsp;                    }
+<b class="nc"><i>473</i>&nbsp;                    invalidByte(2, 4, b1);</b>
+<i>474</i>&nbsp;                }
+<b class="nc"><i>475</i>&nbsp;                int b2 = -1;</b>
+<b class="nc"><i>476</i>&nbsp;                if (++in &lt; total) {</b>
+<b class="nc"><i>477</i>&nbsp;                    b2 = fBuffer[in] &amp; 0x00FF;</b>
+<i>478</i>&nbsp;                }
+<i>479</i>&nbsp;                else {
+<b class="nc"><i>480</i>&nbsp;                    b2 = fInputStream.read();</b>
+<b class="nc"><i>481</i>&nbsp;                    if (b2 == -1) {</b>
+<b class="nc"><i>482</i>&nbsp;                        if (out &gt; offset) {</b>
+<b class="nc"><i>483</i>&nbsp;                            fBuffer[0] = (byte)b0;</b>
+<b class="nc"><i>484</i>&nbsp;                            fBuffer[1] = (byte)b1;</b>
+<b class="nc"><i>485</i>&nbsp;                            fOffset = 2;</b>
+<b class="nc"><i>486</i>&nbsp;                            return out - offset;</b>
+<i>487</i>&nbsp;                        }
+<b class="nc"><i>488</i>&nbsp;                        expectedByte(3, 4);</b>
+<i>489</i>&nbsp;                    }
+<b class="nc"><i>490</i>&nbsp;                    count++;</b>
+<i>491</i>&nbsp;                }
+<b class="nc"><i>492</i>&nbsp;                if ((b2 &amp; 0xC0) != 0x80) {</b>
+<b class="nc"><i>493</i>&nbsp;                    if (out &gt; offset) {</b>
+<b class="nc"><i>494</i>&nbsp;                        fBuffer[0] = (byte)b0;</b>
+<b class="nc"><i>495</i>&nbsp;                        fBuffer[1] = (byte)b1;</b>
+<b class="nc"><i>496</i>&nbsp;                        fBuffer[2] = (byte)b2;</b>
+<b class="nc"><i>497</i>&nbsp;                        fOffset = 3;</b>
+<b class="nc"><i>498</i>&nbsp;                        return out - offset;</b>
+<i>499</i>&nbsp;                    }
+<b class="nc"><i>500</i>&nbsp;                    invalidByte(3, 4, b2);</b>
+<i>501</i>&nbsp;                }
+<b class="nc"><i>502</i>&nbsp;                int b3 = -1;</b>
+<b class="nc"><i>503</i>&nbsp;                if (++in &lt; total) {</b>
+<b class="nc"><i>504</i>&nbsp;                    b3 = fBuffer[in] &amp; 0x00FF;</b>
+<i>505</i>&nbsp;                }
+<i>506</i>&nbsp;                else {
+<b class="nc"><i>507</i>&nbsp;                    b3 = fInputStream.read();</b>
+<b class="nc"><i>508</i>&nbsp;                    if (b3 == -1) {</b>
+<b class="nc"><i>509</i>&nbsp;                        if (out &gt; offset) {</b>
+<b class="nc"><i>510</i>&nbsp;                            fBuffer[0] = (byte)b0;</b>
+<b class="nc"><i>511</i>&nbsp;                            fBuffer[1] = (byte)b1;</b>
+<b class="nc"><i>512</i>&nbsp;                            fBuffer[2] = (byte)b2;</b>
+<b class="nc"><i>513</i>&nbsp;                            fOffset = 3;</b>
+<b class="nc"><i>514</i>&nbsp;                            return out - offset;</b>
+<i>515</i>&nbsp;                        }
+<b class="nc"><i>516</i>&nbsp;                        expectedByte(4, 4);</b>
+<i>517</i>&nbsp;                    }
+<b class="nc"><i>518</i>&nbsp;                    count++;</b>
+<i>519</i>&nbsp;                }
+<b class="nc"><i>520</i>&nbsp;                if ((b3 &amp; 0xC0) != 0x80) {</b>
+<b class="nc"><i>521</i>&nbsp;                    if (out &gt; offset) {</b>
+<b class="nc"><i>522</i>&nbsp;                        fBuffer[0] = (byte)b0;</b>
+<b class="nc"><i>523</i>&nbsp;                        fBuffer[1] = (byte)b1;</b>
+<b class="nc"><i>524</i>&nbsp;                        fBuffer[2] = (byte)b2;</b>
+<b class="nc"><i>525</i>&nbsp;                        fBuffer[3] = (byte)b3;</b>
+<b class="nc"><i>526</i>&nbsp;                        fOffset = 4;</b>
+<b class="nc"><i>527</i>&nbsp;                        return out - offset;</b>
+<i>528</i>&nbsp;                    }
+<b class="nc"><i>529</i>&nbsp;                    invalidByte(4, 4, b2);</b>
+<i>530</i>&nbsp;                }
+<i>531</i>&nbsp;
+<i>532</i>&nbsp;                // check if output buffer is large enough to hold 2 surrogate chars
+<b class="nc"><i>533</i>&nbsp;                if (out + 1 &gt;= ch.length) {</b>
+<b class="nc"><i>534</i>&nbsp;                    fBuffer[0] = (byte)b0;</b>
+<b class="nc"><i>535</i>&nbsp;                    fBuffer[1] = (byte)b1;</b>
+<b class="nc"><i>536</i>&nbsp;                    fBuffer[2] = (byte)b2;</b>
+<b class="nc"><i>537</i>&nbsp;                    fBuffer[3] = (byte)b3;</b>
+<b class="nc"><i>538</i>&nbsp;                    fOffset = 4;</b>
+<b class="nc"><i>539</i>&nbsp;                    return out - offset;</b>
+<i>540</i>&nbsp;                }
+<i>541</i>&nbsp;
+<i>542</i>&nbsp;                // decode bytes into surrogate characters
+<b class="nc"><i>543</i>&nbsp;                int uuuuu = ((b0 &lt;&lt; 2) &amp; 0x001C) | ((b1 &gt;&gt; 4) &amp; 0x0003);</b>
+<b class="nc"><i>544</i>&nbsp;                if (uuuuu &gt; 0x10) {</b>
+<b class="nc"><i>545</i>&nbsp;                    invalidSurrogate(uuuuu);</b>
+<i>546</i>&nbsp;                }
+<b class="nc"><i>547</i>&nbsp;                int wwww = uuuuu - 1;</b>
+<b class="nc"><i>548</i>&nbsp;                int zzzz = b1 &amp; 0x000F;</b>
+<b class="nc"><i>549</i>&nbsp;                int yyyyyy = b2 &amp; 0x003F;</b>
+<b class="nc"><i>550</i>&nbsp;                int xxxxxx = b3 &amp; 0x003F;</b>
+<b class="nc"><i>551</i>&nbsp;                int hs = 0xD800 | ((wwww &lt;&lt; 6) &amp; 0x03C0) | (zzzz &lt;&lt; 2) | (yyyyyy &gt;&gt; 4);</b>
+<b class="nc"><i>552</i>&nbsp;                int ls = 0xDC00 | ((yyyyyy &lt;&lt; 6) &amp; 0x03C0) | xxxxxx;</b>
+<i>553</i>&nbsp;
+<i>554</i>&nbsp;                // set characters
+<b class="nc"><i>555</i>&nbsp;                ch[out++] = (char)hs;</b>
+<b class="nc"><i>556</i>&nbsp;                ch[out++] = (char)ls;</b>
+<b class="nc"><i>557</i>&nbsp;                count -= 2;</b>
+<b class="nc"><i>558</i>&nbsp;                continue;</b>
+<i>559</i>&nbsp;            }
+<i>560</i>&nbsp;
+<i>561</i>&nbsp;            // error
+<b class="nc"><i>562</i>&nbsp;            if (out &gt; offset) {</b>
+<b class="nc"><i>563</i>&nbsp;                fBuffer[0] = (byte)b0;</b>
+<b class="nc"><i>564</i>&nbsp;                fOffset = 1;</b>
+<b class="nc"><i>565</i>&nbsp;                return out - offset;</b>
+<i>566</i>&nbsp;            }
+<b class="nc"><i>567</i>&nbsp;            invalidByte(1, 1, b0);</b>
+<i>568</i>&nbsp;        }
+<i>569</i>&nbsp;
+<i>570</i>&nbsp;        // return number of characters converted
+<i>571</i>&nbsp;        if (DEBUG_READ) {
+<i>572</i>&nbsp;            System.out.println(&quot;read(char[],&quot;+offset+&#39;,&#39;+length+&quot;): count=&quot;+count);
+<i>573</i>&nbsp;        }
+<b class="nc"><i>574</i>&nbsp;        return count;</b>
+<i>575</i>&nbsp;
+<i>576</i>&nbsp;    } // read(char[],int,int)
+<i>577</i>&nbsp;
+<i>578</i>&nbsp;    /**
+<i>579</i>&nbsp;     * Skip characters.  This method will block until some characters are
+<i>580</i>&nbsp;     * available, an I/O error occurs, or the end of the stream is reached.
+<i>581</i>&nbsp;     *
+<i>582</i>&nbsp;     * @param  n  The number of characters to skip
+<i>583</i>&nbsp;     *
+<i>584</i>&nbsp;     * @return    The number of characters actually skipped
+<i>585</i>&nbsp;     *
+<i>586</i>&nbsp;     * @exception  IOException  If an I/O error occurs
+<i>587</i>&nbsp;     */
+<i>588</i>&nbsp;    public long skip(long n) throws IOException {
+<i>589</i>&nbsp;
+<b class="nc"><i>590</i>&nbsp;        long remaining = n;</b>
+<b class="nc"><i>591</i>&nbsp;        final char[] ch = new char[fBuffer.length];</b>
+<i>592</i>&nbsp;        do {
+<b class="nc"><i>593</i>&nbsp;            int length = ch.length &lt; remaining ? ch.length : (int)remaining;</b>
+<b class="nc"><i>594</i>&nbsp;            int count = read(ch, 0, length);</b>
+<b class="nc"><i>595</i>&nbsp;            if (count &gt; 0) {</b>
+<b class="nc"><i>596</i>&nbsp;                remaining -= count;</b>
+<i>597</i>&nbsp;            }
+<i>598</i>&nbsp;            else {
+<i>599</i>&nbsp;                break;
+<i>600</i>&nbsp;            }
+<b class="nc"><i>601</i>&nbsp;        } while (remaining &gt; 0);</b>
+<i>602</i>&nbsp;
+<b class="nc"><i>603</i>&nbsp;        long skipped = n - remaining;</b>
+<b class="nc"><i>604</i>&nbsp;        return skipped;</b>
+<i>605</i>&nbsp;
+<i>606</i>&nbsp;    } // skip(long):long
+<i>607</i>&nbsp;
+<i>608</i>&nbsp;    /**
+<i>609</i>&nbsp;     * Tell whether this stream is ready to be read.
+<i>610</i>&nbsp;     *
+<i>611</i>&nbsp;     * @return True if the next read() is guaranteed not to block for input,
+<i>612</i>&nbsp;     * false otherwise.  Note that returning false does not guarantee that the
+<i>613</i>&nbsp;     * next read will block.
+<i>614</i>&nbsp;     *
+<i>615</i>&nbsp;     * @exception  IOException  If an I/O error occurs
+<i>616</i>&nbsp;     */
+<i>617</i>&nbsp;    public boolean ready() throws IOException {
+<b class="nc"><i>618</i>&nbsp;        return false;</b>
+<i>619</i>&nbsp;    } // ready()
+<i>620</i>&nbsp;
+<i>621</i>&nbsp;    /**
+<i>622</i>&nbsp;     * Tell whether this stream supports the mark() operation.
+<i>623</i>&nbsp;     */
+<i>624</i>&nbsp;    public boolean markSupported() {
+<b class="nc"><i>625</i>&nbsp;        return false;</b>
+<i>626</i>&nbsp;    } // markSupported()
+<i>627</i>&nbsp;
+<i>628</i>&nbsp;    /**
+<i>629</i>&nbsp;     * Mark the present position in the stream.  Subsequent calls to reset()
+<i>630</i>&nbsp;     * will attempt to reposition the stream to this point.  Not all
+<i>631</i>&nbsp;     * character-input streams support the mark() operation.
+<i>632</i>&nbsp;     *
+<i>633</i>&nbsp;     * @param  readAheadLimit  Limit on the number of characters that may be
+<i>634</i>&nbsp;     *                         read while still preserving the mark.  After
+<i>635</i>&nbsp;     *                         reading this many characters, attempting to
+<i>636</i>&nbsp;     *                         reset the stream may fail.
+<i>637</i>&nbsp;     *
+<i>638</i>&nbsp;     * @exception  IOException  If the stream does not support mark(),
+<i>639</i>&nbsp;     *                          or if some other I/O error occurs
+<i>640</i>&nbsp;     */
+<i>641</i>&nbsp;    public void mark(int readAheadLimit) throws IOException {
+<b class="nc"><i>642</i>&nbsp;        throw new IOException(fFormatter.formatMessage(fLocale, &quot;OperationNotSupported&quot;, new Object[]{&quot;mark()&quot;, &quot;UTF-8&quot;}));</b>
+<i>643</i>&nbsp;    } // mark(int)
+<i>644</i>&nbsp;
+<i>645</i>&nbsp;    /**
+<i>646</i>&nbsp;     * Reset the stream.  If the stream has been marked, then attempt to
+<i>647</i>&nbsp;     * reposition it at the mark.  If the stream has not been marked, then
+<i>648</i>&nbsp;     * attempt to reset it in some way appropriate to the particular stream,
+<i>649</i>&nbsp;     * for example by repositioning it to its starting point.  Not all
+<i>650</i>&nbsp;     * character-input streams support the reset() operation, and some support
+<i>651</i>&nbsp;     * reset() without supporting mark().
+<i>652</i>&nbsp;     *
+<i>653</i>&nbsp;     * @exception  IOException  If the stream has not been marked,
+<i>654</i>&nbsp;     *                          or if the mark has been invalidated,
+<i>655</i>&nbsp;     *                          or if the stream does not support reset(),
+<i>656</i>&nbsp;     *                          or if some other I/O error occurs
+<i>657</i>&nbsp;     */
+<i>658</i>&nbsp;    public void reset() throws IOException {
+<b class="nc"><i>659</i>&nbsp;        fOffset = 0;</b>
+<b class="nc"><i>660</i>&nbsp;        fSurrogate = -1;</b>
+<i>661</i>&nbsp;    } // reset()
+<i>662</i>&nbsp;
+<i>663</i>&nbsp;    /**
+<i>664</i>&nbsp;     * Close the stream.  Once a stream has been closed, further read(),
+<i>665</i>&nbsp;     * ready(), mark(), or reset() invocations will throw an IOException.
+<i>666</i>&nbsp;     * Closing a previously-closed stream, however, has no effect.
+<i>667</i>&nbsp;     *
+<i>668</i>&nbsp;     * @exception  IOException  If an I/O error occurs
+<i>669</i>&nbsp;     */
+<i>670</i>&nbsp;    public void close() throws IOException {
+<b class="nc"><i>671</i>&nbsp;        BufferAllocator ba = ThreadLocalBufferAllocator.getBufferAllocator();</b>
+<b class="nc"><i>672</i>&nbsp;        ba.returnByteBuffer(fBuffer);</b>
+<b class="nc"><i>673</i>&nbsp;        fBuffer = null;</b>
+<b class="nc"><i>674</i>&nbsp;        fInputStream.close();</b>
+<i>675</i>&nbsp;    } // close()
+<i>676</i>&nbsp;
+<i>677</i>&nbsp;    //
+<i>678</i>&nbsp;    // Private methods
+<i>679</i>&nbsp;    //
+<i>680</i>&nbsp;
+<i>681</i>&nbsp;    /** Throws an exception for expected byte. */
+<i>682</i>&nbsp;    private void expectedByte(int position, int count)
+<i>683</i>&nbsp;        throws MalformedByteSequenceException {
+<i>684</i>&nbsp;
+<b class="nc"><i>685</i>&nbsp;        throw new MalformedByteSequenceException(fFormatter,</b>
+<i>686</i>&nbsp;            fLocale,
+<i>687</i>&nbsp;            XMLMessageFormatter.XML_DOMAIN,
+<i>688</i>&nbsp;            &quot;ExpectedByte&quot;,
+<b class="nc"><i>689</i>&nbsp;            new Object[] {Integer.toString(position), Integer.toString(count)});</b>
+<i>690</i>&nbsp;
+<i>691</i>&nbsp;    } // expectedByte(int,int)
+<i>692</i>&nbsp;
+<i>693</i>&nbsp;    /** Throws an exception for invalid byte. */
+<i>694</i>&nbsp;    private void invalidByte(int position, int count, int c)
+<i>695</i>&nbsp;        throws MalformedByteSequenceException {
+<i>696</i>&nbsp;
+<b class="nc"><i>697</i>&nbsp;        throw new MalformedByteSequenceException(fFormatter,</b>
+<i>698</i>&nbsp;            fLocale,
+<i>699</i>&nbsp;            XMLMessageFormatter.XML_DOMAIN,
+<i>700</i>&nbsp;            &quot;InvalidByte&quot;,
+<b class="nc"><i>701</i>&nbsp;            new Object [] {Integer.toString(position), Integer.toString(count)});</b>
+<i>702</i>&nbsp;
+<i>703</i>&nbsp;    } // invalidByte(int,int,int)
+<i>704</i>&nbsp;
+<i>705</i>&nbsp;    /** Throws an exception for invalid surrogate bits. */
+<i>706</i>&nbsp;    private void invalidSurrogate(int uuuuu) throws MalformedByteSequenceException {
+<i>707</i>&nbsp;
+<b class="nc"><i>708</i>&nbsp;        throw new MalformedByteSequenceException(fFormatter,</b>
+<i>709</i>&nbsp;            fLocale,
+<i>710</i>&nbsp;            XMLMessageFormatter.XML_DOMAIN,
+<i>711</i>&nbsp;            &quot;InvalidHighSurrogate&quot;,
+<b class="nc"><i>712</i>&nbsp;            new Object[] {Integer.toHexString(uuuuu)});</b>
+<i>713</i>&nbsp;
+<i>714</i>&nbsp;    } // invalidSurrogate(int)
+<i>715</i>&nbsp;
+<i>716</i>&nbsp;} // class UTF8Reader
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

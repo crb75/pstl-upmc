@@ -1,0 +1,190 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: When</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.compiler</a> ]
+</div>
+
+<h1>Coverage Summary for Class: When (com.sun.org.apache.xalan.internal.xsltc.compiler)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">When</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 24)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: When.java,v 1.2.4.1 2005/09/05 09:36:58 pvedula Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.compiler;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.BooleanType;
+<i>27</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
+<i>28</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg;
+<i>29</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+<i>30</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
+<i>31</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+<i>32</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;/**
+<i>35</i>&nbsp; * @author Jacek Ambroziak
+<i>36</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>37</i>&nbsp; * @author Morten Jorgensen
+<i>38</i>&nbsp; */
+<b class="nc"><i>39</i>&nbsp;final class When extends Instruction {</b>
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    private Expression _test;
+<b class="nc"><i>42</i>&nbsp;    private boolean _ignore = false;</b>
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    public void display(int indent) {
+<b class="nc"><i>45</i>&nbsp;        indent(indent);</b>
+<b class="nc"><i>46</i>&nbsp;        Util.println(&quot;When&quot;);</b>
+<b class="nc"><i>47</i>&nbsp;        indent(indent + IndentIncrement);</b>
+<b class="nc"><i>48</i>&nbsp;        System.out.print(&quot;test &quot;);</b>
+<b class="nc"><i>49</i>&nbsp;        Util.println(_test.toString());</b>
+<b class="nc"><i>50</i>&nbsp;        displayContents(indent + IndentIncrement);</b>
+<i>51</i>&nbsp;    }
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    public Expression getTest() {
+<b class="nc"><i>54</i>&nbsp;        return _test;</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    public boolean ignore() {
+<b class="nc"><i>58</i>&nbsp;        return(_ignore);</b>
+<i>59</i>&nbsp;    }
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    public void parseContents(Parser parser) {
+<b class="nc"><i>62</i>&nbsp;        _test = parser.parseExpression(this, &quot;test&quot;, null);</b>
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;        // Ignore xsl:if when test is false (function-available() and
+<i>65</i>&nbsp;        // element-available())
+<b class="nc"><i>66</i>&nbsp;        Object result = _test.evaluateAtCompileTime();</b>
+<b class="nc"><i>67</i>&nbsp;        if (result != null &amp;&amp; result instanceof Boolean) {</b>
+<b class="nc"><i>68</i>&nbsp;            _ignore = !((Boolean) result).booleanValue();</b>
+<i>69</i>&nbsp;        }
+<i>70</i>&nbsp;
+<b class="nc"><i>71</i>&nbsp;        parseChildren(parser);</b>
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;        // Make sure required attribute(s) have been set
+<b class="nc"><i>74</i>&nbsp;        if (_test.isDummy()) {</b>
+<b class="nc"><i>75</i>&nbsp;            reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, &quot;test&quot;);</b>
+<i>76</i>&nbsp;        }
+<i>77</i>&nbsp;    }
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    /**
+<i>80</i>&nbsp;     * Type-check this when element. The test should always be type checked,
+<i>81</i>&nbsp;     * while we do not bother with the contents if we know the test fails.
+<i>82</i>&nbsp;     * This is important in cases where the &quot;test&quot; expression tests for
+<i>83</i>&nbsp;     * the support of a non-available element, and the &lt;xsl:when&gt; body contains
+<i>84</i>&nbsp;     * this non-available element.
+<i>85</i>&nbsp;     */
+<i>86</i>&nbsp;    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
+<i>87</i>&nbsp;        // Type-check the test expression
+<b class="nc"><i>88</i>&nbsp;        if (_test.typeCheck(stable) instanceof BooleanType == false) {</b>
+<b class="nc"><i>89</i>&nbsp;            _test = new CastExpr(_test, Type.Boolean);</b>
+<i>90</i>&nbsp;        }
+<i>91</i>&nbsp;        // Type-check the contents (if necessary)
+<b class="nc"><i>92</i>&nbsp;        if (!_ignore) {</b>
+<b class="nc"><i>93</i>&nbsp;            typeCheckContents(stable);</b>
+<i>94</i>&nbsp;        }
+<i>95</i>&nbsp;
+<b class="nc"><i>96</i>&nbsp;        return Type.Void;</b>
+<i>97</i>&nbsp;    }
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    /**
+<i>100</i>&nbsp;     * This method should never be called. An Otherwise object will explicitly
+<i>101</i>&nbsp;     * translate the &quot;test&quot; expression and and contents of this element.
+<i>102</i>&nbsp;     */
+<i>103</i>&nbsp;    public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
+<b class="nc"><i>104</i>&nbsp;        final ErrorMsg msg = new ErrorMsg(ErrorMsg.STRAY_WHEN_ERR, this);</b>
+<b class="nc"><i>105</i>&nbsp;        getParser().reportError(Constants.ERROR, msg);</b>
+<i>106</i>&nbsp;    }
+<i>107</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

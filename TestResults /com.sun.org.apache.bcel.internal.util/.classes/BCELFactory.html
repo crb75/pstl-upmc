@@ -1,0 +1,443 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BCELFactory</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.bcel.internal.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BCELFactory (com.sun.org.apache.bcel.internal.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BCELFactory</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 143)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;package com.sun.org.apache.bcel.internal.util;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import com.sun.org.apache.bcel.internal.generic.*;
+<i>8</i>&nbsp;import com.sun.org.apache.bcel.internal.classfile.Utility;
+<i>9</i>&nbsp;import com.sun.org.apache.bcel.internal.Constants;
+<i>10</i>&nbsp;import java.io.PrintWriter;
+<i>11</i>&nbsp;import java.util.*;
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;/* ====================================================================
+<i>14</i>&nbsp; * The Apache Software License, Version 1.1
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; * Copyright (c) 2002 The Apache Software Foundation.  All rights
+<i>17</i>&nbsp; * reserved.
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; * Redistribution and use in source and binary forms, with or without
+<i>20</i>&nbsp; * modification, are permitted provided that the following conditions
+<i>21</i>&nbsp; * are met:
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; * 1. Redistributions of source code must retain the above copyright
+<i>24</i>&nbsp; *    notice, this list of conditions and the following disclaimer.
+<i>25</i>&nbsp; *
+<i>26</i>&nbsp; * 2. Redistributions in binary form must reproduce the above copyright
+<i>27</i>&nbsp; *    notice, this list of conditions and the following disclaimer in
+<i>28</i>&nbsp; *    the documentation and/or other materials provided with the
+<i>29</i>&nbsp; *    distribution.
+<i>30</i>&nbsp; *
+<i>31</i>&nbsp; * 3. The end-user documentation included with the redistribution,
+<i>32</i>&nbsp; *    if any, must include the following acknowledgment:
+<i>33</i>&nbsp; *       &quot;This product includes software developed by the
+<i>34</i>&nbsp; *        Apache Software Foundation (http://www.apache.org/).&quot;
+<i>35</i>&nbsp; *    Alternately, this acknowledgment may appear in the software itself,
+<i>36</i>&nbsp; *    if and wherever such third-party acknowledgments normally appear.
+<i>37</i>&nbsp; *
+<i>38</i>&nbsp; * 4. The names &quot;Apache&quot; and &quot;Apache Software Foundation&quot; and
+<i>39</i>&nbsp; *    &quot;Apache BCEL&quot; must not be used to endorse or promote products
+<i>40</i>&nbsp; *    derived from this software without prior written permission. For
+<i>41</i>&nbsp; *    written permission, please contact apache@apache.org.
+<i>42</i>&nbsp; *
+<i>43</i>&nbsp; * 5. Products derived from this software may not be called &quot;Apache&quot;,
+<i>44</i>&nbsp; *    &quot;Apache BCEL&quot;, nor may &quot;Apache&quot; appear in their name, without
+<i>45</i>&nbsp; *    prior written permission of the Apache Software Foundation.
+<i>46</i>&nbsp; *
+<i>47</i>&nbsp; * THIS SOFTWARE IS PROVIDED ``AS IS&#39;&#39; AND ANY EXPRESSED OR IMPLIED
+<i>48</i>&nbsp; * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+<i>49</i>&nbsp; * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+<i>50</i>&nbsp; * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+<i>51</i>&nbsp; * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+<i>52</i>&nbsp; * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+<i>53</i>&nbsp; * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+<i>54</i>&nbsp; * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+<i>55</i>&nbsp; * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+<i>56</i>&nbsp; * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+<i>57</i>&nbsp; * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+<i>58</i>&nbsp; * SUCH DAMAGE.
+<i>59</i>&nbsp; * ====================================================================
+<i>60</i>&nbsp; *
+<i>61</i>&nbsp; * This software consists of voluntary contributions made by many
+<i>62</i>&nbsp; * individuals on behalf of the Apache Software Foundation.  For more
+<i>63</i>&nbsp; * information on the Apache Software Foundation, please see
+<i>64</i>&nbsp; * &lt;http://www.apache.org/&gt;.
+<i>65</i>&nbsp; */
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;/**
+<i>68</i>&nbsp; * Factory creates il.append() statements, and sets instruction targets.
+<i>69</i>&nbsp; * A helper class for BCELifier.
+<i>70</i>&nbsp; *
+<i>71</i>&nbsp; * @see BCELifier
+<i>72</i>&nbsp; * @author  &lt;A HREF=&quot;mailto:markus.dahm@berlin.de&quot;&gt;M. Dahm&lt;/A&gt;
+<i>73</i>&nbsp; */
+<i>74</i>&nbsp;class BCELFactory extends EmptyVisitor {
+<i>75</i>&nbsp;  private MethodGen       _mg;
+<i>76</i>&nbsp;  private PrintWriter     _out;
+<i>77</i>&nbsp;  private ConstantPoolGen _cp;
+<i>78</i>&nbsp;
+<b class="nc"><i>79</i>&nbsp;  BCELFactory(MethodGen mg, PrintWriter out) {</b>
+<b class="nc"><i>80</i>&nbsp;    _mg  = mg;</b>
+<b class="nc"><i>81</i>&nbsp;    _cp  = mg.getConstantPool();</b>
+<b class="nc"><i>82</i>&nbsp;    _out = out;</b>
+<i>83</i>&nbsp;  }
+<i>84</i>&nbsp;
+<b class="nc"><i>85</i>&nbsp;  private HashMap branch_map = new HashMap(); // Map&lt;Instruction, InstructionHandle&gt;</b>
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;  public void start() {
+<b class="nc"><i>88</i>&nbsp;    if(!_mg.isAbstract() &amp;&amp; !_mg.isNative()) {</b>
+<b class="nc"><i>89</i>&nbsp;      for(InstructionHandle ih = _mg.getInstructionList().getStart();</b>
+<b class="nc"><i>90</i>&nbsp;          ih != null; ih = ih.getNext()) {</b>
+<b class="nc"><i>91</i>&nbsp;        Instruction i = ih.getInstruction();</b>
+<i>92</i>&nbsp;
+<b class="nc"><i>93</i>&nbsp;        if(i instanceof BranchInstruction) {</b>
+<b class="nc"><i>94</i>&nbsp;          branch_map.put(i, ih); // memorize container</b>
+<i>95</i>&nbsp;        }
+<i>96</i>&nbsp;
+<b class="nc"><i>97</i>&nbsp;        if(ih.hasTargeters()) {</b>
+<b class="nc"><i>98</i>&nbsp;          if(i instanceof BranchInstruction) {</b>
+<b class="nc"><i>99</i>&nbsp;            _out.println(&quot;    InstructionHandle ih_&quot; + ih.getPosition() + &quot;;&quot;);</b>
+<i>100</i>&nbsp;          } else {
+<b class="nc"><i>101</i>&nbsp;            _out.print(&quot;    InstructionHandle ih_&quot; + ih.getPosition() + &quot; = &quot;);</b>
+<i>102</i>&nbsp;          }
+<i>103</i>&nbsp;        } else {
+<b class="nc"><i>104</i>&nbsp;          _out.print(&quot;    &quot;);</b>
+<i>105</i>&nbsp;        }
+<i>106</i>&nbsp;
+<b class="nc"><i>107</i>&nbsp;        if(!visitInstruction(i))</b>
+<b class="nc"><i>108</i>&nbsp;          i.accept(this);</b>
+<i>109</i>&nbsp;      }
+<i>110</i>&nbsp;
+<b class="nc"><i>111</i>&nbsp;      updateBranchTargets();</b>
+<b class="nc"><i>112</i>&nbsp;      updateExceptionHandlers();</b>
+<i>113</i>&nbsp;    }
+<i>114</i>&nbsp;  }
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;  private boolean visitInstruction(Instruction i) {
+<b class="nc"><i>117</i>&nbsp;    short opcode = i.getOpcode();</b>
+<i>118</i>&nbsp;
+<b class="nc"><i>119</i>&nbsp;    if((InstructionConstants.INSTRUCTIONS[opcode] != null) &amp;&amp;</b>
+<i>120</i>&nbsp;       !(i instanceof ConstantPushInstruction) &amp;&amp;
+<i>121</i>&nbsp;       !(i instanceof ReturnInstruction)) { // Handled below
+<b class="nc"><i>122</i>&nbsp;      _out.println(&quot;il.append(InstructionConstants.&quot; +</b>
+<b class="nc"><i>123</i>&nbsp;                   i.getName().toUpperCase() + &quot;);&quot;);</b>
+<b class="nc"><i>124</i>&nbsp;      return true;</b>
+<i>125</i>&nbsp;    }
+<i>126</i>&nbsp;
+<b class="nc"><i>127</i>&nbsp;    return false;</b>
+<i>128</i>&nbsp;  }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;  public void visitLocalVariableInstruction(LocalVariableInstruction i) {
+<b class="nc"><i>131</i>&nbsp;    short  opcode = i.getOpcode();</b>
+<b class="nc"><i>132</i>&nbsp;    Type   type   = i.getType(_cp);</b>
+<i>133</i>&nbsp;
+<b class="nc"><i>134</i>&nbsp;    if(opcode == Constants.IINC) {</b>
+<b class="nc"><i>135</i>&nbsp;      _out.println(&quot;il.append(new IINC(&quot; + i.getIndex() + &quot;, &quot; +</b>
+<b class="nc"><i>136</i>&nbsp;                   ((IINC)i).getIncrement() + &quot;));&quot;);</b>
+<i>137</i>&nbsp;    } else {
+<b class="nc"><i>138</i>&nbsp;      String kind   = (opcode &lt; Constants.ISTORE)? &quot;Load&quot; : &quot;Store&quot;;</b>
+<b class="nc"><i>139</i>&nbsp;      _out.println(&quot;il.append(_factory.create&quot; + kind + &quot;(&quot; +</b>
+<b class="nc"><i>140</i>&nbsp;                   BCELifier.printType(type) + &quot;, &quot; +</b>
+<b class="nc"><i>141</i>&nbsp;                   i.getIndex() + &quot;));&quot;);</b>
+<i>142</i>&nbsp;    }
+<i>143</i>&nbsp;  }
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;  public void visitArrayInstruction(ArrayInstruction i) {
+<b class="nc"><i>146</i>&nbsp;    short  opcode = i.getOpcode();</b>
+<b class="nc"><i>147</i>&nbsp;    Type   type   = i.getType(_cp);</b>
+<b class="nc"><i>148</i>&nbsp;    String kind   = (opcode &lt; Constants.IASTORE)? &quot;Load&quot; : &quot;Store&quot;;</b>
+<i>149</i>&nbsp;
+<b class="nc"><i>150</i>&nbsp;    _out.println(&quot;il.append(_factory.createArray&quot; + kind + &quot;(&quot; +</b>
+<b class="nc"><i>151</i>&nbsp;                 BCELifier.printType(type) + &quot;));&quot;);</b>
+<i>152</i>&nbsp;  }
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;  public void visitFieldInstruction(FieldInstruction i) {
+<b class="nc"><i>155</i>&nbsp;    short  opcode = i.getOpcode();</b>
+<i>156</i>&nbsp;
+<b class="nc"><i>157</i>&nbsp;    String class_name = i.getClassName(_cp);</b>
+<b class="nc"><i>158</i>&nbsp;    String field_name = i.getFieldName(_cp);</b>
+<b class="nc"><i>159</i>&nbsp;    Type   type       = i.getFieldType(_cp);</b>
+<i>160</i>&nbsp;
+<b class="nc"><i>161</i>&nbsp;    _out.println(&quot;il.append(_factory.createFieldAccess(\&quot;&quot; +</b>
+<i>162</i>&nbsp;                 class_name + &quot;\&quot;, \&quot;&quot; + field_name + &quot;\&quot;, &quot; +
+<b class="nc"><i>163</i>&nbsp;                 BCELifier.printType(type) + &quot;, &quot; +</b>
+<b class="nc"><i>164</i>&nbsp;                 &quot;Constants.&quot; + Constants.OPCODE_NAMES[opcode].toUpperCase() +</b>
+<i>165</i>&nbsp;                 &quot;));&quot;);
+<i>166</i>&nbsp;  }
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;  public void visitInvokeInstruction(InvokeInstruction i) {
+<b class="nc"><i>169</i>&nbsp;    short  opcode      = i.getOpcode();</b>
+<b class="nc"><i>170</i>&nbsp;    String class_name  = i.getClassName(_cp);</b>
+<b class="nc"><i>171</i>&nbsp;    String method_name = i.getMethodName(_cp);</b>
+<b class="nc"><i>172</i>&nbsp;    Type   type        = i.getReturnType(_cp);</b>
+<b class="nc"><i>173</i>&nbsp;    Type[] arg_types   = i.getArgumentTypes(_cp);</b>
+<i>174</i>&nbsp;
+<b class="nc"><i>175</i>&nbsp;    _out.println(&quot;il.append(_factory.createInvoke(\&quot;&quot; +</b>
+<i>176</i>&nbsp;                 class_name + &quot;\&quot;, \&quot;&quot; + method_name + &quot;\&quot;, &quot; +
+<b class="nc"><i>177</i>&nbsp;                 BCELifier.printType(type) + &quot;, &quot; +</b>
+<b class="nc"><i>178</i>&nbsp;                 BCELifier.printArgumentTypes(arg_types) + &quot;, &quot; +</b>
+<b class="nc"><i>179</i>&nbsp;                 &quot;Constants.&quot; + Constants.OPCODE_NAMES[opcode].toUpperCase() +</b>
+<i>180</i>&nbsp;                 &quot;));&quot;);
+<i>181</i>&nbsp;  }
+<i>182</i>&nbsp;
+<i>183</i>&nbsp;  public void visitAllocationInstruction(AllocationInstruction i) {
+<i>184</i>&nbsp;    Type type;
+<i>185</i>&nbsp;
+<b class="nc"><i>186</i>&nbsp;    if(i instanceof CPInstruction) {</b>
+<b class="nc"><i>187</i>&nbsp;      type = ((CPInstruction)i).getType(_cp);</b>
+<i>188</i>&nbsp;    } else {
+<b class="nc"><i>189</i>&nbsp;      type = ((NEWARRAY)i).getType();</b>
+<i>190</i>&nbsp;    }
+<i>191</i>&nbsp;
+<b class="nc"><i>192</i>&nbsp;    short opcode = ((Instruction)i).getOpcode();</b>
+<b class="nc"><i>193</i>&nbsp;    int   dim    = 1;</b>
+<i>194</i>&nbsp;
+<b class="nc"><i>195</i>&nbsp;    switch(opcode) {</b>
+<i>196</i>&nbsp;    case Constants.NEW:
+<b class="nc"><i>197</i>&nbsp;      _out.println(&quot;il.append(_factory.createNew(\&quot;&quot; +</b>
+<b class="nc"><i>198</i>&nbsp;                   ((ObjectType)type).getClassName() + &quot;\&quot;));&quot;);</b>
+<b class="nc"><i>199</i>&nbsp;      break;</b>
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;    case Constants.MULTIANEWARRAY:
+<b class="nc"><i>202</i>&nbsp;      dim = ((MULTIANEWARRAY)i).getDimensions();</b>
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;    case Constants.ANEWARRAY:
+<i>205</i>&nbsp;    case Constants.NEWARRAY:
+<b class="nc"><i>206</i>&nbsp;      _out.println(&quot;il.append(_factory.createNewArray(&quot; +</b>
+<b class="nc"><i>207</i>&nbsp;                   BCELifier.printType(type) + &quot;, (short) &quot; + dim + &quot;));&quot;);</b>
+<b class="nc"><i>208</i>&nbsp;      break;</b>
+<i>209</i>&nbsp;
+<i>210</i>&nbsp;    default:
+<b class="nc"><i>211</i>&nbsp;      throw new RuntimeException(&quot;Oops: &quot; + opcode);</b>
+<i>212</i>&nbsp;    }
+<i>213</i>&nbsp;  }
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;  private void createConstant(Object value) {
+<b class="nc"><i>216</i>&nbsp;    String embed = value.toString();</b>
+<i>217</i>&nbsp;
+<b class="nc"><i>218</i>&nbsp;    if(value instanceof String)</b>
+<b class="nc"><i>219</i>&nbsp;      embed = &#39;&quot;&#39; + Utility.convertString(value.toString()) + &#39;&quot;&#39;;</b>
+<b class="nc"><i>220</i>&nbsp;    else if(value instanceof Character)</b>
+<b class="nc"><i>221</i>&nbsp;      embed = &quot;(char)0x&quot; + Integer.toHexString(((Character)value).charValue());</b>
+<i>222</i>&nbsp;
+<b class="nc"><i>223</i>&nbsp;    _out.println(&quot;il.append(new PUSH(_cp, &quot; + embed + &quot;));&quot;);</b>
+<i>224</i>&nbsp;  }
+<i>225</i>&nbsp;
+<i>226</i>&nbsp;  public void visitLDC(LDC i) {
+<b class="nc"><i>227</i>&nbsp;    createConstant(i.getValue(_cp));</b>
+<i>228</i>&nbsp;  }
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;  public void visitLDC2_W(LDC2_W i) {
+<b class="nc"><i>231</i>&nbsp;    createConstant(i.getValue(_cp));</b>
+<i>232</i>&nbsp;  }
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;  public void visitConstantPushInstruction(ConstantPushInstruction i) {
+<b class="nc"><i>235</i>&nbsp;    createConstant(i.getValue());</b>
+<i>236</i>&nbsp;  }
+<i>237</i>&nbsp;
+<i>238</i>&nbsp;  public void visitINSTANCEOF(INSTANCEOF i) {
+<b class="nc"><i>239</i>&nbsp;    Type type = i.getType(_cp);</b>
+<i>240</i>&nbsp;
+<b class="nc"><i>241</i>&nbsp;    _out.println(&quot;il.append(new INSTANCEOF(_cp.addClass(&quot; +</b>
+<b class="nc"><i>242</i>&nbsp;                 BCELifier.printType(type) + &quot;)));&quot;);</b>
+<i>243</i>&nbsp;  }
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;  public void visitCHECKCAST(CHECKCAST i) {
+<b class="nc"><i>246</i>&nbsp;    Type type = i.getType(_cp);</b>
+<i>247</i>&nbsp;
+<b class="nc"><i>248</i>&nbsp;    _out.println(&quot;il.append(_factory.createCheckCast(&quot; +</b>
+<b class="nc"><i>249</i>&nbsp;                 BCELifier.printType(type) + &quot;));&quot;);</b>
+<i>250</i>&nbsp;  }
+<i>251</i>&nbsp;
+<i>252</i>&nbsp;  public void visitReturnInstruction(ReturnInstruction i) {
+<b class="nc"><i>253</i>&nbsp;    Type type = i.getType(_cp);</b>
+<i>254</i>&nbsp;
+<b class="nc"><i>255</i>&nbsp;    _out.println(&quot;il.append(_factory.createReturn(&quot; +</b>
+<b class="nc"><i>256</i>&nbsp;                 BCELifier.printType(type) + &quot;));&quot;);</b>
+<i>257</i>&nbsp;  }
+<i>258</i>&nbsp;
+<i>259</i>&nbsp;  // Memorize BranchInstructions that need an update
+<b class="nc"><i>260</i>&nbsp;  private ArrayList branches = new ArrayList();</b>
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;  public void visitBranchInstruction(BranchInstruction bi) {
+<b class="nc"><i>263</i>&nbsp;    BranchHandle bh   = (BranchHandle)branch_map.get(bi);</b>
+<b class="nc"><i>264</i>&nbsp;    int          pos  = bh.getPosition();</b>
+<b class="nc"><i>265</i>&nbsp;    String       name = bi.getName() + &quot;_&quot; + pos;</b>
+<i>266</i>&nbsp;
+<b class="nc"><i>267</i>&nbsp;    if(bi instanceof Select) {</b>
+<b class="nc"><i>268</i>&nbsp;      Select s = (Select)bi;</b>
+<b class="nc"><i>269</i>&nbsp;      branches.add(bi);</b>
+<i>270</i>&nbsp;
+<b class="nc"><i>271</i>&nbsp;      StringBuffer args   = new StringBuffer(&quot;new int[] { &quot;);</b>
+<b class="nc"><i>272</i>&nbsp;      int[]        matchs = s.getMatchs();</b>
+<i>273</i>&nbsp;
+<b class="nc"><i>274</i>&nbsp;      for(int i=0; i &lt; matchs.length; i++) {</b>
+<b class="nc"><i>275</i>&nbsp;        args.append(matchs[i]);</b>
+<i>276</i>&nbsp;
+<b class="nc"><i>277</i>&nbsp;        if(i &lt; matchs.length - 1)</b>
+<b class="nc"><i>278</i>&nbsp;          args.append(&quot;, &quot;);</b>
+<i>279</i>&nbsp;      }
+<i>280</i>&nbsp;
+<b class="nc"><i>281</i>&nbsp;      args.append(&quot; }&quot;);</b>
+<i>282</i>&nbsp;
+<b class="nc"><i>283</i>&nbsp;      _out.print(&quot;    Select &quot; + name + &quot; = new &quot; +</b>
+<b class="nc"><i>284</i>&nbsp;                 bi.getName().toUpperCase() + &quot;(&quot; + args +</b>
+<i>285</i>&nbsp;                 &quot;, new InstructionHandle[] { &quot;);
+<i>286</i>&nbsp;
+<b class="nc"><i>287</i>&nbsp;      for(int i=0; i &lt; matchs.length; i++) {</b>
+<b class="nc"><i>288</i>&nbsp;        _out.print(&quot;null&quot;);</b>
+<i>289</i>&nbsp;
+<b class="nc"><i>290</i>&nbsp;        if(i &lt; matchs.length - 1)</b>
+<b class="nc"><i>291</i>&nbsp;          _out.print(&quot;, &quot;);</b>
+<i>292</i>&nbsp;      }
+<i>293</i>&nbsp;
+<b class="nc"><i>294</i>&nbsp;      _out.println(&quot;);&quot;);</b>
+<b class="nc"><i>295</i>&nbsp;    } else {</b>
+<b class="nc"><i>296</i>&nbsp;      int    t_pos  = bh.getTarget().getPosition();</b>
+<i>297</i>&nbsp;      String target;
+<i>298</i>&nbsp;
+<b class="nc"><i>299</i>&nbsp;      if(pos &gt; t_pos) {</b>
+<b class="nc"><i>300</i>&nbsp;        target = &quot;ih_&quot; + t_pos;</b>
+<i>301</i>&nbsp;      } else {
+<b class="nc"><i>302</i>&nbsp;        branches.add(bi);</b>
+<b class="nc"><i>303</i>&nbsp;        target = &quot;null&quot;;</b>
+<i>304</i>&nbsp;      }
+<i>305</i>&nbsp;
+<b class="nc"><i>306</i>&nbsp;      _out.println(&quot;    BranchInstruction &quot; + name +</b>
+<i>307</i>&nbsp;                   &quot; = _factory.createBranchInstruction(&quot; +
+<b class="nc"><i>308</i>&nbsp;                   &quot;Constants.&quot; + bi.getName().toUpperCase() + &quot;, &quot; +</b>
+<i>309</i>&nbsp;                   target + &quot;);&quot;);
+<i>310</i>&nbsp;    }
+<i>311</i>&nbsp;
+<b class="nc"><i>312</i>&nbsp;    if(bh.hasTargeters())</b>
+<b class="nc"><i>313</i>&nbsp;      _out.println(&quot;    ih_&quot; + pos + &quot; = il.append(&quot; + name + &quot;);&quot;);</b>
+<i>314</i>&nbsp;    else
+<b class="nc"><i>315</i>&nbsp;      _out.println(&quot;    il.append(&quot; + name + &quot;);&quot;);</b>
+<i>316</i>&nbsp;  }
+<i>317</i>&nbsp;
+<i>318</i>&nbsp;  public void visitRET(RET i) {
+<b class="nc"><i>319</i>&nbsp;    _out.println(&quot;il.append(new RET(&quot; + i.getIndex() + &quot;)));&quot;);</b>
+<i>320</i>&nbsp;  }
+<i>321</i>&nbsp;
+<i>322</i>&nbsp;  private void updateBranchTargets() {
+<b class="nc"><i>323</i>&nbsp;    for(Iterator i = branches.iterator(); i.hasNext(); ) {</b>
+<b class="nc"><i>324</i>&nbsp;      BranchInstruction bi    = (BranchInstruction)i.next();</b>
+<b class="nc"><i>325</i>&nbsp;      BranchHandle      bh    = (BranchHandle)branch_map.get(bi);</b>
+<b class="nc"><i>326</i>&nbsp;      int               pos   = bh.getPosition();</b>
+<b class="nc"><i>327</i>&nbsp;      String            name  = bi.getName() + &quot;_&quot; + pos;</b>
+<b class="nc"><i>328</i>&nbsp;      int               t_pos = bh.getTarget().getPosition();</b>
+<i>329</i>&nbsp;
+<b class="nc"><i>330</i>&nbsp;      _out.println(&quot;    &quot; + name + &quot;.setTarget(ih_&quot; + t_pos + &quot;);&quot;);</b>
+<i>331</i>&nbsp;
+<b class="nc"><i>332</i>&nbsp;      if(bi instanceof Select) {</b>
+<b class="nc"><i>333</i>&nbsp;        InstructionHandle[] ihs = ((Select)bi).getTargets();</b>
+<i>334</i>&nbsp;
+<b class="nc"><i>335</i>&nbsp;        for(int j = 0; j &lt; ihs.length; j++) {</b>
+<b class="nc"><i>336</i>&nbsp;          t_pos = ihs[j].getPosition();</b>
+<i>337</i>&nbsp;
+<b class="nc"><i>338</i>&nbsp;          _out.println(&quot;    &quot; + name + &quot;.setTarget(&quot; + j +</b>
+<i>339</i>&nbsp;                       &quot;, ih_&quot; + t_pos + &quot;);&quot;);
+<i>340</i>&nbsp;        }
+<i>341</i>&nbsp;      }
+<b class="nc"><i>342</i>&nbsp;    }</b>
+<i>343</i>&nbsp;  }
+<i>344</i>&nbsp;
+<i>345</i>&nbsp;  private void updateExceptionHandlers() {
+<b class="nc"><i>346</i>&nbsp;    CodeExceptionGen[] handlers = _mg.getExceptionHandlers();</b>
+<i>347</i>&nbsp;
+<b class="nc"><i>348</i>&nbsp;    for(int i=0; i &lt; handlers.length; i++) {</b>
+<b class="nc"><i>349</i>&nbsp;      CodeExceptionGen h    = handlers[i];</b>
+<b class="nc"><i>350</i>&nbsp;      String           type = (h.getCatchType() == null)?</b>
+<b class="nc"><i>351</i>&nbsp;        &quot;null&quot; : BCELifier.printType(h.getCatchType());</b>
+<i>352</i>&nbsp;
+<b class="nc"><i>353</i>&nbsp;      _out.println(&quot;    method.addExceptionHandler(&quot; +</b>
+<b class="nc"><i>354</i>&nbsp;                   &quot;ih_&quot; + h.getStartPC().getPosition() + &quot;, &quot; +</b>
+<b class="nc"><i>355</i>&nbsp;                   &quot;ih_&quot; + h.getEndPC().getPosition() + &quot;, &quot; +</b>
+<b class="nc"><i>356</i>&nbsp;                   &quot;ih_&quot; + h.getHandlerPC().getPosition() + &quot;, &quot; +</b>
+<i>357</i>&nbsp;                   type + &quot;);&quot;);
+<i>358</i>&nbsp;    }
+<i>359</i>&nbsp;  }
+<i>360</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

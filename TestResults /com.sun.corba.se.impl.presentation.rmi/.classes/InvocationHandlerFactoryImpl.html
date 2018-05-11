@@ -1,0 +1,296 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: InvocationHandlerFactoryImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.presentation.rmi</a> ]
+</div>
+
+<h1>Coverage Summary for Class: InvocationHandlerFactoryImpl (com.sun.corba.se.impl.presentation.rmi)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">InvocationHandlerFactoryImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 20)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">InvocationHandlerFactoryImpl$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">InvocationHandlerFactoryImpl$CustomCompositeInvocationHandlerImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 30)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2004, 2013, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.presentation.rmi ;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.lang.reflect.InvocationHandler ;
+<i>29</i>&nbsp;import java.lang.reflect.Proxy ;
+<i>30</i>&nbsp;import java.lang.reflect.Method ;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import org.omg.CORBA.portable.ObjectImpl ;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import java.io.ObjectStreamException ;
+<i>35</i>&nbsp;import java.io.Serializable ;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import com.sun.corba.se.spi.presentation.rmi.IDLNameTranslator ;
+<i>38</i>&nbsp;import com.sun.corba.se.spi.presentation.rmi.PresentationManager ;
+<i>39</i>&nbsp;import com.sun.corba.se.spi.presentation.rmi.DynamicStub ;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import com.sun.corba.se.spi.orbutil.proxy.LinkedInvocationHandler ;
+<i>42</i>&nbsp;import com.sun.corba.se.spi.orbutil.proxy.InvocationHandlerFactory ;
+<i>43</i>&nbsp;import com.sun.corba.se.spi.orbutil.proxy.DelegateInvocationHandlerImpl ;
+<i>44</i>&nbsp;import com.sun.corba.se.spi.orbutil.proxy.CompositeInvocationHandler ;
+<i>45</i>&nbsp;import com.sun.corba.se.spi.orbutil.proxy.CompositeInvocationHandlerImpl ;
+<i>46</i>&nbsp;import java.security.AccessController;
+<i>47</i>&nbsp;import java.security.PrivilegedAction;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;public class InvocationHandlerFactoryImpl implements InvocationHandlerFactory
+<i>50</i>&nbsp;{
+<i>51</i>&nbsp;    private final PresentationManager.ClassData classData ;
+<i>52</i>&nbsp;    private final PresentationManager pm ;
+<i>53</i>&nbsp;    private Class[] proxyInterfaces ;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    public InvocationHandlerFactoryImpl( PresentationManager pm,
+<i>56</i>&nbsp;        PresentationManager.ClassData classData )
+<b class="nc"><i>57</i>&nbsp;    {</b>
+<b class="nc"><i>58</i>&nbsp;        this.classData = classData ;</b>
+<b class="nc"><i>59</i>&nbsp;        this.pm = pm ;</b>
+<i>60</i>&nbsp;
+<b class="nc"><i>61</i>&nbsp;        Class[] remoteInterfaces =</b>
+<b class="nc"><i>62</i>&nbsp;            classData.getIDLNameTranslator().getInterfaces() ;</b>
+<b class="nc"><i>63</i>&nbsp;        proxyInterfaces = new Class[ remoteInterfaces.length + 1 ] ;</b>
+<b class="nc"><i>64</i>&nbsp;        for (int ctr=0; ctr&lt;remoteInterfaces.length; ctr++)</b>
+<b class="nc"><i>65</i>&nbsp;            proxyInterfaces[ctr] = remoteInterfaces[ctr] ;</b>
+<i>66</i>&nbsp;
+<b class="nc"><i>67</i>&nbsp;        proxyInterfaces[remoteInterfaces.length] = DynamicStub.class ;</b>
+<i>68</i>&nbsp;    }
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    private class CustomCompositeInvocationHandlerImpl extends
+<i>71</i>&nbsp;        CompositeInvocationHandlerImpl implements LinkedInvocationHandler,
+<i>72</i>&nbsp;        Serializable
+<i>73</i>&nbsp;    {
+<i>74</i>&nbsp;        private transient DynamicStub stub ;
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;        public void setProxy( Proxy proxy )
+<i>77</i>&nbsp;        {
+<b class="nc"><i>78</i>&nbsp;            ((DynamicStubImpl)stub).setSelf( (DynamicStub)proxy ) ;</b>
+<i>79</i>&nbsp;        }
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;        public Proxy getProxy()
+<i>82</i>&nbsp;        {
+<b class="nc"><i>83</i>&nbsp;            return (Proxy)((DynamicStubImpl)stub).getSelf() ;</b>
+<i>84</i>&nbsp;        }
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;        public CustomCompositeInvocationHandlerImpl( DynamicStub stub )
+<b class="nc"><i>87</i>&nbsp;        {</b>
+<b class="nc"><i>88</i>&nbsp;            this.stub = stub ;</b>
+<i>89</i>&nbsp;        }
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;        /** Return the stub, which will actually be written to the stream.
+<i>92</i>&nbsp;         * It will be custom marshalled, with the actual writing done in
+<i>93</i>&nbsp;         * StubIORImpl.  There is a corresponding readResolve method on
+<i>94</i>&nbsp;         * DynamicStubImpl which will re-create the full invocation
+<i>95</i>&nbsp;         * handler on read, and return the invocation handler on the
+<i>96</i>&nbsp;         * readResolve method.
+<i>97</i>&nbsp;         */
+<i>98</i>&nbsp;        public Object writeReplace() throws ObjectStreamException
+<i>99</i>&nbsp;        {
+<b class="nc"><i>100</i>&nbsp;            return stub ;</b>
+<i>101</i>&nbsp;        }
+<i>102</i>&nbsp;    }
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    public InvocationHandler getInvocationHandler()
+<i>105</i>&nbsp;    {
+<b class="nc"><i>106</i>&nbsp;        final DynamicStub stub = new DynamicStubImpl(</b>
+<b class="nc"><i>107</i>&nbsp;            classData.getTypeIds() ) ;</b>
+<i>108</i>&nbsp;
+<b class="nc"><i>109</i>&nbsp;        return getInvocationHandler( stub ) ;</b>
+<i>110</i>&nbsp;    }
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;    // This is also used in DynamicStubImpl to implement readResolve.
+<i>113</i>&nbsp;    InvocationHandler getInvocationHandler( DynamicStub stub )
+<i>114</i>&nbsp;    {
+<i>115</i>&nbsp;        // Create an invocation handler for the methods defined on DynamicStub,
+<i>116</i>&nbsp;        // which extends org.omg.CORBA.Object.  This handler delegates all
+<i>117</i>&nbsp;        // calls directly to a DynamicStubImpl, which extends
+<i>118</i>&nbsp;        // org.omg.CORBA.portable.ObjectImpl.
+<b class="nc"><i>119</i>&nbsp;        final InvocationHandler dynamicStubHandler =</b>
+<b class="nc"><i>120</i>&nbsp;            DelegateInvocationHandlerImpl.create( stub ) ;</b>
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;        // Create an invocation handler that handles any remote interface
+<i>123</i>&nbsp;        // methods.
+<b class="nc"><i>124</i>&nbsp;        final InvocationHandler stubMethodHandler = new StubInvocationHandlerImpl(</b>
+<i>125</i>&nbsp;            pm, classData, stub ) ;
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;        // Create a composite handler that handles the DynamicStub interface
+<i>128</i>&nbsp;        // as well as the remote interfaces.
+<b class="nc"><i>129</i>&nbsp;        final CompositeInvocationHandler handler =</b>
+<i>130</i>&nbsp;            new CustomCompositeInvocationHandlerImpl( stub ) ;
+<i>131</i>&nbsp;
+<b class="nc"><i>132</i>&nbsp;        AccessController.doPrivileged(new PrivilegedAction&lt;Void&gt;() {</b>
+<i>133</i>&nbsp;            @Override
+<i>134</i>&nbsp;            public Void run() {
+<b class="nc"><i>135</i>&nbsp;        handler.addInvocationHandler( DynamicStub.class,</b>
+<i>136</i>&nbsp;            dynamicStubHandler ) ;
+<b class="nc"><i>137</i>&nbsp;        handler.addInvocationHandler( org.omg.CORBA.Object.class,</b>
+<i>138</i>&nbsp;            dynamicStubHandler ) ;
+<b class="nc"><i>139</i>&nbsp;        handler.addInvocationHandler( Object.class,</b>
+<i>140</i>&nbsp;            dynamicStubHandler ) ;
+<b class="nc"><i>141</i>&nbsp;                return null;</b>
+<i>142</i>&nbsp;            }
+<i>143</i>&nbsp;        });
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;        // If the method passed to invoke is not from DynamicStub or its superclasses,
+<i>147</i>&nbsp;        // it must be from an implemented interface, so we just handle
+<i>148</i>&nbsp;        // all of these with the stubMethodHandler.  This used to be
+<i>149</i>&nbsp;        // done be adding explicit entries for stubMethodHandler for
+<i>150</i>&nbsp;        // each remote interface, but that does not work correctly
+<i>151</i>&nbsp;        // for abstract interfaces, since the graph analysis ignores
+<i>152</i>&nbsp;        // abstract interfaces in order to compute the type ids
+<i>153</i>&nbsp;        // correctly (see PresentationManagerImpl.NodeImpl.getChildren).
+<i>154</i>&nbsp;        // Rather than produce more graph traversal code to handle this
+<i>155</i>&nbsp;        // problem, we simply use a default.
+<i>156</i>&nbsp;        // This also points to a possible optimization: just use explict
+<i>157</i>&nbsp;        // checks for the three special classes, rather than a general
+<i>158</i>&nbsp;        // table lookup that usually fails.
+<b class="nc"><i>159</i>&nbsp;        handler.setDefaultHandler( stubMethodHandler ) ;</b>
+<i>160</i>&nbsp;
+<b class="nc"><i>161</i>&nbsp;        return handler ;</b>
+<i>162</i>&nbsp;    }
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;    public Class[] getProxyInterfaces()
+<i>165</i>&nbsp;    {
+<b class="nc"><i>166</i>&nbsp;        return proxyInterfaces ;</b>
+<i>167</i>&nbsp;    }
+<i>168</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

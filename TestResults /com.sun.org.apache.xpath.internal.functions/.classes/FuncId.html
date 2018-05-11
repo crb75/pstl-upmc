@@ -1,0 +1,236 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: FuncId</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xpath.internal.functions</a> ]
+</div>
+
+<h1>Coverage Summary for Class: FuncId (com.sun.org.apache.xpath.internal.functions)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FuncId</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 46)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: FuncId.java,v 1.2.4.1 2005/09/14 20:18:45 jeffsuttor Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xpath.internal.functions;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.util.StringTokenizer;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTM;
+<i>28</i>&nbsp;import com.sun.org.apache.xml.internal.dtm.DTMIterator;
+<i>29</i>&nbsp;import com.sun.org.apache.xml.internal.utils.StringVector;
+<i>30</i>&nbsp;import com.sun.org.apache.xpath.internal.NodeSetDTM;
+<i>31</i>&nbsp;import com.sun.org.apache.xpath.internal.XPathContext;
+<i>32</i>&nbsp;import com.sun.org.apache.xpath.internal.objects.XNodeSet;
+<i>33</i>&nbsp;import com.sun.org.apache.xpath.internal.objects.XObject;
+<i>34</i>&nbsp;import com.sun.org.apache.xpath.internal.res.XPATHErrorResources;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; * Execute the Id() function.
+<i>38</i>&nbsp; * @xsl.usage advanced
+<i>39</i>&nbsp; */
+<b class="nc"><i>40</i>&nbsp;public class FuncId extends FunctionOneArg</b>
+<i>41</i>&nbsp;{
+<i>42</i>&nbsp;    static final long serialVersionUID = 8930573966143567310L;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;  /**
+<i>45</i>&nbsp;   * Fill in a list with nodes that match a space delimited list if ID
+<i>46</i>&nbsp;   * ID references.
+<i>47</i>&nbsp;   *
+<i>48</i>&nbsp;   * @param xctxt The runtime XPath context.
+<i>49</i>&nbsp;   * @param docContext The document where the nodes are being looked for.
+<i>50</i>&nbsp;   * @param refval A space delimited list of ID references.
+<i>51</i>&nbsp;   * @param usedrefs List of references for which nodes were found.
+<i>52</i>&nbsp;   * @param nodeSet Node set where the nodes will be added to.
+<i>53</i>&nbsp;   * @param mayBeMore true if there is another set of nodes to be looked for.
+<i>54</i>&nbsp;   *
+<i>55</i>&nbsp;   * @return The usedrefs value.
+<i>56</i>&nbsp;   */
+<i>57</i>&nbsp;  private StringVector getNodesByID(XPathContext xctxt, int docContext,
+<i>58</i>&nbsp;                                    String refval, StringVector usedrefs,
+<i>59</i>&nbsp;                                    NodeSetDTM nodeSet, boolean mayBeMore)
+<i>60</i>&nbsp;  {
+<i>61</i>&nbsp;
+<b class="nc"><i>62</i>&nbsp;    if (null != refval)</b>
+<i>63</i>&nbsp;    {
+<b class="nc"><i>64</i>&nbsp;      String ref = null;</b>
+<i>65</i>&nbsp;//      DOMHelper dh = xctxt.getDOMHelper();
+<b class="nc"><i>66</i>&nbsp;      StringTokenizer tokenizer = new StringTokenizer(refval);</b>
+<b class="nc"><i>67</i>&nbsp;      boolean hasMore = tokenizer.hasMoreTokens();</b>
+<b class="nc"><i>68</i>&nbsp;      DTM dtm = xctxt.getDTM(docContext);</b>
+<i>69</i>&nbsp;
+<b class="nc"><i>70</i>&nbsp;      while (hasMore)</b>
+<i>71</i>&nbsp;      {
+<b class="nc"><i>72</i>&nbsp;        ref = tokenizer.nextToken();</b>
+<b class="nc"><i>73</i>&nbsp;        hasMore = tokenizer.hasMoreTokens();</b>
+<i>74</i>&nbsp;
+<b class="nc"><i>75</i>&nbsp;        if ((null != usedrefs) &amp;&amp; usedrefs.contains(ref))</b>
+<i>76</i>&nbsp;        {
+<b class="nc"><i>77</i>&nbsp;          ref = null;</b>
+<i>78</i>&nbsp;
+<b class="nc"><i>79</i>&nbsp;          continue;</b>
+<i>80</i>&nbsp;        }
+<i>81</i>&nbsp;
+<b class="nc"><i>82</i>&nbsp;        int node = dtm.getElementById(ref);</b>
+<i>83</i>&nbsp;
+<b class="nc"><i>84</i>&nbsp;        if (DTM.NULL != node)</b>
+<b class="nc"><i>85</i>&nbsp;          nodeSet.addNodeInDocOrder(node, xctxt);</b>
+<i>86</i>&nbsp;
+<b class="nc"><i>87</i>&nbsp;        if ((null != ref) &amp;&amp; (hasMore || mayBeMore))</b>
+<i>88</i>&nbsp;        {
+<b class="nc"><i>89</i>&nbsp;          if (null == usedrefs)</b>
+<b class="nc"><i>90</i>&nbsp;            usedrefs = new StringVector();</b>
+<i>91</i>&nbsp;
+<b class="nc"><i>92</i>&nbsp;          usedrefs.addElement(ref);</b>
+<i>93</i>&nbsp;        }
+<b class="nc"><i>94</i>&nbsp;      }</b>
+<i>95</i>&nbsp;    }
+<i>96</i>&nbsp;
+<b class="nc"><i>97</i>&nbsp;    return usedrefs;</b>
+<i>98</i>&nbsp;  }
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;  /**
+<i>101</i>&nbsp;   * Execute the function.  The function must return
+<i>102</i>&nbsp;   * a valid object.
+<i>103</i>&nbsp;   * @param xctxt The current execution context.
+<i>104</i>&nbsp;   * @return A valid XObject.
+<i>105</i>&nbsp;   *
+<i>106</i>&nbsp;   * @throws javax.xml.transform.TransformerException
+<i>107</i>&nbsp;   */
+<i>108</i>&nbsp;  public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException
+<i>109</i>&nbsp;  {
+<i>110</i>&nbsp;
+<b class="nc"><i>111</i>&nbsp;    int context = xctxt.getCurrentNode();</b>
+<b class="nc"><i>112</i>&nbsp;    DTM dtm = xctxt.getDTM(context);</b>
+<b class="nc"><i>113</i>&nbsp;    int docContext = dtm.getDocument();</b>
+<i>114</i>&nbsp;
+<b class="nc"><i>115</i>&nbsp;    if (DTM.NULL == docContext)</b>
+<b class="nc"><i>116</i>&nbsp;      error(xctxt, XPATHErrorResources.ER_CONTEXT_HAS_NO_OWNERDOC, null);</b>
+<i>117</i>&nbsp;
+<b class="nc"><i>118</i>&nbsp;    XObject arg = m_arg0.execute(xctxt);</b>
+<b class="nc"><i>119</i>&nbsp;    int argType = arg.getType();</b>
+<b class="nc"><i>120</i>&nbsp;    XNodeSet nodes = new XNodeSet(xctxt.getDTMManager());</b>
+<b class="nc"><i>121</i>&nbsp;    NodeSetDTM nodeSet = nodes.mutableNodeset();</b>
+<i>122</i>&nbsp;
+<b class="nc"><i>123</i>&nbsp;    if (XObject.CLASS_NODESET == argType)</b>
+<i>124</i>&nbsp;    {
+<b class="nc"><i>125</i>&nbsp;      DTMIterator ni = arg.iter();</b>
+<b class="nc"><i>126</i>&nbsp;      StringVector usedrefs = null;</b>
+<b class="nc"><i>127</i>&nbsp;      int pos = ni.nextNode();</b>
+<i>128</i>&nbsp;
+<b class="nc"><i>129</i>&nbsp;      while (DTM.NULL != pos)</b>
+<i>130</i>&nbsp;      {
+<b class="nc"><i>131</i>&nbsp;        DTM ndtm = ni.getDTM(pos);</b>
+<b class="nc"><i>132</i>&nbsp;        String refval = ndtm.getStringValue(pos).toString();</b>
+<i>133</i>&nbsp;
+<b class="nc"><i>134</i>&nbsp;        pos = ni.nextNode();</b>
+<b class="nc"><i>135</i>&nbsp;        usedrefs = getNodesByID(xctxt, docContext, refval, usedrefs, nodeSet,</b>
+<i>136</i>&nbsp;                                DTM.NULL != pos);
+<b class="nc"><i>137</i>&nbsp;      }</b>
+<i>138</i>&nbsp;      // ni.detach();
+<b class="nc"><i>139</i>&nbsp;    }</b>
+<b class="nc"><i>140</i>&nbsp;    else if (XObject.CLASS_NULL == argType)</b>
+<i>141</i>&nbsp;    {
+<b class="nc"><i>142</i>&nbsp;      return nodes;</b>
+<i>143</i>&nbsp;    }
+<i>144</i>&nbsp;    else
+<i>145</i>&nbsp;    {
+<b class="nc"><i>146</i>&nbsp;      String refval = arg.str();</b>
+<i>147</i>&nbsp;
+<b class="nc"><i>148</i>&nbsp;      getNodesByID(xctxt, docContext, refval, null, nodeSet, false);</b>
+<i>149</i>&nbsp;    }
+<i>150</i>&nbsp;
+<b class="nc"><i>151</i>&nbsp;    return nodes;</b>
+<i>152</i>&nbsp;  }
+<i>153</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

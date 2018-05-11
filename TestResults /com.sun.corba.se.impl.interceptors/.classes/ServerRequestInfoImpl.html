@@ -1,0 +1,1016 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ServerRequestInfoImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.interceptors</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ServerRequestInfoImpl (com.sun.corba.se.impl.interceptors)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ServerRequestInfoImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 41)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 191)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ServerRequestInfoImpl$AddReplyServiceContextCommand</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 42)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 192)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2000, 2012, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;package com.sun.corba.se.impl.interceptors;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import org.omg.CORBA.Any;
+<i>28</i>&nbsp;import org.omg.CORBA.BAD_INV_ORDER;
+<i>29</i>&nbsp;import org.omg.CORBA.CompletionStatus;
+<i>30</i>&nbsp;import org.omg.CORBA.INTERNAL;
+<i>31</i>&nbsp;import org.omg.CORBA.LocalObject;
+<i>32</i>&nbsp;import org.omg.CORBA.NO_IMPLEMENT;
+<i>33</i>&nbsp;import org.omg.CORBA.NO_RESOURCES;
+<i>34</i>&nbsp;import org.omg.CORBA.NVList;
+<i>35</i>&nbsp;import org.omg.CORBA.Object;
+<i>36</i>&nbsp;import org.omg.CORBA.Policy;
+<i>37</i>&nbsp;import org.omg.CORBA.TypeCode;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;import org.omg.PortableServer.Servant;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import org.omg.IOP.TaggedProfile;
+<i>42</i>&nbsp;import org.omg.IOP.ServiceContext;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import org.omg.Dynamic.Parameter;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;import org.omg.PortableInterceptor.InvalidSlot;
+<i>47</i>&nbsp;import org.omg.PortableInterceptor.ServerRequestInfo;
+<i>48</i>&nbsp;import org.omg.PortableInterceptor.LOCATION_FORWARD;
+<i>49</i>&nbsp;import org.omg.PortableInterceptor.SUCCESSFUL;
+<i>50</i>&nbsp;import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+<i>51</i>&nbsp;import org.omg.PortableInterceptor.TRANSPORT_RETRY;
+<i>52</i>&nbsp;import org.omg.PortableInterceptor.USER_EXCEPTION;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;import com.sun.corba.se.spi.oa.ObjectAdapter;
+<i>55</i>&nbsp;import com.sun.corba.se.spi.presentation.rmi.StubAdapter;
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;import com.sun.corba.se.impl.protocol.giopmsgheaders.ReplyMessage;
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;import com.sun.corba.se.spi.servicecontext.ServiceContexts;
+<i>60</i>&nbsp;import com.sun.corba.se.spi.orb.ORB;
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectKeyTemplate;
+<i>63</i>&nbsp;import com.sun.corba.se.spi.ior.ObjectAdapterId ;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;import com.sun.corba.se.spi.protocol.CorbaMessageMediator;
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;import java.util.*;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;/**
+<i>70</i>&nbsp; * Implementation of the ServerRequestInfo interface as specified in
+<i>71</i>&nbsp; * orbos/99-12-02 section 5.4.3.
+<i>72</i>&nbsp; */
+<i>73</i>&nbsp;public final class ServerRequestInfoImpl
+<i>74</i>&nbsp;    extends RequestInfoImpl
+<i>75</i>&nbsp;    implements ServerRequestInfo
+<i>76</i>&nbsp;{
+<i>77</i>&nbsp;    // The available constants for startingPointCall
+<i>78</i>&nbsp;    static final int CALL_RECEIVE_REQUEST_SERVICE_CONTEXT = 0;
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    // The available constants for intermediatePointCall.  The default (0)
+<i>81</i>&nbsp;    // is receive_request, but can be set to none on demand.
+<i>82</i>&nbsp;    static final int CALL_RECEIVE_REQUEST = 0;
+<i>83</i>&nbsp;    static final int CALL_INTERMEDIATE_NONE = 1;
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    // The available constants for endingPointCall
+<i>86</i>&nbsp;    static final int CALL_SEND_REPLY = 0;
+<i>87</i>&nbsp;    static final int CALL_SEND_EXCEPTION = 1;
+<i>88</i>&nbsp;    static final int CALL_SEND_OTHER = 2;
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    //////////////////////////////////////////////////////////////////////
+<i>91</i>&nbsp;    //
+<i>92</i>&nbsp;    // NOTE: IF AN ATTRIBUTE IS ADDED, PLEASE UPDATE RESET();
+<i>93</i>&nbsp;    //
+<i>94</i>&nbsp;    //////////////////////////////////////////////////////////////////////
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    // Set to true if the server ending point raised ForwardRequest at some
+<i>97</i>&nbsp;    // point in the ending point.
+<i>98</i>&nbsp;    private boolean forwardRequestRaisedInEnding;
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;    // Sources of server request information:
+<i>101</i>&nbsp;    private CorbaMessageMediator request;
+<i>102</i>&nbsp;    private java.lang.Object servant;
+<i>103</i>&nbsp;    private byte[] objectId;
+<i>104</i>&nbsp;    private ObjectKeyTemplate oktemp ;
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;    // Information cached from calls to oktemp
+<i>107</i>&nbsp;    private byte[] adapterId;
+<i>108</i>&nbsp;    private String[] adapterName;
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;    private ArrayList addReplyServiceContextQueue;
+<i>111</i>&nbsp;    private ReplyMessage replyMessage;
+<i>112</i>&nbsp;    private String targetMostDerivedInterface;
+<i>113</i>&nbsp;    private NVList dsiArguments;
+<i>114</i>&nbsp;    private Any dsiResult;
+<i>115</i>&nbsp;    private Any dsiException;
+<i>116</i>&nbsp;    private boolean isDynamic;
+<i>117</i>&nbsp;    private ObjectAdapter objectAdapter;
+<i>118</i>&nbsp;    private int serverRequestId;
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    // Cached information:
+<i>121</i>&nbsp;    private Parameter[] cachedArguments;
+<i>122</i>&nbsp;    private Any cachedSendingException;
+<i>123</i>&nbsp;    // key = Integer, value = IOP.ServiceContext.
+<i>124</i>&nbsp;    private HashMap cachedRequestServiceContexts;
+<i>125</i>&nbsp;    // key = Integer, value = IOP.ServiceContext.
+<i>126</i>&nbsp;    private HashMap cachedReplyServiceContexts;
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;    //////////////////////////////////////////////////////////////////////
+<i>129</i>&nbsp;    //
+<i>130</i>&nbsp;    // NOTE: IF AN ATTRIBUTE IS ADDED, PLEASE UPDATE RESET();
+<i>131</i>&nbsp;    //
+<i>132</i>&nbsp;    //////////////////////////////////////////////////////////////////////
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;    /**
+<i>136</i>&nbsp;     * Reset the info object so that it can be reused for a retry,
+<i>137</i>&nbsp;     * for example.
+<i>138</i>&nbsp;     */
+<i>139</i>&nbsp;    void reset() {
+<b class="nc"><i>140</i>&nbsp;        super.reset();</b>
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;        // Please keep these in the same order as declared above.
+<i>143</i>&nbsp;
+<b class="nc"><i>144</i>&nbsp;        forwardRequestRaisedInEnding = false;</b>
+<i>145</i>&nbsp;
+<b class="nc"><i>146</i>&nbsp;        request = null;</b>
+<b class="nc"><i>147</i>&nbsp;        servant = null;</b>
+<b class="nc"><i>148</i>&nbsp;        objectId = null;</b>
+<b class="nc"><i>149</i>&nbsp;        oktemp = null;</b>
+<i>150</i>&nbsp;
+<b class="nc"><i>151</i>&nbsp;        adapterId = null;</b>
+<b class="nc"><i>152</i>&nbsp;        adapterName = null;</b>
+<i>153</i>&nbsp;
+<b class="nc"><i>154</i>&nbsp;        addReplyServiceContextQueue = null;</b>
+<b class="nc"><i>155</i>&nbsp;        replyMessage = null;</b>
+<b class="nc"><i>156</i>&nbsp;        targetMostDerivedInterface = null;</b>
+<b class="nc"><i>157</i>&nbsp;        dsiArguments = null;</b>
+<b class="nc"><i>158</i>&nbsp;        dsiResult = null;</b>
+<b class="nc"><i>159</i>&nbsp;        dsiException = null;</b>
+<b class="nc"><i>160</i>&nbsp;        isDynamic = false;</b>
+<b class="nc"><i>161</i>&nbsp;        objectAdapter = null;</b>
+<b class="nc"><i>162</i>&nbsp;        serverRequestId = myORB.getPIHandler().allocateServerRequestId();</b>
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;        // reset cached attributes:
+<b class="nc"><i>165</i>&nbsp;        cachedArguments = null;</b>
+<b class="nc"><i>166</i>&nbsp;        cachedSendingException = null;</b>
+<b class="nc"><i>167</i>&nbsp;        cachedRequestServiceContexts = null;</b>
+<b class="nc"><i>168</i>&nbsp;        cachedReplyServiceContexts = null;</b>
+<i>169</i>&nbsp;
+<b class="nc"><i>170</i>&nbsp;        startingPointCall = CALL_RECEIVE_REQUEST_SERVICE_CONTEXT;</b>
+<b class="nc"><i>171</i>&nbsp;        intermediatePointCall = CALL_RECEIVE_REQUEST;</b>
+<b class="nc"><i>172</i>&nbsp;        endingPointCall = CALL_SEND_REPLY;</b>
+<i>173</i>&nbsp;    }
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;    /*
+<i>176</i>&nbsp;     **********************************************************************
+<i>177</i>&nbsp;     * Access protection
+<i>178</i>&nbsp;     **********************************************************************/
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;    // Method IDs for all methods in ServerRequestInfo.  This allows for a
+<i>181</i>&nbsp;    // convenient O(1) lookup for checkAccess().
+<i>182</i>&nbsp;    protected static final int MID_SENDING_EXCEPTION       = MID_RI_LAST +  1;
+<i>183</i>&nbsp;    protected static final int MID_OBJECT_ID               = MID_RI_LAST +  2;
+<i>184</i>&nbsp;    protected static final int MID_ADAPTER_ID              = MID_RI_LAST +  3;
+<i>185</i>&nbsp;    protected static final int MID_TARGET_MOST_DERIVED_INTERFACE
+<i>186</i>&nbsp;                                                           = MID_RI_LAST +  4;
+<i>187</i>&nbsp;    protected static final int MID_GET_SERVER_POLICY       = MID_RI_LAST +  5;
+<i>188</i>&nbsp;    protected static final int MID_SET_SLOT                = MID_RI_LAST +  6;
+<i>189</i>&nbsp;    protected static final int MID_TARGET_IS_A             = MID_RI_LAST +  7;
+<i>190</i>&nbsp;    protected static final int MID_ADD_REPLY_SERVICE_CONTEXT
+<i>191</i>&nbsp;                                                           = MID_RI_LAST +  8;
+<i>192</i>&nbsp;    protected static final int MID_SERVER_ID               = MID_RI_LAST +  9;
+<i>193</i>&nbsp;    protected static final int MID_ORB_ID                  = MID_RI_LAST +  10;
+<i>194</i>&nbsp;    protected static final int MID_ADAPTER_NAME            = MID_RI_LAST +  11;
+<i>195</i>&nbsp;
+<i>196</i>&nbsp;    // ServerRequestInfo validity table (see ptc/00-08-06 table 21-2).
+<i>197</i>&nbsp;    // Note: These must be in the same order as specified in contants.
+<b class="nc"><i>198</i>&nbsp;    private static final boolean validCall[][] = {</b>
+<i>199</i>&nbsp;        // LEGEND:
+<i>200</i>&nbsp;        // r_rsc = receive_request_service_contexts
+<i>201</i>&nbsp;        // r_req = receive_request
+<i>202</i>&nbsp;        // s_rep = send_reply
+<i>203</i>&nbsp;        // s_exc = send_exception
+<i>204</i>&nbsp;        // s_oth = send_other
+<i>205</i>&nbsp;        //
+<i>206</i>&nbsp;        // A true value indicates call is valid at specified point.
+<i>207</i>&nbsp;        // A false value indicates the call is invalid.
+<i>208</i>&nbsp;        //
+<i>209</i>&nbsp;        // NOTE: If the order or number of columns change, update
+<i>210</i>&nbsp;        // checkAccess() accordingly.
+<i>211</i>&nbsp;        //
+<i>212</i>&nbsp;        //                              { r_rsc, r_req, s_rep, s_exc, s_oth }
+<i>213</i>&nbsp;        // RequestInfo methods:
+<i>214</i>&nbsp;        /*request_id*/                  { true , true , true , true , true  },
+<i>215</i>&nbsp;        /*operation*/                   { true , true , true , true , true  },
+<i>216</i>&nbsp;        /*arguments*/                   { false, true , true , false, false },
+<i>217</i>&nbsp;        /*exceptions*/                  { false, true , true , true , true  },
+<i>218</i>&nbsp;        /*contexts*/                    { false, true , true , true , true  },
+<i>219</i>&nbsp;        /*operation_context*/           { false, true , true , false, false },
+<i>220</i>&nbsp;        /*result*/                      { false, false, true , false, false },
+<i>221</i>&nbsp;        /*response_expected*/           { true , true , true , true , true  },
+<i>222</i>&nbsp;        /*sync_scope*/                  { true , true , true , true , true  },
+<i>223</i>&nbsp;        /*reply_status*/                { false, false, true , true , true  },
+<i>224</i>&nbsp;        /*forward_reference*/           { false, false, false, false, true  },
+<i>225</i>&nbsp;        /*get_slot*/                    { true , true , true , true , true  },
+<i>226</i>&nbsp;        /*get_request_service_context*/ { true , true , true , true , true  },
+<i>227</i>&nbsp;        /*get_reply_service_context*/   { false, false, true , true , true  },
+<i>228</i>&nbsp;        //
+<i>229</i>&nbsp;        // ServerRequestInfo methods::
+<i>230</i>&nbsp;        /*sending_exception*/           { false, false, false, true , false },
+<i>231</i>&nbsp;        /*object_id*/                   { false, true , true , true , true  },
+<i>232</i>&nbsp;        /*adapter_id*/                  { false, true , true , true , true  },
+<i>233</i>&nbsp;        /*target_most_derived_inte...*/ { false, true , false, false, false },
+<i>234</i>&nbsp;        /*get_server_policy*/           { true , true , true , true , true  },
+<i>235</i>&nbsp;        /*set_slot*/                    { true , true , true , true , true  },
+<i>236</i>&nbsp;        /*target_is_a*/                 { false, true , false, false, false },
+<i>237</i>&nbsp;        /*add_reply_service_context*/   { true , true , true , true , true  },
+<i>238</i>&nbsp;        /*orb_id*/                      { false, true , true , true , true  },
+<i>239</i>&nbsp;        /*server_id*/                   { false, true , true , true , true  },
+<i>240</i>&nbsp;        /*adapter_name*/                { false, true , true , true , true  }
+<i>241</i>&nbsp;    };
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;    /*
+<i>244</i>&nbsp;     **********************************************************************
+<i>245</i>&nbsp;     * Public interfaces
+<i>246</i>&nbsp;     **********************************************************************/
+<i>247</i>&nbsp;
+<i>248</i>&nbsp;    /**
+<i>249</i>&nbsp;     * Creates a new ServerRequestInfo implementation.
+<i>250</i>&nbsp;     * The constructor is package scope since no other package need create
+<i>251</i>&nbsp;     * an instance of this class.
+<i>252</i>&nbsp;     */
+<i>253</i>&nbsp;    ServerRequestInfoImpl( ORB myORB ) {
+<b class="nc"><i>254</i>&nbsp;        super( myORB );</b>
+<b class="nc"><i>255</i>&nbsp;        startingPointCall = CALL_RECEIVE_REQUEST_SERVICE_CONTEXT;</b>
+<b class="nc"><i>256</i>&nbsp;        intermediatePointCall = CALL_RECEIVE_REQUEST;</b>
+<b class="nc"><i>257</i>&nbsp;        endingPointCall = CALL_SEND_REPLY;</b>
+<b class="nc"><i>258</i>&nbsp;        serverRequestId = myORB.getPIHandler().allocateServerRequestId();</b>
+<i>259</i>&nbsp;    }
+<i>260</i>&nbsp;
+<i>261</i>&nbsp;    /**
+<i>262</i>&nbsp;     * Any containing the exception to be returned to the client.
+<i>263</i>&nbsp;     */
+<i>264</i>&nbsp;    public Any sending_exception () {
+<b class="nc"><i>265</i>&nbsp;        checkAccess( MID_SENDING_EXCEPTION );</b>
+<i>266</i>&nbsp;
+<b class="nc"><i>267</i>&nbsp;        if( cachedSendingException == null ) {</b>
+<b class="nc"><i>268</i>&nbsp;            Any result = null ;</b>
+<i>269</i>&nbsp;
+<b class="nc"><i>270</i>&nbsp;            if( dsiException != null ) {</b>
+<b class="nc"><i>271</i>&nbsp;                result = dsiException;</b>
+<b class="nc"><i>272</i>&nbsp;            } else if( exception != null ) {</b>
+<b class="nc"><i>273</i>&nbsp;                result = exceptionToAny( exception );</b>
+<i>274</i>&nbsp;            } else {
+<i>275</i>&nbsp;                // sending_exception should not be callable if both dsiException
+<i>276</i>&nbsp;                // and exception are null.
+<b class="nc"><i>277</i>&nbsp;                throw wrapper.exceptionUnavailable() ;</b>
+<i>278</i>&nbsp;            }
+<i>279</i>&nbsp;
+<b class="nc"><i>280</i>&nbsp;            cachedSendingException = result;</b>
+<i>281</i>&nbsp;        }
+<i>282</i>&nbsp;
+<b class="nc"><i>283</i>&nbsp;        return cachedSendingException;</b>
+<i>284</i>&nbsp;    }
+<i>285</i>&nbsp;
+<i>286</i>&nbsp;    /**
+<i>287</i>&nbsp;     * The opaque object_id describing the target of the operation invocation.
+<i>288</i>&nbsp;     */
+<i>289</i>&nbsp;    public byte[] object_id () {
+<b class="nc"><i>290</i>&nbsp;        checkAccess( MID_OBJECT_ID );</b>
+<i>291</i>&nbsp;
+<b class="nc"><i>292</i>&nbsp;        if( objectId == null ) {</b>
+<i>293</i>&nbsp;            // For some reason, we never set object id.  This could be
+<i>294</i>&nbsp;            // because a servant locator caused a location forward or
+<i>295</i>&nbsp;            // raised an exception.  As per ptc/00-08-06, section 21.3.14,
+<i>296</i>&nbsp;            // we throw NO_RESOURCES
+<b class="nc"><i>297</i>&nbsp;            throw stdWrapper.piOperationNotSupported6() ;</b>
+<i>298</i>&nbsp;        }
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;        // Good citizen: In the interest of efficiency, we will assume
+<i>301</i>&nbsp;        // interceptors will not change the resulting byte[] array.
+<i>302</i>&nbsp;        // Otherwise, we would need to make a clone of this array.
+<i>303</i>&nbsp;
+<b class="nc"><i>304</i>&nbsp;        return objectId;</b>
+<i>305</i>&nbsp;    }
+<i>306</i>&nbsp;
+<i>307</i>&nbsp;    private void checkForNullTemplate()
+<i>308</i>&nbsp;    {
+<b class="nc"><i>309</i>&nbsp;        if (oktemp == null) {</b>
+<i>310</i>&nbsp;            // For some reason, we never set the ObjectKeyTemplate
+<i>311</i>&nbsp;            // because a servant locator caused a location forward or
+<i>312</i>&nbsp;            // raised an exception.  As per ptc/00-08-06, section 21.3.14,
+<i>313</i>&nbsp;            // we throw NO_RESOURCES
+<b class="nc"><i>314</i>&nbsp;            throw stdWrapper.piOperationNotSupported7() ;</b>
+<i>315</i>&nbsp;        }
+<i>316</i>&nbsp;    }
+<i>317</i>&nbsp;
+<i>318</i>&nbsp;    public String server_id()
+<i>319</i>&nbsp;    {
+<b class="nc"><i>320</i>&nbsp;        checkAccess( MID_SERVER_ID ) ;</b>
+<b class="nc"><i>321</i>&nbsp;        checkForNullTemplate() ;</b>
+<i>322</i>&nbsp;
+<i>323</i>&nbsp;        // Good citizen: In the interest of efficiency, we will assume
+<i>324</i>&nbsp;        // interceptors will not change the resulting byte[] array.
+<i>325</i>&nbsp;        // Otherwise, we would need to make a clone of this array.
+<i>326</i>&nbsp;
+<b class="nc"><i>327</i>&nbsp;        return Integer.toString( oktemp.getServerId() ) ;</b>
+<i>328</i>&nbsp;    }
+<i>329</i>&nbsp;
+<i>330</i>&nbsp;    public String orb_id()
+<i>331</i>&nbsp;    {
+<b class="nc"><i>332</i>&nbsp;        checkAccess( MID_ORB_ID ) ;</b>
+<i>333</i>&nbsp;
+<b class="nc"><i>334</i>&nbsp;        return myORB.getORBData().getORBId() ;</b>
+<i>335</i>&nbsp;    }
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;    synchronized public String[] adapter_name()
+<i>338</i>&nbsp;    {
+<b class="nc"><i>339</i>&nbsp;        checkAccess( MID_ADAPTER_NAME ) ;</b>
+<i>340</i>&nbsp;
+<b class="nc"><i>341</i>&nbsp;        if (adapterName == null) {</b>
+<b class="nc"><i>342</i>&nbsp;            checkForNullTemplate() ;</b>
+<i>343</i>&nbsp;
+<b class="nc"><i>344</i>&nbsp;            ObjectAdapterId oaid = oktemp.getObjectAdapterId() ;</b>
+<b class="nc"><i>345</i>&nbsp;            adapterName = oaid.getAdapterName() ;</b>
+<i>346</i>&nbsp;        }
+<i>347</i>&nbsp;
+<b class="nc"><i>348</i>&nbsp;        return adapterName ;</b>
+<i>349</i>&nbsp;    }
+<i>350</i>&nbsp;
+<i>351</i>&nbsp;    /**
+<i>352</i>&nbsp;     * The opaque identifier for the object adapter.
+<i>353</i>&nbsp;     */
+<i>354</i>&nbsp;    synchronized public byte[] adapter_id ()
+<i>355</i>&nbsp;    {
+<b class="nc"><i>356</i>&nbsp;        checkAccess( MID_ADAPTER_ID );</b>
+<i>357</i>&nbsp;
+<b class="nc"><i>358</i>&nbsp;        if( adapterId == null ) {</b>
+<b class="nc"><i>359</i>&nbsp;            checkForNullTemplate() ;</b>
+<b class="nc"><i>360</i>&nbsp;            adapterId = oktemp.getAdapterId() ;</b>
+<i>361</i>&nbsp;        }
+<i>362</i>&nbsp;
+<b class="nc"><i>363</i>&nbsp;        return adapterId;</b>
+<i>364</i>&nbsp;    }
+<i>365</i>&nbsp;
+<i>366</i>&nbsp;    /**
+<i>367</i>&nbsp;     * The RepositoryID for the most derived interface of the servant.
+<i>368</i>&nbsp;     */
+<i>369</i>&nbsp;    public String target_most_derived_interface () {
+<b class="nc"><i>370</i>&nbsp;        checkAccess( MID_TARGET_MOST_DERIVED_INTERFACE );</b>
+<b class="nc"><i>371</i>&nbsp;        return targetMostDerivedInterface;</b>
+<i>372</i>&nbsp;    }
+<i>373</i>&nbsp;
+<i>374</i>&nbsp;    /**
+<i>375</i>&nbsp;     * Returns the policy in effect for this operation for the given policy
+<i>376</i>&nbsp;     * type.
+<i>377</i>&nbsp;     */
+<i>378</i>&nbsp;    public Policy get_server_policy (int type) {
+<i>379</i>&nbsp;        // access is currently valid for all states:
+<i>380</i>&nbsp;        //checkAccess( MID_GET_SERVER_POLICY );
+<i>381</i>&nbsp;
+<b class="nc"><i>382</i>&nbsp;        Policy result = null;</b>
+<i>383</i>&nbsp;
+<b class="nc"><i>384</i>&nbsp;        if( objectAdapter != null ) {</b>
+<b class="nc"><i>385</i>&nbsp;            result = objectAdapter.getEffectivePolicy( type );</b>
+<i>386</i>&nbsp;        }
+<i>387</i>&nbsp;
+<i>388</i>&nbsp;        // _REVISIT_ RTF Issue: get_server_policy spec not in sync with
+<i>389</i>&nbsp;        // get_effective_policy spec.
+<i>390</i>&nbsp;
+<b class="nc"><i>391</i>&nbsp;        return result;</b>
+<i>392</i>&nbsp;    }
+<i>393</i>&nbsp;
+<i>394</i>&nbsp;    /**
+<i>395</i>&nbsp;     * Allows an Interceptor to set a slot in the Current that is in the scope
+<i>396</i>&nbsp;     * of the request.  If data already exists in that slot, it will be
+<i>397</i>&nbsp;     * overwritten.  If the ID does not define an allocated slot, InvalidSlot
+<i>398</i>&nbsp;     * is raised.
+<i>399</i>&nbsp;     */
+<i>400</i>&nbsp;    public void set_slot (int id, Any data) throws InvalidSlot {
+<i>401</i>&nbsp;        // access is currently valid for all states:
+<i>402</i>&nbsp;        //checkAccess( MID_SET_SLOT );
+<i>403</i>&nbsp;
+<b class="nc"><i>404</i>&nbsp;        slotTable.set_slot( id, data );</b>
+<i>405</i>&nbsp;    }
+<i>406</i>&nbsp;
+<i>407</i>&nbsp;    /**
+<i>408</i>&nbsp;     * Returns true if the servant is the given RepositoryId, false if it is
+<i>409</i>&nbsp;     * not.
+<i>410</i>&nbsp;     */
+<i>411</i>&nbsp;    public boolean target_is_a (String id) {
+<b class="nc"><i>412</i>&nbsp;        checkAccess( MID_TARGET_IS_A );</b>
+<i>413</i>&nbsp;
+<b class="nc"><i>414</i>&nbsp;        boolean result = false ;</b>
+<b class="nc"><i>415</i>&nbsp;        if( servant instanceof Servant ) {</b>
+<b class="nc"><i>416</i>&nbsp;            result = ((Servant)servant)._is_a( id );</b>
+<b class="nc"><i>417</i>&nbsp;        } else if (StubAdapter.isStub( servant )) {</b>
+<b class="nc"><i>418</i>&nbsp;            result = ((org.omg.CORBA.Object)servant)._is_a( id );</b>
+<i>419</i>&nbsp;        } else {
+<b class="nc"><i>420</i>&nbsp;            throw wrapper.servantInvalid() ;</b>
+<i>421</i>&nbsp;        }
+<i>422</i>&nbsp;
+<b class="nc"><i>423</i>&nbsp;        return result;</b>
+<i>424</i>&nbsp;    }
+<i>425</i>&nbsp;
+<i>426</i>&nbsp;    /**
+<i>427</i>&nbsp;     * Allows Interceptors to add service contexts to the request.
+<i>428</i>&nbsp;     */
+<i>429</i>&nbsp;    public void add_reply_service_context ( ServiceContext service_context,
+<i>430</i>&nbsp;                                            boolean replace )
+<i>431</i>&nbsp;    {
+<i>432</i>&nbsp;        // access is currently valid for all states:
+<i>433</i>&nbsp;        //checkAccess( MID_ADD_REPLY_SERVICE_CONTEXT );
+<i>434</i>&nbsp;
+<b class="nc"><i>435</i>&nbsp;        if( currentExecutionPoint == EXECUTION_POINT_ENDING ) {</b>
+<b class="nc"><i>436</i>&nbsp;            ServiceContexts scs = replyMessage.getServiceContexts();</b>
+<i>437</i>&nbsp;
+<i>438</i>&nbsp;            // May be null.  If this is null, create a new one in its place.
+<b class="nc"><i>439</i>&nbsp;            if( scs == null ) {</b>
+<b class="nc"><i>440</i>&nbsp;                scs = new ServiceContexts( myORB );</b>
+<b class="nc"><i>441</i>&nbsp;                replyMessage.setServiceContexts( scs );</b>
+<i>442</i>&nbsp;            }
+<i>443</i>&nbsp;
+<b class="nc"><i>444</i>&nbsp;            if( cachedReplyServiceContexts == null ) {</b>
+<b class="nc"><i>445</i>&nbsp;                cachedReplyServiceContexts = new HashMap();</b>
+<i>446</i>&nbsp;            }
+<i>447</i>&nbsp;
+<i>448</i>&nbsp;            // This is during and ending point, so we now have enough
+<i>449</i>&nbsp;            // information to add the reply service context.
+<b class="nc"><i>450</i>&nbsp;            addServiceContext( cachedReplyServiceContexts, scs,</b>
+<i>451</i>&nbsp;                               service_context, replace );
+<i>452</i>&nbsp;        }
+<i>453</i>&nbsp;
+<i>454</i>&nbsp;        // We enqueue all adds for the following reasons:
+<i>455</i>&nbsp;        //
+<i>456</i>&nbsp;        // If we are not in the ending point then we do not yet have a
+<i>457</i>&nbsp;        // pointer to the ServiceContexts object so we cannot access the
+<i>458</i>&nbsp;        // service contexts until we get to the ending point.
+<i>459</i>&nbsp;        // So we enqueue this add reply service context request.
+<i>460</i>&nbsp;        // It is added when we do have a handle on the service contexts object.
+<i>461</i>&nbsp;        //
+<i>462</i>&nbsp;        // If we are in the ending point and we just add directly to the
+<i>463</i>&nbsp;        // SC container but then an interceptor raises a SystemException
+<i>464</i>&nbsp;        // then that add will be lost since a new container is created
+<i>465</i>&nbsp;        // for the SystemException response.
+<i>466</i>&nbsp;        //
+<i>467</i>&nbsp;        // Therefore we always enqueue and never dequeue (per request) so
+<i>468</i>&nbsp;        // that all adds will be completed.
+<i>469</i>&nbsp;
+<b class="nc"><i>470</i>&nbsp;        AddReplyServiceContextCommand addReply =</b>
+<i>471</i>&nbsp;            new AddReplyServiceContextCommand();
+<b class="nc"><i>472</i>&nbsp;        addReply.service_context = service_context;</b>
+<b class="nc"><i>473</i>&nbsp;        addReply.replace = replace;</b>
+<i>474</i>&nbsp;
+<b class="nc"><i>475</i>&nbsp;        if( addReplyServiceContextQueue == null ) {</b>
+<b class="nc"><i>476</i>&nbsp;            addReplyServiceContextQueue = new ArrayList();</b>
+<i>477</i>&nbsp;        }
+<i>478</i>&nbsp;
+<i>479</i>&nbsp;        // REVISIT: this does not add to the cache.
+<b class="nc"><i>480</i>&nbsp;        enqueue( addReply );</b>
+<i>481</i>&nbsp;    }
+<i>482</i>&nbsp;
+<i>483</i>&nbsp;    // NOTE: When adding a method, be sure to:
+<i>484</i>&nbsp;    // 1. Add a MID_* constant for that method
+<i>485</i>&nbsp;    // 2. Call checkAccess at the start of the method
+<i>486</i>&nbsp;    // 3. Define entries in the validCall[][] table for interception points.
+<i>487</i>&nbsp;
+<i>488</i>&nbsp;    /*
+<i>489</i>&nbsp;     **********************************************************************
+<i>490</i>&nbsp;     * Public RequestInfo interfaces
+<i>491</i>&nbsp;     *
+<i>492</i>&nbsp;     * These are implemented here because they have differing
+<i>493</i>&nbsp;     * implementations depending on whether this is a client or a server
+<i>494</i>&nbsp;     * request info object.
+<i>495</i>&nbsp;     **********************************************************************/
+<i>496</i>&nbsp;
+<i>497</i>&nbsp;    /**
+<i>498</i>&nbsp;     * See ServerRequestInfo for javadocs.
+<i>499</i>&nbsp;     */
+<i>500</i>&nbsp;    public int request_id (){
+<i>501</i>&nbsp;        // access is currently valid for all states:
+<i>502</i>&nbsp;        //checkAccess( MID_REQUEST_ID );
+<i>503</i>&nbsp;        /*
+<i>504</i>&nbsp;         * NOTE: The request id in server interceptors is NOT the
+<i>505</i>&nbsp;         * same as the GIOP request id.  The ORB may be servicing several
+<i>506</i>&nbsp;         * connections, each with possibly overlapping sets of request ids.
+<i>507</i>&nbsp;         * Therefore we create a request id specific to interceptors.
+<i>508</i>&nbsp;         */
+<b class="nc"><i>509</i>&nbsp;        return serverRequestId;</b>
+<i>510</i>&nbsp;    }
+<i>511</i>&nbsp;
+<i>512</i>&nbsp;    /**
+<i>513</i>&nbsp;     * See ServerRequestInfo for javadocs.
+<i>514</i>&nbsp;     */
+<i>515</i>&nbsp;    public String operation (){
+<i>516</i>&nbsp;        // access is currently valid for all states:
+<i>517</i>&nbsp;        //checkAccess( MID_OPERATION );
+<b class="nc"><i>518</i>&nbsp;        return request.getOperationName();</b>
+<i>519</i>&nbsp;    }
+<i>520</i>&nbsp;
+<i>521</i>&nbsp;    /**
+<i>522</i>&nbsp;     * See ServerRequestInfo for javadocs.
+<i>523</i>&nbsp;     */
+<i>524</i>&nbsp;    public Parameter[] arguments (){
+<b class="nc"><i>525</i>&nbsp;        checkAccess( MID_ARGUMENTS );</b>
+<i>526</i>&nbsp;
+<b class="nc"><i>527</i>&nbsp;        if( cachedArguments == null ) {</b>
+<b class="nc"><i>528</i>&nbsp;            if( !isDynamic ) {</b>
+<b class="nc"><i>529</i>&nbsp;                throw stdWrapper.piOperationNotSupported1() ;</b>
+<i>530</i>&nbsp;            }
+<i>531</i>&nbsp;
+<b class="nc"><i>532</i>&nbsp;            if( dsiArguments == null ) {</b>
+<b class="nc"><i>533</i>&nbsp;                throw stdWrapper.piOperationNotSupported8() ;</b>
+<i>534</i>&nbsp;            }
+<i>535</i>&nbsp;
+<i>536</i>&nbsp;            // If it is a DSI request then get the arguments from the DSI req
+<i>537</i>&nbsp;            // and convert that into parameters.
+<b class="nc"><i>538</i>&nbsp;            cachedArguments = nvListToParameterArray( dsiArguments );</b>
+<i>539</i>&nbsp;        }
+<i>540</i>&nbsp;
+<i>541</i>&nbsp;        // Good citizen: In the interest of efficiency, we assume
+<i>542</i>&nbsp;        // interceptors will be &quot;good citizens&quot; in that they will not
+<i>543</i>&nbsp;        // modify the contents of the Parameter[] array.  We also assume
+<i>544</i>&nbsp;        // they will not change the values of the containing Anys.
+<i>545</i>&nbsp;
+<b class="nc"><i>546</i>&nbsp;        return cachedArguments;</b>
+<i>547</i>&nbsp;    }
+<i>548</i>&nbsp;
+<i>549</i>&nbsp;    /**
+<i>550</i>&nbsp;     * See ServerRequestInfo for javadocs.
+<i>551</i>&nbsp;     */
+<i>552</i>&nbsp;    public TypeCode[] exceptions (){
+<b class="nc"><i>553</i>&nbsp;        checkAccess( MID_EXCEPTIONS );</b>
+<i>554</i>&nbsp;
+<i>555</i>&nbsp;        // _REVISIT_ PI RTF Issue: No exception list on server side.
+<i>556</i>&nbsp;
+<b class="nc"><i>557</i>&nbsp;        throw stdWrapper.piOperationNotSupported2() ;</b>
+<i>558</i>&nbsp;    }
+<i>559</i>&nbsp;
+<i>560</i>&nbsp;    /**
+<i>561</i>&nbsp;     * See ServerRequestInfo for javadocs.
+<i>562</i>&nbsp;     */
+<i>563</i>&nbsp;    public String[] contexts (){
+<b class="nc"><i>564</i>&nbsp;        checkAccess( MID_CONTEXTS );</b>
+<i>565</i>&nbsp;
+<i>566</i>&nbsp;        // We do not support this because our ORB does not send contexts.
+<i>567</i>&nbsp;
+<b class="nc"><i>568</i>&nbsp;        throw stdWrapper.piOperationNotSupported3() ;</b>
+<i>569</i>&nbsp;    }
+<i>570</i>&nbsp;
+<i>571</i>&nbsp;    /**
+<i>572</i>&nbsp;     * See ServerRequestInfo for javadocs.
+<i>573</i>&nbsp;     */
+<i>574</i>&nbsp;    public String[] operation_context (){
+<b class="nc"><i>575</i>&nbsp;        checkAccess( MID_OPERATION_CONTEXT );</b>
+<i>576</i>&nbsp;
+<i>577</i>&nbsp;        // We do not support this because our ORB does not send
+<i>578</i>&nbsp;        // operation_context.
+<i>579</i>&nbsp;
+<b class="nc"><i>580</i>&nbsp;        throw stdWrapper.piOperationNotSupported4() ;</b>
+<i>581</i>&nbsp;    }
+<i>582</i>&nbsp;
+<i>583</i>&nbsp;    /**
+<i>584</i>&nbsp;     * See ServerRequestInfo for javadocs.
+<i>585</i>&nbsp;     */
+<i>586</i>&nbsp;    public Any result (){
+<b class="nc"><i>587</i>&nbsp;        checkAccess( MID_RESULT );</b>
+<i>588</i>&nbsp;
+<b class="nc"><i>589</i>&nbsp;        if( !isDynamic ) {</b>
+<b class="nc"><i>590</i>&nbsp;            throw stdWrapper.piOperationNotSupported5() ;</b>
+<i>591</i>&nbsp;        }
+<i>592</i>&nbsp;
+<b class="nc"><i>593</i>&nbsp;        if( dsiResult == null ) {</b>
+<b class="nc"><i>594</i>&nbsp;            throw wrapper.piDsiResultIsNull() ;</b>
+<i>595</i>&nbsp;        }
+<i>596</i>&nbsp;
+<i>597</i>&nbsp;        // Good citizen: In the interest of efficiency, we assume that
+<i>598</i>&nbsp;        // interceptors will not modify the contents of the result Any.
+<i>599</i>&nbsp;        // Otherwise, we would need to create a deep copy of the Any.
+<i>600</i>&nbsp;
+<b class="nc"><i>601</i>&nbsp;        return dsiResult;</b>
+<i>602</i>&nbsp;    }
+<i>603</i>&nbsp;
+<i>604</i>&nbsp;    /**
+<i>605</i>&nbsp;     * See ServerRequestInfo for javadocs.
+<i>606</i>&nbsp;     */
+<i>607</i>&nbsp;    public boolean response_expected (){
+<i>608</i>&nbsp;        // access is currently valid for all states:
+<i>609</i>&nbsp;        //checkAccess( MID_RESPONSE_EXPECTED );
+<b class="nc"><i>610</i>&nbsp;        return !request.isOneWay();</b>
+<i>611</i>&nbsp;    }
+<i>612</i>&nbsp;
+<i>613</i>&nbsp;    /**
+<i>614</i>&nbsp;     * See ServerRequestInfo for javadocs.
+<i>615</i>&nbsp;     */
+<i>616</i>&nbsp;    public Object forward_reference (){
+<b class="nc"><i>617</i>&nbsp;        checkAccess( MID_FORWARD_REFERENCE );</b>
+<i>618</i>&nbsp;        // Check to make sure we are in LOCATION_FORWARD
+<i>619</i>&nbsp;        // state as per ptc/00-08-06, table 21-2
+<i>620</i>&nbsp;        // footnote 2.
+<b class="nc"><i>621</i>&nbsp;        if( replyStatus != LOCATION_FORWARD.value ) {</b>
+<b class="nc"><i>622</i>&nbsp;            throw stdWrapper.invalidPiCall1() ;</b>
+<i>623</i>&nbsp;        }
+<i>624</i>&nbsp;
+<b class="nc"><i>625</i>&nbsp;        return getForwardRequestException().forward;</b>
+<i>626</i>&nbsp;    }
+<i>627</i>&nbsp;
+<i>628</i>&nbsp;    /**
+<i>629</i>&nbsp;     * See ServerRequestInfo for javadocs.
+<i>630</i>&nbsp;     */
+<i>631</i>&nbsp;    public org.omg.IOP.ServiceContext get_request_service_context( int id ) {
+<b class="nc"><i>632</i>&nbsp;        checkAccess( MID_GET_REQUEST_SERVICE_CONTEXT );</b>
+<i>633</i>&nbsp;
+<b class="nc"><i>634</i>&nbsp;        if( cachedRequestServiceContexts == null ) {</b>
+<b class="nc"><i>635</i>&nbsp;            cachedRequestServiceContexts = new HashMap();</b>
+<i>636</i>&nbsp;        }
+<i>637</i>&nbsp;
+<b class="nc"><i>638</i>&nbsp;        return getServiceContext( cachedRequestServiceContexts,</b>
+<b class="nc"><i>639</i>&nbsp;                                  request.getRequestServiceContexts(), id );</b>
+<i>640</i>&nbsp;    }
+<i>641</i>&nbsp;
+<i>642</i>&nbsp;    /**
+<i>643</i>&nbsp;     * See ServerRequestInfo for javadocs.
+<i>644</i>&nbsp;     */
+<i>645</i>&nbsp;    public org.omg.IOP.ServiceContext get_reply_service_context( int id ) {
+<b class="nc"><i>646</i>&nbsp;        checkAccess( MID_GET_REPLY_SERVICE_CONTEXT );</b>
+<i>647</i>&nbsp;
+<b class="nc"><i>648</i>&nbsp;        if( cachedReplyServiceContexts == null ) {</b>
+<b class="nc"><i>649</i>&nbsp;            cachedReplyServiceContexts = new HashMap();</b>
+<i>650</i>&nbsp;        }
+<i>651</i>&nbsp;
+<b class="nc"><i>652</i>&nbsp;        return getServiceContext( cachedReplyServiceContexts,</b>
+<b class="nc"><i>653</i>&nbsp;                                  replyMessage.getServiceContexts(), id );</b>
+<i>654</i>&nbsp;    }
+<i>655</i>&nbsp;
+<i>656</i>&nbsp;    /*
+<i>657</i>&nbsp;     **********************************************************************
+<i>658</i>&nbsp;     * Private-scope classes and methods
+<i>659</i>&nbsp;     **********************************************************************/
+<i>660</i>&nbsp;
+<i>661</i>&nbsp;    // A command encapsulating a request to add a reply service context.
+<i>662</i>&nbsp;    // These commands are enqueued until we have a handle on the actual
+<i>663</i>&nbsp;    // reply service context, at which point they are executed.
+<b class="nc"><i>664</i>&nbsp;    private class AddReplyServiceContextCommand {</b>
+<i>665</i>&nbsp;        ServiceContext service_context;
+<i>666</i>&nbsp;        boolean replace;
+<i>667</i>&nbsp;    }
+<i>668</i>&nbsp;
+<i>669</i>&nbsp;    // Adds the given add reply service context command to the queue of
+<i>670</i>&nbsp;    // such commands.  If a command is detected to have the same id as
+<i>671</i>&nbsp;    // the service context in this command, and replace is false,
+<i>672</i>&nbsp;    // BAD_INV_ORDER is thrown.  If replace is true, the original command
+<i>673</i>&nbsp;    // in the queue is replaced by this command.
+<i>674</i>&nbsp;    private void enqueue( AddReplyServiceContextCommand addReply ) {
+<b class="nc"><i>675</i>&nbsp;        int size = addReplyServiceContextQueue.size();</b>
+<b class="nc"><i>676</i>&nbsp;        boolean found = false;</b>
+<i>677</i>&nbsp;
+<b class="nc"><i>678</i>&nbsp;        for( int i = 0; i &lt; size; i++ ) {</b>
+<b class="nc"><i>679</i>&nbsp;            AddReplyServiceContextCommand cmd =</b>
+<i>680</i>&nbsp;                (AddReplyServiceContextCommand)
+<b class="nc"><i>681</i>&nbsp;                addReplyServiceContextQueue.get( i );</b>
+<i>682</i>&nbsp;
+<b class="nc"><i>683</i>&nbsp;            if( cmd.service_context.context_id ==</b>
+<i>684</i>&nbsp;                addReply.service_context.context_id )
+<i>685</i>&nbsp;            {
+<b class="nc"><i>686</i>&nbsp;                found = true;</b>
+<b class="nc"><i>687</i>&nbsp;                if( addReply.replace ) {</b>
+<b class="nc"><i>688</i>&nbsp;                    addReplyServiceContextQueue.set( i, addReply );</b>
+<i>689</i>&nbsp;                } else {
+<b class="nc"><i>690</i>&nbsp;                    throw stdWrapper.serviceContextAddFailed(</b>
+<i>691</i>&nbsp;                        new Integer( cmd.service_context.context_id ) ) ;
+<i>692</i>&nbsp;                }
+<i>693</i>&nbsp;                break;
+<i>694</i>&nbsp;            }
+<i>695</i>&nbsp;        }
+<i>696</i>&nbsp;
+<b class="nc"><i>697</i>&nbsp;        if( !found ) {</b>
+<b class="nc"><i>698</i>&nbsp;            addReplyServiceContextQueue.add( addReply );</b>
+<i>699</i>&nbsp;        }
+<i>700</i>&nbsp;    }
+<i>701</i>&nbsp;
+<i>702</i>&nbsp;    /*
+<i>703</i>&nbsp;     **********************************************************************
+<i>704</i>&nbsp;     * Package and protected-scope methods
+<i>705</i>&nbsp;     **********************************************************************/
+<i>706</i>&nbsp;
+<i>707</i>&nbsp;    /**
+<i>708</i>&nbsp;     * Overridden from RequestInfoImpl.  This version calls the super
+<i>709</i>&nbsp;     * and then, if we are changing to ending points, executes all
+<i>710</i>&nbsp;     * enqueued AddReplyServiceContextCommands.
+<i>711</i>&nbsp;     */
+<i>712</i>&nbsp;    protected void setCurrentExecutionPoint( int executionPoint ) {
+<b class="nc"><i>713</i>&nbsp;        super.setCurrentExecutionPoint( executionPoint );</b>
+<i>714</i>&nbsp;
+<i>715</i>&nbsp;        // If we are transitioning to ending point, we will now have a pointer
+<i>716</i>&nbsp;        // to the reply service contexts, so we can execute all queued
+<i>717</i>&nbsp;        // add reply service context requests.
+<b class="nc"><i>718</i>&nbsp;        if( (executionPoint == EXECUTION_POINT_ENDING) &amp;&amp;</b>
+<i>719</i>&nbsp;            (addReplyServiceContextQueue != null) )
+<i>720</i>&nbsp;        {
+<b class="nc"><i>721</i>&nbsp;            int size = addReplyServiceContextQueue.size();</b>
+<b class="nc"><i>722</i>&nbsp;            for( int i = 0; i &lt; size; i++ ) {</b>
+<b class="nc"><i>723</i>&nbsp;                AddReplyServiceContextCommand addReply =</b>
+<i>724</i>&nbsp;                    (AddReplyServiceContextCommand)
+<b class="nc"><i>725</i>&nbsp;                    addReplyServiceContextQueue.get( i );</b>
+<i>726</i>&nbsp;                try {
+<b class="nc"><i>727</i>&nbsp;                    add_reply_service_context( addReply.service_context,</b>
+<i>728</i>&nbsp;                                               addReply.replace );
+<i>729</i>&nbsp;                }
+<b class="nc"><i>730</i>&nbsp;                catch( BAD_INV_ORDER e ) {</b>
+<i>731</i>&nbsp;                    // _REVISIT_  The only way this can happen is if during
+<i>732</i>&nbsp;                    // rrsc or rr, the interceptor tried to add with
+<i>733</i>&nbsp;                    // replace=false to a service context that is present in
+<i>734</i>&nbsp;                    // the reply message.  At that time there was no way for
+<i>735</i>&nbsp;                    // us to check for this, so the best we can do is ignore
+<i>736</i>&nbsp;                    // the original request.
+<b class="nc"><i>737</i>&nbsp;                }</b>
+<i>738</i>&nbsp;            }
+<i>739</i>&nbsp;
+<i>740</i>&nbsp;            // We specifically do not empty the SC queue so that if
+<i>741</i>&nbsp;            // the interceptor raises an exception the queued service contexts
+<i>742</i>&nbsp;            // will be put in the exception response.
+<i>743</i>&nbsp;        }
+<i>744</i>&nbsp;    }
+<i>745</i>&nbsp;
+<i>746</i>&nbsp;    /**
+<i>747</i>&nbsp;     * Stores the various sources of information used for this info object.
+<i>748</i>&nbsp;     */
+<i>749</i>&nbsp;    protected void setInfo( CorbaMessageMediator request, ObjectAdapter oa,
+<i>750</i>&nbsp;        byte[] objectId, ObjectKeyTemplate oktemp )
+<i>751</i>&nbsp;    {
+<b class="nc"><i>752</i>&nbsp;        this.request = request;</b>
+<b class="nc"><i>753</i>&nbsp;        this.objectId = objectId;</b>
+<b class="nc"><i>754</i>&nbsp;        this.oktemp = oktemp;</b>
+<b class="nc"><i>755</i>&nbsp;        this.objectAdapter = oa ;</b>
+<b class="nc"><i>756</i>&nbsp;        this.connection = (com.sun.corba.se.spi.legacy.connection.Connection)</b>
+<b class="nc"><i>757</i>&nbsp;            request.getConnection();</b>
+<i>758</i>&nbsp;    }
+<i>759</i>&nbsp;
+<i>760</i>&nbsp;    /**
+<i>761</i>&nbsp;     * Stores the various sources of information used for this info object.
+<i>762</i>&nbsp;     */
+<i>763</i>&nbsp;    protected void setDSIArguments( NVList arguments ) {
+<b class="nc"><i>764</i>&nbsp;        this.dsiArguments = arguments;</b>
+<i>765</i>&nbsp;    }
+<i>766</i>&nbsp;
+<i>767</i>&nbsp;    /**
+<i>768</i>&nbsp;     * Stores the various sources of information used for this info object.
+<i>769</i>&nbsp;     */
+<i>770</i>&nbsp;    protected void setDSIException( Any exception ) {
+<b class="nc"><i>771</i>&nbsp;        this.dsiException = exception;</b>
+<i>772</i>&nbsp;
+<i>773</i>&nbsp;        // Clear cached exception value:
+<b class="nc"><i>774</i>&nbsp;        cachedSendingException = null;</b>
+<i>775</i>&nbsp;    }
+<i>776</i>&nbsp;
+<i>777</i>&nbsp;    /**
+<i>778</i>&nbsp;     * Stores the various sources of information used for this info object.
+<i>779</i>&nbsp;     */
+<i>780</i>&nbsp;    protected void setDSIResult( Any result ) {
+<b class="nc"><i>781</i>&nbsp;        this.dsiResult = result;</b>
+<i>782</i>&nbsp;    }
+<i>783</i>&nbsp;
+<i>784</i>&nbsp;    /**
+<i>785</i>&nbsp;     * Sets the exception to be returned by received_exception and
+<i>786</i>&nbsp;     * received_exception_id.
+<i>787</i>&nbsp;     */
+<i>788</i>&nbsp;    protected void setException( Exception exception ) {
+<b class="nc"><i>789</i>&nbsp;        super.setException( exception );</b>
+<i>790</i>&nbsp;
+<i>791</i>&nbsp;        // Make sure DSIException is null because this is the more recent one.
+<b class="nc"><i>792</i>&nbsp;        this.dsiException = null;</b>
+<i>793</i>&nbsp;
+<i>794</i>&nbsp;        // Clear cached exception value:
+<b class="nc"><i>795</i>&nbsp;        cachedSendingException = null;</b>
+<i>796</i>&nbsp;    }
+<i>797</i>&nbsp;
+<i>798</i>&nbsp;    /**
+<i>799</i>&nbsp;     * Stores the various sources of information used for this info object.
+<i>800</i>&nbsp;     */
+<i>801</i>&nbsp;    protected void setInfo( java.lang.Object servant,
+<i>802</i>&nbsp;                            String targetMostDerivedInterface )
+<i>803</i>&nbsp;    {
+<b class="nc"><i>804</i>&nbsp;        this.servant = servant;</b>
+<b class="nc"><i>805</i>&nbsp;        this.targetMostDerivedInterface = targetMostDerivedInterface;</b>
+<b class="nc"><i>806</i>&nbsp;        this.isDynamic =</b>
+<i>807</i>&nbsp;            (servant instanceof
+<i>808</i>&nbsp;            org.omg.PortableServer.DynamicImplementation) ||
+<i>809</i>&nbsp;            (servant instanceof org.omg.CORBA.DynamicImplementation);
+<i>810</i>&nbsp;    }
+<i>811</i>&nbsp;
+<i>812</i>&nbsp;    /**
+<i>813</i>&nbsp;     * Set reply message
+<i>814</i>&nbsp;     */
+<i>815</i>&nbsp;    void setReplyMessage( ReplyMessage replyMessage ) {
+<b class="nc"><i>816</i>&nbsp;        this.replyMessage = replyMessage;</b>
+<i>817</i>&nbsp;    }
+<i>818</i>&nbsp;
+<i>819</i>&nbsp;    /**
+<i>820</i>&nbsp;     * Overridden from RequestInfoImpl.  Calls the super class, then
+<i>821</i>&nbsp;     * sets the ending point call depending on the reply status.
+<i>822</i>&nbsp;     */
+<i>823</i>&nbsp;    protected void setReplyStatus( short replyStatus ) {
+<b class="nc"><i>824</i>&nbsp;        super.setReplyStatus( replyStatus );</b>
+<b class="nc"><i>825</i>&nbsp;        switch( replyStatus ) {</b>
+<i>826</i>&nbsp;        case SUCCESSFUL.value:
+<b class="nc"><i>827</i>&nbsp;            endingPointCall = CALL_SEND_REPLY;</b>
+<b class="nc"><i>828</i>&nbsp;            break;</b>
+<i>829</i>&nbsp;        case SYSTEM_EXCEPTION.value:
+<i>830</i>&nbsp;        case USER_EXCEPTION.value:
+<b class="nc"><i>831</i>&nbsp;            endingPointCall = CALL_SEND_EXCEPTION;</b>
+<b class="nc"><i>832</i>&nbsp;            break;</b>
+<i>833</i>&nbsp;        case LOCATION_FORWARD.value:
+<i>834</i>&nbsp;        case TRANSPORT_RETRY.value:
+<b class="nc"><i>835</i>&nbsp;            endingPointCall = CALL_SEND_OTHER;</b>
+<i>836</i>&nbsp;            break;
+<i>837</i>&nbsp;        }
+<i>838</i>&nbsp;    }
+<i>839</i>&nbsp;
+<i>840</i>&nbsp;    /**
+<i>841</i>&nbsp;     * Release the servant object so the user has control over its lifetime.
+<i>842</i>&nbsp;     * Called after receive_request is finished executing.
+<i>843</i>&nbsp;     */
+<i>844</i>&nbsp;    void releaseServant() {
+<b class="nc"><i>845</i>&nbsp;        this.servant = null;</b>
+<i>846</i>&nbsp;    }
+<i>847</i>&nbsp;
+<i>848</i>&nbsp;    /**
+<i>849</i>&nbsp;     * Sets the forwardRequestRaisedInEnding flag to true, indicating that
+<i>850</i>&nbsp;     * a server ending point has raised location forward at some point.
+<i>851</i>&nbsp;     */
+<i>852</i>&nbsp;    void setForwardRequestRaisedInEnding() {
+<b class="nc"><i>853</i>&nbsp;        this.forwardRequestRaisedInEnding = true;</b>
+<i>854</i>&nbsp;    }
+<i>855</i>&nbsp;
+<i>856</i>&nbsp;    /**
+<i>857</i>&nbsp;     * Returns true if ForwardRequest was raised by a server ending point
+<i>858</i>&nbsp;     * or false otherwise.
+<i>859</i>&nbsp;     */
+<i>860</i>&nbsp;    boolean isForwardRequestRaisedInEnding() {
+<b class="nc"><i>861</i>&nbsp;        return this.forwardRequestRaisedInEnding;</b>
+<i>862</i>&nbsp;    }
+<i>863</i>&nbsp;
+<i>864</i>&nbsp;    /**
+<i>865</i>&nbsp;     * Returns true if this is a dynamic invocation, or false if not
+<i>866</i>&nbsp;     */
+<i>867</i>&nbsp;    boolean isDynamic() {
+<b class="nc"><i>868</i>&nbsp;      return this.isDynamic;</b>
+<i>869</i>&nbsp;    }
+<i>870</i>&nbsp;
+<i>871</i>&nbsp;    /**
+<i>872</i>&nbsp;     * See description for RequestInfoImpl.checkAccess
+<i>873</i>&nbsp;     */
+<i>874</i>&nbsp;    protected void checkAccess( int methodID )
+<i>875</i>&nbsp;    {
+<i>876</i>&nbsp;        // Make sure currentPoint matches the appropriate index in the
+<i>877</i>&nbsp;        // validCall table:
+<b class="nc"><i>878</i>&nbsp;        int validCallIndex = 0;</b>
+<b class="nc"><i>879</i>&nbsp;        switch( currentExecutionPoint ) {</b>
+<i>880</i>&nbsp;        case EXECUTION_POINT_STARTING:
+<b class="nc"><i>881</i>&nbsp;            validCallIndex = 0;</b>
+<b class="nc"><i>882</i>&nbsp;            break;</b>
+<i>883</i>&nbsp;        case EXECUTION_POINT_INTERMEDIATE:
+<b class="nc"><i>884</i>&nbsp;            validCallIndex = 1;</b>
+<b class="nc"><i>885</i>&nbsp;            break;</b>
+<i>886</i>&nbsp;        case EXECUTION_POINT_ENDING:
+<b class="nc"><i>887</i>&nbsp;            switch( endingPointCall ) {</b>
+<i>888</i>&nbsp;            case CALL_SEND_REPLY:
+<b class="nc"><i>889</i>&nbsp;                validCallIndex = 2;</b>
+<b class="nc"><i>890</i>&nbsp;                break;</b>
+<i>891</i>&nbsp;            case CALL_SEND_EXCEPTION:
+<b class="nc"><i>892</i>&nbsp;                validCallIndex = 3;</b>
+<b class="nc"><i>893</i>&nbsp;                break;</b>
+<i>894</i>&nbsp;            case CALL_SEND_OTHER:
+<b class="nc"><i>895</i>&nbsp;                validCallIndex = 4;</b>
+<i>896</i>&nbsp;                break;
+<i>897</i>&nbsp;            }
+<i>898</i>&nbsp;            break;
+<i>899</i>&nbsp;        }
+<i>900</i>&nbsp;
+<i>901</i>&nbsp;        // Check the validCall table:
+<b class="nc"><i>902</i>&nbsp;        if( !validCall[methodID][validCallIndex] ) {</b>
+<b class="nc"><i>903</i>&nbsp;            throw stdWrapper.invalidPiCall2() ;</b>
+<i>904</i>&nbsp;        }
+<i>905</i>&nbsp;    }
+<i>906</i>&nbsp;
+<i>907</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

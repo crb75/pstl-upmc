@@ -1,0 +1,247 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SAXInputSource</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.util</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SAXInputSource (com.sun.org.apache.xerces.internal.util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SAXInputSource</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 45)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.util;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import java.io.InputStream;
+<i>24</i>&nbsp;import java.io.Reader;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
+<i>27</i>&nbsp;import org.xml.sax.InputSource;
+<i>28</i>&nbsp;import org.xml.sax.XMLReader;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;/**
+<i>31</i>&nbsp; * &lt;p&gt;An &lt;code&gt;XMLInputSource&lt;/code&gt; analogue to &lt;code&gt;javax.xml.transform.sax.SAXSource&lt;/code&gt;.&lt;/p&gt;
+<i>32</i>&nbsp; *
+<i>33</i>&nbsp; */
+<i>34</i>&nbsp;public final class SAXInputSource extends XMLInputSource {
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    private XMLReader fXMLReader;
+<i>37</i>&nbsp;    private InputSource fInputSource;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    public SAXInputSource() {
+<b class="nc"><i>40</i>&nbsp;        this(null);</b>
+<i>41</i>&nbsp;    }
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    public SAXInputSource(InputSource inputSource) {
+<b class="nc"><i>44</i>&nbsp;        this(null, inputSource);</b>
+<i>45</i>&nbsp;    }
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    public SAXInputSource(XMLReader reader, InputSource inputSource) {
+<b class="nc"><i>48</i>&nbsp;        super(inputSource != null ? inputSource.getPublicId() : null,</b>
+<b class="nc"><i>49</i>&nbsp;                inputSource != null ? inputSource.getSystemId() : null, null);</b>
+<b class="nc"><i>50</i>&nbsp;        if (inputSource != null) {</b>
+<b class="nc"><i>51</i>&nbsp;            setByteStream(inputSource.getByteStream());</b>
+<b class="nc"><i>52</i>&nbsp;            setCharacterStream(inputSource.getCharacterStream());</b>
+<b class="nc"><i>53</i>&nbsp;            setEncoding(inputSource.getEncoding());</b>
+<i>54</i>&nbsp;        }
+<b class="nc"><i>55</i>&nbsp;        fInputSource = inputSource;</b>
+<b class="nc"><i>56</i>&nbsp;        fXMLReader = reader;</b>
+<i>57</i>&nbsp;    }
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    public void setXMLReader(XMLReader reader) {
+<b class="nc"><i>60</i>&nbsp;        fXMLReader = reader;</b>
+<i>61</i>&nbsp;    }
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    public XMLReader getXMLReader() {
+<b class="nc"><i>64</i>&nbsp;        return fXMLReader;</b>
+<i>65</i>&nbsp;    }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    public void setInputSource(InputSource inputSource) {
+<b class="nc"><i>68</i>&nbsp;        if (inputSource != null) {</b>
+<b class="nc"><i>69</i>&nbsp;            setPublicId(inputSource.getPublicId());</b>
+<b class="nc"><i>70</i>&nbsp;            setSystemId(inputSource.getSystemId());</b>
+<b class="nc"><i>71</i>&nbsp;            setByteStream(inputSource.getByteStream());</b>
+<b class="nc"><i>72</i>&nbsp;            setCharacterStream(inputSource.getCharacterStream());</b>
+<b class="nc"><i>73</i>&nbsp;            setEncoding(inputSource.getEncoding());</b>
+<i>74</i>&nbsp;        }
+<i>75</i>&nbsp;        else {
+<b class="nc"><i>76</i>&nbsp;            setPublicId(null);</b>
+<b class="nc"><i>77</i>&nbsp;            setSystemId(null);</b>
+<b class="nc"><i>78</i>&nbsp;            setByteStream(null);</b>
+<b class="nc"><i>79</i>&nbsp;            setCharacterStream(null);</b>
+<b class="nc"><i>80</i>&nbsp;            setEncoding(null);</b>
+<i>81</i>&nbsp;        }
+<b class="nc"><i>82</i>&nbsp;        fInputSource = inputSource;</b>
+<i>83</i>&nbsp;    }
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    public InputSource getInputSource() {
+<b class="nc"><i>86</i>&nbsp;        return fInputSource;</b>
+<i>87</i>&nbsp;    }
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    /**
+<i>90</i>&nbsp;     * Sets the public identifier.
+<i>91</i>&nbsp;     *
+<i>92</i>&nbsp;     * @param publicId The new public identifier.
+<i>93</i>&nbsp;     */
+<i>94</i>&nbsp;    public void setPublicId(String publicId) {
+<b class="nc"><i>95</i>&nbsp;        super.setPublicId(publicId);</b>
+<b class="nc"><i>96</i>&nbsp;        if (fInputSource == null) {</b>
+<b class="nc"><i>97</i>&nbsp;            fInputSource = new InputSource();</b>
+<i>98</i>&nbsp;        }
+<b class="nc"><i>99</i>&nbsp;        fInputSource.setPublicId(publicId);</b>
+<i>100</i>&nbsp;    } // setPublicId(String)
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;    /**
+<i>103</i>&nbsp;     * Sets the system identifier.
+<i>104</i>&nbsp;     *
+<i>105</i>&nbsp;     * @param systemId The new system identifier.
+<i>106</i>&nbsp;     */
+<i>107</i>&nbsp;    public void setSystemId(String systemId) {
+<b class="nc"><i>108</i>&nbsp;        super.setSystemId(systemId);</b>
+<b class="nc"><i>109</i>&nbsp;        if (fInputSource == null) {</b>
+<b class="nc"><i>110</i>&nbsp;            fInputSource = new InputSource();</b>
+<i>111</i>&nbsp;        }
+<b class="nc"><i>112</i>&nbsp;        fInputSource.setSystemId(systemId);</b>
+<i>113</i>&nbsp;    } // setSystemId(String)
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;    /**
+<i>116</i>&nbsp;     * Sets the byte stream. If the byte stream is not already opened
+<i>117</i>&nbsp;     * when this object is instantiated, then the code that opens the
+<i>118</i>&nbsp;     * stream should also set the byte stream on this object. Also, if
+<i>119</i>&nbsp;     * the encoding is auto-detected, then the encoding should also be
+<i>120</i>&nbsp;     * set on this object.
+<i>121</i>&nbsp;     *
+<i>122</i>&nbsp;     * @param byteStream The new byte stream.
+<i>123</i>&nbsp;     */
+<i>124</i>&nbsp;    public void setByteStream(InputStream byteStream) {
+<b class="nc"><i>125</i>&nbsp;        super.setByteStream(byteStream);</b>
+<b class="nc"><i>126</i>&nbsp;        if (fInputSource == null) {</b>
+<b class="nc"><i>127</i>&nbsp;            fInputSource = new InputSource();</b>
+<i>128</i>&nbsp;        }
+<b class="nc"><i>129</i>&nbsp;        fInputSource.setByteStream(byteStream);</b>
+<i>130</i>&nbsp;    } // setByteStream(InputStream)
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;    /**
+<i>133</i>&nbsp;     * Sets the character stream. If the character stream is not already
+<i>134</i>&nbsp;     * opened when this object is instantiated, then the code that opens
+<i>135</i>&nbsp;     * the stream should also set the character stream on this object.
+<i>136</i>&nbsp;     * Also, the encoding of the byte stream used by the reader should
+<i>137</i>&nbsp;     * also be set on this object, if known.
+<i>138</i>&nbsp;     *
+<i>139</i>&nbsp;     * @param charStream The new character stream.
+<i>140</i>&nbsp;     *
+<i>141</i>&nbsp;     * @see #setEncoding
+<i>142</i>&nbsp;     */
+<i>143</i>&nbsp;    public void setCharacterStream(Reader charStream) {
+<b class="nc"><i>144</i>&nbsp;        super.setCharacterStream(charStream);</b>
+<b class="nc"><i>145</i>&nbsp;        if (fInputSource == null) {</b>
+<b class="nc"><i>146</i>&nbsp;            fInputSource = new InputSource();</b>
+<i>147</i>&nbsp;        }
+<b class="nc"><i>148</i>&nbsp;        fInputSource.setCharacterStream(charStream);</b>
+<i>149</i>&nbsp;    } // setCharacterStream(Reader)
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;    /**
+<i>152</i>&nbsp;     * Sets the encoding of the stream.
+<i>153</i>&nbsp;     *
+<i>154</i>&nbsp;     * @param encoding The new encoding.
+<i>155</i>&nbsp;     */
+<i>156</i>&nbsp;    public void setEncoding(String encoding) {
+<b class="nc"><i>157</i>&nbsp;        super.setEncoding(encoding);</b>
+<b class="nc"><i>158</i>&nbsp;        if (fInputSource == null) {</b>
+<b class="nc"><i>159</i>&nbsp;            fInputSource = new InputSource();</b>
+<i>160</i>&nbsp;        }
+<b class="nc"><i>161</i>&nbsp;        fInputSource.setEncoding(encoding);</b>
+<i>162</i>&nbsp;    } // setEncoding(String)
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;} // SAXInputSource
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

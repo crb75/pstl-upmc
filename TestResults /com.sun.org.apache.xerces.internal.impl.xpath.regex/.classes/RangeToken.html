@@ -1,0 +1,706 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: RangeToken</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xerces.internal.impl.xpath.regex</a> ]
+</div>
+
+<h1>Coverage Summary for Class: RangeToken (com.sun.org.apache.xerces.internal.impl.xpath.regex)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RangeToken</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 331)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2002,2004,2005 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *      http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;package com.sun.org.apache.xerces.internal.impl.xpath.regex;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;/**
+<i>24</i>&nbsp; * This class represents a character class such as [a-z] or a period.
+<i>25</i>&nbsp; *
+<i>26</i>&nbsp; * @xerces.internal
+<i>27</i>&nbsp; *
+<i>28</i>&nbsp; */
+<i>29</i>&nbsp;final class RangeToken extends Token implements java.io.Serializable {
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;    private static final long serialVersionUID = 3257568399592010545L;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;    int[] ranges;
+<i>34</i>&nbsp;    boolean sorted;
+<i>35</i>&nbsp;    boolean compacted;
+<b class="nc"><i>36</i>&nbsp;    RangeToken icaseCache = null;</b>
+<b class="nc"><i>37</i>&nbsp;    int[] map = null;</b>
+<i>38</i>&nbsp;    int nonMapIndex;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;    RangeToken(int type) {
+<b class="nc"><i>41</i>&nbsp;        super(type);</b>
+<b class="nc"><i>42</i>&nbsp;        this.setSorted(false);</b>
+<i>43</i>&nbsp;    }
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;                                                // for RANGE or NRANGE
+<i>46</i>&nbsp;    protected void addRange(int start, int end) {
+<b class="nc"><i>47</i>&nbsp;        this.icaseCache = null;</b>
+<i>48</i>&nbsp;        //System.err.println(&quot;Token#addRange(): &quot;+start+&quot; &quot;+end);
+<i>49</i>&nbsp;        int r1, r2;
+<b class="nc"><i>50</i>&nbsp;        if (start &lt;= end) {</b>
+<b class="nc"><i>51</i>&nbsp;            r1 = start;</b>
+<b class="nc"><i>52</i>&nbsp;            r2 = end;</b>
+<i>53</i>&nbsp;        } else {
+<b class="nc"><i>54</i>&nbsp;            r1 = end;</b>
+<b class="nc"><i>55</i>&nbsp;            r2 = start;</b>
+<i>56</i>&nbsp;        }
+<i>57</i>&nbsp;
+<b class="nc"><i>58</i>&nbsp;        int pos = 0;</b>
+<b class="nc"><i>59</i>&nbsp;        if (this.ranges == null) {</b>
+<b class="nc"><i>60</i>&nbsp;            this.ranges = new int[2];</b>
+<b class="nc"><i>61</i>&nbsp;            this.ranges[0] = r1;</b>
+<b class="nc"><i>62</i>&nbsp;            this.ranges[1] = r2;</b>
+<b class="nc"><i>63</i>&nbsp;            this.setSorted(true);</b>
+<i>64</i>&nbsp;        } else {
+<b class="nc"><i>65</i>&nbsp;            pos = this.ranges.length;</b>
+<b class="nc"><i>66</i>&nbsp;            if (this.ranges[pos-1]+1 == r1) {</b>
+<b class="nc"><i>67</i>&nbsp;                this.ranges[pos-1] = r2;</b>
+<i>68</i>&nbsp;                return;
+<i>69</i>&nbsp;            }
+<b class="nc"><i>70</i>&nbsp;            int[] temp = new int[pos+2];</b>
+<b class="nc"><i>71</i>&nbsp;            System.arraycopy(this.ranges, 0, temp, 0, pos);</b>
+<b class="nc"><i>72</i>&nbsp;            this.ranges = temp;</b>
+<b class="nc"><i>73</i>&nbsp;            if (this.ranges[pos-1] &gt;= r1)</b>
+<b class="nc"><i>74</i>&nbsp;                this.setSorted(false);</b>
+<b class="nc"><i>75</i>&nbsp;            this.ranges[pos++] = r1;</b>
+<b class="nc"><i>76</i>&nbsp;            this.ranges[pos] = r2;</b>
+<b class="nc"><i>77</i>&nbsp;            if (!this.sorted)</b>
+<b class="nc"><i>78</i>&nbsp;                this.sortRanges();</b>
+<i>79</i>&nbsp;        }
+<i>80</i>&nbsp;    }
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    private final boolean isSorted() {
+<b class="nc"><i>83</i>&nbsp;        return this.sorted;</b>
+<i>84</i>&nbsp;    }
+<i>85</i>&nbsp;    private final void setSorted(boolean sort) {
+<b class="nc"><i>86</i>&nbsp;        this.sorted = sort;</b>
+<b class="nc"><i>87</i>&nbsp;        if (!sort)  this.compacted = false;</b>
+<i>88</i>&nbsp;    }
+<i>89</i>&nbsp;    private final boolean isCompacted() {
+<b class="nc"><i>90</i>&nbsp;        return this.compacted;</b>
+<i>91</i>&nbsp;    }
+<i>92</i>&nbsp;    private final void setCompacted() {
+<b class="nc"><i>93</i>&nbsp;        this.compacted = true;</b>
+<i>94</i>&nbsp;    }
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    protected void sortRanges() {
+<b class="nc"><i>97</i>&nbsp;        if (this.isSorted())</b>
+<i>98</i>&nbsp;            return;
+<b class="nc"><i>99</i>&nbsp;        if (this.ranges == null)</b>
+<i>100</i>&nbsp;            return;
+<i>101</i>&nbsp;        //System.err.println(&quot;Do sorting: &quot;+this.ranges.length);
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;                                                // Bubble sort
+<i>104</i>&nbsp;                                                // Why? -- In many cases,
+<i>105</i>&nbsp;                                                //         this.ranges has few elements.
+<b class="nc"><i>106</i>&nbsp;        for (int i = this.ranges.length-4;  i &gt;= 0;  i -= 2) {</b>
+<b class="nc"><i>107</i>&nbsp;            for (int j = 0;  j &lt;= i;  j += 2) {</b>
+<b class="nc"><i>108</i>&nbsp;                if (this.ranges[j] &gt; this.ranges[j+2]</b>
+<i>109</i>&nbsp;                    || this.ranges[j] == this.ranges[j+2] &amp;&amp; this.ranges[j+1] &gt; this.ranges[j+3]) {
+<i>110</i>&nbsp;                    int tmp;
+<b class="nc"><i>111</i>&nbsp;                    tmp = this.ranges[j+2];</b>
+<b class="nc"><i>112</i>&nbsp;                    this.ranges[j+2] = this.ranges[j];</b>
+<b class="nc"><i>113</i>&nbsp;                    this.ranges[j] = tmp;</b>
+<b class="nc"><i>114</i>&nbsp;                    tmp = this.ranges[j+3];</b>
+<b class="nc"><i>115</i>&nbsp;                    this.ranges[j+3] = this.ranges[j+1];</b>
+<b class="nc"><i>116</i>&nbsp;                    this.ranges[j+1] = tmp;</b>
+<i>117</i>&nbsp;                }
+<i>118</i>&nbsp;            }
+<i>119</i>&nbsp;        }
+<b class="nc"><i>120</i>&nbsp;        this.setSorted(true);</b>
+<i>121</i>&nbsp;    }
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;    /**
+<i>124</i>&nbsp;     * this.ranges is sorted.
+<i>125</i>&nbsp;     */
+<i>126</i>&nbsp;    protected void compactRanges() {
+<b class="nc"><i>127</i>&nbsp;        boolean DEBUG = false;</b>
+<b class="nc"><i>128</i>&nbsp;        if (this.ranges == null || this.ranges.length &lt;= 2)</b>
+<i>129</i>&nbsp;            return;
+<b class="nc"><i>130</i>&nbsp;        if (this.isCompacted())</b>
+<i>131</i>&nbsp;            return;
+<b class="nc"><i>132</i>&nbsp;        int base = 0;                           // Index of writing point</b>
+<b class="nc"><i>133</i>&nbsp;        int target = 0;                         // Index of processing point</b>
+<i>134</i>&nbsp;
+<b class="nc"><i>135</i>&nbsp;        while (target &lt; this.ranges.length) {</b>
+<b class="nc"><i>136</i>&nbsp;            if (base != target) {</b>
+<b class="nc"><i>137</i>&nbsp;                this.ranges[base] = this.ranges[target++];</b>
+<b class="nc"><i>138</i>&nbsp;                this.ranges[base+1] = this.ranges[target++];</b>
+<i>139</i>&nbsp;            } else
+<b class="nc"><i>140</i>&nbsp;                target += 2;</b>
+<b class="nc"><i>141</i>&nbsp;            int baseend = this.ranges[base+1];</b>
+<b class="nc"><i>142</i>&nbsp;            while (target &lt; this.ranges.length) {</b>
+<b class="nc"><i>143</i>&nbsp;                if (baseend+1 &lt; this.ranges[target])</b>
+<b class="nc"><i>144</i>&nbsp;                    break;</b>
+<b class="nc"><i>145</i>&nbsp;                if (baseend+1 == this.ranges[target]) {</b>
+<b class="nc"><i>146</i>&nbsp;                    if (DEBUG)</b>
+<b class="nc"><i>147</i>&nbsp;                        System.err.println(&quot;Token#compactRanges(): Compaction: [&quot;+this.ranges[base]</b>
+<i>148</i>&nbsp;                                           +&quot;, &quot;+this.ranges[base+1]
+<i>149</i>&nbsp;                                           +&quot;], [&quot;+this.ranges[target]
+<i>150</i>&nbsp;                                           +&quot;, &quot;+this.ranges[target+1]
+<i>151</i>&nbsp;                                           +&quot;] -&gt; [&quot;+this.ranges[base]
+<i>152</i>&nbsp;                                           +&quot;, &quot;+this.ranges[target+1]
+<i>153</i>&nbsp;                                           +&quot;]&quot;);
+<b class="nc"><i>154</i>&nbsp;                    this.ranges[base+1] = this.ranges[target+1];</b>
+<b class="nc"><i>155</i>&nbsp;                    baseend = this.ranges[base+1];</b>
+<b class="nc"><i>156</i>&nbsp;                    target += 2;</b>
+<b class="nc"><i>157</i>&nbsp;                } else if (baseend &gt;= this.ranges[target+1]) {</b>
+<b class="nc"><i>158</i>&nbsp;                    if (DEBUG)</b>
+<b class="nc"><i>159</i>&nbsp;                        System.err.println(&quot;Token#compactRanges(): Compaction: [&quot;+this.ranges[base]</b>
+<i>160</i>&nbsp;                                           +&quot;, &quot;+this.ranges[base+1]
+<i>161</i>&nbsp;                                           +&quot;], [&quot;+this.ranges[target]
+<i>162</i>&nbsp;                                           +&quot;, &quot;+this.ranges[target+1]
+<i>163</i>&nbsp;                                           +&quot;] -&gt; [&quot;+this.ranges[base]
+<i>164</i>&nbsp;                                           +&quot;, &quot;+this.ranges[base+1]
+<i>165</i>&nbsp;                                           +&quot;]&quot;);
+<b class="nc"><i>166</i>&nbsp;                    target += 2;</b>
+<b class="nc"><i>167</i>&nbsp;                } else if (baseend &lt; this.ranges[target+1]) {</b>
+<b class="nc"><i>168</i>&nbsp;                    if (DEBUG)</b>
+<b class="nc"><i>169</i>&nbsp;                        System.err.println(&quot;Token#compactRanges(): Compaction: [&quot;+this.ranges[base]</b>
+<i>170</i>&nbsp;                                           +&quot;, &quot;+this.ranges[base+1]
+<i>171</i>&nbsp;                                           +&quot;], [&quot;+this.ranges[target]
+<i>172</i>&nbsp;                                           +&quot;, &quot;+this.ranges[target+1]
+<i>173</i>&nbsp;                                           +&quot;] -&gt; [&quot;+this.ranges[base]
+<i>174</i>&nbsp;                                           +&quot;, &quot;+this.ranges[target+1]
+<i>175</i>&nbsp;                                           +&quot;]&quot;);
+<b class="nc"><i>176</i>&nbsp;                    this.ranges[base+1] = this.ranges[target+1];</b>
+<b class="nc"><i>177</i>&nbsp;                    baseend = this.ranges[base+1];</b>
+<b class="nc"><i>178</i>&nbsp;                    target += 2;</b>
+<i>179</i>&nbsp;                } else {
+<b class="nc"><i>180</i>&nbsp;                    throw new RuntimeException(&quot;Token#compactRanges(): Internel Error: [&quot;</b>
+<i>181</i>&nbsp;                                               +this.ranges[base]
+<i>182</i>&nbsp;                                               +&quot;,&quot;+this.ranges[base+1]
+<i>183</i>&nbsp;                                               +&quot;] [&quot;+this.ranges[target]
+<i>184</i>&nbsp;                                               +&quot;,&quot;+this.ranges[target+1]+&quot;]&quot;);
+<i>185</i>&nbsp;                }
+<i>186</i>&nbsp;            } // while
+<b class="nc"><i>187</i>&nbsp;            base += 2;</b>
+<b class="nc"><i>188</i>&nbsp;        }</b>
+<i>189</i>&nbsp;
+<b class="nc"><i>190</i>&nbsp;        if (base != this.ranges.length) {</b>
+<b class="nc"><i>191</i>&nbsp;            int[] result = new int[base];</b>
+<b class="nc"><i>192</i>&nbsp;            System.arraycopy(this.ranges, 0, result, 0, base);</b>
+<b class="nc"><i>193</i>&nbsp;            this.ranges = result;</b>
+<i>194</i>&nbsp;        }
+<b class="nc"><i>195</i>&nbsp;        this.setCompacted();</b>
+<i>196</i>&nbsp;    }
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;    protected void mergeRanges(Token token) {
+<b class="nc"><i>199</i>&nbsp;        RangeToken tok = (RangeToken)token;</b>
+<b class="nc"><i>200</i>&nbsp;        this.sortRanges();</b>
+<b class="nc"><i>201</i>&nbsp;        tok.sortRanges();</b>
+<b class="nc"><i>202</i>&nbsp;        if (tok.ranges == null)</b>
+<i>203</i>&nbsp;            return;
+<b class="nc"><i>204</i>&nbsp;        this.icaseCache = null;</b>
+<b class="nc"><i>205</i>&nbsp;        this.setSorted(true);</b>
+<b class="nc"><i>206</i>&nbsp;        if (this.ranges == null) {</b>
+<b class="nc"><i>207</i>&nbsp;            this.ranges = new int[tok.ranges.length];</b>
+<b class="nc"><i>208</i>&nbsp;            System.arraycopy(tok.ranges, 0, this.ranges, 0, tok.ranges.length);</b>
+<i>209</i>&nbsp;            return;
+<i>210</i>&nbsp;        }
+<b class="nc"><i>211</i>&nbsp;        int[] result = new int[this.ranges.length+tok.ranges.length];</b>
+<b class="nc"><i>212</i>&nbsp;        for (int i = 0, j = 0, k = 0;  i &lt; this.ranges.length || j &lt; tok.ranges.length;) {</b>
+<b class="nc"><i>213</i>&nbsp;            if (i &gt;= this.ranges.length) {</b>
+<b class="nc"><i>214</i>&nbsp;                result[k++] = tok.ranges[j++];</b>
+<b class="nc"><i>215</i>&nbsp;                result[k++] = tok.ranges[j++];</b>
+<b class="nc"><i>216</i>&nbsp;            } else if (j &gt;= tok.ranges.length) {</b>
+<b class="nc"><i>217</i>&nbsp;                result[k++] = this.ranges[i++];</b>
+<b class="nc"><i>218</i>&nbsp;                result[k++] = this.ranges[i++];</b>
+<b class="nc"><i>219</i>&nbsp;            } else if (tok.ranges[j] &lt; this.ranges[i]</b>
+<i>220</i>&nbsp;                       || tok.ranges[j] == this.ranges[i] &amp;&amp; tok.ranges[j+1] &lt; this.ranges[i+1]) {
+<b class="nc"><i>221</i>&nbsp;                result[k++] = tok.ranges[j++];</b>
+<b class="nc"><i>222</i>&nbsp;                result[k++] = tok.ranges[j++];</b>
+<i>223</i>&nbsp;            } else {
+<b class="nc"><i>224</i>&nbsp;                result[k++] = this.ranges[i++];</b>
+<b class="nc"><i>225</i>&nbsp;                result[k++] = this.ranges[i++];</b>
+<i>226</i>&nbsp;            }
+<i>227</i>&nbsp;        }
+<b class="nc"><i>228</i>&nbsp;        this.ranges = result;</b>
+<i>229</i>&nbsp;    }
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;    protected void subtractRanges(Token token) {
+<b class="nc"><i>232</i>&nbsp;        if (token.type == NRANGE) {</b>
+<b class="nc"><i>233</i>&nbsp;            this.intersectRanges(token);</b>
+<i>234</i>&nbsp;            return;
+<i>235</i>&nbsp;        }
+<b class="nc"><i>236</i>&nbsp;        RangeToken tok = (RangeToken)token;</b>
+<b class="nc"><i>237</i>&nbsp;        if (tok.ranges == null || this.ranges == null)</b>
+<i>238</i>&nbsp;            return;
+<b class="nc"><i>239</i>&nbsp;        this.icaseCache = null;</b>
+<b class="nc"><i>240</i>&nbsp;        this.sortRanges();</b>
+<b class="nc"><i>241</i>&nbsp;        this.compactRanges();</b>
+<b class="nc"><i>242</i>&nbsp;        tok.sortRanges();</b>
+<b class="nc"><i>243</i>&nbsp;        tok.compactRanges();</b>
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;        //System.err.println(&quot;Token#substractRanges(): Entry: &quot;+this.ranges.length+&quot;, &quot;+tok.ranges.length);
+<i>246</i>&nbsp;
+<b class="nc"><i>247</i>&nbsp;        int[] result = new int[this.ranges.length+tok.ranges.length];</b>
+<b class="nc"><i>248</i>&nbsp;        int wp = 0, src = 0, sub = 0;</b>
+<b class="nc"><i>249</i>&nbsp;        while (src &lt; this.ranges.length &amp;&amp; sub &lt; tok.ranges.length) {</b>
+<b class="nc"><i>250</i>&nbsp;            int srcbegin = this.ranges[src];</b>
+<b class="nc"><i>251</i>&nbsp;            int srcend = this.ranges[src+1];</b>
+<b class="nc"><i>252</i>&nbsp;            int subbegin = tok.ranges[sub];</b>
+<b class="nc"><i>253</i>&nbsp;            int subend = tok.ranges[sub+1];</b>
+<b class="nc"><i>254</i>&nbsp;            if (srcend &lt; subbegin) {            // Not overlapped</b>
+<i>255</i>&nbsp;                                                // src: o-----o
+<i>256</i>&nbsp;                                                // sub:         o-----o
+<i>257</i>&nbsp;                                                // res: o-----o
+<i>258</i>&nbsp;                                                // Reuse sub
+<b class="nc"><i>259</i>&nbsp;                result[wp++] = this.ranges[src++];</b>
+<b class="nc"><i>260</i>&nbsp;                result[wp++] = this.ranges[src++];</b>
+<b class="nc"><i>261</i>&nbsp;            } else if (srcend &gt;= subbegin</b>
+<i>262</i>&nbsp;                       &amp;&amp; srcbegin &lt;= subend) { // Overlapped
+<i>263</i>&nbsp;                                                // src:    o--------o
+<i>264</i>&nbsp;                                                // sub:  o----o
+<i>265</i>&nbsp;                                                // sub:      o----o
+<i>266</i>&nbsp;                                                // sub:          o----o
+<i>267</i>&nbsp;                                                // sub:  o------------o
+<b class="nc"><i>268</i>&nbsp;                if (subbegin &lt;= srcbegin &amp;&amp; srcend &lt;= subend) {</b>
+<i>269</i>&nbsp;                                                // src:    o--------o
+<i>270</i>&nbsp;                                                // sub:  o------------o
+<i>271</i>&nbsp;                                                // res: empty
+<i>272</i>&nbsp;                                                // Reuse sub
+<b class="nc"><i>273</i>&nbsp;                    src += 2;</b>
+<b class="nc"><i>274</i>&nbsp;                } else if (subbegin &lt;= srcbegin) {</b>
+<i>275</i>&nbsp;                                                // src:    o--------o
+<i>276</i>&nbsp;                                                // sub:  o----o
+<i>277</i>&nbsp;                                                // res:       o-----o
+<i>278</i>&nbsp;                                                // Reuse src(=res)
+<b class="nc"><i>279</i>&nbsp;                    this.ranges[src] = subend+1;</b>
+<b class="nc"><i>280</i>&nbsp;                    sub += 2;</b>
+<b class="nc"><i>281</i>&nbsp;                } else if (srcend &lt;= subend) {</b>
+<i>282</i>&nbsp;                                                // src:    o--------o
+<i>283</i>&nbsp;                                                // sub:          o----o
+<i>284</i>&nbsp;                                                // res:    o-----o
+<i>285</i>&nbsp;                                                // Reuse sub
+<b class="nc"><i>286</i>&nbsp;                    result[wp++] = srcbegin;</b>
+<b class="nc"><i>287</i>&nbsp;                    result[wp++] = subbegin-1;</b>
+<b class="nc"><i>288</i>&nbsp;                    src += 2;</b>
+<i>289</i>&nbsp;                } else {
+<i>290</i>&nbsp;                                                // src:    o--------o
+<i>291</i>&nbsp;                                                // sub:      o----o
+<i>292</i>&nbsp;                                                // res:    o-o    o-o
+<i>293</i>&nbsp;                                                // Reuse src(=right res)
+<b class="nc"><i>294</i>&nbsp;                    result[wp++] = srcbegin;</b>
+<b class="nc"><i>295</i>&nbsp;                    result[wp++] = subbegin-1;</b>
+<b class="nc"><i>296</i>&nbsp;                    this.ranges[src] = subend+1;</b>
+<b class="nc"><i>297</i>&nbsp;                    sub += 2;</b>
+<i>298</i>&nbsp;                }
+<b class="nc"><i>299</i>&nbsp;            } else if (subend &lt; srcbegin) {</b>
+<i>300</i>&nbsp;                                                // Not overlapped
+<i>301</i>&nbsp;                                                // src:          o-----o
+<i>302</i>&nbsp;                                                // sub: o----o
+<b class="nc"><i>303</i>&nbsp;                sub += 2;</b>
+<i>304</i>&nbsp;            } else {
+<b class="nc"><i>305</i>&nbsp;                throw new RuntimeException(&quot;Token#subtractRanges(): Internal Error: [&quot;+this.ranges[src]</b>
+<i>306</i>&nbsp;                                           +&quot;,&quot;+this.ranges[src+1]
+<i>307</i>&nbsp;                                           +&quot;] - [&quot;+tok.ranges[sub]
+<i>308</i>&nbsp;                                           +&quot;,&quot;+tok.ranges[sub+1]
+<i>309</i>&nbsp;                                           +&quot;]&quot;);
+<i>310</i>&nbsp;            }
+<b class="nc"><i>311</i>&nbsp;        }</b>
+<b class="nc"><i>312</i>&nbsp;        while (src &lt; this.ranges.length) {</b>
+<b class="nc"><i>313</i>&nbsp;            result[wp++] = this.ranges[src++];</b>
+<b class="nc"><i>314</i>&nbsp;            result[wp++] = this.ranges[src++];</b>
+<i>315</i>&nbsp;        }
+<b class="nc"><i>316</i>&nbsp;        this.ranges = new int[wp];</b>
+<b class="nc"><i>317</i>&nbsp;        System.arraycopy(result, 0, this.ranges, 0, wp);</b>
+<i>318</i>&nbsp;                                                // this.ranges is sorted and compacted.
+<i>319</i>&nbsp;    }
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;    /**
+<i>322</i>&nbsp;     * @param tok Ignore whether it is NRANGE or not.
+<i>323</i>&nbsp;     */
+<i>324</i>&nbsp;    protected void intersectRanges(Token token) {
+<b class="nc"><i>325</i>&nbsp;        RangeToken tok = (RangeToken)token;</b>
+<b class="nc"><i>326</i>&nbsp;        if (tok.ranges == null || this.ranges == null)</b>
+<i>327</i>&nbsp;            return;
+<b class="nc"><i>328</i>&nbsp;        this.icaseCache = null;</b>
+<b class="nc"><i>329</i>&nbsp;        this.sortRanges();</b>
+<b class="nc"><i>330</i>&nbsp;        this.compactRanges();</b>
+<b class="nc"><i>331</i>&nbsp;        tok.sortRanges();</b>
+<b class="nc"><i>332</i>&nbsp;        tok.compactRanges();</b>
+<i>333</i>&nbsp;
+<b class="nc"><i>334</i>&nbsp;        int[] result = new int[this.ranges.length+tok.ranges.length];</b>
+<b class="nc"><i>335</i>&nbsp;        int wp = 0, src1 = 0, src2 = 0;</b>
+<b class="nc"><i>336</i>&nbsp;        while (src1 &lt; this.ranges.length &amp;&amp; src2 &lt; tok.ranges.length) {</b>
+<b class="nc"><i>337</i>&nbsp;            int src1begin = this.ranges[src1];</b>
+<b class="nc"><i>338</i>&nbsp;            int src1end = this.ranges[src1+1];</b>
+<b class="nc"><i>339</i>&nbsp;            int src2begin = tok.ranges[src2];</b>
+<b class="nc"><i>340</i>&nbsp;            int src2end = tok.ranges[src2+1];</b>
+<b class="nc"><i>341</i>&nbsp;            if (src1end &lt; src2begin) {          // Not overlapped</b>
+<i>342</i>&nbsp;                                                // src1: o-----o
+<i>343</i>&nbsp;                                                // src2:         o-----o
+<i>344</i>&nbsp;                                                // res:  empty
+<i>345</i>&nbsp;                                                // Reuse src2
+<b class="nc"><i>346</i>&nbsp;                src1 += 2;</b>
+<b class="nc"><i>347</i>&nbsp;            } else if (src1end &gt;= src2begin</b>
+<i>348</i>&nbsp;                       &amp;&amp; src1begin &lt;= src2end) { // Overlapped
+<i>349</i>&nbsp;                                                // src1:    o--------o
+<i>350</i>&nbsp;                                                // src2:  o----o
+<i>351</i>&nbsp;                                                // src2:      o----o
+<i>352</i>&nbsp;                                                // src2:          o----o
+<i>353</i>&nbsp;                                                // src2:  o------------o
+<b class="nc"><i>354</i>&nbsp;                if (src2begin &lt;= src2begin &amp;&amp; src1end &lt;= src2end) {</b>
+<i>355</i>&nbsp;                                                // src1:    o--------o
+<i>356</i>&nbsp;                                                // src2:  o------------o
+<i>357</i>&nbsp;                                                // res:     o--------o
+<i>358</i>&nbsp;                                                // Reuse src2
+<b class="nc"><i>359</i>&nbsp;                    result[wp++] = src1begin;</b>
+<b class="nc"><i>360</i>&nbsp;                    result[wp++] = src1end;</b>
+<b class="nc"><i>361</i>&nbsp;                    src1 += 2;</b>
+<b class="nc"><i>362</i>&nbsp;                } else if (src2begin &lt;= src1begin) {</b>
+<i>363</i>&nbsp;                                                // src1:    o--------o
+<i>364</i>&nbsp;                                                // src2:  o----o
+<i>365</i>&nbsp;                                                // res:     o--o
+<i>366</i>&nbsp;                                                // Reuse the rest of src1
+<b class="nc"><i>367</i>&nbsp;                    result[wp++] = src1begin;</b>
+<b class="nc"><i>368</i>&nbsp;                    result[wp++] = src2end;</b>
+<b class="nc"><i>369</i>&nbsp;                    this.ranges[src1] = src2end+1;</b>
+<b class="nc"><i>370</i>&nbsp;                    src2 += 2;</b>
+<b class="nc"><i>371</i>&nbsp;                } else if (src1end &lt;= src2end) {</b>
+<i>372</i>&nbsp;                                                // src1:    o--------o
+<i>373</i>&nbsp;                                                // src2:          o----o
+<i>374</i>&nbsp;                                                // res:           o--o
+<i>375</i>&nbsp;                                                // Reuse src2
+<b class="nc"><i>376</i>&nbsp;                    result[wp++] = src2begin;</b>
+<b class="nc"><i>377</i>&nbsp;                    result[wp++] = src1end;</b>
+<b class="nc"><i>378</i>&nbsp;                    src1 += 2;</b>
+<i>379</i>&nbsp;                } else {
+<i>380</i>&nbsp;                                                // src1:    o--------o
+<i>381</i>&nbsp;                                                // src2:      o----o
+<i>382</i>&nbsp;                                                // res:       o----o
+<i>383</i>&nbsp;                                                // Reuse the rest of src1
+<b class="nc"><i>384</i>&nbsp;                    result[wp++] = src2begin;</b>
+<b class="nc"><i>385</i>&nbsp;                    result[wp++] = src2end;</b>
+<b class="nc"><i>386</i>&nbsp;                    this.ranges[src1] = src2end+1;</b>
+<i>387</i>&nbsp;                }
+<b class="nc"><i>388</i>&nbsp;            } else if (src2end &lt; src1begin) {</b>
+<i>389</i>&nbsp;                                                // Not overlapped
+<i>390</i>&nbsp;                                                // src1:          o-----o
+<i>391</i>&nbsp;                                                // src2: o----o
+<b class="nc"><i>392</i>&nbsp;                src2 += 2;</b>
+<i>393</i>&nbsp;            } else {
+<b class="nc"><i>394</i>&nbsp;                throw new RuntimeException(&quot;Token#intersectRanges(): Internal Error: [&quot;</b>
+<i>395</i>&nbsp;                                           +this.ranges[src1]
+<i>396</i>&nbsp;                                           +&quot;,&quot;+this.ranges[src1+1]
+<i>397</i>&nbsp;                                           +&quot;] &amp; [&quot;+tok.ranges[src2]
+<i>398</i>&nbsp;                                           +&quot;,&quot;+tok.ranges[src2+1]
+<i>399</i>&nbsp;                                           +&quot;]&quot;);
+<i>400</i>&nbsp;            }
+<b class="nc"><i>401</i>&nbsp;        }</b>
+<b class="nc"><i>402</i>&nbsp;        while (src1 &lt; this.ranges.length) {</b>
+<b class="nc"><i>403</i>&nbsp;            result[wp++] = this.ranges[src1++];</b>
+<b class="nc"><i>404</i>&nbsp;            result[wp++] = this.ranges[src1++];</b>
+<i>405</i>&nbsp;        }
+<b class="nc"><i>406</i>&nbsp;        this.ranges = new int[wp];</b>
+<b class="nc"><i>407</i>&nbsp;        System.arraycopy(result, 0, this.ranges, 0, wp);</b>
+<i>408</i>&nbsp;                                                // this.ranges is sorted and compacted.
+<i>409</i>&nbsp;    }
+<i>410</i>&nbsp;
+<i>411</i>&nbsp;    /**
+<i>412</i>&nbsp;     * for RANGE: Creates complement.
+<i>413</i>&nbsp;     * for NRANGE: Creates the same meaning RANGE.
+<i>414</i>&nbsp;     */
+<i>415</i>&nbsp;    static Token complementRanges(Token token) {
+<b class="nc"><i>416</i>&nbsp;        if (token.type != RANGE &amp;&amp; token.type != NRANGE)</b>
+<b class="nc"><i>417</i>&nbsp;            throw new IllegalArgumentException(&quot;Token#complementRanges(): must be RANGE: &quot;+token.type);</b>
+<b class="nc"><i>418</i>&nbsp;        RangeToken tok = (RangeToken)token;</b>
+<b class="nc"><i>419</i>&nbsp;        tok.sortRanges();</b>
+<b class="nc"><i>420</i>&nbsp;        tok.compactRanges();</b>
+<b class="nc"><i>421</i>&nbsp;        int len = tok.ranges.length+2;</b>
+<b class="nc"><i>422</i>&nbsp;        if (tok.ranges[0] == 0)</b>
+<b class="nc"><i>423</i>&nbsp;            len -= 2;</b>
+<b class="nc"><i>424</i>&nbsp;        int last = tok.ranges[tok.ranges.length-1];</b>
+<b class="nc"><i>425</i>&nbsp;        if (last == UTF16_MAX)</b>
+<b class="nc"><i>426</i>&nbsp;            len -= 2;</b>
+<b class="nc"><i>427</i>&nbsp;        RangeToken ret = Token.createRange();</b>
+<b class="nc"><i>428</i>&nbsp;        ret.ranges = new int[len];</b>
+<b class="nc"><i>429</i>&nbsp;        int wp = 0;</b>
+<b class="nc"><i>430</i>&nbsp;        if (tok.ranges[0] &gt; 0) {</b>
+<b class="nc"><i>431</i>&nbsp;            ret.ranges[wp++] = 0;</b>
+<b class="nc"><i>432</i>&nbsp;            ret.ranges[wp++] = tok.ranges[0]-1;</b>
+<i>433</i>&nbsp;        }
+<b class="nc"><i>434</i>&nbsp;        for (int i = 1;  i &lt; tok.ranges.length-2;  i += 2) {</b>
+<b class="nc"><i>435</i>&nbsp;            ret.ranges[wp++] = tok.ranges[i]+1;</b>
+<b class="nc"><i>436</i>&nbsp;            ret.ranges[wp++] = tok.ranges[i+1]-1;</b>
+<i>437</i>&nbsp;        }
+<b class="nc"><i>438</i>&nbsp;        if (last != UTF16_MAX) {</b>
+<b class="nc"><i>439</i>&nbsp;            ret.ranges[wp++] = last+1;</b>
+<b class="nc"><i>440</i>&nbsp;            ret.ranges[wp] = UTF16_MAX;</b>
+<i>441</i>&nbsp;        }
+<b class="nc"><i>442</i>&nbsp;        ret.setCompacted();</b>
+<b class="nc"><i>443</i>&nbsp;        return ret;</b>
+<i>444</i>&nbsp;    }
+<i>445</i>&nbsp;
+<i>446</i>&nbsp;    synchronized RangeToken getCaseInsensitiveToken() {
+<b class="nc"><i>447</i>&nbsp;        if (this.icaseCache != null)</b>
+<b class="nc"><i>448</i>&nbsp;            return this.icaseCache;</b>
+<i>449</i>&nbsp;
+<b class="nc"><i>450</i>&nbsp;        RangeToken uppers = this.type == Token.RANGE ? Token.createRange() : Token.createNRange();</b>
+<b class="nc"><i>451</i>&nbsp;        for (int i = 0;  i &lt; this.ranges.length;  i += 2) {</b>
+<b class="nc"><i>452</i>&nbsp;            for (int ch = this.ranges[i];  ch &lt;= this.ranges[i+1];  ch ++) {</b>
+<b class="nc"><i>453</i>&nbsp;                if (ch &gt; 0xffff)</b>
+<b class="nc"><i>454</i>&nbsp;                    uppers.addRange(ch, ch);</b>
+<i>455</i>&nbsp;                else {
+<b class="nc"><i>456</i>&nbsp;                    char uch = Character.toUpperCase((char)ch);</b>
+<b class="nc"><i>457</i>&nbsp;                    uppers.addRange(uch, uch);</b>
+<i>458</i>&nbsp;                }
+<i>459</i>&nbsp;            }
+<i>460</i>&nbsp;        }
+<b class="nc"><i>461</i>&nbsp;        RangeToken lowers = this.type == Token.RANGE ? Token.createRange() : Token.createNRange();</b>
+<b class="nc"><i>462</i>&nbsp;        for (int i = 0;  i &lt; uppers.ranges.length;  i += 2) {</b>
+<b class="nc"><i>463</i>&nbsp;            for (int ch = uppers.ranges[i];  ch &lt;= uppers.ranges[i+1];  ch ++) {</b>
+<b class="nc"><i>464</i>&nbsp;                if (ch &gt; 0xffff)</b>
+<b class="nc"><i>465</i>&nbsp;                    lowers.addRange(ch, ch);</b>
+<i>466</i>&nbsp;                else {
+<b class="nc"><i>467</i>&nbsp;                    char uch = Character.toUpperCase((char)ch);</b>
+<b class="nc"><i>468</i>&nbsp;                    lowers.addRange(uch, uch);</b>
+<i>469</i>&nbsp;                }
+<i>470</i>&nbsp;            }
+<i>471</i>&nbsp;        }
+<b class="nc"><i>472</i>&nbsp;        lowers.mergeRanges(uppers);</b>
+<b class="nc"><i>473</i>&nbsp;        lowers.mergeRanges(this);</b>
+<b class="nc"><i>474</i>&nbsp;        lowers.compactRanges();</b>
+<i>475</i>&nbsp;
+<b class="nc"><i>476</i>&nbsp;        this.icaseCache = lowers;</b>
+<b class="nc"><i>477</i>&nbsp;        return lowers;</b>
+<i>478</i>&nbsp;    }
+<i>479</i>&nbsp;
+<i>480</i>&nbsp;    void dumpRanges() {
+<b class="nc"><i>481</i>&nbsp;        System.err.print(&quot;RANGE: &quot;);</b>
+<b class="nc"><i>482</i>&nbsp;        if (this.ranges == null)</b>
+<b class="nc"><i>483</i>&nbsp;            System.err.println(&quot; NULL&quot;);</b>
+<b class="nc"><i>484</i>&nbsp;        for (int i = 0;  i &lt; this.ranges.length;  i += 2) {</b>
+<b class="nc"><i>485</i>&nbsp;            System.err.print(&quot;[&quot;+this.ranges[i]+&quot;,&quot;+this.ranges[i+1]+&quot;] &quot;);</b>
+<i>486</i>&nbsp;        }
+<b class="nc"><i>487</i>&nbsp;        System.err.println(&quot;&quot;);</b>
+<i>488</i>&nbsp;    }
+<i>489</i>&nbsp;
+<i>490</i>&nbsp;    boolean match(int ch) {
+<b class="nc"><i>491</i>&nbsp;        if (this.map == null)  this.createMap();</b>
+<i>492</i>&nbsp;        boolean ret;
+<b class="nc"><i>493</i>&nbsp;        if (this.type == RANGE) {</b>
+<b class="nc"><i>494</i>&nbsp;            if (ch &lt; MAPSIZE)</b>
+<b class="nc"><i>495</i>&nbsp;                return (this.map[ch/32] &amp; (1&lt;&lt;(ch&amp;0x1f))) != 0;</b>
+<b class="nc"><i>496</i>&nbsp;            ret = false;</b>
+<b class="nc"><i>497</i>&nbsp;            for (int i = this.nonMapIndex;  i &lt; this.ranges.length;  i += 2) {</b>
+<b class="nc"><i>498</i>&nbsp;                if (this.ranges[i] &lt;= ch &amp;&amp; ch &lt;= this.ranges[i+1])</b>
+<b class="nc"><i>499</i>&nbsp;                    return true;</b>
+<i>500</i>&nbsp;            }
+<i>501</i>&nbsp;        } else {
+<b class="nc"><i>502</i>&nbsp;            if (ch &lt; MAPSIZE)</b>
+<b class="nc"><i>503</i>&nbsp;                return (this.map[ch/32] &amp; (1&lt;&lt;(ch&amp;0x1f))) == 0;</b>
+<b class="nc"><i>504</i>&nbsp;            ret = true;</b>
+<b class="nc"><i>505</i>&nbsp;            for (int i = this.nonMapIndex;  i &lt; this.ranges.length;  i += 2) {</b>
+<b class="nc"><i>506</i>&nbsp;                if (this.ranges[i] &lt;= ch &amp;&amp; ch &lt;= this.ranges[i+1])</b>
+<b class="nc"><i>507</i>&nbsp;                    return false;</b>
+<i>508</i>&nbsp;            }
+<i>509</i>&nbsp;        }
+<b class="nc"><i>510</i>&nbsp;        return ret;</b>
+<i>511</i>&nbsp;    }
+<i>512</i>&nbsp;
+<i>513</i>&nbsp;    private static final int MAPSIZE = 256;
+<i>514</i>&nbsp;    private void createMap() {
+<b class="nc"><i>515</i>&nbsp;        int asize = MAPSIZE/32;                 // 32 is the number of bits in `int&#39;.</b>
+<b class="nc"><i>516</i>&nbsp;        int [] map = new int[asize];</b>
+<b class="nc"><i>517</i>&nbsp;        int nonMapIndex = this.ranges.length;</b>
+<b class="nc"><i>518</i>&nbsp;        for (int i = 0; i &lt; asize; ++i) {</b>
+<b class="nc"><i>519</i>&nbsp;            map[i] = 0;</b>
+<i>520</i>&nbsp;        }
+<b class="nc"><i>521</i>&nbsp;        for (int i = 0; i &lt; this.ranges.length;  i += 2) {</b>
+<b class="nc"><i>522</i>&nbsp;            int s = this.ranges[i];</b>
+<b class="nc"><i>523</i>&nbsp;            int e = this.ranges[i+1];</b>
+<b class="nc"><i>524</i>&nbsp;            if (s &lt; MAPSIZE) {</b>
+<b class="nc"><i>525</i>&nbsp;                for (int j = s; j &lt;= e &amp;&amp; j &lt; MAPSIZE; j++) {</b>
+<b class="nc"><i>526</i>&nbsp;                    map[j/32] |= 1&lt;&lt;(j&amp;0x1f); // s&amp;0x1f : 0-31</b>
+<i>527</i>&nbsp;                }
+<i>528</i>&nbsp;            }
+<i>529</i>&nbsp;            else {
+<b class="nc"><i>530</i>&nbsp;                nonMapIndex = i;</b>
+<b class="nc"><i>531</i>&nbsp;                break;</b>
+<i>532</i>&nbsp;            }
+<b class="nc"><i>533</i>&nbsp;            if (e &gt;= MAPSIZE) {</b>
+<b class="nc"><i>534</i>&nbsp;                nonMapIndex = i;</b>
+<b class="nc"><i>535</i>&nbsp;                break;</b>
+<i>536</i>&nbsp;            }
+<i>537</i>&nbsp;        }
+<b class="nc"><i>538</i>&nbsp;        this.map = map;</b>
+<b class="nc"><i>539</i>&nbsp;        this.nonMapIndex = nonMapIndex;</b>
+<i>540</i>&nbsp;        //for (int i = 0;  i &lt; asize;  i ++)  System.err.println(&quot;Map: &quot;+Integer.toString(this.map[i], 16));
+<i>541</i>&nbsp;    }
+<i>542</i>&nbsp;
+<i>543</i>&nbsp;    public String toString(int options) {
+<i>544</i>&nbsp;        String ret;
+<b class="nc"><i>545</i>&nbsp;        if (this.type == RANGE) {</b>
+<b class="nc"><i>546</i>&nbsp;            if (this == Token.token_dot)</b>
+<b class="nc"><i>547</i>&nbsp;                ret = &quot;.&quot;;</b>
+<b class="nc"><i>548</i>&nbsp;            else if (this == Token.token_0to9)</b>
+<b class="nc"><i>549</i>&nbsp;                ret = &quot;\\d&quot;;</b>
+<b class="nc"><i>550</i>&nbsp;            else if (this == Token.token_wordchars)</b>
+<b class="nc"><i>551</i>&nbsp;                ret = &quot;\\w&quot;;</b>
+<b class="nc"><i>552</i>&nbsp;            else if (this == Token.token_spaces)</b>
+<b class="nc"><i>553</i>&nbsp;                ret = &quot;\\s&quot;;</b>
+<i>554</i>&nbsp;            else {
+<b class="nc"><i>555</i>&nbsp;                StringBuffer sb = new StringBuffer();</b>
+<b class="nc"><i>556</i>&nbsp;                sb.append(&quot;[&quot;);</b>
+<b class="nc"><i>557</i>&nbsp;                for (int i = 0;  i &lt; this.ranges.length;  i += 2) {</b>
+<b class="nc"><i>558</i>&nbsp;                    if ((options &amp; RegularExpression.SPECIAL_COMMA) != 0 &amp;&amp; i &gt; 0)  sb.append(&quot;,&quot;);</b>
+<b class="nc"><i>559</i>&nbsp;                    if (this.ranges[i] == this.ranges[i+1]) {</b>
+<b class="nc"><i>560</i>&nbsp;                        sb.append(escapeCharInCharClass(this.ranges[i]));</b>
+<i>561</i>&nbsp;                    } else {
+<b class="nc"><i>562</i>&nbsp;                        sb.append(escapeCharInCharClass(this.ranges[i]));</b>
+<b class="nc"><i>563</i>&nbsp;                        sb.append((char)&#39;-&#39;);</b>
+<b class="nc"><i>564</i>&nbsp;                        sb.append(escapeCharInCharClass(this.ranges[i+1]));</b>
+<i>565</i>&nbsp;                    }
+<i>566</i>&nbsp;                }
+<b class="nc"><i>567</i>&nbsp;                sb.append(&quot;]&quot;);</b>
+<b class="nc"><i>568</i>&nbsp;                ret = sb.toString();</b>
+<b class="nc"><i>569</i>&nbsp;            }</b>
+<i>570</i>&nbsp;        } else {
+<b class="nc"><i>571</i>&nbsp;            if (this == Token.token_not_0to9)</b>
+<b class="nc"><i>572</i>&nbsp;                ret = &quot;\\D&quot;;</b>
+<b class="nc"><i>573</i>&nbsp;            else if (this == Token.token_not_wordchars)</b>
+<b class="nc"><i>574</i>&nbsp;                ret = &quot;\\W&quot;;</b>
+<b class="nc"><i>575</i>&nbsp;            else if (this == Token.token_not_spaces)</b>
+<b class="nc"><i>576</i>&nbsp;                ret = &quot;\\S&quot;;</b>
+<i>577</i>&nbsp;            else {
+<b class="nc"><i>578</i>&nbsp;                StringBuffer sb = new StringBuffer();</b>
+<b class="nc"><i>579</i>&nbsp;                sb.append(&quot;[^&quot;);</b>
+<b class="nc"><i>580</i>&nbsp;                for (int i = 0;  i &lt; this.ranges.length;  i += 2) {</b>
+<b class="nc"><i>581</i>&nbsp;                    if ((options &amp; RegularExpression.SPECIAL_COMMA) != 0 &amp;&amp; i &gt; 0)  sb.append(&quot;,&quot;);</b>
+<b class="nc"><i>582</i>&nbsp;                    if (this.ranges[i] == this.ranges[i+1]) {</b>
+<b class="nc"><i>583</i>&nbsp;                        sb.append(escapeCharInCharClass(this.ranges[i]));</b>
+<i>584</i>&nbsp;                    } else {
+<b class="nc"><i>585</i>&nbsp;                        sb.append(escapeCharInCharClass(this.ranges[i]));</b>
+<b class="nc"><i>586</i>&nbsp;                        sb.append(&#39;-&#39;);</b>
+<b class="nc"><i>587</i>&nbsp;                        sb.append(escapeCharInCharClass(this.ranges[i+1]));</b>
+<i>588</i>&nbsp;                    }
+<i>589</i>&nbsp;                }
+<b class="nc"><i>590</i>&nbsp;                sb.append(&quot;]&quot;);</b>
+<b class="nc"><i>591</i>&nbsp;                ret = sb.toString();</b>
+<i>592</i>&nbsp;            }
+<i>593</i>&nbsp;        }
+<b class="nc"><i>594</i>&nbsp;        return ret;</b>
+<i>595</i>&nbsp;    }
+<i>596</i>&nbsp;
+<i>597</i>&nbsp;    private static String escapeCharInCharClass(int ch) {
+<i>598</i>&nbsp;        String ret;
+<b class="nc"><i>599</i>&nbsp;        switch (ch) {</b>
+<i>600</i>&nbsp;          case &#39;[&#39;:  case &#39;]&#39;:  case &#39;-&#39;:  case &#39;^&#39;:
+<i>601</i>&nbsp;          case &#39;,&#39;:  case &#39;\\&#39;:
+<b class="nc"><i>602</i>&nbsp;            ret = &quot;\\&quot;+(char)ch;</b>
+<b class="nc"><i>603</i>&nbsp;            break;</b>
+<b class="nc"><i>604</i>&nbsp;          case &#39;\f&#39;:  ret = &quot;\\f&quot;;  break;</b>
+<b class="nc"><i>605</i>&nbsp;          case &#39;\n&#39;:  ret = &quot;\\n&quot;;  break;</b>
+<b class="nc"><i>606</i>&nbsp;          case &#39;\r&#39;:  ret = &quot;\\r&quot;;  break;</b>
+<b class="nc"><i>607</i>&nbsp;          case &#39;\t&#39;:  ret = &quot;\\t&quot;;  break;</b>
+<b class="nc"><i>608</i>&nbsp;          case 0x1b:  ret = &quot;\\e&quot;;  break;</b>
+<i>609</i>&nbsp;          //case 0x0b:  ret = &quot;\\v&quot;;  break;
+<i>610</i>&nbsp;          default:
+<b class="nc"><i>611</i>&nbsp;            if (ch &lt; 0x20) {</b>
+<b class="nc"><i>612</i>&nbsp;                String pre = &quot;0&quot;+Integer.toHexString(ch);</b>
+<b class="nc"><i>613</i>&nbsp;                ret = &quot;\\x&quot;+pre.substring(pre.length()-2, pre.length());</b>
+<b class="nc"><i>614</i>&nbsp;            } else if (ch &gt;= 0x10000) {</b>
+<b class="nc"><i>615</i>&nbsp;                String pre = &quot;0&quot;+Integer.toHexString(ch);</b>
+<b class="nc"><i>616</i>&nbsp;                ret = &quot;\\v&quot;+pre.substring(pre.length()-6, pre.length());</b>
+<b class="nc"><i>617</i>&nbsp;            } else</b>
+<b class="nc"><i>618</i>&nbsp;                ret = &quot;&quot;+(char)ch;</b>
+<i>619</i>&nbsp;        }
+<b class="nc"><i>620</i>&nbsp;        return ret;</b>
+<i>621</i>&nbsp;    }
+<i>622</i>&nbsp;
+<i>623</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:55</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,355 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TransletOutputHandlerFactory</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xalan.internal.xsltc.runtime.output</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TransletOutputHandlerFactory (com.sun.org.apache.xalan.internal.xsltc.runtime.output)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TransletOutputHandlerFactory</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 72)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 2001-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: TransletOutputHandlerFactory.java,v 1.2.4.2 2005/09/15 19:12:05 jeffsuttor Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package com.sun.org.apache.xalan.internal.xsltc.runtime.output;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.IOException;
+<i>27</i>&nbsp;import java.io.OutputStream;
+<i>28</i>&nbsp;import java.io.Writer;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import javax.xml.parsers.ParserConfigurationException;
+<i>31</i>&nbsp;import javax.xml.stream.XMLEventWriter;
+<i>32</i>&nbsp;import javax.xml.stream.util.XMLEventConsumer;
+<i>33</i>&nbsp;import javax.xml.stream.XMLStreamWriter;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.trax.SAX2DOM;
+<i>36</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.trax.SAX2StAXEventWriter;
+<i>37</i>&nbsp;import com.sun.org.apache.xalan.internal.xsltc.trax.SAX2StAXStreamWriter;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.ToHTMLSAXHandler;
+<i>40</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.ToHTMLStream;
+<i>41</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.ToTextSAXHandler;
+<i>42</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.ToTextStream;
+<i>43</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.ToUnknownStream;
+<i>44</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.ToXMLSAXHandler;
+<i>45</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.ToXMLStream;
+<i>46</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.SerializationHandler;
+<i>47</i>&nbsp;import org.w3c.dom.Node;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;import org.xml.sax.ContentHandler;
+<i>50</i>&nbsp;import org.xml.sax.ext.LexicalHandler;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;/**
+<i>53</i>&nbsp; * @author Santiago Pericas-Geertsen
+<i>54</i>&nbsp; */
+<i>55</i>&nbsp;public class TransletOutputHandlerFactory {
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    public static final int STREAM = 0;
+<i>58</i>&nbsp;    public static final int SAX    = 1;
+<i>59</i>&nbsp;    public static final int DOM    = 2;
+<i>60</i>&nbsp;    public static final int STAX   = 3;
+<i>61</i>&nbsp;
+<b class="nc"><i>62</i>&nbsp;    private String _encoding                        = &quot;utf-8&quot;;</b>
+<b class="nc"><i>63</i>&nbsp;    private String _method                          = null;</b>
+<b class="nc"><i>64</i>&nbsp;    private int    _outputType                      = STREAM;</b>
+<b class="nc"><i>65</i>&nbsp;    private OutputStream _ostream                   = System.out;</b>
+<b class="nc"><i>66</i>&nbsp;    private Writer _writer                          = null;</b>
+<b class="nc"><i>67</i>&nbsp;    private Node _node                              = null;</b>
+<b class="nc"><i>68</i>&nbsp;    private Node   _nextSibling                     = null;</b>
+<b class="nc"><i>69</i>&nbsp;    private XMLEventWriter _xmlStAXEventWriter      = null;</b>
+<b class="nc"><i>70</i>&nbsp;    private XMLStreamWriter _xmlStAXStreamWriter    = null;</b>
+<b class="nc"><i>71</i>&nbsp;    private int _indentNumber                       = -1;</b>
+<b class="nc"><i>72</i>&nbsp;    private ContentHandler _handler                 = null;</b>
+<b class="nc"><i>73</i>&nbsp;    private LexicalHandler _lexHandler              = null;</b>
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    private boolean _useServicesMechanism;
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    static public TransletOutputHandlerFactory newInstance() {
+<b class="nc"><i>78</i>&nbsp;        return new TransletOutputHandlerFactory(true);</b>
+<i>79</i>&nbsp;    }
+<i>80</i>&nbsp;    static public TransletOutputHandlerFactory newInstance(boolean useServicesMechanism) {
+<b class="nc"><i>81</i>&nbsp;        return new TransletOutputHandlerFactory(useServicesMechanism);</b>
+<i>82</i>&nbsp;    }
+<i>83</i>&nbsp;
+<b class="nc"><i>84</i>&nbsp;    public TransletOutputHandlerFactory(boolean useServicesMechanism) {</b>
+<b class="nc"><i>85</i>&nbsp;        _useServicesMechanism = useServicesMechanism;</b>
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;    public void setOutputType(int outputType) {
+<b class="nc"><i>88</i>&nbsp;        _outputType = outputType;</b>
+<i>89</i>&nbsp;    }
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    public void setEncoding(String encoding) {
+<b class="nc"><i>92</i>&nbsp;        if (encoding != null) {</b>
+<b class="nc"><i>93</i>&nbsp;            _encoding = encoding;</b>
+<i>94</i>&nbsp;        }
+<i>95</i>&nbsp;    }
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;    public void setOutputMethod(String method) {
+<b class="nc"><i>98</i>&nbsp;        _method = method;</b>
+<i>99</i>&nbsp;    }
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;    public void setOutputStream(OutputStream ostream) {
+<b class="nc"><i>102</i>&nbsp;        _ostream = ostream;</b>
+<i>103</i>&nbsp;    }
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;    public void setWriter(Writer writer) {
+<b class="nc"><i>106</i>&nbsp;        _writer = writer;</b>
+<i>107</i>&nbsp;    }
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    public void setHandler(ContentHandler handler) {
+<b class="nc"><i>110</i>&nbsp;        _handler = handler;</b>
+<i>111</i>&nbsp;    }
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    public void setLexicalHandler(LexicalHandler lex) {
+<b class="nc"><i>114</i>&nbsp;        _lexHandler = lex;</b>
+<i>115</i>&nbsp;    }
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    public void setNode(Node node) {
+<b class="nc"><i>118</i>&nbsp;        _node = node;</b>
+<i>119</i>&nbsp;    }
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;    public Node getNode() {
+<b class="nc"><i>122</i>&nbsp;        return (_handler instanceof SAX2DOM) ? ((SAX2DOM)_handler).getDOM()</b>
+<i>123</i>&nbsp;           : null;
+<i>124</i>&nbsp;    }
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;    public void setNextSibling(Node nextSibling) {
+<b class="nc"><i>127</i>&nbsp;        _nextSibling = nextSibling;</b>
+<i>128</i>&nbsp;    }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    public XMLEventWriter getXMLEventWriter() {
+<b class="nc"><i>131</i>&nbsp;        return (_handler instanceof SAX2StAXEventWriter) ? ((SAX2StAXEventWriter) _handler).getEventWriter() : null;</b>
+<i>132</i>&nbsp;    }
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;    public void setXMLEventWriter(XMLEventWriter eventWriter) {
+<b class="nc"><i>135</i>&nbsp;        _xmlStAXEventWriter = eventWriter;</b>
+<i>136</i>&nbsp;    }
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;    public XMLStreamWriter getXMLStreamWriter() {
+<b class="nc"><i>139</i>&nbsp;        return (_handler instanceof SAX2StAXStreamWriter) ? ((SAX2StAXStreamWriter) _handler).getStreamWriter() : null;</b>
+<i>140</i>&nbsp;    }
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;    public void setXMLStreamWriter(XMLStreamWriter streamWriter) {
+<b class="nc"><i>143</i>&nbsp;        _xmlStAXStreamWriter = streamWriter;</b>
+<i>144</i>&nbsp;    }
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;    public void setIndentNumber(int value) {
+<b class="nc"><i>147</i>&nbsp;        _indentNumber = value;</b>
+<i>148</i>&nbsp;    }
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;    public SerializationHandler getSerializationHandler()
+<i>151</i>&nbsp;        throws IOException, ParserConfigurationException
+<i>152</i>&nbsp;    {
+<b class="nc"><i>153</i>&nbsp;        SerializationHandler result = null;</b>
+<b class="nc"><i>154</i>&nbsp;        switch (_outputType)</b>
+<i>155</i>&nbsp;        {
+<i>156</i>&nbsp;            case STREAM :
+<i>157</i>&nbsp;
+<b class="nc"><i>158</i>&nbsp;                if (_method == null)</b>
+<i>159</i>&nbsp;                {
+<b class="nc"><i>160</i>&nbsp;                    result = new ToUnknownStream();</b>
+<i>161</i>&nbsp;                }
+<b class="nc"><i>162</i>&nbsp;                else if (_method.equalsIgnoreCase(&quot;xml&quot;))</b>
+<i>163</i>&nbsp;                {
+<i>164</i>&nbsp;
+<b class="nc"><i>165</i>&nbsp;                    result = new ToXMLStream();</b>
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;                }
+<b class="nc"><i>168</i>&nbsp;                else if (_method.equalsIgnoreCase(&quot;html&quot;))</b>
+<i>169</i>&nbsp;                {
+<i>170</i>&nbsp;
+<b class="nc"><i>171</i>&nbsp;                    result = new ToHTMLStream();</b>
+<i>172</i>&nbsp;
+<i>173</i>&nbsp;                }
+<b class="nc"><i>174</i>&nbsp;                else if (_method.equalsIgnoreCase(&quot;text&quot;))</b>
+<i>175</i>&nbsp;                {
+<i>176</i>&nbsp;
+<b class="nc"><i>177</i>&nbsp;                    result = new ToTextStream();</b>
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;                }
+<i>180</i>&nbsp;
+<b class="nc"><i>181</i>&nbsp;                if (result != null &amp;&amp; _indentNumber &gt;= 0)</b>
+<i>182</i>&nbsp;                {
+<b class="nc"><i>183</i>&nbsp;                    result.setIndentAmount(_indentNumber);</b>
+<i>184</i>&nbsp;                }
+<i>185</i>&nbsp;
+<b class="nc"><i>186</i>&nbsp;                result.setEncoding(_encoding);</b>
+<i>187</i>&nbsp;
+<b class="nc"><i>188</i>&nbsp;                if (_writer != null)</b>
+<i>189</i>&nbsp;                {
+<b class="nc"><i>190</i>&nbsp;                    result.setWriter(_writer);</b>
+<i>191</i>&nbsp;                }
+<i>192</i>&nbsp;                else
+<i>193</i>&nbsp;                {
+<b class="nc"><i>194</i>&nbsp;                    result.setOutputStream(_ostream);</b>
+<i>195</i>&nbsp;                }
+<b class="nc"><i>196</i>&nbsp;                return result;</b>
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;            case DOM :
+<b class="nc"><i>199</i>&nbsp;                _handler = (_node != null) ? new SAX2DOM(_node, _nextSibling, _useServicesMechanism) : new SAX2DOM(_useServicesMechanism);</b>
+<b class="nc"><i>200</i>&nbsp;                _lexHandler = (LexicalHandler) _handler;</b>
+<i>201</i>&nbsp;                // falls through
+<i>202</i>&nbsp;            case STAX :
+<b class="nc"><i>203</i>&nbsp;                if (_xmlStAXEventWriter != null) {</b>
+<b class="nc"><i>204</i>&nbsp;                    _handler =  new SAX2StAXEventWriter(_xmlStAXEventWriter);</b>
+<b class="nc"><i>205</i>&nbsp;                } else if (_xmlStAXStreamWriter != null) {</b>
+<b class="nc"><i>206</i>&nbsp;                    _handler =  new SAX2StAXStreamWriter(_xmlStAXStreamWriter);</b>
+<i>207</i>&nbsp;                }
+<b class="nc"><i>208</i>&nbsp;                _lexHandler = (LexicalHandler) _handler;</b>
+<i>209</i>&nbsp;                // again falls through - Padmaja Vedula
+<i>210</i>&nbsp;            case SAX :
+<b class="nc"><i>211</i>&nbsp;                if (_method == null)</b>
+<i>212</i>&nbsp;                {
+<b class="nc"><i>213</i>&nbsp;                    _method = &quot;xml&quot;; // default case</b>
+<i>214</i>&nbsp;                }
+<i>215</i>&nbsp;
+<b class="nc"><i>216</i>&nbsp;                if (_method.equalsIgnoreCase(&quot;xml&quot;))</b>
+<i>217</i>&nbsp;                {
+<i>218</i>&nbsp;
+<b class="nc"><i>219</i>&nbsp;                    if (_lexHandler == null)</b>
+<i>220</i>&nbsp;                    {
+<b class="nc"><i>221</i>&nbsp;                        result = new ToXMLSAXHandler(_handler, _encoding);</b>
+<i>222</i>&nbsp;                    }
+<i>223</i>&nbsp;                    else
+<i>224</i>&nbsp;                    {
+<b class="nc"><i>225</i>&nbsp;                        result =</b>
+<i>226</i>&nbsp;                            new ToXMLSAXHandler(
+<i>227</i>&nbsp;                                _handler,
+<i>228</i>&nbsp;                                _lexHandler,
+<i>229</i>&nbsp;                                _encoding);
+<i>230</i>&nbsp;                    }
+<i>231</i>&nbsp;
+<i>232</i>&nbsp;                }
+<b class="nc"><i>233</i>&nbsp;                else if (_method.equalsIgnoreCase(&quot;html&quot;))</b>
+<i>234</i>&nbsp;                {
+<i>235</i>&nbsp;
+<b class="nc"><i>236</i>&nbsp;                    if (_lexHandler == null)</b>
+<i>237</i>&nbsp;                    {
+<b class="nc"><i>238</i>&nbsp;                        result = new ToHTMLSAXHandler(_handler, _encoding);</b>
+<i>239</i>&nbsp;                    }
+<i>240</i>&nbsp;                    else
+<i>241</i>&nbsp;                    {
+<b class="nc"><i>242</i>&nbsp;                        result =</b>
+<i>243</i>&nbsp;                            new ToHTMLSAXHandler(
+<i>244</i>&nbsp;                                _handler,
+<i>245</i>&nbsp;                                _lexHandler,
+<i>246</i>&nbsp;                                _encoding);
+<i>247</i>&nbsp;                    }
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;                }
+<b class="nc"><i>250</i>&nbsp;                else if (_method.equalsIgnoreCase(&quot;text&quot;))</b>
+<i>251</i>&nbsp;                {
+<i>252</i>&nbsp;
+<b class="nc"><i>253</i>&nbsp;                    if (_lexHandler == null)</b>
+<i>254</i>&nbsp;                    {
+<b class="nc"><i>255</i>&nbsp;                        result = new ToTextSAXHandler(_handler, _encoding);</b>
+<i>256</i>&nbsp;                    }
+<i>257</i>&nbsp;                    else
+<i>258</i>&nbsp;                    {
+<b class="nc"><i>259</i>&nbsp;                        result =</b>
+<i>260</i>&nbsp;                            new ToTextSAXHandler(
+<i>261</i>&nbsp;                                _handler,
+<i>262</i>&nbsp;                                _lexHandler,
+<i>263</i>&nbsp;                                _encoding);
+<i>264</i>&nbsp;                    }
+<i>265</i>&nbsp;
+<i>266</i>&nbsp;                }
+<b class="nc"><i>267</i>&nbsp;                return result;</b>
+<i>268</i>&nbsp;        }
+<b class="nc"><i>269</i>&nbsp;        return null;</b>
+<i>270</i>&nbsp;    }
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

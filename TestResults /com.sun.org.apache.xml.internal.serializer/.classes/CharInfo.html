@@ -1,0 +1,855 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CharInfo</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.serializer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CharInfo (com.sun.org.apache.xml.internal.serializer)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CharInfo</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 160)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CharInfo$CharKey</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 166)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: CharInfo.java,v 1.2.4.1 2005/09/15 08:15:14 suresh_emailid Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.serializer;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xalan.internal.utils.SecuritySupport;
+<i>26</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.utils.MsgKey;
+<i>27</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.utils.SystemIDResolver;
+<i>28</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.utils.Utils;
+<i>29</i>&nbsp;import com.sun.org.apache.xml.internal.serializer.utils.WrappedRuntimeException;
+<i>30</i>&nbsp;import java.io.BufferedReader;
+<i>31</i>&nbsp;import java.io.InputStream;
+<i>32</i>&nbsp;import java.io.InputStreamReader;
+<i>33</i>&nbsp;import java.io.UnsupportedEncodingException;
+<i>34</i>&nbsp;import java.net.URL;
+<i>35</i>&nbsp;import java.util.Enumeration;
+<i>36</i>&nbsp;import java.util.HashMap;
+<i>37</i>&nbsp;import java.util.Locale;
+<i>38</i>&nbsp;import java.util.PropertyResourceBundle;
+<i>39</i>&nbsp;import java.util.ResourceBundle;
+<i>40</i>&nbsp;import javax.xml.transform.TransformerException;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;/**
+<i>43</i>&nbsp; * This class provides services that tell if a character should have
+<i>44</i>&nbsp; * special treatement, such as entity reference substitution or normalization
+<i>45</i>&nbsp; * of a newline character.  It also provides character to entity reference
+<i>46</i>&nbsp; * lookup.
+<i>47</i>&nbsp; *
+<i>48</i>&nbsp; * DEVELOPERS: See Known Issue in the constructor.
+<i>49</i>&nbsp; *
+<i>50</i>&nbsp; * @xsl.usage internal
+<i>51</i>&nbsp; */
+<i>52</i>&nbsp;final class CharInfo
+<i>53</i>&nbsp;{
+<i>54</i>&nbsp;    /** Given a character, lookup a String to output (e.g. a decorated entity reference). */
+<b class="nc"><i>55</i>&nbsp;    private HashMap m_charToString = new HashMap();</b>
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    /**
+<i>58</i>&nbsp;     * The name of the HTML entities file.
+<i>59</i>&nbsp;     * If specified, the file will be resource loaded with the default class loader.
+<i>60</i>&nbsp;     */
+<i>61</i>&nbsp;    public static final String HTML_ENTITIES_RESOURCE =
+<i>62</i>&nbsp;                &quot;com.sun.org.apache.xml.internal.serializer.HTMLEntities&quot;;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    /**
+<i>65</i>&nbsp;     * The name of the XML entities file.
+<i>66</i>&nbsp;     * If specified, the file will be resource loaded with the default class loader.
+<i>67</i>&nbsp;     */
+<i>68</i>&nbsp;    public static final String XML_ENTITIES_RESOURCE =
+<i>69</i>&nbsp;                &quot;com.sun.org.apache.xml.internal.serializer.XMLEntities&quot;;
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    /** The horizontal tab character, which the parser should always normalize. */
+<i>72</i>&nbsp;    public static final char S_HORIZONAL_TAB = 0x09;
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    /** The linefeed character, which the parser should always normalize. */
+<i>75</i>&nbsp;    public static final char S_LINEFEED = 0x0A;
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    /** The carriage return character, which the parser should always normalize. */
+<i>78</i>&nbsp;    public static final char S_CARRIAGERETURN = 0x0D;
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;    /** This flag is an optimization for HTML entities. It false if entities
+<i>81</i>&nbsp;     * other than quot (34), amp (38), lt (60) and gt (62) are defined
+<i>82</i>&nbsp;     * in the range 0 to 127.
+<i>83</i>&nbsp;     * @xsl.usage internal
+<i>84</i>&nbsp;     */
+<i>85</i>&nbsp;    final boolean onlyQuotAmpLtGt;
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    /** Copy the first 0,1 ... ASCII_MAX values into an array */
+<i>88</i>&nbsp;    private static final int ASCII_MAX = 128;
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    /** Array of values is faster access than a set of bits
+<i>91</i>&nbsp;     * to quickly check ASCII characters in attribute values.
+<i>92</i>&nbsp;     */
+<b class="nc"><i>93</i>&nbsp;    private boolean[] isSpecialAttrASCII = new boolean[ASCII_MAX];</b>
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    /** Array of values is faster access than a set of bits
+<i>96</i>&nbsp;     * to quickly check ASCII characters in text nodes.
+<i>97</i>&nbsp;     */
+<b class="nc"><i>98</i>&nbsp;    private boolean[] isSpecialTextASCII = new boolean[ASCII_MAX];</b>
+<i>99</i>&nbsp;
+<b class="nc"><i>100</i>&nbsp;    private boolean[] isCleanTextASCII = new boolean[ASCII_MAX];</b>
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;    /** An array of bits to record if the character is in the set.
+<i>103</i>&nbsp;     * Although information in this array is complete, the
+<i>104</i>&nbsp;     * isSpecialAttrASCII array is used first because access to its values
+<i>105</i>&nbsp;     * is common and faster.
+<i>106</i>&nbsp;     */
+<b class="nc"><i>107</i>&nbsp;    private int array_of_bits[] = createEmptySetOfIntegers(65535);</b>
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;    // 5 for 32 bit words,  6 for 64 bit words ...
+<i>111</i>&nbsp;    /*
+<i>112</i>&nbsp;     * This constant is used to shift an integer to quickly
+<i>113</i>&nbsp;     * calculate which element its bit is stored in.
+<i>114</i>&nbsp;     * 5 for 32 bit words (int) ,  6 for 64 bit words (long)
+<i>115</i>&nbsp;     */
+<i>116</i>&nbsp;    private static final int SHIFT_PER_WORD = 5;
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;    /*
+<i>119</i>&nbsp;     * A mask to get the low order bits which are used to
+<i>120</i>&nbsp;     * calculate the value of the bit within a given word,
+<i>121</i>&nbsp;     * that will represent the presence of the integer in the
+<i>122</i>&nbsp;     * set.
+<i>123</i>&nbsp;     *
+<i>124</i>&nbsp;     * 0x1F for 32 bit words (int),
+<i>125</i>&nbsp;     * or 0x3F for 64 bit words (long)
+<i>126</i>&nbsp;     */
+<i>127</i>&nbsp;    private static final int LOW_ORDER_BITMASK = 0x1f;
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;    /*
+<i>130</i>&nbsp;     * This is used for optimizing the lookup of bits representing
+<i>131</i>&nbsp;     * the integers in the set. It is the index of the first element
+<i>132</i>&nbsp;     * in the array array_of_bits[] that is not used.
+<i>133</i>&nbsp;     */
+<i>134</i>&nbsp;    private int firstWordNotUsed;
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;    /**
+<i>138</i>&nbsp;     * Constructor that reads in a resource file that describes the mapping of
+<i>139</i>&nbsp;     * characters to entity references.
+<i>140</i>&nbsp;     * This constructor is private, just to force the use
+<i>141</i>&nbsp;     * of the getCharInfo(entitiesResource) factory
+<i>142</i>&nbsp;     *
+<i>143</i>&nbsp;     * Resource files must be encoded in UTF-8 and can either be properties
+<i>144</i>&nbsp;     * files with a .properties extension assumed.  Alternatively, they can
+<i>145</i>&nbsp;     * have the following form, with no particular extension assumed:
+<i>146</i>&nbsp;     *
+<i>147</i>&nbsp;     * &lt;pre&gt;
+<i>148</i>&nbsp;     * # First char # is a comment
+<i>149</i>&nbsp;     * Entity numericValue
+<i>150</i>&nbsp;     * quot 34
+<i>151</i>&nbsp;     * amp 38
+<i>152</i>&nbsp;     * &lt;/pre&gt;
+<i>153</i>&nbsp;     *
+<i>154</i>&nbsp;     * @param entitiesResource Name of properties or resource file that should
+<i>155</i>&nbsp;     * be loaded, which describes that mapping of characters to entity
+<i>156</i>&nbsp;     * references.
+<i>157</i>&nbsp;     */
+<i>158</i>&nbsp;    private CharInfo(String entitiesResource, String method)
+<i>159</i>&nbsp;    {
+<b class="nc"><i>160</i>&nbsp;        this(entitiesResource, method, false);</b>
+<i>161</i>&nbsp;    }
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;    private CharInfo(String entitiesResource, String method, boolean internal)
+<b class="nc"><i>164</i>&nbsp;    {</b>
+<b class="nc"><i>165</i>&nbsp;        ResourceBundle entities = null;</b>
+<b class="nc"><i>166</i>&nbsp;        boolean noExtraEntities = true;</b>
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;        // Make various attempts to interpret the parameter as a properties
+<i>169</i>&nbsp;        // file or resource file, as follows:
+<i>170</i>&nbsp;        //
+<i>171</i>&nbsp;        //   1) attempt to load .properties file using ResourceBundle
+<i>172</i>&nbsp;        //   2) try using the class loader to find the specified file a resource
+<i>173</i>&nbsp;        //      file
+<i>174</i>&nbsp;        //   3) try treating the resource a URI
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;        try {
+<b class="nc"><i>177</i>&nbsp;            if (internal) {</b>
+<i>178</i>&nbsp;                // Load entity property files by using PropertyResourceBundle,
+<i>179</i>&nbsp;                // cause of security issure for applets
+<b class="nc"><i>180</i>&nbsp;                entities = PropertyResourceBundle.getBundle(entitiesResource);</b>
+<i>181</i>&nbsp;            } else {
+<b class="nc"><i>182</i>&nbsp;                ClassLoader cl = SecuritySupport.getContextClassLoader();</b>
+<b class="nc"><i>183</i>&nbsp;                if (cl != null) {</b>
+<b class="nc"><i>184</i>&nbsp;                    entities = PropertyResourceBundle.getBundle(entitiesResource,</b>
+<b class="nc"><i>185</i>&nbsp;                            Locale.getDefault(), cl);</b>
+<i>186</i>&nbsp;                }
+<i>187</i>&nbsp;            }
+<b class="nc"><i>188</i>&nbsp;        } catch (Exception e) {}</b>
+<i>189</i>&nbsp;
+<b class="nc"><i>190</i>&nbsp;        if (entities != null) {</b>
+<b class="nc"><i>191</i>&nbsp;            Enumeration keys = entities.getKeys();</b>
+<b class="nc"><i>192</i>&nbsp;            while (keys.hasMoreElements()){</b>
+<b class="nc"><i>193</i>&nbsp;                String name = (String) keys.nextElement();</b>
+<b class="nc"><i>194</i>&nbsp;                String value = entities.getString(name);</b>
+<b class="nc"><i>195</i>&nbsp;                int code = Integer.parseInt(value);</b>
+<b class="nc"><i>196</i>&nbsp;                defineEntity(name, (char) code);</b>
+<b class="nc"><i>197</i>&nbsp;                if (extraEntity(code))</b>
+<b class="nc"><i>198</i>&nbsp;                    noExtraEntities = false;</b>
+<b class="nc"><i>199</i>&nbsp;            }</b>
+<b class="nc"><i>200</i>&nbsp;            set(S_LINEFEED);</b>
+<b class="nc"><i>201</i>&nbsp;            set(S_CARRIAGERETURN);</b>
+<b class="nc"><i>202</i>&nbsp;        } else {</b>
+<b class="nc"><i>203</i>&nbsp;            InputStream is = null;</b>
+<b class="nc"><i>204</i>&nbsp;            String err = null;</b>
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;            // Load user specified resource file by using URL loading, it
+<i>207</i>&nbsp;            // requires a valid URI as parameter
+<i>208</i>&nbsp;            try {
+<b class="nc"><i>209</i>&nbsp;                if (internal) {</b>
+<b class="nc"><i>210</i>&nbsp;                    is = CharInfo.class.getResourceAsStream(entitiesResource);</b>
+<i>211</i>&nbsp;                } else {
+<b class="nc"><i>212</i>&nbsp;                    ClassLoader cl = SecuritySupport.getContextClassLoader();</b>
+<b class="nc"><i>213</i>&nbsp;                    if (cl != null) {</b>
+<i>214</i>&nbsp;                        try {
+<b class="nc"><i>215</i>&nbsp;                            is = cl.getResourceAsStream(entitiesResource);</b>
+<b class="nc"><i>216</i>&nbsp;                        } catch (Exception e) {</b>
+<b class="nc"><i>217</i>&nbsp;                            err = e.getMessage();</b>
+<b class="nc"><i>218</i>&nbsp;                        }</b>
+<i>219</i>&nbsp;                    }
+<i>220</i>&nbsp;
+<b class="nc"><i>221</i>&nbsp;                    if (is == null) {</b>
+<i>222</i>&nbsp;                        try {
+<b class="nc"><i>223</i>&nbsp;                            URL url = new URL(entitiesResource);</b>
+<b class="nc"><i>224</i>&nbsp;                            is = url.openStream();</b>
+<b class="nc"><i>225</i>&nbsp;                        } catch (Exception e) {</b>
+<b class="nc"><i>226</i>&nbsp;                            err = e.getMessage();</b>
+<b class="nc"><i>227</i>&nbsp;                        }</b>
+<i>228</i>&nbsp;                    }
+<i>229</i>&nbsp;                }
+<i>230</i>&nbsp;
+<b class="nc"><i>231</i>&nbsp;                if (is == null) {</b>
+<b class="nc"><i>232</i>&nbsp;                    throw new RuntimeException(</b>
+<b class="nc"><i>233</i>&nbsp;                        Utils.messages.createMessage(</b>
+<i>234</i>&nbsp;                            MsgKey.ER_RESOURCE_COULD_NOT_FIND,
+<i>235</i>&nbsp;                            new Object[] {entitiesResource, err}));
+<i>236</i>&nbsp;                }
+<i>237</i>&nbsp;
+<i>238</i>&nbsp;                // Fix Bugzilla#4000: force reading in UTF-8
+<i>239</i>&nbsp;                //  This creates the de facto standard that Xalan&#39;s resource
+<i>240</i>&nbsp;                //  files must be encoded in UTF-8. This should work in all
+<i>241</i>&nbsp;                // JVMs.
+<i>242</i>&nbsp;                //
+<i>243</i>&nbsp;                // %REVIEW% KNOWN ISSUE: IT FAILS IN MICROSOFT VJ++, which
+<i>244</i>&nbsp;                // didn&#39;t implement the UTF-8 encoding. Theoretically, we should
+<i>245</i>&nbsp;                // simply let it fail in that case, since the JVM is obviously
+<i>246</i>&nbsp;                // broken if it doesn&#39;t support such a basic standard.  But
+<i>247</i>&nbsp;                // since there are still some users attempting to use VJ++ for
+<i>248</i>&nbsp;                // development, we have dropped in a fallback which makes a
+<i>249</i>&nbsp;                // second attempt using the platform&#39;s default encoding. In VJ++
+<i>250</i>&nbsp;                // this is apparently ASCII, which is subset of UTF-8... and
+<i>251</i>&nbsp;                // since the strings we&#39;ll be reading here are also primarily
+<i>252</i>&nbsp;                // limited to the 7-bit ASCII range (at least, in English
+<i>253</i>&nbsp;                // versions of Xalan), this should work well enough to keep us
+<i>254</i>&nbsp;                // on the air until we&#39;re ready to officially decommit from
+<i>255</i>&nbsp;                // VJ++.
+<i>256</i>&nbsp;
+<i>257</i>&nbsp;                BufferedReader reader;
+<i>258</i>&nbsp;                try {
+<b class="nc"><i>259</i>&nbsp;                    reader = new BufferedReader(new InputStreamReader(is, &quot;UTF-8&quot;));</b>
+<b class="nc"><i>260</i>&nbsp;                } catch (UnsupportedEncodingException e) {</b>
+<b class="nc"><i>261</i>&nbsp;                    reader = new BufferedReader(new InputStreamReader(is));</b>
+<b class="nc"><i>262</i>&nbsp;                }</b>
+<i>263</i>&nbsp;
+<b class="nc"><i>264</i>&nbsp;                String line = reader.readLine();</b>
+<i>265</i>&nbsp;
+<b class="nc"><i>266</i>&nbsp;                while (line != null) {</b>
+<b class="nc"><i>267</i>&nbsp;                    if (line.length() == 0 || line.charAt(0) == &#39;#&#39;) {</b>
+<b class="nc"><i>268</i>&nbsp;                        line = reader.readLine();</b>
+<i>269</i>&nbsp;
+<b class="nc"><i>270</i>&nbsp;                        continue;</b>
+<i>271</i>&nbsp;                    }
+<i>272</i>&nbsp;
+<b class="nc"><i>273</i>&nbsp;                    int index = line.indexOf(&#39; &#39;);</b>
+<i>274</i>&nbsp;
+<b class="nc"><i>275</i>&nbsp;                    if (index &gt; 1) {</b>
+<b class="nc"><i>276</i>&nbsp;                        String name = line.substring(0, index);</b>
+<i>277</i>&nbsp;
+<b class="nc"><i>278</i>&nbsp;                        ++index;</b>
+<i>279</i>&nbsp;
+<b class="nc"><i>280</i>&nbsp;                        if (index &lt; line.length()) {</b>
+<b class="nc"><i>281</i>&nbsp;                            String value = line.substring(index);</b>
+<b class="nc"><i>282</i>&nbsp;                            index = value.indexOf(&#39; &#39;);</b>
+<i>283</i>&nbsp;
+<b class="nc"><i>284</i>&nbsp;                            if (index &gt; 0) {</b>
+<b class="nc"><i>285</i>&nbsp;                                value = value.substring(0, index);</b>
+<i>286</i>&nbsp;                            }
+<i>287</i>&nbsp;
+<b class="nc"><i>288</i>&nbsp;                            int code = Integer.parseInt(value);</b>
+<i>289</i>&nbsp;
+<b class="nc"><i>290</i>&nbsp;                            defineEntity(name, (char) code);</b>
+<b class="nc"><i>291</i>&nbsp;                            if (extraEntity(code))</b>
+<b class="nc"><i>292</i>&nbsp;                                noExtraEntities = false;</b>
+<i>293</i>&nbsp;                        }
+<i>294</i>&nbsp;                    }
+<i>295</i>&nbsp;
+<b class="nc"><i>296</i>&nbsp;                    line = reader.readLine();</b>
+<b class="nc"><i>297</i>&nbsp;                }</b>
+<i>298</i>&nbsp;
+<b class="nc"><i>299</i>&nbsp;                is.close();</b>
+<b class="nc"><i>300</i>&nbsp;                set(S_LINEFEED);</b>
+<b class="nc"><i>301</i>&nbsp;                set(S_CARRIAGERETURN);</b>
+<b class="nc"><i>302</i>&nbsp;            } catch (Exception e) {</b>
+<b class="nc"><i>303</i>&nbsp;                throw new RuntimeException(</b>
+<b class="nc"><i>304</i>&nbsp;                    Utils.messages.createMessage(</b>
+<i>305</i>&nbsp;                        MsgKey.ER_RESOURCE_COULD_NOT_LOAD,
+<i>306</i>&nbsp;                        new Object[] { entitiesResource,
+<b class="nc"><i>307</i>&nbsp;                                       e.toString(),</b>
+<i>308</i>&nbsp;                                       entitiesResource,
+<b class="nc"><i>309</i>&nbsp;                                       e.toString()}));</b>
+<i>310</i>&nbsp;            } finally {
+<b class="nc"><i>311</i>&nbsp;                if (is != null) {</b>
+<i>312</i>&nbsp;                    try {
+<b class="nc"><i>313</i>&nbsp;                        is.close();</b>
+<b class="nc"><i>314</i>&nbsp;                    } catch (Exception except) {}</b>
+<i>315</i>&nbsp;                }
+<i>316</i>&nbsp;            }
+<i>317</i>&nbsp;        }
+<i>318</i>&nbsp;
+<i>319</i>&nbsp;        /* initialize the array isCleanTextASCII[] with a cache of values
+<i>320</i>&nbsp;         * for use by ToStream.character(char[], int , int)
+<i>321</i>&nbsp;         * and the array isSpecialTextASCII[] with the opposite values
+<i>322</i>&nbsp;         * (all in the name of performance!)
+<i>323</i>&nbsp;         */
+<b class="nc"><i>324</i>&nbsp;        for (int ch = 0; ch &lt;ASCII_MAX; ch++)</b>
+<b class="nc"><i>325</i>&nbsp;        if((((0x20 &lt;= ch || (0x0A == ch || 0x0D == ch || 0x09 == ch)))</b>
+<b class="nc"><i>326</i>&nbsp;             &amp;&amp; (!get(ch))) || (&#39;&quot;&#39; == ch))</b>
+<i>327</i>&nbsp;        {
+<b class="nc"><i>328</i>&nbsp;            isCleanTextASCII[ch] = true;</b>
+<b class="nc"><i>329</i>&nbsp;            isSpecialTextASCII[ch] = false;</b>
+<i>330</i>&nbsp;        }
+<i>331</i>&nbsp;        else {
+<b class="nc"><i>332</i>&nbsp;            isCleanTextASCII[ch] = false;</b>
+<b class="nc"><i>333</i>&nbsp;            isSpecialTextASCII[ch] = true;</b>
+<i>334</i>&nbsp;        }
+<i>335</i>&nbsp;
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;
+<b class="nc"><i>338</i>&nbsp;        onlyQuotAmpLtGt = noExtraEntities;</b>
+<i>339</i>&nbsp;
+<i>340</i>&nbsp;        // initialize the array with a cache of the BitSet values
+<b class="nc"><i>341</i>&nbsp;        for (int i=0; i&lt;ASCII_MAX; i++)</b>
+<b class="nc"><i>342</i>&nbsp;            isSpecialAttrASCII[i] = get(i);</b>
+<i>343</i>&nbsp;
+<i>344</i>&nbsp;        /* Now that we&#39;ve used get(ch) just above to initialize the
+<i>345</i>&nbsp;         * two arrays we will change by adding a tab to the set of
+<i>346</i>&nbsp;         * special chars for XML (but not HTML!).
+<i>347</i>&nbsp;         * We do this because a tab is always a
+<i>348</i>&nbsp;         * special character in an XML attribute,
+<i>349</i>&nbsp;         * but only a special character in XML text
+<i>350</i>&nbsp;         * if it has an entity defined for it.
+<i>351</i>&nbsp;         * This is the reason for this delay.
+<i>352</i>&nbsp;         */
+<b class="nc"><i>353</i>&nbsp;        if (Method.XML.equals(method))</b>
+<i>354</i>&nbsp;        {
+<b class="nc"><i>355</i>&nbsp;            isSpecialAttrASCII[S_HORIZONAL_TAB] = true;</b>
+<i>356</i>&nbsp;        }
+<i>357</i>&nbsp;    }
+<i>358</i>&nbsp;
+<i>359</i>&nbsp;    /**
+<i>360</i>&nbsp;     * Defines a new character reference. The reference&#39;s name and value are
+<i>361</i>&nbsp;     * supplied. Nothing happens if the character reference is already defined.
+<i>362</i>&nbsp;     * &lt;p&gt;Unlike internal entities, character references are a string to single
+<i>363</i>&nbsp;     * character mapping. They are used to map non-ASCII characters both on
+<i>364</i>&nbsp;     * parsing and printing, primarily for HTML documents. &#39;&amp;lt;amp;&#39; is an
+<i>365</i>&nbsp;     * example of a character reference.&lt;/p&gt;
+<i>366</i>&nbsp;     *
+<i>367</i>&nbsp;     * @param name The entity&#39;s name
+<i>368</i>&nbsp;     * @param value The entity&#39;s value
+<i>369</i>&nbsp;     */
+<i>370</i>&nbsp;    private void defineEntity(String name, char value)
+<i>371</i>&nbsp;    {
+<b class="nc"><i>372</i>&nbsp;        StringBuilder sb = new StringBuilder(&quot;&amp;&quot;);</b>
+<b class="nc"><i>373</i>&nbsp;        sb.append(name);</b>
+<b class="nc"><i>374</i>&nbsp;        sb.append(&#39;;&#39;);</b>
+<b class="nc"><i>375</i>&nbsp;        String entityString = sb.toString();</b>
+<i>376</i>&nbsp;
+<b class="nc"><i>377</i>&nbsp;        defineChar2StringMapping(entityString, value);</b>
+<i>378</i>&nbsp;    }
+<i>379</i>&nbsp;
+<i>380</i>&nbsp;    /**
+<i>381</i>&nbsp;     * Map a character to a String. For example given
+<i>382</i>&nbsp;     * the character &#39;&gt;&#39; this method would return the fully decorated
+<i>383</i>&nbsp;     * entity name &quot;&amp;lt;&quot;.
+<i>384</i>&nbsp;     * Strings for entity references are loaded from a properties file,
+<i>385</i>&nbsp;     * but additional mappings defined through calls to defineChar2String()
+<i>386</i>&nbsp;     * are possible. Such entity reference mappings could be over-ridden.
+<i>387</i>&nbsp;     *
+<i>388</i>&nbsp;     * This is reusing a stored key object, in an effort to avoid
+<i>389</i>&nbsp;     * heap activity. Unfortunately, that introduces a threading risk.
+<i>390</i>&nbsp;     * Simplest fix for now is to make it a synchronized method, or to give
+<i>391</i>&nbsp;     * up the reuse; I see very little performance difference between them.
+<i>392</i>&nbsp;     * Long-term solution would be to replace the hashtable with a sparse array
+<i>393</i>&nbsp;     * keyed directly from the character&#39;s integer value; see DTM&#39;s
+<i>394</i>&nbsp;     * string pool for a related solution.
+<i>395</i>&nbsp;     *
+<i>396</i>&nbsp;     * @param value The character that should be resolved to
+<i>397</i>&nbsp;     * a String, e.g. resolve &#39;&gt;&#39; to  &quot;&amp;lt;&quot;.
+<i>398</i>&nbsp;     *
+<i>399</i>&nbsp;     * @return The String that the character is mapped to, or null if not found.
+<i>400</i>&nbsp;     * @xsl.usage internal
+<i>401</i>&nbsp;     */
+<i>402</i>&nbsp;    String getOutputStringForChar(char value)
+<i>403</i>&nbsp;    {
+<b class="nc"><i>404</i>&nbsp;        CharKey charKey = new CharKey();</b>
+<b class="nc"><i>405</i>&nbsp;        charKey.setChar(value);</b>
+<b class="nc"><i>406</i>&nbsp;        return (String) m_charToString.get(charKey);</b>
+<i>407</i>&nbsp;    }
+<i>408</i>&nbsp;
+<i>409</i>&nbsp;    /**
+<i>410</i>&nbsp;     * Tell if the character argument that is from
+<i>411</i>&nbsp;     * an attribute value should have special treatment.
+<i>412</i>&nbsp;     *
+<i>413</i>&nbsp;     * @param value the value of a character that is in an attribute value
+<i>414</i>&nbsp;     * @return true if the character should have any special treatment,
+<i>415</i>&nbsp;     * such as when writing out attribute values,
+<i>416</i>&nbsp;     * or entity references.
+<i>417</i>&nbsp;     * @xsl.usage internal
+<i>418</i>&nbsp;     */
+<i>419</i>&nbsp;    final boolean isSpecialAttrChar(int value)
+<i>420</i>&nbsp;    {
+<i>421</i>&nbsp;        // for performance try the values in the boolean array first,
+<i>422</i>&nbsp;        // this is faster access than the BitSet for common ASCII values
+<i>423</i>&nbsp;
+<b class="nc"><i>424</i>&nbsp;        if (value &lt; ASCII_MAX)</b>
+<b class="nc"><i>425</i>&nbsp;            return isSpecialAttrASCII[value];</b>
+<i>426</i>&nbsp;
+<i>427</i>&nbsp;        // rather than java.util.BitSet, our private
+<i>428</i>&nbsp;        // implementation is faster (and less general).
+<b class="nc"><i>429</i>&nbsp;        return get(value);</b>
+<i>430</i>&nbsp;    }
+<i>431</i>&nbsp;
+<i>432</i>&nbsp;    /**
+<i>433</i>&nbsp;     * Tell if the character argument that is from a
+<i>434</i>&nbsp;     * text node should have special treatment.
+<i>435</i>&nbsp;     *
+<i>436</i>&nbsp;     * @param value the value of a character that is in a text node
+<i>437</i>&nbsp;     * @return true if the character should have any special treatment,
+<i>438</i>&nbsp;     * such as when writing out attribute values,
+<i>439</i>&nbsp;     * or entity references.
+<i>440</i>&nbsp;     * @xsl.usage internal
+<i>441</i>&nbsp;     */
+<i>442</i>&nbsp;    final boolean isSpecialTextChar(int value)
+<i>443</i>&nbsp;    {
+<i>444</i>&nbsp;        // for performance try the values in the boolean array first,
+<i>445</i>&nbsp;        // this is faster access than the BitSet for common ASCII values
+<i>446</i>&nbsp;
+<b class="nc"><i>447</i>&nbsp;        if (value &lt; ASCII_MAX)</b>
+<b class="nc"><i>448</i>&nbsp;            return isSpecialTextASCII[value];</b>
+<i>449</i>&nbsp;
+<i>450</i>&nbsp;        // rather than java.util.BitSet, our private
+<i>451</i>&nbsp;        // implementation is faster (and less general).
+<b class="nc"><i>452</i>&nbsp;        return get(value);</b>
+<i>453</i>&nbsp;    }
+<i>454</i>&nbsp;
+<i>455</i>&nbsp;    /**
+<i>456</i>&nbsp;     * This method is used to determine if an ASCII character in
+<i>457</i>&nbsp;     * a text node (not an attribute value) is &quot;clean&quot;.
+<i>458</i>&nbsp;     * @param value the character to check (0 to 127).
+<i>459</i>&nbsp;     * @return true if the character can go to the writer as-is
+<i>460</i>&nbsp;     * @xsl.usage internal
+<i>461</i>&nbsp;     */
+<i>462</i>&nbsp;    final boolean isTextASCIIClean(int value)
+<i>463</i>&nbsp;    {
+<b class="nc"><i>464</i>&nbsp;        return isCleanTextASCII[value];</b>
+<i>465</i>&nbsp;    }
+<i>466</i>&nbsp;
+<i>467</i>&nbsp;
+<i>468</i>&nbsp;    /**
+<i>469</i>&nbsp;     * Read an internal resource file that describes the mapping of
+<i>470</i>&nbsp;     * characters to entity references; Construct a CharInfo object.
+<i>471</i>&nbsp;     *
+<i>472</i>&nbsp;     * @param entitiesFileName Name of entities resource file that should
+<i>473</i>&nbsp;     * be loaded, which describes the mapping of characters to entity references.
+<i>474</i>&nbsp;     * @param method the output method type, which should be one of &quot;xml&quot;, &quot;html&quot;, and &quot;text&quot;.
+<i>475</i>&nbsp;     * @return an instance of CharInfo
+<i>476</i>&nbsp;     *
+<i>477</i>&nbsp;     * @xsl.usage internal
+<i>478</i>&nbsp;     */
+<i>479</i>&nbsp;    static CharInfo getCharInfoInternal(String entitiesFileName, String method)
+<i>480</i>&nbsp;    {
+<b class="nc"><i>481</i>&nbsp;        CharInfo charInfo = (CharInfo) m_getCharInfoCache.get(entitiesFileName);</b>
+<b class="nc"><i>482</i>&nbsp;        if (charInfo != null) {</b>
+<b class="nc"><i>483</i>&nbsp;            return charInfo;</b>
+<i>484</i>&nbsp;        }
+<i>485</i>&nbsp;
+<b class="nc"><i>486</i>&nbsp;        charInfo = new CharInfo(entitiesFileName, method, true);</b>
+<b class="nc"><i>487</i>&nbsp;        m_getCharInfoCache.put(entitiesFileName, charInfo);</b>
+<b class="nc"><i>488</i>&nbsp;        return charInfo;</b>
+<i>489</i>&nbsp;    }
+<i>490</i>&nbsp;
+<i>491</i>&nbsp;    /**
+<i>492</i>&nbsp;     * Constructs a CharInfo object using the following process to try reading
+<i>493</i>&nbsp;     * the entitiesFileName parameter:
+<i>494</i>&nbsp;     *
+<i>495</i>&nbsp;     *   1) attempt to load it as a ResourceBundle
+<i>496</i>&nbsp;     *   2) try using the class loader to find the specified file
+<i>497</i>&nbsp;     *   3) try opening it as an URI
+<i>498</i>&nbsp;     *
+<i>499</i>&nbsp;     * In case of 2 and 3, the resource file must be encoded in UTF-8 and have the
+<i>500</i>&nbsp;     * following format:
+<i>501</i>&nbsp;     * &lt;pre&gt;
+<i>502</i>&nbsp;     * # First char # is a comment
+<i>503</i>&nbsp;     * Entity numericValue
+<i>504</i>&nbsp;     * quot 34
+<i>505</i>&nbsp;     * amp 38
+<i>506</i>&nbsp;     * &lt;/pre&gt;
+<i>507</i>&nbsp;     *
+<i>508</i>&nbsp;     * @param entitiesFileName Name of entities resource file that should
+<i>509</i>&nbsp;     * be loaded, which describes the mapping of characters to entity references.
+<i>510</i>&nbsp;     * @param method the output method type, which should be one of &quot;xml&quot;, &quot;html&quot;, and &quot;text&quot;.
+<i>511</i>&nbsp;     * @return an instance of CharInfo
+<i>512</i>&nbsp;     */
+<i>513</i>&nbsp;    static CharInfo getCharInfo(String entitiesFileName, String method)
+<i>514</i>&nbsp;    {
+<i>515</i>&nbsp;        try {
+<b class="nc"><i>516</i>&nbsp;            return new CharInfo(entitiesFileName, method, false);</b>
+<b class="nc"><i>517</i>&nbsp;        } catch (Exception e) {}</b>
+<i>518</i>&nbsp;
+<i>519</i>&nbsp;        String absoluteEntitiesFileName;
+<i>520</i>&nbsp;
+<b class="nc"><i>521</i>&nbsp;        if (entitiesFileName.indexOf(&#39;:&#39;) &lt; 0) {</b>
+<b class="nc"><i>522</i>&nbsp;            absoluteEntitiesFileName =</b>
+<b class="nc"><i>523</i>&nbsp;                SystemIDResolver.getAbsoluteURIFromRelative(entitiesFileName);</b>
+<i>524</i>&nbsp;        } else {
+<i>525</i>&nbsp;            try {
+<b class="nc"><i>526</i>&nbsp;                absoluteEntitiesFileName =</b>
+<b class="nc"><i>527</i>&nbsp;                    SystemIDResolver.getAbsoluteURI(entitiesFileName, null);</b>
+<b class="nc"><i>528</i>&nbsp;            } catch (TransformerException te) {</b>
+<b class="nc"><i>529</i>&nbsp;                throw new WrappedRuntimeException(te);</b>
+<b class="nc"><i>530</i>&nbsp;            }</b>
+<i>531</i>&nbsp;        }
+<i>532</i>&nbsp;
+<b class="nc"><i>533</i>&nbsp;        return new CharInfo(absoluteEntitiesFileName, method, false);</b>
+<i>534</i>&nbsp;    }
+<i>535</i>&nbsp;
+<i>536</i>&nbsp;    /** Table of user-specified char infos. */
+<b class="nc"><i>537</i>&nbsp;    private static HashMap m_getCharInfoCache = new HashMap();</b>
+<i>538</i>&nbsp;
+<i>539</i>&nbsp;    /**
+<i>540</i>&nbsp;     * Returns the array element holding the bit value for the
+<i>541</i>&nbsp;     * given integer
+<i>542</i>&nbsp;     * @param i the integer that might be in the set of integers
+<i>543</i>&nbsp;     *
+<i>544</i>&nbsp;     */
+<i>545</i>&nbsp;    private static int arrayIndex(int i) {
+<b class="nc"><i>546</i>&nbsp;        return (i &gt;&gt; SHIFT_PER_WORD);</b>
+<i>547</i>&nbsp;    }
+<i>548</i>&nbsp;
+<i>549</i>&nbsp;    /**
+<i>550</i>&nbsp;     * For a given integer in the set it returns the single bit
+<i>551</i>&nbsp;     * value used within a given word that represents whether
+<i>552</i>&nbsp;     * the integer is in the set or not.
+<i>553</i>&nbsp;     */
+<i>554</i>&nbsp;    private static int bit(int i) {
+<b class="nc"><i>555</i>&nbsp;        int ret = (1 &lt;&lt; (i &amp; LOW_ORDER_BITMASK));</b>
+<b class="nc"><i>556</i>&nbsp;        return ret;</b>
+<i>557</i>&nbsp;    }
+<i>558</i>&nbsp;
+<i>559</i>&nbsp;    /**
+<i>560</i>&nbsp;     * Creates a new empty set of integers (characters)
+<i>561</i>&nbsp;     * @param max the maximum integer to be in the set.
+<i>562</i>&nbsp;     */
+<i>563</i>&nbsp;    private int[] createEmptySetOfIntegers(int max) {
+<b class="nc"><i>564</i>&nbsp;        firstWordNotUsed = 0; // an optimization</b>
+<i>565</i>&nbsp;
+<b class="nc"><i>566</i>&nbsp;        int[] arr = new int[arrayIndex(max - 1) + 1];</b>
+<b class="nc"><i>567</i>&nbsp;            return arr;</b>
+<i>568</i>&nbsp;
+<i>569</i>&nbsp;    }
+<i>570</i>&nbsp;
+<i>571</i>&nbsp;    /**
+<i>572</i>&nbsp;     * Adds the integer (character) to the set of integers.
+<i>573</i>&nbsp;     * @param i the integer to add to the set, valid values are
+<i>574</i>&nbsp;     * 0, 1, 2 ... up to the maximum that was specified at
+<i>575</i>&nbsp;     * the creation of the set.
+<i>576</i>&nbsp;     */
+<i>577</i>&nbsp;    private final void set(int i) {
+<b class="nc"><i>578</i>&nbsp;        setASCIIdirty(i);</b>
+<i>579</i>&nbsp;
+<b class="nc"><i>580</i>&nbsp;        int j = (i &gt;&gt; SHIFT_PER_WORD); // this word is used</b>
+<b class="nc"><i>581</i>&nbsp;        int k = j + 1;</b>
+<i>582</i>&nbsp;
+<b class="nc"><i>583</i>&nbsp;        if(firstWordNotUsed &lt; k) // for optimization purposes.</b>
+<b class="nc"><i>584</i>&nbsp;            firstWordNotUsed = k;</b>
+<i>585</i>&nbsp;
+<b class="nc"><i>586</i>&nbsp;        array_of_bits[j] |= (1 &lt;&lt; (i &amp; LOW_ORDER_BITMASK));</b>
+<i>587</i>&nbsp;    }
+<i>588</i>&nbsp;
+<i>589</i>&nbsp;
+<i>590</i>&nbsp;    /**
+<i>591</i>&nbsp;     * Return true if the integer (character)is in the set of integers.
+<i>592</i>&nbsp;     *
+<i>593</i>&nbsp;     * This implementation uses an array of integers with 32 bits per
+<i>594</i>&nbsp;     * integer.  If a bit is set to 1 the corresponding integer is
+<i>595</i>&nbsp;     * in the set of integers.
+<i>596</i>&nbsp;     *
+<i>597</i>&nbsp;     * @param i an integer that is tested to see if it is the
+<i>598</i>&nbsp;     * set of integers, or not.
+<i>599</i>&nbsp;     */
+<i>600</i>&nbsp;    private final boolean get(int i) {
+<i>601</i>&nbsp;
+<b class="nc"><i>602</i>&nbsp;        boolean in_the_set = false;</b>
+<b class="nc"><i>603</i>&nbsp;        int j = (i &gt;&gt; SHIFT_PER_WORD); // wordIndex(i)</b>
+<i>604</i>&nbsp;        // an optimization here, ... a quick test to see
+<i>605</i>&nbsp;        // if this integer is beyond any of the words in use
+<b class="nc"><i>606</i>&nbsp;        if(j &lt; firstWordNotUsed)</b>
+<b class="nc"><i>607</i>&nbsp;            in_the_set = (array_of_bits[j] &amp;</b>
+<i>608</i>&nbsp;                          (1 &lt;&lt; (i &amp; LOW_ORDER_BITMASK))
+<i>609</i>&nbsp;            ) != 0;  // 0L for 64 bit words
+<b class="nc"><i>610</i>&nbsp;        return in_the_set;</b>
+<i>611</i>&nbsp;    }
+<i>612</i>&nbsp;
+<i>613</i>&nbsp;    // record if there are any entities other than
+<i>614</i>&nbsp;    // quot, amp, lt, gt  (probably user defined)
+<i>615</i>&nbsp;    /**
+<i>616</i>&nbsp;     * @return true if the entity
+<i>617</i>&nbsp;     * @param code The value of the character that has an entity defined
+<i>618</i>&nbsp;     * for it.
+<i>619</i>&nbsp;     */
+<i>620</i>&nbsp;    private boolean extraEntity(int entityValue)
+<i>621</i>&nbsp;    {
+<b class="nc"><i>622</i>&nbsp;        boolean extra = false;</b>
+<b class="nc"><i>623</i>&nbsp;        if (entityValue &lt; 128)</b>
+<i>624</i>&nbsp;        {
+<b class="nc"><i>625</i>&nbsp;            switch (entityValue)</b>
+<i>626</i>&nbsp;            {
+<i>627</i>&nbsp;                case 34 : // quot
+<i>628</i>&nbsp;                case 38 : // amp
+<i>629</i>&nbsp;                case 60 : // lt
+<i>630</i>&nbsp;                case 62 : // gt
+<b class="nc"><i>631</i>&nbsp;                    break;</b>
+<i>632</i>&nbsp;                default : // other entity in range 0 to 127
+<b class="nc"><i>633</i>&nbsp;                    extra = true;</b>
+<i>634</i>&nbsp;            }
+<i>635</i>&nbsp;        }
+<b class="nc"><i>636</i>&nbsp;        return extra;</b>
+<i>637</i>&nbsp;    }
+<i>638</i>&nbsp;
+<i>639</i>&nbsp;    /**
+<i>640</i>&nbsp;     * If the character is a printable ASCII character then
+<i>641</i>&nbsp;     * mark it as not clean and needing replacement with
+<i>642</i>&nbsp;     * a String on output.
+<i>643</i>&nbsp;     * @param ch
+<i>644</i>&nbsp;     */
+<i>645</i>&nbsp;    private void setASCIIdirty(int j)
+<i>646</i>&nbsp;    {
+<b class="nc"><i>647</i>&nbsp;        if (0 &lt;= j &amp;&amp; j &lt; ASCII_MAX)</b>
+<i>648</i>&nbsp;        {
+<b class="nc"><i>649</i>&nbsp;            isCleanTextASCII[j] = false;</b>
+<b class="nc"><i>650</i>&nbsp;            isSpecialTextASCII[j] = true;</b>
+<i>651</i>&nbsp;        }
+<i>652</i>&nbsp;    }
+<i>653</i>&nbsp;
+<i>654</i>&nbsp;    /**
+<i>655</i>&nbsp;     * If the character is a printable ASCII character then
+<i>656</i>&nbsp;     * mark it as and not needing replacement with
+<i>657</i>&nbsp;     * a String on output.
+<i>658</i>&nbsp;     * @param ch
+<i>659</i>&nbsp;     */
+<i>660</i>&nbsp;    private void setASCIIclean(int j)
+<i>661</i>&nbsp;    {
+<b class="nc"><i>662</i>&nbsp;        if (0 &lt;= j &amp;&amp; j &lt; ASCII_MAX)</b>
+<i>663</i>&nbsp;        {
+<b class="nc"><i>664</i>&nbsp;            isCleanTextASCII[j] = true;</b>
+<b class="nc"><i>665</i>&nbsp;            isSpecialTextASCII[j] = false;</b>
+<i>666</i>&nbsp;        }
+<i>667</i>&nbsp;    }
+<i>668</i>&nbsp;
+<i>669</i>&nbsp;    private void defineChar2StringMapping(String outputString, char inputChar)
+<i>670</i>&nbsp;    {
+<b class="nc"><i>671</i>&nbsp;        CharKey character = new CharKey(inputChar);</b>
+<b class="nc"><i>672</i>&nbsp;        m_charToString.put(character, outputString);</b>
+<b class="nc"><i>673</i>&nbsp;        set(inputChar);</b>
+<i>674</i>&nbsp;    }
+<i>675</i>&nbsp;
+<i>676</i>&nbsp;    /**
+<i>677</i>&nbsp;     * Simple class for fast lookup of char values, when used with
+<i>678</i>&nbsp;     * hashtables.  You can set the char, then use it as a key.
+<i>679</i>&nbsp;     *
+<i>680</i>&nbsp;     * This class is a copy of the one in com.sun.org.apache.xml.internal.utils.
+<i>681</i>&nbsp;     * It exists to cut the serializers dependancy on that package.
+<i>682</i>&nbsp;     *
+<i>683</i>&nbsp;     * @xsl.usage internal
+<i>684</i>&nbsp;     */
+<i>685</i>&nbsp;    private static class CharKey extends Object
+<i>686</i>&nbsp;    {
+<i>687</i>&nbsp;
+<i>688</i>&nbsp;      /** String value          */
+<i>689</i>&nbsp;      private char m_char;
+<i>690</i>&nbsp;
+<i>691</i>&nbsp;      /**
+<i>692</i>&nbsp;       * Constructor CharKey
+<i>693</i>&nbsp;       *
+<i>694</i>&nbsp;       * @param key char value of this object.
+<i>695</i>&nbsp;       */
+<i>696</i>&nbsp;      public CharKey(char key)
+<b class="nc"><i>697</i>&nbsp;      {</b>
+<b class="nc"><i>698</i>&nbsp;        m_char = key;</b>
+<i>699</i>&nbsp;      }
+<i>700</i>&nbsp;
+<i>701</i>&nbsp;      /**
+<i>702</i>&nbsp;       * Default constructor for a CharKey.
+<i>703</i>&nbsp;       *
+<i>704</i>&nbsp;       * @param key char value of this object.
+<i>705</i>&nbsp;       */
+<i>706</i>&nbsp;      public CharKey()
+<b class="nc"><i>707</i>&nbsp;      {</b>
+<i>708</i>&nbsp;      }
+<i>709</i>&nbsp;
+<i>710</i>&nbsp;      /**
+<i>711</i>&nbsp;       * Get the hash value of the character.
+<i>712</i>&nbsp;       *
+<i>713</i>&nbsp;       * @return hash value of the character.
+<i>714</i>&nbsp;       */
+<i>715</i>&nbsp;      public final void setChar(char c)
+<i>716</i>&nbsp;      {
+<b class="nc"><i>717</i>&nbsp;        m_char = c;</b>
+<i>718</i>&nbsp;      }
+<i>719</i>&nbsp;
+<i>720</i>&nbsp;
+<i>721</i>&nbsp;
+<i>722</i>&nbsp;      /**
+<i>723</i>&nbsp;       * Get the hash value of the character.
+<i>724</i>&nbsp;       *
+<i>725</i>&nbsp;       * @return hash value of the character.
+<i>726</i>&nbsp;       */
+<i>727</i>&nbsp;      public final int hashCode()
+<i>728</i>&nbsp;      {
+<b class="nc"><i>729</i>&nbsp;        return (int)m_char;</b>
+<i>730</i>&nbsp;      }
+<i>731</i>&nbsp;
+<i>732</i>&nbsp;      /**
+<i>733</i>&nbsp;       * Override of equals() for this object
+<i>734</i>&nbsp;       *
+<i>735</i>&nbsp;       * @param obj to compare to
+<i>736</i>&nbsp;       *
+<i>737</i>&nbsp;       * @return True if this object equals this string value
+<i>738</i>&nbsp;       */
+<i>739</i>&nbsp;      public final boolean equals(Object obj)
+<i>740</i>&nbsp;      {
+<b class="nc"><i>741</i>&nbsp;        return ((CharKey)obj).m_char == m_char;</b>
+<i>742</i>&nbsp;      }
+<i>743</i>&nbsp;    }
+<i>744</i>&nbsp;
+<i>745</i>&nbsp;
+<i>746</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,348 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SingleObjectMap</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.corba.se.impl.oa.poa</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SingleObjectMap (com.sun.corba.se.impl.oa.poa)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SingleObjectMap</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 1997, 2003, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; *
+<i>5</i>&nbsp; *
+<i>6</i>&nbsp; *
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; *
+<i>9</i>&nbsp; *
+<i>10</i>&nbsp; *
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; *
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; *
+<i>17</i>&nbsp; *
+<i>18</i>&nbsp; *
+<i>19</i>&nbsp; *
+<i>20</i>&nbsp; *
+<i>21</i>&nbsp; *
+<i>22</i>&nbsp; *
+<i>23</i>&nbsp; *
+<i>24</i>&nbsp; */
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;package com.sun.corba.se.impl.oa.poa;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import java.util.Set ;
+<i>29</i>&nbsp;import java.util.HashSet ;
+<i>30</i>&nbsp;import java.util.Map ;
+<i>31</i>&nbsp;import java.util.HashMap ;
+<i>32</i>&nbsp;import java.util.Iterator ;
+<i>33</i>&nbsp;import java.util.Vector ;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import org.omg.PortableServer.Servant ;
+<i>36</i>&nbsp;import org.omg.PortableServer.POAPackage.WrongPolicy ;
+<i>37</i>&nbsp;import org.omg.CORBA.INTERNAL ;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**  The ActiveObjectMap maintains associations between servants and
+<i>40</i>&nbsp; * their keys.  There are two variants, to support whether or not
+<i>41</i>&nbsp; * multiple IDs per servant are allowed.  This class suppots bidirectional
+<i>42</i>&nbsp; * traversal of the key-servant association.  Access to an instance of this
+<i>43</i>&nbsp; * class is serialized by the POA mutex.
+<i>44</i>&nbsp; */
+<i>45</i>&nbsp;public abstract class ActiveObjectMap
+<i>46</i>&nbsp;{
+<i>47</i>&nbsp;    public static class Key {
+<i>48</i>&nbsp;        public byte[] id;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;        Key(byte[] id) {
+<i>51</i>&nbsp;            this.id = id;
+<i>52</i>&nbsp;        }
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;        public String toString() {
+<i>55</i>&nbsp;            StringBuffer buffer = new StringBuffer();
+<i>56</i>&nbsp;            for(int i = 0; i &lt; id.length; i++) {
+<i>57</i>&nbsp;                buffer.append(Integer.toString((int) id[i], 16));
+<i>58</i>&nbsp;                if (i != id.length-1)
+<i>59</i>&nbsp;                    buffer.append(&quot;:&quot;);
+<i>60</i>&nbsp;            }
+<i>61</i>&nbsp;            return buffer.toString();
+<i>62</i>&nbsp;        }
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;        public boolean equals(java.lang.Object key) {
+<i>65</i>&nbsp;            if (!(key instanceof Key))
+<i>66</i>&nbsp;                return false;
+<i>67</i>&nbsp;            Key k = (Key) key;
+<i>68</i>&nbsp;            if (k.id.length != this.id.length)
+<i>69</i>&nbsp;                return false;
+<i>70</i>&nbsp;            for(int i = 0; i &lt; this.id.length; i++)
+<i>71</i>&nbsp;                if (this.id[i] != k.id[i])
+<i>72</i>&nbsp;                    return false;
+<i>73</i>&nbsp;            return true;
+<i>74</i>&nbsp;        }
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;        // Use the same hash function as for String
+<i>77</i>&nbsp;        public int hashCode() {
+<i>78</i>&nbsp;            int h = 0;
+<i>79</i>&nbsp;            for (int i = 0; i &lt; id.length; i++)
+<i>80</i>&nbsp;                h = 31*h + id[i];
+<i>81</i>&nbsp;            return h;
+<i>82</i>&nbsp;        }
+<i>83</i>&nbsp;    }
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    protected POAImpl poa ;
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    protected ActiveObjectMap( POAImpl poa )
+<i>88</i>&nbsp;    {
+<i>89</i>&nbsp;        this.poa = poa ;
+<i>90</i>&nbsp;    }
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;    public static ActiveObjectMap create( POAImpl poa, boolean multipleIDsAllowed )
+<i>93</i>&nbsp;    {
+<i>94</i>&nbsp;        if (multipleIDsAllowed)
+<i>95</i>&nbsp;            return new MultipleObjectMap( poa ) ;
+<i>96</i>&nbsp;        else
+<i>97</i>&nbsp;            return new SingleObjectMap(poa ) ;
+<i>98</i>&nbsp;    }
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;    private Map keyToEntry = new HashMap() ;     // Map&lt; Key, AOMEntry &gt;
+<i>101</i>&nbsp;    private Map entryToServant = new HashMap() ; // Map&lt; AOMEntry, Servant &gt;
+<i>102</i>&nbsp;    private Map servantToEntry = new HashMap() ; // Map&lt; Servant, AOMEntry &gt;
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    public final boolean contains(Servant value)
+<i>105</i>&nbsp;    {
+<i>106</i>&nbsp;        return servantToEntry.containsKey( value ) ;
+<i>107</i>&nbsp;    }
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    public final boolean containsKey(Key key)
+<i>110</i>&nbsp;    {
+<i>111</i>&nbsp;        return keyToEntry.containsKey(key);
+<i>112</i>&nbsp;    }
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;    /** get Returbs the entry assigned to the key, or creates a new
+<i>115</i>&nbsp;    * entry in state INVALID if none is present.
+<i>116</i>&nbsp;    */
+<i>117</i>&nbsp;    public final AOMEntry get(Key key)
+<i>118</i>&nbsp;    {
+<i>119</i>&nbsp;        AOMEntry result = (AOMEntry)keyToEntry.get(key);
+<i>120</i>&nbsp;        if (result == null) {
+<i>121</i>&nbsp;            result = new AOMEntry( poa ) ;
+<i>122</i>&nbsp;            putEntry( key, result ) ;
+<i>123</i>&nbsp;        }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;        return result ;
+<i>126</i>&nbsp;    }
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;    public final Servant getServant( AOMEntry entry )
+<i>129</i>&nbsp;    {
+<i>130</i>&nbsp;        return (Servant)entryToServant.get( entry ) ;
+<i>131</i>&nbsp;    }
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;    public abstract Key getKey(AOMEntry value) throws WrongPolicy ;
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;    public Key getKey(Servant value) throws WrongPolicy
+<i>136</i>&nbsp;    {
+<i>137</i>&nbsp;        AOMEntry entry = (AOMEntry)servantToEntry.get( value ) ;
+<i>138</i>&nbsp;        return getKey( entry ) ;
+<i>139</i>&nbsp;    }
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;    protected void putEntry( Key key, AOMEntry value )
+<i>142</i>&nbsp;    {
+<i>143</i>&nbsp;        keyToEntry.put( key, value ) ;
+<i>144</i>&nbsp;    }
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;    public final void putServant( Servant servant, AOMEntry value )
+<i>147</i>&nbsp;    {
+<i>148</i>&nbsp;        entryToServant.put( value, servant ) ;
+<i>149</i>&nbsp;        servantToEntry.put( servant, value ) ;
+<i>150</i>&nbsp;    }
+<i>151</i>&nbsp;
+<i>152</i>&nbsp;    protected abstract void removeEntry( AOMEntry entry, Key key ) ;
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;    public final void remove( Key key )
+<i>155</i>&nbsp;    {
+<i>156</i>&nbsp;        AOMEntry entry = (AOMEntry)keyToEntry.remove( key ) ;
+<i>157</i>&nbsp;        Servant servant = (Servant)entryToServant.remove( entry ) ;
+<i>158</i>&nbsp;        if (servant != null)
+<i>159</i>&nbsp;            servantToEntry.remove( servant ) ;
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;        removeEntry( entry, key ) ;
+<i>162</i>&nbsp;    }
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;    public abstract boolean hasMultipleIDs(AOMEntry value) ;
+<i>165</i>&nbsp;
+<i>166</i>&nbsp;    protected  void clear()
+<i>167</i>&nbsp;    {
+<i>168</i>&nbsp;        keyToEntry.clear();
+<i>169</i>&nbsp;    }
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;    public final Set keySet()
+<i>172</i>&nbsp;    {
+<i>173</i>&nbsp;        return keyToEntry.keySet() ;
+<i>174</i>&nbsp;    }
+<i>175</i>&nbsp;}
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;class SingleObjectMap extends ActiveObjectMap
+<i>178</i>&nbsp;{
+<b class="nc"><i>179</i>&nbsp;    private Map entryToKey = new HashMap() ;    // Map&lt; AOMEntry, Key &gt;</b>
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;    public SingleObjectMap( POAImpl poa )
+<i>182</i>&nbsp;    {
+<b class="nc"><i>183</i>&nbsp;        super( poa ) ;</b>
+<i>184</i>&nbsp;    }
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;    public  Key getKey(AOMEntry value) throws WrongPolicy
+<i>187</i>&nbsp;    {
+<b class="nc"><i>188</i>&nbsp;        return (Key)entryToKey.get( value ) ;</b>
+<i>189</i>&nbsp;    }
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;    protected void putEntry(Key key, AOMEntry value)
+<i>192</i>&nbsp;    {
+<b class="nc"><i>193</i>&nbsp;        super.putEntry( key, value);</b>
+<i>194</i>&nbsp;
+<b class="nc"><i>195</i>&nbsp;        entryToKey.put( value, key ) ;</b>
+<i>196</i>&nbsp;    }
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;    public  boolean hasMultipleIDs(AOMEntry value)
+<i>199</i>&nbsp;    {
+<b class="nc"><i>200</i>&nbsp;        return false;</b>
+<i>201</i>&nbsp;    }
+<i>202</i>&nbsp;
+<i>203</i>&nbsp;    // This case does not need the key.
+<i>204</i>&nbsp;    protected void removeEntry(AOMEntry entry, Key key)
+<i>205</i>&nbsp;    {
+<b class="nc"><i>206</i>&nbsp;        entryToKey.remove( entry ) ;</b>
+<i>207</i>&nbsp;    }
+<i>208</i>&nbsp;
+<i>209</i>&nbsp;    public  void clear()
+<i>210</i>&nbsp;    {
+<b class="nc"><i>211</i>&nbsp;        super.clear() ;</b>
+<b class="nc"><i>212</i>&nbsp;        entryToKey.clear() ;</b>
+<i>213</i>&nbsp;    }
+<i>214</i>&nbsp;}
+<i>215</i>&nbsp;
+<i>216</i>&nbsp;class MultipleObjectMap extends ActiveObjectMap
+<i>217</i>&nbsp;{
+<i>218</i>&nbsp;    private Map entryToKeys = new HashMap() ;   // Map&lt; AOMEntry, Set&lt; Key &gt; &gt;
+<i>219</i>&nbsp;
+<i>220</i>&nbsp;    public MultipleObjectMap( POAImpl poa )
+<i>221</i>&nbsp;    {
+<i>222</i>&nbsp;        super( poa ) ;
+<i>223</i>&nbsp;    }
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;    public  Key getKey(AOMEntry value) throws WrongPolicy
+<i>226</i>&nbsp;    {
+<i>227</i>&nbsp;        throw new WrongPolicy() ;
+<i>228</i>&nbsp;    }
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;    protected void putEntry(Key key, AOMEntry value)
+<i>231</i>&nbsp;    {
+<i>232</i>&nbsp;        super.putEntry( key, value);
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;        Set set = (Set)entryToKeys.get( value ) ;
+<i>235</i>&nbsp;        if (set == null) {
+<i>236</i>&nbsp;            set = new HashSet() ;
+<i>237</i>&nbsp;            entryToKeys.put( value, set ) ;
+<i>238</i>&nbsp;        }
+<i>239</i>&nbsp;        set.add( key ) ;
+<i>240</i>&nbsp;    }
+<i>241</i>&nbsp;
+<i>242</i>&nbsp;    public  boolean hasMultipleIDs(AOMEntry value)
+<i>243</i>&nbsp;    {
+<i>244</i>&nbsp;        Set set = (Set)entryToKeys.get( value ) ;
+<i>245</i>&nbsp;        if (set == null)
+<i>246</i>&nbsp;            return false ;
+<i>247</i>&nbsp;        return set.size() &gt; 1 ;
+<i>248</i>&nbsp;    }
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;    protected void removeEntry(AOMEntry entry, Key key)
+<i>251</i>&nbsp;    {
+<i>252</i>&nbsp;        Set keys = (Set)entryToKeys.get( entry ) ;
+<i>253</i>&nbsp;        if (keys != null) {
+<i>254</i>&nbsp;            keys.remove( key ) ;
+<i>255</i>&nbsp;            if (keys.isEmpty())
+<i>256</i>&nbsp;                entryToKeys.remove( entry ) ;
+<i>257</i>&nbsp;        }
+<i>258</i>&nbsp;    }
+<i>259</i>&nbsp;
+<i>260</i>&nbsp;    public  void clear()
+<i>261</i>&nbsp;    {
+<i>262</i>&nbsp;        super.clear() ;
+<i>263</i>&nbsp;        entryToKeys.clear() ;
+<i>264</i>&nbsp;    }
+<i>265</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1455 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: NodeSet</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xpath.internal</a> ]
+</div>
+
+<h1>Coverage Summary for Class: NodeSet (com.sun.org.apache.xpath.internal)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">NodeSet</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 60)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 296)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/*
+<i>6</i>&nbsp; * Copyright 1999-2004 The Apache Software Foundation.
+<i>7</i>&nbsp; *
+<i>8</i>&nbsp; * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<i>9</i>&nbsp; * you may not use this file except in compliance with the License.
+<i>10</i>&nbsp; * You may obtain a copy of the License at
+<i>11</i>&nbsp; *
+<i>12</i>&nbsp; *     http://www.apache.org/licenses/LICENSE-2.0
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * Unless required by applicable law or agreed to in writing, software
+<i>15</i>&nbsp; * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<i>16</i>&nbsp; * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<i>17</i>&nbsp; * See the License for the specific language governing permissions and
+<i>18</i>&nbsp; * limitations under the License.
+<i>19</i>&nbsp; */
+<i>20</i>&nbsp;/*
+<i>21</i>&nbsp; * $Id: NodeSet.java,v 1.2.4.1 2005/09/10 17:39:49 jeffsuttor Exp $
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xpath.internal;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import com.sun.org.apache.xalan.internal.res.XSLMessages;
+<i>26</i>&nbsp;import com.sun.org.apache.xml.internal.utils.DOM2Helper;
+<i>27</i>&nbsp;import com.sun.org.apache.xpath.internal.axes.ContextNodeList;
+<i>28</i>&nbsp;import com.sun.org.apache.xpath.internal.res.XPATHErrorResources;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import org.w3c.dom.DOMException;
+<i>31</i>&nbsp;import org.w3c.dom.Node;
+<i>32</i>&nbsp;import org.w3c.dom.NodeList;
+<i>33</i>&nbsp;import org.w3c.dom.traversal.NodeFilter;
+<i>34</i>&nbsp;import org.w3c.dom.traversal.NodeIterator;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;/**
+<i>38</i>&nbsp; * &lt;p&gt;The NodeSet class can act as either a NodeVector,
+<i>39</i>&nbsp; * NodeList, or NodeIterator.  However, in order for it to
+<i>40</i>&nbsp; * act as a NodeVector or NodeList, it&#39;s required that
+<i>41</i>&nbsp; * setShouldCacheNodes(true) be called before the first
+<i>42</i>&nbsp; * nextNode() is called, in order that nodes can be added
+<i>43</i>&nbsp; * as they are fetched.  Derived classes that implement iterators
+<i>44</i>&nbsp; * must override runTo(int index), in order that they may
+<i>45</i>&nbsp; * run the iteration to the given index. &lt;/p&gt;
+<i>46</i>&nbsp; *
+<i>47</i>&nbsp; * &lt;p&gt;Note that we directly implement the DOM&#39;s NodeIterator
+<i>48</i>&nbsp; * interface. We do not emulate all the behavior of the
+<i>49</i>&nbsp; * standard NodeIterator. In particular, we do not guarantee
+<i>50</i>&nbsp; * to present a &quot;live view&quot; of the document ... but in XSLT,
+<i>51</i>&nbsp; * the source document should never be mutated, so this should
+<i>52</i>&nbsp; * never be an issue.&lt;/p&gt;
+<i>53</i>&nbsp; *
+<i>54</i>&nbsp; * &lt;p&gt;Thought: Should NodeSet really implement NodeList and NodeIterator,
+<i>55</i>&nbsp; * or should there be specific subclasses of it which do so? The
+<i>56</i>&nbsp; * advantage of doing it all here is that all NodeSets will respond
+<i>57</i>&nbsp; * to the same calls; the disadvantage is that some of them may return
+<i>58</i>&nbsp; * less-than-enlightening results when you do so.&lt;/p&gt;
+<i>59</i>&nbsp; * @xsl.usage advanced
+<i>60</i>&nbsp; */
+<i>61</i>&nbsp;public class NodeSet
+<i>62</i>&nbsp;        implements NodeList, NodeIterator, Cloneable, ContextNodeList
+<i>63</i>&nbsp;{
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;  /**
+<i>66</i>&nbsp;   * Create an empty nodelist.
+<i>67</i>&nbsp;   */
+<i>68</i>&nbsp;  public NodeSet()
+<b class="nc"><i>69</i>&nbsp;  {</b>
+<b class="nc"><i>70</i>&nbsp;    m_blocksize = 32;</b>
+<b class="nc"><i>71</i>&nbsp;    m_mapSize = 0;</b>
+<i>72</i>&nbsp;  }
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;  /**
+<i>75</i>&nbsp;   * Create an empty, using the given block size.
+<i>76</i>&nbsp;   *
+<i>77</i>&nbsp;   * @param blocksize Size of blocks to allocate
+<i>78</i>&nbsp;   */
+<i>79</i>&nbsp;  public NodeSet(int blocksize)
+<b class="nc"><i>80</i>&nbsp;  {</b>
+<b class="nc"><i>81</i>&nbsp;    m_blocksize = blocksize;</b>
+<b class="nc"><i>82</i>&nbsp;    m_mapSize = 0;</b>
+<i>83</i>&nbsp;  }
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;  /**
+<i>86</i>&nbsp;   * Create a NodeSet, and copy the members of the
+<i>87</i>&nbsp;   * given nodelist into it.
+<i>88</i>&nbsp;   *
+<i>89</i>&nbsp;   * @param nodelist List of Nodes to be made members of the new set.
+<i>90</i>&nbsp;   */
+<i>91</i>&nbsp;  public NodeSet(NodeList nodelist)
+<i>92</i>&nbsp;  {
+<i>93</i>&nbsp;
+<b class="nc"><i>94</i>&nbsp;    this(32);</b>
+<i>95</i>&nbsp;
+<b class="nc"><i>96</i>&nbsp;    addNodes(nodelist);</b>
+<i>97</i>&nbsp;  }
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;  /**
+<i>100</i>&nbsp;   * Create a NodeSet, and copy the members of the
+<i>101</i>&nbsp;   * given NodeSet into it.
+<i>102</i>&nbsp;   *
+<i>103</i>&nbsp;   * @param nodelist Set of Nodes to be made members of the new set.
+<i>104</i>&nbsp;   */
+<i>105</i>&nbsp;  public NodeSet(NodeSet nodelist)
+<i>106</i>&nbsp;  {
+<i>107</i>&nbsp;
+<b class="nc"><i>108</i>&nbsp;    this(32);</b>
+<i>109</i>&nbsp;
+<b class="nc"><i>110</i>&nbsp;    addNodes((NodeIterator) nodelist);</b>
+<i>111</i>&nbsp;  }
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;  /**
+<i>114</i>&nbsp;   * Create a NodeSet, and copy the members of the
+<i>115</i>&nbsp;   * given NodeIterator into it.
+<i>116</i>&nbsp;   *
+<i>117</i>&nbsp;   * @param ni Iterator which yields Nodes to be made members of the new set.
+<i>118</i>&nbsp;   */
+<i>119</i>&nbsp;  public NodeSet(NodeIterator ni)
+<i>120</i>&nbsp;  {
+<i>121</i>&nbsp;
+<b class="nc"><i>122</i>&nbsp;    this(32);</b>
+<i>123</i>&nbsp;
+<b class="nc"><i>124</i>&nbsp;    addNodes(ni);</b>
+<i>125</i>&nbsp;  }
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;  /**
+<i>128</i>&nbsp;   * Create a NodeSet which contains the given Node.
+<i>129</i>&nbsp;   *
+<i>130</i>&nbsp;   * @param node Single node to be added to the new set.
+<i>131</i>&nbsp;   */
+<i>132</i>&nbsp;  public NodeSet(Node node)
+<i>133</i>&nbsp;  {
+<i>134</i>&nbsp;
+<b class="nc"><i>135</i>&nbsp;    this(32);</b>
+<i>136</i>&nbsp;
+<b class="nc"><i>137</i>&nbsp;    addNode(node);</b>
+<i>138</i>&nbsp;  }
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;  /**
+<i>141</i>&nbsp;   * @return The root node of the Iterator, as specified when it was created.
+<i>142</i>&nbsp;   * For non-Iterator NodeSets, this will be null.
+<i>143</i>&nbsp;   */
+<i>144</i>&nbsp;  public Node getRoot()
+<i>145</i>&nbsp;  {
+<b class="nc"><i>146</i>&nbsp;    return null;</b>
+<i>147</i>&nbsp;  }
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;  /**
+<i>150</i>&nbsp;   * Get a cloned Iterator, and reset its state to the beginning of the
+<i>151</i>&nbsp;   * iteration.
+<i>152</i>&nbsp;   *
+<i>153</i>&nbsp;   * @return a new NodeSet of the same type, having the same state...
+<i>154</i>&nbsp;   * except that the reset() operation has been called.
+<i>155</i>&nbsp;   *
+<i>156</i>&nbsp;   * @throws CloneNotSupportedException if this subclass of NodeSet
+<i>157</i>&nbsp;   * does not support the clone() operation.
+<i>158</i>&nbsp;   */
+<i>159</i>&nbsp;  public NodeIterator cloneWithReset() throws CloneNotSupportedException
+<i>160</i>&nbsp;  {
+<i>161</i>&nbsp;
+<b class="nc"><i>162</i>&nbsp;    NodeSet clone = (NodeSet) clone();</b>
+<i>163</i>&nbsp;
+<b class="nc"><i>164</i>&nbsp;    clone.reset();</b>
+<i>165</i>&nbsp;
+<b class="nc"><i>166</i>&nbsp;    return clone;</b>
+<i>167</i>&nbsp;  }
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;  /**
+<i>170</i>&nbsp;   * Reset the iterator. May have no effect on non-iterator Nodesets.
+<i>171</i>&nbsp;   */
+<i>172</i>&nbsp;  public void reset()
+<i>173</i>&nbsp;  {
+<b class="nc"><i>174</i>&nbsp;    m_next = 0;</b>
+<i>175</i>&nbsp;  }
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;  /**
+<i>178</i>&nbsp;   *  This attribute determines which node types are presented via the
+<i>179</i>&nbsp;   * iterator. The available set of constants is defined in the
+<i>180</i>&nbsp;   * &lt;code&gt;NodeFilter&lt;/code&gt; interface. For NodeSets, the mask has been
+<i>181</i>&nbsp;   * hardcoded to show all nodes except EntityReference nodes, which have
+<i>182</i>&nbsp;   * no equivalent in the XPath data model.
+<i>183</i>&nbsp;   *
+<i>184</i>&nbsp;   * @return integer used as a bit-array, containing flags defined in
+<i>185</i>&nbsp;   * the DOM&#39;s NodeFilter class. The value will be
+<i>186</i>&nbsp;   * &lt;code&gt;SHOW_ALL &amp; ~SHOW_ENTITY_REFERENCE&lt;/code&gt;, meaning that
+<i>187</i>&nbsp;   * only entity references are suppressed.
+<i>188</i>&nbsp;   */
+<i>189</i>&nbsp;  public int getWhatToShow()
+<i>190</i>&nbsp;  {
+<b class="nc"><i>191</i>&nbsp;    return NodeFilter.SHOW_ALL &amp; ~NodeFilter.SHOW_ENTITY_REFERENCE;</b>
+<i>192</i>&nbsp;  }
+<i>193</i>&nbsp;
+<i>194</i>&nbsp;  /**
+<i>195</i>&nbsp;   * The filter object used to screen nodes. Filters are applied to
+<i>196</i>&nbsp;   * further reduce (and restructure) the NodeIterator&#39;s view of the
+<i>197</i>&nbsp;   * document. In our case, we will be using hardcoded filters built
+<i>198</i>&nbsp;   * into our iterators... but getFilter() is part of the DOM&#39;s
+<i>199</i>&nbsp;   * NodeIterator interface, so we have to support it.
+<i>200</i>&nbsp;   *
+<i>201</i>&nbsp;   * @return null, which is slightly misleading. True, there is no
+<i>202</i>&nbsp;   * user-written filter object, but in fact we are doing some very
+<i>203</i>&nbsp;   * sophisticated custom filtering. A DOM purist might suggest
+<i>204</i>&nbsp;   * returning a placeholder object just to indicate that this is
+<i>205</i>&nbsp;   * not going to return all nodes selected by whatToShow.
+<i>206</i>&nbsp;   */
+<i>207</i>&nbsp;  public NodeFilter getFilter()
+<i>208</i>&nbsp;  {
+<b class="nc"><i>209</i>&nbsp;    return null;</b>
+<i>210</i>&nbsp;  }
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;  /**
+<i>213</i>&nbsp;   *  The value of this flag determines whether the children of entity
+<i>214</i>&nbsp;   * reference nodes are visible to the iterator. If false, they will be
+<i>215</i>&nbsp;   * skipped over.
+<i>216</i>&nbsp;   * &lt;br&gt; To produce a view of the document that has entity references
+<i>217</i>&nbsp;   * expanded and does not expose the entity reference node itself, use the
+<i>218</i>&nbsp;   * whatToShow flags to hide the entity reference node and set
+<i>219</i>&nbsp;   * expandEntityReferences to true when creating the iterator. To produce
+<i>220</i>&nbsp;   * a view of the document that has entity reference nodes but no entity
+<i>221</i>&nbsp;   * expansion, use the whatToShow flags to show the entity reference node
+<i>222</i>&nbsp;   * and set expandEntityReferences to false.
+<i>223</i>&nbsp;   *
+<i>224</i>&nbsp;   * @return true for all iterators based on NodeSet, meaning that the
+<i>225</i>&nbsp;   * contents of EntityRefrence nodes may be returned (though whatToShow
+<i>226</i>&nbsp;   * says that the EntityReferences themselves are not shown.)
+<i>227</i>&nbsp;   */
+<i>228</i>&nbsp;  public boolean getExpandEntityReferences()
+<i>229</i>&nbsp;  {
+<b class="nc"><i>230</i>&nbsp;    return true;</b>
+<i>231</i>&nbsp;  }
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;  /**
+<i>234</i>&nbsp;   *  Returns the next node in the set and advances the position of the
+<i>235</i>&nbsp;   * iterator in the set. After a NodeIterator is created, the first call
+<i>236</i>&nbsp;   * to nextNode() returns the first node in the set.
+<i>237</i>&nbsp;   * @return  The next &lt;code&gt;Node&lt;/code&gt; in the set being iterated over, or
+<i>238</i>&nbsp;   *   &lt;code&gt;null&lt;/code&gt; if there are no more members in that set.
+<i>239</i>&nbsp;   * @throws DOMException
+<i>240</i>&nbsp;   *    INVALID_STATE_ERR: Raised if this method is called after the
+<i>241</i>&nbsp;   *   &lt;code&gt;detach&lt;/code&gt; method was invoked.
+<i>242</i>&nbsp;   */
+<i>243</i>&nbsp;  public Node nextNode() throws DOMException
+<i>244</i>&nbsp;  {
+<i>245</i>&nbsp;
+<b class="nc"><i>246</i>&nbsp;    if ((m_next) &lt; this.size())</b>
+<i>247</i>&nbsp;    {
+<b class="nc"><i>248</i>&nbsp;      Node next = this.elementAt(m_next);</b>
+<i>249</i>&nbsp;
+<b class="nc"><i>250</i>&nbsp;      m_next++;</b>
+<i>251</i>&nbsp;
+<b class="nc"><i>252</i>&nbsp;      return next;</b>
+<i>253</i>&nbsp;    }
+<i>254</i>&nbsp;    else
+<b class="nc"><i>255</i>&nbsp;      return null;</b>
+<i>256</i>&nbsp;  }
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;  /**
+<i>259</i>&nbsp;   *  Returns the previous node in the set and moves the position of the
+<i>260</i>&nbsp;   * iterator backwards in the set.
+<i>261</i>&nbsp;   * @return  The previous &lt;code&gt;Node&lt;/code&gt; in the set being iterated over,
+<i>262</i>&nbsp;   *   or&lt;code&gt;null&lt;/code&gt; if there are no more members in that set.
+<i>263</i>&nbsp;   * @throws DOMException
+<i>264</i>&nbsp;   *    INVALID_STATE_ERR: Raised if this method is called after the
+<i>265</i>&nbsp;   *   &lt;code&gt;detach&lt;/code&gt; method was invoked.
+<i>266</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not of
+<i>267</i>&nbsp;   * a cached type, and hence doesn&#39;t know what the previous node was.
+<i>268</i>&nbsp;   */
+<i>269</i>&nbsp;  public Node previousNode() throws DOMException
+<i>270</i>&nbsp;  {
+<i>271</i>&nbsp;
+<b class="nc"><i>272</i>&nbsp;    if (!m_cacheNodes)</b>
+<b class="nc"><i>273</i>&nbsp;      throw new RuntimeException(</b>
+<b class="nc"><i>274</i>&nbsp;        XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_CANNOT_ITERATE, null)); //&quot;This NodeSet can not iterate to a previous node!&quot;);</b>
+<i>275</i>&nbsp;
+<b class="nc"><i>276</i>&nbsp;    if ((m_next - 1) &gt; 0)</b>
+<i>277</i>&nbsp;    {
+<b class="nc"><i>278</i>&nbsp;      m_next--;</b>
+<i>279</i>&nbsp;
+<b class="nc"><i>280</i>&nbsp;      return this.elementAt(m_next);</b>
+<i>281</i>&nbsp;    }
+<i>282</i>&nbsp;    else
+<b class="nc"><i>283</i>&nbsp;      return null;</b>
+<i>284</i>&nbsp;  }
+<i>285</i>&nbsp;
+<i>286</i>&nbsp;  /**
+<i>287</i>&nbsp;   * Detaches the iterator from the set which it iterated over, releasing
+<i>288</i>&nbsp;   * any computational resources and placing the iterator in the INVALID
+<i>289</i>&nbsp;   * state. After&lt;code&gt;detach&lt;/code&gt; has been invoked, calls to
+<i>290</i>&nbsp;   * &lt;code&gt;nextNode&lt;/code&gt; or&lt;code&gt;previousNode&lt;/code&gt; will raise the
+<i>291</i>&nbsp;   * exception INVALID_STATE_ERR.
+<i>292</i>&nbsp;   * &lt;p&gt;
+<i>293</i>&nbsp;   * This operation is a no-op in NodeSet, and will not cause
+<i>294</i>&nbsp;   * INVALID_STATE_ERR to be raised by later operations.
+<i>295</i>&nbsp;   * &lt;/p&gt;
+<i>296</i>&nbsp;   */
+<i>297</i>&nbsp;  public void detach(){}
+<i>298</i>&nbsp;
+<i>299</i>&nbsp;  /**
+<i>300</i>&nbsp;   * Tells if this NodeSet is &quot;fresh&quot;, in other words, if
+<i>301</i>&nbsp;   * the first nextNode() that is called will return the
+<i>302</i>&nbsp;   * first node in the set.
+<i>303</i>&nbsp;   *
+<i>304</i>&nbsp;   * @return true if nextNode() would return the first node in the set,
+<i>305</i>&nbsp;   * false if it would return a later one.
+<i>306</i>&nbsp;   */
+<i>307</i>&nbsp;  public boolean isFresh()
+<i>308</i>&nbsp;  {
+<b class="nc"><i>309</i>&nbsp;    return (m_next == 0);</b>
+<i>310</i>&nbsp;  }
+<i>311</i>&nbsp;
+<i>312</i>&nbsp;  /**
+<i>313</i>&nbsp;   * If an index is requested, NodeSet will call this method
+<i>314</i>&nbsp;   * to run the iterator to the index.  By default this sets
+<i>315</i>&nbsp;   * m_next to the index.  If the index argument is -1, this
+<i>316</i>&nbsp;   * signals that the iterator should be run to the end.
+<i>317</i>&nbsp;   *
+<i>318</i>&nbsp;   * @param index Position to advance (or retreat) to, with
+<i>319</i>&nbsp;   * 0 requesting the reset (&quot;fresh&quot;) position and -1 (or indeed
+<i>320</i>&nbsp;   * any out-of-bounds value) requesting the final position.
+<i>321</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not
+<i>322</i>&nbsp;   * one of the types which supports indexing/counting.
+<i>323</i>&nbsp;   */
+<i>324</i>&nbsp;  public void runTo(int index)
+<i>325</i>&nbsp;  {
+<i>326</i>&nbsp;
+<b class="nc"><i>327</i>&nbsp;    if (!m_cacheNodes)</b>
+<b class="nc"><i>328</i>&nbsp;      throw new RuntimeException(</b>
+<b class="nc"><i>329</i>&nbsp;        XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_CANNOT_INDEX, null)); //&quot;This NodeSet can not do indexing or counting functions!&quot;);</b>
+<i>330</i>&nbsp;
+<b class="nc"><i>331</i>&nbsp;    if ((index &gt;= 0) &amp;&amp; (m_next &lt; m_firstFree))</b>
+<b class="nc"><i>332</i>&nbsp;      m_next = index;</b>
+<i>333</i>&nbsp;    else
+<b class="nc"><i>334</i>&nbsp;      m_next = m_firstFree - 1;</b>
+<i>335</i>&nbsp;  }
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;  /**
+<i>338</i>&nbsp;   * Returns the &lt;code&gt;index&lt;/code&gt;th item in the collection. If
+<i>339</i>&nbsp;   * &lt;code&gt;index&lt;/code&gt; is greater than or equal to the number of nodes in
+<i>340</i>&nbsp;   * the list, this returns &lt;code&gt;null&lt;/code&gt;.
+<i>341</i>&nbsp;   *
+<i>342</i>&nbsp;   * TODO: What happens if index is out of range?
+<i>343</i>&nbsp;   *
+<i>344</i>&nbsp;   * @param index Index into the collection.
+<i>345</i>&nbsp;   * @return The node at the &lt;code&gt;index&lt;/code&gt;th position in the
+<i>346</i>&nbsp;   *   &lt;code&gt;NodeList&lt;/code&gt;, or &lt;code&gt;null&lt;/code&gt; if that is not a valid
+<i>347</i>&nbsp;   *   index.
+<i>348</i>&nbsp;   */
+<i>349</i>&nbsp;  public Node item(int index)
+<i>350</i>&nbsp;  {
+<i>351</i>&nbsp;
+<b class="nc"><i>352</i>&nbsp;    runTo(index);</b>
+<i>353</i>&nbsp;
+<b class="nc"><i>354</i>&nbsp;    return (Node) this.elementAt(index);</b>
+<i>355</i>&nbsp;  }
+<i>356</i>&nbsp;
+<i>357</i>&nbsp;  /**
+<i>358</i>&nbsp;   * The number of nodes in the list. The range of valid child node indices is
+<i>359</i>&nbsp;   * 0 to &lt;code&gt;length-1&lt;/code&gt; inclusive. Note that this operation requires
+<i>360</i>&nbsp;   * finding all the matching nodes, which may defeat attempts to defer
+<i>361</i>&nbsp;   * that work.
+<i>362</i>&nbsp;   *
+<i>363</i>&nbsp;   * @return integer indicating how many nodes are represented by this list.
+<i>364</i>&nbsp;   */
+<i>365</i>&nbsp;  public int getLength()
+<i>366</i>&nbsp;  {
+<i>367</i>&nbsp;
+<b class="nc"><i>368</i>&nbsp;    runTo(-1);</b>
+<i>369</i>&nbsp;
+<b class="nc"><i>370</i>&nbsp;    return this.size();</b>
+<i>371</i>&nbsp;  }
+<i>372</i>&nbsp;
+<i>373</i>&nbsp;  /**
+<i>374</i>&nbsp;   * Add a node to the NodeSet. Not all types of NodeSets support this
+<i>375</i>&nbsp;   * operation
+<i>376</i>&nbsp;   *
+<i>377</i>&nbsp;   * @param n Node to be added
+<i>378</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not of
+<i>379</i>&nbsp;   * a mutable type.
+<i>380</i>&nbsp;   */
+<i>381</i>&nbsp;  public void addNode(Node n)
+<i>382</i>&nbsp;  {
+<i>383</i>&nbsp;
+<b class="nc"><i>384</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>385</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>386</i>&nbsp;
+<b class="nc"><i>387</i>&nbsp;    this.addElement(n);</b>
+<i>388</i>&nbsp;  }
+<i>389</i>&nbsp;
+<i>390</i>&nbsp;  /**
+<i>391</i>&nbsp;   * Insert a node at a given position.
+<i>392</i>&nbsp;   *
+<i>393</i>&nbsp;   * @param n Node to be added
+<i>394</i>&nbsp;   * @param pos Offset at which the node is to be inserted,
+<i>395</i>&nbsp;   * with 0 being the first position.
+<i>396</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not of
+<i>397</i>&nbsp;   * a mutable type.
+<i>398</i>&nbsp;   */
+<i>399</i>&nbsp;  public void insertNode(Node n, int pos)
+<i>400</i>&nbsp;  {
+<i>401</i>&nbsp;
+<b class="nc"><i>402</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>403</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>404</i>&nbsp;
+<b class="nc"><i>405</i>&nbsp;    insertElementAt(n, pos);</b>
+<i>406</i>&nbsp;  }
+<i>407</i>&nbsp;
+<i>408</i>&nbsp;  /**
+<i>409</i>&nbsp;   * Remove a node.
+<i>410</i>&nbsp;   *
+<i>411</i>&nbsp;   * @param n Node to be added
+<i>412</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not of
+<i>413</i>&nbsp;   * a mutable type.
+<i>414</i>&nbsp;   */
+<i>415</i>&nbsp;  public void removeNode(Node n)
+<i>416</i>&nbsp;  {
+<i>417</i>&nbsp;
+<b class="nc"><i>418</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>419</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>420</i>&nbsp;
+<b class="nc"><i>421</i>&nbsp;    this.removeElement(n);</b>
+<i>422</i>&nbsp;  }
+<i>423</i>&nbsp;
+<i>424</i>&nbsp;  /**
+<i>425</i>&nbsp;   * Copy NodeList members into this nodelist, adding in
+<i>426</i>&nbsp;   * document order.  If a node is null, don&#39;t add it.
+<i>427</i>&nbsp;   *
+<i>428</i>&nbsp;   * @param nodelist List of nodes which should now be referenced by
+<i>429</i>&nbsp;   * this NodeSet.
+<i>430</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not of
+<i>431</i>&nbsp;   * a mutable type.
+<i>432</i>&nbsp;   */
+<i>433</i>&nbsp;  public void addNodes(NodeList nodelist)
+<i>434</i>&nbsp;  {
+<i>435</i>&nbsp;
+<b class="nc"><i>436</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>437</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>438</i>&nbsp;
+<b class="nc"><i>439</i>&nbsp;    if (null != nodelist)  // defensive to fix a bug that Sanjiva reported.</b>
+<i>440</i>&nbsp;    {
+<b class="nc"><i>441</i>&nbsp;      int nChildren = nodelist.getLength();</b>
+<i>442</i>&nbsp;
+<b class="nc"><i>443</i>&nbsp;      for (int i = 0; i &lt; nChildren; i++)</b>
+<i>444</i>&nbsp;      {
+<b class="nc"><i>445</i>&nbsp;        Node obj = nodelist.item(i);</b>
+<i>446</i>&nbsp;
+<b class="nc"><i>447</i>&nbsp;        if (null != obj)</b>
+<i>448</i>&nbsp;        {
+<b class="nc"><i>449</i>&nbsp;          addElement(obj);</b>
+<i>450</i>&nbsp;        }
+<i>451</i>&nbsp;      }
+<i>452</i>&nbsp;    }
+<i>453</i>&nbsp;
+<i>454</i>&nbsp;    // checkDups();
+<i>455</i>&nbsp;  }
+<i>456</i>&nbsp;
+<i>457</i>&nbsp;  /**
+<i>458</i>&nbsp;   * &lt;p&gt;Copy NodeList members into this nodelist, adding in
+<i>459</i>&nbsp;   * document order.  Only genuine node references will be copied;
+<i>460</i>&nbsp;   * nulls appearing in the source NodeSet will
+<i>461</i>&nbsp;   * not be added to this one. &lt;/p&gt;
+<i>462</i>&nbsp;   *
+<i>463</i>&nbsp;   * &lt;p&gt; In case you&#39;re wondering why this function is needed: NodeSet
+<i>464</i>&nbsp;   * implements both NodeIterator and NodeList. If this method isn&#39;t
+<i>465</i>&nbsp;   * provided, Java can&#39;t decide which of those to use when addNodes()
+<i>466</i>&nbsp;   * is invoked. Providing the more-explicit match avoids that
+<i>467</i>&nbsp;   * ambiguity.)&lt;/p&gt;
+<i>468</i>&nbsp;   *
+<i>469</i>&nbsp;   * @param ns NodeSet whose members should be merged into this NodeSet.
+<i>470</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not of
+<i>471</i>&nbsp;   * a mutable type.
+<i>472</i>&nbsp;   */
+<i>473</i>&nbsp;  public void addNodes(NodeSet ns)
+<i>474</i>&nbsp;  {
+<i>475</i>&nbsp;
+<b class="nc"><i>476</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>477</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>478</i>&nbsp;
+<b class="nc"><i>479</i>&nbsp;    addNodes((NodeIterator) ns);</b>
+<i>480</i>&nbsp;  }
+<i>481</i>&nbsp;
+<i>482</i>&nbsp;  /**
+<i>483</i>&nbsp;   * Copy NodeList members into this nodelist, adding in
+<i>484</i>&nbsp;   * document order.  Null references are not added.
+<i>485</i>&nbsp;   *
+<i>486</i>&nbsp;   * @param iterator NodeIterator which yields the nodes to be added.
+<i>487</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not of
+<i>488</i>&nbsp;   * a mutable type.
+<i>489</i>&nbsp;   */
+<i>490</i>&nbsp;  public void addNodes(NodeIterator iterator)
+<i>491</i>&nbsp;  {
+<i>492</i>&nbsp;
+<b class="nc"><i>493</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>494</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>495</i>&nbsp;
+<b class="nc"><i>496</i>&nbsp;    if (null != iterator)  // defensive to fix a bug that Sanjiva reported.</b>
+<i>497</i>&nbsp;    {
+<i>498</i>&nbsp;      Node obj;
+<i>499</i>&nbsp;
+<b class="nc"><i>500</i>&nbsp;      while (null != (obj = iterator.nextNode()))</b>
+<i>501</i>&nbsp;      {
+<b class="nc"><i>502</i>&nbsp;        addElement(obj);</b>
+<i>503</i>&nbsp;      }
+<i>504</i>&nbsp;    }
+<i>505</i>&nbsp;
+<i>506</i>&nbsp;    // checkDups();
+<i>507</i>&nbsp;  }
+<i>508</i>&nbsp;
+<i>509</i>&nbsp;  /**
+<i>510</i>&nbsp;   * Copy NodeList members into this nodelist, adding in
+<i>511</i>&nbsp;   * document order.  If a node is null, don&#39;t add it.
+<i>512</i>&nbsp;   *
+<i>513</i>&nbsp;   * @param nodelist List of nodes to be added
+<i>514</i>&nbsp;   * @param support The XPath runtime context.
+<i>515</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not of
+<i>516</i>&nbsp;   * a mutable type.
+<i>517</i>&nbsp;   */
+<i>518</i>&nbsp;  public void addNodesInDocOrder(NodeList nodelist, XPathContext support)
+<i>519</i>&nbsp;  {
+<i>520</i>&nbsp;
+<b class="nc"><i>521</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>522</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>523</i>&nbsp;
+<b class="nc"><i>524</i>&nbsp;    int nChildren = nodelist.getLength();</b>
+<i>525</i>&nbsp;
+<b class="nc"><i>526</i>&nbsp;    for (int i = 0; i &lt; nChildren; i++)</b>
+<i>527</i>&nbsp;    {
+<b class="nc"><i>528</i>&nbsp;      Node node = nodelist.item(i);</b>
+<i>529</i>&nbsp;
+<b class="nc"><i>530</i>&nbsp;      if (null != node)</b>
+<i>531</i>&nbsp;      {
+<b class="nc"><i>532</i>&nbsp;        addNodeInDocOrder(node, support);</b>
+<i>533</i>&nbsp;      }
+<i>534</i>&nbsp;    }
+<i>535</i>&nbsp;  }
+<i>536</i>&nbsp;
+<i>537</i>&nbsp;  /**
+<i>538</i>&nbsp;   * Copy NodeList members into this nodelist, adding in
+<i>539</i>&nbsp;   * document order.  If a node is null, don&#39;t add it.
+<i>540</i>&nbsp;   *
+<i>541</i>&nbsp;   * @param iterator NodeIterator which yields the nodes to be added.
+<i>542</i>&nbsp;   * @param support The XPath runtime context.
+<i>543</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not of
+<i>544</i>&nbsp;   * a mutable type.
+<i>545</i>&nbsp;   */
+<i>546</i>&nbsp;  public void addNodesInDocOrder(NodeIterator iterator, XPathContext support)
+<i>547</i>&nbsp;  {
+<i>548</i>&nbsp;
+<b class="nc"><i>549</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>550</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>551</i>&nbsp;
+<i>552</i>&nbsp;    Node node;
+<i>553</i>&nbsp;
+<b class="nc"><i>554</i>&nbsp;    while (null != (node = iterator.nextNode()))</b>
+<i>555</i>&nbsp;    {
+<b class="nc"><i>556</i>&nbsp;      addNodeInDocOrder(node, support);</b>
+<i>557</i>&nbsp;    }
+<i>558</i>&nbsp;  }
+<i>559</i>&nbsp;
+<i>560</i>&nbsp;  /**
+<i>561</i>&nbsp;   * Add the node list to this node set in document order.
+<i>562</i>&nbsp;   *
+<i>563</i>&nbsp;   * @param start index.
+<i>564</i>&nbsp;   * @param end index.
+<i>565</i>&nbsp;   * @param testIndex index.
+<i>566</i>&nbsp;   * @param nodelist The nodelist to add.
+<i>567</i>&nbsp;   * @param support The XPath runtime context.
+<i>568</i>&nbsp;   *
+<i>569</i>&nbsp;   * @return false always.
+<i>570</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not of
+<i>571</i>&nbsp;   * a mutable type.
+<i>572</i>&nbsp;   */
+<i>573</i>&nbsp;  private boolean addNodesInDocOrder(int start, int end, int testIndex,
+<i>574</i>&nbsp;                                     NodeList nodelist, XPathContext support)
+<i>575</i>&nbsp;  {
+<i>576</i>&nbsp;
+<b class="nc"><i>577</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>578</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>579</i>&nbsp;
+<b class="nc"><i>580</i>&nbsp;    boolean foundit = false;</b>
+<i>581</i>&nbsp;    int i;
+<b class="nc"><i>582</i>&nbsp;    Node node = nodelist.item(testIndex);</b>
+<i>583</i>&nbsp;
+<b class="nc"><i>584</i>&nbsp;    for (i = end; i &gt;= start; i--)</b>
+<i>585</i>&nbsp;    {
+<b class="nc"><i>586</i>&nbsp;      Node child = (Node) elementAt(i);</b>
+<i>587</i>&nbsp;
+<b class="nc"><i>588</i>&nbsp;      if (child == node)</b>
+<i>589</i>&nbsp;      {
+<b class="nc"><i>590</i>&nbsp;        i = -2;  // Duplicate, suppress insert</b>
+<i>591</i>&nbsp;
+<b class="nc"><i>592</i>&nbsp;        break;</b>
+<i>593</i>&nbsp;      }
+<i>594</i>&nbsp;
+<b class="nc"><i>595</i>&nbsp;      if (!DOM2Helper.isNodeAfter(node, child))</b>
+<i>596</i>&nbsp;      {
+<b class="nc"><i>597</i>&nbsp;        insertElementAt(node, i + 1);</b>
+<i>598</i>&nbsp;
+<b class="nc"><i>599</i>&nbsp;        testIndex--;</b>
+<i>600</i>&nbsp;
+<b class="nc"><i>601</i>&nbsp;        if (testIndex &gt; 0)</b>
+<i>602</i>&nbsp;        {
+<b class="nc"><i>603</i>&nbsp;          boolean foundPrev = addNodesInDocOrder(0, i, testIndex, nodelist,</b>
+<i>604</i>&nbsp;                                                 support);
+<i>605</i>&nbsp;
+<b class="nc"><i>606</i>&nbsp;          if (!foundPrev)</b>
+<i>607</i>&nbsp;          {
+<b class="nc"><i>608</i>&nbsp;            addNodesInDocOrder(i, size() - 1, testIndex, nodelist, support);</b>
+<i>609</i>&nbsp;          }
+<b class="nc"><i>610</i>&nbsp;        }</b>
+<i>611</i>&nbsp;
+<i>612</i>&nbsp;        break;
+<i>613</i>&nbsp;      }
+<i>614</i>&nbsp;    }
+<i>615</i>&nbsp;
+<b class="nc"><i>616</i>&nbsp;    if (i == -1)</b>
+<i>617</i>&nbsp;    {
+<b class="nc"><i>618</i>&nbsp;      insertElementAt(node, 0);</b>
+<i>619</i>&nbsp;    }
+<i>620</i>&nbsp;
+<b class="nc"><i>621</i>&nbsp;    return foundit;</b>
+<i>622</i>&nbsp;  }
+<i>623</i>&nbsp;
+<i>624</i>&nbsp;  /**
+<i>625</i>&nbsp;   * Add the node into a vector of nodes where it should occur in
+<i>626</i>&nbsp;   * document order.
+<i>627</i>&nbsp;   * @param node The node to be added.
+<i>628</i>&nbsp;   * @param test true if we should test for doc order
+<i>629</i>&nbsp;   * @param support The XPath runtime context.
+<i>630</i>&nbsp;   * @return insertIndex.
+<i>631</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not of
+<i>632</i>&nbsp;   * a mutable type.
+<i>633</i>&nbsp;   */
+<i>634</i>&nbsp;  public int addNodeInDocOrder(Node node, boolean test, XPathContext support)
+<i>635</i>&nbsp;  {
+<i>636</i>&nbsp;
+<b class="nc"><i>637</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>638</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>639</i>&nbsp;
+<b class="nc"><i>640</i>&nbsp;    int insertIndex = -1;</b>
+<i>641</i>&nbsp;
+<b class="nc"><i>642</i>&nbsp;    if (test)</b>
+<i>643</i>&nbsp;    {
+<i>644</i>&nbsp;
+<i>645</i>&nbsp;      // This needs to do a binary search, but a binary search
+<i>646</i>&nbsp;      // is somewhat tough because the sequence test involves
+<i>647</i>&nbsp;      // two nodes.
+<b class="nc"><i>648</i>&nbsp;      int size = size(), i;</b>
+<i>649</i>&nbsp;
+<b class="nc"><i>650</i>&nbsp;      for (i = size - 1; i &gt;= 0; i--)</b>
+<i>651</i>&nbsp;      {
+<b class="nc"><i>652</i>&nbsp;        Node child = (Node) elementAt(i);</b>
+<i>653</i>&nbsp;
+<b class="nc"><i>654</i>&nbsp;        if (child == node)</b>
+<i>655</i>&nbsp;        {
+<b class="nc"><i>656</i>&nbsp;          i = -2;  // Duplicate, suppress insert</b>
+<i>657</i>&nbsp;
+<b class="nc"><i>658</i>&nbsp;          break;</b>
+<i>659</i>&nbsp;        }
+<i>660</i>&nbsp;
+<b class="nc"><i>661</i>&nbsp;        if (!DOM2Helper.isNodeAfter(node, child))</b>
+<i>662</i>&nbsp;        {
+<b class="nc"><i>663</i>&nbsp;          break;</b>
+<i>664</i>&nbsp;        }
+<i>665</i>&nbsp;      }
+<i>666</i>&nbsp;
+<b class="nc"><i>667</i>&nbsp;      if (i != -2)</b>
+<i>668</i>&nbsp;      {
+<b class="nc"><i>669</i>&nbsp;        insertIndex = i + 1;</b>
+<i>670</i>&nbsp;
+<b class="nc"><i>671</i>&nbsp;        insertElementAt(node, insertIndex);</b>
+<i>672</i>&nbsp;      }
+<b class="nc"><i>673</i>&nbsp;    }</b>
+<i>674</i>&nbsp;    else
+<i>675</i>&nbsp;    {
+<b class="nc"><i>676</i>&nbsp;      insertIndex = this.size();</b>
+<i>677</i>&nbsp;
+<b class="nc"><i>678</i>&nbsp;      boolean foundit = false;</b>
+<i>679</i>&nbsp;
+<b class="nc"><i>680</i>&nbsp;      for (int i = 0; i &lt; insertIndex; i++)</b>
+<i>681</i>&nbsp;      {
+<b class="nc"><i>682</i>&nbsp;        if (this.item(i).equals(node))</b>
+<i>683</i>&nbsp;        {
+<b class="nc"><i>684</i>&nbsp;          foundit = true;</b>
+<i>685</i>&nbsp;
+<b class="nc"><i>686</i>&nbsp;          break;</b>
+<i>687</i>&nbsp;        }
+<i>688</i>&nbsp;      }
+<i>689</i>&nbsp;
+<b class="nc"><i>690</i>&nbsp;      if (!foundit)</b>
+<b class="nc"><i>691</i>&nbsp;        addElement(node);</b>
+<i>692</i>&nbsp;    }
+<i>693</i>&nbsp;
+<i>694</i>&nbsp;    // checkDups();
+<b class="nc"><i>695</i>&nbsp;    return insertIndex;</b>
+<i>696</i>&nbsp;  }  // end addNodeInDocOrder(Vector v, Object obj)
+<i>697</i>&nbsp;
+<i>698</i>&nbsp;  /**
+<i>699</i>&nbsp;   * Add the node into a vector of nodes where it should occur in
+<i>700</i>&nbsp;   * document order.
+<i>701</i>&nbsp;   * @param node The node to be added.
+<i>702</i>&nbsp;   * @param support The XPath runtime context.
+<i>703</i>&nbsp;   *
+<i>704</i>&nbsp;   * @return The index where it was inserted.
+<i>705</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not of
+<i>706</i>&nbsp;   * a mutable type.
+<i>707</i>&nbsp;   */
+<i>708</i>&nbsp;  public int addNodeInDocOrder(Node node, XPathContext support)
+<i>709</i>&nbsp;  {
+<i>710</i>&nbsp;
+<b class="nc"><i>711</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>712</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>713</i>&nbsp;
+<b class="nc"><i>714</i>&nbsp;    return addNodeInDocOrder(node, true, support);</b>
+<i>715</i>&nbsp;  }  // end addNodeInDocOrder(Vector v, Object obj)
+<i>716</i>&nbsp;
+<i>717</i>&nbsp;
+<i>718</i>&nbsp;  /** If this node is being used as an iterator, the next index that nextNode()
+<i>719</i>&nbsp;   *  will return.  */
+<b class="nc"><i>720</i>&nbsp;  transient protected int m_next = 0;</b>
+<i>721</i>&nbsp;
+<i>722</i>&nbsp;  /**
+<i>723</i>&nbsp;   * Get the current position, which is one less than
+<i>724</i>&nbsp;   * the next nextNode() call will retrieve.  i.e. if
+<i>725</i>&nbsp;   * you call getCurrentPos() and the return is 0, the next
+<i>726</i>&nbsp;   * fetch will take place at index 1.
+<i>727</i>&nbsp;   *
+<i>728</i>&nbsp;   * @return The the current position index.
+<i>729</i>&nbsp;   */
+<i>730</i>&nbsp;  public int getCurrentPos()
+<i>731</i>&nbsp;  {
+<b class="nc"><i>732</i>&nbsp;    return m_next;</b>
+<i>733</i>&nbsp;  }
+<i>734</i>&nbsp;
+<i>735</i>&nbsp;  /**
+<i>736</i>&nbsp;   * Set the current position in the node set.
+<i>737</i>&nbsp;   * @param i Must be a valid index.
+<i>738</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not of
+<i>739</i>&nbsp;   * a cached type, and thus doesn&#39;t permit indexed access.
+<i>740</i>&nbsp;   */
+<i>741</i>&nbsp;  public void setCurrentPos(int i)
+<i>742</i>&nbsp;  {
+<i>743</i>&nbsp;
+<b class="nc"><i>744</i>&nbsp;    if (!m_cacheNodes)</b>
+<b class="nc"><i>745</i>&nbsp;      throw new RuntimeException(</b>
+<b class="nc"><i>746</i>&nbsp;        XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_CANNOT_INDEX, null)); //&quot;This NodeSet can not do indexing or counting functions!&quot;);</b>
+<i>747</i>&nbsp;
+<b class="nc"><i>748</i>&nbsp;    m_next = i;</b>
+<i>749</i>&nbsp;  }
+<i>750</i>&nbsp;
+<i>751</i>&nbsp;  /**
+<i>752</i>&nbsp;   * Return the last fetched node.  Needed to support the UnionPathIterator.
+<i>753</i>&nbsp;   *
+<i>754</i>&nbsp;   * @return the last fetched node.
+<i>755</i>&nbsp;   * @throws RuntimeException thrown if this NodeSet is not of
+<i>756</i>&nbsp;   * a cached type, and thus doesn&#39;t permit indexed access.
+<i>757</i>&nbsp;   */
+<i>758</i>&nbsp;  public Node getCurrentNode()
+<i>759</i>&nbsp;  {
+<i>760</i>&nbsp;
+<b class="nc"><i>761</i>&nbsp;    if (!m_cacheNodes)</b>
+<b class="nc"><i>762</i>&nbsp;      throw new RuntimeException(</b>
+<b class="nc"><i>763</i>&nbsp;        XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_CANNOT_INDEX, null)); //&quot;This NodeSet can not do indexing or counting functions!&quot;);</b>
+<i>764</i>&nbsp;
+<b class="nc"><i>765</i>&nbsp;    int saved = m_next;</b>
+<b class="nc"><i>766</i>&nbsp;    Node n = (m_next &lt; m_firstFree) ? elementAt(m_next) : null;</b>
+<b class="nc"><i>767</i>&nbsp;    m_next = saved; // HACK: I think this is a bit of a hack.  -sb</b>
+<b class="nc"><i>768</i>&nbsp;    return n;</b>
+<i>769</i>&nbsp;  }
+<i>770</i>&nbsp;
+<i>771</i>&nbsp;  /** True if this list can be mutated.  */
+<b class="nc"><i>772</i>&nbsp;  transient protected boolean m_mutable = true;</b>
+<i>773</i>&nbsp;
+<i>774</i>&nbsp;  /** True if this list is cached.
+<i>775</i>&nbsp;   *  @serial  */
+<b class="nc"><i>776</i>&nbsp;  transient protected boolean m_cacheNodes = true;</b>
+<i>777</i>&nbsp;
+<i>778</i>&nbsp;  /**
+<i>779</i>&nbsp;   * Get whether or not this is a cached node set.
+<i>780</i>&nbsp;   *
+<i>781</i>&nbsp;   *
+<i>782</i>&nbsp;   * @return True if this list is cached.
+<i>783</i>&nbsp;   */
+<i>784</i>&nbsp;  public boolean getShouldCacheNodes()
+<i>785</i>&nbsp;  {
+<b class="nc"><i>786</i>&nbsp;    return m_cacheNodes;</b>
+<i>787</i>&nbsp;  }
+<i>788</i>&nbsp;
+<i>789</i>&nbsp;  /**
+<i>790</i>&nbsp;   * If setShouldCacheNodes(true) is called, then nodes will
+<i>791</i>&nbsp;   * be cached.  They are not cached by default. This switch must
+<i>792</i>&nbsp;   * be set before the first call to nextNode is made, to ensure
+<i>793</i>&nbsp;   * that all nodes are cached.
+<i>794</i>&nbsp;   *
+<i>795</i>&nbsp;   * @param b true if this node set should be cached.
+<i>796</i>&nbsp;   * @throws RuntimeException thrown if an attempt is made to
+<i>797</i>&nbsp;   * request caching after we&#39;ve already begun stepping through the
+<i>798</i>&nbsp;   * nodes in this set.
+<i>799</i>&nbsp;  */
+<i>800</i>&nbsp;  public void setShouldCacheNodes(boolean b)
+<i>801</i>&nbsp;  {
+<i>802</i>&nbsp;
+<b class="nc"><i>803</i>&nbsp;    if (!isFresh())</b>
+<b class="nc"><i>804</i>&nbsp;      throw new RuntimeException(</b>
+<b class="nc"><i>805</i>&nbsp;        XSLMessages.createXPATHMessage(XPATHErrorResources.ER_CANNOT_CALL_SETSHOULDCACHENODE, null)); //&quot;Can not call setShouldCacheNodes after nextNode has been called!&quot;);</b>
+<i>806</i>&nbsp;
+<b class="nc"><i>807</i>&nbsp;    m_cacheNodes = b;</b>
+<b class="nc"><i>808</i>&nbsp;    m_mutable = true;</b>
+<i>809</i>&nbsp;  }
+<i>810</i>&nbsp;
+<i>811</i>&nbsp;
+<b class="nc"><i>812</i>&nbsp;  transient private int m_last = 0;</b>
+<i>813</i>&nbsp;
+<i>814</i>&nbsp;  public int getLast()
+<i>815</i>&nbsp;  {
+<b class="nc"><i>816</i>&nbsp;    return m_last;</b>
+<i>817</i>&nbsp;  }
+<i>818</i>&nbsp;
+<i>819</i>&nbsp;  public void setLast(int last)
+<i>820</i>&nbsp;  {
+<b class="nc"><i>821</i>&nbsp;    m_last = last;</b>
+<i>822</i>&nbsp;  }
+<i>823</i>&nbsp;
+<i>824</i>&nbsp;  /** Size of blocks to allocate.
+<i>825</i>&nbsp;   *  @serial          */
+<i>826</i>&nbsp;  private int m_blocksize;
+<i>827</i>&nbsp;
+<i>828</i>&nbsp;  /** Array of nodes this points to.
+<i>829</i>&nbsp;   *  @serial          */
+<i>830</i>&nbsp;  Node m_map[];
+<i>831</i>&nbsp;
+<i>832</i>&nbsp;  /** Number of nodes in this NodeVector.
+<i>833</i>&nbsp;   *  @serial          */
+<b class="nc"><i>834</i>&nbsp;  protected int m_firstFree = 0;</b>
+<i>835</i>&nbsp;
+<i>836</i>&nbsp;  /** Size of the array this points to.
+<i>837</i>&nbsp;   *  @serial           */
+<i>838</i>&nbsp;  private int m_mapSize;  // lazy initialization
+<i>839</i>&nbsp;
+<i>840</i>&nbsp;  /**
+<i>841</i>&nbsp;   * Get a cloned LocPathIterator.
+<i>842</i>&nbsp;   *
+<i>843</i>&nbsp;   * @return A clone of this
+<i>844</i>&nbsp;   *
+<i>845</i>&nbsp;   * @throws CloneNotSupportedException
+<i>846</i>&nbsp;   */
+<i>847</i>&nbsp;  public Object clone() throws CloneNotSupportedException
+<i>848</i>&nbsp;  {
+<i>849</i>&nbsp;
+<b class="nc"><i>850</i>&nbsp;    NodeSet clone = (NodeSet) super.clone();</b>
+<i>851</i>&nbsp;
+<b class="nc"><i>852</i>&nbsp;    if ((null != this.m_map) &amp;&amp; (this.m_map == clone.m_map))</b>
+<i>853</i>&nbsp;    {
+<b class="nc"><i>854</i>&nbsp;      clone.m_map = new Node[this.m_map.length];</b>
+<i>855</i>&nbsp;
+<b class="nc"><i>856</i>&nbsp;      System.arraycopy(this.m_map, 0, clone.m_map, 0, this.m_map.length);</b>
+<i>857</i>&nbsp;    }
+<i>858</i>&nbsp;
+<b class="nc"><i>859</i>&nbsp;    return clone;</b>
+<i>860</i>&nbsp;  }
+<i>861</i>&nbsp;
+<i>862</i>&nbsp;  /**
+<i>863</i>&nbsp;   * Get the length of the list.
+<i>864</i>&nbsp;   *
+<i>865</i>&nbsp;   * @return Number of nodes in this NodeVector
+<i>866</i>&nbsp;   */
+<i>867</i>&nbsp;  public int size()
+<i>868</i>&nbsp;  {
+<b class="nc"><i>869</i>&nbsp;    return m_firstFree;</b>
+<i>870</i>&nbsp;  }
+<i>871</i>&nbsp;
+<i>872</i>&nbsp;  /**
+<i>873</i>&nbsp;   * Append a Node onto the vector.
+<i>874</i>&nbsp;   *
+<i>875</i>&nbsp;   * @param value Node to add to the vector
+<i>876</i>&nbsp;   */
+<i>877</i>&nbsp;  public void addElement(Node value)
+<i>878</i>&nbsp;  {
+<b class="nc"><i>879</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>880</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>881</i>&nbsp;
+<b class="nc"><i>882</i>&nbsp;    if ((m_firstFree + 1) &gt;= m_mapSize)</b>
+<i>883</i>&nbsp;    {
+<b class="nc"><i>884</i>&nbsp;      if (null == m_map)</b>
+<i>885</i>&nbsp;      {
+<b class="nc"><i>886</i>&nbsp;        m_map = new Node[m_blocksize];</b>
+<b class="nc"><i>887</i>&nbsp;        m_mapSize = m_blocksize;</b>
+<i>888</i>&nbsp;      }
+<i>889</i>&nbsp;      else
+<i>890</i>&nbsp;      {
+<b class="nc"><i>891</i>&nbsp;        m_mapSize += m_blocksize;</b>
+<i>892</i>&nbsp;
+<b class="nc"><i>893</i>&nbsp;        Node newMap[] = new Node[m_mapSize];</b>
+<i>894</i>&nbsp;
+<b class="nc"><i>895</i>&nbsp;        System.arraycopy(m_map, 0, newMap, 0, m_firstFree + 1);</b>
+<i>896</i>&nbsp;
+<b class="nc"><i>897</i>&nbsp;        m_map = newMap;</b>
+<i>898</i>&nbsp;      }
+<i>899</i>&nbsp;    }
+<i>900</i>&nbsp;
+<b class="nc"><i>901</i>&nbsp;    m_map[m_firstFree] = value;</b>
+<i>902</i>&nbsp;
+<b class="nc"><i>903</i>&nbsp;    m_firstFree++;</b>
+<i>904</i>&nbsp;  }
+<i>905</i>&nbsp;
+<i>906</i>&nbsp;  /**
+<i>907</i>&nbsp;   * Append a Node onto the vector.
+<i>908</i>&nbsp;   *
+<i>909</i>&nbsp;   * @param value Node to add to the vector
+<i>910</i>&nbsp;   */
+<i>911</i>&nbsp;  public final void push(Node value)
+<i>912</i>&nbsp;  {
+<i>913</i>&nbsp;
+<b class="nc"><i>914</i>&nbsp;    int ff = m_firstFree;</b>
+<i>915</i>&nbsp;
+<b class="nc"><i>916</i>&nbsp;    if ((ff + 1) &gt;= m_mapSize)</b>
+<i>917</i>&nbsp;    {
+<b class="nc"><i>918</i>&nbsp;      if (null == m_map)</b>
+<i>919</i>&nbsp;      {
+<b class="nc"><i>920</i>&nbsp;        m_map = new Node[m_blocksize];</b>
+<b class="nc"><i>921</i>&nbsp;        m_mapSize = m_blocksize;</b>
+<i>922</i>&nbsp;      }
+<i>923</i>&nbsp;      else
+<i>924</i>&nbsp;      {
+<b class="nc"><i>925</i>&nbsp;        m_mapSize += m_blocksize;</b>
+<i>926</i>&nbsp;
+<b class="nc"><i>927</i>&nbsp;        Node newMap[] = new Node[m_mapSize];</b>
+<i>928</i>&nbsp;
+<b class="nc"><i>929</i>&nbsp;        System.arraycopy(m_map, 0, newMap, 0, ff + 1);</b>
+<i>930</i>&nbsp;
+<b class="nc"><i>931</i>&nbsp;        m_map = newMap;</b>
+<i>932</i>&nbsp;      }
+<i>933</i>&nbsp;    }
+<i>934</i>&nbsp;
+<b class="nc"><i>935</i>&nbsp;    m_map[ff] = value;</b>
+<i>936</i>&nbsp;
+<b class="nc"><i>937</i>&nbsp;    ff++;</b>
+<i>938</i>&nbsp;
+<b class="nc"><i>939</i>&nbsp;    m_firstFree = ff;</b>
+<i>940</i>&nbsp;  }
+<i>941</i>&nbsp;
+<i>942</i>&nbsp;  /**
+<i>943</i>&nbsp;   * Pop a node from the tail of the vector and return the result.
+<i>944</i>&nbsp;   *
+<i>945</i>&nbsp;   * @return the node at the tail of the vector
+<i>946</i>&nbsp;   */
+<i>947</i>&nbsp;  public final Node pop()
+<i>948</i>&nbsp;  {
+<i>949</i>&nbsp;
+<b class="nc"><i>950</i>&nbsp;    m_firstFree--;</b>
+<i>951</i>&nbsp;
+<b class="nc"><i>952</i>&nbsp;    Node n = m_map[m_firstFree];</b>
+<i>953</i>&nbsp;
+<b class="nc"><i>954</i>&nbsp;    m_map[m_firstFree] = null;</b>
+<i>955</i>&nbsp;
+<b class="nc"><i>956</i>&nbsp;    return n;</b>
+<i>957</i>&nbsp;  }
+<i>958</i>&nbsp;
+<i>959</i>&nbsp;  /**
+<i>960</i>&nbsp;   * Pop a node from the tail of the vector and return the
+<i>961</i>&nbsp;   * top of the stack after the pop.
+<i>962</i>&nbsp;   *
+<i>963</i>&nbsp;   * @return The top of the stack after it&#39;s been popped
+<i>964</i>&nbsp;   */
+<i>965</i>&nbsp;  public final Node popAndTop()
+<i>966</i>&nbsp;  {
+<i>967</i>&nbsp;
+<b class="nc"><i>968</i>&nbsp;    m_firstFree--;</b>
+<i>969</i>&nbsp;
+<b class="nc"><i>970</i>&nbsp;    m_map[m_firstFree] = null;</b>
+<i>971</i>&nbsp;
+<b class="nc"><i>972</i>&nbsp;    return (m_firstFree == 0) ? null : m_map[m_firstFree - 1];</b>
+<i>973</i>&nbsp;  }
+<i>974</i>&nbsp;
+<i>975</i>&nbsp;  /**
+<i>976</i>&nbsp;   * Pop a node from the tail of the vector.
+<i>977</i>&nbsp;   */
+<i>978</i>&nbsp;  public final void popQuick()
+<i>979</i>&nbsp;  {
+<i>980</i>&nbsp;
+<b class="nc"><i>981</i>&nbsp;    m_firstFree--;</b>
+<i>982</i>&nbsp;
+<b class="nc"><i>983</i>&nbsp;    m_map[m_firstFree] = null;</b>
+<i>984</i>&nbsp;  }
+<i>985</i>&nbsp;
+<i>986</i>&nbsp;  /**
+<i>987</i>&nbsp;   * Return the node at the top of the stack without popping the stack.
+<i>988</i>&nbsp;   * Special purpose method for TransformerImpl, pushElemTemplateElement.
+<i>989</i>&nbsp;   * Performance critical.
+<i>990</i>&nbsp;   *
+<i>991</i>&nbsp;   * @return Node at the top of the stack or null if stack is empty.
+<i>992</i>&nbsp;   */
+<i>993</i>&nbsp;  public final Node peepOrNull()
+<i>994</i>&nbsp;  {
+<b class="nc"><i>995</i>&nbsp;    return ((null != m_map) &amp;&amp; (m_firstFree &gt; 0))</b>
+<i>996</i>&nbsp;           ? m_map[m_firstFree - 1] : null;
+<i>997</i>&nbsp;  }
+<i>998</i>&nbsp;
+<i>999</i>&nbsp;  /**
+<i>1000</i>&nbsp;   * Push a pair of nodes into the stack.
+<i>1001</i>&nbsp;   * Special purpose method for TransformerImpl, pushElemTemplateElement.
+<i>1002</i>&nbsp;   * Performance critical.
+<i>1003</i>&nbsp;   *
+<i>1004</i>&nbsp;   * @param v1 First node to add to vector
+<i>1005</i>&nbsp;   * @param v2 Second node to add to vector
+<i>1006</i>&nbsp;   */
+<i>1007</i>&nbsp;  public final void pushPair(Node v1, Node v2)
+<i>1008</i>&nbsp;  {
+<i>1009</i>&nbsp;
+<b class="nc"><i>1010</i>&nbsp;    if (null == m_map)</b>
+<i>1011</i>&nbsp;    {
+<b class="nc"><i>1012</i>&nbsp;      m_map = new Node[m_blocksize];</b>
+<b class="nc"><i>1013</i>&nbsp;      m_mapSize = m_blocksize;</b>
+<i>1014</i>&nbsp;    }
+<i>1015</i>&nbsp;    else
+<i>1016</i>&nbsp;    {
+<b class="nc"><i>1017</i>&nbsp;      if ((m_firstFree + 2) &gt;= m_mapSize)</b>
+<i>1018</i>&nbsp;      {
+<b class="nc"><i>1019</i>&nbsp;        m_mapSize += m_blocksize;</b>
+<i>1020</i>&nbsp;
+<b class="nc"><i>1021</i>&nbsp;        Node newMap[] = new Node[m_mapSize];</b>
+<i>1022</i>&nbsp;
+<b class="nc"><i>1023</i>&nbsp;        System.arraycopy(m_map, 0, newMap, 0, m_firstFree);</b>
+<i>1024</i>&nbsp;
+<b class="nc"><i>1025</i>&nbsp;        m_map = newMap;</b>
+<i>1026</i>&nbsp;      }
+<i>1027</i>&nbsp;    }
+<i>1028</i>&nbsp;
+<b class="nc"><i>1029</i>&nbsp;    m_map[m_firstFree] = v1;</b>
+<b class="nc"><i>1030</i>&nbsp;    m_map[m_firstFree + 1] = v2;</b>
+<b class="nc"><i>1031</i>&nbsp;    m_firstFree += 2;</b>
+<i>1032</i>&nbsp;  }
+<i>1033</i>&nbsp;
+<i>1034</i>&nbsp;  /**
+<i>1035</i>&nbsp;   * Pop a pair of nodes from the tail of the stack.
+<i>1036</i>&nbsp;   * Special purpose method for TransformerImpl, pushElemTemplateElement.
+<i>1037</i>&nbsp;   * Performance critical.
+<i>1038</i>&nbsp;   */
+<i>1039</i>&nbsp;  public final void popPair()
+<i>1040</i>&nbsp;  {
+<i>1041</i>&nbsp;
+<b class="nc"><i>1042</i>&nbsp;    m_firstFree -= 2;</b>
+<b class="nc"><i>1043</i>&nbsp;    m_map[m_firstFree] = null;</b>
+<b class="nc"><i>1044</i>&nbsp;    m_map[m_firstFree + 1] = null;</b>
+<i>1045</i>&nbsp;  }
+<i>1046</i>&nbsp;
+<i>1047</i>&nbsp;  /**
+<i>1048</i>&nbsp;   * Set the tail of the stack to the given node.
+<i>1049</i>&nbsp;   * Special purpose method for TransformerImpl, pushElemTemplateElement.
+<i>1050</i>&nbsp;   * Performance critical.
+<i>1051</i>&nbsp;   *
+<i>1052</i>&nbsp;   * @param n Node to set at the tail of vector
+<i>1053</i>&nbsp;   */
+<i>1054</i>&nbsp;  public final void setTail(Node n)
+<i>1055</i>&nbsp;  {
+<b class="nc"><i>1056</i>&nbsp;    m_map[m_firstFree - 1] = n;</b>
+<i>1057</i>&nbsp;  }
+<i>1058</i>&nbsp;
+<i>1059</i>&nbsp;  /**
+<i>1060</i>&nbsp;   * Set the given node one position from the tail.
+<i>1061</i>&nbsp;   * Special purpose method for TransformerImpl, pushElemTemplateElement.
+<i>1062</i>&nbsp;   * Performance critical.
+<i>1063</i>&nbsp;   *
+<i>1064</i>&nbsp;   * @param n Node to set
+<i>1065</i>&nbsp;   */
+<i>1066</i>&nbsp;  public final void setTailSub1(Node n)
+<i>1067</i>&nbsp;  {
+<b class="nc"><i>1068</i>&nbsp;    m_map[m_firstFree - 2] = n;</b>
+<i>1069</i>&nbsp;  }
+<i>1070</i>&nbsp;
+<i>1071</i>&nbsp;  /**
+<i>1072</i>&nbsp;   * Return the node at the tail of the vector without popping
+<i>1073</i>&nbsp;   * Special purpose method for TransformerImpl, pushElemTemplateElement.
+<i>1074</i>&nbsp;   * Performance critical.
+<i>1075</i>&nbsp;   *
+<i>1076</i>&nbsp;   * @return Node at the tail of the vector
+<i>1077</i>&nbsp;   */
+<i>1078</i>&nbsp;  public final Node peepTail()
+<i>1079</i>&nbsp;  {
+<b class="nc"><i>1080</i>&nbsp;    return m_map[m_firstFree - 1];</b>
+<i>1081</i>&nbsp;  }
+<i>1082</i>&nbsp;
+<i>1083</i>&nbsp;  /**
+<i>1084</i>&nbsp;   * Return the node one position from the tail without popping.
+<i>1085</i>&nbsp;   * Special purpose method for TransformerImpl, pushElemTemplateElement.
+<i>1086</i>&nbsp;   * Performance critical.
+<i>1087</i>&nbsp;   *
+<i>1088</i>&nbsp;   * @return Node one away from the tail
+<i>1089</i>&nbsp;   */
+<i>1090</i>&nbsp;  public final Node peepTailSub1()
+<i>1091</i>&nbsp;  {
+<b class="nc"><i>1092</i>&nbsp;    return m_map[m_firstFree - 2];</b>
+<i>1093</i>&nbsp;  }
+<i>1094</i>&nbsp;
+<i>1095</i>&nbsp;  /**
+<i>1096</i>&nbsp;   * Inserts the specified node in this vector at the specified index.
+<i>1097</i>&nbsp;   * Each component in this vector with an index greater or equal to
+<i>1098</i>&nbsp;   * the specified index is shifted upward to have an index one greater
+<i>1099</i>&nbsp;   * than the value it had previously.
+<i>1100</i>&nbsp;   *
+<i>1101</i>&nbsp;   * @param value Node to insert
+<i>1102</i>&nbsp;   * @param at Position where to insert
+<i>1103</i>&nbsp;   */
+<i>1104</i>&nbsp;  public void insertElementAt(Node value, int at)
+<i>1105</i>&nbsp;  {
+<b class="nc"><i>1106</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>1107</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>1108</i>&nbsp;
+<b class="nc"><i>1109</i>&nbsp;    if (null == m_map)</b>
+<i>1110</i>&nbsp;    {
+<b class="nc"><i>1111</i>&nbsp;      m_map = new Node[m_blocksize];</b>
+<b class="nc"><i>1112</i>&nbsp;      m_mapSize = m_blocksize;</b>
+<i>1113</i>&nbsp;    }
+<b class="nc"><i>1114</i>&nbsp;    else if ((m_firstFree + 1) &gt;= m_mapSize)</b>
+<i>1115</i>&nbsp;    {
+<b class="nc"><i>1116</i>&nbsp;      m_mapSize += m_blocksize;</b>
+<i>1117</i>&nbsp;
+<b class="nc"><i>1118</i>&nbsp;      Node newMap[] = new Node[m_mapSize];</b>
+<i>1119</i>&nbsp;
+<b class="nc"><i>1120</i>&nbsp;      System.arraycopy(m_map, 0, newMap, 0, m_firstFree + 1);</b>
+<i>1121</i>&nbsp;
+<b class="nc"><i>1122</i>&nbsp;      m_map = newMap;</b>
+<i>1123</i>&nbsp;    }
+<i>1124</i>&nbsp;
+<b class="nc"><i>1125</i>&nbsp;    if (at &lt;= (m_firstFree - 1))</b>
+<i>1126</i>&nbsp;    {
+<b class="nc"><i>1127</i>&nbsp;      System.arraycopy(m_map, at, m_map, at + 1, m_firstFree - at);</b>
+<i>1128</i>&nbsp;    }
+<i>1129</i>&nbsp;
+<b class="nc"><i>1130</i>&nbsp;    m_map[at] = value;</b>
+<i>1131</i>&nbsp;
+<b class="nc"><i>1132</i>&nbsp;    m_firstFree++;</b>
+<i>1133</i>&nbsp;  }
+<i>1134</i>&nbsp;
+<i>1135</i>&nbsp;  /**
+<i>1136</i>&nbsp;   * Append the nodes to the list.
+<i>1137</i>&nbsp;   *
+<i>1138</i>&nbsp;   * @param nodes NodeVector to append to this list
+<i>1139</i>&nbsp;   */
+<i>1140</i>&nbsp;  public void appendNodes(NodeSet nodes)
+<i>1141</i>&nbsp;  {
+<i>1142</i>&nbsp;
+<b class="nc"><i>1143</i>&nbsp;    int nNodes = nodes.size();</b>
+<i>1144</i>&nbsp;
+<b class="nc"><i>1145</i>&nbsp;    if (null == m_map)</b>
+<i>1146</i>&nbsp;    {
+<b class="nc"><i>1147</i>&nbsp;      m_mapSize = nNodes + m_blocksize;</b>
+<b class="nc"><i>1148</i>&nbsp;      m_map = new Node[m_mapSize];</b>
+<i>1149</i>&nbsp;    }
+<b class="nc"><i>1150</i>&nbsp;    else if ((m_firstFree + nNodes) &gt;= m_mapSize)</b>
+<i>1151</i>&nbsp;    {
+<b class="nc"><i>1152</i>&nbsp;      m_mapSize += (nNodes + m_blocksize);</b>
+<i>1153</i>&nbsp;
+<b class="nc"><i>1154</i>&nbsp;      Node newMap[] = new Node[m_mapSize];</b>
+<i>1155</i>&nbsp;
+<b class="nc"><i>1156</i>&nbsp;      System.arraycopy(m_map, 0, newMap, 0, m_firstFree + nNodes);</b>
+<i>1157</i>&nbsp;
+<b class="nc"><i>1158</i>&nbsp;      m_map = newMap;</b>
+<i>1159</i>&nbsp;    }
+<i>1160</i>&nbsp;
+<b class="nc"><i>1161</i>&nbsp;    System.arraycopy(nodes.m_map, 0, m_map, m_firstFree, nNodes);</b>
+<i>1162</i>&nbsp;
+<b class="nc"><i>1163</i>&nbsp;    m_firstFree += nNodes;</b>
+<i>1164</i>&nbsp;  }
+<i>1165</i>&nbsp;
+<i>1166</i>&nbsp;  /**
+<i>1167</i>&nbsp;   * Inserts the specified node in this vector at the specified index.
+<i>1168</i>&nbsp;   * Each component in this vector with an index greater or equal to
+<i>1169</i>&nbsp;   * the specified index is shifted upward to have an index one greater
+<i>1170</i>&nbsp;   * than the value it had previously.
+<i>1171</i>&nbsp;   */
+<i>1172</i>&nbsp;  public void removeAllElements()
+<i>1173</i>&nbsp;  {
+<i>1174</i>&nbsp;
+<b class="nc"><i>1175</i>&nbsp;    if (null == m_map)</b>
+<i>1176</i>&nbsp;      return;
+<i>1177</i>&nbsp;
+<b class="nc"><i>1178</i>&nbsp;    for (int i = 0; i &lt; m_firstFree; i++)</b>
+<i>1179</i>&nbsp;    {
+<b class="nc"><i>1180</i>&nbsp;      m_map[i] = null;</b>
+<i>1181</i>&nbsp;    }
+<i>1182</i>&nbsp;
+<b class="nc"><i>1183</i>&nbsp;    m_firstFree = 0;</b>
+<i>1184</i>&nbsp;  }
+<i>1185</i>&nbsp;
+<i>1186</i>&nbsp;  /**
+<i>1187</i>&nbsp;   * Removes the first occurrence of the argument from this vector.
+<i>1188</i>&nbsp;   * If the object is found in this vector, each component in the vector
+<i>1189</i>&nbsp;   * with an index greater or equal to the object&#39;s index is shifted
+<i>1190</i>&nbsp;   * downward to have an index one smaller than the value it had
+<i>1191</i>&nbsp;   * previously.
+<i>1192</i>&nbsp;   *
+<i>1193</i>&nbsp;   * @param s Node to remove from the list
+<i>1194</i>&nbsp;   *
+<i>1195</i>&nbsp;   * @return True if the node was successfully removed
+<i>1196</i>&nbsp;   */
+<i>1197</i>&nbsp;  public boolean removeElement(Node s)
+<i>1198</i>&nbsp;  {
+<b class="nc"><i>1199</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>1200</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>1201</i>&nbsp;
+<b class="nc"><i>1202</i>&nbsp;    if (null == m_map)</b>
+<b class="nc"><i>1203</i>&nbsp;      return false;</b>
+<i>1204</i>&nbsp;
+<b class="nc"><i>1205</i>&nbsp;    for (int i = 0; i &lt; m_firstFree; i++)</b>
+<i>1206</i>&nbsp;    {
+<b class="nc"><i>1207</i>&nbsp;      Node node = m_map[i];</b>
+<i>1208</i>&nbsp;
+<b class="nc"><i>1209</i>&nbsp;      if ((null != node) &amp;&amp; node.equals(s))</b>
+<i>1210</i>&nbsp;      {
+<b class="nc"><i>1211</i>&nbsp;        if (i &lt; m_firstFree - 1)</b>
+<b class="nc"><i>1212</i>&nbsp;          System.arraycopy(m_map, i + 1, m_map, i, m_firstFree - i - 1);</b>
+<i>1213</i>&nbsp;
+<b class="nc"><i>1214</i>&nbsp;        m_firstFree--;</b>
+<b class="nc"><i>1215</i>&nbsp;        m_map[m_firstFree] = null;</b>
+<i>1216</i>&nbsp;
+<b class="nc"><i>1217</i>&nbsp;        return true;</b>
+<i>1218</i>&nbsp;      }
+<i>1219</i>&nbsp;    }
+<i>1220</i>&nbsp;
+<b class="nc"><i>1221</i>&nbsp;    return false;</b>
+<i>1222</i>&nbsp;  }
+<i>1223</i>&nbsp;
+<i>1224</i>&nbsp;  /**
+<i>1225</i>&nbsp;   * Deletes the component at the specified index. Each component in
+<i>1226</i>&nbsp;   * this vector with an index greater or equal to the specified
+<i>1227</i>&nbsp;   * index is shifted downward to have an index one smaller than
+<i>1228</i>&nbsp;   * the value it had previously.
+<i>1229</i>&nbsp;   *
+<i>1230</i>&nbsp;   * @param i Index of node to remove
+<i>1231</i>&nbsp;   */
+<i>1232</i>&nbsp;  public void removeElementAt(int i)
+<i>1233</i>&nbsp;  {
+<i>1234</i>&nbsp;
+<b class="nc"><i>1235</i>&nbsp;    if (null == m_map)</b>
+<i>1236</i>&nbsp;      return;
+<i>1237</i>&nbsp;
+<b class="nc"><i>1238</i>&nbsp;    if (i &gt;= m_firstFree)</b>
+<b class="nc"><i>1239</i>&nbsp;      throw new ArrayIndexOutOfBoundsException(i + &quot; &gt;= &quot; + m_firstFree);</b>
+<b class="nc"><i>1240</i>&nbsp;    else if (i &lt; 0)</b>
+<b class="nc"><i>1241</i>&nbsp;      throw new ArrayIndexOutOfBoundsException(i);</b>
+<i>1242</i>&nbsp;
+<b class="nc"><i>1243</i>&nbsp;    if (i &lt; m_firstFree - 1)</b>
+<b class="nc"><i>1244</i>&nbsp;      System.arraycopy(m_map, i + 1, m_map, i, m_firstFree - i - 1);</b>
+<i>1245</i>&nbsp;
+<b class="nc"><i>1246</i>&nbsp;    m_firstFree--;</b>
+<b class="nc"><i>1247</i>&nbsp;    m_map[m_firstFree] = null;</b>
+<i>1248</i>&nbsp;  }
+<i>1249</i>&nbsp;
+<i>1250</i>&nbsp;  /**
+<i>1251</i>&nbsp;   * Sets the component at the specified index of this vector to be the
+<i>1252</i>&nbsp;   * specified object. The previous component at that position is discarded.
+<i>1253</i>&nbsp;   *
+<i>1254</i>&nbsp;   * The index must be a value greater than or equal to 0 and less
+<i>1255</i>&nbsp;   * than the current size of the vector.
+<i>1256</i>&nbsp;   *
+<i>1257</i>&nbsp;   * @param node Node to set
+<i>1258</i>&nbsp;   * @param index Index of where to set the node
+<i>1259</i>&nbsp;   */
+<i>1260</i>&nbsp;  public void setElementAt(Node node, int index)
+<i>1261</i>&nbsp;  {
+<b class="nc"><i>1262</i>&nbsp;    if (!m_mutable)</b>
+<b class="nc"><i>1263</i>&nbsp;      throw new RuntimeException(XSLMessages.createXPATHMessage(XPATHErrorResources.ER_NODESET_NOT_MUTABLE, null)); //&quot;This NodeSet is not mutable!&quot;);</b>
+<i>1264</i>&nbsp;
+<b class="nc"><i>1265</i>&nbsp;    if (null == m_map)</b>
+<i>1266</i>&nbsp;    {
+<b class="nc"><i>1267</i>&nbsp;      m_map = new Node[m_blocksize];</b>
+<b class="nc"><i>1268</i>&nbsp;      m_mapSize = m_blocksize;</b>
+<i>1269</i>&nbsp;    }
+<i>1270</i>&nbsp;
+<b class="nc"><i>1271</i>&nbsp;    m_map[index] = node;</b>
+<i>1272</i>&nbsp;  }
+<i>1273</i>&nbsp;
+<i>1274</i>&nbsp;  /**
+<i>1275</i>&nbsp;   * Get the nth element.
+<i>1276</i>&nbsp;   *
+<i>1277</i>&nbsp;   * @param i Index of node to get
+<i>1278</i>&nbsp;   *
+<i>1279</i>&nbsp;   * @return Node at specified index
+<i>1280</i>&nbsp;   */
+<i>1281</i>&nbsp;  public Node elementAt(int i)
+<i>1282</i>&nbsp;  {
+<i>1283</i>&nbsp;
+<b class="nc"><i>1284</i>&nbsp;    if (null == m_map)</b>
+<b class="nc"><i>1285</i>&nbsp;      return null;</b>
+<i>1286</i>&nbsp;
+<b class="nc"><i>1287</i>&nbsp;    return m_map[i];</b>
+<i>1288</i>&nbsp;  }
+<i>1289</i>&nbsp;
+<i>1290</i>&nbsp;  /**
+<i>1291</i>&nbsp;   * Tell if the table contains the given node.
+<i>1292</i>&nbsp;   *
+<i>1293</i>&nbsp;   * @param s Node to look for
+<i>1294</i>&nbsp;   *
+<i>1295</i>&nbsp;   * @return True if the given node was found.
+<i>1296</i>&nbsp;   */
+<i>1297</i>&nbsp;  public boolean contains(Node s)
+<i>1298</i>&nbsp;  {
+<b class="nc"><i>1299</i>&nbsp;    runTo(-1);</b>
+<i>1300</i>&nbsp;
+<b class="nc"><i>1301</i>&nbsp;    if (null == m_map)</b>
+<b class="nc"><i>1302</i>&nbsp;      return false;</b>
+<i>1303</i>&nbsp;
+<b class="nc"><i>1304</i>&nbsp;    for (int i = 0; i &lt; m_firstFree; i++)</b>
+<i>1305</i>&nbsp;    {
+<b class="nc"><i>1306</i>&nbsp;      Node node = m_map[i];</b>
+<i>1307</i>&nbsp;
+<b class="nc"><i>1308</i>&nbsp;      if ((null != node) &amp;&amp; node.equals(s))</b>
+<b class="nc"><i>1309</i>&nbsp;        return true;</b>
+<i>1310</i>&nbsp;    }
+<i>1311</i>&nbsp;
+<b class="nc"><i>1312</i>&nbsp;    return false;</b>
+<i>1313</i>&nbsp;  }
+<i>1314</i>&nbsp;
+<i>1315</i>&nbsp;  /**
+<i>1316</i>&nbsp;   * Searches for the first occurence of the given argument,
+<i>1317</i>&nbsp;   * beginning the search at index, and testing for equality
+<i>1318</i>&nbsp;   * using the equals method.
+<i>1319</i>&nbsp;   *
+<i>1320</i>&nbsp;   * @param elem Node to look for
+<i>1321</i>&nbsp;   * @param index Index of where to start the search
+<i>1322</i>&nbsp;   * @return the index of the first occurrence of the object
+<i>1323</i>&nbsp;   * argument in this vector at position index or later in the
+<i>1324</i>&nbsp;   * vector; returns -1 if the object is not found.
+<i>1325</i>&nbsp;   */
+<i>1326</i>&nbsp;  public int indexOf(Node elem, int index)
+<i>1327</i>&nbsp;  {
+<b class="nc"><i>1328</i>&nbsp;    runTo(-1);</b>
+<i>1329</i>&nbsp;
+<b class="nc"><i>1330</i>&nbsp;    if (null == m_map)</b>
+<b class="nc"><i>1331</i>&nbsp;      return -1;</b>
+<i>1332</i>&nbsp;
+<b class="nc"><i>1333</i>&nbsp;    for (int i = index; i &lt; m_firstFree; i++)</b>
+<i>1334</i>&nbsp;    {
+<b class="nc"><i>1335</i>&nbsp;      Node node = m_map[i];</b>
+<i>1336</i>&nbsp;
+<b class="nc"><i>1337</i>&nbsp;      if ((null != node) &amp;&amp; node.equals(elem))</b>
+<b class="nc"><i>1338</i>&nbsp;        return i;</b>
+<i>1339</i>&nbsp;    }
+<i>1340</i>&nbsp;
+<b class="nc"><i>1341</i>&nbsp;    return -1;</b>
+<i>1342</i>&nbsp;  }
+<i>1343</i>&nbsp;
+<i>1344</i>&nbsp;  /**
+<i>1345</i>&nbsp;   * Searches for the first occurence of the given argument,
+<i>1346</i>&nbsp;   * beginning the search at index, and testing for equality
+<i>1347</i>&nbsp;   * using the equals method.
+<i>1348</i>&nbsp;   *
+<i>1349</i>&nbsp;   * @param elem Node to look for
+<i>1350</i>&nbsp;   * @return the index of the first occurrence of the object
+<i>1351</i>&nbsp;   * argument in this vector at position index or later in the
+<i>1352</i>&nbsp;   * vector; returns -1 if the object is not found.
+<i>1353</i>&nbsp;   */
+<i>1354</i>&nbsp;  public int indexOf(Node elem)
+<i>1355</i>&nbsp;  {
+<b class="nc"><i>1356</i>&nbsp;    runTo(-1);</b>
+<i>1357</i>&nbsp;
+<b class="nc"><i>1358</i>&nbsp;    if (null == m_map)</b>
+<b class="nc"><i>1359</i>&nbsp;      return -1;</b>
+<i>1360</i>&nbsp;
+<b class="nc"><i>1361</i>&nbsp;    for (int i = 0; i &lt; m_firstFree; i++)</b>
+<i>1362</i>&nbsp;    {
+<b class="nc"><i>1363</i>&nbsp;      Node node = m_map[i];</b>
+<i>1364</i>&nbsp;
+<b class="nc"><i>1365</i>&nbsp;      if ((null != node) &amp;&amp; node.equals(elem))</b>
+<b class="nc"><i>1366</i>&nbsp;        return i;</b>
+<i>1367</i>&nbsp;    }
+<i>1368</i>&nbsp;
+<b class="nc"><i>1369</i>&nbsp;    return -1;</b>
+<i>1370</i>&nbsp;  }
+<i>1371</i>&nbsp;
+<i>1372</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,474 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: RetrievalMethodResolver</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations</a> ]
+</div>
+
+<h1>Coverage Summary for Class: RetrievalMethodResolver (com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RetrievalMethodResolver</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 155)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*
+<i>2</i>&nbsp; * Copyright (c) 2007, 2016, Oracle and/or its affiliates. All rights reserved.
+<i>3</i>&nbsp; * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+<i>4</i>&nbsp; */
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * Licensed to the Apache Software Foundation (ASF) under one
+<i>7</i>&nbsp; * or more contributor license agreements. See the NOTICE file
+<i>8</i>&nbsp; * distributed with this work for additional information
+<i>9</i>&nbsp; * regarding copyright ownership. The ASF licenses this file
+<i>10</i>&nbsp; * to you under the Apache License, Version 2.0 (the
+<i>11</i>&nbsp; * &quot;License&quot;); you may not use this file except in compliance
+<i>12</i>&nbsp; * with the License. You may obtain a copy of the License at
+<i>13</i>&nbsp; *
+<i>14</i>&nbsp; * http://www.apache.org/licenses/LICENSE-2.0
+<i>15</i>&nbsp; *
+<i>16</i>&nbsp; * Unless required by applicable law or agreed to in writing,
+<i>17</i>&nbsp; * software distributed under the License is distributed on an
+<i>18</i>&nbsp; * &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+<i>19</i>&nbsp; * KIND, either express or implied. See the License for the
+<i>20</i>&nbsp; * specific language governing permissions and limitations
+<i>21</i>&nbsp; * under the License.
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;package com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;import java.io.ByteArrayInputStream;
+<i>26</i>&nbsp;import java.io.IOException;
+<i>27</i>&nbsp;import java.security.PublicKey;
+<i>28</i>&nbsp;import java.security.cert.CertificateException;
+<i>29</i>&nbsp;import java.security.cert.CertificateFactory;
+<i>30</i>&nbsp;import java.security.cert.X509Certificate;
+<i>31</i>&nbsp;import java.util.ArrayList;
+<i>32</i>&nbsp;import java.util.Iterator;
+<i>33</i>&nbsp;import java.util.List;
+<i>34</i>&nbsp;import java.util.ListIterator;
+<i>35</i>&nbsp;import java.util.Set;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import javax.xml.XMLConstants;
+<i>38</i>&nbsp;import javax.xml.parsers.DocumentBuilder;
+<i>39</i>&nbsp;import javax.xml.parsers.DocumentBuilderFactory;
+<i>40</i>&nbsp;import javax.xml.parsers.ParserConfigurationException;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import com.sun.org.apache.xml.internal.security.c14n.CanonicalizationException;
+<i>43</i>&nbsp;import com.sun.org.apache.xml.internal.security.exceptions.XMLSecurityException;
+<i>44</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.RetrievalMethod;
+<i>45</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.content.x509.XMLX509Certificate;
+<i>46</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.KeyResolver;
+<i>47</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.KeyResolverException;
+<i>48</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.keyresolver.KeyResolverSpi;
+<i>49</i>&nbsp;import com.sun.org.apache.xml.internal.security.keys.storage.StorageResolver;
+<i>50</i>&nbsp;import com.sun.org.apache.xml.internal.security.signature.XMLSignatureInput;
+<i>51</i>&nbsp;import com.sun.org.apache.xml.internal.security.transforms.Transforms;
+<i>52</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.Constants;
+<i>53</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.XMLUtils;
+<i>54</i>&nbsp;import com.sun.org.apache.xml.internal.security.utils.resolver.ResourceResolver;
+<i>55</i>&nbsp;import org.w3c.dom.Attr;
+<i>56</i>&nbsp;import org.w3c.dom.Document;
+<i>57</i>&nbsp;import org.w3c.dom.Element;
+<i>58</i>&nbsp;import org.w3c.dom.Node;
+<i>59</i>&nbsp;import org.xml.sax.SAXException;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;/**
+<i>62</i>&nbsp; * The RetrievalMethodResolver can retrieve public keys and certificates from
+<i>63</i>&nbsp; * other locations. The location is specified using the ds:RetrievalMethod
+<i>64</i>&nbsp; * element which points to the location. This includes the handling of raw
+<i>65</i>&nbsp; * (binary) X.509 certificate which are not encapsulated in an XML structure.
+<i>66</i>&nbsp; * If the retrieval process encounters an element which the
+<i>67</i>&nbsp; * RetrievalMethodResolver cannot handle itself, resolving of the extracted
+<i>68</i>&nbsp; * element is delegated back to the KeyResolver mechanism.
+<i>69</i>&nbsp; *
+<i>70</i>&nbsp; * @author $Author: raul $ modified by Dave Garcia
+<i>71</i>&nbsp; */
+<b class="nc"><i>72</i>&nbsp;public class RetrievalMethodResolver extends KeyResolverSpi {</b>
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    /** {@link org.apache.commons.logging} logging facility */
+<i>75</i>&nbsp;    private static java.util.logging.Logger log =
+<b class="nc"><i>76</i>&nbsp;        java.util.logging.Logger.getLogger(RetrievalMethodResolver.class.getName());</b>
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    /**
+<i>79</i>&nbsp;     * Method engineResolvePublicKey
+<i>80</i>&nbsp;     * @inheritDoc
+<i>81</i>&nbsp;     * @param element
+<i>82</i>&nbsp;     * @param baseURI
+<i>83</i>&nbsp;     * @param storage
+<i>84</i>&nbsp;     */
+<i>85</i>&nbsp;    public PublicKey engineLookupAndResolvePublicKey(
+<i>86</i>&nbsp;           Element element, String baseURI, StorageResolver storage
+<i>87</i>&nbsp;    ) {
+<b class="nc"><i>88</i>&nbsp;        if (!XMLUtils.elementIsInSignatureSpace(element, Constants._TAG_RETRIEVALMETHOD)) {</b>
+<b class="nc"><i>89</i>&nbsp;            return null;</b>
+<i>90</i>&nbsp;        }
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;        try {
+<i>93</i>&nbsp;            // Create a retrieval method over the given element
+<b class="nc"><i>94</i>&nbsp;            RetrievalMethod rm = new RetrievalMethod(element, baseURI);</b>
+<b class="nc"><i>95</i>&nbsp;            String type = rm.getType();</b>
+<b class="nc"><i>96</i>&nbsp;            XMLSignatureInput resource = resolveInput(rm, baseURI, secureValidation);</b>
+<b class="nc"><i>97</i>&nbsp;            if (RetrievalMethod.TYPE_RAWX509.equals(type)) {</b>
+<i>98</i>&nbsp;                // a raw certificate, direct parsing is done!
+<b class="nc"><i>99</i>&nbsp;                X509Certificate cert = getRawCertificate(resource);</b>
+<b class="nc"><i>100</i>&nbsp;                if (cert != null) {</b>
+<b class="nc"><i>101</i>&nbsp;                    return cert.getPublicKey();</b>
+<i>102</i>&nbsp;                }
+<b class="nc"><i>103</i>&nbsp;                return null;</b>
+<i>104</i>&nbsp;             }
+<b class="nc"><i>105</i>&nbsp;             Element e = obtainReferenceElement(resource);</b>
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;             // Check to make sure that the reference is not to another RetrievalMethod
+<i>108</i>&nbsp;             // which points to this element
+<b class="nc"><i>109</i>&nbsp;             if (XMLUtils.elementIsInSignatureSpace(e, Constants._TAG_RETRIEVALMETHOD)) {</b>
+<b class="nc"><i>110</i>&nbsp;                 if (secureValidation) {</b>
+<b class="nc"><i>111</i>&nbsp;                     String error = &quot;Error: It is forbidden to have one RetrievalMethod &quot;</b>
+<i>112</i>&nbsp;                         + &quot;point to another with secure validation&quot;;
+<b class="nc"><i>113</i>&nbsp;                     if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>114</i>&nbsp;                         log.log(java.util.logging.Level.FINE, error);</b>
+<i>115</i>&nbsp;                     }
+<b class="nc"><i>116</i>&nbsp;                     return null;</b>
+<i>117</i>&nbsp;                 }
+<b class="nc"><i>118</i>&nbsp;                 RetrievalMethod rm2 = new RetrievalMethod(e, baseURI);</b>
+<b class="nc"><i>119</i>&nbsp;                 XMLSignatureInput resource2 = resolveInput(rm2, baseURI, secureValidation);</b>
+<b class="nc"><i>120</i>&nbsp;                 Element e2 = obtainReferenceElement(resource2);</b>
+<b class="nc"><i>121</i>&nbsp;                 if (e2 == element) {</b>
+<b class="nc"><i>122</i>&nbsp;                     if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>123</i>&nbsp;                         log.log(java.util.logging.Level.FINE, &quot;Error: Can&#39;t have RetrievalMethods pointing to each other&quot;);</b>
+<i>124</i>&nbsp;                     }
+<b class="nc"><i>125</i>&nbsp;                     return null;</b>
+<i>126</i>&nbsp;                 }
+<i>127</i>&nbsp;             }
+<i>128</i>&nbsp;
+<b class="nc"><i>129</i>&nbsp;             return resolveKey(e, baseURI, storage);</b>
+<b class="nc"><i>130</i>&nbsp;         } catch (XMLSecurityException ex) {</b>
+<b class="nc"><i>131</i>&nbsp;             if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>132</i>&nbsp;                 log.log(java.util.logging.Level.FINE, &quot;XMLSecurityException&quot;, ex);</b>
+<i>133</i>&nbsp;             }
+<b class="nc"><i>134</i>&nbsp;         } catch (CertificateException ex) {</b>
+<b class="nc"><i>135</i>&nbsp;             if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>136</i>&nbsp;                 log.log(java.util.logging.Level.FINE, &quot;CertificateException&quot;, ex);</b>
+<i>137</i>&nbsp;             }
+<b class="nc"><i>138</i>&nbsp;         } catch (IOException ex) {</b>
+<b class="nc"><i>139</i>&nbsp;             if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>140</i>&nbsp;                 log.log(java.util.logging.Level.FINE, &quot;IOException&quot;, ex);</b>
+<i>141</i>&nbsp;             }
+<b class="nc"><i>142</i>&nbsp;         } catch (ParserConfigurationException e) {</b>
+<b class="nc"><i>143</i>&nbsp;             if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>144</i>&nbsp;                 log.log(java.util.logging.Level.FINE, &quot;ParserConfigurationException&quot;, e);</b>
+<i>145</i>&nbsp;             }
+<b class="nc"><i>146</i>&nbsp;         } catch (SAXException e) {</b>
+<b class="nc"><i>147</i>&nbsp;             if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>148</i>&nbsp;                 log.log(java.util.logging.Level.FINE, &quot;SAXException&quot;, e);</b>
+<i>149</i>&nbsp;             }
+<b class="nc"><i>150</i>&nbsp;         }</b>
+<b class="nc"><i>151</i>&nbsp;         return null;</b>
+<i>152</i>&nbsp;    }
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;    /**
+<i>155</i>&nbsp;     * Method engineResolveX509Certificate
+<i>156</i>&nbsp;     * @inheritDoc
+<i>157</i>&nbsp;     * @param element
+<i>158</i>&nbsp;     * @param baseURI
+<i>159</i>&nbsp;     * @param storage
+<i>160</i>&nbsp;     */
+<i>161</i>&nbsp;    public X509Certificate engineLookupResolveX509Certificate(
+<i>162</i>&nbsp;        Element element, String baseURI, StorageResolver storage) {
+<b class="nc"><i>163</i>&nbsp;        if (!XMLUtils.elementIsInSignatureSpace(element, Constants._TAG_RETRIEVALMETHOD)) {</b>
+<b class="nc"><i>164</i>&nbsp;             return null;</b>
+<i>165</i>&nbsp;        }
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;        try {
+<b class="nc"><i>168</i>&nbsp;            RetrievalMethod rm = new RetrievalMethod(element, baseURI);</b>
+<b class="nc"><i>169</i>&nbsp;            String type = rm.getType();</b>
+<b class="nc"><i>170</i>&nbsp;            XMLSignatureInput resource = resolveInput(rm, baseURI, secureValidation);</b>
+<b class="nc"><i>171</i>&nbsp;            if (RetrievalMethod.TYPE_RAWX509.equals(type)) {</b>
+<b class="nc"><i>172</i>&nbsp;                return getRawCertificate(resource);</b>
+<i>173</i>&nbsp;            }
+<i>174</i>&nbsp;
+<b class="nc"><i>175</i>&nbsp;            Element e = obtainReferenceElement(resource);</b>
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;            // Check to make sure that the reference is not to another RetrievalMethod
+<i>178</i>&nbsp;            // which points to this element
+<b class="nc"><i>179</i>&nbsp;            if (XMLUtils.elementIsInSignatureSpace(e, Constants._TAG_RETRIEVALMETHOD)) {</b>
+<b class="nc"><i>180</i>&nbsp;                if (secureValidation) {</b>
+<b class="nc"><i>181</i>&nbsp;                    String error = &quot;Error: It is forbidden to have one RetrievalMethod &quot;</b>
+<i>182</i>&nbsp;                        + &quot;point to another with secure validation&quot;;
+<b class="nc"><i>183</i>&nbsp;                    if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>184</i>&nbsp;                        log.log(java.util.logging.Level.FINE, error);</b>
+<i>185</i>&nbsp;                    }
+<b class="nc"><i>186</i>&nbsp;                    return null;</b>
+<i>187</i>&nbsp;                }
+<b class="nc"><i>188</i>&nbsp;                RetrievalMethod rm2 = new RetrievalMethod(e, baseURI);</b>
+<b class="nc"><i>189</i>&nbsp;                XMLSignatureInput resource2 = resolveInput(rm2, baseURI, secureValidation);</b>
+<b class="nc"><i>190</i>&nbsp;                Element e2 = obtainReferenceElement(resource2);</b>
+<b class="nc"><i>191</i>&nbsp;                if (e2 == element) {</b>
+<b class="nc"><i>192</i>&nbsp;                    if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>193</i>&nbsp;                        log.log(java.util.logging.Level.FINE, &quot;Error: Can&#39;t have RetrievalMethods pointing to each other&quot;);</b>
+<i>194</i>&nbsp;                    }
+<b class="nc"><i>195</i>&nbsp;                    return null;</b>
+<i>196</i>&nbsp;                }
+<i>197</i>&nbsp;            }
+<i>198</i>&nbsp;
+<b class="nc"><i>199</i>&nbsp;            return resolveCertificate(e, baseURI, storage);</b>
+<b class="nc"><i>200</i>&nbsp;        } catch (XMLSecurityException ex) {</b>
+<b class="nc"><i>201</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>202</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;XMLSecurityException&quot;, ex);</b>
+<i>203</i>&nbsp;            }
+<b class="nc"><i>204</i>&nbsp;        } catch (CertificateException ex) {</b>
+<b class="nc"><i>205</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>206</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;CertificateException&quot;, ex);</b>
+<i>207</i>&nbsp;            }
+<b class="nc"><i>208</i>&nbsp;        } catch (IOException ex) {</b>
+<b class="nc"><i>209</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>210</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;IOException&quot;, ex);</b>
+<i>211</i>&nbsp;            }
+<b class="nc"><i>212</i>&nbsp;        } catch (ParserConfigurationException e) {</b>
+<b class="nc"><i>213</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>214</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;ParserConfigurationException&quot;, e);</b>
+<i>215</i>&nbsp;            }
+<b class="nc"><i>216</i>&nbsp;        } catch (SAXException e) {</b>
+<b class="nc"><i>217</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>218</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;SAXException&quot;, e);</b>
+<i>219</i>&nbsp;            }
+<b class="nc"><i>220</i>&nbsp;        }</b>
+<b class="nc"><i>221</i>&nbsp;        return null;</b>
+<i>222</i>&nbsp;    }
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;    /**
+<i>225</i>&nbsp;     * Retrieves a x509Certificate from the given information
+<i>226</i>&nbsp;     * @param e
+<i>227</i>&nbsp;     * @param baseURI
+<i>228</i>&nbsp;     * @param storage
+<i>229</i>&nbsp;     * @return
+<i>230</i>&nbsp;     * @throws KeyResolverException
+<i>231</i>&nbsp;     */
+<i>232</i>&nbsp;    private static X509Certificate resolveCertificate(
+<i>233</i>&nbsp;        Element e, String baseURI, StorageResolver storage
+<i>234</i>&nbsp;    ) throws KeyResolverException {
+<b class="nc"><i>235</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>236</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;Now we have a {&quot; + e.getNamespaceURI() + &quot;}&quot;</b>
+<b class="nc"><i>237</i>&nbsp;                + e.getLocalName() + &quot; Element&quot;);</b>
+<i>238</i>&nbsp;        }
+<i>239</i>&nbsp;        // An element has been provided
+<b class="nc"><i>240</i>&nbsp;        if (e != null) {</b>
+<b class="nc"><i>241</i>&nbsp;            return KeyResolver.getX509Certificate(e, baseURI, storage);</b>
+<i>242</i>&nbsp;        }
+<b class="nc"><i>243</i>&nbsp;        return null;</b>
+<i>244</i>&nbsp;    }
+<i>245</i>&nbsp;
+<i>246</i>&nbsp;    /**
+<i>247</i>&nbsp;     * Retrieves a PublicKey from the given information
+<i>248</i>&nbsp;     * @param e
+<i>249</i>&nbsp;     * @param baseURI
+<i>250</i>&nbsp;     * @param storage
+<i>251</i>&nbsp;     * @return
+<i>252</i>&nbsp;     * @throws KeyResolverException
+<i>253</i>&nbsp;     */
+<i>254</i>&nbsp;    private static PublicKey resolveKey(
+<i>255</i>&nbsp;        Element e, String baseURI, StorageResolver storage
+<i>256</i>&nbsp;    ) throws KeyResolverException {
+<b class="nc"><i>257</i>&nbsp;        if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>258</i>&nbsp;            log.log(java.util.logging.Level.FINE, &quot;Now we have a {&quot; + e.getNamespaceURI() + &quot;}&quot;</b>
+<b class="nc"><i>259</i>&nbsp;                + e.getLocalName() + &quot; Element&quot;);</b>
+<i>260</i>&nbsp;        }
+<i>261</i>&nbsp;        // An element has been provided
+<b class="nc"><i>262</i>&nbsp;        if (e != null) {</b>
+<b class="nc"><i>263</i>&nbsp;            return KeyResolver.getPublicKey(e, baseURI, storage);</b>
+<i>264</i>&nbsp;        }
+<b class="nc"><i>265</i>&nbsp;        return null;</b>
+<i>266</i>&nbsp;    }
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;    private static Element obtainReferenceElement(XMLSignatureInput resource)
+<i>269</i>&nbsp;        throws CanonicalizationException, ParserConfigurationException,
+<i>270</i>&nbsp;        IOException, SAXException, KeyResolverException {
+<i>271</i>&nbsp;        Element e;
+<b class="nc"><i>272</i>&nbsp;        if (resource.isElement()){</b>
+<b class="nc"><i>273</i>&nbsp;            e = (Element) resource.getSubNode();</b>
+<b class="nc"><i>274</i>&nbsp;        } else if (resource.isNodeSet()) {</b>
+<i>275</i>&nbsp;            // Retrieved resource is a nodeSet
+<b class="nc"><i>276</i>&nbsp;            e = getDocumentElement(resource.getNodeSet());</b>
+<i>277</i>&nbsp;        } else {
+<i>278</i>&nbsp;            // Retrieved resource is an inputStream
+<b class="nc"><i>279</i>&nbsp;            byte inputBytes[] = resource.getBytes();</b>
+<b class="nc"><i>280</i>&nbsp;            e = getDocFromBytes(inputBytes);</b>
+<i>281</i>&nbsp;            // otherwise, we parse the resource, create an Element and delegate
+<b class="nc"><i>282</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>283</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;we have to parse &quot; + inputBytes.length + &quot; bytes&quot;);</b>
+<i>284</i>&nbsp;            }
+<i>285</i>&nbsp;        }
+<b class="nc"><i>286</i>&nbsp;        return e;</b>
+<i>287</i>&nbsp;    }
+<i>288</i>&nbsp;
+<i>289</i>&nbsp;    private static X509Certificate getRawCertificate(XMLSignatureInput resource)
+<i>290</i>&nbsp;        throws CanonicalizationException, IOException, CertificateException {
+<b class="nc"><i>291</i>&nbsp;        byte inputBytes[] = resource.getBytes();</b>
+<i>292</i>&nbsp;        // if the resource stores a raw certificate, we have to handle it
+<b class="nc"><i>293</i>&nbsp;        CertificateFactory certFact =</b>
+<b class="nc"><i>294</i>&nbsp;            CertificateFactory.getInstance(XMLX509Certificate.JCA_CERT_ID);</b>
+<b class="nc"><i>295</i>&nbsp;        X509Certificate cert = (X509Certificate)</b>
+<b class="nc"><i>296</i>&nbsp;            certFact.generateCertificate(new ByteArrayInputStream(inputBytes));</b>
+<b class="nc"><i>297</i>&nbsp;        return cert;</b>
+<i>298</i>&nbsp;    }
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;    /**
+<i>301</i>&nbsp;     * Resolves the input from the given retrieval method
+<i>302</i>&nbsp;     * @return
+<i>303</i>&nbsp;     * @throws XMLSecurityException
+<i>304</i>&nbsp;     */
+<i>305</i>&nbsp;    private static XMLSignatureInput resolveInput(
+<i>306</i>&nbsp;        RetrievalMethod rm, String baseURI, boolean secureValidation
+<i>307</i>&nbsp;    ) throws XMLSecurityException {
+<b class="nc"><i>308</i>&nbsp;        Attr uri = rm.getURIAttr();</b>
+<i>309</i>&nbsp;        // Apply the transforms
+<b class="nc"><i>310</i>&nbsp;        Transforms transforms = rm.getTransforms();</b>
+<b class="nc"><i>311</i>&nbsp;        ResourceResolver resRes = ResourceResolver.getInstance(uri, baseURI, secureValidation);</b>
+<b class="nc"><i>312</i>&nbsp;        XMLSignatureInput resource = resRes.resolve(uri, baseURI, secureValidation);</b>
+<b class="nc"><i>313</i>&nbsp;        if (transforms != null) {</b>
+<b class="nc"><i>314</i>&nbsp;            if (log.isLoggable(java.util.logging.Level.FINE)) {</b>
+<b class="nc"><i>315</i>&nbsp;                log.log(java.util.logging.Level.FINE, &quot;We have Transforms&quot;);</b>
+<i>316</i>&nbsp;            }
+<b class="nc"><i>317</i>&nbsp;            resource = transforms.performTransforms(resource);</b>
+<i>318</i>&nbsp;        }
+<b class="nc"><i>319</i>&nbsp;        return resource;</b>
+<i>320</i>&nbsp;    }
+<i>321</i>&nbsp;
+<i>322</i>&nbsp;    /**
+<i>323</i>&nbsp;     * Parses a byte array and returns the parsed Element.
+<i>324</i>&nbsp;     *
+<i>325</i>&nbsp;     * @param bytes
+<i>326</i>&nbsp;     * @return the Document Element after parsing bytes
+<i>327</i>&nbsp;     * @throws KeyResolverException if something goes wrong
+<i>328</i>&nbsp;     */
+<i>329</i>&nbsp;    private static Element getDocFromBytes(byte[] bytes) throws KeyResolverException {
+<i>330</i>&nbsp;        try {
+<b class="nc"><i>331</i>&nbsp;            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();</b>
+<b class="nc"><i>332</i>&nbsp;            dbf.setNamespaceAware(true);</b>
+<b class="nc"><i>333</i>&nbsp;            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE);</b>
+<b class="nc"><i>334</i>&nbsp;            DocumentBuilder db = dbf.newDocumentBuilder();</b>
+<b class="nc"><i>335</i>&nbsp;            Document doc = db.parse(new ByteArrayInputStream(bytes));</b>
+<b class="nc"><i>336</i>&nbsp;            return doc.getDocumentElement();</b>
+<b class="nc"><i>337</i>&nbsp;        } catch (SAXException ex) {</b>
+<b class="nc"><i>338</i>&nbsp;            throw new KeyResolverException(&quot;empty&quot;, ex);</b>
+<b class="nc"><i>339</i>&nbsp;        } catch (IOException ex) {</b>
+<b class="nc"><i>340</i>&nbsp;            throw new KeyResolverException(&quot;empty&quot;, ex);</b>
+<b class="nc"><i>341</i>&nbsp;        } catch (ParserConfigurationException ex) {</b>
+<b class="nc"><i>342</i>&nbsp;            throw new KeyResolverException(&quot;empty&quot;, ex);</b>
+<i>343</i>&nbsp;        }
+<i>344</i>&nbsp;    }
+<i>345</i>&nbsp;
+<i>346</i>&nbsp;    /**
+<i>347</i>&nbsp;     * Method engineResolveSecretKey
+<i>348</i>&nbsp;     * @inheritDoc
+<i>349</i>&nbsp;     * @param element
+<i>350</i>&nbsp;     * @param baseURI
+<i>351</i>&nbsp;     * @param storage
+<i>352</i>&nbsp;     */
+<i>353</i>&nbsp;    public javax.crypto.SecretKey engineLookupAndResolveSecretKey(
+<i>354</i>&nbsp;        Element element, String baseURI, StorageResolver storage
+<i>355</i>&nbsp;    ) {
+<b class="nc"><i>356</i>&nbsp;        return null;</b>
+<i>357</i>&nbsp;    }
+<i>358</i>&nbsp;
+<i>359</i>&nbsp;    private static Element getDocumentElement(Set&lt;Node&gt; set) {
+<b class="nc"><i>360</i>&nbsp;        Iterator&lt;Node&gt; it = set.iterator();</b>
+<b class="nc"><i>361</i>&nbsp;        Element e = null;</b>
+<b class="nc"><i>362</i>&nbsp;        while (it.hasNext()) {</b>
+<b class="nc"><i>363</i>&nbsp;            Node currentNode = it.next();</b>
+<b class="nc"><i>364</i>&nbsp;            if (currentNode != null &amp;&amp; Node.ELEMENT_NODE == currentNode.getNodeType()) {</b>
+<b class="nc"><i>365</i>&nbsp;                e = (Element) currentNode;</b>
+<b class="nc"><i>366</i>&nbsp;                break;</b>
+<i>367</i>&nbsp;            }
+<b class="nc"><i>368</i>&nbsp;        }</b>
+<b class="nc"><i>369</i>&nbsp;        List&lt;Node&gt; parents = new ArrayList&lt;Node&gt;();</b>
+<i>370</i>&nbsp;
+<i>371</i>&nbsp;        // Obtain all the parents of the elemnt
+<b class="nc"><i>372</i>&nbsp;        while (e != null) {</b>
+<b class="nc"><i>373</i>&nbsp;            parents.add(e);</b>
+<b class="nc"><i>374</i>&nbsp;            Node n = e.getParentNode();</b>
+<b class="nc"><i>375</i>&nbsp;            if (n == null || Node.ELEMENT_NODE != n.getNodeType()) {</b>
+<b class="nc"><i>376</i>&nbsp;                break;</b>
+<i>377</i>&nbsp;            }
+<b class="nc"><i>378</i>&nbsp;            e = (Element) n;</b>
+<b class="nc"><i>379</i>&nbsp;        }</b>
+<i>380</i>&nbsp;        // Visit them in reverse order.
+<b class="nc"><i>381</i>&nbsp;        ListIterator&lt;Node&gt; it2 = parents.listIterator(parents.size()-1);</b>
+<b class="nc"><i>382</i>&nbsp;        Element ele = null;</b>
+<b class="nc"><i>383</i>&nbsp;        while (it2.hasPrevious()) {</b>
+<b class="nc"><i>384</i>&nbsp;            ele = (Element) it2.previous();</b>
+<b class="nc"><i>385</i>&nbsp;            if (set.contains(ele)) {</b>
+<b class="nc"><i>386</i>&nbsp;                return ele;</b>
+<i>387</i>&nbsp;            }
+<i>388</i>&nbsp;        }
+<b class="nc"><i>389</i>&nbsp;        return null;</b>
+<i>390</i>&nbsp;    }
+<i>391</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>

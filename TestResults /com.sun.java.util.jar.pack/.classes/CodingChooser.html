@@ -1,0 +1,294 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CodingChooser</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.sun.java.util.jar.pack</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CodingChooser (com.sun.java.util.jar.pack)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CodingChooser</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 38)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 763)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CodingChooser$Choice</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CodingChooser$Sizer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 52)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 798)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;
+<i>2</i>&nbsp;  // IntelliJ API Decompiler stub source generated from a class file
+<i>3</i>&nbsp;  // Implementation of methods is not available
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;package com.sun.java.util.jar.pack;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;class CodingChooser {
+<i>8</i>&nbsp;    int verbose;
+<i>9</i>&nbsp;    int effort;
+<i>10</i>&nbsp;    boolean optUseHistogram;
+<i>11</i>&nbsp;    boolean optUsePopulationCoding;
+<i>12</i>&nbsp;    boolean optUseAdaptiveCoding;
+<i>13</i>&nbsp;    boolean disablePopCoding;
+<i>14</i>&nbsp;    boolean disableRunCoding;
+<i>15</i>&nbsp;    boolean topLevel;
+<i>16</i>&nbsp;    double fuzz;
+<i>17</i>&nbsp;    com.sun.java.util.jar.pack.Coding[] allCodingChoices;
+<i>18</i>&nbsp;    com.sun.java.util.jar.pack.CodingChooser.Choice[] choices;
+<i>19</i>&nbsp;    java.io.ByteArrayOutputStream context;
+<i>20</i>&nbsp;    com.sun.java.util.jar.pack.CodingChooser popHelper;
+<i>21</i>&nbsp;    com.sun.java.util.jar.pack.CodingChooser runHelper;
+<i>22</i>&nbsp;    java.util.Random stress;
+<i>23</i>&nbsp;    private int[] values;
+<i>24</i>&nbsp;    private int start;
+<i>25</i>&nbsp;    private int end;
+<i>26</i>&nbsp;    private int[] deltas;
+<i>27</i>&nbsp;    private int min;
+<i>28</i>&nbsp;    private int max;
+<i>29</i>&nbsp;    private com.sun.java.util.jar.pack.Histogram vHist;
+<i>30</i>&nbsp;    private com.sun.java.util.jar.pack.Histogram dHist;
+<i>31</i>&nbsp;    private int searchOrder;
+<i>32</i>&nbsp;    private com.sun.java.util.jar.pack.CodingChooser.Choice regularChoice;
+<i>33</i>&nbsp;    private com.sun.java.util.jar.pack.CodingChooser.Choice bestChoice;
+<i>34</i>&nbsp;    private com.sun.java.util.jar.pack.CodingMethod bestMethod;
+<i>35</i>&nbsp;    private int bestByteSize;
+<i>36</i>&nbsp;    private int bestZipSize;
+<i>37</i>&nbsp;    private int targetSize;
+<i>38</i>&nbsp;    public static final int MIN_EFFORT = 1;
+<i>39</i>&nbsp;    public static final int MID_EFFORT = 5;
+<i>40</i>&nbsp;    public static final int MAX_EFFORT = 9;
+<i>41</i>&nbsp;    public static final int POP_EFFORT = 4;
+<i>42</i>&nbsp;    public static final int RUN_EFFORT = 3;
+<i>43</i>&nbsp;    public static final int BYTE_SIZE = 0;
+<i>44</i>&nbsp;    public static final int ZIP_SIZE = 1;
+<i>45</i>&nbsp;    private com.sun.java.util.jar.pack.CodingChooser.Sizer zipSizer;
+<b class="nc"><i>46</i>&nbsp;    private java.util.zip.Deflater zipDef;</b>
+<i>47</i>&nbsp;    private java.util.zip.DeflaterOutputStream zipOut;
+<i>48</i>&nbsp;    private com.sun.java.util.jar.pack.CodingChooser.Sizer byteSizer;
+<b class="nc"><i>49</i>&nbsp;    private com.sun.java.util.jar.pack.CodingChooser.Sizer byteOnlySizer;</b>
+<b class="nc"><i>50</i>&nbsp;</b>
+<b class="nc"><i>51</i>&nbsp;    CodingChooser(int i, com.sun.java.util.jar.pack.Coding[] codings) { /* compiled code */ }</b>
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    com.sun.java.util.jar.pack.CodingChooser.Choice makeExtraChoice(com.sun.java.util.jar.pack.Coding coding) { /* compiled code */ }
+<b class="nc"><i>54</i>&nbsp;</b>
+<i>55</i>&nbsp;    java.io.ByteArrayOutputStream getContext() { /* compiled code */ }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    private void reset(int[] ints, int i, int i1) { /* compiled code */ }
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    com.sun.java.util.jar.pack.CodingMethod choose(int[] ints, int i, int i1, com.sun.java.util.jar.pack.Coding coding, int[] ints1) { /* compiled code */ }
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    com.sun.java.util.jar.pack.CodingMethod choose(int[] ints, int i, int i1, com.sun.java.util.jar.pack.Coding coding) { /* compiled code */ }
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    com.sun.java.util.jar.pack.CodingMethod choose(int[] ints, com.sun.java.util.jar.pack.Coding coding, int[] ints1) { /* compiled code */ }
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    com.sun.java.util.jar.pack.CodingMethod choose(int[] ints, com.sun.java.util.jar.pack.Coding coding) { /* compiled code */ }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    private int markUsableChoices(com.sun.java.util.jar.pack.Coding coding) { /* compiled code */ }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    private com.sun.java.util.jar.pack.CodingChooser.Choice findChoiceNear(com.sun.java.util.jar.pack.CodingChooser.Choice choice, int i, int i1) { /* compiled code */ }
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    private void evaluate(com.sun.java.util.jar.pack.CodingChooser.Choice choice) { /* compiled code */ }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    private boolean noteSizes(com.sun.java.util.jar.pack.CodingMethod codingMethod, int i, int i1) { /* compiled code */ }
+<b class="nc"><i>74</i>&nbsp;</b>
+<b class="nc"><i>75</i>&nbsp;    private int updateDistances(com.sun.java.util.jar.pack.CodingChooser.Choice choice) { /* compiled code */ }</b>
+<b class="nc"><i>76</i>&nbsp;</b>
+<b class="nc"><i>77</i>&nbsp;    public void computeSize(com.sun.java.util.jar.pack.CodingMethod codingMethod, int[] ints, int i, int i1, int[] ints1) { /* compiled code */ }</b>
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    public void computeSize(com.sun.java.util.jar.pack.CodingMethod codingMethod, int[] ints, int[] ints1) { /* compiled code */ }
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    public int[] computeSize(com.sun.java.util.jar.pack.CodingMethod codingMethod, int[] ints, int i, int i1) { /* compiled code */ }
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    public int[] computeSize(com.sun.java.util.jar.pack.CodingMethod codingMethod, int[] ints) { /* compiled code */ }
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    private int[] computeSizePrivate(com.sun.java.util.jar.pack.CodingMethod codingMethod) { /* compiled code */ }
+<i>86</i>&nbsp;
+<b class="nc"><i>87</i>&nbsp;    public int computeByteSize(com.sun.java.util.jar.pack.CodingMethod codingMethod, int[] ints, int i, int i1) { /* compiled code */ }</b>
+<b class="nc"><i>88</i>&nbsp;</b>
+<b class="nc"><i>89</i>&nbsp;    private int countBytesToSizer(com.sun.java.util.jar.pack.CodingMethod codingMethod, int[] ints, int i, int i1) { /* compiled code */ }</b>
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    int[] getDeltas(int i, int i1) { /* compiled code */ }
+<i>92</i>&nbsp;
+<b class="nc"><i>93</i>&nbsp;    com.sun.java.util.jar.pack.Histogram getValueHistogram() { /* compiled code */ }</b>
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    com.sun.java.util.jar.pack.Histogram getDeltaHistogram() { /* compiled code */ }
+<i>96</i>&nbsp;
+<b class="nc"><i>97</i>&nbsp;    com.sun.java.util.jar.pack.Histogram getHistogram(boolean b) { /* compiled code */ }</b>
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;    private void tryPopulationCoding(com.sun.java.util.jar.pack.Coding coding) { /* compiled code */ }
+<i>100</i>&nbsp;
+<b class="nc"><i>101</i>&nbsp;    private int[] computePopSizePrivate(com.sun.java.util.jar.pack.PopulationCoding populationCoding, com.sun.java.util.jar.pack.Coding coding, com.sun.java.util.jar.pack.Coding coding1) { /* compiled code */ }</b>
+<b class="nc"><i>102</i>&nbsp;</b>
+<b class="nc"><i>103</i>&nbsp;    private void tryAdaptiveCoding(com.sun.java.util.jar.pack.Coding coding) { /* compiled code */ }</b>
+<b class="nc"><i>104</i>&nbsp;</b>
+<b class="nc"><i>105</i>&nbsp;    private static java.lang.String pct(double v, double v1) { /* compiled code */ }</b>
+<b class="nc"><i>106</i>&nbsp;</b>
+<b class="nc"><i>107</i>&nbsp;    private void resetData() { /* compiled code */ }</b>
+<b class="nc"><i>108</i>&nbsp;</b>
+<b class="nc"><i>109</i>&nbsp;    private void flushData() { /* compiled code */ }</b>
+<b class="nc"><i>110</i>&nbsp;</b>
+<b class="nc"><i>111</i>&nbsp;    private int getByteSize() { /* compiled code */ }</b>
+<b class="nc"><i>112</i>&nbsp;</b>
+<i>113</i>&nbsp;    private int getZipSize() { /* compiled code */ }
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;    void addStressSeed(int i) { /* compiled code */ }
+<b class="nc"><i>116</i>&nbsp;</b>
+<b class="nc"><i>117</i>&nbsp;    private com.sun.java.util.jar.pack.CodingMethod stressPopCoding(com.sun.java.util.jar.pack.CodingMethod codingMethod) { /* compiled code */ }</b>
+<b class="nc"><i>118</i>&nbsp;</b>
+<b class="nc"><i>119</i>&nbsp;    private com.sun.java.util.jar.pack.CodingMethod stressAdaptiveCoding(com.sun.java.util.jar.pack.CodingMethod codingMethod) { /* compiled code */ }</b>
+<b class="nc"><i>120</i>&nbsp;</b>
+<b class="nc"><i>121</i>&nbsp;    private com.sun.java.util.jar.pack.Coding stressCoding(int i, int i1) { /* compiled code */ }</b>
+<b class="nc"><i>122</i>&nbsp;</b>
+<b class="nc"><i>123</i>&nbsp;    private int stressLen(int i) { /* compiled code */ }</b>
+<b class="nc"><i>124</i>&nbsp;</b>
+<b class="nc"><i>125</i>&nbsp;    static class Sizer extends java.io.OutputStream {</b>
+<b class="nc"><i>126</i>&nbsp;        final java.io.OutputStream out;</b>
+<b class="nc"><i>127</i>&nbsp;        private int count;</b>
+<b class="nc"><i>128</i>&nbsp;</b>
+<b class="nc"><i>129</i>&nbsp;        Sizer(java.io.OutputStream outputStream) { /* compiled code */ }</b>
+<b class="nc"><i>130</i>&nbsp;</b>
+<b class="nc"><i>131</i>&nbsp;        Sizer() { /* compiled code */ }</b>
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;        public void write(int i) throws java.io.IOException { /* compiled code */ }
+<b class="nc"><i>134</i>&nbsp;</b>
+<i>135</i>&nbsp;        public void write(byte[] bytes, int i, int i1) throws java.io.IOException { /* compiled code */ }
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;        public void reset() { /* compiled code */ }
+<i>138</i>&nbsp;
+<b class="nc"><i>139</i>&nbsp;        public int getSize() { /* compiled code */ }</b>
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;        public java.lang.String toString() { /* compiled code */ }
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;        java.lang.String stringForDebug() { /* compiled code */ }
+<i>144</i>&nbsp;    }
+<b class="nc"><i>145</i>&nbsp;</b>
+<i>146</i>&nbsp;    static class Choice {
+<b class="nc"><i>147</i>&nbsp;        final com.sun.java.util.jar.pack.Coding coding;</b>
+<b class="nc"><i>148</i>&nbsp;        final int index;</b>
+<b class="nc"><i>149</i>&nbsp;        final int[] distance;</b>
+<b class="nc"><i>150</i>&nbsp;        int searchOrder;</b>
+<i>151</i>&nbsp;        int minDistance;
+<b class="nc"><i>152</i>&nbsp;        int zipSize;</b>
+<b class="nc"><i>153</i>&nbsp;        int byteSize;</b>
+<b class="nc"><i>154</i>&nbsp;        int histSize;</b>
+<b class="nc"><i>155</i>&nbsp;</b>
+<b class="nc"><i>156</i>&nbsp;        Choice(com.sun.java.util.jar.pack.Coding coding, int i, int[] ints) { /* compiled code */ }</b>
+<b class="nc"><i>157</i>&nbsp;</b>
+<i>158</i>&nbsp;        void reset() { /* compiled code */ }
+<b class="nc"><i>159</i>&nbsp;</b>
+<b class="nc"><i>160</i>&nbsp;        boolean isExtra() { /* compiled code */ }</b>
+<b class="nc"><i>161</i>&nbsp;</b>
+<b class="nc"><i>162</i>&nbsp;        public java.lang.String toString() { /* compiled code */ }</b>
+<b class="nc"><i>163</i>&nbsp;</b>
+<b class="nc"><i>164</i>&nbsp;        private java.lang.String stringForDebug() { /* compiled code */ }</b>
+<b class="nc"><i>165</i>&nbsp;    }</b>
+<b class="nc"><i>166</i>&nbsp;}</b>
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2018-05-11 02:56</div>
+</div>
+</body>
+</html>
