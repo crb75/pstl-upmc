@@ -1,5 +1,6 @@
 # Affichage d'une graphe de dépendance d'un programme Java en utilisant la bibliothèque Piccolo2D.
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/15829f6877784ae292bc98e7e1acfcd5)](https://app.codacy.com/app/Misteryagci/pstl-upmc?utm_source=github.com&utm_medium=referral&utm_content=Misteryagci/pstl-upmc&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/Misteryagci/pstl-upmc.svg?branch=master)](https://travis-ci.org/Misteryagci/pstl-upmc)
 [![Coverage Status](https://coveralls.io/repos/github/Misteryagci/pstl-upmc/badge.svg?branch=master)](https://coveralls.io/github/Misteryagci/pstl-upmc?branch=master)
 ## Guide pour les développeurs
