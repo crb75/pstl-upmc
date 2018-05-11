@@ -2,7 +2,7 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/15829f6877784ae292bc98e7e1acfcd5)](https://app.codacy.com/app/Misteryagci/pstl-upmc?utm_source=github.com&utm_medium=referral&utm_content=Misteryagci/pstl-upmc&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/Misteryagci/pstl-upmc.svg?branch=master)](https://travis-ci.org/Misteryagci/pstl-upmc)
-
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/00495cc3c84a4162bbe6b5150b2c74a2)](https://www.codacy.com/app/Misteryagci/pstl-upmc?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Misteryagci/pstl-upmc&amp;utm_campaign=Badge_Coverage)
 ## Guide pour les développeurs
 
 Si vous êtes développeur de ce répo, <strong>après avoir cloné le répo</strong> veuillez suivre les instructions qui vous convient parmi les  suivantes:
