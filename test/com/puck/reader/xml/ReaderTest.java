@@ -959,8 +959,30 @@ public class ReaderTest {
         assertEquals(va, vo);
     }
 
-    @Test
+    @Test(
+            description = "Methode permet de tester la methode getEdgeFrom de la classe Reader",
+            groups = {"simple","reader","getEdgeFrom"}
+    )
     public void testGetEdgeFrom() {
-        /* CONTINUE FROM HERE */
+        this.message = "La methode permet de tester la mathode getEdgeFrom qui permet d'obtenir la liste des edges qui partennt de l'edge doont son id est passe en parametres";
+        Logger.logMethod(this.methodName, this.message);
+        this.message = "Pour ce cas de teste on utilise id = 3";
+        Logger.logMethod(this.methodName, this.message);
+        int ra = 0;
+        this.message = "La taille de la liste attendue est " + ra;
+        Logger.logMethod(this.methodName, this.message);
+        int ro = r.getEdgeFrom("3").getLength();
+        this.message = "La taille de la liste obtenue est " + ro;
+        Logger.logMethod(this.methodName, this.message);
+        this.message = "On controle maintenant si la taille de la liste obtenue correspond bien avec la taille de la liste attendue";
+        Logger.logMethod(this.methodName, this.message);
+        if (ra == ro) {
+            this.message = "La taille de la liste attendue correspond avec la taille de la liste obtenue";
+            Logger.logMethod(this.methodName, this.message);
+        } else {
+            this.message = "La taille de la liste obtenue ne correspond pas avec la taille de la liste attendue";
+            Logger.logError(this.methodName, this.message);
+        }
+        assertEquals(ro,ra);
     }
 }
