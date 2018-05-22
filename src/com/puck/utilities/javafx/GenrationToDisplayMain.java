@@ -37,6 +37,7 @@ import com.puck.refactoring.ExecuteRefactoringPlan;
 import com.puck.refactoring.RefactoringCommands;
 import com.puck.undoRedo.StateChanger2;
 import java.awt.TextArea;
+import java.awt.Button;
 
 public class GenrationToDisplayMain extends JFrame {
 	private JTextField jarPathText;
@@ -80,7 +81,7 @@ public class GenrationToDisplayMain extends JFrame {
 				jarPathText.setText(jarChoser.getSelectedFile().getAbsolutePath());
 			}
 		});
-		jarButton.setBounds(680, 6, 191, 33);
+		jarButton.setBounds(680, 6, 68, 33);
 		panel_conf.add(jarButton);
 
 		projetPathText = new JTextField();
@@ -113,7 +114,7 @@ public class GenrationToDisplayMain extends JFrame {
 					while (runCommand.getWriter() == null) {}
 					runCommand.sendCommand("saveGraph DependecyGraph.xml");
 					while(writingDone == false) {
-						System.out.println(writingDone);
+						System.out.println("Waiting DG xml File");
 					}
 					init(new String[] {});
 					writingDone = false;
@@ -130,6 +131,16 @@ public class GenrationToDisplayMain extends JFrame {
 		puck2StdOut.setEditable(false);
 		puck2StdOut.setBounds(69, 131, 846, 348);
 		panel_conf.add(puck2StdOut);
+		
+		JButton embeddedJar = new JButton("Embedded Jar");
+		embeddedJar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				File file = new File("puck2.jar");
+				jarPathText.setText(file.getAbsolutePath());
+			}
+		});
+		embeddedJar.setBounds(748, 6, 123, 33);
+		panel_conf.add(embeddedJar);
 	}
 
 	public JFrame init(String[] args) {
@@ -281,7 +292,6 @@ public class GenrationToDisplayMain extends JFrame {
 						writingDone = true;
 					}
 				}
-				System.out.println("apres");
 
 			} catch (IOException e) {
 				e.printStackTrace();
