@@ -8,6 +8,7 @@ import org.piccolo2d.extras.pswing.PSwingCanvas;
 
 import com.puck.arrows.ArrowNodesHolder;
 import com.puck.menu.Menu;
+import com.puck.menu.items.RenameNode;
 import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
 
@@ -55,10 +56,12 @@ public class ExecuteRefactoringPlan {
 			int nodeSize = reader.getNbNodesRename();
 			for (int i = 1; i <= nodeSize; i++) {
 				PiccoloCustomNode pnode = allPNodes.get(reader.getNodeId(i));
-				pnode.getContent().rename(reader.getNodeNewName(i));
-				pnode.setName(reader.getNodeNewName(i));
+				RenameNode renaming = new RenameNode(pnode, canvas, allPNodes, menu, ANH, null, null);
+				renaming.rename(reader.getNodeNewName(i));
+				//pnode.getContent().rename(reader.getNodeNewName(i));
+				//pnode.setName(reader.getNodeNewName(i));
 			}
-			root.setLayout();
+			//root.setLayout();
 		}
 	}
 }

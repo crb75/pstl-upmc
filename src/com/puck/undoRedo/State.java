@@ -12,12 +12,20 @@ public class State {
 	private ArrowNodesHolder ANH;
 	private PSwingCanvas canvas;
 	private PiccoloCustomNode root;
-	public State(HashMap<String, PiccoloCustomNode> allPNodes, ArrowNodesHolder aNH, PSwingCanvas canvas,PiccoloCustomNode root) {
+	private StringBuilder refactoringCommands;
+	public State(HashMap<String, PiccoloCustomNode> allPNodes, ArrowNodesHolder aNH, PSwingCanvas canvas,PiccoloCustomNode root,StringBuilder refactoringCommands) {
 		super();
 		this.allPNodes = allPNodes;
 		ANH = aNH;
 		this.canvas = canvas;
 		this.root = root;
+		this.refactoringCommands = refactoringCommands;
+	}
+	public StringBuilder getRefactoringCommands() {
+		return refactoringCommands;
+	}
+	public void setRefactoringCommands(StringBuilder refactoringCommands) {
+		this.refactoringCommands = refactoringCommands;
 	}
 	public HashMap<String, PiccoloCustomNode> getAllPNodes() {
 		return allPNodes;

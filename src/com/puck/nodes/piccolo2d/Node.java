@@ -5,12 +5,11 @@ package com.puck.nodes.piccolo2d;
 import java.util.HashMap;
 
 public class Node {
-	
 	private String name ; 
 	private String id;
-	//enumaration
 	private String type ;
 	private HashMap<String, Edge> relation;
+	
 	
 	public Node(){
 		this.relation = new HashMap<String,Edge>();

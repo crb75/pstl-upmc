@@ -22,7 +22,7 @@ public class RefactoringCommands {
 	public static RefactoringCommands getInstance() {
 		return INSTANCE;
 	}
-	
+
 	public void init() {
 		try {
 			PrintWriter pw = new PrintWriter("RefactoringCommands.xml");
@@ -30,7 +30,7 @@ public class RefactoringCommands {
 			xmlString = new StringBuilder();
 			xmlString.append("<?xml version=\"1.0\"?>\n");
 			xmlString.append("<RefactoringCommands>\n");	
-			br = new BufferedWriter(new FileWriter(new File("RefactoringCommands.xml")));
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -43,16 +43,28 @@ public class RefactoringCommands {
 		xmlString.append(String.format(formatString, id, newName));
 	}
 
-	public void writeFile() {
+	public void writeFile(File savingFile) {
+		if (!xmlString.toString().contains("</RefactoringCommands>")) 
 		xmlString.append("</RefactoringCommands>");
 		try {
+			br = new BufferedWriter(new FileWriter(new File("RefactoringCommands.xml")));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(savingFile));
+			bw.write(xmlString.toString());
+			bw.flush();
+			bw.close();
 			System.out.println(xmlString.toString());
 			br.write(xmlString.toString());
+			br.flush();
 			br.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
+	public StringBuilder getXmlString() {
+		return xmlString;
+	}
+	public void setXmlString(StringBuilder xmlString) {
+		this.xmlString = xmlString;
+	}
 	
 }

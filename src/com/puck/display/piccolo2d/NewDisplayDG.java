@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,6 +65,8 @@ public class NewDisplayDG extends JFrame {
 		listNodes = new XmlToStructure(args).parseNode();
 		NodeToPnodeParser nodesToPnodes = new NodeToPnodeParser(allPNodes, listNodes);
 		root = nodesToPnodes.getPackageNodes();
+		//System.err.println(allPNodes.size());
+		//System.err.println(listNodes.size());
 		root.collapseAll();
 		this.ANH =  new ArrowNodesHolder();
 	//	state.init(this.allPNodes, ANH, canvas);
@@ -73,7 +76,7 @@ public class NewDisplayDG extends JFrame {
 		canvas.addMouseListener(mp);
 		canvas.setAutoscrolls(false);
 		menu.addPopupMenuListener(mpp);
-		state2.init(this.allPNodes, ANH, canvas,root,listNodes,menu);
+		state2.init(this.allPNodes, ANH, canvas,root,listNodes,menu,RefactoringCommands.getInstance().getXmlString());
 		refactoringPlanExecutor.init(this.allPNodes, ANH, canvas,root,listNodes,menu);
 		
 		//TestXmlDisplay testXml = new TestXmlDisplay(allPNodes,root);
@@ -91,96 +94,107 @@ public class NewDisplayDG extends JFrame {
 	
 	
 	public static void main(String[] args) {
-		//Component 
 		PSwingCanvas canvas = new PSwingCanvas();
-		
+
 		JButton undo = new JButton("UNDO");
 		JButton redo = new JButton("REDO");
-		JButton save = new JButton("SAVE-Refactoring");
-		JButton export = new JButton("Export-Refactoring");
-		undo.setSize(40,40);
-	 	JToolBar toolBar = new JToolBar();
-	   	toolBar.add(undo);
-	   	toolBar.add(redo);
-	   	toolBar.add(save);
-	   	toolBar.add(export);
-	   	
-	    JFileChooser fc = new JFileChooser();
-        fc.setMultiSelectionEnabled(true);
-        //fc.setCurrentDirectory(new File("C:\\tmp"));
-	   	
+		JButton save = new JButton("SAVE-Refactoring Plan");
+		JButton execute = new JButton("Execute-Refactoring Plan");
+		JButton impor = new JButton("LOAD-refactoring Plan");
+		JButton generate = new JButton("Generate code source");
+		undo.setSize(40, 40);
+		JToolBar toolBar = new JToolBar();
+		toolBar.add(undo);
+		toolBar.add(redo);
+		toolBar.add(save);
+		toolBar.add(impor);
+		toolBar.add(execute);
+		toolBar.add(generate);
+
+		JFileChooser fc = new JFileChooser();
+		fc.setMultiSelectionEnabled(false);
+
 		JTextArea textArear = new JTextArea();
 		textArear.setEditable(false);
 		textArear.setSize(200, 40);
 		textArear.setForeground(Color.RED);
 		textArear.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
 		textArear.append("- INFO - Les menus des noeuds s'ouvrent et se ferment avec le bouton droit  ");
-		
+
 		toolBar.addSeparator();
 		toolBar.add(textArear);
-		
-		//Button action listeners
+
+		// Button action listeners
 		undo.addActionListener(new ActionListener() {
-	         public void actionPerformed(ActionEvent e) {
-	        	 StateChanger2.getInstance().undo();
-	         }          
-	      });
-		 redo.addActionListener(new ActionListener() {
-	         public void actionPerformed(ActionEvent e) {
-	        	 StateChanger2.getInstance().redo();
-	         }          
-	      });
-		 save.addActionListener(new ActionListener() {
-	         public void actionPerformed(ActionEvent e) {
-	        	RefactoringCommands.getInstance().writeFile();
-	         }          
-	      });
-		 export.addActionListener(new ActionListener() {
-	         public void actionPerformed(ActionEvent e) {
-	        	fc.addChoosableFileFilter(new FileNameExtensionFilter("*.xml", "xml"));
-	        	fc.showDialog(canvas, "select");
-	        	System.out.println(fc.getSelectedFile().getPath());
-	        	ExecuteRefactoringPlan.getInstance().setFilePath(fc.getSelectedFile().getPath());
-	        	ExecuteRefactoringPlan.getInstance().execute();
-	         }          
-	      });
-	
-		JFrame frame;
+			public void actionPerformed(ActionEvent e) {
+				StateChanger2.getInstance().undo();
+			}
+		});
+		redo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				StateChanger2.getInstance().redo();
+			}
+		});
+		execute.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			File file = new File("RefactoringCommands.xml");
+			//System.out.println(file.getAbsolutePath());
+			}
+		});
+		save.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				if (fileChooser.showSaveDialog(canvas) == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					RefactoringCommands.getInstance().writeFile(file);
+					//System.out.println(file.getAbsolutePath());
+				}
+			}
+		});
+		
+		generate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				if (fileChooser.showSaveDialog(canvas) == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+				}
+			}
+		});
+		impor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				fc.addChoosableFileFilter(new FileNameExtensionFilter("*.xml", "xml"));
+				fc.showDialog(canvas, "select");
+				//System.out.println(fc.getSelectedFile().getPath());
+				ExecuteRefactoringPlan.getInstance().setFilePath(fc.getSelectedFile().getPath());
+				ExecuteRefactoringPlan.getInstance().execute();
+			}
+		});
+
+		JFrame frame = null;
 		try {
-			if (args.length == 0)
-			{
+			if (args.length == 0) {
 				System.out.println("Appel de la newDisplayDG sans aucun argument");
-				frame = new NewDisplayDG(canvas, "mongraph2.xml");
+				frame = new NewDisplayDG(canvas, "DependecyGraph.xml");
+			} else {
+				frame = new NewDisplayDG(canvas, args[0]);
 			}
-			else
-			{
-				frame = new NewDisplayDG(canvas,args[0]);	
-			}
-		
-			// Piccolo2D canvas
-//		canvas.setDefaultRenderQuality(PPaintContext.HIGH_QUALITY_RENDERING);
-//        canvas.setAnimatingRenderQuality(PPaintContext.HIGH_QUALITY_RENDERING);
-//        canvas.setInteractingRenderQuality(PPaintContext.HIGH_QUALITY_RENDERING);
-//        canvas.setZoomEventHandler(null);
-		canvas.setPreferredSize(new Dimension(1000, 500));
 
-		// Jframe Container
-        Container container = frame.getContentPane();
-		container.setLayout(new BorderLayout());		
-		container.add(canvas, BorderLayout.CENTER);		
-	    container.add(toolBar, BorderLayout.PAGE_START);  
-	    
+			canvas.setPreferredSize(new Dimension(1000, 500));
 
-		frame.pack();
-        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        frame.setVisible(true);
-		
+			// Jframe Container
+			Container container = frame.getContentPane();
+			container.setLayout(new BorderLayout());
+			container.add(canvas, BorderLayout.CENTER);
+			container.add(toolBar, BorderLayout.PAGE_START);
+
+			frame.pack();
+			frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+			frame.setVisible(true);
+
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-       
-
 	}
 	
 	// Listener for Pnode click 

@@ -12,6 +12,7 @@ import com.puck.arrows.ArrowNodesHolder;
 import com.puck.menu.Menu;
 import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
+import com.puck.refactoring.RefactoringCommands;
 import com.puck.utilities.piccolo2d.PCustomInputEventHandler;
 
 public class StateChanger2 implements Changeable{
@@ -24,6 +25,7 @@ public class StateChanger2 implements Changeable{
 	private Map<String, Node> listNodes;
 	private Menu menu;
 	private State currentState;
+	private  StringBuilder refactoringCommands;
 	
 	private StateChanger2() {
 		super();
@@ -33,7 +35,7 @@ public class StateChanger2 implements Changeable{
 	    {   return INSTANCE;
 	    }
 	public void init(HashMap<String, PiccoloCustomNode> allPNodes,ArrowNodesHolder ANH,PSwingCanvas canvas,PiccoloCustomNode root,
-			Map<String, Node> listNodes, Menu menu) {
+			Map<String, Node> listNodes, Menu menu, StringBuilder refactoringCommands) {
 		this.allPNodes = allPNodes;
 		this.ANH = ANH;
 		this.canvas = canvas;
@@ -42,6 +44,8 @@ public class StateChanger2 implements Changeable{
 		this.root = root;
 		this.listNodes = listNodes;
 		this.menu = menu;
+		this.refactoringCommands = refactoringCommands;
+		//System.err.println("ref"+refactoringCommands.hashCode());
 	}
 	
 	@Override
@@ -56,7 +60,7 @@ public class StateChanger2 implements Changeable{
 			allPNodes.putAll(previousState.getAllPNodes());
 			
 			ANH = previousState.getANH();
-			
+			RefactoringCommands.getInstance().setXmlString(previousState.getRefactoringCommands());
 			root.removeAllChildren();
 			root.getAllChildren().clear();
 			root.getHiddenchildren().clear();
@@ -84,7 +88,8 @@ public class StateChanger2 implements Changeable{
 			allPNodes.putAll(nextState.getAllPNodes());
 			
 			ANH = nextState.getANH();
-			
+			RefactoringCommands.getInstance().setXmlString(nextState.getRefactoringCommands());
+
 			root.removeAllChildren();
 			root.getAllChildren().clear();
 			root.getHiddenchildren().clear();

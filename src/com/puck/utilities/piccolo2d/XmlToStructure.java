@@ -82,10 +82,6 @@ private static Edge parseAttributs(NamedNodeMap attrs) {
 		return listNode;
 	}
 
-	public static void main(String[] args) {
-		@SuppressWarnings("unused")
-		HashMap<String, Node> listNode;
-		//listNode = new HashMap<>(new XmlToStructure().parseNode());
-	}
+
 
 }

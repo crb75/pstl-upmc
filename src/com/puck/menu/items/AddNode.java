@@ -72,7 +72,7 @@ public class AddNode extends JMenuItem {
 	public void addNodeToParent(PiccoloCustomNode nodeToAdd, String name) {
 		PiccoloCustomNode root_atpre = PiccoloCustomNode.newInstance(root);
 	
-		State previousState = new State(copy(), ANH, canvas,root_atpre);
+//		State previousState = new State(copy(), ANH, canvas,root_atpre);
 	//	StateChanger2.getInstance().init(allPNodes, ANH, canvas, root);
 		
 		
@@ -86,7 +86,7 @@ public class AddNode extends JMenuItem {
 		
 		// undo redo with state
 		Stack<State> editedState = StateChanger2.getInstance().getAddedPnodes();
-		editedState.push(previousState);
+	//	editedState.push(previousState);
 		StateChanger2.getInstance().setAddedPnodes(editedState);
 		
 		
@@ -96,9 +96,9 @@ public class AddNode extends JMenuItem {
 		//root.showChildren();
 		ANH.updateAllPosition();
 		
-		State currentState = new State(copy(), ANH, canvas,PiccoloCustomNode.newInstance(root));
+	//	State currentState = new State(copy(), ANH, canvas,PiccoloCustomNode.newInstance(root));
 		editedState = StateChanger2.getInstance().getAddedPnodes();
-		editedState.push(currentState);
+	//	editedState.push(currentState);
 		StateChanger2.getInstance().setAddedPnodes(editedState);
 	
 	}

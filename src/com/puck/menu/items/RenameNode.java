@@ -25,7 +25,6 @@ import com.puck.undoRedo.StateChanger2;
 
 public class RenameNode extends JMenuItem {
 	private HashMap<String, PiccoloCustomNode> allPNodes;
-	private Map<String, Node> listNodes;
 	private PiccoloCustomNode pnode;
 	private PSwingCanvas canvas;
 	private Menu menu;
@@ -42,7 +41,6 @@ public class RenameNode extends JMenuItem {
 		this.canvas = canvas;
 		this.menu = menu;
 		this.ANH = ANH;
-		this.listNodes = listNodes;
 		this.state = state;
 		root = pnode.getHigherParent();
 		children = pnode.getChildren();
@@ -51,20 +49,22 @@ public class RenameNode extends JMenuItem {
 
 	public void rename(String newName) {
 		PiccoloCustomNode root_atpre = PiccoloCustomNode.newInstance(root);
-		State previousState = new State(copy(), ANH, canvas,root_atpre);
+		State previousState = new State(copy(), ANH, canvas,root_atpre,new StringBuilder(RefactoringCommands.getInstance().getXmlString()));
 		Stack<State> editedState = StateChanger2.getInstance().getAddedPnodes();
 		editedState.push(previousState);
 		StateChanger2.getInstance().setAddedPnodes(editedState);
 		
 		pnode.getContent().rename(newName);
 		pnode.setName(newName);
-		
-		State currentState = new State(copy(), ANH, canvas,PiccoloCustomNode.newInstance(root));
+		RefactoringCommands.getInstance().nodeToString(pnode);
+		//System.out.println(RefactoringCommands.getInstance().getXmlString().hashCode());
+
+		State currentState = new State(copy(), ANH, canvas,PiccoloCustomNode.newInstance(root),new StringBuilder(RefactoringCommands.getInstance().getXmlString()));
 		editedState = StateChanger2.getInstance().getAddedPnodes();
 		editedState.push(currentState);
 		StateChanger2.getInstance().setAddedPnodes(editedState);
 		
-		RefactoringCommands.getInstance().nodeToString(pnode);
+		
 		root.setLayout();
 	}
 

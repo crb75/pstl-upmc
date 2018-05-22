@@ -62,6 +62,7 @@ public class NodeToPnodeParser {
 		}
 		root.addChildren(listePNode);
 		root.setName("root");
+		System.err.println("root children"+listePNode.size());
 		return root;
 	}
 
