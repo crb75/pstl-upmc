@@ -20,7 +20,6 @@ import com.puck.nodes.piccolo2d.Node;
 import com.puck.nodes.piccolo2d.PiccoloCustomNode;
 import com.puck.undoRedo.Changeable;
 import com.puck.undoRedo.State;
-import com.puck.undoRedo.StateChanger;
 import com.puck.undoRedo.StateChanger2;
 import com.puck.utilities.NodeType;
 import com.puck.utilities.piccolo2d.PCustomInputEventHandler;
@@ -72,8 +71,6 @@ public class AddNode extends JMenuItem {
 	public void addNodeToParent(PiccoloCustomNode nodeToAdd, String name) {
 		PiccoloCustomNode root_atpre = PiccoloCustomNode.newInstance(root);
 	
-//		State previousState = new State(copy(), ANH, canvas,root_atpre);
-	//	StateChanger2.getInstance().init(allPNodes, ANH, canvas, root);
 		
 		
 		nodeToAdd.setName(name);

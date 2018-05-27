@@ -68,7 +68,7 @@ public class StateChanger2 implements Changeable{
 			root.setChilldren(new ArrayList<>(children));
 			//root.setHiddenchildren(previousState.getRoot().getHiddenchildren());	
 			addEvent(root, root, canvas, menu, listNodes);
-
+			System.out.println(allPNodes.hashCode());
 			root.setLayout();
 		}
 

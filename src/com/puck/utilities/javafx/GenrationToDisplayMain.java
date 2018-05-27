@@ -48,7 +48,7 @@ public class GenrationToDisplayMain extends JFrame {
 	private final JFileChooser jarChoser = new JFileChooser();
 	private final JFileChooser projectChooser = new JFileChooser();
 	private boolean writingDone = false;
-
+	JFrame frame;
 	private RunCommand runCommand;
 
 	public GenrationToDisplayMain() {
@@ -170,10 +170,10 @@ public class GenrationToDisplayMain extends JFrame {
 		textArear.setSize(200, 40);
 		textArear.setForeground(Color.RED);
 		textArear.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
-		textArear.append("- INFO - Les menus des noeuds s'ouvrent et se ferment avec le bouton droit  ");
+		//textArear.append("- INFO - Les menus des noeuds s'ouvrent et se ferment avec le bouton droit  ");
 
 		toolBar.addSeparator();
-		toolBar.add(textArear);
+		//toolBar.add(textArear);
 
 		// Button action listeners
 		undo.addActionListener(new ActionListener() {
@@ -226,7 +226,7 @@ public class GenrationToDisplayMain extends JFrame {
 			}
 		});
 
-		JFrame frame = null;
+		
 		try {
 			if (args.length == 0) {
 				System.out.println("Appel de la newDisplayDG sans aucun argument");
@@ -288,8 +288,14 @@ public class GenrationToDisplayMain extends JFrame {
 					String line = scanner.nextLine();
 					puck2StdOut.append(line +"\n");
 					System.out.println(line);
-					if (line.trim().equals("WRITING DONE")) {
+					if (line.trim().equals("DONE")) {
 						writingDone = true;
+					}
+					if (line.trim().contains("DONE:")) {
+						String sub = line.substring(line.indexOf(":")+2, line.length());
+						String [] split = sub.split(" ");
+						if (split.length > 0) 
+						((NewDisplayDG)frame).renameNodes(split);
 					}
 				}
 

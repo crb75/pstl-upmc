@@ -32,7 +32,7 @@ public class RenameNode extends JMenuItem {
 	private Changeable state;
 	private PiccoloCustomNode root;
 	private Collection<PiccoloCustomNode> children;
-
+    // TODO(rename methode interface ) rename -> undo rename -> save -> execute / undo redo ne renomme pas les metrhode override
 	public RenameNode(PiccoloCustomNode pnode, PSwingCanvas canvas, HashMap<String, PiccoloCustomNode> allPNodes,
 			Menu menu, ArrowNodesHolder ANH, Map<String, Node> listNodes, Changeable state) {
 		super("Rename ",new ImageIcon("images/add.png"));
@@ -56,6 +56,11 @@ public class RenameNode extends JMenuItem {
 		
 		pnode.getContent().rename(newName);
 		pnode.setName(newName);
+		
+		allPNodes.get(pnode.getidNode()).getContent().rename(newName);
+		allPNodes.get(pnode.getidNode()).setName(newName);
+		
+		
 		RefactoringCommands.getInstance().nodeToString(pnode);
 		//System.out.println(RefactoringCommands.getInstance().getXmlString().hashCode());
 
@@ -63,9 +68,12 @@ public class RenameNode extends JMenuItem {
 		editedState = StateChanger2.getInstance().getAddedPnodes();
 		editedState.push(currentState);
 		StateChanger2.getInstance().setAddedPnodes(editedState);
-		
-		
+	
 		root.setLayout();
+	}
+	public void renameWithoutStateSaving(String newName) {
+		pnode.getContent().rename(newName);
+		pnode.setName(newName);
 	}
 
 	public void addActionListener() {

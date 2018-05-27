@@ -40,6 +40,8 @@ public class RefactoringCommands {
 		String formatString = "\t<Rename id=\"%s\" newName=\"%s\"/>\n";
 		String id = node.getidNode();
 		String newName = node.getName();
+		if (node.getContent().getType().equals("method")) 
+		newName = newName.substring(0,newName.indexOf("("));
 		xmlString.append(String.format(formatString, id, newName));
 	}
 
