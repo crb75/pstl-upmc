@@ -5,6 +5,8 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/00495cc3c84a4162bbe6b5150b2c74a2)](https://www.codacy.com/app/Misteryagci/pstl-upmc?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Misteryagci/pstl-upmc&amp;utm_campaign=Badge_Coverage)
 ## Guide pour les développeurs
 
+Utiliser une version de Java < 11.
+
 Si vous êtes développeur de ce répo, <strong>après avoir cloné le répo</strong> veuillez suivre les instructions qui vous convient parmi les  suivantes:
 
 <details>
