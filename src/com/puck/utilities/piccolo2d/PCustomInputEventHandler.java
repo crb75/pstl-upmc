@@ -1,8 +1,5 @@
 package com.puck.utilities.piccolo2d;
 
-
-
-
 import java.awt.event.InputEvent;
 import java.util.HashMap;
 import java.util.Map;

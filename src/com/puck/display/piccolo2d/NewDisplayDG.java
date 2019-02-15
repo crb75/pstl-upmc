@@ -96,12 +96,12 @@ public class NewDisplayDG extends JFrame {
 	// Listener for Pnode click 
 	class MousePopupListener extends MouseAdapter {
 	    public void mousePressed(MouseEvent e) {
-	    	//System.out.println("j'ai detecte click press");
+	    	System.out.println("j'ai detecte click press");
 	      checkPopup(e);
 	    }
 
 	    public void mouseClicked(MouseEvent e) {
-	    	//System.out.println("j'ai detecte click click");
+	    	System.out.println("j'ai detecte click click");
 	      checkPopup(e);
 	    }
 
@@ -111,10 +111,10 @@ public class NewDisplayDG extends JFrame {
 
 	    private void checkPopup(MouseEvent e) {
 	      if (e.isPopupTrigger()) {
-		    //	System.out.println("popuptrigger");
+		    	System.out.println("popuptrigger");
 
 	    	 if (menu.isHidden()) {
-	    	//		System.out.println("menu hidden");
+	    		System.out.println("menu hidden");
 	    		 menu.show();
 			 }else {
 				 menu.hide();
@@ -126,15 +126,15 @@ public class NewDisplayDG extends JFrame {
 	  }
 	class PopupPrintListener implements PopupMenuListener {
 		public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-		//	System.out.println("Popup menu will be visible!");
+			System.out.println("Popup menu will be visible!");
 		}
 
 		public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-		//	System.out.println("Popup menu will be invisible!");
+			System.out.println("Popup menu will be invisible!");
 		}
 
 		public void popupMenuCanceled(PopupMenuEvent e) {
-		//	System.out.println("Popup menu is hidden!");
+			System.out.println("Popup menu is hidden!");
 		}
 	}
 

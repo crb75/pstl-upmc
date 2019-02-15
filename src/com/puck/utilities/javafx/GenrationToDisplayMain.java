@@ -37,7 +37,6 @@ import com.puck.refactoring.ExecuteRefactoringPlan;
 import com.puck.refactoring.RefactoringCommands;
 import com.puck.undoRedo.StateChanger2;
 import java.awt.TextArea;
-import java.awt.Button;
 
 public class GenrationToDisplayMain extends JFrame {
 	private JTextField jarPathText;
@@ -51,97 +50,7 @@ public class GenrationToDisplayMain extends JFrame {
 	JFrame frame;
 	private RunCommand runCommand;
 
-	public GenrationToDisplayMain() {
-		setTitle("Display");
-		getContentPane().setLayout(null);
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(0, 0, 1024, 554);
-		getContentPane().add(scrollPane);
-
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		scrollPane.setViewportView(tabbedPane);
-
-		JPanel panel_conf = new JPanel();
-		tabbedPane.addTab("Configuration", null, panel_conf, null);
-		panel_conf.setLayout(null);
-
-		jarPathText = new JTextField();
-		jarPathText.setBounds(112, 6, 571, 33);
-		panel_conf.add(jarPathText);
-		jarPathText.setColumns(30);
-
-		JButton jarButton = new JButton("Jar");
-		jarButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				FileFilter filter = new FileNameExtensionFilter("jar File", "jar");
-				jarChoser.showOpenDialog(GenrationToDisplayMain.this);
-				jarChoser.addChoosableFileFilter(filter);
-				jarPathText.setText(jarChoser.getSelectedFile().getAbsolutePath());
-			}
-		});
-		jarButton.setBounds(680, 6, 68, 33);
-		panel_conf.add(jarButton);
-
-		projetPathText = new JTextField();
-		projetPathText.setBounds(112, 44, 571, 33);
-		panel_conf.add(projetPathText);
-		projetPathText.setColumns(30);
-
-		JButton btnNewButton = new JButton("projet");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				projectChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				projectChooser.showOpenDialog(GenrationToDisplayMain.this);
-				projetPathText.setText(projectChooser.getSelectedFile().getAbsolutePath());
-			}
-		});
-		btnNewButton.setBounds(680, 44, 191, 33);
-		panel_conf.add(btnNewButton);
-
-		JButton btnRun = new JButton("Run");
-		btnRun.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				try {
-					String jarPath = jarPathText.getText().replaceAll("\"", "\\\\");
-					String testFile = projetPathText.getText().replaceAll("\"", "\\\\");
-					ProcessBuilder pb = new ProcessBuilder("java", "-jar", jarPath, testFile);
-					pb.redirectErrorStream(true);
-					runCommand = new RunCommand(pb);
-					runCommand.start();
-					while (runCommand.getWriter() == null) {}
-					runCommand.sendCommand("saveGraph DependecyGraph.xml");
-					while(writingDone == false) {
-						System.out.println("Waiting DG xml File");
-					}
-					init(new String[] {});
-					writingDone = false;
-
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		btnRun.setBounds(731, 89, 90, 28);
-		panel_conf.add(btnRun);
-		
-	    puck2StdOut = new TextArea();
-		puck2StdOut.setEditable(false);
-		puck2StdOut.setBounds(69, 131, 846, 348);
-		panel_conf.add(puck2StdOut);
-		
-		JButton embeddedJar = new JButton("Embedded Jar");
-		embeddedJar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				File file = new File("puck2.jar");
-				jarPathText.setText(file.getAbsolutePath());
-			}
-		});
-		embeddedJar.setBounds(748, 6, 123, 33);
-		panel_conf.add(embeddedJar);
-	}
+	
 
 	public JFrame init(String[] args) {
 		// Component
@@ -253,12 +162,7 @@ public class GenrationToDisplayMain extends JFrame {
 		return frame;
 	}
 
-	public static void main(String[] args) {
-		JFrame frame = new GenrationToDisplayMain();
-		frame.pack();
-		frame.setSize(1040, 810);
-		frame.setVisible(true);
-	}
+
 
 	public class RunCommand extends Thread {
 		private ProcessBuilder processBuilder;

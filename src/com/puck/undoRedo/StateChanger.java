@@ -22,6 +22,8 @@ public class StateChanger implements Changeable{
 	 public static StateChanger getInstance()
 	    {   return INSTANCE;
 	    }
+	 
+	 
 	public void init(HashMap<String, PiccoloCustomNode> allPNodes,ArrowNodesHolder ANH,PSwingCanvas canvas) {
 		this.allPNodes = allPNodes;
 		this.ANH = ANH;
