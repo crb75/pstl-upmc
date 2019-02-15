@@ -5,6 +5,8 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/00495cc3c84a4162bbe6b5150b2c74a2)](https://www.codacy.com/app/Misteryagci/pstl-upmc?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Misteryagci/pstl-upmc&amp;utm_campaign=Badge_Coverage)
 ## Guide pour les développeurs
 
+Utiliser une version de Java < 11.
+
 Si vous êtes développeur de ce répo, <strong>après avoir cloné le répo</strong> veuillez suivre les instructions qui vous convient parmi les  suivantes:
 
 <details>
@@ -186,122 +188,7 @@ Ce changement permettra de mettre à jour de la dernière version du fichier <sa
 
 ## Guide d'exécution 
 
-
-### Uniquement la partie de graphe de dépendance
-
-<details>
-  <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Feclipse.svg?alt=media&token=c1a40189-1236-407b-9568-52c292e46e3d" alt="Eclipse Logo" width="32" height="32" align="top"/> Eclipse </summary>
-
-
-  <ul>
-    <li>
-      <details>
-        <summary>
-          En exécutant <strong>manuellement le fichier <samp>NewDisplayDG</samp></strong> (<em>Risque de ne pas marcher si vous avez importé le projet en utilisant l'intégration <samp>git</samp></em>)
-        </summary>
-        <ol>
-          <li>
-            Faites <strong>un clique droit sur le dossier principal</strong> contenant le projet. Puis dans le menu déroulant cliquez sur <strong><samp>Java Application</samp></strong> sous la section <strong><samp>Run As</samp></strong>.<br/>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse1.png?alt=media&token=e121056e-c502-4f98-a91b-1eb40e988cfe" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur Java Application sous la section Run As">
-          </li>
-          <li>
-            Sur la fenêtre intitulée <samp>Select Java Application</samp> <strong>sélectionnez <samp>NewDisplayDG - com.puck.display.piccolo2d</samp></strong>. Puis cliquez sur le bouton <strong><samp>OK</samp></strong>.<br/>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunEclipse2.png?alt=media&token=cda8fc2f-e2ba-477b-b35c-cc122e72cb65" alt="Sur la fenêtre intitulée Select Java Application sélectionnez NewDisplayDG - com.puck.display.piccolo2d. Puis cliquez sur le bouton OK.">
-          </li>
-        </ol>
-      </details>
-    </li>
-    <li>
-      <details>
-        <summary>
-          En utilisant le fichier <strong><samp>build.xml</samp></strong>
-        </summary>
-        <ol>
-          <li>
-            Faites <strong>un clique droit sur le fichier <samp>build.xml</samp></strong> dans le répertoire principal de projet. Puis dans le menu déroulant cliquez sur <strong><samp>2 Ant Build...</samp></strong> sous la section <strong><samp>Run As</samp></strong>.<br/>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse0.png?alt=media&token=f61f27e5-c1d5-48b4-88bc-ea0cfd37bdb2" alt="Faites un clique droit sur le dossier principal contenant le projet. Puis dans le menu déroulant cliquez sur 2 Ant Build... sous la section Run As">
-          </li>
-          <li>
-            Sur la fenêtre intitulée <samp>Edit Configuration</samp> <strong>chochez le case <samp>base</samp></strong>. Vérifiez bien que l'ordre dans la section <samp>Target execution order:</samp> est <samp>base</samp>. Puis cliquez sur le bouton <strong><samp>Run</samp></strong>.<br/>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FbuildXMLEclipse2.png?alt=media&token=6110f7dd-c2b8-408e-9fa0-41b6151f2ea3" alt="Sur la fenêtre intitulée Edit Configuration cochez le case base. Vérifiez bien que l'ordre dans la section Target execution order est base. Puis cliquez sur le bouton Run">
-          </li>
-        </ol>
-      </details>
-    </li>
-  </ul>
-</details>
-
-<details>
-  <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJ_IDEA_Logo.svg?alt=media&token=4f8c266b-4d1c-4fa5-972a-19dbb23ad1be" alt="IntelliJ Logo" width="32" height="32" align="top"/> IntelliJ </summary>
-  <ol>
-    <li>
-      <details>
-        <summary>
-          En exécutant <strong>manuellement le fichier <samp>NewDisplayDG</samp></strong>
-        </summary>
-          <ol>
-            <li>
-              Chargez le projet <strong>en sélectionnant le projet</strong> sur la fenêtre de démarrage.<br/>
-              <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunIntelliJ1.png?alt=media&token=fc23661d-95d6-4d9d-b3f4-e90e7bc0bb6a" alt="Chargez le projet en sélectionnant le projet sur la fenêtre de démarrage">
-            </li>
-            <li>
-              Trouvez le fichier <strong><samp>NewDisplayDG</samp></strong> qui se trouve dans le dossier <samp>display.piccolo2d</samp> qui se trouve dans le dossier <samp>com.puck</samp> qui se trouve dans le dossier <samp>src</samp> qui se trouve dans le dossier principal du projet. <strong>Faites un clique droit sur ce fichier</strong> et dans le menu déroulant <strong>cliquez sur <samp>Run 'NewDisplayDG.main()'</samp></strong>.<br/>
-              <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FrunIntelliJ2.png?alt=media&token=2a0c94a8-a8a0-44f9-a616-215ac2b6cdbf" alt="Trouvez le fichier NewDisplayDG qui se trouve dans le dossier display.piccolo2d qui se trouve dans le dossier com.puck qui se trouve dans le dossier src qui se trouve dans le dossier principal du projet. Faites un clique droit sur ce fichier et dans le menu déroulant cliquez sur Run 'NewDisplayDG.main()'">
-            </li>
-          </ol>
-      </details>
-    </li>
-    <li>
-      <details>
-        <summary>
-          En utilisant <samp>Ant Build</samp>
-        </summary>
-        <ol>
-          <li>
-             Chargez le projet <strong>en sélectionnant le projet</strong> sur la fenêtre de démarrage.<br/>
-              <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FintelliJOpenForAntbuild.png?alt=media&token=bdd1f3e9-50fb-4b60-8563-176237fbebca" alt="Chargez le projet en sélectionnant le projet sur la fenêtre de démarrage">
-          </li>
-          <!-- <li>
-              Dans la partie intitulé <samp>Ant Build</samp> qui se trouve à droite de la fenêtre <samp>d'IntelliJ</samp>, cliquez deux fois sur la cible <strong><samp>Build</samp></strong>. <em>( Contrairement à Eclipse IntelliJ ne build pas les projets automatiquement, donc il faut le faire manuellement.)</em> <br/>
-              <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJAntBuild.png?alt=media&token=c10bfb8c-52ec-4973-9133-bc644ae08854" alt="Dans la partie intitulé Ant Build qui se trouve à droite de la fenêtre d'IntelliJ cliquez deux fois sur la cible Build."/>
-          </li> -->
-          <li>
-            <!-- Vérifiez le message qui s'affiche sur la gauche de la barre latérale qui se trouve toute en bas de la fenêtre d'IntelliJ commence bien avec <samp>"Ant build completed..."</samp>. Une fois vous avez vérifié que la construction (build) a bien eu lieu,  -->
-            Cliquez deux fois sur la cible <samp>base</samp> sur la partie intitulé <samp>Ant Build</samp> qui se trouve à droite de la fenêtre <samp>d'IntelliJ</samp>. <br>
-            <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FIntelliJAntBase.png?alt=media&token=6ff389e7-e2c5-4a46-acff-f2014bdd34e5" alt="Cliquez deux fois sur la cible InterfaceAffichageGrapheDeDependace surla partie intitulé Ant Build qui se trouve à droite de la fenêtre d'IntelliJ"/>
-          </li>
-        </ol>
-      </details>
-    </strong>
- </ol> 
-</details>
-
-<details>
-  <summary> Sur <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Fterminal.png?alt=media&token=df454a13-1480-4c33-a86e-4b22d6f8db99" alt="Command line logo" width="32" height="32" align="top"/> la ligne des commandes
-  </summary>
-  <ul>
-    <li>
-      Sur un terminal lancer la commande suivante <br/>
-      <code>ant base</code> <br/>
-      <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2FterminalBase.png?alt=media&token=1b6d7dc0-35e6-4f88-8b10-6a7f6f5be25f" alt="Sur un terminal lancer la commande ant base">
-    </li>
-    <li>
-      En utilisant le script d'exécution selon votre système d'exécution
-      <ul> 
-        <li>
-          <strong>Sous systèmes UNIX</strong> <br/>
-          Dans un terminal lancer le script <samp>run.sh</samp> par la commande suivante <br/>
-          <code>./run.sh</code>
-        </li>
-        <li>
-          <strong>Sous systèmes Windows</strong><br/>
-          Lancer le fichier <strong><samp>run.bat</samp></strong>
-        </li>
-    </li>
-  </ul>
-</details>
-
-### L'application complet
+### L'application complète
 
 <details>
   <summary> Sous <img src="https://firebasestorage.googleapis.com/v0/b/kaan-yagci-website.appspot.com/o/PSTL%20Assets%2Feclipse.svg?alt=media&token=c1a40189-1236-407b-9568-52c292e46e3d" alt="Eclipse Logo" width="32" height="32" align="top"/> Eclipse </summary>
