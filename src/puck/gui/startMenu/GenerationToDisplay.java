@@ -148,7 +148,6 @@ public class GenerationToDisplay extends JFrame {
 	public JFrame init(String[] args) {
 		// Component
 		PSwingCanvas canvas = new PSwingCanvas();
-
 		JButton undo = new JButton("UNDO");
 		JButton redo = new JButton("REDO");
 		JButton save = new JButton("SAVE-Refactoring Plan");
@@ -246,7 +245,7 @@ public class GenerationToDisplay extends JFrame {
 			container.add(toolBar, BorderLayout.PAGE_START);
 
 			frame.pack();
-			frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+			frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 			frame.setVisible(true);
 
 		} catch (InterruptedException e) {

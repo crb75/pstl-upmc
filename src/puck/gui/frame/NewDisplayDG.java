@@ -44,9 +44,7 @@ public class NewDisplayDG extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	   public NewDisplayDG() {
-		
-	}
+	   
 	public NewDisplayDG(PSwingCanvas canvas,String args) throws InterruptedException{
 		RefactoringCommands.getInstance().init();
 		state2 = StateChanger2.getInstance();
@@ -101,7 +99,6 @@ public class NewDisplayDG extends JFrame {
 		zoomHandler.setMinScale(0.5);
 		zoomHandler.setMaxScale(5);
 		canvas.setZoomEventHandler(zoomHandler);
-		
 	}
 	
 	public void setCam(PSwingCanvas canvas) {
