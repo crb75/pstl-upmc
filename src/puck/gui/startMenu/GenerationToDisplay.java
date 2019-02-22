@@ -41,7 +41,7 @@ import java.awt.TextArea;
 import java.awt.Button;
 
 @SuppressWarnings("serial")
-public class GenrationToDisplayMain extends JFrame {
+public class GenerationToDisplay extends JFrame {
 	private JTextField jarPathText;
 	private JTextField projetPathText;
 	private TextArea puck2StdOut;
@@ -53,7 +53,7 @@ public class GenrationToDisplayMain extends JFrame {
 	JFrame frame;
 	private RunCommand runCommand;
 
-	public GenrationToDisplayMain() {
+	public GenerationToDisplay() {
 		setTitle("Display");
 		getContentPane().setLayout(null);
 		JScrollPane scrollPane = new JScrollPane();
@@ -78,7 +78,7 @@ public class GenrationToDisplayMain extends JFrame {
 		jarButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				FileFilter filter = new FileNameExtensionFilter("jar File", "jar");
-				jarChoser.showOpenDialog(GenrationToDisplayMain.this);
+				jarChoser.showOpenDialog(GenerationToDisplay.this);
 				jarChoser.addChoosableFileFilter(filter);
 				jarPathText.setText(jarChoser.getSelectedFile().getAbsolutePath());
 			}
@@ -95,7 +95,7 @@ public class GenrationToDisplayMain extends JFrame {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				projectChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				projectChooser.showOpenDialog(GenrationToDisplayMain.this);
+				projectChooser.showOpenDialog(GenerationToDisplay.this);
 				projetPathText.setText(projectChooser.getSelectedFile().getAbsolutePath());
 			}
 		});
