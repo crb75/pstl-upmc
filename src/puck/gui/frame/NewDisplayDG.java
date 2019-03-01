@@ -76,7 +76,7 @@ public class NewDisplayDG extends JFrame {
 	}
 	
 	private void addEvent(PiccoloCustomNode node, PiccoloCustomNode tree,PSwingCanvas canvas,Menu menu,Map<String, Node> listNodes) {
-		node.getContent().getText().addInputEventListener(new PCustomInputEventHandler(node, tree, canvas, allPNodes,menu,ANH,listNodes));
+		node.getContent().addInputEventListener(new PCustomInputEventHandler(node, tree, canvas, allPNodes,menu,ANH,listNodes));
 		if (node.getAllChildren().size() != 0)
 			for (PiccoloCustomNode PCN : node.getAllChildren()) {
 				addEvent(PCN, tree,canvas,menu,listNodes);
@@ -115,6 +115,7 @@ public class NewDisplayDG extends JFrame {
 		 mouseWheelHandler.zoomAboutMouse();
 		 mouseWheelHandler.setScaleFactor(0.1);
 		 canvas.addInputEventListener(mouseWheelHandler);
+		 
 	}
 	
 	public void init() {

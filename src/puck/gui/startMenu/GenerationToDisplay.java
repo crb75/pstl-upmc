@@ -51,7 +51,7 @@ public class GenerationToDisplay extends JFrame {
 	private final JFileChooser projectChooser = new JFileChooser();
 	private boolean writingDone = false;
 	JFrame frame;
-	private RunCommand runCommand = new RunCommand();
+	private RunCommand runCommand;
 
 	public GenerationToDisplay() {
 		setTitle("Display");
@@ -119,10 +119,9 @@ public class GenerationToDisplay extends JFrame {
 					String testFile = projetPathText.getText().replaceAll("\"", "\\\\");
 					ProcessBuilder pb = new ProcessBuilder("java", "-jar", jarPath, testFile);
 					pb.redirectErrorStream(true);
-//					runCommand = new RunCommand(pb);
-					runCommand.setProcessBuilder(pb);
+					runCommand = new RunCommand(pb);
 					runCommand.start();
-					while (runCommand.getWriter() == null) {}
+					while (runCommand.getWriter() == null) {} //attente active
 					runCommand.sendCommand("saveGraph DependecyGraph.xml");
 					while(writingDone == false) {
 						System.out.println("Waiting DG xml File");
@@ -287,8 +286,8 @@ public class GenerationToDisplay extends JFrame {
 	            public void windowClosing(WindowEvent e)
 	            {
 	                writingDone=false;
-	                runCommand.getPro().destroy();
-	                runCommand.stop();
+//	                runCommand = null;
+//	             
 	            }
 			});
 
@@ -314,9 +313,6 @@ public class GenerationToDisplay extends JFrame {
 
 		}
 		
-		public RunCommand() {
-			super();
-		}
 
 		@Override
 		public void run() {
