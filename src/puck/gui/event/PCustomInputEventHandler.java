@@ -1,8 +1,5 @@
 package puck.gui.event;
 
-
-
-
 import java.awt.event.InputEvent;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +33,7 @@ import puck.gui.state.Changeable;
 import puck.gui.state.StateChanger;
 
 public class PCustomInputEventHandler extends PBasicInputEventHandler {
+	
 	private PiccoloCustomNode pnode;
 	private PiccoloCustomNode root;
 	private PSwingCanvas canvas;
@@ -57,6 +55,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	private JMenuItem addPackage;
 	private JMenuItem renameNode;
 	private Changeable state;
+	
 	public PCustomInputEventHandler(PiccoloCustomNode pnode, PiccoloCustomNode root, PSwingCanvas canvas,
 			Map<String, PiccoloCustomNode> allPNodes, Menu menu, ArrowNodesHolder ANH, Map<String, Node> listNodes) {
 		setEventFilter(new PInputEventFilter(InputEvent.BUTTON1_MASK & InputEvent.BUTTON2_MASK));

@@ -24,6 +24,7 @@ import puck.gui.menu.Menu;
  * 
  * */
 public class XmlToDisplay {
+	
 	private StringBuilder xmlString;
 	private PiccoloCustomNode root;
 	private HashMap<String, Edge> addedEdges = new HashMap<String, Edge>();

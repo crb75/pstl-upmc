@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -42,38 +44,51 @@ import java.awt.Button;
 
 @SuppressWarnings("serial")
 public class GenerationToDisplay extends JFrame {
-	private JTextField jarPathText;
-	private JTextField projetPathText;
+	private JTextField jarPathText, projetPathText;
 	private TextArea puck2StdOut;
-	private String jarPath;
-	private String projectPath;
+	private String jarPath, projectPath;
 	private final JFileChooser jarChoser = new JFileChooser();
 	private final JFileChooser projectChooser = new JFileChooser();
 	private boolean writingDone = false;
 	JFrame frame;
-	private RunCommand runCommand;
+	private RunCommand runCommand = new RunCommand();
 
 	public GenerationToDisplay() {
 		setTitle("Display");
 		getContentPane().setLayout(null);
+		JScrollPane scrollPane = createScrollPane();
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		JPanel panel_conf = new JPanel();
+		JButton jarButton = createJarButton();
+		JButton btnRun = createRunButton();
+		JButton btnNewButton = createProjectButton();
+		JButton embeddedJar = createEmbeddedJarButton();
+		setJarPathText();
+		setProjetPathText();
+		setPuck2toStdOut();
+		getContentPane().add(scrollPane);
+		scrollPane.setViewportView(tabbedPane);
+		tabbedPane.addTab("Configuration", null, panel_conf, null);
+		panel_conf.setLayout(null);
+		panel_conf.add(jarPathText);
+		panel_conf.add(jarButton);
+		panel_conf.add(projetPathText);
+		btnNewButton.setBounds(680, 44, 191, 33);
+		panel_conf.add(btnNewButton);
+		panel_conf.add(btnRun);
+		panel_conf.add(puck2StdOut);
+		panel_conf.add(embeddedJar);
+	}
+	
+	public JScrollPane createScrollPane() {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scrollPane.setBounds(0, 0, 1024, 554);
-		getContentPane().add(scrollPane);
-
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		scrollPane.setViewportView(tabbedPane);
-
-		JPanel panel_conf = new JPanel();
-		tabbedPane.addTab("Configuration", null, panel_conf, null);
-		panel_conf.setLayout(null);
-
-		jarPathText = new JTextField();
-		jarPathText.setBounds(112, 6, 571, 33);
-		panel_conf.add(jarPathText);
-		jarPathText.setColumns(30);
-
+		return scrollPane;
+	}
+	
+	public JButton createJarButton() {
 		JButton jarButton = new JButton("Jar");
 		jarButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -84,34 +99,28 @@ public class GenerationToDisplay extends JFrame {
 			}
 		});
 		jarButton.setBounds(680, 6, 68, 33);
-		panel_conf.add(jarButton);
+		return jarButton;
+	}
+	
+	public void setPuck2toStdOut() {
+		puck2StdOut = new TextArea();
+		puck2StdOut.setEditable(false);
+		puck2StdOut.setBounds(69, 131, 846, 348);
+	}
 
-		projetPathText = new JTextField();
-		projetPathText.setBounds(112, 44, 571, 33);
-		panel_conf.add(projetPathText);
-		projetPathText.setColumns(30);
-
-		JButton btnNewButton = new JButton("projet");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				projectChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				projectChooser.showOpenDialog(GenerationToDisplay.this);
-				projetPathText.setText(projectChooser.getSelectedFile().getAbsolutePath());
-			}
-		});
-		btnNewButton.setBounds(680, 44, 191, 33);
-		panel_conf.add(btnNewButton);
-
+	
+	public JButton createRunButton() {
 		JButton btnRun = new JButton("Run");
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+	
 				try {
 					String jarPath = jarPathText.getText().replaceAll("\"", "\\\\");
 					String testFile = projetPathText.getText().replaceAll("\"", "\\\\");
 					ProcessBuilder pb = new ProcessBuilder("java", "-jar", jarPath, testFile);
 					pb.redirectErrorStream(true);
-					runCommand = new RunCommand(pb);
+//					runCommand = new RunCommand(pb);
+					runCommand.setProcessBuilder(pb);
 					runCommand.start();
 					while (runCommand.getWriter() == null) {}
 					runCommand.sendCommand("saveGraph DependecyGraph.xml");
@@ -120,20 +129,29 @@ public class GenerationToDisplay extends JFrame {
 					}
 					init(new String[] {});
 					writingDone = false;
-
+	
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
 			}
 		});
 		btnRun.setBounds(731, 89, 90, 28);
-		panel_conf.add(btnRun);
-		
-	    puck2StdOut = new TextArea();
-		puck2StdOut.setEditable(false);
-		puck2StdOut.setBounds(69, 131, 846, 348);
-		panel_conf.add(puck2StdOut);
-		
+		return btnRun;
+	}
+	
+	public JButton createProjectButton() {
+		JButton btnNewButton = new JButton("projet");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				projectChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				projectChooser.showOpenDialog(GenerationToDisplay.this);
+				projetPathText.setText(projectChooser.getSelectedFile().getAbsolutePath());
+			}
+		});
+		return btnNewButton;
+	}
+	
+	public JButton createEmbeddedJarButton() {
 		JButton embeddedJar = new JButton("Embedded Jar");
 		embeddedJar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -142,9 +160,27 @@ public class GenerationToDisplay extends JFrame {
 			}
 		});
 		embeddedJar.setBounds(748, 6, 123, 33);
-		panel_conf.add(embeddedJar);
+		return embeddedJar;
+	}
+	
+	public void setJarPathText() {
+		jarPathText = new JTextField();
+		jarPathText.setBounds(112, 6, 571, 33);
+		jarPathText.setColumns(30);
 	}
 
+	
+	public void setProjetPathText() {
+		projetPathText = new JTextField();
+		projetPathText.setBounds(112, 44, 571, 33);
+		projetPathText.setColumns(30);
+	}
+	
+	
+	
+	//INIT LE FRAME POUR AFFICHER LE GRAPHE
+	
+	
 	public JFrame init(String[] args) {
 		// Component
 		PSwingCanvas canvas = new PSwingCanvas();
@@ -154,19 +190,17 @@ public class GenerationToDisplay extends JFrame {
 		JButton execute = new JButton("Execute-Refactoring Plan");
 		JButton impor = new JButton("LOAD-refactoring Plan");
 		JButton generate = new JButton("Generate code source");
-		undo.setSize(40, 40);
+		JTextArea textArear = new JTextArea();
 		JToolBar toolBar = new JToolBar();
+		JFileChooser fc = new JFileChooser();
+		undo.setSize(40, 40);
 		toolBar.add(undo);
 		toolBar.add(redo);
 		toolBar.add(save);
 		toolBar.add(impor);
 		toolBar.add(execute);
 		toolBar.add(generate);
-
-		JFileChooser fc = new JFileChooser();
 		fc.setMultiSelectionEnabled(false);
-
-		JTextArea textArear = new JTextArea();
 		textArear.setEditable(false);
 		textArear.setSize(200, 40);
 		textArear.setForeground(Color.RED);
@@ -247,13 +281,24 @@ public class GenerationToDisplay extends JFrame {
 			frame.pack();
 			frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 			frame.setVisible(true);
+			
+			frame.addWindowListener(new WindowAdapter() {
+				@Override
+	            public void windowClosing(WindowEvent e)
+	            {
+	                writingDone=false;
+	                runCommand.getPro().destroy();
+	                runCommand.stop();
+	            }
+			});
 
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		return frame;
 	}
-
+	
+	
 
 	public class RunCommand extends Thread {
 		private ProcessBuilder processBuilder;
@@ -267,6 +312,10 @@ public class GenerationToDisplay extends JFrame {
 			super();
 			this.processBuilder = processBuilder;
 
+		}
+		
+		public RunCommand() {
+			super();
 		}
 
 		@Override
@@ -316,6 +365,46 @@ public class GenerationToDisplay extends JFrame {
 
 		public BufferedWriter getWriter() {
 			return writer;
+		}
+		
+		public Process getPro() {
+			return this.pro;
+		}
+
+		public ProcessBuilder getProcessBuilder() {
+			return processBuilder;
+		}
+
+		public void setProcessBuilder(ProcessBuilder processBuilder) {
+			this.processBuilder = processBuilder;
+		}
+
+		public OutputStream getStdin() {
+			return stdin;
+		}
+
+		public void setStdin(OutputStream stdin) {
+			this.stdin = stdin;
+		}
+
+		public InputStream getStdout() {
+			return stdout;
+		}
+
+		public void setStdout(InputStream stdout) {
+			this.stdout = stdout;
+		}
+
+		public void setPro(Process pro) {
+			this.pro = pro;
+		}
+
+		public void setReader(BufferedReader reader) {
+			this.reader = reader;
+		}
+
+		public void setWriter(BufferedWriter writer) {
+			this.writer = writer;
 		}
 
 	}

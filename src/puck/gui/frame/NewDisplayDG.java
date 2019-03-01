@@ -71,6 +71,8 @@ public class NewDisplayDG extends JFrame {
 		setScaling(canvas);
 		
 		
+		
+		
 	}
 	
 	private void addEvent(PiccoloCustomNode node, PiccoloCustomNode tree,PSwingCanvas canvas,Menu menu,Map<String, Node> listNodes) {
@@ -113,6 +115,10 @@ public class NewDisplayDG extends JFrame {
 		 mouseWheelHandler.zoomAboutMouse();
 		 mouseWheelHandler.setScaleFactor(0.1);
 		 canvas.addInputEventListener(mouseWheelHandler);
+	}
+	
+	public void init() {
+		
 	}
 
 	
@@ -160,5 +166,6 @@ public class NewDisplayDG extends JFrame {
 		//	System.out.println("Popup menu is hidden!");
 		}
 	}
+	
 
 }
