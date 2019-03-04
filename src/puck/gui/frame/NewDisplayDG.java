@@ -109,7 +109,7 @@ public class NewDisplayDG extends JFrame {
 	
 	public void setCam(PSwingCanvas canvas) {
 		PCamera cam = canvas.getCamera();
-//        cam.setViewConstraint(PCamera.VIEW_CONSTRAINT_CENTER);
+		cam.setViewConstraint(PCamera.VIEW_CONSTRAINT_CENTER);
         cam.scaleView(2.5);
         canvas.setCamera(cam);
 	}

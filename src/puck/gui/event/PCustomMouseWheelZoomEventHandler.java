@@ -97,9 +97,17 @@ public final class PCustomMouseWheelZoomEventHandler extends PBasicInputEventHan
         double scale = 1.0d + event.getWheelRotation() * scaleFactor;
         Point2D viewAboutPoint = getViewAboutPoint(event);
         double s = camera.getViewScale();
-        if(s > minScale || s < maxScale) {
+        System.out.println(s);
+        if(s >= minScale && s <= maxScale) {
         	camera.scaleViewAboutPoint(scale, viewAboutPoint.getX(), viewAboutPoint.getY());
         }
+        else if (s < minScale) {
+        	camera.setViewScale(minScale);
+        }
+        else if (s > maxScale) {
+        	camera.setViewScale(maxScale);
+        }
+        
         
     }
 
