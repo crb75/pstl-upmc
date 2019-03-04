@@ -286,8 +286,6 @@ public class GenerationToDisplay extends JFrame {
 	            public void windowClosing(WindowEvent e)
 	            {
 	                writingDone=false;
-//	                runCommand = null;
-//	             
 	            }
 			});
 

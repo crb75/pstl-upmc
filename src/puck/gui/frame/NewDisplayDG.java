@@ -11,6 +11,8 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import org.piccolo2d.PCamera;
+import org.piccolo2d.event.PBasicInputEventHandler;
+import org.piccolo2d.event.PInputEvent;
 import org.piccolo2d.event.PMouseWheelZoomEventHandler;
 import org.piccolo2d.event.PZoomEventHandler;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
@@ -18,6 +20,7 @@ import org.piccolo2d.extras.pswing.PSwingCanvas;
 import puck.conversion.NodeToPnodeParser;
 import puck.conversion.XmlToStructure;
 import puck.gui.event.PCustomInputEventHandler;
+import puck.gui.event.PCustomMouseWheelZoomEventHandler;
 import puck.gui.item.arrow.ArrowNodesHolder;
 import puck.gui.item.node.Node;
 import puck.gui.item.node.PiccoloCustomNode;
@@ -40,9 +43,10 @@ public class NewDisplayDG extends JFrame {
 	private StateChanger2 state2;
 	private ExecuteRefactoringPlan refactoringPlanExecutor;
 	private PSwingCanvas canvas;
-	/**
-	 * 
-	 */
+	private double minScale = 0.5;
+	private double maxScale = 5;
+
+	
 	private static final long serialVersionUID = 1L;
 	   
 	public NewDisplayDG(PSwingCanvas canvas,String args) throws InterruptedException{
@@ -98,8 +102,8 @@ public class NewDisplayDG extends JFrame {
 	
 	public void setScaling(PSwingCanvas canvas) {
 		PZoomEventHandler zoomHandler = canvas.getZoomEventHandler();
-		zoomHandler.setMinScale(0.5);
-		zoomHandler.setMaxScale(5);
+		zoomHandler.setMinScale(minScale);
+		zoomHandler.setMaxScale(maxScale);
 		canvas.setZoomEventHandler(zoomHandler);
 	}
 	
@@ -111,11 +115,13 @@ public class NewDisplayDG extends JFrame {
 	}
 	
 	public void setMouseWheelHandler(PSwingCanvas canvas) {
-		PMouseWheelZoomEventHandler mouseWheelHandler = new PMouseWheelZoomEventHandler();
+		
+		PCustomMouseWheelZoomEventHandler mouseWheelHandler = new PCustomMouseWheelZoomEventHandler();
+
 		 mouseWheelHandler.zoomAboutMouse();
 		 mouseWheelHandler.setScaleFactor(0.1);
-		 canvas.addInputEventListener(mouseWheelHandler);
-		 
+		
+		 canvas.addInputEventListener(mouseWheelHandler);	
 	}
 	
 	public void init() {
