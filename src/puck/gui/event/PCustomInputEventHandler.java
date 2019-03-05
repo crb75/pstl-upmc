@@ -91,9 +91,9 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 	public void mousePressed(PInputEvent aEvent) {
 		
 		try {
-			if (aEvent.isLeftMouseButton()) {
+			if (aEvent.isLeftMouseButton()) {	
 				pnode.toggleChildren();
-				//System.out.println(pnode.isHidden());
+				System.out.println(pnode.isHidden());
 				root.setLayout();
 				root.updateContentBoundingBoxes(false, canvas);
 				for (Parrow arrow : ANH.getVisibleArrows()) {
@@ -101,9 +101,7 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 				}
 			}
 			if (aEvent.isRightMouseButton()) {
-					generateMenu(menu,aEvent);		
-					
-
+					generateMenu(menu,aEvent);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -129,12 +127,11 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		menu.add(collapseAll);
 		menu.addSeparator();
 		if(pnode.getContent().getType().equals("package")) {
-		menu.add(addClass);
-		menu.add(addPackage);
-		menu.addSeparator();
+			menu.add(addClass);
+			menu.add(addPackage);
+			menu.addSeparator();
 		}
 		menu.add(renameNode);
-	
 		menu.setPoint(aEvent.getPosition());
 		menu.setCanvas(canvas);
 	}

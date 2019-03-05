@@ -45,7 +45,6 @@ public class NewDisplayDG extends JFrame {
 	private PSwingCanvas canvas;
 	private double minScale = 0.5;
 	private double maxScale = 5;
-
 	
 	private static final long serialVersionUID = 1L;
 	   
@@ -73,9 +72,6 @@ public class NewDisplayDG extends JFrame {
 		setMouseWheelHandler(canvas);
 		setCam(canvas);
 		setScaling(canvas);
-		
-		
-		
 		
 	}
 	
@@ -133,33 +129,39 @@ public class NewDisplayDG extends JFrame {
 	class MousePopupListener extends MouseAdapter {
 	    public void mousePressed(MouseEvent e) {
 	    	//System.out.println("j'ai detecte click press");
+	    
 	      checkPopup(e);
 	    }
 
-	    public void mouseClicked(MouseEvent e) {
+		public void mouseClicked(MouseEvent e) {
 	    	//System.out.println("j'ai detecte click click");
-	      checkPopup(e);
+		  checkPopup(e);
+		 	if(e.getButton() == MouseEvent.BUTTON1) {
+				 if(!menu.isHidden()) {
+			    	  menu.hide();
+			      }
+			}
 	    }
-
-	    public void mouseReleased(MouseEvent e) {
+		
+		public void mouseReleased(MouseEvent e) {
 	      checkPopup(e);
-	    }
+		}
 
 	    private void checkPopup(MouseEvent e) {
-	      if (e.isPopupTrigger()) {
-		    //	System.out.println("popuptrigger");
-
-	    	 if (menu.isHidden()) {
-	    	//		System.out.println("menu hidden");
-	    		 menu.show();
-			 }else {
-				 menu.hide();
-			 }
-	    		 
-		
+	    	if (e.isPopupTrigger()) {
+			if(e.getButton() == MouseEvent.BUTTON3) {
+				 if(menu.isHidden()) {
+			    	  menu.show();
+			      }
+				 else {
+					 menu.hide();
+				 }
+			}
 	      }
 	    }
+	    
 	  }
+	
 	class PopupPrintListener implements PopupMenuListener {
 		public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
 		//	System.out.println("Popup menu will be visible!");
