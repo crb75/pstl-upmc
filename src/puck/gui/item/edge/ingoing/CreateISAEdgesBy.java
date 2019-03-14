@@ -42,6 +42,7 @@ public class CreateISAEdgesBy extends JMenuItem {
 		this.ANH = ANH;
 		this.listNodes = listNodes;
 		addActionListener();
+		System.out.println("ISA");
 	}
 
 	public void drawExtendsEdges(PiccoloCustomNode target, PSwingCanvas canvas) {

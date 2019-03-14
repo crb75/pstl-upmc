@@ -91,6 +91,7 @@ public class XmlToDisplay {
 	}
 
 	private String nodeToString(PiccoloCustomNode node) {
+		System.out.println("nodeToString");
 		String formatString = "\t<node type=\"%s\" id=\"%s\" name=\"%s\"/>\n";
 		String type = node.getContent().getType().toLowerCase();
 		String id = node.getidNode();

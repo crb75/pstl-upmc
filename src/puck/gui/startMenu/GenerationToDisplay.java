@@ -111,12 +111,15 @@ public class GenerationToDisplay extends JFrame {
 	
 	public JButton createRunButton() {
 		JButton btnRun = new JButton("Run");
+
+		
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 	
 				try {
 					String jarPath = jarPathText.getText().replaceAll("\"", "\\\\");
 					String testFile = projetPathText.getText().replaceAll("\"", "\\\\");
+					
 					ProcessBuilder pb = new ProcessBuilder("java", "-jar", jarPath, testFile);
 					pb.redirectErrorStream(true);
 					runCommand = new RunCommand(pb);
@@ -128,7 +131,6 @@ public class GenerationToDisplay extends JFrame {
 					}
 					init(new String[] {});
 					writingDone = false;
-	
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -139,7 +141,7 @@ public class GenerationToDisplay extends JFrame {
 	}
 	
 	public JButton createProjectButton() {
-		JButton btnNewButton = new JButton("projet");
+		JButton btnNewButton = new JButton("Projet");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				projectChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -285,7 +287,7 @@ public class GenerationToDisplay extends JFrame {
 				@Override
 	            public void windowClosing(WindowEvent e)
 	            {
-	                writingDone=false;
+	               
 	            }
 			});
 
@@ -304,7 +306,7 @@ public class GenerationToDisplay extends JFrame {
 		private InputStream stdout;
 		private BufferedReader reader;
 		private BufferedWriter writer;
-
+		
 		public RunCommand(ProcessBuilder processBuilder) {
 			super();
 			this.processBuilder = processBuilder;
@@ -322,9 +324,9 @@ public class GenerationToDisplay extends JFrame {
 				writer = new BufferedWriter(new OutputStreamWriter(stdin));
 				sendCommand("display\n");
 				Scanner scanner = new Scanner(stdout);
-				while (scanner.hasNextLine()) {
+				while (scanner.hasNextLine()) { //lit le fichier xml ligne par ligne
 					String line = scanner.nextLine();
-					puck2StdOut.append(line +"\n");
+					puck2StdOut.append(line +"\n"); //écrit sur l'entrée de sortie (le rectangle du menu)
 					System.out.println(line);
 					if (line.trim().equals("DONE")) {
 						writingDone = true;

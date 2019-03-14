@@ -1,5 +1,7 @@
 package puck.gui.item.node;
 
+import java.awt.Paint;
+
 import org.piccolo2d.PNode;
 import org.piccolo2d.nodes.PImage;
 import org.piccolo2d.nodes.PText;

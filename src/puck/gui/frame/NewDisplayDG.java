@@ -1,6 +1,7 @@
 package puck.gui.frame;
 
 
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
@@ -105,7 +106,7 @@ public class NewDisplayDG extends JFrame {
 	
 	public void setCam(PSwingCanvas canvas) {
 		PCamera cam = canvas.getCamera();
-		cam.setViewConstraint(PCamera.VIEW_CONSTRAINT_CENTER);
+	//	cam.setViewConstraint(PCamera.VIEW_CONSTRAINT_CENTER);
         cam.scaleView(2.5);
         canvas.setCamera(cam);
 	}

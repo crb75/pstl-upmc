@@ -18,13 +18,18 @@ import org.piccolo2d.nodes.PText;
 import puck.gui.item.arrow.Parrow;
 
 public class PiccoloCustomNode extends PNode {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	private NodeContent content;
 	private PPath rect;
 	private Collection<PiccoloCustomNode> hiddenchildren;
+	private double margin = 50;	//pour "espacement" 
+	private String idNode;
+	private PiccoloCustomNode parent;
+	private HashSet<Parrow> outgoing;
+	private HashSet<Parrow> ingoing;
+
+	
 	public Collection<PiccoloCustomNode> getHiddenchildren() {
 		return hiddenchildren;
 	}
@@ -33,15 +38,7 @@ public class PiccoloCustomNode extends PNode {
 		this.hiddenchildren = hiddenchildren;
 	}
 	
-	
 
-	private double margin = 10;
-	private String idNode;
-	private PiccoloCustomNode parent;
-	private HashSet<Parrow> outgoing;
-	private HashSet<Parrow> ingoing;
-
-	// region getters/setters
 
 	public PPath getRect() {
 		return rect;
