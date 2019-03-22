@@ -121,6 +121,7 @@ public class GenerationToDisplay extends JFrame {
 					String testFile = projetPathText.getText().replaceAll("\"", "\\\\");
 					
 					ProcessBuilder pb = new ProcessBuilder("java", "-jar", jarPath, testFile);
+					System.out.println();
 					pb.redirectErrorStream(true);
 					runCommand = new RunCommand(pb);
 					runCommand.start();

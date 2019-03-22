@@ -23,7 +23,7 @@ public class PiccoloCustomNode extends PNode {
 	private NodeContent content;
 	private PPath rect;
 	private Collection<PiccoloCustomNode> hiddenchildren;
-	private double margin = 50;	//pour "espacement" 
+	private double margin = 10;	//pour "espacement" 
 	private String idNode;
 	private PiccoloCustomNode parent;
 	private HashSet<Parrow> outgoing;
