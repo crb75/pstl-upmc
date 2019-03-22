@@ -5,9 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import puck.modele.*;
 
-import puck.gui.item.edge.Edge;
-import puck.gui.item.node.Node;
 import puck.gui.item.node.PiccoloCustomNode;
 
 public class NodeToPnodeParser {

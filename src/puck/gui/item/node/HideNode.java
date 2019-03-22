@@ -9,6 +9,7 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 
+import puck.modele.Node;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 
 import puck.gui.item.arrow.ArrowNodesHolder;

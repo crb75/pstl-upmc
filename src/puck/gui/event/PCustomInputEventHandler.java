@@ -11,8 +11,9 @@ import org.piccolo2d.event.PInputEvent;
 import org.piccolo2d.event.PInputEventFilter;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 
+import puck.modele.Node;
+import puck.modele.Parrow;
 import puck.gui.item.arrow.ArrowNodesHolder;
-import puck.gui.item.arrow.Parrow;
 import puck.gui.item.edge.ingoing.CreateEdgesBy;
 import puck.gui.item.edge.ingoing.CreateEgdesHierarchyBy;
 import puck.gui.item.edge.outgoing.CreateEdgesOf;
@@ -24,7 +25,6 @@ import puck.gui.item.node.CollapseAll;
 import puck.gui.item.node.ExpandAll;
 import puck.gui.item.node.FocusNode;
 import puck.gui.item.node.HideNode;
-import puck.gui.item.node.Node;
 import puck.gui.item.node.NodeType;
 import puck.gui.item.node.PiccoloCustomNode;
 import puck.gui.item.node.RenameNode;

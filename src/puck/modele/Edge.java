@@ -1,4 +1,4 @@
-package puck.gui.item.edge;
+package puck.modele;
 
 
 

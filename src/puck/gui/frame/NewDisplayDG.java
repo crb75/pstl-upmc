@@ -23,7 +23,6 @@ import puck.conversion.XmlToStructure;
 import puck.gui.event.PCustomInputEventHandler;
 import puck.gui.event.PCustomMouseWheelZoomEventHandler;
 import puck.gui.item.arrow.ArrowNodesHolder;
-import puck.gui.item.node.Node;
 import puck.gui.item.node.PiccoloCustomNode;
 import puck.gui.item.node.RenameNode;
 import puck.gui.menu.Menu;
@@ -31,6 +30,8 @@ import puck.gui.plan.ExecuteRefactoringPlan;
 import puck.gui.plan.RefactoringCommands;
 import puck.gui.state.StateChanger;
 import puck.gui.state.StateChanger2;
+import puck.modele.Node;
+
 
 public class NewDisplayDG extends JFrame {
 	private HashMap<String, PiccoloCustomNode> allPNodes = new HashMap<>();

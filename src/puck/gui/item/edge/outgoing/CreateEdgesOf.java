@@ -12,7 +12,7 @@ import org.piccolo2d.extras.pswing.PSwingCanvas;
 
 import puck.conversion.XmlToStructure;
 import puck.gui.item.arrow.ArrowNodesHolder;
-import puck.gui.item.node.Node;
+import puck.modele.Node;
 import puck.gui.item.node.PiccoloCustomNode;
 import puck.gui.menu.Menu;
 

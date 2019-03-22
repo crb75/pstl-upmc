@@ -8,8 +8,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 
-import puck.gui.item.edge.Edge;
-import puck.gui.item.node.Node;
+import puck.modele.*;
 import puck.reader.Reader;
 
 public  class XmlToStructure {

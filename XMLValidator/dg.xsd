@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- New XSD document created with EditiX XML Editor (http://www.editix.com) at Mon Jan 22 15:40:38 CET 2018 -->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="DG" type="dgtype"/>
+	
+	<xs:complexType name="dgtype">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:choice>
+				<xs:element name="node" type="nodetype"/>
+				<xs:element name="edge" type="edgetype"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="nodetype">
+		<xs:attribute name="id" type="xs:integer"/>
+		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="type" type="nodeclass"/>
+	</xs:complexType>
+	<xs:simpleType name="nodeclass">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="package"/>
+			<xs:enumeration value="class"/>
+			<xs:enumeration value="interface"/>
+			<xs:enumeration value="method"/>
+			<xs:enumeration value="methodbody"/>
+			<xs:enumeration value="attribute"/>
+			<xs:enumeration value="parameter"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="edgetype">
+	        <xs:attribute name="id" type="xs:integer"/>
+			<xs:attribute name="src" type="xs:integer"/>
+			<xs:attribute name="dest" type="xs:integer"/>
+			<xs:attribute name="type" type="edgesort"/>
+            <xs:attribute name="violation" type="violationType"/>
+	</xs:complexType>
+	<xs:simpleType name="edgesort">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="uses"/>
+			<xs:enumeration value="contains"/>
+			<xs:enumeration value="isa"/>
+		</xs:restriction>
+	</xs:simpleType>
+    <xs:simpleType name="violationType">
+        <xs:restriction base="xs:integer">
+            <xs:enumeration value="0"/>
+            <xs:enumeration value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

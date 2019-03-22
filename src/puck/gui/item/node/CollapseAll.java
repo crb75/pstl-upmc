@@ -1,6 +1,7 @@
 package puck.gui.item.node;
 
 import java.awt.event.ActionEvent;
+import puck.modele.Node;
 import java.util.HashMap;
 import java.util.Map;
 

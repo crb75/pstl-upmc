@@ -1,6 +1,7 @@
 package puck.gui.item.node;
 
 import java.awt.Paint;
+import java.net.URL;
 
 import org.piccolo2d.PNode;
 import org.piccolo2d.nodes.PImage;
@@ -72,27 +73,35 @@ public class NodeContent extends PNode {
 
 	public void setImageIcon(String type) {
 		PImage Icon;
+		URL url;
 		switch (type) {
 		case "package":
-			Icon = new PImage("images/package.gif");
+			url = NodeContent.class.getResource("/package.gif");
+			Icon = new PImage(url);
 			break;
 		case "class":
-			Icon = new PImage("images/class.gif");
+			url = NodeContent.class.getResource("/class.gif");
+			Icon = new PImage(url);
 			break;
 		case "interface":
-			Icon = new PImage("images/interface.gif");
+			url = NodeContent.class.getResource("/interface.gif");
+			Icon = new PImage(url);
 			break;
 		case "root":
-			Icon = new PImage("images/root.gif");
+			url = NodeContent.class.getResource("/root.gif");
+			Icon = new PImage(url);
 			break;
 		case "method":
-			Icon = new PImage("images/method.png");
+			url = NodeContent.class.getResource("/method.png");
+			Icon = new PImage(url);
 			break;
 		case "attribute":
-			Icon = new PImage("images/field.png");
+			url = NodeContent.class.getResource("/field.gif");
+			Icon = new PImage(url);
 			break;
 		default:
-			Icon = new PImage("images/question-mark.gif");
+			url = NodeContent.class.getResource("/question-mark.gif");
+			Icon = new PImage(url);
 			break;
 		}
 		this.icon = Icon;

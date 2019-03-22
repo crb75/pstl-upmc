@@ -8,7 +8,7 @@ import java.awt.geom.Point2D;
 import org.piccolo2d.PNode;
 import org.piccolo2d.nodes.PPath;
 import org.piccolo2d.nodes.PText;
-
+import puck.modele.*;
 import puck.gui.item.node.PiccoloCustomNode;
 
 public class ParrowUses extends Parrow{

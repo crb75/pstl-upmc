@@ -13,7 +13,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import org.piccolo2d.extras.pswing.PSwingCanvas;
-
+import puck.modele.Node;
 import puck.gui.item.arrow.ArrowNodesHolder;
 import puck.gui.menu.Menu;
 import puck.gui.plan.RefactoringCommands;

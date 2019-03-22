@@ -1,10 +1,5 @@
-package puck.gui.item.node;
-
-
-
+package puck.modele;
 import java.util.HashMap;
-
-import puck.gui.item.edge.Edge;
 
 public class Node {
 	private String name ; 

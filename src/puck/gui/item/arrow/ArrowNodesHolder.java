@@ -7,6 +7,8 @@ import java.util.Iterator;
 
 import org.piccolo2d.PNode;
 
+import puck.modele.Parrow;
+
 import puck.gui.item.node.PiccoloCustomNode;
 
 public class ArrowNodesHolder extends PNode {

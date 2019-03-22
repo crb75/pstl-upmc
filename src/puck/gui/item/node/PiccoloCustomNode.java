@@ -15,7 +15,9 @@ import org.piccolo2d.PNode;
 import org.piccolo2d.nodes.PPath;
 import org.piccolo2d.nodes.PText;
 
-import puck.gui.item.arrow.Parrow;
+import puck.modele.Parrow;
+
+
 
 public class PiccoloCustomNode extends PNode {
 	

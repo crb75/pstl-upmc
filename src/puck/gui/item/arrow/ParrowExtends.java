@@ -4,7 +4,7 @@ package puck.gui.item.arrow;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.geom.Point2D;
-
+import puck.modele.*;
 import org.piccolo2d.PNode;
 import org.piccolo2d.nodes.PPath;
 import org.piccolo2d.nodes.PText;

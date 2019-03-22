@@ -1,4 +1,4 @@
-package puck.gui.item.arrow;
+package puck.modele;
 
 import java.awt.geom.Point2D;
 

@@ -16,10 +16,8 @@ import org.piccolo2d.extras.pswing.PSwingCanvas;
 
 import puck.conversion.XmlToStructure;
 import puck.gui.item.arrow.ArrowNodesHolder;
-import puck.gui.item.arrow.Parrow;
+import puck.modele.*;
 import puck.gui.item.arrow.ParrowExtends;
-import puck.gui.item.edge.Edge;
-import puck.gui.item.node.Node;
 import puck.gui.item.node.PiccoloCustomNode;
 import puck.gui.menu.Menu;
 

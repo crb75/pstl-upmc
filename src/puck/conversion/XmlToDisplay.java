@@ -12,12 +12,11 @@ import org.piccolo2d.PNode;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 
 import puck.gui.item.arrow.ArrowNodesHolder;
-import puck.gui.item.edge.Edge;
 import puck.gui.item.edge.ingoing.CreateEgdesHierarchyBy;
 import puck.gui.item.edge.outgoing.CreateEgdesHierarchyOf;
-import puck.gui.item.node.Node;
 import puck.gui.item.node.PiccoloCustomNode;
 import puck.gui.menu.Menu;
+import puck.modele.*;
 
 /*
  * cette classe permet de comparer le xml intial avec le xml regenere a partir de l'affichage 
