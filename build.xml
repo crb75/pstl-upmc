@@ -78,7 +78,7 @@
         <delete dir="bin"/>
     </target>
     <!-- The build target compile all .java files -->
-    <target depends="init" name="build">
+    <target name="build" depends="init">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac encoding="iso-8859-1" debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
@@ -98,6 +98,18 @@
         <java classname="puck.main.MainClass" failonerror="true" fork="yes">
             <classpath refid="upmc-pstl.classpath"/>
         </java>
+    </target>
+
+    <target name="jar" depends="build,clean"
+            description="Generer la distribution" >
+        <delete file = "PSTL-UPMC.jar"/>
+        <jar destfile="PSTL-UPMC.jar" basedir="bin" includes="**/*.*">
+            <manifest>
+                <attribute name = "Main-Class" value = "puck.main.MainClass"/>
+                <attribute name = "Class-Path" value = "bin"/>
+            </manifest>
+
+        </jar>
     </target>
 
     <target name="build_tests" depends="build">
