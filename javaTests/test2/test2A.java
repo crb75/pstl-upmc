@@ -7,7 +7,7 @@ public class A{
 		this.x = x;
 	}
 
-	private void ma1(){
+	private void ma1fljhfdsjkljmslqkdqlhifjmosdojoilu(String s){
 	}
 
 	public int ma2(){
