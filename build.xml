@@ -88,9 +88,9 @@
 
     <!-- Target admin builds project if it was not and launches the admin interface of the project -->
     <target name="admin" depends="build">
-            <java classname="puck.main.MainClass" failonerror="true" fork="yes">
-                    <classpath refid="upmc-pstl.classpath"/>
-            </java>
+        <java classname="puck.main.MainClass" failonerror="true" fork="yes">
+            <classpath refid="upmc-pstl.classpath"/>
+        </java>
     </target>
 
     <!-- Target base builds the project if it was not and launches the ui for dependecy graph from sample xml file -->
@@ -100,13 +100,14 @@
         </java>
     </target>
 
-    <target name="jar" depends="build,clean"
+    <target name="jar" depends="clean,build"
             description="Generer la distribution" >
         <delete file = "PSTL-UPMC.jar"/>
         <jar destfile="PSTL-UPMC.jar" basedir="bin" includes="**/*.*">
+            <fileset dir="./lib" includes="lib/piccolo2d-extras-3.1-SNAPSHOT.jar"/>
             <manifest>
                 <attribute name = "Main-Class" value = "puck.main.MainClass"/>
-                <attribute name = "Class-Path" value = "bin"/>
+                <attribute name = "Class-Path" value = "./bin,./lib"/>
             </manifest>
 
         </jar>
@@ -132,26 +133,26 @@
             </testng>
         </jacoco:coverage>
     </target>
-	
-	<target name="code_coverage" depends="run_all_test_with_coverage">
-		<jacoco:report>
-		    <executiondata>
-		        <file file="jacoco.exec"/>
-		    </executiondata>
-		                        
-		    <structure name="PSTL-UPMC">
-		        <classfiles>
-		            <fileset dir="out/production"/>
-		        </classfiles>
-		        <sourcefiles encoding="iso-8859-1">
-		            <fileset dir="test"/>
-		        </sourcefiles>
-		    </structure>
-		                        
-		    <xml destfile="coverage.xml"/>
-		                        
-		</jacoco:report>
-	</target>
+
+    <target name="code_coverage" depends="run_all_test_with_coverage">
+        <jacoco:report>
+            <executiondata>
+                <file file="jacoco.exec"/>
+            </executiondata>
+
+            <structure name="PSTL-UPMC">
+                <classfiles>
+                    <fileset dir="out/production"/>
+                </classfiles>
+                <sourcefiles encoding="iso-8859-1">
+                    <fileset dir="test"/>
+                </sourcefiles>
+            </structure>
+
+            <xml destfile="coverage.xml"/>
+
+        </jacoco:report>
+    </target>
 
 
 
