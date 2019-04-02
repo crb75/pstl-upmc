@@ -324,7 +324,7 @@ public class PiccoloCustomNode extends PNode {
 		addChildren(children);
 	}
 
-	// TODO this function breaks the layout when ckick on the first child of the
+	// TODO this function breaks the layout when click on the first child of the
 	// last line
 	public void setGridLayout(int cap) {
 
