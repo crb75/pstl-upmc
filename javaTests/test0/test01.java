@@ -6,5 +6,5 @@ class B {
         
             private A a;
         
-            public void mb(){ a.ma(); }
+            public void mb(){  }
 }

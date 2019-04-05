@@ -96,7 +96,7 @@ public class NodeContent extends PNode {
 			Icon = new PImage(url);
 			break;
 		case "attribute":
-			url = NodeContent.class.getResource("/field.gif");
+			url = NodeContent.class.getResource("/field.png");
 			Icon = new PImage(url);
 			break;
 		default:
