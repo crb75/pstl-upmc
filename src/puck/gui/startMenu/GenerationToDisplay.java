@@ -253,6 +253,7 @@ public class GenerationToDisplay extends JFrame {
 				}
 			}
 		});
+		
 		impor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				fc.addChoosableFileFilter(new FileNameExtensionFilter("*.xml", "xml"));
@@ -288,7 +289,8 @@ public class GenerationToDisplay extends JFrame {
 				@Override
 	            public void windowClosing(WindowEvent e)
 	            {
-	               
+					runCommand.end();
+	               runCommand.stop();
 	            }
 			});
 
@@ -318,7 +320,7 @@ public class GenerationToDisplay extends JFrame {
 		@Override
 		public void run() {
 			try {
-				pro = this.processBuilder.start();
+				pro =  processBuilder.start();
 				stdin = pro.getOutputStream();
 				stdout = pro.getInputStream();
 				reader = new BufferedReader(new InputStreamReader(stdout));
@@ -328,7 +330,7 @@ public class GenerationToDisplay extends JFrame {
 				while (scanner.hasNextLine()) { //lit le fichier xml ligne par ligne
 					String line = scanner.nextLine();
 					puck2StdOut.append(line +"\n"); //écrit sur l'entrée de sortie (le rectangle du menu)
-					System.out.println(line);
+					//System.out.println(line);
 					if (line.trim().equals("DONE")) {
 						writingDone = true;
 					}
@@ -344,6 +346,17 @@ public class GenerationToDisplay extends JFrame {
 				e.printStackTrace();
 			}
 			super.run();
+			
+			
+		}
+		
+
+		public void end() {
+			pro.destroyForcibly();
+			reader = null;
+			writer = null;
+			stdin = null;
+			stdout = null;
 		}
 
 		public void sendCommand(String commande) {

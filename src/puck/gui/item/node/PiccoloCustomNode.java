@@ -25,7 +25,7 @@ public class PiccoloCustomNode extends PNode {
 	private NodeContent content;
 	private PPath rect;
 	private Collection<PiccoloCustomNode> hiddenchildren;
-	private double margin = 10;	//pour "espacement" 
+	private double margin = 10;
 	private String idNode;
 	private PiccoloCustomNode parent;
 	private HashSet<Parrow> outgoing;
@@ -66,6 +66,8 @@ public class PiccoloCustomNode extends PNode {
 		return ((PText) (content.getChild(0))).getText();
 	}
 
+	
+	//OK
 	public boolean isHidden() {
 		PNode parent = getParent();
 		if (parent == null)
@@ -101,10 +103,15 @@ public class PiccoloCustomNode extends PNode {
 		this.hiddenchildren = new ArrayList<>();
 	}
 
+	/**
+	 *
+	 * @param textContent : nom de l'entité
+	 * @param idNode : numéro iD
+	 * @param type : url de l'img de l'élément 
+	 */
 	public PiccoloCustomNode(String textContent, String idNode, String type) {
 
 		this.idNode = idNode;
-
 		hiddenchildren = new ArrayList<>();
 		content = new NodeContent(new PText(textContent), type);
 
@@ -118,8 +125,9 @@ public class PiccoloCustomNode extends PNode {
 		this.ingoing = new HashSet<>();
 		this.outgoing = new HashSet<>();
 		this.parent = null;
-
 	}
+	
+	
 	public static PiccoloCustomNode newInstance(PiccoloCustomNode copy) {
 		PiccoloCustomNode p = new  PiccoloCustomNode(copy.getContent().getText().getText(),copy.getidNode(),copy.getContent().getType());
 	//	p.setParentNode(PiccoloCustomNode.newInstance(copy.parent));
@@ -134,10 +142,12 @@ public class PiccoloCustomNode extends PNode {
 			node.setParentNode(this);
 			hiddenchildren.add(node);
 		}
-
 		setLayout();
 	}
 
+	/*
+	 * Recupere tous les noeuds fils d'un NOEUD
+	 */
 	public Collection<PiccoloCustomNode> getChildren() {
 		ArrayList<PiccoloCustomNode> children = new ArrayList<>();
 		for (Iterator<PNode> childrenIterator = getChildrenIterator(); childrenIterator.hasNext();) {
@@ -209,120 +219,13 @@ public class PiccoloCustomNode extends PNode {
 			showChildren();
 	}
 
+	/*
+	 * set the cap for max element in a row
+	 */
 	public void setLayout() {
 		setGridLayout(3);
 	}
 
-	// region avaliable layouts
-
-	public void setGridLayoutH() {
-		if (getChildren().size() == 0) {
-
-			double x = 0;
-			double y = 0;
-			double w = margin + content.getBounds().getWidth() + margin;
-			double h = margin + content.getBounds().getHeight() + margin;
-
-			removeChild(rect);
-			rect = PPath.createRectangle(x, y, w, h);
-			rect = bevelOut(rect, 0);
-			addChild(rect);
-			addChild(content);
-
-			return;
-		}
-
-		NodeContent content = this.content;
-		Collection<PiccoloCustomNode> children = getChildren();
-
-		double x = margin;
-		double y = margin + content.getBounds().getHeight() + margin;
-		double w = margin + content.getBounds().getWidth() + margin;
-		double h = margin + content.getBounds().getHeight() + margin;
-
-		PiccoloCustomNode lastChild = children.iterator().next();
-		double maxHeight = lastChild.getRect().getHeight();
-
-		// region horizontal layout
-		for (PiccoloCustomNode PCN : children) {
-
-			PCN.setTransform(AffineTransform.getTranslateInstance(0, 0));
-
-			PCN.setGridLayoutH();
-
-			PCN.translate(x, y);
-
-			x += PCN.getRect().getWidth() + margin;
-			w += PCN.getRect().getWidth() + margin;
-
-			if (PCN.getRect().getHeight() > maxHeight)
-				maxHeight = PCN.getRect().getHeight();
-		}
-		h += maxHeight + margin;
-		// endregion
-
-		removeChild(rect);
-		rect = PPath.createRectangle(0, 0, w, h);
-		rect = bevelIn(rect, 0);
-		addChild(rect);
-		addChild(content);
-		addChildren(children);
-	}
-
-	public void setGridLayoutV() {
-		if (getChildren().size() == 0) {
-
-			double x = 0;
-			double y = 0;
-			double w = margin + content.getBounds().getWidth() + margin;
-			double h = margin + content.getBounds().getHeight() + margin;
-
-			removeChild(rect);
-			rect = PPath.createRectangle(x, y, w, h);
-			rect = bevelOut(rect, 0);
-			addChild(rect);
-			addChild(content);
-
-			return;
-		}
-
-		PNode content = this.content;
-		Collection<PiccoloCustomNode> children = getChildren();
-
-		double x = margin + content.getBounds().getWidth() + margin;
-		double y = 0;
-		double w = margin + content.getBounds().getWidth() + margin;
-		double h = margin + content.getBounds().getHeight() + margin;
-
-		PiccoloCustomNode lastChild = children.iterator().next();
-		double maxWidth = lastChild.getRect().getWidth();
-
-		// region vertical layout
-		for (PiccoloCustomNode PCN : children) {
-
-			PCN.setTransform(AffineTransform.getTranslateInstance(0, 0));
-
-			PCN.setGridLayoutV();
-
-			PCN.translate(x, y);
-
-			y += PCN.getRect().getHeight() + margin;
-			h += PCN.getRect().getHeight() + margin;
-
-			if (PCN.getRect().getWidth() > maxWidth)
-				maxWidth = PCN.getRect().getWidth();
-
-		}
-		w += maxWidth + margin;
-		// endregion
-
-		removeChild(rect);
-		rect = PPath.createRectangle(0, 0, w, h);
-		rect = bevelIn(rect, 0);
-		addChild(rect);
-		addChild(content);
-		addChildren(children);
-	}
 
 	// TODO this function breaks the layout when click on the first child of the
 	// last line
@@ -337,6 +240,7 @@ public class PiccoloCustomNode extends PNode {
 			removeChild(rect);
 			rect = PPath.createRectangle(x, y, w, h);
 			rect = bevelOut(rect, 0);
+			rect.setPaint(Color.LIGHT_GRAY);
 			addChild(rect);
 			addChild(content);
 		} else {
@@ -353,52 +257,43 @@ public class PiccoloCustomNode extends PNode {
 				PCN.setGridLayout(cap);
 				if (i == cap) {
 					i = 1;
-					x = margin;
-					y += margin + maxHeight;
-					h += margin + PCN.getRect().getHeight();
+					x = margin ; //revient au départ
+					y += margin + maxHeight; // coordonées y plus bas 
+					h += margin + PCN.getRect().getHeight(); 
 				} else {
-					w = x + PCN.getRect().getWidth() + margin;
+					w = x + PCN.getRect().getWidth() + margin; //ajoute un node sur la même ligne
 					i++;
 				}
 
-				if (PCN.getRect().getHeight() > maxHeight)
-					maxHeight = PCN.getRect().getHeight();
-
-				if (w > maxWidth)
-					maxWidth = w;
-
+				if (PCN.getRect().getHeight() > maxHeight) maxHeight = PCN.getRect().getHeight();
+				if (w > maxWidth) maxWidth = w;
 				PCN.setTransform(AffineTransform.getTranslateInstance(0, 0));
 				PCN.translate(x, y);
 				x += PCN.getRect().getWidth() + margin;
 			}
 
 			removeChild(rect);
-			rect = PPath.createRectangle(x, y, maxWidth, h+ maxHeight + margin);
+			rect = PPath.createRectangle(x, y, maxWidth+margin, h+ maxHeight + margin);
 			rect = bevelIn(rect, 0);
 
 			addChild(rect);
 			addChild(content);
 			addChildren(getChildren());
 
-			// if (outgoing.size() != 0) {
-			// for (Parrow parrow : outgoing) {
-			// System.out.println(parrow.getFrom().getidNode());
-			// System.out.println(parrow.getTo().getidNode());
-			//
-			// //parrow.redraw(this);
-			// }
-			// }
 		}
 	}
 
 	// endregion
 
+	
+	//construct the region/rectangle of the elements in current package
 	public PPath bevelOut(PPath rectangle, int bevel) {
 		double w = rectangle.getWidth();
 		double h = rectangle.getHeight();
 
+		
 		PPath background = PPath.createRectangle(0, 0, w, h);
-		background.setPaint(Color.WHITE);
+		background.setPaint(Color.LIGHT_GRAY);
 		PPath borderTop = PPath.createRectangle(0, 0, w, bevel);
 		borderTop.setPaint(Color.LIGHT_GRAY);
 		borderTop.setStroke(null);
@@ -408,29 +303,30 @@ public class PiccoloCustomNode extends PNode {
 		borderLeft.setStroke(null);
 		background.addChild(borderLeft);
 		PPath borderRight = PPath.createRectangle(w - bevel, 0, bevel, h);
-		borderRight.setPaint(Color.DARK_GRAY);
+		borderRight.setPaint(Color.LIGHT_GRAY);
 		borderRight.setStroke(null);
 		background.addChild(borderRight);
 		PPath borderBottom = PPath.createRectangle(0, h - bevel, w, bevel);
-		borderBottom.setPaint(Color.DARK_GRAY);
+		borderBottom.setPaint(Color.LIGHT_GRAY);
 		borderBottom.setStroke(null);
 		background.addChild(borderBottom);
 
 		return background;
 	}
 
+	//construct the region refer to the package in which the element is contained
 	public PPath bevelIn(PPath rectangle, int bevel) {
 		double w = rectangle.getWidth();
 		double h = rectangle.getHeight();
 
 		PPath background = PPath.createRectangle(0, 0, w, h);
-		background.setPaint(Color.WHITE);
+		background.setPaint(Color.LIGHT_GRAY);
 		PPath borderTop = PPath.createRectangle(0, 0, w, bevel);
-		borderTop.setPaint(Color.DARK_GRAY);
+		borderTop.setPaint(Color.LIGHT_GRAY);
 		borderTop.setStroke(null);
 		background.addChild(borderTop);
 		PPath borderLeft = PPath.createRectangle(0, 0, bevel, h);
-		borderLeft.setPaint(Color.DARK_GRAY);
+		borderLeft.setPaint(Color.LIGHT_GRAY);
 		borderLeft.setStroke(null);
 		background.addChild(borderLeft);
 		PPath borderRight = PPath.createRectangle(w - bevel, 0, bevel, h);

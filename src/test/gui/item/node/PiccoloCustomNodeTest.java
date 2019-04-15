@@ -1158,6 +1158,8 @@ class PiccoloCustomNodeTest {
 	 * Pour le faire, calcule la surface initiale et on le compare d'inégalité avec le surface finale. Le résultat de cette comparasion, on le stocke dans une variable result de type boolean.
 	 * Puis on teste si la valeur de la variable result est true.
 	 */
+	
+	/*
 	@Test
 	final void testSetGridLayoutH() {
 		final String methodeName = "testSetGridLayoutH()";
@@ -1254,7 +1256,9 @@ class PiccoloCustomNodeTest {
 		message = "Fin d'appel de la méthode";
 		Logger.logMethod(methodeName, message);	
 	}
-
+*/
+	
+	
 	/**
 	 * Test method for {@link nodes.piccolo2d.PiccoloCustomNode#setGridLayoutV()}.
 	 * Cette méthode permet de tester la méthode setGridLayoutV() de la classe PiccoloCustomNode
@@ -1275,6 +1279,8 @@ class PiccoloCustomNodeTest {
 	 * Pour le faire, calcule la surface initiale et on le compare d'inégalité avec le surface finale. Le résultat de cette comparasion, on le stocke dans une variable result de type boolean.
 	 * Puis on teste si la valeur de la variable result est true.
 	 */
+	
+	/*
 	@Test
 	final void testSetGridLayoutV() {
 		final String methodeName = "setGridLayoutV()";

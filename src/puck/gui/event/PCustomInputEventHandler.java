@@ -1,6 +1,8 @@
 package puck.gui.event;
 
+import java.awt.Color;
 import java.awt.event.InputEvent;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,13 +94,17 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		
 		try {
 			if (aEvent.isLeftMouseButton()) {	
+				
+				
 				pnode.toggleChildren();
-				System.out.println(pnode.isHidden());
+				//pnode.setPickable(true);
 				root.setLayout();
 				root.updateContentBoundingBoxes(false, canvas);
 				for (Parrow arrow : ANH.getVisibleArrows()) {
 					ANH.updatePosition(arrow);
 				}
+				 aEvent.setHandled(true);
+				
 			}
 			if (aEvent.isRightMouseButton()) {
 					generateMenu(menu,aEvent);
@@ -108,6 +114,27 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		}
 
 	}
+	
+	/*
+	 public void mouseDragged(PInputEvent event) {
+ 		 Point2D pt = event.getPosition();
+         org.piccolo2d.PNode aNode = event.getPickedNode();
+         org.piccolo2d.util.PDimension delta = event.getDeltaRelativeTo(aNode);
+         aNode.translate(delta.width, delta.height);
+         event.setHandled(true);
+ 	}*/
+	 
+	 
+	 @Override
+     public void mouseEntered(final PInputEvent event) {
+         event.getPickedNode().setPaint(Color.RED);
+     }
+ 	
+	 
+	 @Override
+     public void mouseExited(final PInputEvent event) {
+         event.getPickedNode().setPaint(Color.LIGHT_GRAY);
+     }
 	
 	public void generateMenu(Menu menu,PInputEvent aEvent) {
 		menu.removeAll();
@@ -135,18 +162,6 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		menu.setPoint(aEvent.getPosition());
 		menu.setCanvas(canvas);
 	}
-//	public boolean menuContainsPoint(Menu menu, Point point) {
-//		PBounds bounds = menu.getP().getGlobalFullBounds();
-//		Point2D poi = new Point2D.Double(point.getX()+5, point.getY()+5);
-//		int x = (int) bounds.x;
-//		int y = (int) bounds.y;
-//		Rectangle2D rect =new Rectangle2D.Double();
-//		rect.setFrame(x, y, bounds.getWidth(), bounds.getWidth());
-//		System.out.println("menu "+rect);
-//		System.out.println("point event "+poi);
-//		System.out.println(rect.contains(poi));
-//		return rect.contains(poi);
-//	}
-	
+
 	 
 }
