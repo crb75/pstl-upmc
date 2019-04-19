@@ -19,7 +19,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class Reader {
+public class  Reader {
 	
 	private String filePath;
 	private DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -43,6 +43,7 @@ public class Reader {
 		    this.xpf = XPathFactory.newInstance();
 		    this.path = xpf.newXPath();
 		} catch(ParserConfigurationException|SAXException|IOException e) {
+
 			Logger.getLogger(Reader.loggerName).log(Level.SEVERE, "Exception catched in Reader constructor method", e);
 		}
 	}

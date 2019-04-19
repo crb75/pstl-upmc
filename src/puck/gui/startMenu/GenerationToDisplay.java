@@ -52,6 +52,7 @@ public class GenerationToDisplay extends JFrame {
 	private boolean writingDone = false;
 	JFrame frame;
 	private RunCommand runCommand;
+	private Thread display;
 
 	public GenerationToDisplay() {
 		setTitle("Display");
@@ -117,6 +118,7 @@ public class GenerationToDisplay extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 	
 				try {
+				    display = null;
 					String jarPath = jarPathText.getText().replaceAll("\"", "\\\\");
 					String testFile = projetPathText.getText().replaceAll("\"", "\\\\");
 					
@@ -124,10 +126,14 @@ public class GenerationToDisplay extends JFrame {
 					System.out.println();
 					pb.redirectErrorStream(true);
 					runCommand = new RunCommand(pb);
-					runCommand.start();
-					while (runCommand.getWriter() == null) {} //attente active
+					display = new Thread(runCommand);
+					display.start();
+					while (runCommand.getWriter() == null) {
+
+                    } //attente active
 					runCommand.sendCommand("saveGraph DependecyGraph.xml");
-					while(writingDone == false) {
+					while(!writingDone) {
+						Thread.sleep(1000);
 						System.out.println("Waiting DG xml File");
 					}
 					init(new String[] {});
@@ -289,8 +295,9 @@ public class GenerationToDisplay extends JFrame {
 				@Override
 	            public void windowClosing(WindowEvent e)
 	            {
+	                System.out.println("fenetre fermee");
+					display=null;
 					runCommand.end();
-	               runCommand.stop();
 	            }
 			});
 
@@ -302,7 +309,7 @@ public class GenerationToDisplay extends JFrame {
 	
 	
 
-	public class RunCommand extends Thread {
+	public class RunCommand implements Runnable {
 		private ProcessBuilder processBuilder;
 		private Process pro;
 		private OutputStream stdin;
@@ -333,11 +340,12 @@ public class GenerationToDisplay extends JFrame {
 					//System.out.println(line);
 					if (line.trim().equals("DONE")) {
 						writingDone = true;
+
 					}
 					if (line.trim().contains("DONE:")) {
 						String sub = line.substring(line.indexOf(":")+2, line.length());
 						String [] split = sub.split(" ");
-						if (split.length > 0) 
+						if (split.length > 0)
 						((NewDisplayDG)frame).renameNodes(split);
 					}
 				}
@@ -345,7 +353,6 @@ public class GenerationToDisplay extends JFrame {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			super.run();
 			
 			
 		}
