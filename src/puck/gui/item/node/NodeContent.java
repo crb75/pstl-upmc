@@ -78,30 +78,37 @@ public class NodeContent extends PNode {
 		case "package":
 			url = NodeContent.class.getResource("/package.gif");
 			Icon = new PImage(url);
+			Icon.setName("package");
 			break;
 		case "class":
 			url = NodeContent.class.getResource("/class.gif");
 			Icon = new PImage(url);
+			Icon.setName("class");
 			break;
 		case "interface":
 			url = NodeContent.class.getResource("/interface.gif");
 			Icon = new PImage(url);
+			Icon.setName("interface");
 			break;
 		case "root":
 			url = NodeContent.class.getResource("/root.gif");
 			Icon = new PImage(url);
+			Icon.setName("root");
 			break;
 		case "method":
 			url = NodeContent.class.getResource("/method.png");
 			Icon = new PImage(url);
+			Icon.setName("method");
 			break;
 		case "attribute":
 			url = NodeContent.class.getResource("/field.png");
 			Icon = new PImage(url);
+			Icon.setName("attribute");
 			break;
 		default:
 			url = NodeContent.class.getResource("/question-mark.gif");
 			Icon = new PImage(url);
+			Icon.setName("other");
 			break;
 		}
 		this.icon = Icon;

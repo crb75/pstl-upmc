@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.swing.JMenuItem;
 
+import org.piccolo2d.PNode;
 import org.piccolo2d.event.PBasicInputEventHandler;
 import org.piccolo2d.event.PInputEvent;
 import org.piccolo2d.event.PInputEventFilter;
@@ -100,6 +101,12 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 				//pnode.setPickable(true);
 				root.setLayout();
 				root.updateContentBoundingBoxes(false, canvas);
+				System.out.println("root children count "+ root.getHiddenchildren().size());
+				
+				for(PNode p : root.getHiddenchildren()) {
+					System.out.println("is children of root :"+ p.getName());
+				}
+				
 				for (Parrow arrow : ANH.getVisibleArrows()) {
 					ANH.updatePosition(arrow);
 				}
@@ -114,26 +121,17 @@ public class PCustomInputEventHandler extends PBasicInputEventHandler {
 		}
 
 	}
-	
-	/*
-	 public void mouseDragged(PInputEvent event) {
- 		 Point2D pt = event.getPosition();
-         org.piccolo2d.PNode aNode = event.getPickedNode();
-         org.piccolo2d.util.PDimension delta = event.getDeltaRelativeTo(aNode);
-         aNode.translate(delta.width, delta.height);
-         event.setHandled(true);
- 	}*/
 	 
 	 
 	 @Override
      public void mouseEntered(final PInputEvent event) {
-         event.getPickedNode().setPaint(Color.RED);
+         event.getPickedNode().setPaint(Color.YELLOW);
      }
  	
 	 
 	 @Override
      public void mouseExited(final PInputEvent event) {
-         event.getPickedNode().setPaint(Color.LIGHT_GRAY);
+         event.getPickedNode().setPaint(Color.WHITE);
      }
 	
 	public void generateMenu(Menu menu,PInputEvent aEvent) {

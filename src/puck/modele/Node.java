@@ -9,6 +9,9 @@ public class Node {
 	
 	
 	public Node(){
+		name = "";
+		id = "";
+		type = "";
 		this.relation = new HashMap<String,Edge>();
 	}
 	

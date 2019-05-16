@@ -58,6 +58,7 @@ public class NewDisplayDG extends JFrame {
 	    mpp = new PopupPrintListener();
 		menu = new Menu();
 		listNodes = new XmlToStructure(args).parseNode();
+		
 		this.canvas = canvas;
 		NodeToPnodeParser nodesToPnodes = new NodeToPnodeParser(allPNodes, listNodes);
 		root = nodesToPnodes.getPackageNodes();

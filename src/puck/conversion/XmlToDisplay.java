@@ -18,10 +18,6 @@ import puck.gui.item.node.PiccoloCustomNode;
 import puck.gui.menu.Menu;
 import puck.modele.*;
 
-/*
- * cette classe permet de comparer le xml intial avec le xml regenere a partir de l'affichage 
- * 
- * */
 public class XmlToDisplay {
 	
 	private StringBuilder xmlString;
@@ -41,6 +37,7 @@ public class XmlToDisplay {
 		xmlString = new StringBuilder();
 		xmlString.append("<?xml version=\"1.0\"?>\n");
 		xmlString.append("<DG>\n");
+		xmlString.append("</DG>");
 		this.listNodes = new XmlToStructure("DependecyGraph.xml").parseNode();
 		this.root = new NodeToPnodeParser(allPNodes, listNodes).getPackageNodes();
 		this.canvas = new PSwingCanvas();
@@ -61,7 +58,7 @@ public class XmlToDisplay {
 		}
 		addUsesIsaToXml();
 		System.err.println(addedEdges.size());
-		xmlString.append("</DG>");
+	
 		try {
 			writeTo();
 			
@@ -77,20 +74,17 @@ public class XmlToDisplay {
 			addPnodeToXml(child);
 			addPnodes(child);
 		}
-
 	}
 
-	public void addPnodeToXml(PiccoloCustomNode pnode) {
+	private void addPnodeToXml(PiccoloCustomNode pnode) {
 		if (!addedPnodes.containsValue(pnode)) {
-			System.out.println(pnode.getName());
-			System.out.println(pnode.isHidden());
 			addedPnodes.put(pnode.getidNode(), pnode);
-			xmlString.append(nodeToString(pnode));
+			String s = nodeToString(pnode);
+			xmlString.insert(xmlString.length()-5,s , 0,s.length());
 		}
 	}
 
 	private String nodeToString(PiccoloCustomNode node) {
-		System.out.println("nodeToString");
 		String formatString = "\t<node type=\"%s\" id=\"%s\" name=\"%s\"/>\n";
 		String type = node.getContent().getType().toLowerCase();
 		String id = node.getidNode();
@@ -112,13 +106,16 @@ public class XmlToDisplay {
 		br.write(xmlString.toString());
 		br.close();
 	}
+	
 	public void addUsesIsaToXml() {
 		for (Entry<String, Edge> entry : addedEdges.entrySet()) {
 			Edge e = entry.getValue();
-			xmlString.append(edgeToString(e));
+			String s = edgeToString(e);
+			xmlString.insert(xmlString.length()-5,s , 0,s.length());
 		}
 	}
-	public void addEdgesToXml(PiccoloCustomNode pnode) {
+	
+	private void addEdgesToXml(PiccoloCustomNode pnode) {
 		Node node = listNodes.get(pnode.getidNode());
 		for (Entry<String, PiccoloCustomNode> entry : addedPnodes.entrySet()) {
 			String key = entry.getKey();
@@ -127,14 +124,15 @@ public class XmlToDisplay {
 				if (node != null) {
 					Edge e = getCointainsEdge(node, listNodes.get(child.getidNode()));
 					if (e != null && !addedEdges.containsKey(e)) {		
-						xmlString.append(edgeToString(e));
+						String s = edgeToString(e);
+						xmlString.insert(xmlString.length()-5,s , 0,s.length());
 					}
 				}
 			}
 		}
 	}
 
-	public Edge getCointainsEdge(Node node, Node child) {
+	private Edge getCointainsEdge(Node node, Node child) {
 		HashMap<String, Edge> edges = node.getRelation();
 		for (Entry<String, Edge> entry : edges.entrySet()) {
 			Edge e = entry.getValue();
@@ -148,9 +146,26 @@ public class XmlToDisplay {
 		return null;
 	}
 
-	/*
-		public static void main(String[] args) {
-			new XmlToDisplay();
-		}
-	*/
+	public HashMap<String, PiccoloCustomNode> getAddedPnodes() {
+		return addedPnodes;
+	}
+
+	public void setAddedPnodes(HashMap<String, PiccoloCustomNode> addedPnodes) {
+		this.addedPnodes = addedPnodes;
+	}
+
+	public Map<String, Node> getListNodes() {
+		return listNodes;
+	}
+
+	public void setListNodes(Map<String, Node> listNodes) {
+		this.listNodes = listNodes;
+	}
+	
+	public StringBuilder getXmlString() {
+		return xmlString;
+	}
+
+
+
 }

@@ -14,7 +14,7 @@ public class RefactoringCommands {
 	private BufferedWriter br;
 	private StringBuilder xmlString;
 	
-	private RefactoringCommands() {
+	public RefactoringCommands() {
 		super();
 	};
 
@@ -24,16 +24,11 @@ public class RefactoringCommands {
 	}
 
 	public void init() {
-		try {
-			PrintWriter pw = new PrintWriter("RefactoringCommands.xml");
-			pw.close();
+//			PrintWriter pw = new PrintWriter("RefactoringCommands.xml");
+//			pw.close();
 			xmlString = new StringBuilder();
 			xmlString.append("<?xml version=\"1.0\"?>\n");
 			xmlString.append("<RefactoringCommands>\n");	
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public void nodeToString(PiccoloCustomNode node) {
@@ -62,6 +57,7 @@ public class RefactoringCommands {
 			e.printStackTrace();
 		}
 	}
+	
 	public StringBuilder getXmlString() {
 		return xmlString;
 	}

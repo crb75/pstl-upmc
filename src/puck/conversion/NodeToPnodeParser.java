@@ -42,6 +42,7 @@ public class NodeToPnodeParser {
 					if (allPNodes.containsKey(node.getId())) {
 						listePNode.remove(allPNodes.get(node.getId()));
 						pnode = allPNodes.get(node.getId());
+						System.out.println("pnode " +node.getId());
 						pnode.setName(node.getName());
 						children.add(pnode);
 					} else {

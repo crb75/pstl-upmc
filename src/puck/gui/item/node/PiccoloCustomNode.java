@@ -28,6 +28,7 @@ public class PiccoloCustomNode extends PNode {
 	private double margin = 10;
 	private String idNode;
 	private PiccoloCustomNode parent;
+	private Collection<PiccoloCustomNode> parents;
 	private HashSet<Parrow> outgoing;
 	private HashSet<Parrow> ingoing;
 
@@ -119,8 +120,9 @@ public class PiccoloCustomNode extends PNode {
 		double height = margin + content.getBounds().getHeight() + margin;
 
 		rect = PPath.createRectangle(0, 0, width, height);
+		rect.addChild(content);
 		addChild(rect);
-		addChild(content);
+		//addChild(content);
 		content.translate(margin, margin);
 		this.ingoing = new HashSet<>();
 		this.outgoing = new HashSet<>();
@@ -162,12 +164,16 @@ public class PiccoloCustomNode extends PNode {
 	public Collection<PiccoloCustomNode> getAllChildren() {
 		Collection<PiccoloCustomNode> out = new ArrayList<>();
 		Collection<PiccoloCustomNode> children = getChildren();
-		for (PiccoloCustomNode PCN : children)
+		for (PiccoloCustomNode PCN : children) {
 			out.add(PCN);
-		for (PiccoloCustomNode PCN : hiddenchildren)
+		}
+			
+		for (PiccoloCustomNode PCN : hiddenchildren) {
 			out.add(PCN);
+		}
 		return out;
 	}
+	
 	public Collection<PiccoloCustomNode> getAllChildrenCopy() {
 		Collection<PiccoloCustomNode> out = new ArrayList<>();
 		Collection<PiccoloCustomNode> children = getChildren();
@@ -192,9 +198,7 @@ public class PiccoloCustomNode extends PNode {
 	}
 
 	public void showChildren() {
-		for (PiccoloCustomNode PCN : hiddenchildren) {
-			addChild(PCN);
-		}
+		addChildren(hiddenchildren);
 		hiddenchildren.clear();
 	}
 
@@ -240,7 +244,7 @@ public class PiccoloCustomNode extends PNode {
 			removeChild(rect);
 			rect = PPath.createRectangle(x, y, w, h);
 			rect = bevelOut(rect, 0);
-			rect.setPaint(Color.LIGHT_GRAY);
+			rect.setPaint(Color.WHITE);
 			addChild(rect);
 			addChild(content);
 		} else {
@@ -251,6 +255,7 @@ public class PiccoloCustomNode extends PNode {
 
 			PiccoloCustomNode firstChild = getChildren().iterator().next();
 			double maxHeight = firstChild.getContent().getHeight();
+//			System.out.println("firstchild name " +firstChild.getName());
 			double maxWidth = firstChild.getContent().getWidth();
 			int i = 0;
 			for (PiccoloCustomNode PCN : getChildren()) {
@@ -265,7 +270,9 @@ public class PiccoloCustomNode extends PNode {
 					i++;
 				}
 
-				if (PCN.getRect().getHeight() > maxHeight) maxHeight = PCN.getRect().getHeight();
+				if (PCN.getRect().getHeight() > maxHeight) {
+					maxHeight = PCN.getRect().getHeight();
+				}
 				if (w > maxWidth) maxWidth = w;
 				PCN.setTransform(AffineTransform.getTranslateInstance(0, 0));
 				PCN.translate(x, y);
@@ -293,7 +300,7 @@ public class PiccoloCustomNode extends PNode {
 
 		
 		PPath background = PPath.createRectangle(0, 0, w, h);
-		background.setPaint(Color.LIGHT_GRAY);
+		background.setPaint(Color.WHITE);
 		PPath borderTop = PPath.createRectangle(0, 0, w, bevel);
 		borderTop.setPaint(Color.LIGHT_GRAY);
 		borderTop.setStroke(null);
@@ -320,7 +327,7 @@ public class PiccoloCustomNode extends PNode {
 		double h = rectangle.getHeight();
 
 		PPath background = PPath.createRectangle(0, 0, w, h);
-		background.setPaint(Color.LIGHT_GRAY);
+		background.setPaint(Color.WHITE);
 		PPath borderTop = PPath.createRectangle(0, 0, w, bevel);
 		borderTop.setPaint(Color.LIGHT_GRAY);
 		borderTop.setStroke(null);
@@ -346,18 +353,25 @@ public class PiccoloCustomNode extends PNode {
 		updateTextBoundingBoxes(false);
 
 		Point2D GLobalTranslation = content.getGlobalTranslation();
-
+//		System.out.println("node "+ getName() +" children count "+ getChildrenCount());
+//		
+//		for(PNode p : getHiddenchildren()) {
+//			System.out.println("is children of"+ getName() +":"+ p.getName());
+//		}
+//		
+		
 		double x = GLobalTranslation.getX();
 		double y = GLobalTranslation.getY();
 		double w = content.getBounds().getWidth();
 		double h = content.getBounds().getHeight();
-		content.setBounds(x+content.getIcon().getWidth()+content.getMargin(), y, w, h);
+	
+		content.setBounds(x+content.getIcon().getWidth()+content.getMargin(), y,w, h);
 
-		if (debug)
-			canvas.getLayer().addChild(PPath.createRectangle(x, y, w, h));
+		if (debug) canvas.getLayer().addChild(PPath.createRectangle(x, y, w, h));
 
-		for (PiccoloCustomNode PCN : getChildren())
-			PCN.updateContentBoundingBoxes(debug, canvas);
+		for (PiccoloCustomNode PCN : getHiddenchildren()) PCN.updateContentBoundingBoxes(debug, canvas);
+		
+		
 	}
 
 	public void updateTextBoundingBoxes(boolean debug) {
@@ -372,9 +386,7 @@ public class PiccoloCustomNode extends PNode {
 
 		content.getText().setBounds(x+content.getIcon().getWidth()+content.getMargin(), y, w, h);
 
-		if (debug)
-			content.addChild(PPath.createRectangle(x, y, w, h));
-
+		if (debug) content.addChild(PPath.createRectangle(x, y, w, h));
 	}
 
 	public void expandAll() {

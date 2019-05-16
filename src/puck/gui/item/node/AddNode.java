@@ -67,9 +67,6 @@ public class AddNode extends JMenuItem {
 
 	public void addNodeToParent(PiccoloCustomNode nodeToAdd, String name) {
 		PiccoloCustomNode root_atpre = PiccoloCustomNode.newInstance(root);
-	
-		
-		
 		nodeToAdd.setName(name);
 		nodeToAdd.setParentNode(pnode);
 		nodeToAdd.getContent().getText().addInputEventListener(

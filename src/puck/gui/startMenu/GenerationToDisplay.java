@@ -236,6 +236,7 @@ public class GenerationToDisplay extends JFrame {
 			runCommand.sendCommand("execPlan "+file.getAbsolutePath()+"\n");
 			}
 		});
+		
 		save.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser = new JFileChooser();
