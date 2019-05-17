@@ -19,6 +19,7 @@ import puck.gui.item.arrow.ArrowNodesHolder;
 import puck.gui.menu.Menu;
 import puck.gui.state.Changeable;
 import puck.gui.state.State;
+import puck.gui.state.StateChanger;
 import puck.gui.state.StateChanger2;
 
 public class AddNode extends JMenuItem {
@@ -76,14 +77,18 @@ public class AddNode extends JMenuItem {
 	//	Stack<State> editedState = StateChanger2.getInstance().getAddedPnodes();
 	  //  editedState.push((State) state);
 	//	StateChanger2.getInstance().setAddedPnodes(editedState);
-	//	StateChanger2.getInstance().setPosition(StateChanger2.getInstance().getPosition()+1);
-		
+	
 		allPNodes.put(nodeToAdd.getidNode(), nodeToAdd);
 
 		root.setLayout();
 		//root.showChildren();
 		ANH.updateAllPosition();
-		
+
+		Stack<PiccoloCustomNode> stack =StateChanger.getAddedPnodes();
+		stack.push(nodeToAdd);
+		StateChanger.setAddedPnodes(stack);
+		System.out.println(StateChanger.getAddedPnodes().size());
+		StateChanger.setPosition(StateChanger.getInstance().getPosition()+1);
 //		State currentState = new State(copy(), ANH, canvas,PiccoloCustomNode.newInstance(root),StateChanger2.getInstance().getRefactoringCommands());
 //		editedState = StateChanger2.getInstance().getAddedPnodes();
 //		editedState.push(currentState);

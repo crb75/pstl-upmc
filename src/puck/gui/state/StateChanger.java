@@ -9,11 +9,11 @@ import puck.gui.item.arrow.ArrowNodesHolder;
 import puck.gui.item.node.PiccoloCustomNode;
 
 public class StateChanger implements Changeable{
-	private HashMap<String, PiccoloCustomNode> allPNodes;
-	private ArrowNodesHolder ANH;
-	private PSwingCanvas canvas;
-	private Stack<PiccoloCustomNode> editedPnodes; 
-	private int position;
+	private static HashMap<String, PiccoloCustomNode> allPNodes;
+	private static ArrowNodesHolder ANH;
+	private static PSwingCanvas canvas;
+	private static Stack<PiccoloCustomNode> editedPnodes; 
+	private static int position;
 	
 	public StateChanger() {
 		super();
@@ -23,58 +23,65 @@ public class StateChanger implements Changeable{
 	    {   return INSTANCE;
 	    }
 	public void init(HashMap<String, PiccoloCustomNode> allPNodes,ArrowNodesHolder ANH,PSwingCanvas canvas) {
-		this.allPNodes = allPNodes;
-		this.ANH = ANH;
-		this.canvas = canvas;
-		this.editedPnodes = new  Stack<PiccoloCustomNode>();
-		this.position = 0;
+		StateChanger.allPNodes = allPNodes;
+		StateChanger.ANH = ANH;
+		StateChanger.canvas = canvas;
+		StateChanger.editedPnodes = new  Stack<PiccoloCustomNode>();
+		StateChanger.position = 0;
 	}
 	
-	@Override
 	public void undo() {
-		if (editedPnodes.size() > 0 && position >= 0) {
-			System.out.println("undo");
-			PiccoloCustomNode pnode = editedPnodes.get(position);
+		if (editedPnodes.size() > 0 && position >0) {
+			System.out.println("undo "+ editedPnodes.size() + " " + position);
+			try {
+			PiccoloCustomNode pnode = editedPnodes.get(position-1);
 			pnode.getParentNode().removeChild(pnode);
 			pnode.getHigherParent().setLayout();
 			ANH.updateAllPosition();
-			if(position > 1 )position-- ;
-			else position = 0 ;
+			position-- ;
+			}
+			catch(Exception e) {
+				System.out.println(position);
+				System.out.println(editedPnodes.size());
+			}
 		}
 	}
 
 	@Override
 	public void redo() {
 		if (editedPnodes.size() > 0 && position < editedPnodes.size()) {
-			System.out.println("redo");
+			System.out.println("redo "+ editedPnodes.size() + " " + position);
+			try {
 			PiccoloCustomNode pnode = editedPnodes.get(position);
 			pnode.getParentNode().addChild(pnode);
 			pnode.getHigherParent().setLayout();
 			ANH.updateAllPosition();
 			position++;
-			if (position == editedPnodes.size()) position--;
+			System.out.println(position);
+			}catch(Exception e) {
+				System.out.println(position);
+				System.out.println(editedPnodes.size());
+			}
 		}
 		
 	}
 	
 	
-	public Stack<PiccoloCustomNode> getAddedPnodes() {
+	public static Stack<PiccoloCustomNode> getAddedPnodes() {
 		return editedPnodes;
 	}
 
-
-
 	public int getPosition() {
-		return position;
+		return StateChanger.position;
 	}
 
-	public void setPosition(int position) {
-		this.position = position;
+	public static void setPosition(int position) {
+		StateChanger.position = position;
 	}
 
-	public void setAddedPnodes(Stack<PiccoloCustomNode> addedPnodes) {
-		this.editedPnodes = addedPnodes;
-		position = this.editedPnodes.size()-1;
+	public static void setAddedPnodes(Stack<PiccoloCustomNode> addedPnodes) {
+		StateChanger.editedPnodes = addedPnodes;
+		position = StateChanger.editedPnodes.size()-1;
 	}
 
 	public HashMap<String, PiccoloCustomNode> getAllPNodes() {
@@ -82,7 +89,7 @@ public class StateChanger implements Changeable{
 	}
 
 	public void setAllPNodes(HashMap<String, PiccoloCustomNode> allPNodes) {
-		this.allPNodes = allPNodes;
+		StateChanger.allPNodes = allPNodes;
 	}
 
 	public ArrowNodesHolder getANH() {
@@ -98,7 +105,7 @@ public class StateChanger implements Changeable{
 	}
 
 	public void setCanvas(PSwingCanvas canvas) {
-		this.canvas = canvas;
+		StateChanger.canvas = canvas;
 	}
 	
 	

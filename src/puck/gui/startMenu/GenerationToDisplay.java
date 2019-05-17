@@ -37,6 +37,7 @@ import org.piccolo2d.extras.pswing.PSwingCanvas;
 import puck.gui.frame.NewDisplayDG;
 import puck.gui.plan.ExecuteRefactoringPlan;
 import puck.gui.plan.RefactoringCommands;
+import puck.gui.state.StateChanger;
 import puck.gui.state.StateChanger2;
 
 import java.awt.TextArea;
@@ -221,12 +222,12 @@ public class GenerationToDisplay extends JFrame {
 		// Button action listeners
 		undo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				StateChanger2.getInstance().undo();
+				StateChanger.getInstance().undo();
 			}
 		});
 		redo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				StateChanger2.getInstance().redo();
+				StateChanger.getInstance().redo();
 			}
 		});
 		execute.addActionListener(new ActionListener() {
