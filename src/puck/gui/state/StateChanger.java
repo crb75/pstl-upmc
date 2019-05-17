@@ -15,7 +15,7 @@ public class StateChanger implements Changeable{
 	private Stack<PiccoloCustomNode> editedPnodes; 
 	private int position;
 	
-	private StateChanger() {
+	public StateChanger() {
 		super();
 	};
 	private static StateChanger INSTANCE = new StateChanger();

@@ -50,14 +50,13 @@ public class AddNode extends JMenuItem {
 	}
 
 	public void addNode(PiccoloCustomNode pnode, PSwingCanvas canvas,String nodeName) {
-
 		switch (nodeType) {
 		case CLASS:
-			PiccoloCustomNode cla = new PiccoloCustomNode(nodeName, "1000", "class");
+			PiccoloCustomNode cla = new PiccoloCustomNode(nodeName, ""+allPNodes.size(), "class");
 			addNodeToParent(cla, nodeName);
 			break;
 		case PACKAGE:
-			PiccoloCustomNode pack = new PiccoloCustomNode(nodeName, "1011", "package");
+			PiccoloCustomNode pack = new PiccoloCustomNode(nodeName, ""+allPNodes.size(), "package");
 			addNodeToParent(pack, nodeName);			
 			break;
 		default:
@@ -69,17 +68,15 @@ public class AddNode extends JMenuItem {
 		PiccoloCustomNode root_atpre = PiccoloCustomNode.newInstance(root);
 		nodeToAdd.setName(name);
 		nodeToAdd.setParentNode(pnode);
-		nodeToAdd.getContent().getText().addInputEventListener(
-				new PCustomInputEventHandler(nodeToAdd, root, canvas, allPNodes, menu, ANH, listNodes));
+		nodeToAdd.getContent().getText().addInputEventListener(new PCustomInputEventHandler(nodeToAdd, root, canvas, allPNodes, menu, ANH, listNodes));
 		children.add(nodeToAdd);
 		pnode.setChilldren(children);
 		pnode.showChildren();
-		
 		// undo redo with state
-		Stack<State> editedState = StateChanger2.getInstance().getAddedPnodes();
-	//	editedState.push(previousState);
-		StateChanger2.getInstance().setAddedPnodes(editedState);
-		
+	//	Stack<State> editedState = StateChanger2.getInstance().getAddedPnodes();
+	  //  editedState.push((State) state);
+	//	StateChanger2.getInstance().setAddedPnodes(editedState);
+	//	StateChanger2.getInstance().setPosition(StateChanger2.getInstance().getPosition()+1);
 		
 		allPNodes.put(nodeToAdd.getidNode(), nodeToAdd);
 
@@ -87,10 +84,10 @@ public class AddNode extends JMenuItem {
 		//root.showChildren();
 		ANH.updateAllPosition();
 		
-	//	State currentState = new State(copy(), ANH, canvas,PiccoloCustomNode.newInstance(root));
-		editedState = StateChanger2.getInstance().getAddedPnodes();
-	//	editedState.push(currentState);
-		StateChanger2.getInstance().setAddedPnodes(editedState);
+//		State currentState = new State(copy(), ANH, canvas,PiccoloCustomNode.newInstance(root),StateChanger2.getInstance().getRefactoringCommands());
+//		editedState = StateChanger2.getInstance().getAddedPnodes();
+//		editedState.push(currentState);
+//		StateChanger2.getInstance().setAddedPnodes(editedState);
 	
 	}
 

@@ -25,17 +25,6 @@ public class Menu extends JPopupMenu {
 		
 	}
 
-	// public Menu(List<JMenuItem> items,PSwingCanvas canvas,Point2D point) {
-	// System.out.println("je suis la ");
-	// this.items = items;
-	// this.canvas = canvas;
-	// this.point = point;
-	// this.p = new PNode();
-	// p.addChild(new PSwing(this));
-	// p.setOffset(point);
-	// hidden = true ;
-	//
-	// }
 
 	public void drawMenu() {
 		if (point != null && canvas != null) {

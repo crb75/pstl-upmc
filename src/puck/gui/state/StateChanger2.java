@@ -27,7 +27,7 @@ public class StateChanger2 implements Changeable{
 	private State currentState;
 	private  StringBuilder refactoringCommands;
 	
-	private StateChanger2() {
+	public StateChanger2() {
 		super();
 	};
 	private static StateChanger2 INSTANCE = new StateChanger2();
@@ -50,10 +50,14 @@ public class StateChanger2 implements Changeable{
 	
 	@Override
 	public void undo() {
+		System.out.println("undo");
 		if(position > 1 )position-- ;
 		else position = 0 ;
+		System.out.println(editedState.size());
+		System.out.println(position);
+		System.out.println(!currentState.equals(editedState.get(position)));
 		if (editedState.size() > 0 && position >= 0 && !currentState.equals(editedState.get(position))) {
-			System.err.println("undo");
+			System.out.println("undo");
 			State previousState = editedState.get(position);
 			currentState = previousState;
 			allPNodes.clear();
@@ -148,6 +152,12 @@ public class StateChanger2 implements Changeable{
 		this.canvas = canvas;
 	}
 	
+	public StringBuilder getRefactoringCommands() {
+		return refactoringCommands;
+	}
+	public void setRefactoringCommands(StringBuilder refactoringCommands) {
+		this.refactoringCommands = refactoringCommands;
+	}
 	private void addEvent(PiccoloCustomNode node, PiccoloCustomNode tree,PSwingCanvas canvas,Menu menu,Map<String, Node> listNodes) {
 		if (node.getidNode() != "r01") 
 		node.getContent().getText().addInputEventListener(new PCustomInputEventHandler(node, tree, canvas, allPNodes,menu,ANH,listNodes));
