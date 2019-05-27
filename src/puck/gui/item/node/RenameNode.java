@@ -14,12 +14,12 @@ import javax.swing.JOptionPane;
 
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 import puck.modele.Node;
+import puck.controleur.refactoring.RefactoringCommands;
+import puck.controleur.state.Changeable;
+import puck.controleur.state.State;
+import puck.controleur.state.StateChanger2;
 import puck.gui.item.arrow.ArrowNodesHolder;
 import puck.gui.menu.Menu;
-import puck.gui.plan.RefactoringCommands;
-import puck.gui.state.Changeable;
-import puck.gui.state.State;
-import puck.gui.state.StateChanger2;
 
 public class RenameNode extends JMenuItem {
 	private HashMap<String, PiccoloCustomNode> allPNodes;

@@ -10,7 +10,7 @@ import javax.swing.JMenuItem;
 
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 
-import puck.conversion.XmlToStructure;
+import puck.controleur.conversion.XmlToStructure;
 import puck.gui.item.arrow.ArrowNodesHolder;
 import puck.gui.item.edge.outgoing.CreateISAEdgesOf;
 import puck.gui.item.edge.outgoing.CreateUsesEdgesOf;

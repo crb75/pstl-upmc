@@ -2,7 +2,7 @@ package puck.main;
 
 import javax.swing.JFrame;
 
-import puck.gui.startMenu.GenerationToDisplay;
+import puck.gui.window.GenerationToDisplay;
 
 public class MainClass {
 

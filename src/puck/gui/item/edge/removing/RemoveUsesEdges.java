@@ -8,7 +8,7 @@ import javax.swing.JMenuItem;
 import org.piccolo2d.PNode;
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 
-import puck.conversion.XmlToStructure;
+import puck.controleur.conversion.XmlToStructure;
 import puck.gui.item.arrow.ArrowNodesHolder;
 import puck.modele.Parrow;
 import puck.gui.item.arrow.ParrowUses;

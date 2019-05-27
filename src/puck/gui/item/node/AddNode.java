@@ -14,13 +14,13 @@ import javax.swing.JOptionPane;
 
 import org.piccolo2d.extras.pswing.PSwingCanvas;
 
-import puck.gui.event.PCustomInputEventHandler;
+import puck.controleur.state.Changeable;
+import puck.controleur.state.State;
+import puck.controleur.state.StateChanger;
+import puck.controleur.state.StateChanger2;
+import puck.controleur.user_event.PCustomInputEventHandler;
 import puck.gui.item.arrow.ArrowNodesHolder;
 import puck.gui.menu.Menu;
-import puck.gui.state.Changeable;
-import puck.gui.state.State;
-import puck.gui.state.StateChanger;
-import puck.gui.state.StateChanger2;
 
 public class AddNode extends JMenuItem {
 	private HashMap<String, PiccoloCustomNode> allPNodes;
@@ -74,26 +74,13 @@ public class AddNode extends JMenuItem {
 		pnode.setChilldren(children);
 		pnode.showChildren();
 		// undo redo with state
-	//	Stack<State> editedState = StateChanger2.getInstance().getAddedPnodes();
-	  //  editedState.push((State) state);
-	//	StateChanger2.getInstance().setAddedPnodes(editedState);
-	
 		allPNodes.put(nodeToAdd.getidNode(), nodeToAdd);
-
 		root.setLayout();
-		//root.showChildren();
 		ANH.updateAllPosition();
-
 		Stack<PiccoloCustomNode> stack =StateChanger.getAddedPnodes();
 		stack.push(nodeToAdd);
 		StateChanger.setAddedPnodes(stack);
-		System.out.println(StateChanger.getAddedPnodes().size());
 		StateChanger.setPosition(StateChanger.getInstance().getPosition()+1);
-//		State currentState = new State(copy(), ANH, canvas,PiccoloCustomNode.newInstance(root),StateChanger2.getInstance().getRefactoringCommands());
-//		editedState = StateChanger2.getInstance().getAddedPnodes();
-//		editedState.push(currentState);
-//		StateChanger2.getInstance().setAddedPnodes(editedState);
-	
 	}
 
 	public void addActionListener() {
