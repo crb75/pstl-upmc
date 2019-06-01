@@ -39,8 +39,6 @@ public class TestNodeToPnodeParser {
 	@Test
 	public void testGetPackageNodes() {
 		PiccoloCustomNode root = new PiccoloCustomNode("root", "r01","root");
-		PiccoloCustomNode p = new PiccoloCustomNode("p", "0","package");
-		
 		assertEquals(nodesToPnodes.getPackageNodes().getName(),"root");
 	}
 

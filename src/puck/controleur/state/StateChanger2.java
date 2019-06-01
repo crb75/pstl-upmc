@@ -16,47 +16,43 @@ import puck.gui.item.node.PiccoloCustomNode;
 import puck.gui.menu.Menu;
 
 public class StateChanger2 implements Changeable{
-	private HashMap<String, PiccoloCustomNode> allPNodes;
-	private ArrowNodesHolder ANH;
-	private PSwingCanvas canvas;
-	private Stack<State> editedState; 
-	private int position;
-	private PiccoloCustomNode root;
-	private Map<String, Node> listNodes;
-	private Menu menu;
-	private State currentState;
-	private  StringBuilder refactoringCommands;
+	private static HashMap<String, PiccoloCustomNode> allPNodes;
+	private static ArrowNodesHolder ANH;
+	private static PSwingCanvas canvas;
+	private static Stack<State> editedState = new Stack<State>(); 
+	private static int position = 0 ;
+	private static PiccoloCustomNode root;
+	private static Map<String, Node> listNodes;
+	private static Menu menu;
+	private static State currentState;
+	private static StringBuilder refactoringCommands;
 	
 	public StateChanger2() {
 		super();
 	};
+	
 	private static StateChanger2 INSTANCE = new StateChanger2();
-	 public static StateChanger2 getInstance()
-	    {   return INSTANCE;
-	    }
+	
+	public static StateChanger2 getInstance(){   
+		return INSTANCE;
+	}
+	
+	
 	public void init(HashMap<String, PiccoloCustomNode> allPNodes,ArrowNodesHolder ANH,PSwingCanvas canvas,PiccoloCustomNode root,
 			Map<String, Node> listNodes, Menu menu, StringBuilder refactoringCommands) {
-		this.allPNodes = allPNodes;
-		this.ANH = ANH;
-		this.canvas = canvas;
-		this.editedState = new  Stack<State>();
-		this.position = 0;
-		this.root = root;
-		this.listNodes = listNodes;
-		this.menu = menu;
-		this.refactoringCommands = refactoringCommands;
+		StateChanger2.allPNodes = allPNodes;
+		StateChanger2.ANH = ANH;
+		StateChanger2.canvas = canvas;
+		StateChanger2.root = root;
+		StateChanger2.listNodes = listNodes;
+		StateChanger2.menu = menu;
+		StateChanger2.refactoringCommands = refactoringCommands;
 		//System.err.println("ref"+refactoringCommands.hashCode());
 	}
 	
 	@Override
 	public void undo() {
-		System.out.println("undo");
-		if(position > 1 )position-- ;
-		else position = 0 ;
-		System.out.println(editedState.size());
-		System.out.println(position);
-		System.out.println(!currentState.equals(editedState.get(position)));
-		if (editedState.size() > 0 && position >= 0 && !currentState.equals(editedState.get(position))) {
+		if (editedState.size() > 0 && position > 0 && !currentState.equals(editedState.get(position))) {
 			System.out.println("undo");
 			State previousState = editedState.get(position);
 			currentState = previousState;

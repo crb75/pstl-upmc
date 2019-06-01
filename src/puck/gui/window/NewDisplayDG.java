@@ -32,6 +32,7 @@ import puck.gui.item.node.RenameNode;
 import puck.gui.menu.Menu;
 import puck.modele.Node;
 
+//fenetre générée après avoir fait un run
 
 public class NewDisplayDG extends JFrame {
 	private HashMap<String, PiccoloCustomNode> allPNodes = new HashMap<>();

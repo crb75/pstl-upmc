@@ -12,27 +12,28 @@ public class StateChanger implements Changeable{
 	private static HashMap<String, PiccoloCustomNode> allPNodes;
 	private static ArrowNodesHolder ANH;
 	private static PSwingCanvas canvas;
-	private static Stack<PiccoloCustomNode> editedPnodes; 
-	private static int position;
+	private static Stack<PiccoloCustomNode> editedPnodes =  new  Stack<PiccoloCustomNode>();
+	private static int position = 0;
 	
 	public StateChanger() {
 		super();
 	};
+	
 	private static StateChanger INSTANCE = new StateChanger();
-	 public static StateChanger getInstance()
-	    {   return INSTANCE;
-	    }
+	 
+	public static StateChanger getInstance() { 
+		return INSTANCE;
+	}
+	
 	public void init(HashMap<String, PiccoloCustomNode> allPNodes,ArrowNodesHolder ANH,PSwingCanvas canvas) {
 		StateChanger.allPNodes = allPNodes;
 		StateChanger.ANH = ANH;
 		StateChanger.canvas = canvas;
-		StateChanger.editedPnodes = new  Stack<PiccoloCustomNode>();
-		StateChanger.position = 0;
 	}
 	
 	public void undo() {
 		if (editedPnodes.size() > 0 && position >0) {
-			System.out.println("undo "+ editedPnodes.size() + " " + position);
+//			System.out.println("undo "+ editedPnodes.size() + " " + position);
 			try {
 			PiccoloCustomNode pnode = editedPnodes.get(position-1);
 			pnode.getParentNode().removeChild(pnode);
@@ -50,14 +51,13 @@ public class StateChanger implements Changeable{
 	@Override
 	public void redo() {
 		if (editedPnodes.size() > 0 && position < editedPnodes.size()) {
-			System.out.println("redo "+ editedPnodes.size() + " " + position);
+//			System.out.println("redo "+ editedPnodes.size() + " " + position);
 			try {
 			PiccoloCustomNode pnode = editedPnodes.get(position);
 			pnode.getParentNode().addChild(pnode);
 			pnode.getHigherParent().setLayout();
 			ANH.updateAllPosition();
 			position++;
-			System.out.println(position);
 			}catch(Exception e) {
 				System.out.println(position);
 				System.out.println(editedPnodes.size());
@@ -66,6 +66,23 @@ public class StateChanger implements Changeable{
 		
 	}
 	
+	
+//	public static void clearUnwantedPNodes() {
+//		if(position < editedPnodes.size()) {
+//			try {
+//				for(int i = position; i<editedPnodes.size();i++) {
+//					PiccoloCustomNode p  = editedPnodes.pop();
+//					p.getParentNode().removeChild(p);
+//					allPNodes.remove(p);
+//				}
+//				ANH.updateAllPosition();
+//			}
+//			catch(Exception e) {
+//				System.out.println("oops");
+//			}
+//		}
+//	}
+//	
 	
 	public static Stack<PiccoloCustomNode> getAddedPnodes() {
 		return editedPnodes;

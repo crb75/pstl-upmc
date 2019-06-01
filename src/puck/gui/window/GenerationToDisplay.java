@@ -42,6 +42,8 @@ import puck.controleur.state.StateChanger2;
 import java.awt.TextArea;
 import java.awt.Button;
 
+//fenetre générée lors du lancement de l'application
+
 @SuppressWarnings("serial")
 public class GenerationToDisplay extends JFrame {
 	private JTextField jarPathText, projetPathText;
@@ -217,6 +219,8 @@ public class GenerationToDisplay extends JFrame {
 
 		toolBar.addSeparator();
 		//toolBar.add(textArear);
+		
+		canvas.setAutoscrolls(false);
 
 		// Button action listeners
 		undo.addActionListener(new ActionListener() {
