@@ -38,7 +38,7 @@ public class  Reader {
 			this.factory = DocumentBuilderFactory.newInstance();
 		    this.builder = this.factory.newDocumentBuilder();
 		    this.fileXML = new File(this.filePath);
-		    this.xml = this.builder.parse(fileXML);
+		    this.xml = this.builder.parse(fileXML); //utilise SAX
 		    this.root = this.xml.getDocumentElement();
 		    this.xpf = XPathFactory.newInstance();
 		    this.path = xpf.newXPath();

@@ -10,7 +10,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import graph.Node;
 import puck.controleur.conversion.NodeToPnodeParser;
 import puck.controleur.conversion.XmlToDisplay;
 import puck.controleur.conversion.XmlToStructure;

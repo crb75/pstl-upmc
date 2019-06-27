@@ -60,7 +60,10 @@ public  class XmlToStructure {
 		for (int i = 1; i <= listLength; i++) {
 			Node n = new Node();
 			n.setId(reader.getNodeId(i));
-			n.setName(reader.getNodeName(i));
+			String name = reader.getNodeName(i);
+			name = name.replace("&lt;","<");
+			name = name.replace("&gt;",">");
+			n.setName(name);
 			n.setType(reader.getNodeType(i));
 			NodeList listEdge = reader.getEdgeFrom(n.getId());
 			if (listEdge.getLength() != 0) {
